@@ -474,16 +474,6 @@ class BlockAdapter(
                     ItemBlockDescriptionBinding.inflate(inflater, parent, false)
                 ).apply {
                     with(content) {
-                        enableEnterKeyDetector(
-                            onEnterClicked = { range ->
-                                onDescriptionEnterKeyListener(
-                                    views = views,
-                                    textView = content,
-                                    range = range,
-                                    onKeyPressedEvent = onKeyPressedEvent
-                                )
-                            }
-                        )
                         addTextChangedListener(
                             DefaultTextWatcher { editable ->
                                 val pos = bindingAdapterPosition

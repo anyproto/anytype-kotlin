@@ -358,7 +358,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="migration_error_msg">Something might have gone wrong. Please visit our forum, read the migration instructions, and ask questions to our team.</string>
 
     <string name="onboarding_auth_title">the\neverything\napp</string>
-    <string name="onboarding_auth_description">Welcome to Anytype: a place to securely write notes and documents, manage tasks, and save important content from the web.</string>
+    <string name="onboarding_auth_description">For those who celebrate trust &amp; autonomy. Anytype is your safe space to write, plan, think and organise everything that matters to you.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
@@ -368,18 +368,18 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
-    <string name="onboarding_void_description">Everything you create will be stored here. It is a special encrypted place, which exist on your machine and is backed up to the network.</string>
-    <string name="onboarding_mnemonic_title">Your Void is encrypted by the Key</string>
-    <string name="onboarding_mnemonic_description">The Key is a set of 12 words. It is unique for the Void and can’t be changed. You only one person who knows the Key. If you lose it, no one, including us, can help restore your Void. Store it securely.</string>
+    <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
+    <string name="onboarding_mnemonic_title">End-to-end Encryption</string>
+    <string name="onboarding_mnemonic_description">Your data is encrypted by the Key above - your secret Recovery phrase. Store it securely. This is the only way to login and access your Void.</string>
     <string name="onboarding_mnemonic_show_key">Show me the Key</string>
     <string name="onboarding_mnemonic_key_saved">I saved my key</string>
     <string name="onboarding_mnemonic_check_later">Check later</string>
     <string name="onboarding_mnemonic_copy">Copy to clipboard</string>
-    <string name="onboarding_soul_creation_title">Create your Soul</string>
-    <string name="onboarding_soul_creation_description">Think of it like an identity, or a profile within\nAnytype.</string>
-    <string name="onboarding_soul_creation_placeholder">Call it whatever you want</string>
-    <string name="onboarding_soul_creation">Creating your Soul</string>
-    <string name="onboarding_soul_space_creation">Setting up your Personal Space</string>
+    <string name="onboarding_soul_creation_title">Anytype Identity</string>
+    <string name="onboarding_soul_creation_description">Great! As a last step, let\'s create your Identity and enter your name. Don\'t worry – you can always change the name later.</string>
+    <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
+    <string name="onboarding_soul_creation">Creating your Identity…</string>
+    <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
     <string name="onboarding_soul_creation_personal_space">Personal Space</string>
     <string name="onboarding_type_recovery_phrase">Type your recovery phrase</string>
     <string name="onboarding_login_or">OR</string>
@@ -390,4 +390,5 @@ Do the computation of an expensive paragraph of text on a background thread:
 
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
     <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
+    <string name="go_to_the_app">Go to the app</string>
 </resources>

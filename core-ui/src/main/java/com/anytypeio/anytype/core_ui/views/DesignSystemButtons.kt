@@ -3,9 +3,11 @@ package com.anytypeio.anytype.core_ui.views
 import android.content.Context
 import android.util.AttributeSet
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,15 +21,20 @@ import androidx.compose.material.ripple.RippleAlpha
 import androidx.compose.material.ripple.RippleTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
+import com.anytypeio.anytype.core_ui.views.animations.LoadingIndicator
 
 class ButtonPrimaryXSmall @JvmOverloads constructor(
     context: Context,
@@ -148,6 +155,65 @@ fun ButtonPrimary(
 }
 
 @Composable
+fun ButtonPrimaryLoading(
+    text: String = "",
+    modifierBox: Modifier = Modifier,
+    modifierButton: Modifier = Modifier,
+    size: ButtonSize,
+    onClick: () -> Unit = {},
+    enabled: Boolean = true,
+    loading: Boolean = false,
+    loadingItemsCount: Int = 3
+) {
+    val contentAlpha by animateFloatAsState(targetValue = if (loading) 0f else 1f)
+    val loadingAlpha by animateFloatAsState(targetValue = if (loading) 1f else 0f)
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+    val backgroundColor =
+        if (isPressed.value) colorResource(id = R.color.button_pressed) else colorResource(
+            id = R.color.glyph_selected
+        )
+
+    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+        Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
+            Button(
+                onClick = { if (!loading) onClick() },
+                interactionSource = interactionSource,
+                enabled = enabled,
+                shape = RoundedCornerShape(size.cornerSize),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = backgroundColor,
+                    contentColor = colorResource(id = R.color.button_text),
+                    disabledBackgroundColor = colorResource(id = R.color.shape_tertiary),
+                    disabledContentColor = colorResource(id = R.color.text_tertiary)
+                ),
+                modifier = modifierButton
+                    .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp
+                ),
+                contentPadding = size.contentPadding
+            ) {
+                Text(
+                    text = text,
+                    modifier = Modifier.graphicsLayer { alpha = contentAlpha },
+                    style = size.textStyle
+                )
+            }
+            LoadingIndicator(
+                animating = loading,
+                modifier = Modifier.graphicsLayer { alpha = loadingAlpha },
+                animationSpecs = FadeAnimationSpecs(itemCount = loadingItemsCount),
+                color = colorResource(id = R.color.button_text),
+                size = size
+            )
+        }
+    }
+}
+
+@Composable
 fun ButtonSecondary(
     text: String = "",
     onClick: () -> Unit,
@@ -193,6 +259,68 @@ fun ButtonSecondary(
 }
 
 @Composable
+fun ButtonSecondaryLoading(
+    text: String = "",
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    modifierBox: Modifier = Modifier,
+    modifierButton: Modifier = Modifier,
+    size: ButtonSize,
+    loading: Boolean = false,
+    loadingItemsCount: Int = 3
+) {
+
+    val contentAlpha by animateFloatAsState(targetValue = if (loading) 0f else 1f)
+    val loadingAlpha by animateFloatAsState(targetValue = if (loading) 1f else 0f)
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+    val backgroundColor =
+        if (isPressed.value) colorResource(id = R.color.shape_transparent) else Color.Transparent
+    val borderColor = if (enabled) colorResource(id = R.color.shape_primary) else colorResource(
+        id = R.color.shape_secondary
+    )
+
+    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+        Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
+            Button(
+                onClick = {if (!loading) onClick()},
+                interactionSource = interactionSource,
+                enabled = enabled,
+                shape = RoundedCornerShape(size.cornerSize),
+                border = BorderStroke(width = 1.dp, color = borderColor),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = backgroundColor,
+                    contentColor = colorResource(id = R.color.text_primary),
+                    disabledBackgroundColor = Color.Transparent,
+                    disabledContentColor = colorResource(id = R.color.text_tertiary)
+                ),
+                modifier = modifierButton
+                    .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp
+                ),
+                contentPadding = size.contentPadding
+            ) {
+                Text(
+                    text = text,
+                    style = size.textStyle,
+                    modifier = Modifier.graphicsLayer { alpha = contentAlpha }
+                )
+            }
+            LoadingIndicator(
+                animating = loading,
+                modifier = Modifier.graphicsLayer { alpha = loadingAlpha },
+                animationSpecs = FadeAnimationSpecs(itemCount = loadingItemsCount),
+                color = colorResource(id = R.color.text_primary),
+                size = size
+            )
+        }
+    }
+}
+
+@Composable
 fun ButtonWarning(
     text: String = "",
     onClick: () -> Unit,
@@ -228,6 +356,63 @@ fun ButtonWarning(
             Text(
                 text = text,
                 style = size.textStyle
+            )
+        }
+    }
+}
+
+@Composable
+fun ButtonWarningLoading(
+    text: String = "",
+    modifierBox: Modifier = Modifier,
+    modifierButton: Modifier = Modifier,
+    size: ButtonSize,
+    onClick: () -> Unit = {},
+    loading: Boolean = false,
+    loadingItemsCount: Int = 3
+) {
+    val contentAlpha by animateFloatAsState(targetValue = if (loading) 0f else 1f)
+    val loadingAlpha by animateFloatAsState(targetValue = if (loading) 1f else 0f)
+
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+    val contentColor =
+        if (isPressed.value) colorResource(id = R.color.palette_light_red) else colorResource(
+            id = R.color.palette_system_red
+        )
+    val borderColor = colorResource(id = R.color.shape_primary)
+
+    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+        Box(modifier = modifierBox, contentAlignment = Alignment.Center) {
+            Button(
+                onClick = { if (!loading) onClick() },
+                interactionSource = interactionSource,
+                shape = RoundedCornerShape(size.cornerSize),
+                border = BorderStroke(width = 1.dp, color = borderColor),
+                colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.Transparent,
+                    contentColor = contentColor
+                ),
+                modifier = modifierButton
+                    .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 0.dp,
+                    pressedElevation = 0.dp
+                ),
+                contentPadding = size.contentPadding
+            ) {
+                Text(
+                    text = text,
+                    modifier = Modifier.graphicsLayer { alpha = contentAlpha },
+                    style = size.textStyle
+                )
+            }
+            LoadingIndicator(
+                animating = loading,
+                modifier = Modifier.graphicsLayer { alpha = loadingAlpha },
+                animationSpecs = FadeAnimationSpecs(itemCount = loadingItemsCount),
+                color = contentColor,
+                size = size
             )
         }
     }
@@ -296,7 +481,8 @@ fun MyPrimaryButton() {
         onClick = {},
         size = ButtonSize.Large,
         text = "Login",
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
     )
 }
@@ -308,7 +494,8 @@ fun MySecondaryButton() {
         onClick = {},
         size = ButtonSize.LargeSecondary,
         text = "Cancel",
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
     )
 }
@@ -320,7 +507,8 @@ fun MyWarningButton() {
         onClick = {},
         size = ButtonSize.Large,
         text = "Log out",
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
     )
 }

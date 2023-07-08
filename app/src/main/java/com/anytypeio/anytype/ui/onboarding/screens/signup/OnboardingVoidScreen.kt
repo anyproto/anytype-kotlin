@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -22,21 +25,26 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.presentation.common.ScreenState
+
 
 @Composable
 fun VoidScreenWrapper(
+    screenState: ScreenState,
     contentPaddingTop: Int,
-    navigateToMnemonicPhrase: () -> Unit
+    onNextClicked: () -> Unit
 ) {
     VoidScreen(
-        navigateToMnemonicPhrase = navigateToMnemonicPhrase,
+        screenState = screenState,
+        onNextClicked = onNextClicked,
         contentPaddingTop = contentPaddingTop
     )
 }
 
 @Composable
 fun VoidScreen(
-    navigateToMnemonicPhrase: () -> Unit,
+    screenState: ScreenState,
+    onNextClicked: () -> Unit,
     contentPaddingTop: Int
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -50,15 +58,29 @@ fun VoidScreen(
             Spacer(modifier = Modifier.height(12.dp))
             VoidDescription()
         }
-        OnBoardingButtonPrimary(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 16.dp, end = 16.dp, bottom = 24.dp)
-                .align(Alignment.BottomCenter),
-            text = stringResource(id = R.string.next),
-            onClick = { navigateToMnemonicPhrase.invoke() },
-            size = ButtonSize.Large
-        )
+                .align(Alignment.BottomCenter)
+        ) {
+            OnBoardingButtonPrimary(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.next),
+                onClick = { onNextClicked() },
+                size = ButtonSize.Large
+            )
+            if (screenState is ScreenState.Loading) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 20.dp)
+                        .size(18.dp),
+                    color = colorResource(R.color.shape_secondary),
+                    strokeWidth = 1.5.dp
+                )
+            }
+        }
     }
 }
 

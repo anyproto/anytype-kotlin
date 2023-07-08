@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.view.Gravity
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDescriptionBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
@@ -113,27 +112,6 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
 
     fun enableEditMode() {
         binding.tvBlockDescription.enableEditMode()
-    }
-
-    fun onDescriptionEnterKeyListener(
-        views: List<BlockView>,
-        textView: TextView,
-        range: IntRange,
-        onKeyPressedEvent: (KeyPressedEvent) -> Unit
-    ) {
-        val pos = bindingAdapterPosition
-        val text = textView.text.toString()
-        if (pos != RecyclerView.NO_POSITION) {
-            val view = views[pos]
-            check(view is BlockView.Title)
-            onKeyPressedEvent.invoke(
-                KeyPressedEvent.OnDescriptionBlockEnterKeyEvent(
-                    target = view.id,
-                    text = text,
-                    range = range
-                )
-            )
-        }
     }
 
     private fun setupContentPadding(isTodoLayout: Boolean) {

@@ -1391,12 +1391,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             hasFocus = true
         )
 
-        vm.onKeyPressedEvent(
-            KeyPressedEvent.OnDescriptionBlockEnterKeyEvent(
-                target = description.id,
-                text = description.content<Block.Content.Text>().text,
-                range = range
-            )
+        vm.onSplitObjectDescription(
+            target = description.id,
+            text = description.content<Block.Content.Text>().text,
+            range = range
         )
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
@@ -1467,12 +1465,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             hasFocus = true
         )
 
-        vm.onKeyPressedEvent(
-            KeyPressedEvent.OnDescriptionBlockEnterKeyEvent(
-                target = description.id,
-                text = description.content<Block.Content.Text>().text,
-                range = range
-            )
+        vm.onSplitObjectDescription(
+            target = description.id,
+            text = description.content<Block.Content.Text>().text,
+            range = range
         )
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
@@ -1543,12 +1539,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             hasFocus = true
         )
 
-        vm.onKeyPressedEvent(
-            KeyPressedEvent.OnDescriptionBlockEnterKeyEvent(
-                target = description.id,
-                text = description.content<Block.Content.Text>().text,
-                range = range
-            )
+        vm.onSplitObjectDescription(
+            target = description.id,
+            text = description.content<Block.Content.Text>().text,
+            range = range
         )
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
@@ -1621,12 +1615,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             hasFocus = true
         )
 
-        vm.onKeyPressedEvent(
-            KeyPressedEvent.OnDescriptionBlockEnterKeyEvent(
-                target = description.id,
-                text = description.content<Block.Content.Text>().text,
-                range = range
-            )
+        vm.onSplitObjectDescription(
+            target = description.id,
+            text = description.content<Block.Content.Text>().text,
+            range = range
         )
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
@@ -1696,12 +1688,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             hasFocus = true
         )
 
-        vm.onKeyPressedEvent(
-            KeyPressedEvent.OnDescriptionBlockEnterKeyEvent(
-                target = description.id,
-                text = description.content<Block.Content.Text>().text,
-                range = range
-            )
+        vm.onSplitObjectDescription(
+            target = description.id,
+            text = description.content<Block.Content.Text>().text,
+            range = range
         )
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
@@ -1771,12 +1761,10 @@ class EditorSplitTest : EditorPresentationTestSetup() {
             hasFocus = true
         )
 
-        vm.onKeyPressedEvent(
-            KeyPressedEvent.OnDescriptionBlockEnterKeyEvent(
-                target = description.id,
-                text = description.content<Block.Content.Text>().text,
-                range = range
-            )
+        vm.onSplitObjectDescription(
+            target = description.id,
+            text = description.content<Block.Content.Text>().text,
+            range = range
         )
 
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)

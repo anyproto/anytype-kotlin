@@ -88,7 +88,7 @@ abstract class ResultInteractor<in P, R>(
     suspend fun run(params: P) = doWork(params)
 
     /*
-    * Executes on the caller's thread.
+    * N.B. Executes on the caller's thread.
     * */
     suspend fun execute(params: P): Resultat<R> = runCatchingL { doWork(params) }
 

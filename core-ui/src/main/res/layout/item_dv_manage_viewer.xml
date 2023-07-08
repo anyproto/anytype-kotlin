@@ -17,6 +17,19 @@
         android:src="@drawable/ic_remove_red"
         tools:visibility="visible" />
 
+    <ImageView
+        android:id="@+id/icRemoveInactive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:paddingStart="20dp"
+        android:paddingTop="14dp"
+        android:paddingEnd="@dimen/dp_16"
+        android:paddingBottom="14dp"
+        android:visibility="gone"
+        android:src="@drawable/ic_remove_inactive"
+        tools:visibility="gone" />
+
     <FrameLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"

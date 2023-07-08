@@ -77,6 +77,20 @@ sealed class Widget {
     }
 }
 
+fun List<Block>.parseActiveViews() : WidgetToActiveView {
+    val result = mutableMapOf<WidgetId, WidgetActiveViewId>()
+    forEach { block ->
+        val content = block.content
+        if (content is Block.Content.Widget) {
+            val view = content.activeView
+            if (!view.isNullOrEmpty()) {
+                result[block.id] = view
+            }
+        }
+    }
+    return result
+}
+
 fun List<Block>.parseWidgets(
     root: Id,
     details: Map<Id, Struct>
@@ -107,7 +121,8 @@ fun List<Block>.parseWidgets(
                                 add(
                                     Widget.Tree(
                                         id = w.id,
-                                        source = source
+                                        source = source,
+                                        limit = widgetContent.limit
                                     )
                                 )
                             }
@@ -123,7 +138,8 @@ fun List<Block>.parseWidgets(
                                 add(
                                     Widget.List(
                                         id = w.id,
-                                        source = source
+                                        source = source,
+                                        limit = widgetContent.limit
                                     )
                                 )
                             }
@@ -132,7 +148,8 @@ fun List<Block>.parseWidgets(
                                     Widget.List(
                                         id = w.id,
                                         source = source,
-                                        isCompact = true
+                                        isCompact = true,
+                                        limit = widgetContent.limit
                                     )
                                 )
                             }

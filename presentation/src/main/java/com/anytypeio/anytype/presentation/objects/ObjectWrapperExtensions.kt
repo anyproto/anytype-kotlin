@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -22,7 +23,6 @@ import timber.log.Timber
 suspend fun ObjectWrapper.Basic.values(
     relations: List<ObjectWrapper.Relation>,
     settings: List<DVViewerRelation>,
-    details: Map<Id, Block.Fields>,
     urlBuilder: UrlBuilder,
     storeOfObjects: ObjectStore
 ): List<DefaultObjectRelationValueView> {
@@ -134,7 +134,10 @@ suspend fun ObjectWrapper.Basic.values(
                 val value = DefaultObjectRelationValueView.File(
                     objectId = id,
                     relationKey = relation.key,
-                    files = files(relation = relation.key, details = details)
+                    files = files(
+                        relation = relation.key,
+                        storeOfObjects = storeOfObjects
+                    )
                 )
                 values.add(value)
             }
@@ -144,8 +147,8 @@ suspend fun ObjectWrapper.Basic.values(
                     relationKey = relation.key,
                     objects = objects(
                         relation = relation.key,
-                        details = details,
-                        urlBuilder = urlBuilder
+                        urlBuilder = urlBuilder,
+                        storeOfObjects = storeOfObjects
                     )
                 )
                 values.add(value)
@@ -159,17 +162,15 @@ suspend fun ObjectWrapper.Basic.values(
     return values
 }
 
-suspend fun ObjectWrapper.Basic.valuesFilteredByHidden(
+suspend fun ObjectWrapper.Basic.relationsFilteredByHiddenAndDescription(
     relations: List<ObjectWrapper.Relation>,
     settings: List<DVViewerRelation>,
-    details: Map<Id, Block.Fields>,
     urlBuilder: UrlBuilder,
     storeOfObjects: ObjectStore
 ): List<DefaultObjectRelationValueView> {
     return values(
-        relations = relations.filter { it.isHidden != true },
+        relations = relations.filter { it.isHidden != true && it.key != Relations.DESCRIPTION },
         settings = settings,
-        details = details,
         urlBuilder = urlBuilder,
         storeOfObjects = storeOfObjects
     )
@@ -225,9 +226,9 @@ suspend fun ObjectWrapper.Basic.tags(
     return result
 }
 
-fun ObjectWrapper.Basic.files(
+suspend fun ObjectWrapper.Basic.files(
     relation: Id,
-    details: Map<Id, Block.Fields>
+    storeOfObjects: ObjectStore
 ) : List<FileView> {
     val result = mutableListOf<FileView>()
     val ids : List<Id> = when(val value = map.getOrDefault(relation, null)) {
@@ -236,9 +237,8 @@ fun ObjectWrapper.Basic.files(
         else -> emptyList()
     }
     ids.forEach { id ->
-        val data = details[id]
-        if (data != null) {
-            val obj = ObjectWrapper.Basic(data.map)
+        val obj = storeOfObjects.get(id)
+        if (obj != null) {
             result.add(
                 FileView(
                     id = obj.id,
@@ -254,10 +254,10 @@ fun ObjectWrapper.Basic.files(
     return result
 }
 
-fun ObjectWrapper.Basic.objects(
+suspend fun ObjectWrapper.Basic.objects(
     relation: Id,
-    details: Map<Id, Block.Fields>,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    storeOfObjects: ObjectStore
 ) : List<ObjectView> {
     val result = mutableListOf<ObjectView>()
 
@@ -266,9 +266,8 @@ fun ObjectWrapper.Basic.objects(
         is List<*> -> value.typeOf()
         else -> emptyList()
     }
-
     ids.forEach { id ->
-        val wrapper = ObjectWrapper.Basic(details[id]?.map ?: return@forEach)
+        val wrapper = storeOfObjects.get(id) ?: return@forEach
         result.add(wrapper.toObjectView(urlBuilder))
     }
     return result

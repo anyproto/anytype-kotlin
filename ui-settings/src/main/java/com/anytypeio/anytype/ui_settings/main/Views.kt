@@ -63,7 +63,7 @@ fun Section(modifier: Modifier = Modifier, title: String) {
 
 @OptIn(FlowPreview::class)
 @Composable
-fun NameBlock(
+fun SpaceNameBlock(
     modifier: Modifier = Modifier,
     name: String,
     onNameSet: (String) -> Unit
@@ -177,7 +177,8 @@ fun SpaceImageBlock(
                     }
             ) {
                 Box(
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier
+                        .align(Alignment.Center)
                         .size(gradientSize)
                         .clip(RoundedCornerShape(32.dp))
                         .background(gradient)
@@ -234,13 +235,15 @@ fun SettingsTextField(
                 value = value,
                 visualTransformation = visualTransformation,
                 innerTextField = innerTextField,
-                placeholder = null,
                 label = null,
                 leadingIcon = null,
                 trailingIcon = null,
                 singleLine = true,
                 enabled = true,
                 isError = false,
+                placeholder = {
+                    Text(text = stringResource(id = R.string.space_name))
+                },
                 interactionSource = remember { MutableInteractionSource() },
                 colors = TextFieldDefaults.outlinedTextFieldColors(
                     textColor = colorResource(id = R.color.text_primary),
@@ -249,7 +252,7 @@ fun SettingsTextField(
                     errorBorderColor = Color.Transparent,
                     focusedBorderColor = Color.Transparent,
                     unfocusedBorderColor = Color.Transparent,
-                    placeholderColor = colorResource(id = R.color.glyph_active),
+                    placeholderColor = colorResource(id = R.color.text_tertiary),
                     cursorColor = colorResource(id = R.color.orange)
                 ),
                 contentPadding = PaddingValues(),

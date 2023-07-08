@@ -17,7 +17,7 @@ class MiddlewareServiceImplementation @Inject constructor(
 ) : MiddlewareService {
 
     init {
-        if (!featureToggles.isLogFromMiddlewareLibrary) {
+        if (!featureToggles.isLogFromGoProcess) {
             Service.setEnv("ANYTYPE_LOG_LEVEL", "*=fatal;anytype*=error")
         }
     }
@@ -158,6 +158,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Block.CreateWidget.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Block.CreateWidget.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun blockWidgetSetViewId(request: Rpc.BlockWidget.SetViewId.Request): Rpc.BlockWidget.SetViewId.Response {
+        val encoded = Service.blockWidgetSetViewId(
+            Rpc.BlockWidget.SetViewId.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.BlockWidget.SetViewId.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.BlockWidget.SetViewId.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

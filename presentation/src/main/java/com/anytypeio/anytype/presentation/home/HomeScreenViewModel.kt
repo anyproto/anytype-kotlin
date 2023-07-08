@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
@@ -42,6 +43,7 @@ import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
+import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
@@ -72,7 +74,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
-import com.anytypeio.anytype.presentation.widgets.getActiveTabViews
+import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -127,7 +129,8 @@ class HomeScreenViewModel(
     private val saveWidgetSession: SaveWidgetSession,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val objectWatcher: ObjectWatcher
+    private val objectWatcher: ObjectWatcher,
+    private val setWidgetActiveView: SetWidgetActiveView
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -171,7 +174,6 @@ class HomeScreenViewModel(
     private fun proceedWithRenderingPipeline() {
         viewModelScope.launch {
             containers.filterNotNull().flatMapLatest { list ->
-                Timber.d("Receiving list of containers: ${list.map { it::class }}")
                 if (list.isNotEmpty()) {
                     combine(
                         list.map { m -> m.view }
@@ -191,6 +193,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             widgets.filterNotNull().map {
                 it.map { widget ->
+                    // TODO caching logic for containers could be implemented here.
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
                             widget = widget
@@ -240,13 +243,14 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithObjectViewStatePipeline(config: Config) {
-        val externalChannelEvents =
-            interceptEvents.build(InterceptEvents.Params(config.widgets)).map {
-                Payload(
-                    context = config.widgets,
-                    events = it
-                )
-            }
+        val externalChannelEvents = interceptEvents.build(
+            InterceptEvents.Params(config.widgets)
+        ).map { events ->
+            Payload(
+                context = config.widgets,
+                events = events
+            )
+        }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()
 
@@ -266,7 +270,9 @@ class HomeScreenViewModel(
                 state.obj.blocks.parseWidgets(
                     root = state.obj.root,
                     details = state.obj.details
-                )
+                ).also {
+                    widgetActiveViewStateHolder.init(state.obj.blocks.parseActiveViews())
+                }
             }.collect {
                 Timber.d("Emitting list of widgets: ${it.size}")
                 widgets.value = it
@@ -329,7 +335,7 @@ class HomeScreenViewModel(
                 SaveWidgetSession.Params(
                     WidgetSession(
                         collapsed = collapsedWidgetStateHolder.get(),
-                        widgetsToActiveViews = views.value.getActiveTabViews()
+                        widgetsToActiveViews = emptyMap()
                     )
                 )
             )
@@ -454,11 +460,12 @@ class HomeScreenViewModel(
                 UpdateWidget.Params(
                     ctx = config.widgets,
                     source = source,
-                    target = widget,
+                    widget = widget,
                     type = when (type) {
                         Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
                         Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
                         Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
                         else -> throw IllegalStateException("Unexpected type: $type")
                     }
                 )
@@ -757,6 +764,49 @@ class HomeScreenViewModel(
                 is Event.Command.Details -> {
                     curr = curr.copy(details = curr.details.process(e))
                 }
+                is Event.Command.LinkGranularChange -> {
+                    curr = curr.copy(
+                        blocks = curr.blocks.map { block ->
+                            if (block.id == e.id) {
+                                val content = block.content
+                                if (content is Block.Content.Link) {
+                                    block.copy(
+                                        content = content.copy(
+                                            target = e.target
+                                        )
+                                    )
+                                } else {
+                                    block
+                                }
+                            } else {
+                                block
+                            }
+                        }
+                    )
+                }
+                is Event.Command.Widgets.SetWidget -> {
+                    Timber.d("Set widget event: $e")
+                    curr = curr.copy(
+                        blocks = curr.blocks.map { block ->
+                            if (block.id == e.widget) {
+                                val content = block.content
+                                if (content is Block.Content.Widget) {
+                                    block.copy(
+                                        content = content.copy(
+                                            layout = e.layout ?: content.layout,
+                                            limit = e.limit ?: content.limit,
+                                            activeView = e.activeView ?: content.activeView
+                                        )
+                                    )
+                                } else {
+                                    block
+                                }
+                            } else {
+                                block
+                            }
+                        }
+                    )
+                }
                 else -> {
                     Timber.d("Skipping event: $e")
                 }
@@ -797,7 +847,6 @@ class HomeScreenViewModel(
                 }
                 if (session != null) {
                     collapsedWidgetStateHolder.set(session.collapsed)
-                    widgetActiveViewStateHolder.init(session.widgetsToActiveViews)
                 }
                 proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
             }
@@ -1006,6 +1055,28 @@ class HomeScreenViewModel(
         }
     }
 
+    override fun onChangeCurrentWidgetView(widget: Id, view: Id) {
+        widgetActiveViewStateHolder.onChangeCurrentWidgetView(
+            widget = widget,
+            view = view
+        ).also {
+            viewModelScope.launch {
+                setWidgetActiveView.stream(
+                    SetWidgetActiveView.Params(
+                        ctx = configStorage.get().widgets,
+                        widget = widget,
+                        view = view,
+                    )
+                ).collect { result ->
+                    result.fold(
+                        onSuccess = { objectPayloadDispatcher.send(it) },
+                        onFailure = { Timber.e(it, "Error while updating active view") }
+                    )
+                }
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
@@ -1047,7 +1118,8 @@ class HomeScreenViewModel(
         private val saveWidgetSession: SaveWidgetSession,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val objectWatcher: ObjectWatcher
+        private val objectWatcher: ObjectWatcher,
+        private val setWidgetActiveView: SetWidgetActiveView
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1078,7 +1150,8 @@ class HomeScreenViewModel(
             saveWidgetSession = saveWidgetSession,
             spaceGradientProvider = spaceGradientProvider,
             storeOfObjectTypes = storeOfObjectTypes,
-            objectWatcher = objectWatcher
+            objectWatcher = objectWatcher,
+            setWidgetActiveView = setWidgetActiveView
         ) as T
     }
 

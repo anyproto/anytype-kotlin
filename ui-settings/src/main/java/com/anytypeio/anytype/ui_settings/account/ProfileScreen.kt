@@ -253,7 +253,7 @@ private fun Header(
                 Dragger()
             }
             Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
-                ProfileTileBlock()
+                ProfileTitleBlock()
             }
             Box(modifier = modifier.padding(bottom = 16.dp)) {
                 ProfileImageBlock(
@@ -300,7 +300,7 @@ fun ProfileNameBlock(
             onValueChange = {
                 nameValue.value = it
             },
-            modifier = Modifier.padding(top = 4.dp, end = 20.dp),
+            modifier = Modifier.fillMaxWidth().padding(top = 4.dp, end = 20.dp),
             enabled = true,
             textStyle = TextStyle(
                 fontSize = 22.sp,
@@ -325,7 +325,7 @@ fun ProfileNameBlock(
                     enabled = true,
                     isError = false,
                     placeholder = {
-                        Text(text = "Account name")
+                        Text(text = stringResource(R.string.account_name))
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
                         textColor = colorResource(id = R.color.text_primary),
@@ -335,6 +335,7 @@ fun ProfileNameBlock(
                         focusedBorderColor = Color.Transparent,
                         unfocusedBorderColor = Color.Transparent,
                         placeholderColor = colorResource(id = R.color.text_tertiary),
+                        cursorColor = colorResource(id = R.color.orange)
                     ),
                     contentPadding = PaddingValues(
                         start = 0.dp,
@@ -353,7 +354,7 @@ fun ProfileNameBlock(
 }
 
 @Composable
-fun ProfileTileBlock() {
+fun ProfileTitleBlock() {
     Text(
         text = stringResource(R.string.profile),
         style = Title1,

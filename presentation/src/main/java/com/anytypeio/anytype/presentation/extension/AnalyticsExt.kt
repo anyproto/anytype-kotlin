@@ -17,6 +17,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.objectScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeFilter
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeSort
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.repositionView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.setScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.setSelectQuery
 import com.anytypeio.anytype.analytics.base.EventsDictionary.switchView
@@ -1060,6 +1061,21 @@ fun CoroutineScope.logEvent(
                 )
             )
         }
+        ObjectStateAnalyticsEvent.REPOSITION_VIEW -> {
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = repositionView,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    analyticsContext = analyticsContext,
+                    analyticsObjectId = analyticsObjectId,
+                    type = type,
+                    embedType = embedTypeDefault,
+                    objectType = objectTypeDefault
+                )
+            )
+        }
         ObjectStateAnalyticsEvent.DUPLICATE_VIEW -> {
             scope.sendEvent(
                 analytics = analytics,
@@ -1214,6 +1230,7 @@ enum class ObjectStateAnalyticsEvent {
     CHANGE_VIEW_TYPE,
     REMOVE_VIEW,
     SWITCH_VIEW,
+    REPOSITION_VIEW,
     DUPLICATE_VIEW,
     ADD_FILTER,
     CHANGE_FILTER_VALUE,
@@ -1526,6 +1543,12 @@ suspend fun Analytics.sendSettingsStorageManageEvent() {
 suspend fun Analytics.sendSettingsOffloadEvent() {
     sendEvent(
         eventName = EventsDictionary.screenSettingsStorageOffload
+    )
+}
+
+suspend fun Analytics.sendGetMoreSpaceEvent() {
+    sendEvent(
+        eventName = EventsDictionary.getMoreSpace
     )
 }
 

@@ -64,7 +64,9 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingAuthComponent
+import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingLoginSetupComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingMnemonicComponent
+import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingSoulCreationAnimComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingSoulCreationComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
@@ -82,11 +84,11 @@ import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectModule
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModule
 import com.anytypeio.anytype.di.feature.settings.DaggerAboutAppComponent
-import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
+import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.types.DaggerTypeCreationComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeEditComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
@@ -921,6 +923,18 @@ class ComponentManager(
 
     val onboardingSoulCreationAnimComponent = Component {
         DaggerOnboardingSoulCreationAnimComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val onboardingMnemonicLoginComponent = Component {
+        DaggerOnboardingMnemonicLoginComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val onboardingLoginSetupComponent = Component {
+        DaggerOnboardingLoginSetupComponent
             .factory()
             .create(findComponentDependencies())
     }

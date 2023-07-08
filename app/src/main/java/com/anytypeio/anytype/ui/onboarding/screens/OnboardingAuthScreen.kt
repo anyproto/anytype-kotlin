@@ -31,31 +31,40 @@ import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingTitle
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
-import com.anytypeio.anytype.ui.onboarding.OnboardingAuthViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
 
 
 @Preview
 @Composable
 fun AuthScreenPreview() {
-    AuthScreen({}, {}, OnboardingAuthViewModel.JoinFlowState.Active)
+    AuthScreen(
+        onLoginClicked = {},
+        onJoinClicked = {},
+        onPrivacyPolicyClicked = {},
+        onTermsOfUseClicked = {},
+        joinState = OnboardingAuthViewModel.JoinFlowState.Active
+    )
 }
 
 @Composable
 fun AuthScreenWrapper(
-    viewModel: OnboardingAuthViewModel,
-    navigateToLogin: () -> Unit
+    vm: OnboardingAuthViewModel
 ) {
     AuthScreen(
-        viewModel::signUp,
-        navigateToLogin,
-        viewModel.joinFlowState.collectAsStateWithLifecycle().value
+        onJoinClicked = vm::onJoinClicked,
+        onLoginClicked = vm::onLoginClicked,
+        onPrivacyPolicyClicked = vm::onPrivacyPolicyClicked,
+        onTermsOfUseClicked = vm::onTermsOfUseClicked,
+        joinState = vm.joinFlowState.collectAsStateWithLifecycle().value
     )
 }
 
 @Composable
 fun AuthScreen(
-    signup: () -> Unit,
-    navigateToLogin: () -> Unit,
+    onJoinClicked: () -> Unit,
+    onLoginClicked: () -> Unit,
+    onPrivacyPolicyClicked: () -> Unit,
+    onTermsOfUseClicked: () -> Unit,
     joinState: OnboardingAuthViewModel.JoinFlowState
 ) {
     Box(
@@ -69,8 +78,16 @@ fun AuthScreen(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Bottom
         ) {
-            SignButtons(signup, navigateToLogin, joinState)
-            TermsAndPolicy(Modifier)
+            SignButtons(
+                onJoinClicked = onJoinClicked,
+                onLoginClicked = onLoginClicked,
+                joinFlowState = joinState
+            )
+            TermsAndPolicy(
+                modifier = Modifier,
+                onPrivacyPolicyClicked = onPrivacyPolicyClicked,
+                onTermsOfUseClicked = onTermsOfUseClicked
+            )
         }
     }
 }
@@ -110,16 +127,14 @@ fun Description(modifier: Modifier = Modifier) {
 
 @Composable
 fun SignButtons(
-    signup: () -> Unit,
-    navigateToLogin: () -> Unit,
+    onJoinClicked: () -> Unit,
+    onLoginClicked: () -> Unit,
     joinFlowState: OnboardingAuthViewModel.JoinFlowState
 ) {
     Row {
         OnBoardingButtonPrimary(
             text = stringResource(id = R.string.onboarding_join),
-            onClick = {
-                signup.invoke()
-            },
+            onClick = onJoinClicked,
             enabled = joinFlowState is OnboardingAuthViewModel.JoinFlowState.Active,
             size = ButtonSize.Large,
             modifier = Modifier
@@ -129,9 +144,7 @@ fun SignButtons(
         )
         OnBoardingButtonSecondary(
             text = stringResource(id = R.string.onboarding_log_in),
-            onClick = {
-                navigateToLogin.invoke()
-            },
+            onClick = onLoginClicked,
             size = ButtonSize.Large,
             modifier = Modifier
                 .weight(1f)
@@ -144,6 +157,8 @@ fun SignButtons(
 @Composable
 fun TermsAndPolicy(
     modifier: Modifier = Modifier,
+    onPrivacyPolicyClicked: () -> Unit,
+    onTermsOfUseClicked: () -> Unit
 ) {
     val annotatedString = buildAnnotatedString {
         append(
@@ -175,11 +190,11 @@ fun TermsAndPolicy(
         onClick = {
             annotatedString.getStringAnnotations(TermsOfUseTag, it, it)
                 .firstOrNull()?.let {
-                    // do nothing
+                    onTermsOfUseClicked()
                 }
             annotatedString.getStringAnnotations(PrivacyPolicyTag, it, it)
                 .firstOrNull()?.let {
-                    // do nothing
+                    onPrivacyPolicyClicked()
                 }
         }
     )

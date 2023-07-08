@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
 import com.anytypeio.anytype.domain.device.PathProvider
 
+@Deprecated("Legacy")
 class KeychainLoginViewModelFactory(
     private val pathProvider: PathProvider,
     private val convertWallet: ConvertWallet,

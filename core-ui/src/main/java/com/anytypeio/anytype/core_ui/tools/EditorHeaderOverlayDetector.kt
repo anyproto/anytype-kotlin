@@ -31,14 +31,23 @@ class EditorHeaderOverlayDetector(
                     is Title.Document -> {
                         val root = holder.binding.root
                         val title = holder.binding.title
+                        val cover = holder.binding.cover
                         val emojiIconContainer = holder.binding.docEmojiIconContainer
                         val imageIconContainer = holder.binding.imageIcon
                         onHeaderOverlaid = when {
                             emojiIconContainer.isVisible -> {
-                                (emojiIconContainer.top + root.top >= threshold + thresholdPadding)
+                                if (cover.isVisible) {
+                                    (emojiIconContainer.top + root.top >= threshold + thresholdPadding)
+                                } else {
+                                    (emojiIconContainer.top + root.top >= (threshold / 2) + thresholdPadding)
+                                }
                             }
                             imageIconContainer.isVisible -> {
-                                (imageIconContainer.top + root.top >= threshold + thresholdPadding)
+                                if (cover.isVisible) {
+                                    (imageIconContainer.top + root.top >= threshold + thresholdPadding)
+                                } else {
+                                    (imageIconContainer.top + root.top >= (threshold / 2) + thresholdPadding)
+                                }
                             }
                             else -> {
                                 root.top + title.top >= threshold + thresholdPadding
@@ -62,7 +71,7 @@ class EditorHeaderOverlayDetector(
                         onHeaderOverlaid = if (cover.isVisible) {
                             (container.top + icon.bottom >= threshold + thresholdPadding)
                         } else {
-                            (container.top + title.top >= threshold + thresholdPadding)
+                            (container.top + title.top >= (threshold / 2) + thresholdPadding)
                         }
                     }
                     is FeaturedRelationListViewHolder -> {

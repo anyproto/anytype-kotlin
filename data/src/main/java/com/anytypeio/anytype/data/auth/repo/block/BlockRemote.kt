@@ -332,9 +332,15 @@ interface BlockRemote {
 
     suspend fun updateWidget(
         ctx: Id,
-        target: Id,
+        widget: Id,
         source: Id,
         type: Block.Content.Widget.Layout
+    ): Payload
+
+    suspend fun setWidgetViewId(
+        ctx: Id,
+        widget: Id,
+        view: Id
     ): Payload
 
     suspend fun addDataViewFilter(command: Command.AddFilter): Payload

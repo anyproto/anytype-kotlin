@@ -83,10 +83,10 @@ sealed class Event {
             override val context: String,
             val id: Id,
             val target: Id,
-            val iconSize: Block.Content.Link.IconSize?,
-            val cardStyle: Block.Content.Link.CardStyle?,
-            val description: Block.Content.Link.Description?,
-            val relations: Set<Key>?,
+            val iconSize: Block.Content.Link.IconSize? = null,
+            val cardStyle: Block.Content.Link.CardStyle? = null,
+            val description: Block.Content.Link.Description? = null,
+            val relations: Set<Key>? = null,
         ) : Command()
 
         /**
@@ -219,6 +219,16 @@ sealed class Event {
                 val id: Id,
                 val key: Id
             ) : ObjectRelation()
+        }
+
+        sealed class Widgets: Command() {
+            data class SetWidget(
+                override val context: Id,
+                val widget: Id,
+                val layout: WidgetLayout? = null,
+                val activeView: Id? = null,
+                val limit: Int? = null
+            ) : Widgets()
         }
 
         sealed class DataView : Command() {

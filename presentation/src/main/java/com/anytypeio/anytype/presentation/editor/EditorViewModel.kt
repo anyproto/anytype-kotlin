@@ -124,6 +124,7 @@ import com.anytypeio.anytype.presentation.editor.editor.ext.update
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateCursorAndEditMode
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateSelection
 import com.anytypeio.anytype.presentation.editor.editor.ext.updateTableOfContentsViews
+import com.anytypeio.anytype.presentation.editor.editor.items
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.markup
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_PREFIX
@@ -1365,12 +1366,14 @@ class EditorViewModel(
         text: String,
         range: IntRange
     ) {
+        Timber.d("onSplitObjectDescription, target:[$target] text:[$text] range:[$range]")
         proceedWithSplitEvent(
             target = target,
             text = text,
             range = range,
             marks = emptyList()
         )
+        viewModelScope.sendAnalyticsSetDescriptionEvent(analytics, analyticsContext)
     }
 
     private fun proceedWithEnterEvent(
@@ -3853,36 +3856,6 @@ class EditorViewModel(
                     }
                 }
             }
-            is ListenerType.Relation.ChangeObjectType -> {
-                if (mode != EditorMode.Locked) {
-                    val restrictions = orchestrator.stores.objectRestrictions.current()
-                    if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
-                        sendToast(NOT_ALLOWED_FOR_OBJECT)
-                        Timber.d("No interaction allowed with this object type")
-                        return
-                    }
-                    proceedWithOpeningSelectingObjectTypeScreen()
-                } else {
-                    sendToast("Your object is locked. To change its type, simply unlock it.")
-                }
-            }
-            is ListenerType.Relation.ObjectTypeOpenSet -> {
-                viewModelScope.launch {
-                    findObjectSetForType(FindObjectSetForType.Params(clicked.type)).process(
-                        failure = { Timber.e(it, "Error while search for a set for this type") },
-                        success = { response ->
-                            when (response) {
-                                is FindObjectSetForType.Response.NotFound -> {
-                                    snacks.emit(Snack.ObjectSetNotFound(clicked.type))
-                                }
-                                is FindObjectSetForType.Response.Success -> {
-                                    proceedWithOpeningDataViewObject(response.obj.id)
-                                }
-                            }
-                        }
-                    )
-                }
-            }
             is ListenerType.TableOfContentsItem -> {
                 when (mode) {
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
@@ -3965,7 +3938,49 @@ class EditorViewModel(
                     else -> Unit
                 }
             }
+            is ListenerType.Relation.ObjectType -> {
+                viewModelScope.launch {
+                    val params = FindObjectSetForType.Params(
+                        type = clicked.typeId,
+                        filters = ObjectSearchConstants.setsByObjectTypeFilters(
+                            types = listOf(clicked.typeId),
+                            workspaceId = workspaceManager.getCurrentWorkspace()
+                        )
+                    )
+                    findObjectSetForType(params).process(
+                        failure = {
+                            Timber.e(it, "Error while search for a set for type ${clicked.typeId}")
+                        },
+                        success = { response ->
+                            val command = when (response) {
+                                is FindObjectSetForType.Response.NotFound ->
+                                    Command.OpenObjectTypeMenu(clicked.items())
+                                is FindObjectSetForType.Response.Success ->
+                                    Command.OpenObjectTypeMenu(clicked.items(set = response.obj.id))
+                            }
+                            commands.postValue(EventWrapper(command))
+                        }
+                    )
+                }
+            }
+            is ListenerType.Relation.ObjectTypeDeleted -> {
+                commands.postValue(EventWrapper(Command.OpenObjectTypeMenu(clicked.items())))
+            }
             else -> {}
+        }
+    }
+
+    fun onChangeObjectTypeClicked() {
+        if (mode != EditorMode.Locked) {
+            val restrictions = orchestrator.stores.objectRestrictions.current()
+            if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
+                sendToast(NOT_ALLOWED_FOR_OBJECT)
+                Timber.d("No interaction allowed with this object type")
+                return
+            }
+            proceedWithOpeningSelectingObjectTypeScreen()
+        } else {
+            sendToast("Your object is locked. To change its type, simply unlock it.")
         }
     }
 
@@ -5320,14 +5335,6 @@ class EditorViewModel(
                 )
                 viewModelScope.sendAnalyticsSetTitleEvent(analytics, analyticsContext)
             }
-            is KeyPressedEvent.OnDescriptionBlockEnterKeyEvent -> {
-                proceedWithDescriptionEnterClicked(
-                    description = event.target,
-                    text = event.text,
-                    range = event.range
-                )
-                viewModelScope.sendAnalyticsSetDescriptionEvent(analytics, analyticsContext)
-            }
         }
     }
 
@@ -5362,14 +5369,6 @@ class EditorViewModel(
                 position = Position.TOP
             )
         }
-    }
-
-    private fun proceedWithDescriptionEnterClicked(
-        description: Id,
-        text: String,
-        range: IntRange
-    ) {
-        proceedWithSplitEvent(description, range, text, emptyList())
     }
     //endregion
 

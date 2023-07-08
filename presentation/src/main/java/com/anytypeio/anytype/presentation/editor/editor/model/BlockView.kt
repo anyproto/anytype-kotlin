@@ -624,8 +624,9 @@ sealed class BlockView : ViewType {
         override var cursor: Int? = null,
         override val color: ThemeColor = ThemeColor.DEFAULT,
         override val background: ThemeColor = ThemeColor.DEFAULT,
+        override val alignment: Alignment? = null,
         val isTodoLayout: Boolean = false
-    ) : BlockView(), TextSupport, Focusable, Cursor, Permission {
+    ) : BlockView(), TextSupport, Focusable, Cursor, Permission, Alignable {
         override fun getViewType(): Int = HOLDER_DESCRIPTION
     }
 

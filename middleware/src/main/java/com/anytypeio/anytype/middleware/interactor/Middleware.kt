@@ -1957,16 +1957,32 @@ class Middleware(
         return response.event.toPayload()
     }
 
-    @Throws(Exception::class)
-    fun updateWidget(
+    fun setWidgetViewId(
         ctx: Id,
-        target: Id,
+        widget: Id,
+        view: Id
+    ): Payload {
+        val request = Rpc.BlockWidget.SetViewId.Request(
+            contextId = ctx,
+            blockId = widget,
+            viewId = view
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.blockWidgetSetViewId(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
+    @Throws(Exception::class)
+    fun createWidgetByReplacingExistingWidget(
+        ctx: Id,
+        widget: Id,
         source: Id,
         type: WidgetLayout
     ): Payload {
         val request = Rpc.Block.CreateWidget.Request(
             contextId = ctx,
-            targetId = target,
+            targetId = widget,
             widgetLayout = type.mw(),
             position = Block.Position.Replace,
             block = Block(

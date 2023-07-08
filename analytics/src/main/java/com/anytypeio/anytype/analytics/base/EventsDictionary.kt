@@ -23,6 +23,7 @@ object EventsDictionary {
     const val defaultTypeChanged = "DefaultTypeChange"
     const val fileOffloadSuccess = "FileOffload"
     const val changeTheme = "ThemeSet"
+    const val getMoreSpace = "GetMoreSpace"
 
     // Screen show events
     const val objectScreenShow = "ScreenObject"
@@ -36,10 +37,7 @@ object EventsDictionary {
     const val aboutAnalyticsScreenShow = "ScreenDisclaimer"
     const val deletionWarningShow = "ShowDeletionWarning"
     const val keychainPhraseScreenShow = "ScreenKeychain"
-    const val fileOffloadScreenShow = "ScreenFileOffloadWarning"
-    const val manageFilesScreenShow = "ScreenManageFiles"
     const val relationsScreenShow = "ScreenObjectRelation"
-    const val settingsShow = "ScreenSettings"
     const val personalisationSettingsShow = "ScreenSettingsPersonal"
     const val wallpaperScreenShow = "ScreenSettingsWallpaper"
     const val accountDataSettingsShow = "ScreenSettingsAccount"
@@ -109,6 +107,7 @@ object EventsDictionary {
     const val setSelectQuery = "SetSelectQuery"
     const val addView = "AddView"
     const val switchView = "SwitchView"
+    const val repositionView = "RepositionView"
     const val removeView = "RemoveView"
     const val changeViewType = "ChangeViewType"
     const val duplicateView = "DuplicateView"
@@ -142,7 +141,7 @@ object EventsDictionary {
     // Widgets
 
     const val addWidget = "AddWidget"
-    const val editWidgets = "EditWidgets"
+    const val editWidgets = "EditWidget"
     const val changeWidgetSource = "ChangeWidgetSource"
     const val changeWidgetLayout = "ChangeWidgetLayout"
     const val reorderWidget = "ReorderWidget"

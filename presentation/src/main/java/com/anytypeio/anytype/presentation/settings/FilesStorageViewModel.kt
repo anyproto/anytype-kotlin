@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeFloatingPoint
@@ -16,6 +18,7 @@ import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.device.BuildProvider
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
@@ -25,8 +28,10 @@ import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
+import com.anytypeio.anytype.presentation.extension.sendGetMoreSpaceEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsOffloadEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageManageEvent
@@ -40,6 +45,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
@@ -58,7 +64,8 @@ class FilesStorageViewModel(
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val fileSpaceUsage: FileSpaceUsage,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
-    private val buildProvider: BuildProvider
+    private val buildProvider: BuildProvider,
+    private val getAccount: GetAccount
 ) : ViewModel() {
 
     val events = MutableSharedFlow<Event>(replay = 0)
@@ -85,7 +92,9 @@ class FilesStorageViewModel(
 
     fun onStop() {
         viewModelScope.launch {
-            storelessSubscriptionContainer.unsubscribe(listOf(SPACE_STORAGE_SUBSCRIPTION_ID))
+            storelessSubscriptionContainer.unsubscribe(
+                listOf(SPACE_STORAGE_SUBSCRIPTION_ID, PROFILE_SUBSCRIPTION_ID)
+            )
         }
         jobs.cancel()
     }
@@ -111,7 +120,6 @@ class FilesStorageViewModel(
         events
             .throttleFirst()
             .onEach { event ->
-                dispatchAnalyticsEvent(event)
                 dispatchCommand(event)
             }
             .launchIn(viewModelScope)
@@ -189,22 +197,9 @@ class FilesStorageViewModel(
                 commands.emit(Command.OpenOffloadFilesScreen)
                 analytics.sendSettingsOffloadEvent()
             }
-        }
-    }
-
-    private fun dispatchAnalyticsEvent(event: Event) {
-        when (event) {
-            Event.OnManageFilesClicked -> {
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.manageFilesScreenShow
-                )
-            }
-            Event.OnOffloadFilesClicked -> {
-                viewModelScope.sendEvent(
-                    analytics = analytics,
-                    eventName = EventsDictionary.fileOffloadScreenShow
-                )
+            Event.OnGetMoreSpaceClicked -> {
+                onGetMoreSpaceClicked()
+                analytics.sendGetMoreSpaceEvent()
             }
         }
     }
@@ -231,12 +226,21 @@ class FilesStorageViewModel(
                 val workspace = result.find { it.id == workspaceId }
                 val bytesUsage = spaceUsage.bytesUsage
                 val bytesLimit = spaceUsage.bytesLimit
+                val localeUsage = spaceUsage.localBytesUsage
                 val percentUsage =
                     if (bytesUsage != null && bytesLimit != null && bytesLimit != 0L) {
                         (bytesUsage.toFloat() / bytesLimit.toFloat())
                     } else {
                         null
                     }
+                val isShowGetMoreSpace = isNeedToShowGetMoreSpace(
+                    percentUsage = percentUsage,
+                    localUsage = localeUsage,
+                    bytesLimit = bytesLimit
+                )
+                val isShowSpaceUsedWarning = isShowSpaceUsedWarning(
+                    percentUsage = percentUsage
+                )
                 ScreenState(
                     spaceName = workspace?.name.orEmpty(),
                     spaceIcon = workspace?.spaceIcon(urlBuilder, spaceGradientProvider),
@@ -246,6 +250,8 @@ class FilesStorageViewModel(
                     localUsage = spaceUsage.localBytesUsage?.let { bytesToHumanReadableSizeLocal(it) }
                         .orEmpty(),
                     spaceLimit = bytesLimit?.let { bytesToHumanReadableSize(it) }.orEmpty(),
+                    isShowGetMoreSpace = isShowGetMoreSpace,
+                    isShowSpaceUsedWarning = isShowSpaceUsedWarning
                 )
             }
                 .flowOn(appCoroutineDispatchers.io)
@@ -263,14 +269,60 @@ class FilesStorageViewModel(
         }
     }
 
+    private fun isNeedToShowGetMoreSpace(
+        percentUsage: Float?,
+        localUsage: Long?,
+        bytesLimit: Long?
+    ): Boolean {
+        val localPercentUsage =
+            if (localUsage != null && bytesLimit != null && bytesLimit != 0L) {
+                (localUsage.toFloat() / bytesLimit.toFloat())
+            } else {
+                null
+            }
+        return (percentUsage != null && percentUsage >= WARNING_PERCENT)
+                || (localPercentUsage != null && localPercentUsage >= WARNING_PERCENT)
+    }
+
+    private fun isShowSpaceUsedWarning(
+        percentUsage: Float?
+    ): Boolean {
+        return percentUsage != null && percentUsage >= WARNING_PERCENT
+    }
+
+    private fun onGetMoreSpaceClicked() {
+        viewModelScope.launch {
+            val params = StoreSearchByIdsParams(
+                subscription = PROFILE_SUBSCRIPTION_ID,
+                keys = listOf(Relations.ID, Relations.NAME),
+                targets = listOf(configStorage.get().profile)
+            )
+            combine(
+                getAccount.asFlow(Unit),
+                storelessSubscriptionContainer.subscribe(params)
+            ) { account: Account, profileObj: List<ObjectWrapper.Basic> ->
+                Command.SendGetMoreSpaceEmail(
+                    account = account.id,
+                    name = profileObj.firstOrNull()?.name.orEmpty(),
+                    limit = _state.value.spaceLimit
+                )
+            }
+                .catch { Timber.e(it, "onGetMoreSpaceClicked error") }
+                .flowOn(appCoroutineDispatchers.io)
+                .collect { commands.emit(it) }
+        }
+    }
+
     sealed class Event {
         object OnManageFilesClicked : Event()
         object OnOffloadFilesClicked : Event()
+        object OnGetMoreSpaceClicked : Event()
     }
 
     sealed class Command {
         object OpenOffloadFilesScreen : Command()
         data class OpenRemoteStorageScreen(val subscription: Id) : Command()
+        data class SendGetMoreSpaceEmail(val account: Id, val name: String, val limit: String) : Command()
     }
 
     class Factory @Inject constructor(
@@ -283,7 +335,8 @@ class FilesStorageViewModel(
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val fileSpaceUsage: FileSpaceUsage,
         private val interceptFileLimitEvents: InterceptFileLimitEvents,
-        private val buildProvider: BuildProvider
+        private val buildProvider: BuildProvider,
+        private val getAccount: GetAccount
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -298,7 +351,8 @@ class FilesStorageViewModel(
             appCoroutineDispatchers = appCoroutineDispatchers,
             fileSpaceUsage = fileSpaceUsage,
             interceptFileLimitEvents = interceptFileLimitEvents,
-            buildProvider = buildProvider
+            buildProvider = buildProvider,
+            getAccount = getAccount
         ) as T
     }
 
@@ -309,7 +363,9 @@ class FilesStorageViewModel(
         val spaceUsage: String,
         val percentUsage: Float?,
         val device: String?,
-        val localUsage: String
+        val localUsage: String,
+        val isShowGetMoreSpace: Boolean,
+        val isShowSpaceUsedWarning: Boolean
     ) {
         companion object {
             fun empty() = ScreenState(
@@ -319,8 +375,14 @@ class FilesStorageViewModel(
                 spaceUsage = "",
                 percentUsage = null,
                 device = null,
-                localUsage = ""
+                localUsage = "",
+                isShowGetMoreSpace = false,
+                isShowSpaceUsedWarning = false
             )
         }
+    }
+
+    companion object {
+        const val WARNING_PERCENT = 0.9f
     }
 }

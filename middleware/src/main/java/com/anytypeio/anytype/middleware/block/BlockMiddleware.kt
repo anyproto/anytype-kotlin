@@ -718,14 +718,24 @@ class BlockMiddleware(
 
     override suspend fun updateWidget(
         ctx: Id,
-        target: Id,
+        widget: Id,
         source: Id,
         type: Block.Content.Widget.Layout
-    ): Payload = middleware.updateWidget(
+    ): Payload = middleware.createWidgetByReplacingExistingWidget(
         ctx = ctx,
-        target = target,
+        widget = widget,
         source = source,
         type = type
+    )
+
+    override suspend fun setWidgetViewId(
+        ctx: Id,
+        widget: Id,
+        view: Id
+    ): Payload = middleware.setWidgetViewId(
+        ctx = ctx,
+        widget = widget,
+        view = view
     )
 
     override suspend fun addDataViewFilter(command: Command.AddFilter): Payload {

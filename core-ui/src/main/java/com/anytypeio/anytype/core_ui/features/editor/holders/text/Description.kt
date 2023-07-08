@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
+import android.view.Gravity
 import android.widget.TextView
-import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDescriptionBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
+import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import timber.log.Timber
 
@@ -33,6 +34,7 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
             setFocus(view)
         }
         setupContentPadding(view.isTodoLayout)
+        setAlignment(view.alignment)
     }
 
     fun processChangePayload(
@@ -61,6 +63,10 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
 
             if (payload.focusChanged()) {
                 setFocus(item)
+            }
+
+            if (payload.alignmentChanged()) {
+                setAlignment(item.alignment)
             }
 
             try {
@@ -108,33 +114,20 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
         binding.tvBlockDescription.enableEditMode()
     }
 
-    fun onDescriptionEnterKeyListener(
-        views: List<BlockView>,
-        textView: TextView,
-        range: IntRange,
-        onKeyPressedEvent: (KeyPressedEvent) -> Unit
-    ) {
-        val pos = bindingAdapterPosition
-        val text = textView.text.toString()
-        if (pos != RecyclerView.NO_POSITION) {
-            val view = views[pos]
-            check(view is BlockView.Title)
-            onKeyPressedEvent.invoke(
-                KeyPressedEvent.OnDescriptionBlockEnterKeyEvent(
-                    target = view.id,
-                    text = text,
-                    range = range
-                )
-            )
-        }
-    }
-
     private fun setupContentPadding(isTodoLayout: Boolean) {
         if (isTodoLayout) {
             val lr = itemView.context.dimen(R.dimen.dp_40).toInt()
             binding.tvBlockDescription.setPadding(lr, 0, 0, 0)
         } else {
             binding.tvBlockDescription.setPadding(0, 0, 0, 0)
+        }
+    }
+
+    private fun setAlignment(alignment: Alignment?) {
+        content.gravity = when (alignment) {
+            Alignment.CENTER -> Gravity.CENTER
+            Alignment.END -> Gravity.END
+            else -> Gravity.START
         }
     }
 }

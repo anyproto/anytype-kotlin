@@ -1,19 +1,19 @@
 package com.anytypeio.anytype.middleware.interactor
 
-import anytype.Event.Status.Thread.SyncStatus
-import com.anytypeio.anytype.data.auth.model.SyncStatusEntity
+import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.data.auth.status.ThreadStatusRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.mapNotNull
+import anytype.Event.Status.Thread.SyncStatus as MSyncStatus
 
 class ThreadStatusMiddlewareChannel(
     private val events: EventProxy,
 ) : ThreadStatusRemoteChannel {
 
-    override fun observe(ctx: String): Flow<SyncStatusEntity> = events.flow()
+    override fun observe(ctx: String): Flow<SyncStatus> = events.flow()
         .filter { it.contextId == ctx }
         .mapNotNull { emission ->
             emission
@@ -25,12 +25,12 @@ class ThreadStatusMiddlewareChannel(
         }
         .mapLatest { status ->
             when (status) {
-                SyncStatus.Unknown -> SyncStatusEntity.UNKNOWN
-                SyncStatus.Offline -> SyncStatusEntity.OFFLINE
-                SyncStatus.Syncing -> SyncStatusEntity.SYNCING
-                SyncStatus.Synced -> SyncStatusEntity.SYNCED
-                SyncStatus.Failed -> SyncStatusEntity.FAILED
-                SyncStatus.IncompatibleVersion -> SyncStatusEntity.INCOMPATIBLE_VERSION
+                MSyncStatus.Unknown -> SyncStatus.UNKNOWN
+                MSyncStatus.Offline -> SyncStatus.OFFLINE
+                MSyncStatus.Syncing -> SyncStatus.SYNCING
+                MSyncStatus.Synced -> SyncStatus.SYNCED
+                MSyncStatus.Failed -> SyncStatus.FAILED
+                MSyncStatus.IncompatibleVersion -> SyncStatus.INCOMPATIBLE_VERSION
             }
         }
 }

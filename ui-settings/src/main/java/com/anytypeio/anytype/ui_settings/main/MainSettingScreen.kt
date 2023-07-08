@@ -50,7 +50,7 @@ fun MainSettingScreen(
     onFileStorageClick: () -> Unit
 ) {
     Column(Modifier.fillMaxSize()) {
-        Header(
+        SpaceHeader(
             modifier = Modifier.align(Alignment.CenterHorizontally),
             workspace = workspace,
             onSpaceIconClick = onSpaceIconClick,
@@ -123,7 +123,7 @@ private fun Settings(
 }
 
 @Composable
-private fun Header(
+private fun SpaceHeader(
     modifier: Modifier = Modifier,
     workspace: MainSettingsViewModel.WorkspaceAndAccount,
     onSpaceIconClick: () -> Unit,
@@ -146,7 +146,10 @@ private fun Header(
                 }
             }
             workspace.space?.name?.let {
-                NameBlock(name = it, onNameSet = onNameSet)
+                SpaceNameBlock(
+                    name = it,
+                    onNameSet = onNameSet
+                )
             }
         }
         is MainSettingsViewModel.WorkspaceAndAccount.Idle -> {}

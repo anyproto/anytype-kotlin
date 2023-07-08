@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui_settings.fstorage
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -47,7 +49,8 @@ import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 fun FilesStorageScreen(
     data: ScreenState,
     onOffloadFilesClicked: () -> Unit,
-    onManageFilesClicked: () -> Unit
+    onManageFilesClicked: () -> Unit,
+    onGetMoreSpaceClicked: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxSize(),
@@ -85,6 +88,17 @@ fun FilesStorageScreen(
                 color = colorResource(R.color.text_primary),
                 style = BodyCalloutRegular
             )
+            if (data.isShowGetMoreSpace) {
+                Text(
+                    text = stringResource(id = R.string.get_more_space),
+                    color = colorResource(R.color.palette_system_red),
+                    style = BodyCalloutMedium,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 4.dp)
+                        .clickable { onGetMoreSpaceClicked() }
+                )
+            }
             Spacer(modifier = Modifier.height(28.dp))
             Row(
                 modifier = Modifier
@@ -105,7 +119,7 @@ fun FilesStorageScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = data.spaceName.orEmpty(),
+                        text = data.spaceName,
                         style = PreviewTitle2Medium,
                         color = colorResource(id = R.color.text_primary),
                         modifier = Modifier.fillMaxWidth(),
@@ -117,7 +131,7 @@ fun FilesStorageScreen(
                             data.spaceLimit
                         ),
                         style = Relations3,
-                        color = if (data.percentUsage != null && data.percentUsage!! >= 0.9F) {
+                        color = if (data.isShowSpaceUsedWarning) {
                             colorResource(id = R.color.palette_system_red)
                         } else {
                             colorResource(id = R.color.text_secondary)
@@ -258,7 +272,9 @@ object MockFileStorage {
         percentUsage = mockSpaceInfraPercent,
         device = mockDevice,
         localUsage = mockSpaceLocalUsage,
-        spaceLimit = mockInfraMax
+        spaceLimit = mockInfraMax,
+        isShowGetMoreSpace = true,
+        isShowSpaceUsedWarning = true
     )
 }
 
@@ -268,7 +284,8 @@ fun PreviewFilesStorageScreen() {
     FilesStorageScreen(
         data = mockData,
         onOffloadFilesClicked = { },
-        onManageFilesClicked = { }
+        onManageFilesClicked = { },
+        onGetMoreSpaceClicked = { }
     )
 }
 

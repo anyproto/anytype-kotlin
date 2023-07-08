@@ -84,6 +84,7 @@
     <dimen name="sp_13">13sp</dimen>
     <dimen name="sp_15">15sp</dimen>
     <dimen name="dp_2">2dp</dimen>
+    <dimen name="dp_3">3dp</dimen>
     <dimen name="dp_4">4dp</dimen>
     <dimen name="dp_6">6dp</dimen>
     <dimen name="dp_8">8dp</dimen>
@@ -93,14 +94,21 @@
     <dimen name="dp_17">17dp</dimen>
     <dimen name="dp_12">12dp</dimen>
     <dimen name="dp_13">13dp</dimen>
-    <dimen name="dp_48">48dp</dimen>
     <dimen name="dp_32">32dp</dimen>
     <dimen name="dp_20">20dp</dimen>
     <dimen name="dp_104">104dp</dimen>
     <dimen name="dp_40">40dp</dimen>
     <dimen name="dp_45">45dp</dimen>
+    <dimen name="dp_46">46dp</dimen>
+    <dimen name="dp_48">48dp</dimen>
+    <dimen name="dp_54">54dp</dimen>
+    <dimen name="dp_72">72dp</dimen>
     <dimen name="dp_80">80dp</dimen>
+    <dimen name="dp_51">51dp</dimen>
     <dimen name="dp_60">60dp</dimen>
+    <dimen name="dp_92">92dp</dimen>
+    <dimen name="dp_102">102dp</dimen>
+    <dimen name="dp_120">120dp</dimen>
     <dimen name="dp_203">203dp</dimen>
 
     <dimen name="roundedTextBorderRadius">4dp</dimen>
@@ -316,6 +324,7 @@
 
     <dimen name="default_dv_gallery_first_line_margin_start">22dp</dimen>
     <dimen name="default_collection_dv_header_height">56dp</dimen>
+    <dimen name="default_dv_list_first_line_margin_start">26dp</dimen>
 
     <dimen name="default_dv_gallery_title_height">38dp</dimen>
     <dimen name="default_dv_gallery_title_desc_height">57dp</dimen>
@@ -325,5 +334,9 @@
     <dimen name="dv_gallery_title_min_height">40dp</dimen>
     <dimen name="dv_gallery_relation_height">16dp</dimen>
     <dimen name="dv_gallery_relation_margin_top">4dp</dimen>
+
+    <!-- DataView, List items, relations-->
+    <dimen name="dv_list_gallery_item_relation_height">15dp</dimen>
+    <dimen name="dv_list_gallery_item_relation_count_margin_start">4dp</dimen>
 
 </resources>

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.ui.settings.AboutAppFragment
 import com.anytypeio.anytype.ui_settings.about.AboutAppViewModel
@@ -37,8 +38,9 @@ object AboutAppModule {
     @Provides
     @AboutAppScope
     fun provideGetAccountUseCase(
-        repo: AuthRepository
-    ): GetAccount = GetAccount(repo = repo)
+        repo: AuthRepository,
+        dispatcher: AppCoroutineDispatchers
+    ): GetAccount = GetAccount(repo = repo, dispatcher = dispatcher)
 
     @JvmStatic
     @Provides
@@ -62,6 +64,7 @@ interface AboutAppDependencies : ComponentDependencies {
     fun authRepo(): AuthRepository
     fun configStorage(): ConfigStorage
     fun analytics(): Analytics
+    fun dispatchers(): AppCoroutineDispatchers
 }
 
 @Scope

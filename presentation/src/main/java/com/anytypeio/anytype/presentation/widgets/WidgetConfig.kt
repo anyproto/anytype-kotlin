@@ -24,6 +24,28 @@ object WidgetConfig {
                 && obj.isDeleted != true
                 && SupportedLayouts.isSupported(obj.layout)
     }
+
+    fun resolveListWidgetLimit(isCompact: Boolean, limit: Int) : Int {
+        return if (isCompact) {
+            if (compactListLimitOptions.contains(limit)) {
+                limit
+            } else {
+                DEFAULT_COMPACT_LIST_MAX_COUNT
+            }
+        } else {
+            if (listLimitOptions.contains(limit)) {
+                limit
+            } else {
+                DEFAULT_LIST_MAX_COUNT
+            }
+        }
+    }
+
+    const val DEFAULT_LIST_MAX_COUNT = 4
+    const val DEFAULT_COMPACT_LIST_MAX_COUNT = 6
+
+    private val listLimitOptions = intArrayOf(DEFAULT_LIST_MAX_COUNT, 6, 8)
+    private val compactListLimitOptions = intArrayOf(DEFAULT_COMPACT_LIST_MAX_COUNT, 10, 14)
 }
 
 object BundledWidgetSourceIds {

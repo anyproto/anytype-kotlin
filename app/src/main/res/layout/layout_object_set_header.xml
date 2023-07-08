@@ -24,19 +24,20 @@
 
         <FrameLayout
             android:id="@+id/docEmojiIconContainer"
-            android:layout_width="72dp"
-            android:layout_height="72dp"
+            android:layout_width="88dp"
+            android:layout_height="88dp"
             android:layout_gravity="bottom"
             android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:background="@drawable/background_layout_icon_basic"
-            android:transitionName="@string/logo_transition">
+            android:transitionName="@string/logo_transition"
+            tools:visibility="gone">
 
             <ImageView
                 android:id="@+id/emojiIcon"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_gravity="center" />
 
         </FrameLayout>
@@ -46,9 +47,8 @@
             android:layout_width="108dp"
             android:layout_height="108dp"
             android:layout_gravity="bottom"
-            android:layout_marginStart="14dp"
+            android:layout_marginStart="15dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
             android:adjustViewBounds="true"
             android:background="@color/shape_tertiary"
             android:padding="4dp"
@@ -56,7 +56,8 @@
             android:visibility="gone"
             app:shapeAppearance="@style/TitleImageAppearanceOverlay"
             app:strokeColor="@color/background_primary"
-            app:strokeWidth="4dp" />
+            app:strokeWidth="4dp"
+            tools:visibility="gone" />
 
     </FrameLayout>
 
@@ -73,7 +74,7 @@
 
     <androidx.appcompat.widget.AppCompatEditText
         android:id="@+id/tvSetDescription"
-        style="@style/TextView.ContentStyle.Relations.2"
+        style="@style/TextView.ContentStyle.Relations.1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"

@@ -3,11 +3,12 @@ package com.anytypeio.anytype.domain.auth.interactor
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
+import javax.inject.Inject
 
 /**
  * Use case for recovering wallet via recovery (aka keychain) phrase (mnemonic).
  */
-class RecoverWallet(
+class RecoverWallet @Inject constructor(
     private val repository: AuthRepository
 ) : BaseUseCase<Unit, RecoverWallet.Params>() {
 

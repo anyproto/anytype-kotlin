@@ -5,14 +5,17 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.ui.onboarding.OnboardingAuthViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -69,6 +72,17 @@ object OnboardingAuthModule {
         repository = authRepository
     )
 
+    @JvmStatic
+    @Provides
+    @AuthScreenScope
+    fun provideSetupSkipUseCase(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ) = SetupMobileUseCaseSkip(
+        repo = repository,
+        dispatchers = dispatchers
+    )
+
     @Module
     interface Declarations {
 
@@ -81,12 +95,14 @@ object OnboardingAuthModule {
 
 interface OnboardingAuthDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
+    fun blockRepository(): BlockRepository
     fun configStorage(): ConfigStorage
     fun workspaceManager(): WorkspaceManager
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
     fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun pathProvider(): PathProvider
     fun metricsProvider(): MetricsProvider
+    fun dispatchers(): AppCoroutineDispatchers
 }
 
 @Scope

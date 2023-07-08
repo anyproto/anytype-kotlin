@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.MiddlewareEventChannel
 import com.anytypeio.anytype.middleware.mappers.MRelationLink
@@ -24,12 +25,18 @@ class MiddlewareEventChannelTest {
     @Mock
     lateinit var proxy: EventProxy
 
+    @Mock
+    lateinit var featureToggles: FeatureToggles
+
     private lateinit var channel: MiddlewareEventChannel
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        channel = MiddlewareEventChannel(proxy)
+        channel = MiddlewareEventChannel(
+            events = proxy,
+            featureToggles = featureToggles
+        )
     }
 
     @Test

@@ -59,11 +59,12 @@ import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
-import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel
-import com.anytypeio.anytype.presentation.onboarding.OnboardingAuthViewModel.SideEffect
+import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
+import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.SideEffect
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingLoginSetupViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingVoidViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.EnteringTheVoidScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
@@ -112,9 +113,7 @@ class OnboardingFragment : Fragment() {
                         PagerIndicator(
                             pageCount = OnboardingPage.values().filter { it.visible }.size,
                             page = currentPage,
-                            onBackClick = {
-                                navController.popBackStack()
-                            }
+                            onBackClick = { navController.popBackStack() }
                         )
                     }
                 }
@@ -189,13 +188,34 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.VOID
+                val component = componentManager().onboardingNewVoidComponent.ReleaseOn(
+                    viewLifecycleOwner = viewLifecycleOwner,
+                    state = Lifecycle.State.DESTROYED
+                )
+                val vm = daggerViewModel { component.get().getViewModel() }
                 VoidScreenWrapper(
                     contentPaddingTop = ContentPaddingTop(),
-                    onNextClicked = {
-                        navController.navigate(OnboardingNavigation.mnemonic)
-                    }
+                    onNextClicked = vm::onNextClicked,
+                    screenState = vm.state.collectAsState().value
                 )
-
+                BackHandler {
+                    vm.onSystemBackPressed()
+                }
+                LaunchedEffect(Unit) {
+                    vm.navigation.collect { navigation ->
+                        when(navigation) {
+                            OnboardingVoidViewModel.Navigation.GoBack -> {
+                                navController.popBackStack()
+                            }
+                            OnboardingVoidViewModel.Navigation.NavigateToMnemonic -> {
+                                navController.navigate(OnboardingNavigation.mnemonic)
+                            }
+                        }
+                    }
+                }
+                LaunchedEffect(Unit) {
+                    vm.toasts.collect { toast(it) }
+                }
             }
             composable(
                 route = OnboardingNavigation.mnemonic,
@@ -447,31 +467,15 @@ class OnboardingFragment : Fragment() {
 
     @Composable
     private fun Auth(navController: NavHostController) {
-        val component = componentManager().onboardingAuthComponent.ReleaseOn(
+        val component = componentManager().onboardingStartComponent.ReleaseOn(
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
         val vm = daggerViewModel { component.get().getViewModel() }
         AuthScreenWrapper(vm = vm)
-        val navigationCommands = vm.navigationFlow.collectAsState(
-            initial = OnboardingAuthViewModel.AuthNavigation.Idle
-        )
-        LaunchedEffect(key1 = navigationCommands.value) {
-            when (navigationCommands.value) {
-                is OnboardingAuthViewModel.AuthNavigation.ProceedWithSignUp -> {
-                    navController.navigate(OnboardingNavigation.void)
-                }
-                is OnboardingAuthViewModel.AuthNavigation.ProceedWithSignIn -> {
-                    navController.navigate(OnboardingNavigation.recovery)
-                }
-                else -> {
-
-                }
-            }
-        }
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
-                when(effect) {
+                when (effect) {
                     SideEffect.OpenPrivacyPolicy -> {
                         try {
                             val intent = Intent(
@@ -483,6 +487,7 @@ class OnboardingFragment : Fragment() {
                             Timber.e(e, "Error while opening privacy policy")
                         }
                     }
+
                     SideEffect.OpenTermsOfUse -> {
                         try {
                             val intent = Intent(
@@ -493,6 +498,19 @@ class OnboardingFragment : Fragment() {
                         } catch (e: Exception) {
                             Timber.e(e, "Error while opening terms of use")
                         }
+                    }
+                }
+            }
+        }
+        LaunchedEffect(Unit) {
+            vm.navigation.collect { navigation ->
+                when (navigation) {
+                    is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
+                        navController.navigate(OnboardingNavigation.void)
+                    }
+
+                    is OnboardingStartViewModel.AuthNavigation.ProceedWithSignIn -> {
+                        navController.navigate(OnboardingNavigation.recovery)
                     }
                 }
             }

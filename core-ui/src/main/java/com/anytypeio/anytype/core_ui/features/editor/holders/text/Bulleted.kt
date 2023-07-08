@@ -6,10 +6,7 @@ import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
-import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBulletedBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
@@ -28,9 +25,9 @@ class Bulleted(
 
     val indent: View = binding.bulletIndent
     val bullet = binding.bullet
-    private val container = binding.graphicPlusTextContainer
     override val content: TextInputWidget = binding.bulletedListContent
     override val root: View = itemView
+    override val selectionView: View = binding.selectionView
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int
@@ -82,10 +79,6 @@ class Bulleted(
     @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
         // Do nothing.
-    }
-
-    override fun select(item: BlockView.Selectable) {
-        container.isSelected = item.isSelected
     }
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {

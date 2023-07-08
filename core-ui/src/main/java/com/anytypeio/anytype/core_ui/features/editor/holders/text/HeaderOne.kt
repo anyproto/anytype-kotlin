@@ -5,7 +5,6 @@ import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderOneBinding
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
@@ -21,6 +20,7 @@ class HeaderOne(
     override val header: TextInputWidget = binding.headerOne
     override val content: TextInputWidget get() = header
     override val root: View = itemView
+    override val selectionView: View = binding.selectionView
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int

@@ -113,18 +113,7 @@ class OnboardingFragment : Fragment() {
                         PagerIndicator(
                             pageCount = OnboardingPage.values().filter { it.visible }.size,
                             page = currentPage,
-                            onBackClick = {
-                                when(currentPage.value) {
-                                    OnboardingPage.VOID -> {
-                                        val component = componentManager().onboardingNewVoidComponent.get()
-                                        val vm = component.getViewModel()
-                                        vm.onBackPressed()
-                                    }
-                                    else -> {
-                                        navController.popBackStack()
-                                    }
-                                }
-                            }
+                            onBackClick = { navController.popBackStack() }
                         )
                     }
                 }

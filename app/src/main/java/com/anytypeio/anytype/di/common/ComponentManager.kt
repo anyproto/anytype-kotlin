@@ -63,12 +63,13 @@ import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
-import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingAuthComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingLoginSetupComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingSoulCreationAnimComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingSoulCreationComponent
+import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponent
+import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingVoidComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -903,8 +904,14 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val onboardingAuthComponent = Component {
-        DaggerOnboardingAuthComponent
+    val onboardingStartComponent = Component {
+        DaggerOnboardingStartComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val onboardingNewVoidComponent = Component {
+        DaggerOnboardingVoidComponent
             .factory()
             .create(findComponentDependencies())
     }

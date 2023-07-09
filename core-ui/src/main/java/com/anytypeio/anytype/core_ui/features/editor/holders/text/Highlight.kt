@@ -78,6 +78,8 @@ class Highlight(
             binding.highlightBlockContentContainer.updateLayoutParams<FrameLayout.LayoutParams> {
                 marginStart = dimen(R.dimen.default_indent) + rect.left
                 marginEnd = dimen(R.dimen.dp_8) + rect.right
+            }
+            content.updateLayoutParams<LinearLayout.LayoutParams> {
                 bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
             }
         }

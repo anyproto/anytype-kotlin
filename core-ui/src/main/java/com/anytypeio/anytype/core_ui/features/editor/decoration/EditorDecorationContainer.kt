@@ -31,8 +31,6 @@ class EditorDecorationContainer @JvmOverloads constructor(
     private val totalCalloutOffset = totalGraphicOffset
     private val defaultCalloutColor = resources.getColor(R.color.palette_very_light_grey, null)
 
-    private val defaultTextBottomExtraSpace = resources.getDimension(R.dimen.default_text_bottom_extra_space).toInt()
-
     fun decorate(
         decorations: List<Decoration>,
         onApplyContentOffset: ((rect: Rect) -> Unit)? = null
@@ -85,9 +83,6 @@ class EditorDecorationContainer @JvmOverloads constructor(
             // Drawing highlight line inside box
 
             if (decor.style is Decoration.Style.Highlight && decor.style !is Decoration.Style.Highlight.Itself) {
-                if (decor.style is Decoration.Style.Highlight.End) {
-                    rect.bottom += highlightBottomOffset
-                }
                 val highlight = DecorationWidget.Highlight(context = context)
                 val lm = LayoutParams(
                     defaultGraphicContainerWidth,
@@ -101,7 +96,6 @@ class EditorDecorationContainer @JvmOverloads constructor(
                             rect.left + defaultIndentOffset
                         }
                     }
-                    bottomMargin = rect.bottom
                 }
 
                 addView(

@@ -28,6 +28,7 @@ class Highlight(
 
     override val content: TextInputWidget = binding.highlightContent
     override val root: View = itemView
+    override val selectionView: View = binding.selectionView
 
     override val decoratableContainer: EditorDecorationContainer = binding.decorationContainer
 
@@ -53,11 +54,11 @@ class Highlight(
 
     override fun select(item: BlockView.Selectable) {
         if (item.isSelected) {
-            binding.selected.isSelected = true
-            binding.selected.visible()
+            selectionView.isSelected = true
+            selectionView.visible()
         } else {
-            binding.selected.isSelected = false
-            binding.selected.gone()
+            selectionView.isSelected = false
+            selectionView.gone()
         }
     }
 
@@ -99,11 +100,11 @@ class Highlight(
                 }
             }
         }
-        binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
+        selectionView.applySelectorOffset<FrameLayout.LayoutParams>(
             content = binding.highlightBlockContentContainer,
             res = itemView.resources
         )
-        binding.selected.updateLayoutParams<FrameLayout.LayoutParams> {
+        selectionView.updateLayoutParams<FrameLayout.LayoutParams> {
             marginEnd = dimen(R.dimen.dp_8)
         }
     }

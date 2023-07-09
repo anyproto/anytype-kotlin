@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderThreeBinding
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
+import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
@@ -56,8 +57,12 @@ class HeaderThree(
             binding.box.updateLayoutParams<FrameLayout.LayoutParams> {
                 marginStart = rect.left
                 marginEnd = rect.right
-                bottomMargin = rect.bottom
-                // TODO handle top and bottom offsets
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
+            }
+            selectionView.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
             }
         }
     }

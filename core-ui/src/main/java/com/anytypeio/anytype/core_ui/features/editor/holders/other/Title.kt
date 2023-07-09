@@ -255,6 +255,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val icon: View = binding.docEmojiIconContainer
         override val image: ImageView = binding.imageIcon
         private val emoji: ImageView = binding.emojiIcon
+        override val selectionView: View = itemView
 
         override val root: View = itemView
         override val content: TextInputWidget = binding.title
@@ -375,6 +376,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val icon: View = binding.docProfileIconContainer
         override val image: ImageView = binding.imageIcon
         override val content: TextInputWidget = binding.title
+        override val selectionView: View = itemView
 
         private val iconText = binding.imageText
         private var hasImage = false
@@ -470,6 +472,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
 
         override val icon: View = binding.todoTitleCheckbox
         override val image: ImageView = binding.todoTitleCheckbox
+        override val selectionView: View = itemView
 
         val checkbox = binding.todoTitleCheckbox
         var isLocked: Boolean = false

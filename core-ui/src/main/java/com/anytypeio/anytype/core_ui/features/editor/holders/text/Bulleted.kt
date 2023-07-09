@@ -86,8 +86,12 @@ class Bulleted(
             binding.graphicPlusTextContainer.updateLayoutParams<FrameLayout.LayoutParams> {
                 marginStart = dimen(R.dimen.default_indent) + rect.left
                 marginEnd = dimen(R.dimen.dp_8) + rect.right
-                bottomMargin = rect.bottom
-                // TODO handle top and bottom offsets
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
+            }
+            selectionView.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
             }
         }
     }

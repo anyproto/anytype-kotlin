@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.view.View
-import androidx.core.view.updatePadding
-import com.anytypeio.anytype.core_ui.BuildConfig
+import android.widget.FrameLayout
+import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.TextBlockHolder
@@ -21,9 +21,26 @@ abstract class Header<T : BlockView.Text.Header>(
     DecoratableViewHolder {
 
     abstract val header: TextInputWidget
+    abstract val contentTopMargin: Int
 
     @Deprecated("Pre-nested-styling legacy.")
     override fun indentize(item: BlockView.Indentable) {
         // Do nothing.
+    }
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        decoratableContainer.decorate(decorations) { rect ->
+            content.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                topMargin = contentTopMargin
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
+            }
+            selectionView.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
+            }
+        }
     }
 }

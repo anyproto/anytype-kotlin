@@ -2,9 +2,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.graphics.drawable.Drawable
 import android.view.View
-import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderTwoBinding
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
@@ -32,6 +30,8 @@ class HeaderTwo(
     private val mentionUncheckedIcon: Drawable?
     private val mentionInitialsSize: Float
 
+    override val contentTopMargin: Int = dimen(R.dimen.dp_16)
+
     init {
         setup()
         with(itemView.context) {
@@ -51,19 +51,4 @@ class HeaderTwo(
     override fun getMentionCheckedIcon(): Drawable? = mentionCheckedIcon
     override fun getMentionUncheckedIcon(): Drawable? = mentionUncheckedIcon
     override fun getMentionInitialsSize(): Float = mentionInitialsSize
-
-    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
-        decoratableContainer.decorate(decorations) { rect ->
-            binding.box.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = rect.left
-                marginEnd = rect.right
-                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
-            }
-            selectionView.updateLayoutParams<FrameLayout.LayoutParams> {
-                marginStart = dimen(R.dimen.dp_8) + rect.left
-                marginEnd = dimen(R.dimen.dp_8) + rect.right
-                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
-            }
-        }
-    }
 }

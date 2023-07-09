@@ -96,6 +96,7 @@
     <dimen name="dp_13">13dp</dimen>
     <dimen name="dp_32">32dp</dimen>
     <dimen name="dp_20">20dp</dimen>
+    <dimen name="dp_24">24dp</dimen>
     <dimen name="dp_104">104dp</dimen>
     <dimen name="dp_40">40dp</dimen>
     <dimen name="dp_45">45dp</dimen>

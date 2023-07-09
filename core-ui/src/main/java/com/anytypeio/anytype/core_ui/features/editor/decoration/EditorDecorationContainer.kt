@@ -23,24 +23,6 @@ class EditorDecorationContainer @JvmOverloads constructor(
         resources.getDimension(R.dimen.default_highlight_content_margin_top).toInt()
     private val totalGraphicOffset =
         (defaultIndentOffset + graphicOffsetValue + graphicOffsetValueExtra)
-    private val defaultHeaderOneExtraSpaceTop =
-        resources.getDimension(R.dimen.default_header_one_extra_space_top)
-            .toInt()
-    private val defaultHeaderOneExtraSpaceBottom =
-        resources.getDimension(R.dimen.default_header_one_extra_space_bottom)
-            .toInt()
-    private val defaultHeaderTwoExtraSpaceTop =
-        resources.getDimension(R.dimen.default_header_two_extra_space_top)
-            .toInt()
-    private val defaultHeaderTwoExtraSpaceBottom =
-        resources.getDimension(R.dimen.default_header_two_extra_space_bottom)
-            .toInt()
-    private val defaultHeaderThreeExtraSpaceTop =
-        resources.getDimension(R.dimen.default_header_three_extra_space_top)
-            .toInt()
-    private val defaultHeaderThreeExtraSpaceBottom =
-        resources.getDimension(R.dimen.default_header_three_extra_space_bottom)
-            .toInt()
     private val defaultGraphicContainerWidth = resources.getDimensionPixelSize(R.dimen.default_graphic_container_width)
 
     private val calloutInternalBottomPadding = resources.getDimension(R.dimen.default_callout_internal_bottom_padding).toInt()
@@ -86,29 +68,7 @@ class EditorDecorationContainer @JvmOverloads constructor(
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT
                 ).apply {
-
                     marginStart = rect.left
-
-                    if (isLastDecoration) {
-                        when (decor.style) {
-                            Decoration.Style.Header.H1 -> {
-                                topMargin = defaultHeaderOneExtraSpaceTop
-                                rect.bottom += defaultHeaderOneExtraSpaceBottom
-                            }
-                            Decoration.Style.Header.H2 -> {
-                                topMargin = defaultHeaderTwoExtraSpaceTop
-                                rect.bottom += defaultHeaderTwoExtraSpaceBottom
-                            }
-                            Decoration.Style.Header.H3 -> {
-                                topMargin = defaultHeaderThreeExtraSpaceTop
-                                rect.bottom += defaultHeaderThreeExtraSpaceBottom
-                            }
-                            else -> {
-                                // TODO
-                            }
-                        }
-                    }
-
                     bottomMargin = rect.bottom
                     marginEnd = rect.right
                 }

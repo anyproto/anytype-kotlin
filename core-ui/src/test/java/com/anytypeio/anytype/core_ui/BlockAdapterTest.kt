@@ -991,8 +991,8 @@ class BlockAdapterTest {
         check(firstHolder is Paragraph)
         check(secondHolder is Paragraph)
 
-        assertTrue { firstHolder.content.isSelected }
-        assertFalse { secondHolder.content.isSelected }
+        assertTrue { firstHolder.selectionView.isSelected }
+        assertFalse { secondHolder.selectionView.isSelected }
     }
 
     @Test
@@ -1369,12 +1369,12 @@ class BlockAdapterTest {
         check(h3SelectedHolder is HeaderThree)
         check(h3NotSelectedHolder is HeaderThree)
 
-        assertTrue { h1SelectedHolder.content.isSelected }
-        assertFalse { h1NotSelectedHolder.content.isSelected }
-        assertTrue { h2SelectedHolder.content.isSelected }
-        assertFalse { h2NotSelectedHolder.content.isSelected }
-        assertTrue { h3SelectedHolder.content.isSelected }
-        assertFalse { h3NotSelectedHolder.content.isSelected }
+        assertTrue { h1SelectedHolder.selectionView.isSelected }
+        assertFalse { h1NotSelectedHolder.selectionView.isSelected }
+        assertTrue { h2SelectedHolder.selectionView.isSelected }
+        assertFalse { h2NotSelectedHolder.selectionView.isSelected }
+        assertTrue { h3SelectedHolder.selectionView.isSelected }
+        assertFalse { h3NotSelectedHolder.selectionView.isSelected }
     }
 
     @Test

@@ -14,7 +14,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.ColorButtonPrimaryActive
 import com.anytypeio.anytype.core_ui.ColorButtonPrimaryInactive
@@ -26,7 +25,6 @@ import com.anytypeio.anytype.core_ui.ColorButtonSecondaryBorder
 import com.anytypeio.anytype.core_ui.ColorButtonSecondaryBorderPressed
 import com.anytypeio.anytype.core_ui.ColorButtonSecondaryPressed
 import com.anytypeio.anytype.core_ui.ColorButtonSecondaryText
-import com.anytypeio.anytype.core_ui.R
 
 @Composable
 fun OnBoardingButtonPrimary(
@@ -78,7 +76,8 @@ fun OnBoardingButtonSecondary(
     onClick: () -> Unit,
     enabled: Boolean = true,
     modifier: Modifier = Modifier,
-    size: ButtonSize
+    size: ButtonSize,
+    textColor: Color = ColorButtonSecondaryText
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
@@ -114,7 +113,7 @@ fun OnBoardingButtonSecondary(
             Text(
                 text = text,
                 style = size.textStyle.copy(
-                    color = ColorButtonSecondaryText
+                    color = textColor
                 )
             )
         }

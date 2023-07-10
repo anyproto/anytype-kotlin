@@ -5,6 +5,7 @@ import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,7 +46,6 @@ import com.anytypeio.anytype.core_ui.ColorPagerIndicatorText
 import com.anytypeio.anytype.core_ui.ColorPlaceholderText
 import com.anytypeio.anytype.core_ui.ColorTextInput
 import com.anytypeio.anytype.core_ui.ColorTextInputCursor
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -88,10 +88,10 @@ fun PagerIndicator(
                 Image(
                     modifier = Modifier
                         .padding(start = 9.dp, top = 16.dp)
-                        .noRippleClickable {
-                            onBackClick.invoke()
+                        .clickable {
+                            TODO()
                         },
-                    painter = painterResource(id = R.drawable.ic_back_onboarding_32),
+                    painter = painterResource(id = R.drawable.ic_back),
                     contentDescription = "back"
                 )
                 Spacer(modifier = Modifier.weight(1f))

@@ -19,6 +19,7 @@ class EditableCellHolder(
 
     override val root: View = binding.root
     override val content: TextInputWidget = binding.textContent
+    override val selectionView: View = binding.selection
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int
@@ -54,7 +55,7 @@ class EditableCellHolder(
     }
 
     fun cellSelection(isSelected: Boolean) {
-        binding.selection.isSelected = isSelected
+        selectionView.isSelected = isSelected
     }
 
     override fun processChangePayload(

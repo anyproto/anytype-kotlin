@@ -36,6 +36,7 @@ class Toggle(
     private val container = binding.graphicPlusTextContainer
     override val content: TextInputWidget = binding.toggleContent
     override val root: View = itemView
+    override val selectionView: View = binding.selectionView
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int
@@ -94,10 +95,6 @@ class Toggle(
         // Do nothing.
     }
 
-    override fun select(item: BlockView.Selectable) {
-        container.isSelected = item.isSelected
-    }
-
     override fun enableReadMode() {
         super.enableReadMode()
         mode = BlockView.Mode.READ
@@ -144,8 +141,12 @@ class Toggle(
             binding.graphicPlusTextContainer.updateLayoutParams<FrameLayout.LayoutParams> {
                 marginStart = dimen(R.dimen.default_indent) + rect.left
                 marginEnd = dimen(R.dimen.dp_8) + rect.right
-                bottomMargin = rect.bottom
-                // TODO handle top and bottom offsets
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
+            }
+            selectionView.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
             }
         }
     }

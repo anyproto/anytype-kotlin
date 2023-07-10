@@ -11,12 +11,17 @@
         android:layout_height="match_parent"/>
 
     <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-        tools:background="@drawable/item_block_multi_select_selected"
         android:id="@+id/textContent"
         style="@style/BlockTextContentStyle"
-        android:background="@drawable/item_block_multi_select_mode_selector"
         android:focusable="true"
         android:textIsSelectable="true"
         tools:text="@string/default_text_placeholder" />
+
+    <View
+        android:id="@+id/selectionView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 
 </FrameLayout>

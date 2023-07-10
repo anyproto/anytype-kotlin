@@ -1,26 +1,19 @@
 package com.anytypeio.anytype.core_ui.features.editor.holders.text
 
 import android.graphics.drawable.Drawable
-import android.text.Editable
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
-import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockTextBinding
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
-import com.anytypeio.anytype.core_ui.features.editor.marks
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
-import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 
 class Paragraph(
     val binding: ItemBlockTextBinding,
@@ -30,7 +23,7 @@ class Paragraph(
     override val root: View = binding.root
     override val content: TextInputWidget = binding.textContent
     override val decoratableContainer : EditorDecorationContainer = binding.decorationContainer
-
+    override val selectionView: View = binding.selectionView
     private val mentionIconSize: Int
     private val mentionIconPadding: Int
     private val mentionCheckedIcon: Drawable?
@@ -68,7 +61,12 @@ class Paragraph(
             content.updateLayoutParams<FrameLayout.LayoutParams> {
                 marginStart = dimen(R.dimen.dp_8) + rect.left
                 marginEnd = dimen(R.dimen.dp_8) + rect.right
-                bottomMargin = rect.bottom
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
+            }
+            selectionView.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
             }
         }
     }

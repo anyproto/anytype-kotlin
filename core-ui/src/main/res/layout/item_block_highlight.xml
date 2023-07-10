@@ -13,8 +13,6 @@
         android:id="@+id/highlightBlockContentContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
-        android:layout_marginBottom="1dp"
         android:addStatesFromChildren="true"
         android:orientation="horizontal"
         tools:ignore="UselessParent">
@@ -28,8 +26,7 @@
             android:id="@+id/highlightGlyphContainer"
             android:layout_width="24dp"
             android:layout_height="match_parent"
-            android:layout_marginTop="@dimen/default_highlight_content_margin_top"
-            android:layout_marginBottom="6dp">
+            android:layout_marginTop="@dimen/default_highlight_content_margin_top">
 
             <View
                 android:id="@+id/divider"
@@ -49,7 +46,7 @@
     </LinearLayout>
 
     <View
-        android:id="@+id/selected"
+        android:id="@+id/selectionView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:visibility="gone"

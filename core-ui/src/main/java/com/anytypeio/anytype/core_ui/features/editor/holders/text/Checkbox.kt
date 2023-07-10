@@ -6,9 +6,6 @@ import android.widget.FrameLayout
 import android.widget.ImageView
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
-import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCheckboxBinding
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
@@ -31,6 +28,7 @@ class Checkbox(
     private val container = binding.graphicPlusTextContainer
     override val content: TextInputWidget = binding.checkboxContent
     override val root: View = itemView
+    override val selectionView: View = binding.selectionView
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int
@@ -84,17 +82,17 @@ class Checkbox(
         // Do nothing.
     }
 
-    override fun select(item: BlockView.Selectable) {
-        container.isSelected = item.isSelected
-    }
-
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         decoratableContainer.decorate(decorations = decorations) { rect ->
             binding.graphicPlusTextContainer.updateLayoutParams<FrameLayout.LayoutParams> {
                 marginStart = dimen(R.dimen.default_indent) + rect.left
                 marginEnd = dimen(R.dimen.dp_8) + rect.right
-                bottomMargin = rect.bottom
-                // TODO handle top and bottom offsets
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
+            }
+            selectionView.updateLayoutParams<FrameLayout.LayoutParams> {
+                marginStart = dimen(R.dimen.dp_8) + rect.left
+                marginEnd = dimen(R.dimen.dp_8) + rect.right
+                bottomMargin = rect.bottom + dimen(R.dimen.dp_2)
             }
         }
     }

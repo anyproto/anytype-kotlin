@@ -14,9 +14,7 @@
         android:id="@+id/graphicPlusTextContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:addStatesFromChildren="true"
-        android:background="@drawable/item_block_multi_select_mode_selector"
-        tools:background="@drawable/item_block_multi_select_selected">
+        android:addStatesFromChildren="true">
 
         <ImageView
             android:id="@+id/toggle"
@@ -60,5 +58,12 @@
             app:layout_constraintGuide_begin="0dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/selectionView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/item_block_multi_select_mode_selector"
+        tools:background="@drawable/item_block_multi_select_selected" />
 
 </FrameLayout>

@@ -28,6 +28,8 @@ interface TextHolder {
      */
     val content: TextInputWidget
 
+    val selectionView: View
+
     fun setCursor(item: BlockView.Cursor) {
         Timber.d("Setting cursor: $item")
         item.cursor?.let {
@@ -64,7 +66,7 @@ interface TextHolder {
     }
 
     fun select(item: BlockView.Selectable) {
-        content.isSelected = item.isSelected
+        selectionView.isSelected = item.isSelected
     }
 
     fun setFocus(item: Focusable) {

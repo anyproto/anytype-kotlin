@@ -23,24 +23,6 @@ class EditorDecorationContainer @JvmOverloads constructor(
         resources.getDimension(R.dimen.default_highlight_content_margin_top).toInt()
     private val totalGraphicOffset =
         (defaultIndentOffset + graphicOffsetValue + graphicOffsetValueExtra)
-    private val defaultHeaderOneExtraSpaceTop =
-        resources.getDimension(R.dimen.default_header_one_extra_space_top)
-            .toInt()
-    private val defaultHeaderOneExtraSpaceBottom =
-        resources.getDimension(R.dimen.default_header_one_extra_space_bottom)
-            .toInt()
-    private val defaultHeaderTwoExtraSpaceTop =
-        resources.getDimension(R.dimen.default_header_two_extra_space_top)
-            .toInt()
-    private val defaultHeaderTwoExtraSpaceBottom =
-        resources.getDimension(R.dimen.default_header_two_extra_space_bottom)
-            .toInt()
-    private val defaultHeaderThreeExtraSpaceTop =
-        resources.getDimension(R.dimen.default_header_three_extra_space_top)
-            .toInt()
-    private val defaultHeaderThreeExtraSpaceBottom =
-        resources.getDimension(R.dimen.default_header_three_extra_space_bottom)
-            .toInt()
     private val defaultGraphicContainerWidth = resources.getDimensionPixelSize(R.dimen.default_graphic_container_width)
 
     private val calloutInternalBottomPadding = resources.getDimension(R.dimen.default_callout_internal_bottom_padding).toInt()
@@ -48,8 +30,6 @@ class EditorDecorationContainer @JvmOverloads constructor(
     private val calloutExtraSpaceBottom = resources.getDimension(R.dimen.callout_block_extra_space_bottom).toInt()
     private val totalCalloutOffset = totalGraphicOffset
     private val defaultCalloutColor = resources.getColor(R.color.palette_very_light_grey, null)
-
-    private val defaultTextBottomExtraSpace = resources.getDimension(R.dimen.default_text_bottom_extra_space).toInt()
 
     fun decorate(
         decorations: List<Decoration>,
@@ -86,29 +66,7 @@ class EditorDecorationContainer @JvmOverloads constructor(
                     LayoutParams.MATCH_PARENT,
                     LayoutParams.MATCH_PARENT
                 ).apply {
-
                     marginStart = rect.left
-
-                    if (isLastDecoration) {
-                        when (decor.style) {
-                            Decoration.Style.Header.H1 -> {
-                                topMargin = defaultHeaderOneExtraSpaceTop
-                                rect.bottom += defaultHeaderOneExtraSpaceBottom
-                            }
-                            Decoration.Style.Header.H2 -> {
-                                topMargin = defaultHeaderTwoExtraSpaceTop
-                                rect.bottom += defaultHeaderTwoExtraSpaceBottom
-                            }
-                            Decoration.Style.Header.H3 -> {
-                                topMargin = defaultHeaderThreeExtraSpaceTop
-                                rect.bottom += defaultHeaderThreeExtraSpaceBottom
-                            }
-                            else -> {
-                                // TODO
-                            }
-                        }
-                    }
-
                     bottomMargin = rect.bottom
                     marginEnd = rect.right
                 }
@@ -141,7 +99,6 @@ class EditorDecorationContainer @JvmOverloads constructor(
                             rect.left + defaultIndentOffset
                         }
                     }
-                    bottomMargin = rect.bottom
                 }
 
                 addView(

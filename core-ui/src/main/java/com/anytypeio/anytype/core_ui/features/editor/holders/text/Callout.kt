@@ -6,11 +6,9 @@ import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCalloutBinding
 import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundTintColor
-import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
@@ -35,6 +33,7 @@ class Callout(
     override val root: View = itemView
     override val content: TextInputWidget = binding.calloutText
     private val icon: ObjectIconWidget = binding.calloutIcon
+    override val selectionView: View = binding.selectionView
 
     private val mentionIconSize: Int
     private val mentionIconPadding: Int
@@ -89,10 +88,6 @@ class Callout(
             item,
             clicked,
         )
-    }
-
-    override fun select(item: BlockView.Selectable) {
-        binding.selectionView.isSelected = item.isSelected
     }
 
     @Deprecated("Pre-nested-styling legacy.")

@@ -24,6 +24,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.ColorButtonInversion
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -145,7 +146,8 @@ fun SignButtons(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxWidth()
-                .padding(start = 6.dp, end = 32.dp)
+                .padding(start = 6.dp, end = 32.dp),
+            textColor = ColorButtonInversion
         )
     }
 }

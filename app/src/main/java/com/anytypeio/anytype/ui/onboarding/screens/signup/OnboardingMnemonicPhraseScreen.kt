@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorBackgroundField
+import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.extensions.conditional
@@ -125,7 +126,9 @@ fun MnemonicButtons(
                         ),
                     onClick = {
                         openSoulCreation.invoke()
-                    }, size = ButtonSize.Large
+                    },
+                    size = ButtonSize.Large,
+                    textColor = ColorButtonRegular
                 )
             }
         }
@@ -199,7 +202,9 @@ fun MnemonicPhrase(
                             .padding(bottom = 12.dp),
                         onClick = {
                             copyMnemonicToClipboard.invoke(state.mnemonicPhrase)
-                        }, size = ButtonSize.SmallSecondary
+                        },
+                        size = ButtonSize.SmallSecondary,
+                        textColor = ColorButtonRegular
                     )
                 }
             }

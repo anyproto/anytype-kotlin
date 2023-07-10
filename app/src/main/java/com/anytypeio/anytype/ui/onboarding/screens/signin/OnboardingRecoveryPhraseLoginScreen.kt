@@ -23,6 +23,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -147,7 +148,8 @@ fun RecoveryScreen(
                         size = ButtonSize.Large,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 18.dp, end = 18.dp, bottom = 24.dp)
+                            .padding(start = 18.dp, end = 18.dp, bottom = 24.dp),
+                        textColor = ColorButtonRegular
                     )
                 }
             }

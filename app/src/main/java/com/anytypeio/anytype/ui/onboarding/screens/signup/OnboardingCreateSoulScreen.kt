@@ -84,7 +84,7 @@ private fun CreateSoulScreen(
                 )
             }
             item {
-                Spacer(modifier = Modifier.height(9.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
             item {
                 CreateSoulDescription()
@@ -181,6 +181,7 @@ fun CreateSoulDescription() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 48.dp)
             .wrapContentHeight(),
         contentAlignment = Alignment.Center
     ) {

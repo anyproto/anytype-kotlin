@@ -152,7 +152,7 @@ fun CreateSoulInput(
                 .focusRequester(focusRequester)
             ,
             text = text,
-            placeholder = stringResource(id = R.string.onboarding_soul_creation_placeholder),
+            placeholder = stringResource(id = R.string.name),
             keyboardActions = KeyboardActions(
                 onDone = {
                     val input = text.value

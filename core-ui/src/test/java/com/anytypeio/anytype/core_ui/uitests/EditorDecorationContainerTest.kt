@@ -228,8 +228,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top)
-                .toInt(),
+            expected = 0,
             actual = rectWithVerticalQuoteLine.marginBottom
         )
 
@@ -293,8 +292,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top)
-                .toInt(),
+            expected = 0,
             actual = rectWithVerticalQuoteLine.marginBottom
         )
 
@@ -355,8 +353,7 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_highlight_content_margin_top)
-                .toInt(),
+            expected = 0,
             actual = rectWithVerticalQuoteLine.marginBottom
         )
 
@@ -919,14 +916,12 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_two_extra_space_top)
-                .toInt(),
+            expected = 0,
             actual = view2.marginTop
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_two_extra_space_bottom)
-                .toInt(),
+            expected = 0,
             actual = view2.marginBottom
         )
     }
@@ -1008,14 +1003,12 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_three_extra_space_top)
-                .toInt(),
+            expected = 0,
             actual = view2.marginTop
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_three_extra_space_bottom)
-                .toInt(),
+            expected = 0,
             actual = view2.marginBottom
         )
     }
@@ -1097,14 +1090,12 @@ class EditorDecorationContainerTest {
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_one_extra_space_top)
-                .toInt(),
+            expected = 0,
             actual = view2.marginTop
         )
 
         assertEquals(
-            expected = context.resources.getDimension(R.dimen.default_header_one_extra_space_bottom)
-                .toInt(),
+            expected = 0,
             actual = view2.marginBottom
         )
     }

@@ -119,7 +119,7 @@ fun MnemonicPhraseWidget(
         words.forEach { word ->
             Text(
                 modifier = Modifier.padding(horizontal = 3.dp),
-                text = word.replaceFirst(word.first(), word.first().uppercaseChar()),
+                text = word.lowercase(),
                 style = PreviewTitle1Regular.copy(
                     color = ColorMnemonicPhrase
                 )

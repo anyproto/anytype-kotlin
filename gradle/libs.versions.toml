@@ -22,10 +22,12 @@ androidJunitVersion = "1.1.4"
 runnerVersion = "1.5.0"
 mockitoAndroidVersion = '4.10.0'
 kotlinCoroutinesVersion = '1.6.4'
+
 androidxTestCoreVersion = '1.5.0'
 androidxCoreTestingVersion = '2.2.0'
 androidxSecurityCryptoVersion = '1.0.0'
 androidxPreferenceVersion = '1.2.0'
+
 constraintLayoutVersion = '2.1.4'
 recyclerviewVersion = '1.2.1'
 cardviewVersion = '1.0.0'
@@ -55,7 +57,7 @@ timberJunitVersion = '1.0.1'
 turbineVersion = '0.12.1'
 coroutineTestingVersion = '1.6.4'
 liveDataTestingVersion = '1.2.0'
-espressoVersion = '3.4.0'
+espressoVersion = '3.5.1'
 disableAnimationVersion = '2.0.0'
 leakCanaryVersion = '1.5'
 stethoVersion = '1.5.1'

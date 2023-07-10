@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.foundation.Warning
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
@@ -71,6 +72,9 @@ class LogoutWarningFragment : BaseBottomSheetComposeFragment() {
                         when (command) {
                             LogoutWarningViewModel.Command.Logout -> {
                                 findNavController().navigate(R.id.actionLogout)
+                            }
+                            is LogoutWarningViewModel.Command.ShowError -> {
+                                toast(command.msg)
                             }
                         }
                     }

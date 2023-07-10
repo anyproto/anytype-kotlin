@@ -106,7 +106,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion libs.versions.androidxComposeVersion1.get()
+        kotlinCompilerExtensionVersion libs.versions.composeKotlinCompilerVersion.get()
     }
 
     buildFeatures {

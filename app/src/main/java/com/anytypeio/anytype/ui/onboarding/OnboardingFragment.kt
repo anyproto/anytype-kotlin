@@ -113,9 +113,7 @@ class OnboardingFragment : Fragment() {
                         PagerIndicator(
                             pageCount = OnboardingPage.values().filter { it.visible }.size,
                             page = currentPage,
-                            onBackClick = {
-                                // TODO
-                            }
+                            onBackClick = { navController.popBackStack() }
                         )
                     }
                 }

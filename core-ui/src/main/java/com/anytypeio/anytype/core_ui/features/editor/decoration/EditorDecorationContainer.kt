@@ -19,6 +19,8 @@ class EditorDecorationContainer @JvmOverloads constructor(
     private val graphicOffsetValueExtra =
         resources.getDimension(R.dimen.default_graphic_container_right_offset).toInt()
     private val defaultIndentOffset = resources.getDimension(R.dimen.default_indent).toInt()
+    private val highlightBottomOffset =
+        resources.getDimension(R.dimen.default_highlight_content_margin_top).toInt()
     private val totalGraphicOffset =
         (defaultIndentOffset + graphicOffsetValue + graphicOffsetValueExtra)
     private val defaultGraphicContainerWidth = resources.getDimensionPixelSize(R.dimen.default_graphic_container_width)
@@ -81,6 +83,9 @@ class EditorDecorationContainer @JvmOverloads constructor(
             // Drawing highlight line inside box
 
             if (decor.style is Decoration.Style.Highlight && decor.style !is Decoration.Style.Highlight.Itself) {
+                if (decor.style is Decoration.Style.Highlight.End) {
+                    rect.bottom += highlightBottomOffset
+                }
                 val highlight = DecorationWidget.Highlight(context = context)
                 val lm = LayoutParams(
                     defaultGraphicContainerWidth,

@@ -53,8 +53,9 @@ class LogoutWarningViewModel(
                         commands.emit(Command.Logout)
                     }
                     is Interactor.Status.Error -> {
-                        isLoggingOut.value = true
-                        Timber.e(status.throwable, "Error while logging out")
+                        isLoggingOut.value = false
+                        commands.emit(Command.ShowError(status.throwable.message ?: ""))
+                        Timber.e(status.throwable.message, "Error while logging out")
                     }
                 }
             }
@@ -90,5 +91,6 @@ class LogoutWarningViewModel(
 
     sealed class Command {
         object Logout : Command()
+        data class ShowError(val msg: String) : Command()
     }
 }

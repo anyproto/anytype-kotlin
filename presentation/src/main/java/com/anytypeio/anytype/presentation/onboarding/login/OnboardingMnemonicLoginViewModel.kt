@@ -43,6 +43,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     fun onBackButtonPressed() {
+        Timber.d("onBackButtonPressed")
         viewModelScope.launch {
             sideEffects.emit(SideEffect.Exit)
         }

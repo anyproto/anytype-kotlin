@@ -350,7 +350,7 @@ class OnboardingFragment : Fragment() {
             state = Lifecycle.State.DESTROYED
         )
         val vm = daggerViewModel { component.get().getViewModel() }
-        val openDialog = remember { mutableStateOf(false) }
+        val isQrWarningDialogVisible = remember { mutableStateOf(false) }
 
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
@@ -364,13 +364,17 @@ class OnboardingFragment : Fragment() {
         RecoveryScreenWrapper(
             vm = vm,
             onBackClicked = vm::onBackButtonPressed,
-            onScanQrClick = { openDialog.value = true },
+            onScanQrClick = { isQrWarningDialogVisible.value = true },
         )
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
                 when(effect) {
                     is OnboardingMnemonicLoginViewModel.SideEffect.Exit -> {
-                        navController.popBackStack()
+                        val lastDestination = navController.backQueue.lastOrNull()
+                        // TODO Temporary workaround to prevent inconsistent state in navigation
+                        if (lastDestination?.destination?.route == OnboardingNavigation.recovery) {
+                            navController.popBackStack()
+                        }
                     }
                     is OnboardingMnemonicLoginViewModel.SideEffect.ProceedWithLogin -> {
                         navController.navigate(OnboardingNavigation.enterTheVoid)
@@ -381,15 +385,15 @@ class OnboardingFragment : Fragment() {
                 }
             }
         }
-        if (openDialog.value) {
+        if (isQrWarningDialogVisible.value) {
             BaseAlertDialog(
                 dialogText = stringResource(id = R.string.alert_qr_camera),
                 buttonText = stringResource(id = R.string.alert_qr_camera_ok),
                 onButtonClick = {
-                    openDialog.value = false
+                    isQrWarningDialogVisible.value = false
                     proceedWithQrCodeActivity(launcher)
                 },
-                onDismissRequest = { openDialog.value = false }
+                onDismissRequest = { isQrWarningDialogVisible.value = false }
             )
         }
     }

@@ -21,12 +21,13 @@ import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
-import com.anytypeio.anytype.di.feature.onboarding.OnboardingLoginSetupDependencies
-import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicDependencies
-import com.anytypeio.anytype.di.feature.onboarding.OnboardingMnemonicLoginDependencies
-import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationAnimDependencies
-import com.anytypeio.anytype.di.feature.onboarding.OnboardingSoulCreationDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
+import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingLoginSetupDependencies
+import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
+import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
+import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationAnimDependencies
+import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingVoidDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
@@ -84,6 +85,7 @@ interface MainComponent :
     MigrationErrorDependencies,
     BacklinkOrAddToObjectDependencies,
     FilesStorageDependencies,
+    OnboardingDependencies,
     OnboardingStartDependencies,
     OnboardingVoidDependencies,
     OnboardingMnemonicDependencies,
@@ -197,6 +199,11 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(FilesStorageDependencies::class)
     abstract fun provideFilesStorageDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(OnboardingDependencies::class)
+    abstract fun provideOnboardingDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

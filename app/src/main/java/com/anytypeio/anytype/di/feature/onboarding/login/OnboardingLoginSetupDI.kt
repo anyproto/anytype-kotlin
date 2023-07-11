@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.onboarding
+package com.anytypeio.anytype.di.feature.onboarding.login
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.CrashReporter

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.ui.onboarding
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -16,7 +15,6 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AlertDialog
 import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Left
 import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Right
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -28,6 +26,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -43,6 +42,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.ViewCompat
@@ -55,6 +55,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.BuildConfig
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.ComponentManager
@@ -341,6 +342,7 @@ class OnboardingFragment : Fragment() {
     @Composable
     private fun ContentPaddingTop() = LocalConfiguration.current.screenHeightDp * 2 / 6
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun Recovery(navController: NavHostController) {
         val component = componentManager().onboardingMnemonicLoginComponent.ReleaseOn(
@@ -348,6 +350,7 @@ class OnboardingFragment : Fragment() {
             state = Lifecycle.State.DESTROYED
         )
         val vm = daggerViewModel { component.get().getViewModel() }
+        val openDialog = remember { mutableStateOf(false) }
 
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
@@ -361,15 +364,7 @@ class OnboardingFragment : Fragment() {
         RecoveryScreenWrapper(
             vm = vm,
             onBackClicked = vm::onBackButtonPressed,
-            onScanQrClick = {
-                AlertDialog.Builder(requireContext())
-                    .setMessage(R.string.alert_qr_camera)
-                    .setPositiveButton(R.string.alert_qr_camera_ok) { dialog, _ ->
-                        proceedWithQrCodeActivity(launcher, dialog)
-                    }
-                    .setCancelable(true)
-                    .show()
-            }
+            onScanQrClick = { openDialog.value = true },
         )
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
@@ -386,22 +381,29 @@ class OnboardingFragment : Fragment() {
                 }
             }
         }
+        if (openDialog.value) {
+            BaseAlertDialog(
+                dialogText = stringResource(id = R.string.alert_qr_camera),
+                buttonText = stringResource(id = R.string.alert_qr_camera_ok),
+                onButtonClick = {
+                    openDialog.value = false
+                    proceedWithQrCodeActivity(launcher)
+                },
+                onDismissRequest = { openDialog.value = false }
+            )
+        }
     }
 
-    private fun proceedWithQrCodeActivity(
-        launcher: ManagedActivityResultLauncher<Intent, ActivityResult>,
-        dialog: DialogInterface
-    ) {
+    private fun proceedWithQrCodeActivity(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
         try {
             launcher.launch(
                 IntentIntegrator
                     .forSupportFragment(this)
                     .setBeepEnabled(false)
                     .createScanIntent()
-            ).also {
-                dialog.dismiss()
-            }
+            )
         } catch (e: Exception) {
+            toast("Error while scanning QR code")
             Timber.e(e, "Error while scanning QR code")
         }
     }

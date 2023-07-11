@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.onboarding
+package com.anytypeio.anytype.di.feature.onboarding.signup
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies
@@ -9,8 +9,8 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationAnimViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import dagger.Binds
 import dagger.Component
 import dagger.Module

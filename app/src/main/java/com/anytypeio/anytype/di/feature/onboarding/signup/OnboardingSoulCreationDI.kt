@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.di.feature.onboarding
+package com.anytypeio.anytype.di.feature.onboarding.signup
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies

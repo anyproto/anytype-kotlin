@@ -25,12 +25,12 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.presentation.common.ScreenState
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingVoidViewModel
 
 
 @Composable
 fun VoidScreenWrapper(
-    screenState: ScreenState,
+    screenState: OnboardingVoidViewModel.ScreenState,
     contentPaddingTop: Int,
     onNextClicked: () -> Unit
 ) {
@@ -43,7 +43,7 @@ fun VoidScreenWrapper(
 
 @Composable
 fun VoidScreen(
-    screenState: ScreenState,
+    screenState: OnboardingVoidViewModel.ScreenState,
     onNextClicked: () -> Unit,
     contentPaddingTop: Int
 ) {
@@ -70,7 +70,7 @@ fun VoidScreen(
                 onClick = { onNextClicked() },
                 size = ButtonSize.Large
             )
-            if (screenState is ScreenState.Loading) {
+            if (screenState is OnboardingVoidViewModel.ScreenState.Loading) {
                 CircularProgressIndicator(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)

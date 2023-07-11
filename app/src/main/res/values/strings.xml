@@ -391,4 +391,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
     <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
     <string name="go_to_the_app">Go to the app</string>
+
+    <string name="exiting_please_wait">Exiting... please wait</string>
+    <string name="loading_please_wait">Loading... please wait</string>
 </resources>

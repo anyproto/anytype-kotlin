@@ -60,6 +60,7 @@ import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
+import com.anytypeio.anytype.presentation.common.ScreenState
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.SideEffect
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
@@ -95,7 +96,7 @@ class OnboardingFragment : Fragment() {
     @Inject
     lateinit var factory: OnboardingViewModel.Factory
 
-    private val vm by viewModels<OnboardingViewModel> { factory }
+    private val onBoardingViewModel by viewModels<OnboardingViewModel> { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -107,7 +108,6 @@ class OnboardingFragment : Fragment() {
         releaseDependencies()
     }
 
-    @OptIn(ExperimentalAnimationApi::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -116,24 +116,44 @@ class OnboardingFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MaterialTheme {
-                    val navController = rememberAnimatedNavController()
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black)
-                    ) {
-                        val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                            BackgroundCircle()
+                OnboardingScreen()
+            }
+        }
+    }
+
+    @Composable
+    @OptIn(ExperimentalAnimationApi::class)
+    private fun OnboardingScreen() {
+        MaterialTheme {
+            val navController = rememberAnimatedNavController()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black)
+            ) {
+                val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    BackgroundCircle()
+                }
+                Onboarding(currentPage, navController)
+                PagerIndicator(
+                    pageCount = OnboardingPage.values().filter { it.visible }.size,
+                    page = currentPage,
+                    onBackClick = onBoardingViewModel::onBackPressed
+                )
+            }
+            LaunchedEffect(Unit) {
+                onBoardingViewModel.navigation.collect { navigation ->
+                    when (navigation) {
+                        OnboardingViewModel.Navigation.Back -> {
+                            navController.popBackStack()
                         }
-                        Onboarding(currentPage, navController)
-                        PagerIndicator(
-                            pageCount = OnboardingPage.values().filter { it.visible }.size,
-                            page = currentPage,
-                            onBackClick = { navController.popBackStack() }
-                        )
                     }
+                }
+            }
+            LaunchedEffect(Unit) {
+                onBoardingViewModel.toasts.collect {
+                    toast(it)
                 }
             }
         }
@@ -229,6 +249,13 @@ class OnboardingFragment : Fragment() {
                                 navController.navigate(OnboardingNavigation.mnemonic)
                             }
                         }
+                    }
+                }
+                LaunchedEffect(Unit) {
+                    vm.state.collect { state ->
+                        onBoardingViewModel.onLoadingStateChanged(
+                            isLoading = state is ScreenState.Loading
+                        )
                     }
                 }
                 LaunchedEffect(Unit) {

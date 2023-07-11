@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.views.ButtonSecondaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonPrimaryDarkTheme
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
@@ -132,6 +133,14 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             modifierButton = Modifier
                                 .wrapContentHeight()
                         )
+                        ButtonPrimaryDarkTheme(
+                            onClick = {},
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            text = "Button Dark",
+                            size = ButtonSize.XSmall
+                        )
                         Text(
                             text = "Button.Small",
                             modifier = Modifier
@@ -205,6 +214,14 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                                 .align(CenterHorizontally),
                             modifierButton = Modifier
                                 .wrapContentHeight()
+                        )
+                        ButtonPrimaryDarkTheme(
+                            onClick = {},
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .align(CenterHorizontally),
+                            text = "Button Dark",
+                            size = ButtonSize.Small
                         )
                         Text(
                             text = "Button.Medium",
@@ -287,6 +304,15 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             modifierButton = Modifier
                                 .wrapContentHeight()
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                        ButtonPrimaryDarkTheme(
+                            onClick = {},
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .align(CenterHorizontally),
+                            text = "Button Dark",
+                            size = ButtonSize.Medium
                         )
                         Text(
                             text = "Button.Large",
@@ -372,6 +398,16 @@ class ComposeButtonsPrimaryFragment : BaseComposeFragment() {
                             modifierButton = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                        ButtonPrimaryDarkTheme(
+                            onClick = {},
+                            modifier = Modifier
+                                .wrapContentHeight()
+                                .fillMaxWidth()
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .align(CenterHorizontally),
+                            text = "Button Dark",
+                            size = ButtonSize.Large
                         )
                     }
                 }

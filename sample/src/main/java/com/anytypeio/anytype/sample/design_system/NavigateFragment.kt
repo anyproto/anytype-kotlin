@@ -34,6 +34,9 @@ class NavigateFragment : Fragment(R.layout.fragment_navigate) {
         view.findViewById<TextView>(R.id.btnCompose).setOnClickListener {
             (activity as Navigate).toButtonsCompose()
         }
+        view.findViewById<TextView>(R.id.btnDialogsCompose).setOnClickListener {
+            (activity as Navigate).toDialogsCompose()
+        }
         view.findViewById<Switch>(R.id.switch3).setOnClickListener {
             it as Switch
             if (it.isChecked) {

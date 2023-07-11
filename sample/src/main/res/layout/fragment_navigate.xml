@@ -86,4 +86,14 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button20" />
 
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryMedium
+        android:id="@+id/btnDialogsCompose"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="Dialogs Compose"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button20" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

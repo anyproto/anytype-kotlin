@@ -60,7 +60,6 @@ import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
-import com.anytypeio.anytype.presentation.common.ScreenState
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.SideEffect
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
@@ -126,6 +125,9 @@ class OnboardingFragment : Fragment() {
     private fun OnboardingScreen() {
         MaterialTheme {
             val navController = rememberAnimatedNavController()
+            val backNavigationState = remember {
+                mutableStateOf<BackNavigationState>(BackNavigationState.UnBlocked)
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -135,21 +137,28 @@ class OnboardingFragment : Fragment() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     BackgroundCircle()
                 }
-                Onboarding(currentPage, navController)
+                Onboarding(
+                    currentPage = currentPage,
+                    navController = navController,
+                    backNavigationState = backNavigationState
+                )
                 PagerIndicator(
                     pageCount = OnboardingPage.values().filter { it.visible }.size,
                     page = currentPage,
-                    onBackClick = onBoardingViewModel::onBackPressed
-                )
-            }
-            LaunchedEffect(Unit) {
-                onBoardingViewModel.navigation.collect { navigation ->
-                    when (navigation) {
-                        OnboardingViewModel.Navigation.Back -> {
-                            navController.popBackStack()
+                    onBackClick = {
+                        when(backNavigationState.value) {
+                            BackNavigationState.Blocked.Exiting -> {
+                                toast(resources.getString(R.string.exiting_please_wait))
+                            }
+                            BackNavigationState.Blocked.Loading -> {
+                                toast(resources.getString(R.string.loading_please_wait))
+                            }
+                            BackNavigationState.UnBlocked -> {
+                                navController.popBackStack()
+                            }
                         }
                     }
-                }
+                )
             }
             LaunchedEffect(Unit) {
                 onBoardingViewModel.toasts.collect {
@@ -178,7 +187,11 @@ class OnboardingFragment : Fragment() {
 
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
-    private fun Onboarding(currentPage: MutableState<OnboardingPage>, navController: NavHostController) {
+    private fun Onboarding(
+        currentPage: MutableState<OnboardingPage>,
+        backNavigationState: MutableState<BackNavigationState>,
+        navController: NavHostController
+    ) {
         AnimatedNavHost(navController, startDestination = OnboardingNavigation.auth) {
             composable(
                 route = OnboardingNavigation.auth,
@@ -253,9 +266,17 @@ class OnboardingFragment : Fragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.state.collect { state ->
-                        onBoardingViewModel.onLoadingStateChanged(
-                            isLoading = state is ScreenState.Loading
-                        )
+                        when(state) {
+                            is OnboardingVoidViewModel.ScreenState.Loading -> {
+                                backNavigationState.value = BackNavigationState.Blocked.Loading
+                            }
+                            is OnboardingVoidViewModel.ScreenState.Exiting -> {
+                                backNavigationState.value = BackNavigationState.Blocked.Exiting
+                            }
+                            else -> {
+                                backNavigationState.value = BackNavigationState.UnBlocked
+                            }
+                        }
                     }
                 }
                 LaunchedEffect(Unit) {
@@ -639,6 +660,14 @@ class OnboardingFragment : Fragment() {
 
     fun releaseDependencies() {
         componentManager().onboardingComponent.release()
+    }
+}
+
+sealed class BackNavigationState {
+    object UnBlocked : BackNavigationState()
+    sealed class Blocked: BackNavigationState() {
+        object Loading: Blocked()
+        object Exiting: Blocked()
     }
 }
 

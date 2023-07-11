@@ -21,7 +21,6 @@ abstract class Interactor<in P>(
     operator fun invoke(params: P): Flow<Status> {
         return flow {
             emit(Status.Started)
-            kotlinx.coroutines.delay(5000)
             withContext(context) { run(params) }
             emit(Status.Success)
         }.catch { t ->

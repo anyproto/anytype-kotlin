@@ -7,7 +7,6 @@ import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.settings.EditorSettings
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
@@ -79,14 +78,11 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.action_open_settings)
     }
 
-    override fun openDocument(id: String, editorSettings: EditorSettings?) {
+    override fun openDocument(id: String) {
         navController?.navigate(
             R.id.objectNavigation,
             Bundle().apply {
                 putString(EditorFragment.ID_KEY, id)
-                editorSettings?.let {
-                    putParcelable(EditorFragment.DEBUG_SETTINGS, it)
-                }
             }
         )
     }

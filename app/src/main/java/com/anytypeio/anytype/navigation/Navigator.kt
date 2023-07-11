@@ -93,6 +93,9 @@ class Navigator : AppNavigation {
             bundleOf(EditorFragment.ID_KEY to id),
             navOptions {
                 launchSingleTop = true
+                popUpTo(R.id.pageSearchFragment) {
+                    inclusive = true
+                }
             }
         )
     }
@@ -110,6 +113,9 @@ class Navigator : AppNavigation {
             bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to id),
             navOptions {
                 launchSingleTop = true
+                popUpTo(R.id.pageSearchFragment) {
+                    inclusive = true
+                }
             }
         )
     }

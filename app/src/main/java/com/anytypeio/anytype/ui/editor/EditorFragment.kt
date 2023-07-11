@@ -2100,7 +2100,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     companion object {
         const val ID_KEY = "id"
-        const val DEBUG_SETTINGS = "debug_settings"
 
         const val DEFAULT_ANIM_DURATION = 150L
         const val DEFAULT_DELAY_BLOCK_ACTION_TOOLBAR = 100L

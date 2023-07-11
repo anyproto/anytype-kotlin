@@ -5,11 +5,12 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import javax.inject.Inject
 
 /**
  * Use case for logging out.
  */
-class Logout(
+class Logout @Inject constructor(
     private val repo: AuthRepository,
     private val config: ConfigStorage,
     private val user: UserSettingsRepository,

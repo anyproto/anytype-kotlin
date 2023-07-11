@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.platform.MetricsProvider
@@ -93,6 +94,7 @@ object OnboardingVoidModule {
 
 interface OnboardingVoidDependencies : ComponentDependencies {
     fun authRepository(): AuthRepository
+    fun userSettings(): UserSettingsRepository
     fun blockRepository(): BlockRepository
     fun configStorage(): ConfigStorage
     fun workspaceManager(): WorkspaceManager

@@ -964,6 +964,8 @@ class ComponentManager(
         fun release() {
             instance = null
         }
+
+        fun isInitialized() = instance != null
     }
 
     class ComponentMap<T>(private val builder: () -> T) {

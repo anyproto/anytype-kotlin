@@ -5344,6 +5344,26 @@ message Rpc {
             }
         }
 
+        message Subscriptions {
+            message Request {}
+
+            message Response {
+                Error error = 1;
+                repeated string subscriptions = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
         message Ping {
             message Request {
                 int32 index = 1;

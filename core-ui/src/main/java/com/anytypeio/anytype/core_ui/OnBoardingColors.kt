@@ -17,6 +17,8 @@ val ColorButtonSecondaryPressed = Color(0xFF1F1E1C)
 val ColorButtonSecondaryBorder = Color(0xFF525148)
 val ColorButtonSecondaryBorderPressed = Color(0xFF525148)
 val ColorButtonSecondaryText = Color(0xFF7B7A72)
+val ColorButtonRegular = Color(0xFFCBC9BD)
+val ColorButtonInversion= Color(0xFFFFFFFF)
 
 val ColorPagerIndicator = Color(0xFF3A3935)
 val ColorPagerIndicatorCurrent = Color(0xFFF3F2EC)

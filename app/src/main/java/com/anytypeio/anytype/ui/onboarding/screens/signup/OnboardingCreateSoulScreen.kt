@@ -84,7 +84,7 @@ private fun CreateSoulScreen(
                 )
             }
             item {
-                Spacer(modifier = Modifier.height(9.dp))
+                Spacer(modifier = Modifier.height(16.dp))
             }
             item {
                 CreateSoulDescription()
@@ -152,7 +152,7 @@ fun CreateSoulInput(
                 .focusRequester(focusRequester)
             ,
             text = text,
-            placeholder = stringResource(id = R.string.onboarding_soul_creation_placeholder),
+            placeholder = stringResource(id = R.string.name),
             keyboardActions = KeyboardActions(
                 onDone = {
                     val input = text.value
@@ -181,6 +181,7 @@ fun CreateSoulDescription() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(horizontal = 48.dp)
             .wrapContentHeight(),
         contentAlignment = Alignment.Center
     ) {

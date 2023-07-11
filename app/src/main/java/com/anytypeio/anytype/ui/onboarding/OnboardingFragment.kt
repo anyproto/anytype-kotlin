@@ -125,8 +125,9 @@ class OnboardingFragment : Fragment() {
     private fun OnboardingScreen() {
         MaterialTheme {
             val navController = rememberAnimatedNavController()
-            val backNavigationState = remember {
-                mutableStateOf<BackNavigationState>(BackNavigationState.UnBlocked)
+            val defaultBackCallback : BackButtonCallback = { navController.popBackStack() }
+            val signUpBackButtonCallback = remember {
+                mutableStateOf(defaultBackCallback)
             }
             Box(
                 modifier = Modifier
@@ -140,29 +141,26 @@ class OnboardingFragment : Fragment() {
                 Onboarding(
                     currentPage = currentPage,
                     navController = navController,
-                    backNavigationState = backNavigationState
+                    backButtonCallback = signUpBackButtonCallback
                 )
                 PagerIndicator(
                     pageCount = OnboardingPage.values().filter { it.visible }.size,
                     page = currentPage,
                     onBackClick = {
-                        when(backNavigationState.value) {
-                            BackNavigationState.Blocked.Exiting -> {
-                                toast(resources.getString(R.string.exiting_please_wait))
-                            }
-                            BackNavigationState.Blocked.Loading -> {
-                                toast(resources.getString(R.string.loading_please_wait))
-                            }
-                            BackNavigationState.UnBlocked -> {
-                                navController.popBackStack()
-                            }
-                        }
+                        signUpBackButtonCallback.value?.invoke()
                     }
                 )
             }
             LaunchedEffect(Unit) {
                 onBoardingViewModel.toasts.collect {
                     toast(it)
+                }
+            }
+            DisposableEffect(
+                viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.DESTROYED)
+            ) {
+                onDispose {
+                    signUpBackButtonCallback.value = null
                 }
             }
         }
@@ -189,7 +187,7 @@ class OnboardingFragment : Fragment() {
     @Composable
     private fun Onboarding(
         currentPage: MutableState<OnboardingPage>,
-        backNavigationState: MutableState<BackNavigationState>,
+        backButtonCallback: MutableState<BackButtonCallback>,
         navController: NavHostController
     ) {
         AnimatedNavHost(navController, startDestination = OnboardingNavigation.auth) {
@@ -239,19 +237,22 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.VOID
+
                 val component = componentManager().onboardingNewVoidComponent.ReleaseOn(
                     viewLifecycleOwner = viewLifecycleOwner,
                     state = Lifecycle.State.DESTROYED
                 )
                 val vm = daggerViewModel { component.get().getViewModel() }
+
                 VoidScreenWrapper(
                     contentPaddingTop = ContentPaddingTop(),
                     onNextClicked = vm::onNextClicked,
                     screenState = vm.state.collectAsState().value
                 )
-                BackHandler {
-                    vm.onSystemBackPressed()
-                }
+
+                backButtonCallback.value = vm::onBackButtonPressed
+                BackHandler { vm.onSystemBackPressed() }
+
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { navigation ->
                         when(navigation) {
@@ -260,21 +261,6 @@ class OnboardingFragment : Fragment() {
                             }
                             OnboardingVoidViewModel.Navigation.NavigateToMnemonic -> {
                                 navController.navigate(OnboardingNavigation.mnemonic)
-                            }
-                        }
-                    }
-                }
-                LaunchedEffect(Unit) {
-                    vm.state.collect { state ->
-                        when(state) {
-                            is OnboardingVoidViewModel.ScreenState.Loading -> {
-                                backNavigationState.value = BackNavigationState.Blocked.Loading
-                            }
-                            is OnboardingVoidViewModel.ScreenState.Exiting -> {
-                                backNavigationState.value = BackNavigationState.Blocked.Exiting
-                            }
-                            else -> {
-                                backNavigationState.value = BackNavigationState.UnBlocked
                             }
                         }
                     }
@@ -307,6 +293,7 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.MNEMONIC
+                backButtonCallback.value = {  navController.popBackStack() }
                 Mnemonic(navController, ContentPaddingTop())
             }
             composable(
@@ -324,6 +311,7 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.SOUL_CREATION
+                backButtonCallback.value = {  navController.popBackStack() }
                 CreateSoul(
                     navController = navController,
                     contentPaddingTop = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
@@ -339,9 +327,10 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.SOUL_CREATION_ANIM
+                backButtonCallback.value = null
                 CreateSoulAnimation(ContentPaddingTop())
                 BackHandler {
-                    Timber.d("OnBackHandler")
+                    // Intercepting back-press event but doing nothing.
                 }
             }
             composable(
@@ -663,13 +652,7 @@ class OnboardingFragment : Fragment() {
     }
 }
 
-sealed class BackNavigationState {
-    object UnBlocked : BackNavigationState()
-    sealed class Blocked: BackNavigationState() {
-        object Loading: Blocked()
-        object Exiting: Blocked()
-    }
-}
-
 private const val ANIMATION_LENGTH_SLIDE = 300
 private const val ANIMATION_LENGTH_FADE = 700
+
+typealias BackButtonCallback = (() -> Unit)?

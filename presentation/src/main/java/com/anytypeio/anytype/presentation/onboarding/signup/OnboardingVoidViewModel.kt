@@ -104,6 +104,11 @@ class OnboardingVoidViewModel @Inject constructor(
         }
     }
 
+    fun onBackButtonPressed() {
+        Timber.d("onBackButtonPressed!")
+        resolveBackNavigation()
+    }
+
     fun onSystemBackPressed() {
         resolveBackNavigation()
     }
@@ -119,6 +124,7 @@ class OnboardingVoidViewModel @Inject constructor(
             else -> {
                 viewModelScope.launch {
                     state.value = ScreenState.Exiting.Status
+                    Timber.d("Checking auth status")
                     checkAuthorizationStatus(Unit).proceed(
                         failure = { e ->
                             navigation.emit(Navigation.GoBack).also {
@@ -128,6 +134,7 @@ class OnboardingVoidViewModel @Inject constructor(
                         success = { status ->
                             when(status) {
                                 AuthStatus.AUTHORIZED -> {
+                                    Timber.d("Proceeding with logout")
                                     proceedWithLogout()
                                 }
                                 AuthStatus.UNAUTHORIZED -> {
@@ -201,6 +208,5 @@ class OnboardingVoidViewModel @Inject constructor(
             object Status : Exiting()
             object Logout: Exiting()
         }
-        data class Failure(val msg: String): ScreenState()
     }
 }

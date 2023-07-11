@@ -21,7 +21,7 @@ interface AppNavigation {
     fun openSettings()
 
     fun openObjectSet(target: String, isPopUpToDashboard: Boolean = false)
-    fun openDocument(id: String, editorSettings: EditorSettings? = null)
+    fun openDocument(id: String)
 
     fun launchDocument(id: String)
     fun launchCollections(subscription: Subscription)
@@ -82,8 +82,7 @@ interface AppNavigation {
         object EnterKeyChainScreen : Command()
         object WorkspaceScreen : Command()
 
-        data class OpenObject(val id: String, val editorSettings: EditorSettings? = null) :
-            Command()
+        data class OpenObject(val id: String) : Command()
 
         data class LaunchDocument(val id: String) : Command()
         data class LaunchObjectFromSplash(val target: Id) : Command()

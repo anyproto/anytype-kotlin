@@ -52,7 +52,6 @@ fun BaseAlertDialog(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                // Child views.
                 Text(
                     text = dialogText,
                     style = UXBody,

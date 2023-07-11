@@ -48,6 +48,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
@@ -61,6 +62,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.SideEffect
+import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingLoginSetupViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
@@ -85,9 +87,25 @@ import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Util
 import com.google.zxing.integration.android.IntentIntegrator
+import javax.inject.Inject
 import timber.log.Timber
 
 class OnboardingFragment : Fragment() {
+
+    @Inject
+    lateinit var factory: OnboardingViewModel.Factory
+
+    private val vm by viewModels<OnboardingViewModel> { factory }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        injectDependencies()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        releaseDependencies()
+    }
 
     @OptIn(ExperimentalAnimationApi::class)
     override fun onCreateView(
@@ -586,6 +604,14 @@ class OnboardingFragment : Fragment() {
             }
         )
         return that
+    }
+
+    fun injectDependencies() {
+        componentManager().onboardingComponent.get().inject(this)
+    }
+
+    fun releaseDependencies() {
+        componentManager().onboardingComponent.release()
     }
 }
 

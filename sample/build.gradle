@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     id "kotlin-android-extensions"
     id "kotlin-kapt"
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -84,4 +85,6 @@ dependencies {
     testImplementation libs.robolectric
     testImplementation libs.androidXTestCore
     testImplementation libs.mockitoKotlin
+
+    implementation platform('com.google.firebase:firebase-bom:32.1.1')
 }

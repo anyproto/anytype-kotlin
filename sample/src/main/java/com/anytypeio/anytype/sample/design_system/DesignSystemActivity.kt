@@ -71,6 +71,14 @@ class DesignSystemActivity : AppCompatActivity(), Navigate {
             .addToBackStack(null)
             .commit()
     }
+
+    override fun toDialogsCompose() {
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.root, ComposeDialogFragment())
+            .addToBackStack(null)
+            .commit()
+    }
 }
 
 interface Navigate {
@@ -81,4 +89,5 @@ interface Navigate {
     fun toButtonsSecondary()
     fun toButtonsWarning()
     fun toButtonsCompose()
+    fun toDialogsCompose()
 }

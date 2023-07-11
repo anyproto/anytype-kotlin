@@ -155,6 +155,45 @@ fun ButtonPrimary(
 }
 
 @Composable
+fun ButtonPrimaryDarkTheme(
+    text: String = "",
+    onClick: () -> Unit,
+    enabled: Boolean = true,
+    modifier: Modifier = Modifier,
+    size: ButtonSize
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val backgroundColor = Color(0xFFF3F2EC)
+
+    CompositionLocalProvider(LocalRippleTheme provides NoRippleTheme) {
+        Button(
+            onClick = onClick,
+            interactionSource = interactionSource,
+            enabled = enabled,
+            shape = RoundedCornerShape(size.cornerSize),
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = backgroundColor,
+                contentColor = Color(0xFF1F1E1D),
+                disabledBackgroundColor = Color(0xFF1F1E1D),
+                disabledContentColor = Color(0xFF1F1E1D)
+            ),
+            modifier = modifier
+                .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+            elevation = ButtonDefaults.elevation(
+                defaultElevation = 0.dp,
+                pressedElevation = 0.dp
+            ),
+            contentPadding = size.contentPadding
+        ) {
+            Text(
+                text = text,
+                style = size.textStyle
+            )
+        }
+    }
+}
+
+@Composable
 fun ButtonPrimaryLoading(
     text: String = "",
     modifierBox: Modifier = Modifier,
@@ -478,6 +517,19 @@ object NoRippleTheme : RippleTheme {
 @Preview
 fun MyPrimaryButton() {
     ButtonPrimary(
+        onClick = {},
+        size = ButtonSize.Large,
+        text = "Login",
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+    )
+}
+
+@Composable
+@Preview
+fun MyPrimaryButtonDark() {
+    ButtonPrimaryDarkTheme(
         onClick = {},
         size = ButtonSize.Large,
         text = "Login",

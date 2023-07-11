@@ -61,7 +61,6 @@ import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
-import com.anytypeio.anytype.presentation.common.ScreenState
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.SideEffect
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
@@ -127,6 +126,10 @@ class OnboardingFragment : Fragment() {
     private fun OnboardingScreen() {
         MaterialTheme {
             val navController = rememberAnimatedNavController()
+            val defaultBackCallback : BackButtonCallback = { navController.popBackStack() }
+            val signUpBackButtonCallback = remember {
+                mutableStateOf(defaultBackCallback)
+            }
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -136,25 +139,29 @@ class OnboardingFragment : Fragment() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     BackgroundCircle()
                 }
-                Onboarding(currentPage, navController)
+                Onboarding(
+                    currentPage = currentPage,
+                    navController = navController,
+                    backButtonCallback = signUpBackButtonCallback
+                )
                 PagerIndicator(
                     pageCount = OnboardingPage.values().filter { it.visible }.size,
                     page = currentPage,
-                    onBackClick = onBoardingViewModel::onBackPressed
-                )
-            }
-            LaunchedEffect(Unit) {
-                onBoardingViewModel.navigation.collect { navigation ->
-                    when (navigation) {
-                        OnboardingViewModel.Navigation.Back -> {
-                            navController.popBackStack()
-                        }
+                    onBackClick = {
+                        signUpBackButtonCallback.value?.invoke()
                     }
-                }
+                )
             }
             LaunchedEffect(Unit) {
                 onBoardingViewModel.toasts.collect {
                     toast(it)
+                }
+            }
+            DisposableEffect(
+                viewLifecycleOwner.lifecycle.currentState.isAtLeast(Lifecycle.State.DESTROYED)
+            ) {
+                onDispose {
+                    signUpBackButtonCallback.value = null
                 }
             }
         }
@@ -179,7 +186,11 @@ class OnboardingFragment : Fragment() {
 
     @OptIn(ExperimentalAnimationApi::class)
     @Composable
-    private fun Onboarding(currentPage: MutableState<OnboardingPage>, navController: NavHostController) {
+    private fun Onboarding(
+        currentPage: MutableState<OnboardingPage>,
+        backButtonCallback: MutableState<BackButtonCallback>,
+        navController: NavHostController
+    ) {
         AnimatedNavHost(navController, startDestination = OnboardingNavigation.auth) {
             composable(
                 route = OnboardingNavigation.auth,
@@ -227,19 +238,22 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.VOID
+
                 val component = componentManager().onboardingNewVoidComponent.ReleaseOn(
                     viewLifecycleOwner = viewLifecycleOwner,
                     state = Lifecycle.State.DESTROYED
                 )
                 val vm = daggerViewModel { component.get().getViewModel() }
+
                 VoidScreenWrapper(
                     contentPaddingTop = ContentPaddingTop(),
                     onNextClicked = vm::onNextClicked,
                     screenState = vm.state.collectAsState().value
                 )
-                BackHandler {
-                    vm.onSystemBackPressed()
-                }
+
+                backButtonCallback.value = vm::onBackButtonPressed
+                BackHandler { vm.onSystemBackPressed() }
+
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { navigation ->
                         when(navigation) {
@@ -250,13 +264,6 @@ class OnboardingFragment : Fragment() {
                                 navController.navigate(OnboardingNavigation.mnemonic)
                             }
                         }
-                    }
-                }
-                LaunchedEffect(Unit) {
-                    vm.state.collect { state ->
-                        onBoardingViewModel.onLoadingStateChanged(
-                            isLoading = state is ScreenState.Loading
-                        )
                     }
                 }
                 LaunchedEffect(Unit) {
@@ -287,6 +294,7 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.MNEMONIC
+                backButtonCallback.value = {  navController.popBackStack() }
                 Mnemonic(navController, ContentPaddingTop())
             }
             composable(
@@ -304,6 +312,7 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.SOUL_CREATION
+                backButtonCallback.value = {  navController.popBackStack() }
                 CreateSoul(
                     navController = navController,
                     contentPaddingTop = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
@@ -319,9 +328,10 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.SOUL_CREATION_ANIM
+                backButtonCallback.value = null
                 CreateSoulAnimation(ContentPaddingTop())
                 BackHandler {
-                    Timber.d("OnBackHandler")
+                    // Intercepting back-press event but doing nothing.
                 }
             }
             composable(
@@ -650,3 +660,5 @@ class OnboardingFragment : Fragment() {
 
 private const val ANIMATION_LENGTH_SLIDE = 300
 private const val ANIMATION_LENGTH_FADE = 700
+
+typealias BackButtonCallback = (() -> Unit)?

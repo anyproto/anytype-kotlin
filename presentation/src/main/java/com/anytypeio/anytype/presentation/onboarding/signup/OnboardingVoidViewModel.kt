@@ -149,7 +149,7 @@ class OnboardingVoidViewModel @Inject constructor(
     }
 
     private suspend fun proceedWithLogout() {
-        logout.invoke(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
+        logout.invoke(Logout.Params(clearLocalRepositoryData = false)).collect { status ->
             when (status) {
                 is Interactor.Status.Started -> {
                     state.value = ScreenState.Exiting.Logout.also {

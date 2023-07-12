@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -93,12 +94,16 @@ class OnboardingVoidViewModel @Inject constructor(
             setupMobileUseCaseSkip.execute(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
-                    state.value = ScreenState.Success
                     navigation.emit(Navigation.NavigateToMnemonic)
+                    // Workaround for leaving screen in loading state to wait screen transition
+                    delay(LOADING_AFTER_SUCCESS_DELAY)
+                    state.value = ScreenState.Success
                 },
                 onSuccess = {
-                    state.value = ScreenState.Success
                     navigation.emit(Navigation.NavigateToMnemonic)
+                    // Workaround for leaving screen in loading state to wait screen transition
+                    delay(LOADING_AFTER_SUCCESS_DELAY)
+                    state.value = ScreenState.Success
                 }
             )
         }
@@ -199,6 +204,7 @@ class OnboardingVoidViewModel @Inject constructor(
     companion object {
         const val LOADING_MSG = "Loading, please wait."
         const val EXITING_MSG = "Clearing resources, please wait."
+        const val LOADING_AFTER_SUCCESS_DELAY = 600L
     }
 
     sealed class ScreenState {

@@ -1607,3 +1607,50 @@ suspend fun Analytics.sendHideKeyboardEvent() {
         eventName = EventsDictionary.hideKeyboard
     )
 }
+
+fun CoroutineScope.sendAnalyticsOnboardingScreenEvent(
+    analytics: Analytics,
+    step: EventsDictionary.ScreenOnboardingStep
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenOnboarding,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.step, step.value)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsOnboardingClickEvent(
+    analytics: Analytics,
+    type: EventsDictionary.ClickOnboardingButton,
+    step: EventsDictionary.ScreenOnboardingStep
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.clickOnboarding,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.type, type.value)
+                put(EventsPropertiesKey.step, step.value)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsOnboardingLoginEvent(
+    analytics: Analytics,
+    type: EventsDictionary.ClickLoginButton
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.clickLogin,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.type, type.value)
+            }
+        )
+    )
+}

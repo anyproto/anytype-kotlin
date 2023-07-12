@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature.onboarding.signup
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -60,6 +61,7 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun dispatchers(): AppCoroutineDispatchers
     fun configStorage(): ConfigStorage
+    fun analytics(): Analytics
 }
 
 @Scope

@@ -394,7 +394,10 @@ class OnboardingFragment : Fragment() {
         RecoveryScreenWrapper(
             vm = vm,
             onBackClicked = vm::onBackButtonPressed,
-            onScanQrClick = { isQrWarningDialogVisible.value = true },
+            onScanQrClick = {
+                isQrWarningDialogVisible.value = true
+                vm.onScanQrCodeClicked()
+            },
         )
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
@@ -525,6 +528,7 @@ class OnboardingFragment : Fragment() {
                         navController.navigate(
                             route = OnboardingNavigation.createSoulAnim
                         )
+                        vm.sendAnalyticsOnboardingScreen()
                     }
                 }
             }
@@ -542,13 +546,16 @@ class OnboardingFragment : Fragment() {
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
+        val vm = daggerViewModel { component.get().getViewModel() }
         MnemonicPhraseScreenWrapper(
             contentPaddingTop = contentPaddingTop,
-            viewModel = daggerViewModel { component.get().getViewModel() },
+            viewModel = vm,
             openSoulCreation = {
                 navController.navigate(OnboardingNavigation.createSoul)
+                vm.sendAnalyticsOnboardingScreen()
             },
-            copyMnemonicToClipboard = ::copyMnemonicToClipboard
+            copyMnemonicToClipboard = ::copyMnemonicToClipboard,
+            vm = vm
         )
     }
 
@@ -607,6 +614,7 @@ class OnboardingFragment : Fragment() {
                 when (navigation) {
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
                         navController.navigate(OnboardingNavigation.void)
+                        vm.sendAnalyticsOnboardingScreen()
                     }
 
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignIn -> {

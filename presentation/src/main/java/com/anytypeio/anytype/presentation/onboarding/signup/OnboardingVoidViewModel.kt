@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.onboarding.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -15,6 +17,7 @@ import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -32,7 +35,8 @@ class OnboardingVoidViewModel @Inject constructor(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
-    private val logout: Logout
+    private val logout: Logout,
+    private val analytics: Analytics
 ): BaseViewModel() {
 
     val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
@@ -95,12 +99,14 @@ class OnboardingVoidViewModel @Inject constructor(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
                     navigation.emit(Navigation.NavigateToMnemonic)
+                    sendAnalyticsOnboardingScreen()
                     // Workaround for leaving screen in loading state to wait screen transition
                     delay(LOADING_AFTER_SUCCESS_DELAY)
                     state.value = ScreenState.Success
                 },
                 onSuccess = {
                     navigation.emit(Navigation.NavigateToMnemonic)
+                    sendAnalyticsOnboardingScreen()
                     // Workaround for leaving screen in loading state to wait screen transition
                     delay(LOADING_AFTER_SUCCESS_DELAY)
                     state.value = ScreenState.Success
@@ -169,6 +175,12 @@ class OnboardingVoidViewModel @Inject constructor(
         }
     }
 
+    private fun sendAnalyticsOnboardingScreen() {
+        viewModelScope.sendAnalyticsOnboardingScreenEvent(analytics,
+            EventsDictionary.ScreenOnboardingStep.PHRASE
+        )
+    }
+
     sealed class Navigation {
         object NavigateToMnemonic: Navigation()
         object GoBack: Navigation()
@@ -183,7 +195,8 @@ class OnboardingVoidViewModel @Inject constructor(
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val checkAuthorizationStatus: CheckAuthorizationStatus,
-        private val logout: Logout
+        private val logout: Logout,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -196,7 +209,8 @@ class OnboardingVoidViewModel @Inject constructor(
                 relationsSubscriptionManager = relationsSubscriptionManager,
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
                 logout = logout,
-                checkAuthorizationStatus = checkAuthorizationStatus
+                checkAuthorizationStatus = checkAuthorizationStatus,
+                analytics = analytics
             ) as T
         }
     }

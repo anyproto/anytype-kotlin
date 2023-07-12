@@ -205,7 +205,7 @@ private fun TreeWidgetTreeItems(
             }
             Text(
                 text = element.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled),
-                modifier = Modifier.padding(start = 8.dp),
+                modifier = Modifier.padding(start = 8.dp).fillMaxWidth(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = PreviewTitle2Medium,

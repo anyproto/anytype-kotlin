@@ -14,6 +14,7 @@ import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -25,8 +26,6 @@ class OnboardingSoulCreationAnimViewModel @Inject constructor(
     private val urlBuilder: UrlBuilder
 ) : ViewModel() {
 
-    private val accountId = configStorage.get().profile
-
     val accountData = storelessSubscriptionContainer.subscribe(
         StoreSearchByIdsParams(
             subscription = ONBOARDING_SUBSCRIPTION_ID,
@@ -37,7 +36,7 @@ class OnboardingSoulCreationAnimViewModel @Inject constructor(
                 Relations.ICON_EMOJI,
                 Relations.ICON_OPTION
             ),
-            targets = listOf(accountId)
+            targets = listOf(configStorage.get().profile)
         )
     ).map { result ->
         val obj = result.firstOrNull()
@@ -51,6 +50,8 @@ class OnboardingSoulCreationAnimViewModel @Inject constructor(
                     )
             )
         )
+    }.catch {
+        Resultat.Failure(it)
     }.stateIn(
         viewModelScope,
         SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),

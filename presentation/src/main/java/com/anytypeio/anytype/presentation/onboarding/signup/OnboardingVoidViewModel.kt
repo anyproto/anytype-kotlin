@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -97,12 +98,16 @@ class OnboardingVoidViewModel @Inject constructor(
             setupMobileUseCaseSkip.execute(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
-                    state.value = ScreenState.Success
                     navigation.emit(Navigation.NavigateToMnemonic)
+                    // Workaround for leaving screen in loading state to wait screen transition
+                    delay(LOADING_AFTER_SUCCESS_DELAY)
+                    state.value = ScreenState.Success
                 },
                 onSuccess = {
-                    state.value = ScreenState.Success
                     navigation.emit(Navigation.NavigateToMnemonic)
+                    // Workaround for leaving screen in loading state to wait screen transition
+                    delay(LOADING_AFTER_SUCCESS_DELAY)
+                    state.value = ScreenState.Success
                 }
             )
         }
@@ -153,7 +158,8 @@ class OnboardingVoidViewModel @Inject constructor(
     }
 
     private suspend fun proceedWithLogout() {
-        logout.invoke(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
+        // N.B. If we clear repository data at this step, user won't be able to login into this account.
+        logout.invoke(Logout.Params(clearLocalRepositoryData = false)).collect { status ->
             when (status) {
                 is Interactor.Status.Started -> {
                     state.value = ScreenState.Exiting.Logout.also {
@@ -210,6 +216,7 @@ class OnboardingVoidViewModel @Inject constructor(
     companion object {
         const val LOADING_MSG = "Loading, please wait."
         const val EXITING_MSG = "Clearing resources, please wait."
+        const val LOADING_AFTER_SUCCESS_DELAY = 600L
     }
 
     sealed class ScreenState {

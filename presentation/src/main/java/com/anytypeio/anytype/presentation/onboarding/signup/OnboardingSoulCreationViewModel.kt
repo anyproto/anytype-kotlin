@@ -27,7 +27,11 @@ class OnboardingSoulCreationViewModel @Inject constructor(
     private val _navigationFlow = MutableSharedFlow<Navigation>()
     val navigationFlow: SharedFlow<Navigation> = _navigationFlow
 
-    fun setAccountAndSpaceName(name: String) {
+    fun onGoToTheAppClicked(name: String) {
+        proceedWithSettingAccountName(name)
+    }
+
+    private fun proceedWithSettingAccountName(name: String) {
         val config = configStorage.getOrNull()
         if (config != null) {
             viewModelScope.launch {
@@ -40,7 +44,7 @@ class OnboardingSoulCreationViewModel @Inject constructor(
                         Timber.e(it, "Error while updating object details")
                     },
                     onSuccess = {
-                        setWorkspaceName(name)
+                        proceedWithSettingWorkspaceName(name)
                     }
                 )
             }
@@ -51,7 +55,7 @@ class OnboardingSoulCreationViewModel @Inject constructor(
         }
     }
 
-    private fun setWorkspaceName(name: String) {
+    private fun proceedWithSettingWorkspaceName(name: String) {
         val config = configStorage.getOrNull()
         if (config != null) {
             viewModelScope.launch {
@@ -91,7 +95,6 @@ class OnboardingSoulCreationViewModel @Inject constructor(
     }
 
     sealed interface Navigation {
-        object Idle: Navigation
         class OpenSoulCreationAnim(val name: String): Navigation
     }
 

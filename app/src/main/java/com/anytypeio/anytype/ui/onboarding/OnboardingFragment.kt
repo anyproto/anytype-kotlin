@@ -521,7 +521,7 @@ class OnboardingFragment : Fragment() {
                 when (command) {
                     is OnboardingSoulCreationViewModel.Navigation.OpenSoulCreationAnim -> {
                         if (keyboardInsets.getBottom(density) > 0) {
-                            focusManager.clearFocus(true)
+                            focusManager.clearFocus(force = true)
                             delay(KEYBOARD_HIDE_DELAY)
                         }
                         navController.navigate(

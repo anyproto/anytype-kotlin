@@ -169,7 +169,6 @@ object EventsDictionary {
     enum class ClickLoginButton(val value: String) {
         PHRASE("Phrase"),
         QR("Qr"),
-        KEYCHAIN("Keychain")
     }
 
     // Routes

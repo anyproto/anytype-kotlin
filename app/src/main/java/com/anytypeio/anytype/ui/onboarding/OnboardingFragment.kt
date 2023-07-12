@@ -54,6 +54,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
@@ -456,7 +457,11 @@ class OnboardingFragment : Fragment() {
                         findNavController().navigate(R.id.action_openHome)
                     }
                     OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen -> {
-                        // TODO
+                        findNavController().navigate(R.id.migrationNeededScreen, null, navOptions {
+                            popUpTo(R.id.onboarding_nav) {
+                                inclusive = false
+                            }
+                        })
                     }
                 }
             }

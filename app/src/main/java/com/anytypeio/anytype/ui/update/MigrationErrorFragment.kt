@@ -54,7 +54,7 @@ class MigrationErrorFragment : BaseComposeFragment() {
                             browseUrl(command)
                         }
                         is MigrationErrorViewModel.Command.Exit -> {
-                            navigation().startLogin()
+                            navigation().exitFromMigrationScreen()
                         }
                     }
                 }

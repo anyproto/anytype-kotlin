@@ -624,7 +624,7 @@
     <string name="set_no_items_description">Create first object to continue</string>
     <string name="set_no_items_button">Create object</string>
     <string name="set_collection_view_not_present">View is not present in set or collection, please recreate object</string>
-    <string name="menu_turn_to_collection">Turn set into collection</string>
+    <string name="menu_turn_to_collection">Turn Set into Collection</string>
     <string name="menu_change_query">Change query</string>
     <string name="collections">Collections</string>
     <string name="collection_widget_description">Your collections of objects</string>

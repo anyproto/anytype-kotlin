@@ -489,10 +489,11 @@ class OnboardingFragment : Fragment() {
         )
         CreateSoulAnimWrapper(
             contentPaddingTop = contentPaddingTop,
-            viewModel = daggerViewModel { component.get().getViewModel() }
-        ) {
-            findNavController().navigate(R.id.action_openHome)
-        }
+            viewModel = daggerViewModel { component.get().getViewModel() },
+            onAnimationComplete = {
+                findNavController().navigate(R.id.action_openHome)
+            }
+        )
     }
 
     @Composable

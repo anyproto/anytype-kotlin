@@ -24,7 +24,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +44,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -91,6 +95,7 @@ import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Util
 import com.google.zxing.integration.android.IntentIntegrator
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import timber.log.Timber
 
 class OnboardingFragment : Fragment() {
@@ -496,6 +501,7 @@ class OnboardingFragment : Fragment() {
         )
     }
 
+
     @Composable
     private fun CreateSoul(navController: NavHostController, contentPaddingTop: Int) {
         val component = componentManager().onboardingSoulCreationComponent.ReleaseOn(
@@ -504,12 +510,20 @@ class OnboardingFragment : Fragment() {
         )
         val vm = daggerViewModel { component.get().getViewModel() }
 
+        val focusManager = LocalFocusManager.current
+        val keyboardInsets = WindowInsets.ime
+        val density = LocalDensity.current
+
         CreateSoulWrapper(vm, contentPaddingTop)
 
         LaunchedEffect(Unit) {
             vm.navigationFlow.collect { command ->
                 when (command) {
                     is OnboardingSoulCreationViewModel.Navigation.OpenSoulCreationAnim -> {
+                        if (keyboardInsets.getBottom(density) > 0) {
+                            focusManager.clearFocus(true)
+                            delay(KEYBOARD_HIDE_DELAY)
+                        }
                         navController.navigate(
                             route = OnboardingNavigation.createSoulAnim
                         )
@@ -687,5 +701,6 @@ class OnboardingFragment : Fragment() {
 
 private const val ANIMATION_LENGTH_SLIDE = 300
 private const val ANIMATION_LENGTH_FADE = 700
+private const val KEYBOARD_HIDE_DELAY = 300L
 
 typealias BackButtonCallback = (() -> Unit)?

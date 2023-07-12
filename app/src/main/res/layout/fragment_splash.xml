@@ -19,7 +19,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="16dp"
-        android:textColor="@color/palette_system_sky"
+        android:textColor="#DBDAD4"
+        android:textSize="10sp"
         tools:text="0.0.10-alpha" />
 
     <TextView

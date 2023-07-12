@@ -386,7 +386,10 @@ class OnboardingFragment : Fragment() {
         RecoveryScreenWrapper(
             vm = vm,
             onBackClicked = vm::onBackButtonPressed,
-            onScanQrClick = { isQrWarningDialogVisible.value = true },
+            onScanQrClick = {
+                isQrWarningDialogVisible.value = true
+                vm.onScanQrCodeClicked()
+            },
         )
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->

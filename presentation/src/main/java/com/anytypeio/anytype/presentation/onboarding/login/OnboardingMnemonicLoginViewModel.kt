@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.common.ViewState
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -36,6 +37,10 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     fun onLoginClicked(chain: String) {
         proceedWithRecoveringWallet(chain.trim())
+        viewModelScope.sendAnalyticsOnboardingLoginEvent(
+            analytics = analytics,
+            type = EventsDictionary.ClickLoginButton.PHRASE
+        )
     }
 
     fun onActionDone(chain: String) {
@@ -112,6 +117,13 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 fnL = { Timber.e(it, "Error while saving mnemonic") }
             )
         }
+    }
+
+    fun onScanQrCodeClicked() {
+        viewModelScope.sendAnalyticsOnboardingLoginEvent(
+            analytics = analytics,
+            type = EventsDictionary.ClickLoginButton.QR
+        )
     }
 
     sealed class SideEffect {

@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -136,9 +137,7 @@ class OnboardingFragment : Fragment() {
                     .background(Color.Black)
             ) {
                 val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                    BackgroundCircle()
-                }
+                BackgroundCircle()
                 Onboarding(
                     currentPage = currentPage,
                     navController = navController,
@@ -172,6 +171,14 @@ class OnboardingFragment : Fragment() {
         onApplyWindowRootInsets(view)
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            // Disabling workaround to prevent background circle with video shrinking.
+            activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+        }
+    }
+
     private fun onApplyWindowRootInsets(view: View) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val deferringInsetsListener = RootViewDeferringInsetsCallback(
@@ -181,6 +188,9 @@ class OnboardingFragment : Fragment() {
 
             ViewCompat.setWindowInsetsAnimationCallback(view, deferringInsetsListener)
             ViewCompat.setOnApplyWindowInsetsListener(view, deferringInsetsListener)
+        } else {
+            // Enabling workaround to prevent background circle with video shrinking.
+            activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         }
     }
 

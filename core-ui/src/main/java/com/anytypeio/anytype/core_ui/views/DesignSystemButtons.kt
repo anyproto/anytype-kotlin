@@ -33,8 +33,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
-import com.anytypeio.anytype.core_ui.views.animations.LoadingIndicator
 
 class ButtonPrimaryXSmall @JvmOverloads constructor(
     context: Context,
@@ -241,7 +241,7 @@ fun ButtonPrimaryLoading(
                     style = size.textStyle
                 )
             }
-            LoadingIndicator(
+            DotsLoadingIndicator(
                 animating = loading,
                 modifier = Modifier.graphicsLayer { alpha = loadingAlpha },
                 animationSpecs = FadeAnimationSpecs(itemCount = loadingItemsCount),
@@ -348,7 +348,7 @@ fun ButtonSecondaryLoading(
                     modifier = Modifier.graphicsLayer { alpha = contentAlpha }
                 )
             }
-            LoadingIndicator(
+            DotsLoadingIndicator(
                 animating = loading,
                 modifier = Modifier.graphicsLayer { alpha = loadingAlpha },
                 animationSpecs = FadeAnimationSpecs(itemCount = loadingItemsCount),
@@ -446,7 +446,7 @@ fun ButtonWarningLoading(
                     style = size.textStyle
                 )
             }
-            LoadingIndicator(
+            DotsLoadingIndicator(
                 animating = loading,
                 modifier = Modifier.graphicsLayer { alpha = loadingAlpha },
                 animationSpecs = FadeAnimationSpecs(itemCount = loadingItemsCount),

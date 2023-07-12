@@ -149,7 +149,8 @@ class OnboardingVoidViewModel @Inject constructor(
     }
 
     private suspend fun proceedWithLogout() {
-        logout.invoke(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
+        // N.B. If we clear repository data at this step, user won't be able to login into this account.
+        logout.invoke(Logout.Params(clearLocalRepositoryData = false)).collect { status ->
             when (status) {
                 is Interactor.Status.Started -> {
                     state.value = ScreenState.Exiting.Logout.also {

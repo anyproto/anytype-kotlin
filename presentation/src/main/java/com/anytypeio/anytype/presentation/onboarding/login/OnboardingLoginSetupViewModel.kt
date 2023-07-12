@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import javax.inject.Inject
@@ -38,7 +39,7 @@ class OnboardingLoginSetupViewModel @Inject constructor(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val crashReporter: CrashReporter,
     private val configStorage: ConfigStorage
-) : ViewModel() {
+) : BaseViewModel() {
 
     private val setupState = MutableStateFlow<SetupState>(SetupState.Idle)
 
@@ -168,9 +169,19 @@ class OnboardingLoginSetupViewModel @Inject constructor(
     }
 
     fun onSystemBackPressed() {
-        if (setupState.value == SetupState.Failed) {
-            viewModelScope.launch {
-                navigation.emit(Navigation.Exit)
+        when(setupState.value) {
+            SetupState.Failed -> {
+                viewModelScope.launch {
+                    navigation.emit(Navigation.Exit)
+                }
+            }
+            SetupState.Idle -> {
+                viewModelScope.launch {
+                    navigation.emit(Navigation.Exit)
+                }
+            }
+            SetupState.InProgress -> {
+                sendToast(LOADING_MSG)
             }
         }
     }
@@ -218,5 +229,6 @@ class OnboardingLoginSetupViewModel @Inject constructor(
     companion object {
         const val NO_ERROR = ""
         const val SOMETHING_WENT_WRONG_ERROR = "Something went wrong. Please, try again."
+        const val LOADING_MSG = "Loading... please wait."
     }
 }

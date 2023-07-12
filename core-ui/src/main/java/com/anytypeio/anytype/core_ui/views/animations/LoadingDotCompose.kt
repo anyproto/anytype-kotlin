@@ -40,7 +40,7 @@ fun rememberLoadingIndicatorState(
 }
 
 @Composable
-fun LoadingIndicator(
+fun DotsLoadingIndicator(
     animating: Boolean,
     modifier: Modifier = Modifier,
     color: Color = Color.White,

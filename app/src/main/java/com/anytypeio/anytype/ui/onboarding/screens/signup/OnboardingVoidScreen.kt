@@ -71,7 +71,7 @@ fun VoidScreen(
             OnBoardingButtonPrimary(
                 modifier = Modifier.fillMaxWidth(),
                 text = if (!isLoading) stringResource(id = R.string.next) else "",
-                onClick = { onNextClicked() },
+                onClick = { if (!isLoading) onNextClicked() },
                 size = ButtonSize.Large
             )
             if (isLoading) {

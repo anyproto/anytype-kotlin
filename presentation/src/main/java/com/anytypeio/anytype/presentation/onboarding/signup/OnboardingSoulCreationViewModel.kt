@@ -77,7 +77,6 @@ class OnboardingSoulCreationViewModel @Inject constructor(
     }
 
     sealed interface Navigation {
-        object Idle: Navigation
         class OpenSoulCreationAnim(val name: String): Navigation
     }
 

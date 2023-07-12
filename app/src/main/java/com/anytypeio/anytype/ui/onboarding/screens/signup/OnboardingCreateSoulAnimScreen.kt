@@ -63,44 +63,41 @@ private fun CreateSoulAnimScreen(
     onAnimationComplete: () -> Unit,
     contentPaddingTop: Int
 ) {
-
-    state.fold(
-        onSuccess = {
-
-            val gradient = Brush.radialGradient(
-                listOf(
-                    Color(it.icon.from.toColorInt()),
-                    Color(it.icon.to.toColorInt())
-                )
-            )
-
-            val isBoxVisible = remember { mutableStateOf(false) }
-            val targetElementsAlpha by animateFloatAsState(
-                targetValue = if (isBoxVisible.value) 1f else 0f,
-                animationSpec = tween(durationMillis = ANIMATION_DURATION)
-            )
-
-            Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
-                Spacer(modifier = Modifier.height(contentPaddingTop.dp))
-                CreateSoulAnimationTitle(targetElementsAlpha)
-                CreateSoulAnimation(
-                    isBoxVisible,
-                    targetElementsAlpha,
-                    gradient,
-                    it.name
-                )
-            }
-
-            LaunchedEffect(Unit) {
-                delay(ANIMATION_START_DELAY)
-                isBoxVisible.value = true
-            }
-            LaunchedEffect(Unit) {
-                delay(ANIMATION_COMPLETE_DELAY)
-                onAnimationComplete.invoke()
-            }
-        }
+    val isBoxVisible = remember { mutableStateOf(false) }
+    val targetElementsAlpha by animateFloatAsState(
+        targetValue = if (isBoxVisible.value) 1f else 0f,
+        animationSpec = tween(durationMillis = ANIMATION_DURATION)
     )
+    Box(modifier = Modifier.fillMaxSize()) {
+        state.fold(
+            onSuccess = {
+                val gradient = Brush.radialGradient(
+                    listOf(
+                        Color(it.icon.from.toColorInt()),
+                        Color(it.icon.to.toColorInt())
+                    )
+                )
+                Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Top) {
+                    Spacer(modifier = Modifier.height(contentPaddingTop.dp))
+                    CreateSoulAnimationTitle(targetElementsAlpha)
+                    CreateSoulAnimation(
+                        isBoxVisible,
+                        targetElementsAlpha,
+                        gradient,
+                        it.name
+                    )
+                }
+                LaunchedEffect(Unit) {
+                    delay(ANIMATION_START_DELAY)
+                    isBoxVisible.value = true
+                }
+                LaunchedEffect(Unit) {
+                    delay(ANIMATION_COMPLETE_DELAY)
+                    onAnimationComplete.invoke()
+                }
+            }
+        )
+    }
 }
 
 @Composable

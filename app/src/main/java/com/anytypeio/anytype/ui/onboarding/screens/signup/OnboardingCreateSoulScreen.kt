@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -43,15 +44,16 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 @Composable
 fun CreateSoulWrapper(viewModel: OnboardingSoulCreationViewModel, contentPaddingTop: Int) {
-    CreateSoulScreen(contentPaddingTop) {
-        viewModel.setAccountAndSpaceName(it)
-    }
+    CreateSoulScreen(
+        contentPaddingTop = contentPaddingTop,
+        onGoToTheAppClicked = viewModel::onGoToTheAppClicked
+    )
 }
 
 @Composable
 private fun CreateSoulScreen(
     contentPaddingTop: Int,
-    onCreateSoulClicked: (String) -> Unit
+    onGoToTheAppClicked: (Name) -> Unit
 ) {
     val text = remember { mutableStateOf("") }
     val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
@@ -80,7 +82,7 @@ private fun CreateSoulScreen(
             item {
                 CreateSoulInput(
                     text = text,
-                    onKeyboardActionDoneClicked = { onCreateSoulClicked(text.value) }
+                    onKeyboardActionDoneClicked = { onGoToTheAppClicked(text.value) }
                 )
             }
             item {
@@ -103,7 +105,7 @@ private fun CreateSoulScreen(
                         Modifier.padding(bottom = 13.dp)
                 )
             ,
-            onCreateSoulEntered = onCreateSoulClicked,
+            onGoToTheAppClicked = onGoToTheAppClicked,
             text = text
         )
     }
@@ -198,13 +200,13 @@ fun CreateSoulDescription() {
 @Composable
 fun CreateSoulNextButton(
     modifier: Modifier,
-    onCreateSoulEntered: (String) -> Unit,
+    onGoToTheAppClicked: (Name) -> Unit,
     text: MutableState<String>
 ) {
     OnBoardingButtonPrimary(
         text = stringResource(id = R.string.go_to_the_app),
         onClick = {
-            onCreateSoulEntered.invoke(text.value)
+            onGoToTheAppClicked(text.value)
         },
         size = ButtonSize.Large,
         enabled = text.value.trim().isNotEmpty(),

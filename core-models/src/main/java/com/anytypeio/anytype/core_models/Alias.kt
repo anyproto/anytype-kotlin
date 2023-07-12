@@ -5,6 +5,7 @@ typealias Key = String
 typealias Url = String
 typealias Hash = String
 typealias Struct = Map<Id, Any?>
+typealias Name = String
 
 typealias Document = List<Block>
 

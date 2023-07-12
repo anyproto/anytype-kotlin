@@ -278,7 +278,6 @@ class OnboardingFragment : Fragment() {
                             }
 
                             OnboardingVoidViewModel.Navigation.NavigateToMnemonic -> {
-                                vm.sendAnalyticsOnboardingScreen()
                                 navController.navigate(OnboardingNavigation.mnemonic)
                             }
                         }

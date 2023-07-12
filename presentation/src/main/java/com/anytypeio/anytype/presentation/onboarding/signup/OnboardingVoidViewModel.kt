@@ -95,11 +95,13 @@ class OnboardingVoidViewModel @Inject constructor(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
                     navigation.emit(Navigation.NavigateToMnemonic)
+                    // Workaround for leaving screen in loading state to wait screen transition
                     delay(LOADING_AFTER_SUCCESS_DELAY)
                     state.value = ScreenState.Success
                 },
                 onSuccess = {
                     navigation.emit(Navigation.NavigateToMnemonic)
+                    // Workaround for leaving screen in loading state to wait screen transition
                     delay(LOADING_AFTER_SUCCESS_DELAY)
                     state.value = ScreenState.Success
                 }

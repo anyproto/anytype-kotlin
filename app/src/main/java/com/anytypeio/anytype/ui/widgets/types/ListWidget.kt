@@ -135,7 +135,7 @@ fun CompactListWidgetList(
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit
 ) {
     elements.forEachIndexed { idx, element ->
-        Column() {
+        Column {
             Row(
                 modifier = Modifier
                     .padding(vertical = 10.dp, horizontal = 16.dp)
@@ -153,7 +153,7 @@ fun CompactListWidgetList(
                 )
                 Text(
                     text = element.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled),
-                    modifier = Modifier.padding(start = 8.dp),
+                    modifier = Modifier.padding(start = 8.dp).fillMaxWidth(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = PreviewTitle2Medium,

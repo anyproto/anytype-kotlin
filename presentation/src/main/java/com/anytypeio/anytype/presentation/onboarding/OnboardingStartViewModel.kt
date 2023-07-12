@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary.ScreenOnboardingStep.VOID
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -37,6 +39,10 @@ class OnboardingStartViewModel @Inject constructor(
         viewModelScope.launch {
             navigation.emit(destination)
         }
+    }
+
+    fun sendAnalyticsOnboardingScreen() {
+        viewModelScope.sendAnalyticsOnboardingScreenEvent(analytics, VOID)
     }
 
     interface AuthNavigation {

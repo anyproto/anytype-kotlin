@@ -3,7 +3,10 @@ package com.anytypeio.anytype.presentation.onboarding.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -38,6 +41,11 @@ class OnboardingMnemonicViewModel @Inject constructor(
         )
     }
 
+    fun sendAnalyticsOnboardingScreen() {
+        viewModelScope.sendAnalyticsOnboardingScreenEvent(analytics,
+            EventsDictionary.ScreenOnboardingStep.SOUL
+        )
+    }
 
     sealed interface State {
 

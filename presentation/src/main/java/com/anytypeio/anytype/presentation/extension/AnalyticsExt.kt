@@ -1607,3 +1607,18 @@ suspend fun Analytics.sendHideKeyboardEvent() {
         eventName = EventsDictionary.hideKeyboard
     )
 }
+
+fun CoroutineScope.sendAnalyticsOnboardingScreenEvent(
+    analytics: Analytics,
+    step: EventsDictionary.ScreenOnboardingStep
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.screenOnboarding,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.step, step.value)
+            }
+        )
+    )
+}

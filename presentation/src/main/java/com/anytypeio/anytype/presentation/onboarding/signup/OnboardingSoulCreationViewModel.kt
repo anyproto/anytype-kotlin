@@ -3,10 +3,13 @@ package com.anytypeio.anytype.presentation.onboarding.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -62,6 +65,10 @@ class OnboardingSoulCreationViewModel @Inject constructor(
                         Timber.e(it, "Error while updating object details")
                     },
                     onSuccess = {
+                        sendAnalyticsOnboardingScreenEvent(
+                            analytics = analytics,
+                            step = EventsDictionary.ScreenOnboardingStep.SPACE_CREATING
+                        )
                         _navigationFlow.emit(Navigation.OpenSoulCreationAnim(name))
                     }
                 )
@@ -75,6 +82,12 @@ class OnboardingSoulCreationViewModel @Inject constructor(
 
     private fun toast(msg: String) {
         viewModelScope.launch { toasts.emit(msg) }
+    }
+
+    fun sendAnalyticsOnboardingScreen() {
+        viewModelScope.sendAnalyticsOnboardingScreenEvent(analytics,
+            EventsDictionary.ScreenOnboardingStep.SOUL_CREATING
+        )
     }
 
     sealed interface Navigation {

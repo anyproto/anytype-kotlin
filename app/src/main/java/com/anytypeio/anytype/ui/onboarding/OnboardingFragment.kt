@@ -272,6 +272,7 @@ class OnboardingFragment : Fragment() {
                                 navController.popBackStack()
                             }
                             OnboardingVoidViewModel.Navigation.NavigateToMnemonic -> {
+                                vm.sendAnalyticsOnboardingScreen()
                                 navController.navigate(OnboardingNavigation.mnemonic)
                             }
                         }
@@ -504,6 +505,7 @@ class OnboardingFragment : Fragment() {
                     navController.navigate(
                         route = OnboardingNavigation.createSoulAnim
                     )
+                    vm.sendAnalyticsOnboardingScreen()
                 }
                 else -> {}
             }
@@ -521,11 +523,13 @@ class OnboardingFragment : Fragment() {
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
         )
+        val vm = daggerViewModel { component.get().getViewModel() }
         MnemonicPhraseScreenWrapper(
             contentPaddingTop = contentPaddingTop,
-            viewModel = daggerViewModel { component.get().getViewModel() },
+            viewModel = vm,
             openSoulCreation = {
                 navController.navigate(OnboardingNavigation.createSoul)
+                vm.sendAnalyticsOnboardingScreen()
             },
             copyMnemonicToClipboard = ::copyMnemonicToClipboard
         )
@@ -586,6 +590,7 @@ class OnboardingFragment : Fragment() {
                 when (navigation) {
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
                         navController.navigate(OnboardingNavigation.void)
+                        vm.sendAnalyticsOnboardingScreen()
                     }
 
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignIn -> {

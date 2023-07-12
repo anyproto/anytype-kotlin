@@ -531,7 +531,8 @@ class OnboardingFragment : Fragment() {
                 navController.navigate(OnboardingNavigation.createSoul)
                 vm.sendAnalyticsOnboardingScreen()
             },
-            copyMnemonicToClipboard = ::copyMnemonicToClipboard
+            copyMnemonicToClipboard = ::copyMnemonicToClipboard,
+            vm = vm
         )
     }
 

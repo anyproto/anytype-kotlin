@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingClickEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,6 +30,19 @@ class OnboardingMnemonicViewModel @Inject constructor(
         if (state.value is State.Mnemonic) {
             state.value = State.MnemonicOpened((state.value as State.Mnemonic).mnemonicPhrase)
         }
+        viewModelScope.sendAnalyticsOnboardingClickEvent(
+            analytics = analytics,
+            type = EventsDictionary.ClickOnboardingButton.SHOW_AND_COPY,
+            step = EventsDictionary.ScreenOnboardingStep.PHRASE
+        )
+    }
+
+    fun onCheckLaterClicked() {
+        viewModelScope.sendAnalyticsOnboardingClickEvent(
+            analytics = analytics,
+            type = EventsDictionary.ClickOnboardingButton.CHECK_LATER,
+            step = EventsDictionary.ScreenOnboardingStep.PHRASE
+        )
     }
 
     private suspend fun proceedWithMnemonicPhrase() {

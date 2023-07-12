@@ -130,7 +130,7 @@ class OnboardingVoidViewModel @Inject constructor(
                 sendToast(LOADING_MSG)
             }
             is ScreenState.Exiting -> {
-                sendToast(EXITING_MSG)
+                // Do nothing
             }
             else -> {
                 viewModelScope.launch {

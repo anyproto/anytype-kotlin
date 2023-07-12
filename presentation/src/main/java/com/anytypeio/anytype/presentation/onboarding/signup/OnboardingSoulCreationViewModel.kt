@@ -15,7 +15,8 @@ import timber.log.Timber
 
 class OnboardingSoulCreationViewModel @Inject constructor(
     private val setObjectDetails: SetObjectDetails,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val analytics: Analytics
 ) : ViewModel() {
 
     val toasts = MutableSharedFlow<String>()
@@ -83,13 +84,15 @@ class OnboardingSoulCreationViewModel @Inject constructor(
 
     class Factory @Inject constructor(
         private val setObjectDetails: SetObjectDetails,
-        private val configStorage: ConfigStorage
+        private val configStorage: ConfigStorage,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return OnboardingSoulCreationViewModel(
                 setObjectDetails = setObjectDetails,
-                configStorage = configStorage
+                configStorage = configStorage,
+                analytics = analytics
             ) as T
         }
     }

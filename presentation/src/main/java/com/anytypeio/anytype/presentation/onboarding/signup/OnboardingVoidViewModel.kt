@@ -31,7 +31,8 @@ class OnboardingVoidViewModel @Inject constructor(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
-    private val logout: Logout
+    private val logout: Logout,
+    private val analytics: Analytics
 ): BaseViewModel() {
 
     val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
@@ -177,7 +178,8 @@ class OnboardingVoidViewModel @Inject constructor(
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val checkAuthorizationStatus: CheckAuthorizationStatus,
-        private val logout: Logout
+        private val logout: Logout,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -190,7 +192,8 @@ class OnboardingVoidViewModel @Inject constructor(
                 relationsSubscriptionManager = relationsSubscriptionManager,
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
                 logout = logout,
-                checkAuthorizationStatus = checkAuthorizationStatus
+                checkAuthorizationStatus = checkAuthorizationStatus,
+                analytics = analytics
             ) as T
         }
     }

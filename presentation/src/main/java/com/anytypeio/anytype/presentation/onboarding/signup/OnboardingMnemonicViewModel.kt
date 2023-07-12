@@ -10,7 +10,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class OnboardingMnemonicViewModel @Inject constructor(
-    private val getMnemonic: GetMnemonic
+    private val getMnemonic: GetMnemonic,
+    private val analytics: Analytics
 ) : ViewModel() {
 
     val state = MutableStateFlow<State>(State.Idle(""))
@@ -48,12 +49,14 @@ class OnboardingMnemonicViewModel @Inject constructor(
     }
 
     class Factory @Inject constructor(
-        private val getMnemonic: GetMnemonic
+        private val getMnemonic: GetMnemonic,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return OnboardingMnemonicViewModel(
-                getMnemonic = getMnemonic
+                getMnemonic = getMnemonic,
+                analytics = analytics
             ) as T
         }
     }

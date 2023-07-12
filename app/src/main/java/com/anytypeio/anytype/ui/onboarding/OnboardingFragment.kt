@@ -24,7 +24,9 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +44,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -91,6 +95,7 @@ import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Util
 import com.google.zxing.integration.android.IntentIntegrator
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import timber.log.Timber
 
 class OnboardingFragment : Fragment() {
@@ -128,7 +133,7 @@ class OnboardingFragment : Fragment() {
     private fun OnboardingScreen() {
         MaterialTheme {
             val navController = rememberAnimatedNavController()
-            val defaultBackCallback : BackButtonCallback = { navController.popBackStack() }
+            val defaultBackCallback: BackButtonCallback = { navController.popBackStack() }
             val signUpBackButtonCallback = remember {
                 mutableStateOf(defaultBackCallback)
             }
@@ -232,6 +237,7 @@ class OnboardingFragment : Fragment() {
                         OnboardingNavigation.auth -> {
                             fadeIn(tween(ANIMATION_LENGTH_FADE))
                         }
+
                         else -> {
                             slideIntoContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
                         }
@@ -242,6 +248,7 @@ class OnboardingFragment : Fragment() {
                         OnboardingNavigation.auth -> {
                             fadeOut(tween(ANIMATION_LENGTH_FADE))
                         }
+
                         else -> {
                             slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }
@@ -267,10 +274,11 @@ class OnboardingFragment : Fragment() {
 
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { navigation ->
-                        when(navigation) {
+                        when (navigation) {
                             OnboardingVoidViewModel.Navigation.GoBack -> {
                                 navController.popBackStack()
                             }
+
                             OnboardingVoidViewModel.Navigation.NavigateToMnemonic -> {
                                 navController.navigate(OnboardingNavigation.mnemonic)
                             }
@@ -288,6 +296,7 @@ class OnboardingFragment : Fragment() {
                         OnboardingNavigation.void -> {
                             slideIntoContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }
+
                         else -> {
                             slideIntoContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
                         }
@@ -298,6 +307,7 @@ class OnboardingFragment : Fragment() {
                         OnboardingNavigation.void -> {
                             slideOutOfContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
                         }
+
                         else -> {
                             slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }
@@ -305,7 +315,7 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.MNEMONIC
-                backButtonCallback.value = {  navController.popBackStack() }
+                backButtonCallback.value = { navController.popBackStack() }
                 Mnemonic(navController, ContentPaddingTop())
             }
             composable(
@@ -316,6 +326,7 @@ class OnboardingFragment : Fragment() {
                         OnboardingNavigation.mnemonic -> {
                             slideOutOfContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
                         }
+
                         else -> {
                             fadeOut(tween(ANIMATION_LENGTH_FADE))
                         }
@@ -323,7 +334,7 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.SOUL_CREATION
-                backButtonCallback.value = {  navController.popBackStack() }
+                backButtonCallback.value = { navController.popBackStack() }
                 CreateSoul(
                     navController = navController,
                     contentPaddingTop = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
@@ -389,7 +400,7 @@ class OnboardingFragment : Fragment() {
         )
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
-                when(effect) {
+                when (effect) {
                     is OnboardingMnemonicLoginViewModel.SideEffect.Exit -> {
                         val lastDestination = navController.backQueue.lastOrNull()
                         // TODO Temporary workaround to prevent inconsistent state in navigation
@@ -397,9 +408,11 @@ class OnboardingFragment : Fragment() {
                             navController.popBackStack()
                         }
                     }
+
                     is OnboardingMnemonicLoginViewModel.SideEffect.ProceedWithLogin -> {
                         navController.navigate(OnboardingNavigation.enterTheVoid)
                     }
+
                     is OnboardingMnemonicLoginViewModel.SideEffect.Error -> {
                         toast(effect.msg)
                     }
@@ -453,9 +466,11 @@ class OnboardingFragment : Fragment() {
                     OnboardingLoginSetupViewModel.Navigation.Exit -> {
                         navController.popBackStack()
                     }
+
                     OnboardingLoginSetupViewModel.Navigation.NavigateToHomeScreen -> {
                         findNavController().navigate(R.id.action_openHome)
                     }
+
                     OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen -> {
                         findNavController().navigate(R.id.migrationNeededScreen, null, navOptions {
                             popUpTo(R.id.onboarding_nav) {
@@ -479,11 +494,13 @@ class OnboardingFragment : Fragment() {
         )
         CreateSoulAnimWrapper(
             contentPaddingTop = contentPaddingTop,
-            viewModel = daggerViewModel { component.get().getViewModel() }
-        ) {
-            findNavController().navigate(R.id.action_openHome)
-        }
+            viewModel = daggerViewModel { component.get().getViewModel() },
+            onAnimationComplete = {
+                findNavController().navigate(R.id.action_openHome)
+            }
+        )
     }
+
 
     @Composable
     private fun CreateSoul(navController: NavHostController, contentPaddingTop: Int) {
@@ -493,19 +510,25 @@ class OnboardingFragment : Fragment() {
         )
         val vm = daggerViewModel { component.get().getViewModel() }
 
+        val focusManager = LocalFocusManager.current
+        val keyboardInsets = WindowInsets.ime
+        val density = LocalDensity.current
+
         CreateSoulWrapper(vm, contentPaddingTop)
 
-        val navigationCommands = vm.navigationFlow.collectAsState(
-                initial = OnboardingSoulCreationViewModel.Navigation.Idle
-        )
-        LaunchedEffect(key1 = navigationCommands.value) {
-            when (navigationCommands.value) {
-                is OnboardingSoulCreationViewModel.Navigation.OpenSoulCreationAnim -> {
-                    navController.navigate(
-                        route = OnboardingNavigation.createSoulAnim
-                    )
+        LaunchedEffect(Unit) {
+            vm.navigationFlow.collect { command ->
+                when (command) {
+                    is OnboardingSoulCreationViewModel.Navigation.OpenSoulCreationAnim -> {
+                        if (keyboardInsets.getBottom(density) > 0) {
+                            focusManager.clearFocus(force = true)
+                            delay(KEYBOARD_HIDE_DELAY)
+                        }
+                        navController.navigate(
+                            route = OnboardingNavigation.createSoulAnim
+                        )
+                    }
                 }
-                else -> {}
             }
         }
         LaunchedEffect(Unit) {
@@ -678,5 +701,6 @@ class OnboardingFragment : Fragment() {
 
 private const val ANIMATION_LENGTH_SLIDE = 300
 private const val ANIMATION_LENGTH_FADE = 700
+private const val KEYBOARD_HIDE_DELAY = 300L
 
 typealias BackButtonCallback = (() -> Unit)?

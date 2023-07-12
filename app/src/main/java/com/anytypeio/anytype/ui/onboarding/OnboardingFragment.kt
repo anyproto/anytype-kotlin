@@ -237,7 +237,6 @@ class OnboardingFragment : Fragment() {
                         OnboardingNavigation.auth -> {
                             fadeIn(tween(ANIMATION_LENGTH_FADE))
                         }
-
                         else -> {
                             slideIntoContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
                         }
@@ -248,7 +247,6 @@ class OnboardingFragment : Fragment() {
                         OnboardingNavigation.auth -> {
                             fadeOut(tween(ANIMATION_LENGTH_FADE))
                         }
-
                         else -> {
                             slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }

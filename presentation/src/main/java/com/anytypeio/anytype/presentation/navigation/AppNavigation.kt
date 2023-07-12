@@ -1,12 +1,11 @@
 package com.anytypeio.anytype.presentation.navigation
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.presentation.settings.EditorSettings
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 
 interface AppNavigation {
 
-    fun startLogin()
+    fun exitFromMigrationScreen()
     fun createProfile(invitationCode: String)
     fun enterKeychain()
     fun choosePinCode()
@@ -68,7 +67,7 @@ interface AppNavigation {
         object Exit : Command()
         object ExitToDesktop : Command()
 
-        object OpenStartLoginScreen : Command()
+        object ExitFromMigrationScreen : Command()
         data class OpenCreateAccount(val invitationCode: String) : Command()
         object ChoosePinCodeScreen : Command()
         @Deprecated("To be deleted")

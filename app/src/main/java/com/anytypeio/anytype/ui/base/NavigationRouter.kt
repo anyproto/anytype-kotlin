@@ -15,7 +15,7 @@ class NavigationRouter(
             is AppNavigation.Command.StartDesktopFromLogin -> navigation.startDesktopFromLogin()
             is AppNavigation.Command.StartDesktopFromSignUp -> navigation.startDesktopFromSignUp()
             is AppNavigation.Command.StartDesktopFromSplash -> navigation.startDesktopFromSplash()
-            is AppNavigation.Command.OpenStartLoginScreen -> navigation.startLogin()
+            is AppNavigation.Command.ExitFromMigrationScreen -> navigation.exitFromMigrationScreen()
             is AppNavigation.Command.OpenCreateAccount -> navigation.createProfile(command.invitationCode)
             is AppNavigation.Command.ChoosePinCodeScreen -> navigation.choosePinCode()
             is AppNavigation.Command.EnterKeyChainScreen -> navigation.enterKeychain()

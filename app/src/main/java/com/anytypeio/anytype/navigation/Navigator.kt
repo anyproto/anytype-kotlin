@@ -39,10 +39,6 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.action_global_desktopScreen, bundle)
     }
 
-    override fun startLogin() {
-        navController?.navigate(R.id.action_splashFragment_to_login_nav)
-    }
-
     override fun createProfile(invitationCode: String) {
         val bundle = bundleOf(ARGS_CODE to invitationCode)
         navController?.navigate(R.id.action_invitationFragment_to_createAccountScreen, bundle)
@@ -254,6 +250,14 @@ class Navigator : AppNavigation {
 
     override fun migrationErrorScreen() {
         navController?.navigate(R.id.migrationNeededScreen)
+    }
+
+    override fun exitFromMigrationScreen() {
+        navController?.navigate(R.id.onboarding_nav, null, navOptions {
+            popUpTo(R.id.migrationNeededScreen) {
+                inclusive = true
+            }
+        })
     }
 
     override fun openTemplates(

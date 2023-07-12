@@ -148,6 +148,29 @@ object EventsDictionary {
     const val screenHome = "ScreenHome"
     const val selectHomeTab = "SelectHomeTab"
 
+    // Onboarding events
+    const val screenOnboarding = "ScreenOnboarding"
+    const val clickOnboarding = "ClickOnboarding"
+    const val clickLogin = "ClickLogin"
+
+    enum class ScreenOnboardingStep(val value: String) {
+        VOID("Void"),
+        PHRASE("Phrase"),
+        SOUL("Soul"),
+        SOUL_CREATING("SoulCreating"),
+        SPACE_CREATING("SpaceCreating")
+    }
+
+    enum class ClickOnboardingButton(val value: String) {
+        SHOW_AND_COPY("ShowAndCopy"),
+        CHECK_LATER("CheckLater")
+    }
+
+    enum class ClickLoginButton(val value: String) {
+        PHRASE("Phrase"),
+        QR("Qr"),
+    }
+
     // Routes
     object Routes {
         const val home = "ScreenHome"
@@ -216,4 +239,5 @@ object EventsPropertiesKey {
     const val align = "align"
     const val originalId = "originalId"
     const val view = "view"
+    const val step = "step"
 }

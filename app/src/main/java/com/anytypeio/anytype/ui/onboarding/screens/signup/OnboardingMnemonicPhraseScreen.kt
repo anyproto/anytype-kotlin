@@ -43,7 +43,8 @@ fun MnemonicPhraseScreenWrapper(
     viewModel: OnboardingMnemonicViewModel,
     openSoulCreation: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
-    contentPaddingTop: Int
+    contentPaddingTop: Int,
+    vm: OnboardingMnemonicViewModel
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     MnemonicPhraseScreen(
@@ -51,7 +52,8 @@ fun MnemonicPhraseScreenWrapper(
         reviewMnemonic = { viewModel.openMnemonic() },
         openSoulCreation = openSoulCreation,
         copyMnemonicToClipboard = copyMnemonicToClipboard,
-        contentPaddingTop = contentPaddingTop
+        contentPaddingTop = contentPaddingTop,
+        vm = vm
     )
 }
 
@@ -61,7 +63,8 @@ fun MnemonicPhraseScreen(
     reviewMnemonic: () -> Unit,
     openSoulCreation: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
-    contentPaddingTop: Int
+    contentPaddingTop: Int,
+    vm: OnboardingMnemonicViewModel
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -79,7 +82,8 @@ fun MnemonicPhraseScreen(
             modifier = Modifier.align(Alignment.BottomCenter),
             openMnemonic = reviewMnemonic,
             openSoulCreation = openSoulCreation,
-            state = state
+            state = state,
+            vm = vm
         )
     }
 }
@@ -89,7 +93,8 @@ fun MnemonicButtons(
     modifier: Modifier = Modifier,
     openMnemonic: () -> Unit,
     openSoulCreation: () -> Unit,
-    state: OnboardingMnemonicViewModel.State
+    state: OnboardingMnemonicViewModel.State,
+    vm: OnboardingMnemonicViewModel
 ) {
     Column(modifier.wrapContentHeight()) {
         when (state) {
@@ -126,6 +131,7 @@ fun MnemonicButtons(
                         ),
                     onClick = {
                         openSoulCreation.invoke()
+                        vm.onCheckLaterClicked()
                     },
                     size = ButtonSize.Large,
                     textColor = ColorButtonRegular

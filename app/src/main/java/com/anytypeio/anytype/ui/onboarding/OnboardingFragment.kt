@@ -451,6 +451,9 @@ class OnboardingFragment : Fragment() {
                 }
             }
         }
+        LaunchedEffect(Unit) {
+            vm.toasts.collect { toast(it) }
+        }
     }
 
     @Composable

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import java.io.File
 import java.io.FileOutputStream
 
+@Deprecated("To be deleted")
 class DebugSpaceFileContentSaver(
     private val context: Context,
     dispatchers: AppCoroutineDispatchers,

@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
+@Deprecated("To be deleted")
 class DebugSpaceShareDownloader(
     private val debugSpace: DebugSpace,
     private val fileSaver: DebugSpaceFileContentSaver,

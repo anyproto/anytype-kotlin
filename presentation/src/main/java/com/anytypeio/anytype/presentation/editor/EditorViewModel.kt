@@ -4791,9 +4791,22 @@ class EditorViewModel(
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                    workspaceId = workspaceManager.getCurrentWorkspace()
-                ),
+                filters = buildList {
+                    addAll(
+                        ObjectSearchConstants.filterObjectTypeLibrary(
+                            workspaceId = workspaceManager.getCurrentWorkspace()
+                        )
+                    )
+                    add(
+                        DVFilter(
+                            relation = Relations.RECOMMENDED_LAYOUT,
+                            condition = DVFilterCondition.IN,
+                            value = SupportedLayouts.editorLayouts.map {
+                                it.code.toDouble()
+                            }
+                        )
+                    )
+                },
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
             getObjectTypes.execute(params).fold(

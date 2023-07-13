@@ -22,7 +22,9 @@ class DebugSpaceFileContentSaver(
 
         require(cacheDir != null) { "Impossible to cache files!" }
 
-        val downloadFolder = File("${cacheDir.path}/${params.folderName}/").apply { mkdirs() }
+        val downloadFolder = File("${cacheDir.path}/${params.folderName}/").apply {
+            mkdirs()
+        }
 
         val resultFilePath = "${cacheDir.path}/${params.folderName}/${params.filename}"
         val resultFile = File(resultFilePath)

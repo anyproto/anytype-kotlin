@@ -18,7 +18,7 @@ class DebugSpaceShareDownloader(
 
     private fun getFileName(): String {
         val date = Calendar.getInstance().time
-        val dateFormat = SimpleDateFormat("dd-MM-yyyy-HH:mm:ss", Locale.getDefault())
+        val dateFormat = SimpleDateFormat(DATE_FORMAT, Locale.getDefault())
         val formattedDate = dateFormat.format(date)
         return "DebugSpace$formattedDate.txt"
     }
@@ -32,5 +32,9 @@ class DebugSpaceShareDownloader(
             )
         )
         return uriFileProvider.getUriForFile(file)
+    }
+
+    companion object {
+        const val DATE_FORMAT = "dd-MM-yyyy-HH:mm:ss"
     }
 }

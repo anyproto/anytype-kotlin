@@ -22,6 +22,8 @@ class DebugSpaceFileContentSaver(
 
         require(cacheDir != null) { "Impossible to cache files!" }
 
+        // Creating folder
+
         val downloadFolder = File("${cacheDir.path}/${params.folderName}/").apply {
             mkdirs()
         }
@@ -29,20 +31,27 @@ class DebugSpaceFileContentSaver(
         val resultFilePath = "${cacheDir.path}/${params.folderName}/${params.filename}"
         val resultFile = File(resultFilePath)
 
-        if (!resultFile.exists()) {
-            val tempFileFolderPath = "${downloadFolder.absolutePath}/${TEMP_FOLDER_NAME}"
-            val tempDir = File(tempFileFolderPath)
-            if (tempDir.exists()) tempDir.deleteRecursively()
-            tempDir.mkdirs()
+        // Writing content
 
-            val tempResult = File(tempFileFolderPath, params.filename)
-            FileOutputStream(tempResult).use {
-                it.write(params.content.toByteArray())
-            }
+        val tempFileFolderPath = "${downloadFolder.absolutePath}/${TEMP_FOLDER_NAME}"
+        val tempDir = File(tempFileFolderPath)
+        if (tempDir.exists()) tempDir.deleteRecursively()
+        tempDir.mkdirs()
 
-            tempResult.renameTo(resultFile)
-            tempDir.deleteRecursively()
+        val tempResult = File(tempFileFolderPath, params.filename)
+
+        FileOutputStream(tempResult).use { stream ->
+            stream.write(params.content.toByteArray())
         }
+
+        tempResult.renameTo(resultFile)
+
+        // Clearing
+
+        tempDir.deleteRecursively()
+
+        // Sending file
+
         return resultFile
     }
 

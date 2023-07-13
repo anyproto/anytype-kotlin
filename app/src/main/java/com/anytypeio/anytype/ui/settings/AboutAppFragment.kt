@@ -86,6 +86,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         expand()
+        skipCollapsed()
         subscribe(vm.navigation) {
             when (it) {
                 is AboutAppViewModel.Navigation.OpenExternalLink -> {

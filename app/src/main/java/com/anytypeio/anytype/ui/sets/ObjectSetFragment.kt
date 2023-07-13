@@ -1063,11 +1063,7 @@ open class ObjectSetFragment :
             if (childFragmentManager.backStackEntryCount > 0) {
                 childFragmentManager.popBackStack()
             } else {
-                if(vm.isCustomizeViewPanelVisible.value) {
-                    vm.onHideViewerCustomizeSwiped()
-                } else {
-                    vm.onSystemBackPressed()
-                }
+                vm.onSystemBackPressed()
             }
         }
     }

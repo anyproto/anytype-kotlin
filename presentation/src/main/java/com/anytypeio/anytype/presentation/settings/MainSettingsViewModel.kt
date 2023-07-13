@@ -121,7 +121,9 @@ class MainSettingsViewModel(
                 .collect { result ->
                     result.fold(
                         onLoading = {
-                            commands.emit(Command.Toast(SPACE_DEBUG_MSG))
+                            commands.emit(
+                                Command.Toast(SPACE_DEBUG_MSG, isLongDuration = true)
+                            )
                         },
                         onSuccess = { path ->
                             commands.emit(
@@ -235,7 +237,7 @@ class MainSettingsViewModel(
         object OpenDebugScreen : Command()
         class OpenSpaceImageSet(val id: Id) : Command()
         object OpenFilesStorageScreen : Command()
-        data class Toast(val msg: String) : Command()
+        data class Toast(val msg: String, val isLongDuration: Boolean = false) : Command()
         data class ShareSpaceDebug(val path: Filepath): Command()
     }
 

@@ -6,6 +6,7 @@ plugins {
 dependencies {
 
     implementation project(':data')
+    implementation project(':domain')
 
     implementation libs.kotlin
     implementation libs.coroutinesAndroid
@@ -17,4 +18,6 @@ dependencies {
     testImplementation libs.kotlinTest
     testImplementation libs.androidXTestCore
     testImplementation libs.robolectric
+
+    compileOnly libs.javaxInject
 }

@@ -1,22 +1,22 @@
 package com.anytypeio.anytype.presentation.settings
 
-import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -37,7 +37,8 @@ class MainSettingsViewModel(
     private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
     private val setObjectDetails: SetObjectDetails,
-    private val spaceGradientProvider: SpaceGradientProvider
+    private val spaceGradientProvider: SpaceGradientProvider,
+    private val debugSpaceShareDownloader: DebugSpaceShareDownloader
 ) : ViewModel() {
 
     val events = MutableSharedFlow<Event>(replay = 0)
@@ -99,7 +100,9 @@ class MainSettingsViewModel(
             Event.OnProfileClicked -> commands.emit(Command.OpenProfileScreen)
             Event.OnAppearanceClicked -> commands.emit(Command.OpenAppearanceScreen)
             Event.OnPersonalizationClicked -> commands.emit(Command.OpenPersonalizationScreen)
-            Event.OnDebugClicked -> commands.emit(Command.OpenDebugScreen)
+            Event.OnDebugClicked -> {
+                proceedWithSpaceDebug()
+            }
             Event.OnSpaceImageClicked -> commands.emit(
                 Command.OpenSpaceImageSet(
                     configStorage.get().workspace
@@ -108,6 +111,22 @@ class MainSettingsViewModel(
             Event.OnFilesStorageClicked -> {
                 commands.emit(Command.OpenFilesStorageScreen)
             }
+        }
+    }
+
+    private fun proceedWithSpaceDebug() {
+        viewModelScope.launch {
+            debugSpaceShareDownloader
+                .stream(Unit)
+                .collect { result ->
+                    result.fold(
+                        onSuccess = { path ->
+                            commands.emit(
+                                Command.ShareSpaceDebug(path)
+                            )
+                        }
+                    )
+                }
         }
     }
 
@@ -178,7 +197,8 @@ class MainSettingsViewModel(
         private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,
         private val setObjectDetails: SetObjectDetails,
-        private val spaceGradientProvider: SpaceGradientProvider
+        private val spaceGradientProvider: SpaceGradientProvider,
+        private val debugSpaceShareDownloader: DebugSpaceShareDownloader
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -189,7 +209,8 @@ class MainSettingsViewModel(
             configStorage = configStorage,
             urlBuilder = urlBuilder,
             setObjectDetails = setObjectDetails,
-            spaceGradientProvider = spaceGradientProvider
+            spaceGradientProvider = spaceGradientProvider,
+            debugSpaceShareDownloader = debugSpaceShareDownloader
         ) as T
     }
 
@@ -212,6 +233,7 @@ class MainSettingsViewModel(
         class OpenSpaceImageSet(val id: Id) : Command()
         object OpenFilesStorageScreen : Command()
         data class Toast(val msg: String) : Command()
+        data class ShareSpaceDebug(val path: Filepath): Command()
     }
 
     sealed class WorkspaceAndAccount {
@@ -230,10 +252,7 @@ class MainSettingsViewModel(
             val name: String,
             val icon: ProfileIconView,
         )
-
     }
-
-
 }
 
 const val SPACE_STORAGE_SUBSCRIPTION_ID = "settings_space_storage_subscription"

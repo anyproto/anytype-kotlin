@@ -191,7 +191,7 @@ class ObjectSearchFragment :
             )
             addItemDecoration(
                 SpacingItemDecoration(
-                    lastItemSpacingBottom = resources.getDimension(com.anytypeio.anytype.core_ui.R.dimen.dp_48).toInt()
+                    lastItemSpacingBottom = resources.getDimension(R.dimen.dp_120).toInt()
                 )
             )
         }

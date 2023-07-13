@@ -337,9 +337,6 @@
             android:id="@+id/action_openHome"
             app:destination="@id/homeScreen"
             app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out"
             app:popUpTo="@id/authStartScreen"
             app:popUpToInclusive="true" />
 

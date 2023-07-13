@@ -48,9 +48,9 @@ import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.*
+import timber.log.Timber
 
 fun Context.dimen(res: Int): Float {
     return resources

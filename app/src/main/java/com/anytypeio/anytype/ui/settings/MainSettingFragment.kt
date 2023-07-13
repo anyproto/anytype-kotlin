@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
+import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -23,12 +24,15 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel.Event
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase.Companion.ARG_CONTEXT_ID_KEY
 import com.anytypeio.anytype.ui.sets.ARG_SHOW_REMOVE_BUTTON
 import com.anytypeio.anytype.ui.settings.system.SettingsActivity
 import com.anytypeio.anytype.ui_settings.main.MainSettingScreen
-import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class MainSettingFragment : BaseBottomSheetComposeFragment() {
 
@@ -37,6 +41,9 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var featureToggles: FeatureToggles
+
+    @Inject
+    lateinit var uriFileProvider: UriFileProvider
 
     private val vm by viewModels<MainSettingsViewModel> { factory }
 
@@ -135,12 +142,22 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
                     )
                 )
             }
-            Command.OpenFilesStorageScreen -> {
+            is Command.OpenFilesStorageScreen -> {
                 safeNavigate(R.id.actionOpenFilesStorageScreen)
             }
-
             is Command.Toast -> {
                 toast(msg = command.msg)
+            }
+            is Command.ShareSpaceDebug -> {
+                try {
+                    shareFile(
+                        uriFileProvider.getUriForFile(File(command.path))
+                    )
+                } catch (e: Exception) {
+                    Timber.e(e, "Error while sharing space debug").also {
+                        toast("Error while sharing space debug. Please try again later.")
+                    }
+                }
             }
         }
     }

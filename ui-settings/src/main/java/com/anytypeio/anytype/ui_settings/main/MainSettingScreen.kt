@@ -115,6 +115,12 @@ private fun Settings(
     )
     Divider(paddingStart = 60.dp)
     Option(
+        image = R.drawable.ic_debug,
+        text = stringResource(R.string.space_debug),
+        onClick = onDebugClicked
+    )
+    Divider(paddingStart = 60.dp)
+    Option(
         image = R.drawable.ic_about,
         text = stringResource(R.string.about),
         onClick = onAboutAppClicked

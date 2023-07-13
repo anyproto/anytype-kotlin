@@ -17,15 +17,15 @@ import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.math.RoundingMode
 import javax.inject.Inject
 import kotlin.time.DurationUnit.DAYS
 import kotlin.time.DurationUnit.MILLISECONDS
 import kotlin.time.toDuration
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class DeletedAccountViewModel(
     private val restoreAccount: RestoreAccount,
@@ -113,7 +113,7 @@ class DeletedAccountViewModel(
     private fun proceedWithLoggingOut() {
         if (!isLoggingOut.value) {
             viewModelScope.launch {
-                logout(Logout.Params(clearLocalRepositoryData = true)).collect { status ->
+                logout(Logout.Params(clearLocalRepositoryData = false)).collect { status ->
                     when (status) {
                         is Interactor.Status.Error -> {
                             isLoggingOut.value = false

@@ -67,10 +67,7 @@ fun ProfileScreen(
     onKeychainPhraseClicked: () -> Unit,
     onDeleteAccountClicked: () -> Unit,
     onLogoutClicked: () -> Unit,
-    onSpaceDebugClicked: () -> Unit,
     isLogoutInProgress: Boolean,
-    isDebugSpaceReportInProgress: Boolean,
-    isShowDebug: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
     account: ProfileViewModel.AccountProfile
@@ -108,15 +105,6 @@ fun ProfileScreen(
             onClick = onLogoutClicked,
             isInProgress = isLogoutInProgress
         )
-        Divider()
-        if (isShowDebug) {
-            ActionWithProgressBar(
-                name = stringResource(R.string.space_debug),
-                color = colorResource(R.color.text_primary),
-                onClick = onSpaceDebugClicked,
-                isInProgress = isDebugSpaceReportInProgress
-            )
-        }
         Box(Modifier.height(54.dp))
     }
 }

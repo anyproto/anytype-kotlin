@@ -21,7 +21,19 @@ class ObjectSetMenuFragment : ObjectMenuBaseFragment() {
         with(lifecycleScope) {
             subscribe(vm.isObjectArchived) { isArchived ->
                 if (isArchived) {
-                    findNavController().popBackStack(R.id.objectSetScreen, true)
+                    val navController = findNavController()
+                    when {
+                        navController.popBackStack(R.id.objectSetScreen, true) -> {
+                            // Successfully returned to objectSetScreen and removed it from the stack
+                        }
+                        navController.popBackStack(R.id.homeScreen, false) -> {
+                            // Successfully returned to homeScreen without removing it from the stack
+                        }
+                        else -> {
+                            // homeScreen is not found in the stack, navigate to it
+                            navController.navigate(R.id.homeScreen)
+                        }
+                    }
                 }
             }
         }

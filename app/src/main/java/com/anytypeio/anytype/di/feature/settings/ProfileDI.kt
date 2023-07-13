@@ -21,8 +21,8 @@ import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.settings.ProfileFragment
 import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
+import com.anytypeio.anytype.ui_settings.account.repo.DebugSpaceFileContentSaver
 import com.anytypeio.anytype.ui_settings.account.repo.DebugSpaceShareDownloader
-import com.anytypeio.anytype.ui_settings.account.repo.FileSaver
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -83,18 +83,26 @@ object ProfileModule {
     @Provides
     @PerScreen
     fun provideFileSaver(
-        uriFileProvider: UriFileProvider,
         context: Context,
         dispatchers: AppCoroutineDispatchers,
-    ): FileSaver = FileSaver(context, uriFileProvider, dispatchers)
+    ): DebugSpaceFileContentSaver = DebugSpaceFileContentSaver(
+        context = context,
+        dispatchers = dispatchers
+    )
 
     @Provides
     @PerScreen
     fun providesDebugSyncShareDownloader(
         debugSpace: DebugSpace,
-        fileSaver: FileSaver,
+        fileSaver: DebugSpaceFileContentSaver,
         dispatchers: AppCoroutineDispatchers,
-    ): DebugSpaceShareDownloader = DebugSpaceShareDownloader(debugSpace, fileSaver, dispatchers)
+        uriFileProvider: UriFileProvider
+    ): DebugSpaceShareDownloader = DebugSpaceShareDownloader(
+        debugSpace = debugSpace,
+        fileSaver = fileSaver,
+        dispatchers = dispatchers,
+        uriFileProvider = uriFileProvider
+    )
 
     @JvmStatic
     @PerScreen

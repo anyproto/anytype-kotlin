@@ -258,7 +258,7 @@ class MainSettingsViewModel(
     }
 
     companion object {
-        const val SPACE_DEBUG_MSG = "Kindly share this valuable debug information with Anytype developers."
+        const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."
     }
 }
 

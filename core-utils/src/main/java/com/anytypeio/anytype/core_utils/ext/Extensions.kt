@@ -64,8 +64,22 @@ inline fun <T> List<T>.replace(replacement: (T) -> T, target: (T) -> Boolean): L
     return map { if (target(it)) replacement(it) else it }
 }
 
-fun Context.toast(msg: CharSequence) = Toast.makeText(this, msg, Toast.LENGTH_SHORT).show()
-fun Fragment.toast(msg: CharSequence) = requireActivity().toast(msg)
+fun Context.toast(
+    msg: CharSequence,
+    duration: Int = Toast.LENGTH_SHORT
+) = Toast.makeText(
+    this,
+    msg,
+    duration
+).show()
+
+fun Fragment.toast(
+    msg: CharSequence,
+    duration: Int = Toast.LENGTH_SHORT
+) = requireActivity().toast(
+    msg = msg,
+    duration = duration
+)
 
 fun Fragment.toast(@StringRes msgId: Int) = requireActivity().toast(requireActivity().getString(msgId))
 

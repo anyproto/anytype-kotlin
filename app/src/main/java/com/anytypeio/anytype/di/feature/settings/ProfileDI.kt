@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.di.feature.settings
 
-import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.account.DeleteAccount
@@ -17,13 +16,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
-import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.settings.ProfileFragment
 import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
-import com.anytypeio.anytype.ui_settings.account.repo.DebugSpaceFileContentSaver
-import com.anytypeio.anytype.ui_settings.account.repo.DebugSpaceShareDownloader
-import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -49,7 +43,6 @@ object ProfileModule {
     @PerScreen
     fun provideViewModelFactory(
         deleteAccount: DeleteAccount,
-        debugSpaceShareDownloader: DebugSpaceShareDownloader,
         analytics: Analytics,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         setObjectDetails: SetObjectDetails,
@@ -59,7 +52,6 @@ object ProfileModule {
         spaceGradientProvider: SpaceGradientProvider
     ): ProfileViewModel.Factory = ProfileViewModel.Factory(
         deleteAccount = deleteAccount,
-        debugSpaceShareDownloader = debugSpaceShareDownloader,
         analytics = analytics,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         setObjectDetails = setObjectDetails,
@@ -79,30 +71,6 @@ object ProfileModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): DebugSpace = DebugSpace(repo = repo, dispatchers = dispatchers)
-
-    @Provides
-    @PerScreen
-    fun provideFileSaver(
-        context: Context,
-        dispatchers: AppCoroutineDispatchers,
-    ): DebugSpaceFileContentSaver = DebugSpaceFileContentSaver(
-        context = context,
-        dispatchers = dispatchers
-    )
-
-    @Provides
-    @PerScreen
-    fun providesDebugSyncShareDownloader(
-        debugSpace: DebugSpace,
-        fileSaver: DebugSpaceFileContentSaver,
-        dispatchers: AppCoroutineDispatchers,
-        uriFileProvider: UriFileProvider
-    ): DebugSpaceShareDownloader = DebugSpaceShareDownloader(
-        debugSpace = debugSpace,
-        fileSaver = fileSaver,
-        dispatchers = dispatchers,
-        uriFileProvider = uriFileProvider
-    )
 
     @JvmStatic
     @PerScreen
@@ -157,11 +125,6 @@ object ProfileModule {
 
     @Module
     interface Bindings {
-
-        @PerScreen
-        @Binds
-        fun bindUriFileProvider(
-            defaultProvider: DefaultUriFileProvider
-        ): UriFileProvider
+        // Add bindings if needed
     }
 }

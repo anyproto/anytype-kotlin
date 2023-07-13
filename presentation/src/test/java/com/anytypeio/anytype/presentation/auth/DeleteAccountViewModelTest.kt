@@ -203,7 +203,7 @@ class DeleteAccountViewModelTest {
             nowInMillis = nowInMillis
         )
         verifyBlocking(repo, times(1)) {
-            logout(clearLocalRepositoryData = true)
+            logout(clearLocalRepositoryData = false)
         }
     }
 

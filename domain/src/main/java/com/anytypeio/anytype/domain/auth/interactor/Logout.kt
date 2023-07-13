@@ -18,7 +18,7 @@ class Logout @Inject constructor(
 ) : Interactor<Logout.Params>(context = dispatchers.io) {
 
     override suspend fun run(params: Params) {
-        repo.logout(params.clearLocalRepositoryData)
+        repo.logout(clearLocalRepositoryData = params.clearLocalRepositoryData)
         user.clear()
         config.clear()
     }

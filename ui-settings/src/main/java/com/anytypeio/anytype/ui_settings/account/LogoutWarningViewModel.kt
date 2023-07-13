@@ -30,7 +30,9 @@ class LogoutWarningViewModel(
     fun onLogoutClicked() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            logout(params = Logout.Params()).collect { status ->
+            logout(
+                params = Logout.Params(clearLocalRepositoryData = false)
+            ).collect { status ->
                 when (status) {
                     is Interactor.Status.Started -> {
                         isLoggingOut.value = true

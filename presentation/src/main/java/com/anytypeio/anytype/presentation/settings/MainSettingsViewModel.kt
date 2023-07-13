@@ -120,6 +120,9 @@ class MainSettingsViewModel(
                 .stream(Unit)
                 .collect { result ->
                     result.fold(
+                        onLoading = {
+                            commands.emit(Command.Toast(SPACE_DEBUG_MSG))
+                        },
                         onSuccess = { path ->
                             commands.emit(
                                 Command.ShareSpaceDebug(path)
@@ -252,6 +255,10 @@ class MainSettingsViewModel(
             val name: String,
             val icon: ProfileIconView,
         )
+    }
+
+    companion object {
+        const val SPACE_DEBUG_MSG = "Kindly share this valuable debug information with Anytype developers."
     }
 }
 

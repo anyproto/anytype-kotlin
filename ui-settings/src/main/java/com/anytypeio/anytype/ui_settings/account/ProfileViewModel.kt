@@ -44,7 +44,6 @@ class ProfileViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    val isDebugSpaceReportInProgress = MutableStateFlow(false)
     val isLoggingOut = MutableStateFlow(false)
     val debugSyncReportUri = MutableStateFlow<Uri?>(null)
 

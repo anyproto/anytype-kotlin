@@ -340,4 +340,6 @@
     <dimen name="dv_list_gallery_item_relation_height">15dp</dimen>
     <dimen name="dv_list_gallery_item_relation_count_margin_start">4dp</dimen>
 
+    <dimen name="footer_height">120dp</dimen>
+
 </resources>

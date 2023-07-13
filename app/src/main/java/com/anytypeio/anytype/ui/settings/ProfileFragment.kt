@@ -16,6 +16,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
@@ -79,7 +80,7 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
                         onSpaceDebugClicked = { throttle { vm.onSpaceDebugClicked() } },
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
                         isDebugSpaceReportInProgress = vm.isDebugSpaceReportInProgress.collectAsState().value,
-                        isShowDebug = true,
+                        isShowDebug = BuildConfig.DEBUG,
                         onNameChange = { vm.onNameChange(it) },
                         onProfileIconClick = { proceedWithIconClick() },
                         account = vm.profileData.collectAsStateWithLifecycle().value,

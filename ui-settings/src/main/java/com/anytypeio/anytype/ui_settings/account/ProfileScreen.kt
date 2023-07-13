@@ -108,8 +108,8 @@ fun ProfileScreen(
             onClick = onLogoutClicked,
             isInProgress = isLogoutInProgress
         )
-        Divider()
         if (isShowDebug) {
+            Divider()
             ActionWithProgressBar(
                 name = stringResource(R.string.space_debug),
                 color = colorResource(R.color.text_primary),

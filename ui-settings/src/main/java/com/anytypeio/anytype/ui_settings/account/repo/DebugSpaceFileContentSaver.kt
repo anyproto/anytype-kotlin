@@ -1,48 +1,51 @@
 package com.anytypeio.anytype.ui_settings.account.repo
 
 import android.content.Context
-import android.net.Uri
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
-import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import java.io.File
 import java.io.FileOutputStream
-import kotlinx.coroutines.Dispatchers
 
-class FileSaver(
+class DebugSpaceFileContentSaver(
     private val context: Context,
-    private val uriFileProvider: UriFileProvider,
     dispatchers: AppCoroutineDispatchers,
-) : ResultInteractor<FileSaver.Params, Uri>(dispatchers.io) {
+) : ResultInteractor<DebugSpaceFileContentSaver.Params, File>(dispatchers.io) {
 
     data class Params(
         val content: String,
-        val name: String
+        val filename: String,
+        val folderName: String = DEFAULT_FOLDER_NAME
     )
 
-    override suspend fun doWork(params: Params): Uri {
+    override suspend fun doWork(params: Params): File {
         val cacheDir = context.cacheDir
 
         require(cacheDir != null) { "Impossible to cache files!" }
 
-        val downloadFolder = File("${cacheDir.path}/debug_sync/").apply { mkdirs() }
+        val downloadFolder = File("${cacheDir.path}/${params.folderName}/").apply { mkdirs() }
 
-        val resultFilePath = "${cacheDir.path}/${params.name}"
+        val resultFilePath = "${cacheDir.path}/${params.folderName}/${params.filename}"
         val resultFile = File(resultFilePath)
 
         if (!resultFile.exists()) {
-            val tempFileFolderPath = "${downloadFolder.absolutePath}/tmp"
+            val tempFileFolderPath = "${downloadFolder.absolutePath}/${TEMP_FOLDER_NAME}"
             val tempDir = File(tempFileFolderPath)
             if (tempDir.exists()) tempDir.deleteRecursively()
             tempDir.mkdirs()
 
-            val tempResult = File(tempFileFolderPath, params.name)
+            val tempResult = File(tempFileFolderPath, params.filename)
             FileOutputStream(tempResult).use {
                 it.write(params.content.toByteArray())
             }
 
             tempResult.renameTo(resultFile)
+            tempDir.deleteRecursively()
         }
-        return uriFileProvider.getUriForFile(resultFile)
+        return resultFile
+    }
+
+    companion object {
+        const val DEFAULT_FOLDER_NAME = "debug_space"
+        const val TEMP_FOLDER_NAME = "tmp"
     }
 }

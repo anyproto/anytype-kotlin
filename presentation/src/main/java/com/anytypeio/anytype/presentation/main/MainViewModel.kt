@@ -8,7 +8,6 @@ import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -76,7 +75,7 @@ class MainViewModel(
 
     private fun proceedWithLogoutDueToAccountDeletion() {
         viewModelScope.launch {
-            logout(Logout.Params(false)).collect { status ->
+            logout(Logout.Params(clearLocalRepositoryData = false)).collect { status ->
                 when (status) {
                     is Interactor.Status.Error -> {
                         toasts.emit("Error while logging out due to account deletion")

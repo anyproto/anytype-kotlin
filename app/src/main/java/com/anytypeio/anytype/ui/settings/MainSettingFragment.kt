@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -146,7 +147,13 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
                 safeNavigate(R.id.actionOpenFilesStorageScreen)
             }
             is Command.Toast -> {
-                toast(msg = command.msg)
+                toast(
+                    msg = command.msg,
+                    duration = if (command.isLongDuration)
+                        Toast.LENGTH_LONG
+                    else
+                        Toast.LENGTH_SHORT
+                )
             }
             is Command.ShareSpaceDebug -> {
                 try {

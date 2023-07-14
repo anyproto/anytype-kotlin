@@ -138,7 +138,7 @@ class MainSettingFragment : BaseBottomSheetComposeFragment() {
                 safeNavigate(
                     R.id.actionOpenImagePickerScreen, bundleOf(
                         ARG_CONTEXT_ID_KEY to command.id,
-                        ARG_SHOW_REMOVE_BUTTON to true
+                        ARG_SHOW_REMOVE_BUTTON to command.showRemoveButton
                     )
                 )
             }

@@ -103,11 +103,16 @@ class MainSettingsViewModel(
             Event.OnDebugClicked -> {
                 proceedWithSpaceDebug()
             }
-            Event.OnSpaceImageClicked -> commands.emit(
-                Command.OpenSpaceImageSet(
-                    configStorage.get().workspace
+            Event.OnSpaceImageClicked -> {
+                val showRemoveButton =
+                    (workspaceAndAccount.value as? WorkspaceAndAccount.Account)?.space?.icon !is SpaceIconView.Gradient
+                commands.emit(
+                    Command.OpenSpaceImageSet(
+                        id = configStorage.get().workspace,
+                        showRemoveButton = showRemoveButton
+                    )
                 )
-            )
+            }
             Event.OnFilesStorageClicked -> {
                 commands.emit(Command.OpenFilesStorageScreen)
             }
@@ -230,7 +235,7 @@ class MainSettingsViewModel(
         object OpenProfileScreen : Command()
         object OpenPersonalizationScreen : Command()
         object OpenDebugScreen : Command()
-        class OpenSpaceImageSet(val id: Id) : Command()
+        class OpenSpaceImageSet(val id: Id, val showRemoveButton: Boolean) : Command()
         object OpenFilesStorageScreen : Command()
         data class Toast(val msg: String) : Command()
         data class ShareSpaceDebug(val path: Filepath): Command()

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.collectionsSorts
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -168,7 +169,7 @@ class ListWidgetContainer(
             BundledWidgetSourceIds.COLLECTIONS -> {
                 StoreSearchParams(
                     subscription = subscription,
-                    sorts = emptyList(),
+                    sorts = collectionsSorts,
                     filters = ObjectSearchConstants.collectionFilters(workspace),
                     keys = keys,
                     limit = limit

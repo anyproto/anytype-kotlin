@@ -58,29 +58,17 @@ class ListWidgetContainer(
                     .map { obj -> obj.orderOfRootObjects(obj.root) }
                     .catch { emit(emptyMap()) }
                     .flatMapLatest { order ->
+                        val customFavoritesOrder = order.entries.sortedBy { (id, idx) ->
+                            idx
+                        }.map { (id, idx) -> id }
                         storage.subscribe(
-                            buildParams(
-                                customFavoritesOrder = order.entries.sortedBy {
-                                    it.value
-                                }.map { it.key }
-                            )
+                            buildParams(customFavoritesOrder = customFavoritesOrder)
                         ).map { objects ->
                             buildWidgetViewWithElements(
                                 objects = objects.sortedBy { obj -> order[obj.id] }
                             )
                         }
                     }
-//                combine(
-//                    storage.subscribe(buildParams()),
-//                    objectWatcher
-//                        .watch(config.home)
-//                        .map { obj -> obj.orderOfRootObjects(obj.root) }
-//                        .catch { emit(emptyMap()) }
-//                ) { objects, order ->
-//                    buildWidgetViewWithElements(
-//                        objects = objects.sortedBy { obj -> order[obj.id] }
-//                    )
-//                }
             } else {
                 storage.subscribe(buildParams()).map { objects ->
                     buildWidgetViewWithElements(

@@ -20,6 +20,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
+import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.drawable
@@ -223,6 +224,11 @@ class LinkToObjectFragment : BaseBottomSheetTextInputFragment<FragmentObjectSear
                 DividerItemDecoration(context, DividerItemDecoration.VERTICAL).apply {
                     setDrawable(drawable(R.drawable.divider_object_search))
                 }
+            )
+            addItemDecoration(
+                SpacingItemDecoration(
+                    lastItemSpacingBottom = resources.getDimension(R.dimen.dp_120).toInt()
+                )
             )
         }
     }

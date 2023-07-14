@@ -772,6 +772,14 @@ object ObjectSearchConstants {
         )
     )
 
+    val collectionsSorts = listOf(
+        DVSort(
+            relationKey = Relations.LAST_MODIFIED_DATE,
+            type = DVSortType.DESC,
+            includeTime = true
+        )
+    )
+
     fun filesFilters(workspaceId: String) = listOf(
         DVFilter(
             relation = Relations.IS_DELETED,

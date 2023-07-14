@@ -73,6 +73,10 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
         (dialog as? BottomSheetDialog)?.behavior?.state = STATE_EXPANDED
     }
 
+    fun skipCollapsed() {
+        (dialog as? BottomSheetDialog)?.behavior?.skipCollapsed = true
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         injectDependencies()

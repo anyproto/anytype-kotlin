@@ -343,7 +343,8 @@ fun Block.Content.DataView.Sort.toMiddlewareModel(): MDVSort =
         id = id,
         RelationKey = relationKey,
         type = type.toMiddlewareModel(),
-        includeTime = includeTime
+        includeTime = includeTime,
+        customOrder = customOrder
     )
 
 fun Block.Content.DataView.Sort.Type.toMiddlewareModel(): MDVSortType = when (this) {

@@ -2,6 +2,8 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -14,7 +16,6 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -52,17 +53,23 @@ class ListWidgetContainer(
         } else {
             if (subscription == BundledWidgetSourceIds.FAVORITE) {
                 // Objects from favorites have custom sorting logic.
-                combine(
-                    storage.subscribe(buildParams()),
-                    objectWatcher
-                        .watch(config.home)
-                        .map { obj -> obj.orderOfRootObjects(obj.root) }
-                        .catch { emit(emptyMap()) }
-                ) { objects, order ->
-                    buildWidgetViewWithElements(
-                        objects = objects.sortedBy { obj -> order[obj.id] }
-                    )
-                }
+                // TODO consider switching to search-by-id?
+                objectWatcher
+                    .watch(config.home)
+                    .map { obj -> obj.orderOfRootObjects(obj.root) }
+                    .catch { emit(emptyMap()) }
+                    .flatMapLatest { order ->
+                        val customFavoritesOrder = order.entries.sortedBy { (id, idx) ->
+                            idx
+                        }.map { (id, idx) -> id }
+                        storage.subscribe(
+                            buildParams(customFavoritesOrder = customFavoritesOrder)
+                        ).map { objects ->
+                            buildWidgetViewWithElements(
+                                objects = objects.sortedBy { obj -> order[obj.id] }
+                            )
+                        }
+                    }
             } else {
                 storage.subscribe(buildParams()).map { objects ->
                     buildWidgetViewWithElements(
@@ -89,11 +96,14 @@ class ListWidgetContainer(
         isCompact = widget.isCompact
     )
 
-    private fun buildParams() = params(
+    private fun buildParams(
+        customFavoritesOrder: List<Id> = emptyList()
+    ) = params(
         subscription = subscription,
         workspace = workspace,
         keys = keys,
-        limit = resolveLimit()
+        limit = resolveLimit(),
+        customFavoritesOrder = customFavoritesOrder
     )
 
     private fun resolveType() = when (subscription) {
@@ -115,7 +125,8 @@ class ListWidgetContainer(
             subscription: Id,
             workspace: Id,
             keys: List<Id>,
-            limit: Int
+            limit: Int,
+            customFavoritesOrder: List<Id> = emptyList()
         ) : StoreSearchParams = when (subscription) {
             BundledWidgetSourceIds.RECENT -> {
                 StoreSearchParams(
@@ -138,7 +149,17 @@ class ListWidgetContainer(
             BundledWidgetSourceIds.FAVORITE -> {
                 StoreSearchParams(
                     subscription = subscription,
-                    sorts = emptyList(),
+                    sorts = buildList {
+                        if (customFavoritesOrder.isNotEmpty()) {
+                            add(
+                                DVSort(
+                                    relationKey = Relations.ID,
+                                    type = DVSortType.CUSTOM,
+                                    customOrder = customFavoritesOrder
+                                )
+                            )
+                        }
+                    },
                     filters = ObjectSearchConstants.filterTabFavorites(workspace),
                     keys = keys,
                     limit = limit

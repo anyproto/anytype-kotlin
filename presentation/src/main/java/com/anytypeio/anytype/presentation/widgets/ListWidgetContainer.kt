@@ -53,6 +53,7 @@ class ListWidgetContainer(
         } else {
             if (subscription == BundledWidgetSourceIds.FAVORITE) {
                 // Objects from favorites have custom sorting logic.
+                // TODO consider switching to search-by-id?
                 objectWatcher
                     .watch(config.home)
                     .map { obj -> obj.orderOfRootObjects(obj.root) }

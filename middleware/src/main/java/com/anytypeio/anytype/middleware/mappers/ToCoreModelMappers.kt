@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.FileLimits
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
@@ -588,7 +589,9 @@ fun MDVSort.toCoreModels(): Block.Content.DataView.Sort = DVSort(
     relationKey = RelationKey,
     type = type.toCoreModels(),
     includeTime = includeTime,
-    customOrder = customOrder.mapNotNull { it }
+    customOrder = customOrder.mapNotNull { value ->
+        if (value is Id) value else null
+    }
 )
 
 fun MDVSortType.toCoreModels(): DVSortType = when (this) {

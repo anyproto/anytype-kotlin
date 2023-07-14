@@ -324,7 +324,7 @@ data class Block(
                 val relationKey: String,
                 val type: Type,
                 val includeTime: Boolean = false,
-                val customOrder: List<Any> = emptyList()
+                val customOrder: List<Id> = emptyList()
             ) {
                 enum class Type(val formattedName: String) {
                     ASC("ascending"),

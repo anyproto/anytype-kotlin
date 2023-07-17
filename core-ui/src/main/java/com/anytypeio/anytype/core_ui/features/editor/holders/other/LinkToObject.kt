@@ -6,13 +6,10 @@ import android.text.style.LeadingMarginSpan
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
-import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkBinding
-import com.anytypeio.anytype.core_ui.extensions.setBlockBackgroundColor
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
@@ -22,7 +19,6 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Searchable.Field.Companion.DEFAULT_SEARCH_FIELD_KEY
@@ -41,7 +37,7 @@ class LinkToObject(
     private val untitled = itemView.resources.getString(R.string.untitled)
     val objectIcon = binding.objectIconWidget
     private val objectIconContainer = binding.iconObjectContainer
-    private val title = binding.text
+    val title = binding.text
     private val description = binding.tvDescription
     private val objectType = binding.tvObjectType
 
@@ -63,8 +59,8 @@ class LinkToObject(
         applyText(item)
         applyDescription(item)
         applyObjectType(item)
-        applySearchHighlight(item)
         applyImageOrEmoji(item)
+        applySearchHighlight(item)
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
     }
 
@@ -89,7 +85,7 @@ class LinkToObject(
                     )
                 }
                 title.visible()
-                title.text = sb
+                title.setText(sb, TextView.BufferType.EDITABLE)
             }
             else -> {
                 val sb = SpannableString(name)
@@ -101,7 +97,7 @@ class LinkToObject(
                     )
                 }
                 title.visible()
-                title.text = sb
+                title.setText(sb, TextView.BufferType.EDITABLE)
             }
         }
     }
@@ -181,9 +177,6 @@ class LinkToObject(
             if (payload.isSelectionChanged) {
                 applySelectedState(item)
             }
-            if (payload.isSearchHighlightChanged) {
-                applySearchHighlight(item)
-            }
             if (payload.isObjectTitleChanged) {
                 applyText(item)
             }
@@ -195,6 +188,9 @@ class LinkToObject(
             }
             if (payload.isObjectTypeChanged) {
                 applyObjectType(item)
+            }
+            if (payload.isSearchHighlightChanged) {
+                applySearchHighlight(item)
             }
         }
     }

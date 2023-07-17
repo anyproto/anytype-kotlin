@@ -157,14 +157,18 @@ class HomeScreenViewModel(
     val icon = MutableStateFlow<SpaceIconView>(SpaceIconView.Loading)
 
     init {
-        val config = configStorage.get()
-        proceedWithObservingSpaceIcon(config)
-        proceedWithLaunchingUnsubscriber()
-        proceedWithObjectViewStatePipeline(config)
-        proceedWithWidgetContainerPipeline(config)
-        proceedWithRenderingPipeline()
-        proceedWithObservingDispatches()
-        proceedWithSettingUpShortcuts()
+        val config = configStorage.getOrNull()
+        if (config != null) {
+            proceedWithObservingSpaceIcon(config)
+            proceedWithLaunchingUnsubscriber()
+            proceedWithObjectViewStatePipeline(config)
+            proceedWithWidgetContainerPipeline(config)
+            proceedWithRenderingPipeline()
+            proceedWithObservingDispatches(config)
+            proceedWithSettingUpShortcuts()
+        } else {
+            Timber.e("Failed to get config to initialize home component")
+        }
     }
 
     private fun proceedWithLaunchingUnsubscriber() {
@@ -361,7 +365,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithObservingDispatches() {
+    private fun proceedWithObservingDispatches(config: Config) {
         viewModelScope.launch {
             widgetEventDispatcher.flow().collect { dispatch ->
                 Timber.d("New dispatch: $dispatch")
@@ -369,7 +373,7 @@ class HomeScreenViewModel(
                     is WidgetDispatchEvent.SourcePicked.Default -> {
                         commands.emit(
                             Command.SelectWidgetType(
-                                ctx = configStorage.get().widgets,
+                                ctx = config.widgets,
                                 source = dispatch.source,
                                 layout = dispatch.sourceLayout,
                                 target = dispatch.target,
@@ -380,7 +384,7 @@ class HomeScreenViewModel(
                     is WidgetDispatchEvent.SourcePicked.Bundled -> {
                         commands.emit(
                             Command.SelectWidgetType(
-                                ctx = configStorage.get().widgets,
+                                ctx = config.widgets,
                                 source = dispatch.source,
                                 layout = ObjectType.Layout.SET.code,
                                 target = dispatch.target,
@@ -413,35 +417,41 @@ class HomeScreenViewModel(
         target: Id?
     ) {
         viewModelScope.launch {
-            val config = configStorage.get()
-            createWidget(
-                CreateWidget.Params(
-                    ctx = config.widgets,
-                    source = source,
-                    type = when (type) {
-                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
-                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
-                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
-                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
-                        else -> WidgetLayout.LINK
-                    },
-                    target = target,
-                    position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
-                )
-            ).flowOn(appCoroutineDispatchers.io).collect { status ->
-                Timber.d("Status while creating widget: $status")
-                when (status) {
-                    is Resultat.Failure -> {
-                        sendToast("Error while creating widget: ${status.exception}")
-                        Timber.e(status.exception, "Error while creating widget")
-                    }
-                    is Resultat.Loading -> {
-                        // Do nothing?
-                    }
-                    is Resultat.Success -> {
-                        objectPayloadDispatcher.send(status.value)
+            val config = configStorage.getOrNull()
+            if (config != null) {
+                createWidget(
+                    CreateWidget.Params(
+                        ctx = config.widgets,
+                        source = source,
+                        type = when (type) {
+                            Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                            Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                            Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                            Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
+                            else -> WidgetLayout.LINK
+                        },
+                        target = target,
+                        position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
+                    )
+                ).flowOn(appCoroutineDispatchers.io).collect { status ->
+                    Timber.d("Status while creating widget: $status")
+                    when (status) {
+                        is Resultat.Failure -> {
+                            sendToast("Error while creating widget: ${status.exception}")
+                            Timber.e(status.exception, "Error while creating widget")
+                        }
+
+                        is Resultat.Loading -> {
+                            // Do nothing?
+                        }
+
+                        is Resultat.Success -> {
+                            objectPayloadDispatcher.send(status.value)
+                        }
                     }
                 }
+            } else {
+                Timber.e("Failed to get config to create widgets")
             }
         }
     }
@@ -455,65 +465,77 @@ class HomeScreenViewModel(
         type: Int
     ) {
         viewModelScope.launch {
-            val config = configStorage.get()
-            updateWidget(
-                UpdateWidget.Params(
-                    ctx = config.widgets,
-                    source = source,
-                    widget = widget,
-                    type = when (type) {
-                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
-                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
-                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
-                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
-                        else -> throw IllegalStateException("Unexpected type: $type")
-                    }
-                )
-            ).flowOn(appCoroutineDispatchers.io).collect { status ->
-                Timber.d("Status while creating widget: $status")
-                when (status) {
-                    is Resultat.Failure -> {
-                        sendToast("Error while creating widget: ${status.exception}")
-                        Timber.e(status.exception, "Error while creating widget")
-                    }
-                    is Resultat.Loading -> {
-                        // Do nothing?
-                    }
-                    is Resultat.Success -> {
-                        launch {
-                            objectPayloadDispatcher.send(status.value)
+            val config = configStorage.getOrNull()
+            if (config != null) {
+                updateWidget(
+                    UpdateWidget.Params(
+                        ctx = config.widgets,
+                        source = source,
+                        widget = widget,
+                        type = when (type) {
+                            Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                            Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                            Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                            Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
+                            else -> throw IllegalStateException("Unexpected type: $type")
+                        }
+                    )
+                ).flowOn(appCoroutineDispatchers.io).collect { status ->
+                    Timber.d("Status while creating widget: $status")
+                    when (status) {
+                        is Resultat.Failure -> {
+                            sendToast("Error while creating widget: ${status.exception}")
+                            Timber.e(status.exception, "Error while creating widget")
+                        }
+
+                        is Resultat.Loading -> {
+                            // Do nothing?
+                        }
+
+                        is Resultat.Success -> {
+                            launch {
+                                objectPayloadDispatcher.send(status.value)
+                            }
                         }
                     }
                 }
+            } else {
+                Timber.e("Failed to get config to update widgets")
             }
         }
     }
 
     private fun proceedWithDeletingWidget(widget: Id) {
         viewModelScope.launch {
-            val config = configStorage.get()
-            val target = widgets.value.orEmpty().find { it.id == widget }
-            deleteWidget.stream(
-                DeleteWidget.Params(
-                    ctx = config.widgets,
-                    targets = listOf(widget)
-                )
-            ).flowOn(appCoroutineDispatchers.io).collect { status ->
-                Timber.d("Status while deleting widget: $status")
-                when (status) {
-                    is Resultat.Failure -> {
-                        sendToast("Error while deleting widget: ${status.exception}")
-                        Timber.e(status.exception, "Error while deleting widget")
-                    }
-                    is Resultat.Loading -> {
-                        // Do nothing?
-                    }
-                    is Resultat.Success -> {
-                        objectPayloadDispatcher.send(status.value).also {
-                            dispatchDeleteWidgetAnalyticsEvent(target)
+            val config = configStorage.getOrNull()
+            if (config != null) {
+                val target = widgets.value.orEmpty().find { it.id == widget }
+                deleteWidget.stream(
+                    DeleteWidget.Params(
+                        ctx = config.widgets,
+                        targets = listOf(widget)
+                    )
+                ).flowOn(appCoroutineDispatchers.io).collect { status ->
+                    Timber.d("Status while deleting widget: $status")
+                    when (status) {
+                        is Resultat.Failure -> {
+                            sendToast("Error while deleting widget: ${status.exception}")
+                            Timber.e(status.exception, "Error while deleting widget")
+                        }
+
+                        is Resultat.Loading -> {
+                            // Do nothing?
+                        }
+
+                        is Resultat.Success -> {
+                            objectPayloadDispatcher.send(status.value).also {
+                                dispatchDeleteWidgetAnalyticsEvent(target)
+                            }
                         }
                     }
                 }
+            } else {
+                Timber.e("Failed to get config to delete a widget")
             }
         }
     }
@@ -686,21 +708,26 @@ class HomeScreenViewModel(
         val curr = widgets.value.orEmpty().find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
-                commands.emit(
-                    Command.ChangeWidgetType(
-                        ctx = configStorage.get().widgets,
-                        widget = widget,
-                        source = curr.source.id,
-                        type = parseWidgetType(curr),
-                        layout = when (val source = curr.source) {
-                            is Widget.Source.Bundled -> UNDEFINED_LAYOUT_CODE
-                            is Widget.Source.Default -> {
-                                source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
-                            }
-                        },
-                        isInEditMode = isInEditMode()
+                val config = configStorage.getOrNull()
+                if (config != null) {
+                    commands.emit(
+                        Command.ChangeWidgetType(
+                            ctx = config.widgets,
+                            widget = widget,
+                            source = curr.source.id,
+                            type = parseWidgetType(curr),
+                            layout = when (val source = curr.source) {
+                                is Widget.Source.Bundled -> UNDEFINED_LAYOUT_CODE
+                                is Widget.Source.Default -> {
+                                    source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
+                                }
+                            },
+                            isInEditMode = isInEditMode()
+                        )
                     )
-                )
+                } else {
+                    Timber.e("Failed to get config to change widget type")
+                }
             }
         } else {
             sendToast("Widget missing. Please try again later")
@@ -711,15 +738,20 @@ class HomeScreenViewModel(
         val curr = widgets.value.orEmpty().find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
-                commands.emit(
-                    Command.ChangeWidgetSource(
-                        ctx = configStorage.get().widgets,
-                        widget = widget,
-                        source = curr.source.id,
-                        type = parseWidgetType(curr),
-                        isInEditMode = isInEditMode()
+                val config = configStorage.getOrNull()
+                if (config != null) {
+                    commands.emit(
+                        Command.ChangeWidgetSource(
+                            ctx = config.widgets,
+                            widget = widget,
+                            source = curr.source.id,
+                            type = parseWidgetType(curr),
+                            isInEditMode = isInEditMode()
+                        )
                     )
-                )
+                } else {
+                    Timber.e("Failed to get config to change widget source")
+                }
             }
         } else {
             sendToast("Widget missing. Please try again later")
@@ -848,10 +880,18 @@ class HomeScreenViewModel(
                 if (session != null) {
                     collapsedWidgetStateHolder.set(session.collapsed)
                 }
-                proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
+                val config = configStorage.getOrNull()
+                if (config != null)
+                    proceedWithOpeningWidgetObject(widgetObject = config.widgets)
+                else
+                    Timber.d("Failed to get config to open widget object")
             }
         } else {
-            proceedWithOpeningWidgetObject(widgetObject = configStorage.get().widgets)
+            val config = configStorage.getOrNull()
+            if (config != null)
+                proceedWithOpeningWidgetObject(widgetObject = config.widgets)
+            else
+                Timber.d("Failed to get config to open widget object")
         }
     }
 
@@ -913,29 +953,33 @@ class HomeScreenViewModel(
     }
 
     fun onMove(views: List<WidgetView>, from: Int, to: Int) {
-        viewModelScope.launch {
-            val direction = if (from < to) Position.BOTTOM else Position.TOP
-            val subject = views[to]
-            val target = if (direction == Position.TOP) views[to.inc()].id else views[to.dec()].id
-            move.stream(
-                Move.Params(
-                    context = configStorage.get().widgets,
-                    targetId = target,
-                    targetContext = configStorage.get().widgets,
-                    blockIds = listOf(subject.id),
-                    position = direction
-                )
-            ).collect { result ->
-                result.fold(
-                    onSuccess = {
-                        objectPayloadDispatcher.send(it).also {
-                            dispatchReorderWidgetAnalyticEvent(subject)
-                        }
-                    },
-                    onFailure = { Timber.e(it, "Error while moving blocks") }
-                )
+        val config = configStorage.getOrNull()
+        if (config != null)
+            viewModelScope.launch {
+                val direction = if (from < to) Position.BOTTOM else Position.TOP
+                val subject = views[to]
+                val target = if (direction == Position.TOP) views[to.inc()].id else views[to.dec()].id
+                move.stream(
+                    Move.Params(
+                        context = config.widgets,
+                        targetId = target,
+                        targetContext = config.widgets,
+                        blockIds = listOf(subject.id),
+                        position = direction
+                    )
+                ).collect { result ->
+                    result.fold(
+                        onSuccess = {
+                            objectPayloadDispatcher.send(it).also {
+                                dispatchReorderWidgetAnalyticEvent(subject)
+                            }
+                        },
+                        onFailure = { Timber.e(it, "Error while moving blocks") }
+                    )
+                }
             }
-        }
+        else
+            Timber.e("Failed to get config for move operation")
     }
 
     private fun proceedWithSettingUpShortcuts() {
@@ -1062,18 +1106,22 @@ class HomeScreenViewModel(
             view = view
         ).also {
             viewModelScope.launch {
-                setWidgetActiveView.stream(
-                    SetWidgetActiveView.Params(
-                        ctx = configStorage.get().widgets,
-                        widget = widget,
-                        view = view,
-                    )
-                ).collect { result ->
-                    result.fold(
-                        onSuccess = { objectPayloadDispatcher.send(it) },
-                        onFailure = { Timber.e(it, "Error while updating active view") }
-                    )
-                }
+                val config = configStorage.getOrNull()
+                if (config != null)
+                    setWidgetActiveView.stream(
+                        SetWidgetActiveView.Params(
+                            ctx = config.widgets,
+                            widget = widget,
+                            view = view,
+                        )
+                    ).collect { result ->
+                        result.fold(
+                            onSuccess = { objectPayloadDispatcher.send(it) },
+                            onFailure = { Timber.e(it, "Error while updating active view") }
+                        )
+                    }
+                else
+                    Timber.e("Failed to get config to set active widget view")
             }
         }
     }

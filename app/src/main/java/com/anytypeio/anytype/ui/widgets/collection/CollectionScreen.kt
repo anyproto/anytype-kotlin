@@ -461,7 +461,7 @@ fun CollectionItem(
                     .padding(0.dp, 0.dp, 60.dp, 0.dp)
             ) {
 
-                val name = view.obj.name.ifBlank { stringResource(R.string.untitled) }
+                val name = view.obj.name.trim().ifBlank { stringResource(R.string.untitled) }
 
                 Text(
                     text = name,

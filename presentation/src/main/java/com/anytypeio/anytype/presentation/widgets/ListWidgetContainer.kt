@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -54,17 +55,18 @@ class ListWidgetContainer(
         } else {
             if (subscription == BundledWidgetSourceIds.FAVORITE) {
                 // Objects from favorites have custom sorting logic.
-                // TODO consider switching to search-by-id?
                 objectWatcher
                     .watch(config.home)
                     .map { obj -> obj.orderOfRootObjects(obj.root) }
                     .catch { emit(emptyMap()) }
                     .flatMapLatest { order ->
-                        val customFavoritesOrder = order.entries.sortedBy { (id, idx) ->
-                            idx
-                        }.map { (id, idx) -> id }
                         storage.subscribe(
-                            buildParams(customFavoritesOrder = customFavoritesOrder)
+                            StoreSearchByIdsParams(
+                                subscription = subscription,
+                                targets = order.keys.toList(),
+                                keys = keys
+                            )
+
                         ).map { objects ->
                             buildWidgetViewWithElements(
                                 objects = objects.sortedBy { obj -> order[obj.id] }

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteStorageFragment
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
+import timber.log.Timber
 
 class Navigator : AppNavigation {
 
@@ -71,7 +72,11 @@ class Navigator : AppNavigation {
     override fun workspace() {}
 
     override fun openSettings() {
-        navController?.navigate(R.id.action_open_settings)
+        try {
+            navController?.navigate(R.id.action_open_settings)
+        } catch (e: Exception) {
+            Timber.e(e, "Error while opening settings")
+        }
     }
 
     override fun openDocument(id: String) {

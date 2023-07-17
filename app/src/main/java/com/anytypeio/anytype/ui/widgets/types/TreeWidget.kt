@@ -200,7 +200,8 @@ private fun TreeWidgetTreeItems(
                 TreeWidgetObjectIcon(
                     icon = element.objectIcon,
                     paddingStart = 8.dp,
-                    paddingEnd = 4.dp
+                    paddingEnd = 4.dp,
+                    modifier = Modifier.align(Alignment.CenterVertically)
                 )
             }
             Text(

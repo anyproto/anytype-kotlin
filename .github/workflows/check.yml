@@ -3,7 +3,7 @@ on:
   pull_request:
     # add "synchronize" in "types", in order to trigger workflow for pull request commit(s) pushes.
     types: [ opened ]
-    branches: [ main ]
+    branches: [ main, releases/**]
 name: Run debug unit tests
 jobs:
   setup-android:

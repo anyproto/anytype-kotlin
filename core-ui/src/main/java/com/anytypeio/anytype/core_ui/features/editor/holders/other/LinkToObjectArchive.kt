@@ -35,7 +35,7 @@ class LinkToObjectArchive(
 
     private val root = binding.root
     private val untitled = itemView.resources.getString(R.string.untitled)
-    private val title = binding.pageTitle
+    val title = binding.pageTitle
 
     override val editorTouchProcessor = EditorTouchProcessor(
         fallback = { e -> itemView.onTouchEvent(e) }

@@ -5722,7 +5722,7 @@ class EditorViewModel(
         val target = blocks.first { it.id == focus.value }
 
         val new = target.addMention(
-            mentionText = name,
+            mentionText = name.getMentionName(MENTION_TITLE_EMPTY),
             mentionId = id,
             from = mentionFrom,
             mentionTrigger = mentionTrigger

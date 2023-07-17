@@ -1083,6 +1083,131 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         clearPendingCoroutines()
     }
 
+    @Test
+    fun `should update text as Untitled when mention text is empty`() {
+
+        val title = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Text(
+                text = MockDataFactory.randomString(),
+                style = Block.Content.Text.Style.TITLE,
+                marks = emptyList()
+            ),
+            children = emptyList(),
+            fields = Block.Fields.empty()
+        )
+
+        val header = Block(
+            id = MockDataFactory.randomUuid(),
+            content = Block.Content.Layout(
+                type = Block.Content.Layout.Type.HEADER
+            ),
+            fields = Block.Fields.empty(),
+            children = listOf(title.id)
+        )
+
+        val mentionTrigger = "@"
+        val from = 11
+        val givenText = "page about $mentionTrigger music"
+        val mentionText = ""
+        val mentionHash = "ryew78yfhiuwehudc"
+
+        val a = Block(
+            id = "dfhkshfjkhsdjhfjkhsjkd",
+            fields = Block.Fields.empty(),
+            children = emptyList(),
+            content = Block.Content.Text(
+                text = givenText,
+                marks = listOf(),
+                style = Block.Content.Text.Style.P
+            )
+        )
+
+        val page = Block(
+            id = root,
+            fields = Block.Fields(emptyMap()),
+            content = Block.Content.Smart,
+            children = listOf(header.id, a.id)
+        )
+
+        val document = listOf(page, header, title, a)
+
+        stubOpenDocument(document)
+        stubInterceptEvents()
+
+        updateText.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(Unit)
+        }
+
+        searchObjects.stub {
+            onBlocking { invoke(any()) } doReturn Either.Right(listOf())
+        }
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        vm.apply {
+            onBlockFocusChanged(
+                id = a.id,
+                hasFocus = true
+            )
+            onSelectionChanged(
+                id = a.id,
+                selection = IntRange(12, 12)
+            )
+            onMentionEvent(
+                MentionEvent.MentionSuggestStart(
+                    cursorCoordinate = 500,
+                    mentionStart = from
+                )
+            )
+            onCreateMentionInText(
+                id = mentionHash,
+                name = mentionText,
+                mentionTrigger = mentionTrigger
+            )
+        }
+
+        vm.state.test().apply {
+            assertValue(
+                ViewState.Success(
+                    blocks = listOf(
+                        BlockView.Title.Basic(
+                            id = title.id,
+                            isFocused = false,
+                            text = title.content<TXT>().text,
+                            mode = BlockView.Mode.EDIT
+                        ),
+                        BlockView.Text.Paragraph(
+                            id = a.id,
+                            cursor = 12,
+                            isSelected = false,
+                            isFocused = true,
+                            marks = listOf(
+                                Markup.Mark.Mention.Loading(
+                                    from = from,
+                                    to = from + MENTION_TITLE_EMPTY.length,
+                                    param = mentionHash
+                                )
+                            ),
+                            indent = 0,
+                            text = "page about $MENTION_TITLE_EMPTY  music",
+                            mode = BlockView.Mode.EDIT,
+                            decorations = listOf(
+                                BlockView.Decoration(
+                                    background = a.parseThemeBackgroundColor()
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        }
+
+        clearPendingCoroutines()
+    }
+
     private fun clearPendingCoroutines() {
         coroutineTestRule.advanceTime(EditorViewModel.TEXT_CHANGES_DEBOUNCE_DURATION)
     }

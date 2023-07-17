@@ -77,11 +77,11 @@ abstract class LinkToObjectCard(
 
         applyBackground(item.background)
 
-        applySearchHighlight(item)
-
         applyImageOrEmoji(item)
 
         applyObjectType(item)
+
+        applySearchHighlight(item)
 
         itemView.setOnClickListener { clicked(ListenerType.LinkToObject(item.id)) }
     }
@@ -97,12 +97,12 @@ abstract class LinkToObjectCard(
             name.isBlank() -> {
                 titleView.visible()
                 val sb = SpannableString(untitled)
-                titleView.setText(sb, TextView.BufferType.SPANNABLE)
+                titleView.setText(sb, TextView.BufferType.EDITABLE)
             }
             else -> {
                 titleView.visible()
                 val sb = SpannableString(name)
-                titleView.setText(sb, TextView.BufferType.SPANNABLE)
+                titleView.setText(sb, TextView.BufferType.EDITABLE)
             }
         }
     }

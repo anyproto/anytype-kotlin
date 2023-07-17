@@ -5,7 +5,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -1707,6 +1706,12 @@ class HomeScreenViewModelTest {
             results = listOf(firstLink, secondLink)
         )
 
+        stubSearchByIds(
+            subscription = favoriteSource.id,
+            keys = ListWidgetContainer.keys,
+            targets = emptyList()
+        )
+
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
@@ -1755,11 +1760,10 @@ class HomeScreenViewModelTest {
 
         verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
-                ListWidgetContainer.params(
+                StoreSearchByIdsParams(
                     subscription = favoriteSource.id,
-                    workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                    targets = emptyList()
                 )
             )
         }
@@ -1808,11 +1812,10 @@ class HomeScreenViewModelTest {
 
         verifyBlocking(storelessSubscriptionContainer, times(2)) {
             subscribe(
-                ListWidgetContainer.params(
+                StoreSearchByIdsParams(
                     subscription = favoriteSource.id,
-                    workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                    targets = emptyList()
                 )
             )
         }
@@ -2466,6 +2469,9 @@ class HomeScreenViewModelTest {
     private fun stubConfig() {
         configStorage.stub {
             on { get() } doReturn config
+        }
+        configStorage.stub {
+            on { getOrNull() } doReturn config
         }
     }
 

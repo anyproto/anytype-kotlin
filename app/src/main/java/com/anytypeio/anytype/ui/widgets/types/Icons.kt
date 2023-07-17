@@ -31,6 +31,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @Composable
 fun TreeWidgetObjectIcon(
+    modifier: Modifier = Modifier,
     icon: ObjectIcon,
     paddingStart: Dp,
     paddingEnd: Dp
@@ -38,7 +39,7 @@ fun TreeWidgetObjectIcon(
     when (icon) {
         is ObjectIcon.Profile.Avatar -> {
             Box(
-                modifier = Modifier
+                modifier = modifier
                     .height(18.dp)
                     .width(18.dp)
                     .padding(start = paddingStart, end = paddingEnd)
@@ -61,13 +62,13 @@ fun TreeWidgetObjectIcon(
         is ObjectIcon.Profile.Image -> {
             UriImage(
                 uri = icon.hash,
-                modifier = Modifier.padding(start = paddingStart, end = paddingEnd)
+                modifier = modifier.padding(start = paddingStart, end = paddingEnd)
             )
         }
         is ObjectIcon.Basic.Emoji -> {
             UriImage(
                 uri = Emojifier.safeUri(icon.unicode),
-                modifier = Modifier.padding(start = paddingStart, end = paddingEnd)
+                modifier = modifier.padding(start = paddingStart, end = paddingEnd)
             )
         }
         is ObjectIcon.Basic.Image -> {
@@ -89,7 +90,7 @@ fun TreeWidgetObjectIcon(
                 else
                     painterResource(id = R.drawable.ic_dashboard_task_checkbox_not_checked),
                 contentDescription = "Task icon",
-                modifier = Modifier.padding(start = paddingStart, end = paddingEnd)
+                modifier = modifier.padding(start = paddingStart, end = paddingEnd)
             )
         }
         else -> {

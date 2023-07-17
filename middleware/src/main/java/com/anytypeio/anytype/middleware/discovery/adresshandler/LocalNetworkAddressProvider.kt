@@ -5,6 +5,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import service.InterfaceGetter
 import service.Service
+import timber.log.Timber
 
 /**
  * This class is used for sending local Ip addresses to middleware.
@@ -18,7 +19,11 @@ class LocalNetworkAddressProvider(
 
     fun start() {
         scope.launch(dispatcher) {
-            Service.setInterfaceGetter(interfaceProvider)
+            try {
+                Service.setInterfaceGetter(interfaceProvider)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to set interface getter")
+            }
         }
     }
 }

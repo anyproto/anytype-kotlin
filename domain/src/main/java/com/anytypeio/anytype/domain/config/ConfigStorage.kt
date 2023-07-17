@@ -3,6 +3,8 @@ package com.anytypeio.anytype.domain.config
 import com.anytypeio.anytype.core_models.Config
 
 interface ConfigStorage {
+    @Deprecated("Unsafe method. Use getOrNull() instead")
+    @Throws(IllegalStateException::class)
     fun get(): Config
     fun getOrNull(): Config?
     fun set(config: Config)

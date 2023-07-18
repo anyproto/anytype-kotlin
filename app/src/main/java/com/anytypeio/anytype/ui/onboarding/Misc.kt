@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.ColorMnemonicPhrase
 import com.anytypeio.anytype.core_ui.ColorMnemonicStub
 import com.anytypeio.anytype.core_ui.ColorPagerIndicator
 import com.anytypeio.anytype.core_ui.ColorPagerIndicatorCurrent
@@ -45,6 +44,7 @@ import com.anytypeio.anytype.core_ui.ColorPagerIndicatorText
 import com.anytypeio.anytype.core_ui.ColorPlaceholderText
 import com.anytypeio.anytype.core_ui.ColorTextInput
 import com.anytypeio.anytype.core_ui.ColorTextInputCursor
+import com.anytypeio.anytype.core_ui.MnemonicPhraseColors
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
@@ -118,10 +118,10 @@ fun MnemonicPhraseWidget(
     ) {
         words.forEach { word ->
             Text(
-                modifier = Modifier.padding(horizontal = 3.dp),
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
                 text = word.lowercase(),
                 style = PreviewTitle1Regular.copy(
-                    color = ColorMnemonicPhrase
+                    color = MnemonicPhraseColors.random()
                 )
             )
         }

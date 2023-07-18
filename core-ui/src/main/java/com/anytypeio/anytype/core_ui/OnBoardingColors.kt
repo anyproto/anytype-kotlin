@@ -33,3 +33,14 @@ val ColorMnemonicStub = Color(0xFF252525)
 val ColorPlaceholderText = Color(0x4DFFFFFF)
 val ColorSoulConnectorLine = Color(0x30DBDAD4)
 val ColorSpaceBackground = Color(0xFFDBDAD4)
+
+
+val MnemonicPhraseColors = listOf(
+    Color(0xFFF1A91A),
+    Color(0xFFF55522),
+    Color(0xFF5871FF),
+    Color(0xFF18A3F1),
+    Color(0xFFDD2EA1),
+    Color(0xFFB354D7),
+    Color(0xFF5DD400),
+)

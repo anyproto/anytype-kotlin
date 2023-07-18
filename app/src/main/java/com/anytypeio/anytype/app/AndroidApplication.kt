@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.app
 
 import android.app.Application
+import android.os.StrictMode
+import android.os.StrictMode.ThreadPolicy
+import android.os.StrictMode.VmPolicy
 import com.amplitude.api.Amplitude
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.CrashReporter
@@ -46,12 +49,31 @@ class AndroidApplication : Application(), HasComponentDependencies {
     }
 
     override fun onCreate() {
+        if (BuildConfig.ENABLE_STRICT_MODE) {
+            enableStrictMode()
+        }
         super.onCreate()
         main.inject(this)
         setupAnalytics()
         setupTimber()
         setupCrashReporter()
         setupLocalNetworkAddressHandler()
+    }
+
+    private fun enableStrictMode() {
+        StrictMode.setThreadPolicy(
+            ThreadPolicy.Builder()
+                .detectAll()
+                .penaltyLog()
+                .build()
+        )
+        StrictMode.setVmPolicy(
+            VmPolicy.Builder()
+                .detectLeakedSqlLiteObjects()
+                .detectLeakedClosableObjects()
+                .penaltyLog()
+                .build()
+        )
     }
 
     private fun setupTimber() {

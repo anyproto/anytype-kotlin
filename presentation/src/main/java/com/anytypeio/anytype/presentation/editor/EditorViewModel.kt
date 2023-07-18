@@ -2628,7 +2628,6 @@ class EditorViewModel(
             uiBlock = uiBlock,
             errorAction = { sendToast("Cannot convert block to $uiBlock") }
         )
-        dispatch(Command.PopBackStack)
     }
 
     fun onUpdateTextBlockStyle(uiBlock: UiBlock) {

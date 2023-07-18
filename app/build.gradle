@@ -47,6 +47,7 @@ android {
         buildConfigField "boolean", "LOG_DASHBOARD_REDUCER", localProperties.getProperty("LOG_DASHBOARD_REDUCER", "false")
         buildConfigField "boolean", "LOG_EDITOR_VIEWMODEL_EVENTS", localProperties.getProperty("LOG_EDITOR_VIEWMODEL_EVENTS", "false")
         buildConfigField "boolean", "LOG_EDITOR_CONTROL_PANEL", localProperties.getProperty("LOG_EDITOR_CONTROL_PANEL", "false")
+        buildConfigField "boolean", "ENABLE_STRICT_MODE", "false"
         resValue "string", "SENTRY_DSN", config.sentryApiKey
     }
 

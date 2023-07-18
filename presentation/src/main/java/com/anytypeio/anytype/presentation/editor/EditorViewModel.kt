@@ -2628,7 +2628,6 @@ class EditorViewModel(
             uiBlock = uiBlock,
             errorAction = { sendToast("Cannot convert block to $uiBlock") }
         )
-        dispatch(Command.PopBackStack)
     }
 
     fun onUpdateTextBlockStyle(uiBlock: UiBlock) {
@@ -4736,7 +4735,6 @@ class EditorViewModel(
             val update = views.update(new)
             viewModelScope.launch {
                 orchestrator.stores.views.update(update)
-                renderCommand.send(Unit)
             }
             return new
         }

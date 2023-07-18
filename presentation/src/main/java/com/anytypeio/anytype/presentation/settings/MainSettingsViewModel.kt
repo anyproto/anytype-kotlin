@@ -23,6 +23,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -44,43 +45,47 @@ class MainSettingsViewModel(
     val events = MutableSharedFlow<Event>(replay = 0)
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    private val profileId = configStorage.get().profile
-    private val workspaceId = configStorage.get().workspace
+    private val profileId = configStorage.getOrNull()?.profile
+    private val workspaceId = configStorage.getOrNull()?.workspace
 
-    val workspaceAndAccount = storelessSubscriptionContainer.subscribe(
-        StoreSearchByIdsParams(
-            subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
-            targets = listOf(workspaceId, profileId),
-            keys = listOf(
-                Relations.ID,
-                Relations.NAME,
-                Relations.ICON_EMOJI,
-                Relations.ICON_IMAGE,
-                Relations.ICON_OPTION
+    val workspaceAndAccount = if (workspaceId != null && profileId != null) {
+        storelessSubscriptionContainer.subscribe(
+            StoreSearchByIdsParams(
+                subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
+                targets = listOf(workspaceId, profileId),
+                keys = listOf(
+                    Relations.ID,
+                    Relations.NAME,
+                    Relations.ICON_EMOJI,
+                    Relations.ICON_IMAGE,
+                    Relations.ICON_OPTION
+                )
             )
+        ).map { result ->
+            val workspace = result.find { it.id == workspaceId }
+            val profile = result.find { it.id == profileId }
+            WorkspaceAndAccount.Account(
+                space = workspace?.let {
+                    WorkspaceAndAccount.SpaceData(
+                        name = workspace.name ?: "",
+                        icon = workspace.spaceIcon(urlBuilder, spaceGradientProvider)
+                    )
+                },
+                profile = profile?.let {
+                    WorkspaceAndAccount.ProfileData(
+                        name = profile.name ?: "",
+                        icon = profile.profileIcon(urlBuilder, spaceGradientProvider)
+                    )
+                }
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
+            WorkspaceAndAccount.Idle
         )
-    ).map { result ->
-        val workspace = result.find { it.id == workspaceId }
-        val profile = result.find { it.id == profileId }
-        WorkspaceAndAccount.Account(
-            space = workspace?.let {
-                WorkspaceAndAccount.SpaceData(
-                    name = workspace.name ?: "",
-                    icon = workspace.spaceIcon(urlBuilder, spaceGradientProvider)
-                )
-            },
-            profile = profile?.let {
-                WorkspaceAndAccount.ProfileData(
-                    name = profile.name ?: "",
-                    icon = profile.profileIcon(urlBuilder, spaceGradientProvider)
-                )
-            }
-        )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
-        WorkspaceAndAccount.Idle
-    )
+    } else {
+        MutableStateFlow(WorkspaceAndAccount.Idle)
+    }
 
     init {
         events
@@ -104,19 +109,27 @@ class MainSettingsViewModel(
                 proceedWithSpaceDebug()
             }
             Event.OnSpaceImageClicked -> {
-                val showRemoveButton =
-                    (workspaceAndAccount.value as? WorkspaceAndAccount.Account)?.space?.icon !is SpaceIconView.Gradient
-                commands.emit(
-                    Command.OpenSpaceImageSet(
-                        id = configStorage.get().workspace,
-                        showRemoveButton = showRemoveButton
+                val config = configStorage.getOrNull()
+                if (config != null) {
+                    commands.emit(
+                        Command.OpenSpaceImageSet(
+                            id = config.workspace,
+                            showRemoveButton = isShowRemoveButton()
+                        )
                     )
-                )
+                } else {
+                    commands.emit(Command.Toast(COULD_NOT_GET_CONFIG_ERROR))
+                }
             }
             Event.OnFilesStorageClicked -> {
                 commands.emit(Command.OpenFilesStorageScreen)
             }
         }
+    }
+
+    private fun isShowRemoveButton() : Boolean {
+        return (workspaceAndAccount.value as? WorkspaceAndAccount.Account)
+            ?.space?.icon !is SpaceIconView.Gradient
     }
 
     private fun proceedWithSpaceDebug() {
@@ -266,6 +279,7 @@ class MainSettingsViewModel(
 
     companion object {
         const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."
+        const val COULD_NOT_GET_CONFIG_ERROR = "Could not get config. Please, try again later."
     }
 }
 

@@ -532,7 +532,7 @@
     <dialog
         android:id="@+id/relationCreationFragment"
         android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromLibraryFragment"
-        android:label="RelationCreationFragment"></dialog>
+        android:label="RelationCreationFragment"/>
 
     <dialog
         android:id="@+id/typeEditingFragment"

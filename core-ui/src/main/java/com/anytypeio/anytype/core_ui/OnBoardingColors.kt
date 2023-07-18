@@ -44,3 +44,5 @@ val MnemonicPhrasePaletteColors = listOf(
     Color(0xFFB354D7),
     Color(0xFF5DD400),
 )
+
+const val MNEMONIC_WORD_COUNT = 12

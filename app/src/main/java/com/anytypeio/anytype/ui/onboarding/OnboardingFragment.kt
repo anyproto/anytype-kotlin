@@ -61,6 +61,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.BuildConfig
+import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -108,7 +109,7 @@ class OnboardingFragment : Fragment() {
 
     private val mnemonicColorPalette by lazy {
         buildList {
-            repeat(12) {
+            repeat(MNEMONIC_WORD_COUNT) {
                 add(MnemonicPhrasePaletteColors.random())
             }
         }

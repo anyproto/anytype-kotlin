@@ -35,7 +35,7 @@ val ColorSoulConnectorLine = Color(0x30DBDAD4)
 val ColorSpaceBackground = Color(0xFFDBDAD4)
 
 
-val MnemonicPhraseColors = listOf(
+val MnemonicPhrasePaletteColors = listOf(
     Color(0xFFF1A91A),
     Color(0xFFF55522),
     Color(0xFF5871FF),

@@ -44,7 +44,7 @@ import com.anytypeio.anytype.core_ui.ColorPagerIndicatorText
 import com.anytypeio.anytype.core_ui.ColorPlaceholderText
 import com.anytypeio.anytype.core_ui.ColorTextInput
 import com.anytypeio.anytype.core_ui.ColorTextInputCursor
-import com.anytypeio.anytype.core_ui.MnemonicPhraseColors
+import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
@@ -125,7 +125,7 @@ fun MnemonicPhraseWidget(
                 val color = if (idx <= mnemonicColorPalette.lastIndex) {
                     mnemonicColorPalette[idx]
                 } else {
-                    MnemonicPhraseColors.random()
+                    MnemonicPhrasePaletteColors.random()
                 }
                 Text(
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),

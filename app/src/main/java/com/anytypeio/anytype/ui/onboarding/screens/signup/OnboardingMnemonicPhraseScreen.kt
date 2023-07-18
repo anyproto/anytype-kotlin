@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -44,7 +45,8 @@ fun MnemonicPhraseScreenWrapper(
     openSoulCreation: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     contentPaddingTop: Int,
-    vm: OnboardingMnemonicViewModel
+    vm: OnboardingMnemonicViewModel,
+    mnemonicColorPalette: List<Color>
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     MnemonicPhraseScreen(
@@ -53,7 +55,8 @@ fun MnemonicPhraseScreenWrapper(
         openSoulCreation = openSoulCreation,
         copyMnemonicToClipboard = copyMnemonicToClipboard,
         contentPaddingTop = contentPaddingTop,
-        vm = vm
+        vm = vm,
+        mnemonicColorPalette = mnemonicColorPalette
     )
 }
 
@@ -64,7 +67,8 @@ fun MnemonicPhraseScreen(
     openSoulCreation: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     contentPaddingTop: Int,
-    vm: OnboardingMnemonicViewModel
+    vm: OnboardingMnemonicViewModel,
+    mnemonicColorPalette: List<Color>
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -75,7 +79,11 @@ fun MnemonicPhraseScreen(
         ) {
             Spacer(modifier = Modifier.height(contentPaddingTop.dp))
             MnemonicTitle()
-            MnemonicPhrase(state, copyMnemonicToClipboard)
+            MnemonicPhrase(
+                state = state,
+                copyMnemonicToClipboard = copyMnemonicToClipboard,
+                mnemonicColorPalette = mnemonicColorPalette
+            )
             MnemonicDescription()
         }
         MnemonicButtons(
@@ -163,7 +171,8 @@ fun MnemonicTitle() {
 @Composable
 fun MnemonicPhrase(
     state: OnboardingMnemonicViewModel.State,
-    copyMnemonicToClipboard: (String) -> Unit
+    copyMnemonicToClipboard: (String) -> Unit,
+    mnemonicColorPalette: List<Color>
 ) {
     when (state) {
         is OnboardingMnemonicViewModel.State.Idle -> {}
@@ -196,7 +205,8 @@ fun MnemonicPhrase(
                                     end = 16.dp,
                                     bottom = 16.dp
                                 ),
-                            mnemonic = state.mnemonicPhrase
+                            mnemonic = state.mnemonicPhrase,
+                            mnemonicColorPalette = mnemonicColorPalette
                         )
                     }
                 }

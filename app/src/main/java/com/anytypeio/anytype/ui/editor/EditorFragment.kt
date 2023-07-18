@@ -1490,11 +1490,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             } else {
                 if (binding.slashWidget.isVisible) {
-                    applySlideTransition(
-                        binding.slashWidget,
-                        SLASH_HIDE_ANIM_DURATION,
-                        binding.sheet
-                    )
                     binding.slashWidget.gone()
                 }
                 binding.recycler.removeItemDecoration(slashWidgetFooter)

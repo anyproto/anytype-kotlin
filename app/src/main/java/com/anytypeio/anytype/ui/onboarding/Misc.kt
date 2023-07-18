@@ -49,6 +49,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
+import timber.log.Timber
 
 @Composable
 fun PagerIndicator(
@@ -110,20 +111,30 @@ fun PagerIndicator(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MnemonicPhraseWidget(
-    modifier: Modifier = Modifier, mnemonic: String
+    modifier: Modifier = Modifier,
+    mnemonic: String,
+    mnemonicColorPalette: List<Color>
 ) {
     val words = mnemonic.split(" ")
-    FlowRow(
-        modifier = modifier, maxItemsInEachRow = 4, horizontalArrangement = Arrangement.Center
-    ) {
-        words.forEach { word ->
-            Text(
-                modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
-                text = word.lowercase(),
-                style = PreviewTitle1Regular.copy(
-                    color = MnemonicPhraseColors.random()
+    if (words.isNotEmpty()) {
+        Timber.d("Drawing mnemonic")
+        FlowRow(
+            modifier = modifier, maxItemsInEachRow = 4, horizontalArrangement = Arrangement.Center
+        ) {
+            words.forEachIndexed { idx, word ->
+                val color = if (idx <= mnemonicColorPalette.lastIndex) {
+                    mnemonicColorPalette[idx]
+                } else {
+                    MnemonicPhraseColors.random()
+                }
+                Text(
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                    text = word.lowercase(),
+                    style = PreviewTitle1Regular.copy(
+                        color = color
+                    )
                 )
-            )
+            }
         }
     }
 }
@@ -185,7 +196,10 @@ fun MnemonicStubPreview() {
 @Composable
 fun MnemonicPhraseWidgetPreview() {
     val mnemonic = "kenobi hello there general grievous you are bold like toe pineapple wave"
-    MnemonicPhraseWidget(mnemonic = mnemonic)
+    MnemonicPhraseWidget(
+        mnemonic = mnemonic,
+        mnemonicColorPalette = emptyList()
+    )
 }
 
 @Composable

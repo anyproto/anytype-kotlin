@@ -61,6 +61,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.BuildConfig
+import com.anytypeio.anytype.core_ui.MnemonicPhraseColors
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
@@ -104,6 +105,14 @@ class OnboardingFragment : Fragment() {
     lateinit var factory: OnboardingViewModel.Factory
 
     private val onBoardingViewModel by viewModels<OnboardingViewModel> { factory }
+
+    private val mnemonicColorPalette by lazy {
+        buildList {
+            repeat(12) {
+                add(MnemonicPhraseColors.random())
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -314,7 +323,12 @@ class OnboardingFragment : Fragment() {
             ) {
                 currentPage.value = OnboardingPage.MNEMONIC
                 backButtonCallback.value = { navController.popBackStack() }
-                Mnemonic(navController, ContentPaddingTop())
+                Timber.d("Mnemonic state")
+                Mnemonic(
+                    navController = navController,
+                    contentPaddingTop = ContentPaddingTop(),
+                    mnemonicColorPalette = mnemonicColorPalette
+                )
             }
             composable(
                 route = OnboardingNavigation.createSoul,
@@ -541,7 +555,11 @@ class OnboardingFragment : Fragment() {
     }
 
     @Composable
-    private fun Mnemonic(navController: NavHostController, contentPaddingTop: Int) {
+    private fun Mnemonic(
+        navController: NavHostController,
+        contentPaddingTop: Int,
+        mnemonicColorPalette: List<Color>
+    ) {
         val component = componentManager().onboardingMnemonicComponent.ReleaseOn(
             viewLifecycleOwner = viewLifecycleOwner,
             state = Lifecycle.State.DESTROYED
@@ -555,7 +573,8 @@ class OnboardingFragment : Fragment() {
                 vm.sendAnalyticsOnboardingScreen()
             },
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
-            vm = vm
+            vm = vm,
+            mnemonicColorPalette = mnemonicColorPalette
         )
     }
 

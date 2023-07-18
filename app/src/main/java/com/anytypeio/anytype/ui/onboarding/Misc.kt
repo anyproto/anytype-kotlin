@@ -37,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.ColorMnemonicPhrase
 import com.anytypeio.anytype.core_ui.ColorMnemonicStub
 import com.anytypeio.anytype.core_ui.ColorPagerIndicator
 import com.anytypeio.anytype.core_ui.ColorPagerIndicatorCurrent
@@ -45,6 +44,7 @@ import com.anytypeio.anytype.core_ui.ColorPagerIndicatorText
 import com.anytypeio.anytype.core_ui.ColorPlaceholderText
 import com.anytypeio.anytype.core_ui.ColorTextInput
 import com.anytypeio.anytype.core_ui.ColorTextInputCursor
+import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
@@ -110,20 +110,29 @@ fun PagerIndicator(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun MnemonicPhraseWidget(
-    modifier: Modifier = Modifier, mnemonic: String
+    modifier: Modifier = Modifier,
+    mnemonic: String,
+    mnemonicColorPalette: List<Color>
 ) {
     val words = mnemonic.split(" ")
-    FlowRow(
-        modifier = modifier, maxItemsInEachRow = 4, horizontalArrangement = Arrangement.Center
-    ) {
-        words.forEach { word ->
-            Text(
-                modifier = Modifier.padding(horizontal = 3.dp),
-                text = word.lowercase(),
-                style = PreviewTitle1Regular.copy(
-                    color = ColorMnemonicPhrase
+    if (words.isNotEmpty()) {
+        FlowRow(
+            modifier = modifier, maxItemsInEachRow = 4, horizontalArrangement = Arrangement.Center
+        ) {
+            words.forEachIndexed { idx, word ->
+                val color = if (idx <= mnemonicColorPalette.lastIndex) {
+                    mnemonicColorPalette[idx]
+                } else {
+                    MnemonicPhrasePaletteColors.random()
+                }
+                Text(
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                    text = word.lowercase(),
+                    style = PreviewTitle1Regular.copy(
+                        color = color
+                    )
                 )
-            )
+            }
         }
     }
 }
@@ -185,7 +194,10 @@ fun MnemonicStubPreview() {
 @Composable
 fun MnemonicPhraseWidgetPreview() {
     val mnemonic = "kenobi hello there general grievous you are bold like toe pineapple wave"
-    MnemonicPhraseWidget(mnemonic = mnemonic)
+    MnemonicPhraseWidget(
+        mnemonic = mnemonic,
+        mnemonicColorPalette = emptyList()
+    )
 }
 
 @Composable

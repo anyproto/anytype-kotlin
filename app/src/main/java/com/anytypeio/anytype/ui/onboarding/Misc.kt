@@ -49,7 +49,6 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
-import timber.log.Timber
 
 @Composable
 fun PagerIndicator(
@@ -117,7 +116,6 @@ fun MnemonicPhraseWidget(
 ) {
     val words = mnemonic.split(" ")
     if (words.isNotEmpty()) {
-        Timber.d("Drawing mnemonic")
         FlowRow(
             modifier = modifier, maxItemsInEachRow = 4, horizontalArrangement = Arrangement.Center
         ) {

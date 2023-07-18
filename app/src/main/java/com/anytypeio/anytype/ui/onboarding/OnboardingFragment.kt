@@ -323,7 +323,6 @@ class OnboardingFragment : Fragment() {
             ) {
                 currentPage.value = OnboardingPage.MNEMONIC
                 backButtonCallback.value = { navController.popBackStack() }
-                Timber.d("Mnemonic state")
                 Mnemonic(
                     navController = navController,
                     contentPaddingTop = ContentPaddingTop(),

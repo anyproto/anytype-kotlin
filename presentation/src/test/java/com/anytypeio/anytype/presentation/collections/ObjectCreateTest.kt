@@ -66,7 +66,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             objectId = newObjectId,
             objectType = ObjectTypeIds.NOTE
         )
-        doReturn(Resultat.success(result)).`when`(createDataViewObject).execute(
+        doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
                 type = ObjectTypeIds.NOTE,
                 filters = mockObjectSet.filters
@@ -84,7 +84,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         advanceUntilIdle()
 
         verifyBlocking(createDataViewObject, times(1)) {
-            execute(
+            async(
                 CreateDataViewObject.Params.SetByType(
                     type = ObjectTypeIds.NOTE,
                     filters = mockObjectSet.filters
@@ -122,13 +122,13 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             objectId = newObjectId,
             objectType = ObjectTypeIds.PAGE
         )
-        doReturn(Resultat.success(result)).`when`(createDataViewObject).execute(
+        doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
                 type = ObjectTypeIds.PAGE,
                 filters = mockObjectSet.filters
             )
         )
-        doReturn(Resultat.success(Unit)).`when`(closeBlock).execute(mockObjectSet.root)
+        doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
 
         // TESTING
         viewModel.onStart(ctx = root)
@@ -143,7 +143,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         advanceUntilIdle()
 
         verifyBlocking(createDataViewObject, times(1)) {
-            execute(
+            async(
                 CreateDataViewObject.Params.SetByType(
                     type = ObjectTypeIds.PAGE,
                     filters = mockObjectSet.filters
@@ -181,13 +181,13 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             objectId = newObjectId,
             objectType = ObjectTypeIds.NOTE
         )
-        doReturn(Resultat.success(result)).`when`(createDataViewObject).execute(
+        doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByRelation(
                 relations = listOf(mockObjectSet.relationObject3.id),
                 filters = mockObjectSet.filters
             )
         )
-        doReturn(Resultat.success(Unit)).`when`(closeBlock).execute(mockObjectSet.root)
+        doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
 
         // TESTING
         viewModel.onStart(ctx = root)
@@ -199,7 +199,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         advanceUntilIdle()
 
         verifyBlocking(createDataViewObject, times(1)) {
-            execute(
+            async(
                 CreateDataViewObject.Params.SetByRelation(
                     relations = listOf(mockObjectSet.relationObject3.id),
                     filters = mockObjectSet.filters
@@ -243,7 +243,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             objectId = newObjectId,
             objectType = ObjectTypeIds.NOTE
         )
-        doReturn(Resultat.success(result)).`when`(createDataViewObject).execute(
+        doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.Collection
         )
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
@@ -258,7 +258,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         advanceUntilIdle()
 
         verifyBlocking(createDataViewObject, times(1)) {
-            execute(CreateDataViewObject.Params.Collection)
+            async(CreateDataViewObject.Params.Collection)
         }
 
         verifyBlocking(closeBlock, times(1)) { async(objectCollection.root)}

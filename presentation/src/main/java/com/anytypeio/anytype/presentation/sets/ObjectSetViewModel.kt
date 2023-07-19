@@ -901,7 +901,7 @@ class ObjectSetViewModel(
     ) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            createDataViewObject.execute(params).fold(
+            createDataViewObject.async(params).fold(
                 onFailure = { Timber.e(it, "Error while creating new record") },
                 onSuccess = { result ->
                     proceedWithNewDataViewObject(params, result.objectId)
@@ -1193,7 +1193,7 @@ class ObjectSetViewModel(
 
         val startTime = System.currentTimeMillis()
         jobs += viewModelScope.launch {
-            createObject.execute(CreateObject.Param(type = null)).fold(
+            createObject.async(CreateObject.Param(type = null)).fold(
                 onSuccess = { result ->
                     proceedWithOpeningObject(result.objectId)
                     sendAnalyticsObjectCreateEvent(

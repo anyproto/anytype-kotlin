@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.middleware.interactor
 
-import androidx.annotation.WorkerThread
 import anytype.Rpc
 import anytype.model.Block
 import anytype.model.Range
@@ -49,7 +48,6 @@ import com.anytypeio.anytype.middleware.service.MiddlewareService
 import javax.inject.Inject
 import timber.log.Timber
 
-@WorkerThread
 class Middleware @Inject constructor(
     private val service: MiddlewareService,
     private val factory: MiddlewareFactory,

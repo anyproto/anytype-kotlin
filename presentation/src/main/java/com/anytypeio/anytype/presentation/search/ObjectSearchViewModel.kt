@@ -121,7 +121,7 @@ open class ObjectSearchViewModel(
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
-            getObjectTypes.execute(params).fold(
+            getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting object types") },
                 onSuccess = {
                     types.value = Resultat.success(it)

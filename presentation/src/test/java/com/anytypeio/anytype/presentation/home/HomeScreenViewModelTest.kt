@@ -252,7 +252,7 @@ class HomeScreenViewModelTest {
     ) {
         getWidgetSession.stub {
             onBlocking {
-                execute(any())
+                async(any())
             } doReturn Resultat.Success(session)
         }
     }

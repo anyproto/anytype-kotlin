@@ -188,7 +188,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             dvFilters = mockObjectSet.filters
         )
 
-        doReturn(Unit).`when`(closeBlock).execute(mockObjectSet.root)
+        doReturn(Unit).`when`(closeBlock).async(mockObjectSet.root)
 
         // TESTING
         viewModel.onStart(ctx = root)
@@ -207,7 +207,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             // CHECK CLOSE BLOCK COMMAND
             advanceUntilIdle()
             verifyBlocking(closeBlock, times(1)) {
-                execute(mockObjectSet.root)
+                async(mockObjectSet.root)
             }
         }
     }

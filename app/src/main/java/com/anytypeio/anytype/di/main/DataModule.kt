@@ -6,6 +6,7 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKeys
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.app.DefaultMetricsProvider
+import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.data.auth.config.DefaultFeaturesConfigProvider
 import com.anytypeio.anytype.data.auth.repo.AuthCache
 import com.anytypeio.anytype.data.auth.repo.AuthCacheDataStore
@@ -216,8 +217,15 @@ object DataModule {
         service: MiddlewareService,
         factory: MiddlewareFactory,
         logger: MiddlewareProtobufLogger,
-        protobufConverter: ProtobufConverterProvider
-    ): Middleware = Middleware(service, factory, logger, protobufConverter)
+        protobufConverter: ProtobufConverterProvider,
+        threadInfo: ThreadInfo
+    ): Middleware = Middleware(
+        service = service,
+        factory = factory,
+        logger = logger,
+        protobufConverter = protobufConverter,
+        threadInfo = threadInfo
+    )
 
     @JvmStatic
     @Provides

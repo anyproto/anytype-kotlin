@@ -80,7 +80,7 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
             )
 
             //VERIFY
-            verify(createBlock, times(1)).execute(
+            verify(createBlock, times(1)).async(
                 params = eq(
                     CreateBlock.Params(
                         context = root,

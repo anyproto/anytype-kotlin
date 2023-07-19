@@ -1,18 +1,17 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
-import kotlin.test.assertTrue
 
 class EditorBackButtonTest : EditorPresentationTestSetup() {
 
@@ -51,6 +50,6 @@ class EditorBackButtonTest : EditorPresentationTestSetup() {
 
         assertTrue(stateBackPressed?.styleTextToolbar?.isVisible == false)
 
-        verifyBlocking(closePage, times(1)) { execute(root) }
+        verifyBlocking(closePage, times(1)) { async(root) }
     }
 }

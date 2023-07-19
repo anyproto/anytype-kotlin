@@ -92,5 +92,9 @@ abstract class ResultInteractor<in P, R>(
     * */
     suspend fun execute(params: P): Resultat<R> = runCatchingL { doWork(params) }
 
+    suspend fun async(params: P): Resultat<R> = withContext(context) {
+        runCatchingL { doWork(params) }
+    }
+
     protected abstract suspend fun doWork(params: P): R
 }

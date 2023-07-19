@@ -335,7 +335,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithClosingWidgetObject(widgetObject: Id) {
         viewModelScope.launch {
-            saveWidgetSession.execute(
+            saveWidgetSession.async(
                 SaveWidgetSession.Params(
                     WidgetSession(
                         collapsed = collapsedWidgetStateHolder.get(),
@@ -875,7 +875,7 @@ class HomeScreenViewModel(
         if (!isWidgetSessionRestored) {
             viewModelScope.launch {
                 val session = withContext(appCoroutineDispatchers.io) {
-                    getWidgetSession.execute(Unit).getOrNull()
+                    getWidgetSession.async(Unit).getOrNull()
                 }
                 if (session != null) {
                     collapsedWidgetStateHolder.set(session.collapsed)
@@ -984,7 +984,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithSettingUpShortcuts() {
         viewModelScope.launch {
-            getDefaultPageType.execute(Unit).fold(
+            getDefaultPageType.async(Unit).fold(
                 onSuccess = {
                     Pair(it.name, it.type).letNotNull { name, type ->
                         appActionManager.setup(

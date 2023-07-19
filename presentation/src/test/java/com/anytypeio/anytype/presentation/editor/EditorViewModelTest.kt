@@ -90,7 +90,6 @@ import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -410,7 +409,7 @@ open class EditorViewModelTest {
 
         vm.onStart(root)
 
-        runBlockingTest { verify(openPage, times(1)).execute(param) }
+        runBlockingTest { verify(openPage, times(1)).async(param) }
     }
 
     @Test
@@ -489,7 +488,7 @@ open class EditorViewModelTest {
         vm.onSystemBackPressed(editorHasChildrenScreens = false)
 
         runBlockingTest {
-            verify(closePage, times(1)).execute(any())
+            verify(closePage, times(1)).async(any())
         }
     }
 
@@ -753,7 +752,7 @@ open class EditorViewModelTest {
         vm.onAddTextBlockClicked(style = Block.Content.Text.Style.P)
 
         runBlockingTest {
-            verify(createBlock, times(1)).execute(any())
+            verify(createBlock, times(1)).async(any())
         }
     }
 
@@ -2096,7 +2095,7 @@ open class EditorViewModelTest {
         )
 
         runBlockingTest {
-            verify(createBlock, times(1)).execute(
+            verify(createBlock, times(1)).async(
                 params = eq(
                     CreateBlock.Params(
                         context = root,
@@ -2228,7 +2227,7 @@ open class EditorViewModelTest {
         )
 
         runBlockingTest {
-            verify(createBlock, times(1)).execute(
+            verify(createBlock, times(1)).async(
                 params = eq(
                     CreateBlock.Params(
                         context = root,
@@ -2558,7 +2557,7 @@ open class EditorViewModelTest {
         vm.startSharingFile(id = file.id)
 
         runTest {
-            verify(documentFileShareDownloader, times(1)).execute(
+            verify(documentFileShareDownloader, times(1)).async(
                 params = eq(
                     MiddlewareShareDownloader.Params(
                         name = file.content<Block.Content.File>().name.orEmpty(),
@@ -2806,7 +2805,7 @@ open class EditorViewModelTest {
         vm.proceedWithExitingBack()
 
         runBlockingTest {
-            verify(closePage, times(1)).execute(
+            verify(closePage, times(1)).async(
                 params = eq(root)
             )
         }
@@ -3608,7 +3607,7 @@ open class EditorViewModelTest {
         objectRestrictions: List<ObjectRestriction> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,
@@ -3633,12 +3632,12 @@ open class EditorViewModelTest {
     ) {
 
         closePage.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(Unit)
+            onBlocking { async(any()) } doReturn Resultat.success(Unit)
         }
 
         exception?.let {
             closePage.stub {
-                onBlocking { execute(any()) } doAnswer { invocationOnMock -> throw exception }
+                onBlocking { async(any()) } doAnswer { invocationOnMock -> throw exception }
             }
         }
     }
@@ -3662,7 +3661,7 @@ open class EditorViewModelTest {
         events: List<Event> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = context,
@@ -3722,7 +3721,7 @@ open class EditorViewModelTest {
 
     private fun stubCreateBlock(root: String) {
         createBlock.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Pair(
                     MockDataFactory.randomString(), Payload(
                         context = root,
@@ -3747,7 +3746,7 @@ open class EditorViewModelTest {
 
     private fun givenSharedFile() {
         documentFileShareDownloader.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(Uri.EMPTY)
+            onBlocking { async(any()) } doReturn Resultat.success(Uri.EMPTY)
         }
     }
 
@@ -4368,7 +4367,7 @@ open class EditorViewModelTest {
 
     private fun givenDelegateId(id: String) {
         createObject.stub {
-            onBlocking { execute(CreateObject.Param(null)) } doReturn Resultat.success(
+            onBlocking { async(CreateObject.Param(null)) } doReturn Resultat.success(
                 CreateObject.Result(
                     objectId = id,
                     event = Payload(

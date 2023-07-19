@@ -30,7 +30,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
-import com.anytypeio.anytype.core_utils.ext.isOnMainThread
+import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
@@ -46,14 +46,16 @@ import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toPayload
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.service.MiddlewareService
+import javax.inject.Inject
 import timber.log.Timber
 
 @WorkerThread
-class Middleware(
+class Middleware @Inject constructor(
     private val service: MiddlewareService,
     private val factory: MiddlewareFactory,
     private val logger: MiddlewareProtobufLogger,
     private val protobufConverter: ProtobufConverterProvider,
+    private val threadInfo: ThreadInfo
 ) {
 
     @Throws(Exception::class)
@@ -2210,7 +2212,7 @@ class Middleware(
 
     private fun logRequest(any: Any) {
         logger.logRequest(any).also {
-            if (BuildConfig.DEBUG && isOnMainThread()) {
+            if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {
                 Timber.w("Main thread is used for operation: ${any::class.qualifiedName}")
             }
         }

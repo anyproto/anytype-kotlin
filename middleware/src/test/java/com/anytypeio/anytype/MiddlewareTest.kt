@@ -12,6 +12,8 @@ import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
@@ -23,8 +25,6 @@ import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
-import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 typealias CBlock = com.anytypeio.anytype.core_models.Block
 typealias CFields = com.anytypeio.anytype.core_models.Block.Fields
@@ -44,7 +44,13 @@ class MiddlewareTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        middleware = Middleware(service, factory, mock(), mock())
+        middleware = Middleware(
+            service = service,
+            factory = factory,
+            logger =  mock(),
+            protobufConverter = mock(),
+            threadInfo = mock()
+        )
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.service
 
+import androidx.annotation.WorkerThread
 import anytype.Rpc
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
@@ -12,6 +13,7 @@ import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import javax.inject.Inject
 import service.Service
 
+@WorkerThread
 class MiddlewareServiceImplementation @Inject constructor(
     featureToggles: FeatureToggles
 ) : MiddlewareService {

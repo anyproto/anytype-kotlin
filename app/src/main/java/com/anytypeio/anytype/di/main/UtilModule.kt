@@ -4,12 +4,14 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.preference.PreferenceManager
 import com.anytypeio.anytype.BuildConfig
-import com.anytypeio.anytype.app.TogglePrefs
 import com.anytypeio.anytype.app.DefaultFeatureToggles
+import com.anytypeio.anytype.app.TogglePrefs
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.core_utils.tools.DefaultAppInfo
+import com.anytypeio.anytype.core_utils.tools.DefaultThreadInfo
 import com.anytypeio.anytype.core_utils.tools.DefaultUrlValidator
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -43,6 +45,10 @@ object UtilModule {
 
     @Module
     interface Bindings {
+
+        @Binds
+        @Singleton
+        fun bindThreadInfo(info: DefaultThreadInfo): ThreadInfo
 
         @Binds
         @Singleton

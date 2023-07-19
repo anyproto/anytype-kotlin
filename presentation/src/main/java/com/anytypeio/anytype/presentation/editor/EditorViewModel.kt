@@ -983,7 +983,7 @@ class EditorViewModel(
 
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            openPage.execute(id).fold(
+            openPage.async(id).fold(
                 onSuccess = { result ->
                     when (result) {
                         is Result.Success -> {
@@ -1151,7 +1151,7 @@ class EditorViewModel(
             Session.IDLE -> navigate(EventWrapper(AppNavigation.Command.Exit))
             Session.OPEN -> {
                 viewModelScope.launch {
-                    closePage.execute(context).fold(
+                    closePage.async(context).fold(
                         onSuccess = { navigate(EventWrapper(AppNavigation.Command.Exit)) },
                         onFailure = {
                             Timber.e(it, "Error while closing document: $context")
@@ -1169,7 +1169,7 @@ class EditorViewModel(
 
     private fun exitDashboard() {
         viewModelScope.launch {
-            closePage.execute(context).fold(
+            closePage.async(context).fold(
                 onSuccess = { navigateToDesktop() },
                 onFailure = {
                     Timber.e(it, "Error while closing this page: $context")
@@ -3122,7 +3122,7 @@ class EditorViewModel(
         val startTime = System.currentTimeMillis()
 
         viewModelScope.launch {
-            createBlockLinkWithObject.execute(
+            createBlockLinkWithObject.async(
                 params = params
             ).fold(
                 onFailure = {
@@ -3150,7 +3150,7 @@ class EditorViewModel(
 
         val startTime = System.currentTimeMillis()
         jobs += viewModelScope.launch {
-            createObject.execute(CreateObject.Param(type = null))
+            createObject.async(CreateObject.Param(type = null))
                 .fold(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(
@@ -4133,7 +4133,7 @@ class EditorViewModel(
 
     fun proceedWithOpeningObject(target: Id) {
         viewModelScope.launch {
-            closePage.execute(context).fold(
+            closePage.async(context).fold(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
@@ -4147,7 +4147,7 @@ class EditorViewModel(
 
     fun proceedWithOpeningDataViewObject(target: Id, isPopUpToDashboard: Boolean = false) {
         viewModelScope.launch {
-            closePage.execute(context).fold(
+            closePage.async(context).fold(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
                     navigate(
@@ -4299,7 +4299,7 @@ class EditorViewModel(
             ctx = context,
             sources = emptyList()
         )
-        objectToSet.execute(params).fold(
+        objectToSet.async(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to set") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
@@ -4309,7 +4309,7 @@ class EditorViewModel(
 
     private suspend fun proceedWithConvertingToCollection() {
         val params = ConvertObjectToCollection.Params(ctx = context)
-        objectToCollection.execute(params).fold(
+        objectToCollection.async(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
@@ -4807,7 +4807,7 @@ class EditorViewModel(
                 },
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
-            getObjectTypes.execute(params).fold(
+            getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
                     val views = types.getObjectTypeViewsForSBPage(
@@ -5656,7 +5656,7 @@ class EditorViewModel(
     fun onAddMentionNewPageClicked(mentionText: String) {
         Timber.d("onAddMentionNewPageClicked, mentionText:[$mentionText]")
         viewModelScope.launch {
-            getDefaultPageType.execute(Unit).fold(
+            getDefaultPageType.async(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
                     proceedWithCreateNewObject(objectType = null, mentionText = mentionText)
@@ -5677,7 +5677,7 @@ class EditorViewModel(
         val startTime = System.currentTimeMillis()
 
         viewModelScope.launch {
-            createObjectAsMentionOrLink.execute(
+            createObjectAsMentionOrLink.async(
                 params = params
             ).fold(
                 onFailure = {
@@ -5908,7 +5908,7 @@ class EditorViewModel(
                 },
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
-            getObjectTypes.execute(params).fold(
+            getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
                     val views = types.getObjectTypeViewsForSBPage(
@@ -5924,7 +5924,7 @@ class EditorViewModel(
     }
 
     private suspend fun proceedWithSortingObjectTypesForObjectTypeWidget(views: List<ObjectTypeView>) {
-        getDefaultPageType.execute(Unit).fold(
+        getDefaultPageType.async(Unit).fold(
             onFailure = {
                 Timber.e(it, "Error while getting default object type")
             },
@@ -5986,7 +5986,7 @@ class EditorViewModel(
     fun proceedToCreateObjectAndAddToTextAsLink(name: String) {
         Timber.d("proceedToCreateObjectAndAddToTextAsLink, name:[$name]")
         viewModelScope.launch {
-            getDefaultPageType.execute(Unit).fold(
+            getDefaultPageType.async(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
                 },
@@ -6024,7 +6024,7 @@ class EditorViewModel(
     private suspend fun createObjectAddProceedToAddToTextAsLink(name: String, type: String?) {
         val startTime = System.currentTimeMillis()
         val params = CreateObjectAsMentionOrLink.Params(name, type)
-        createObjectAsMentionOrLink.execute(params).fold(
+        createObjectAsMentionOrLink.async(params).fold(
             onFailure = { Timber.e(it, "Error while creating new page with params: $params") },
             onSuccess = { result ->
                 proceedToAddObjectToTextAsLink(id = result.id)

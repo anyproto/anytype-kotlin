@@ -103,7 +103,7 @@ class Orchestrator(
             when (intent) {
                 is Intent.CRUD.Create -> {
                     val startTime = System.currentTimeMillis()
-                    createBlock.execute(
+                    createBlock.async(
                         params = CreateBlock.Params(
                             context = intent.context,
                             target = intent.target,
@@ -450,7 +450,7 @@ class Orchestrator(
                     )
                 }
                 is Intent.Media.ShareFile -> {
-                    documentFileShareDownloader.execute(
+                    documentFileShareDownloader.async(
                         params = MiddlewareShareDownloader.Params(
                             hash = intent.hash,
                             name = intent.name

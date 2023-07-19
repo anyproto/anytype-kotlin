@@ -95,7 +95,7 @@ class OnboardingVoidViewModel @Inject constructor(
 
     private fun proceedWithSettingUpMobileUseCase() {
         viewModelScope.launch {
-            setupMobileUseCaseSkip.execute(Unit).fold(
+            setupMobileUseCaseSkip.async(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
                     navigation.emit(Navigation.NavigateToMnemonic)

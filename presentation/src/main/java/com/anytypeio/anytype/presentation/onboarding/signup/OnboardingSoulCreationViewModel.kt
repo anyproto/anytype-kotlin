@@ -35,7 +35,7 @@ class OnboardingSoulCreationViewModel @Inject constructor(
         val config = configStorage.getOrNull()
         if (config != null) {
             viewModelScope.launch {
-                setObjectDetails.execute(
+                setObjectDetails.async(
                     SetObjectDetails.Params(
                         ctx = config.profile, details = mapOf(Relations.NAME to name)
                     )
@@ -59,7 +59,7 @@ class OnboardingSoulCreationViewModel @Inject constructor(
         val config = configStorage.getOrNull()
         if (config != null) {
             viewModelScope.launch {
-                setObjectDetails.execute(
+                setObjectDetails.async(
                     SetObjectDetails.Params(
                         ctx = config.workspace,
                         details = mapOf(Relations.NAME to name)

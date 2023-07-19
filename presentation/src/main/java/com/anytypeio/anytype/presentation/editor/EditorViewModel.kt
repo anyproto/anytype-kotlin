@@ -4625,7 +4625,12 @@ class EditorViewModel(
             }
             is SlashItem.Media -> {
                 // TODO join cutting and block creation operations and merge its payload changes
-                cutSlashFilter(targetId = targetId, setPendingCursor = false)
+                // TODO unify focus handling
+                cutSlashFilter(
+                    targetId = targetId,
+                    setPendingCursor = false,
+                    clearFocusFromView = true
+                )
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStopAndClearFocus)
                 onSlashMediaItemClicked(item = item)
             }
@@ -4703,7 +4708,11 @@ class EditorViewModel(
         }
     }
 
-    private fun cutSlashFilter(targetId: Id, setPendingCursor: Boolean = true): Boolean {
+    private fun cutSlashFilter(
+        targetId: Id,
+        setPendingCursor: Boolean = true,
+        clearFocusFromView: Boolean = false
+    ): Boolean {
 
         //saving cursor on slash start index
         if (setPendingCursor) {
@@ -4711,7 +4720,10 @@ class EditorViewModel(
         }
 
         // cut text from List<BlockView> and re-render views
-        val newBlockView = cutSlashFilterFromViews(targetId)
+        val newBlockView = cutSlashFilterFromViews(
+            targetId = targetId,
+            clearFocusFromView = clearFocusFromView
+        )
 
         // cut text from List<Block> and send TextUpdate Intent
         if (newBlockView != null) {
@@ -4727,7 +4739,10 @@ class EditorViewModel(
         return newBlockView?.text?.isEmpty() ?: false
     }
 
-    private fun cutSlashFilterFromViews(targetId: Id): BlockView.Text? {
+    private fun cutSlashFilterFromViews(
+        targetId: Id,
+        clearFocusFromView: Boolean = false
+    ): BlockView.Text? {
         Timber.d("cutSlashFilterFromViews, targetId:[$targetId], slashStartIndex:[$slashStartIndex], slashFilter:[$slashFilter]")
         val blockView = views.firstOrNull { it.id == targetId }
         if (blockView is BlockView.Text) {
@@ -4735,6 +4750,9 @@ class EditorViewModel(
                 from = slashStartIndex,
                 partLength = slashFilter.length
             )
+            if (clearFocusFromView) {
+                new.isFocused = false
+            }
             val update = views.update(new)
             viewModelScope.launch {
                 orchestrator.stores.views.update(update)

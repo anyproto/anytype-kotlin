@@ -92,7 +92,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddTextBlockClicked(style)
         }
 
-        verifyBlocking(createBlock, times(1)) { execute(params) }
+        verifyBlocking(createBlock, times(1)) { async(params) }
     }
 
     @Test
@@ -147,7 +147,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddTextBlockClicked(style)
         }
 
-        verifyBlocking(createBlock, times(1)) { execute(params) }
+        verifyBlocking(createBlock, times(1)) { async(params) }
     }
 
     @Test
@@ -195,7 +195,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddFileBlockClicked(type = type)
         }
 
-        verifyBlocking(createBlock, times(1)) { execute(params) }
+        verifyBlocking(createBlock, times(1)) { async(params) }
     }
 
     @Test
@@ -254,7 +254,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddFileBlockClicked(type = type)
         }
 
-        verifyBlocking(createBlock, times(1)) { execute(params) }
+        verifyBlocking(createBlock, times(1)) { async(params) }
     }
 
     @Test
@@ -295,7 +295,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddBookmarkBlockClicked()
         }
 
-        verifyBlocking(createBlock, times(1)) { execute(params) }
+        verifyBlocking(createBlock, times(1)) { async(params) }
     }
 
     @Test
@@ -347,7 +347,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddBookmarkBlockClicked()
         }
 
-        verifyBlocking(createBlock, times(1)) { execute(params) }
+        verifyBlocking(createBlock, times(1)) { async(params) }
     }
 
     @Test
@@ -388,7 +388,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddDividerBlockClicked(style = Block.Content.Divider.Style.LINE)
         }
 
-        verifyBlocking(createBlock, times(1)) { execute(params) }
+        verifyBlocking(createBlock, times(1)) { async(params) }
     }
 
     @Test
@@ -440,7 +440,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
             onAddDividerBlockClicked(style = Block.Content.Divider.Style.LINE)
         }
 
-        verifyBlocking(createBlock, times(1)) { execute(params) }
+        verifyBlocking(createBlock, times(1)) { async(params) }
     }
 
     private fun stubCreateBlock(

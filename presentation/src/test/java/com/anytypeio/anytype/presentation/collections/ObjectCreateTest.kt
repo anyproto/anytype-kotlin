@@ -72,7 +72,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 filters = mockObjectSet.filters
             )
         )
-        doReturn(Resultat.success(Unit)).`when`(closeBlock).execute(mockObjectSet.root)
+        doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
 
         // TESTING
         viewModel.onStart(ctx = root)
@@ -92,7 +92,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             )
         }
 
-        verifyBlocking(closeBlock, times(1)) { execute(mockObjectSet.root)}
+        verifyBlocking(closeBlock, times(1)) { async(mockObjectSet.root)}
     }
 
     @Test
@@ -207,7 +207,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             )
         }
 
-        verifyBlocking(closeBlock, times(1)) { execute(mockObjectSet.root)}
+        verifyBlocking(closeBlock, times(1)) { async(mockObjectSet.root)}
     }
 
     @Test
@@ -246,7 +246,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         doReturn(Resultat.success(result)).`when`(createDataViewObject).execute(
             CreateDataViewObject.Params.Collection
         )
-        doReturn(Resultat.success(Unit)).`when`(closeBlock).execute(objectCollection.root)
+        doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
 
         // TESTING
         viewModel.onStart(ctx = root)
@@ -261,6 +261,6 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             execute(CreateDataViewObject.Params.Collection)
         }
 
-        verifyBlocking(closeBlock, times(1)) { execute(objectCollection.root)}
+        verifyBlocking(closeBlock, times(1)) { async(objectCollection.root)}
     }
 }

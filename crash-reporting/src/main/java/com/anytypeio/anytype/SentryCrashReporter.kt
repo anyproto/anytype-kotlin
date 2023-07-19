@@ -22,9 +22,7 @@ class SentryCrashReporter(
             with(options) {
                 release = appInfo.versionName
                 environment = appInfo.sentryEnvironment.value
-                if (appInfo.sentryEnvironment == SentryEnvironment.DEV) {
-                    isAttachScreenshot = true
-                }
+                isAttachScreenshot = appInfo.sentryEnvironment == SentryEnvironment.DEV
                 if (withTimber) {
                     addIntegration(
                         SentryTimberIntegration(

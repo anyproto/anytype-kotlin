@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.interactor
 
+import androidx.annotation.WorkerThread
 import anytype.Rpc
 import anytype.model.Block
 import anytype.model.Range
@@ -29,6 +30,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_utils.ext.isOnMainThread
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
@@ -44,7 +46,9 @@ import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toPayload
 import com.anytypeio.anytype.middleware.model.CreateWalletResponse
 import com.anytypeio.anytype.middleware.service.MiddlewareService
+import timber.log.Timber
 
+@WorkerThread
 class Middleware(
     private val service: MiddlewareService,
     private val factory: MiddlewareFactory,
@@ -2205,7 +2209,11 @@ class Middleware(
     }
 
     private fun logRequest(any: Any) {
-        logger.logRequest(any)
+        logger.logRequest(any).also {
+            if (BuildConfig.DEBUG && isOnMainThread()) {
+                Timber.w("Main thread is used for operation: ${any::class.qualifiedName}")
+            }
+        }
     }
 
     private fun logResponse(any: Any) {

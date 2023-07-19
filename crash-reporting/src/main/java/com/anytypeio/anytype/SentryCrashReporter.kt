@@ -2,13 +2,13 @@ package com.anytypeio.anytype
 
 import android.content.Context
 import com.anytypeio.anytype.core_utils.tools.AppInfo
+import com.anytypeio.anytype.core_utils.tools.SentryEnvironment
 import io.sentry.Sentry
 import io.sentry.SentryLevel
 import io.sentry.android.core.SentryAndroid
 import io.sentry.android.core.SentryAndroidOptions
 import io.sentry.android.timber.SentryTimberIntegration
 import io.sentry.protocol.User
-import java.lang.Exception
 import timber.log.Timber
 
 class SentryCrashReporter(
@@ -22,6 +22,7 @@ class SentryCrashReporter(
             with(options) {
                 release = appInfo.versionName
                 environment = appInfo.sentryEnvironment.value
+                isAttachScreenshot = appInfo.sentryEnvironment == SentryEnvironment.DEV
                 if (withTimber) {
                     addIntegration(
                         SentryTimberIntegration(

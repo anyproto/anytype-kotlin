@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -556,7 +555,7 @@ class ObjectSetViewModel(
     }
 
     private suspend fun proceedWithClosingAndExit() {
-        closeBlock.execute(context).fold(
+        closeBlock.async(context).fold(
             onSuccess = { dispatch(AppNavigation.Command.Exit) },
             onFailure = {
                 Timber.e(it, "Error while closing object set: $context").also {
@@ -1105,7 +1104,7 @@ class ObjectSetViewModel(
     private suspend fun proceedWithOpeningObject(target: Id) {
         isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {
-            closeBlock.execute(context).fold(
+            closeBlock.async(context).fold(
                 onSuccess = {
                     navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
                 },
@@ -1120,7 +1119,7 @@ class ObjectSetViewModel(
     private suspend fun proceedWithOpeningObjectCollection(target: Id) {
         isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {
-            closeBlock.execute(context).fold(
+            closeBlock.async(context).fold(
                 onSuccess = {
                     navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target = target)))
                 },
@@ -1142,7 +1141,7 @@ class ObjectSetViewModel(
             ObjectType.Layout.FILE,
             ObjectType.Layout.BOOKMARK -> proceedWithOpeningObject(target)
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                closeBlock.execute(context).fold(
+                closeBlock.async(context).fold(
                     onSuccess = {
                         navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(target)))
                     },
@@ -1174,7 +1173,7 @@ class ObjectSetViewModel(
 
     fun onHomeButtonClicked() {
         viewModelScope.launch {
-            closeBlock.execute(context).fold(
+            closeBlock.async(context).fold(
                 onSuccess = { dispatch(AppNavigation.Command.ExitToDesktop) },
                 onFailure = {
                     Timber.e(it, "Error while closing object set: $context").also {
@@ -1229,7 +1228,7 @@ class ObjectSetViewModel(
 
     fun onSearchButtonClicked() {
         viewModelScope.launch {
-            closeBlock.execute(context).fold(
+            closeBlock.async(context).fold(
                 onSuccess = { dispatch(AppNavigation.Command.OpenPageSearch) },
                 onFailure = { Timber.e(it, "Error while closing object set: $context") }
             )

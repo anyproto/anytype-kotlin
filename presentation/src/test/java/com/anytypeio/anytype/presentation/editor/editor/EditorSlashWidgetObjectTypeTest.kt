@@ -88,7 +88,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             type = type2.id
         )
 
-        verifyBlocking(createBlockLinkWithObject, times(1)) { execute(params) }
+        verifyBlocking(createBlockLinkWithObject, times(1)) { async(params) }
     }
 
     @Test
@@ -143,6 +143,6 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             type = type2.id
         )
 
-        verifyBlocking(createBlockLinkWithObject, times(1)) { execute(params) }
+        verifyBlocking(createBlockLinkWithObject, times(1)) { async(params) }
     }
 }

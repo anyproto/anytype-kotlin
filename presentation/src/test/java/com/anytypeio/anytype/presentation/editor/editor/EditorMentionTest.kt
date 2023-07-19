@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.page.CreateObjectAsMentionOrLink
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.mention.MentionConst.MENTION_TITLE_EMPTY
@@ -320,7 +319,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         createObjectAsMentionOrLink.stub {
             onBlocking {
-                execute(
+                async(
                     CreateObjectAsMentionOrLink.Params(
                         name = newPageName,
                         type = ObjectTypeIds.NOTE
@@ -359,7 +358,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         }
 
         verifyBlocking(createObjectAsMentionOrLink, times(1)) {
-            execute(
+            async(
                 CreateObjectAsMentionOrLink.Params(
                     name = newPageName,
                     type = ObjectTypeIds.NOTE
@@ -484,7 +483,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         createObjectAsMentionOrLink.stub {
             onBlocking {
-                execute(
+                async(
                     CreateObjectAsMentionOrLink.Params(
                         name = newPageName,
                         type = "_otarticle"
@@ -523,7 +522,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         }
 
         verifyBlocking(createObjectAsMentionOrLink, times(1)) {
-            execute(
+            async(
                 CreateObjectAsMentionOrLink.Params(
                     name = newPageName,
                     type = "_otarticle"
@@ -860,7 +859,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         val params = InterceptEvents.Params(context = root)
 
         openPage.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,
@@ -1003,7 +1002,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         val params = InterceptEvents.Params(context = root)
 
         openPage.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,

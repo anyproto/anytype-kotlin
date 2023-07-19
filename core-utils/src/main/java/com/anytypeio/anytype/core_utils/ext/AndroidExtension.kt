@@ -15,7 +15,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Looper
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.InputType
@@ -425,5 +424,3 @@ fun BaseBottomSheetComposeFragment.setupBottomSheetBehavior(paddingTop: Int) {
         skipCollapsed = true
     }
 }
-
-fun isOnMainThread() = Looper.myLooper() == Looper.getMainLooper()

@@ -479,7 +479,7 @@ open class EditorPresentationTestSetup {
         relationLinks: List<RelationLink> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,
@@ -570,17 +570,9 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubTurnIntoDocument(
-        params: TurnIntoDocument.Params = any()
-    ) {
-        turnIntoDocument.stub {
-            onBlocking { invoke(params) } doReturn Either.Right(emptyList())
-        }
-    }
-
     fun stubCreateBlock(root: String) {
         createBlock.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Pair(
                     MockDataFactory.randomString(), Payload(
                         context = root,
@@ -606,7 +598,7 @@ open class EditorPresentationTestSetup {
     fun stubCreateBlockLinkWithObject(root: String, target: String) {
         createBlockLinkWithObject.stub {
             onBlocking {
-                execute(any())
+                async(any())
             } doReturn Resultat.success(
                 CreateBlockLinkWithObject.Result(
                     id = root,
@@ -652,7 +644,7 @@ open class EditorPresentationTestSetup {
 
     fun stubClosePage() {
         closePage.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(Unit)
+            onBlocking { async(any()) } doReturn Resultat.success(Unit)
         }
     }
 
@@ -711,7 +703,7 @@ open class EditorPresentationTestSetup {
 
     fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultPageType.stub {
-            onBlocking { execute(Unit) } doReturn Resultat.success(
+            onBlocking { async(Unit) } doReturn Resultat.success(
                 GetDefaultPageType.Response(
                     type,
                     name
@@ -724,7 +716,7 @@ open class EditorPresentationTestSetup {
         val params = CreateObjectAsMentionOrLink.Params(name, type)
         val result = CreateObjectAsMentionOrLink.Result(id, name)
         createObjectAsMentionOrLink.stub {
-            onBlocking { execute(params) } doReturn Resultat.success(result)
+            onBlocking { async(params) } doReturn Resultat.success(result)
         }
     }
 
@@ -750,7 +742,7 @@ open class EditorPresentationTestSetup {
     fun stubGetObjectTypes(types: List<ObjectWrapper.Type>) {
         getObjectTypes.stub {
             onBlocking {
-                execute(any())
+                async(any())
             } doReturn Resultat.success(types)
         }
     }

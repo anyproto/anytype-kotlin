@@ -721,6 +721,7 @@ message Event {
                     string groupRelationKey = 7; // Group view by this relationKey
                     bool groupBackgroundColors = 8; // Enable backgrounds in groups
                     int32 pageLimit = 9;
+                    string defaultTemplateId = 10; // Id of template object set default for the view
                 }
 
                 message Filter {

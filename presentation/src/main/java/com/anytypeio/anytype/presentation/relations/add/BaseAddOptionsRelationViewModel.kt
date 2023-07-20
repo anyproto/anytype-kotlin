@@ -52,8 +52,6 @@ abstract class BaseAddOptionsRelationViewModel(
 
     val isMultiple = MutableStateFlow(true)
 
-    private val logger = Timber.tag("BaseAddOptionsRelation")
-
     init {
         viewModelScope.launch {
             allRelationOptions.collect { all ->
@@ -64,7 +62,6 @@ abstract class BaseAddOptionsRelationViewModel(
             choosingRelationOptions.combine(query) { choosing, query ->
                 filterRelationsBy(query, allRelationOptions.value.all, choosing)
             }.collect {
-                logger.i("Update ui: $it")
                 ui.value = it
             }
         }

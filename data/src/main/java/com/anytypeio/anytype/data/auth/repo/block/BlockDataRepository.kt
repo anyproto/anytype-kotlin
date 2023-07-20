@@ -438,6 +438,8 @@ class BlockDataRepository(
     override suspend fun debugLocalStore(path: String): String =
         remote.debugLocalStore(path)
 
+    override suspend fun debugSubscriptions(): List<Id> = remote.debugSubscriptions()
+
     override suspend fun setObjectDetail(
         ctx: Id,
         key: String,

@@ -223,6 +223,8 @@ interface BlockRepository {
 
     suspend fun debugLocalStore(path: String): String
 
+    suspend fun debugSubscriptions(): List<Id>
+
     suspend fun turnInto(
         context: Id,
         targets: List<Id>,

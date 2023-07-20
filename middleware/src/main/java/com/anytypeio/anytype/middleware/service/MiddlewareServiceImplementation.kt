@@ -579,6 +579,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun debugSubscriptions(request: Rpc.Debug.Subscriptions.Request): Rpc.Debug.Subscriptions.Response {
+        val encoded = Service.debugSubscriptions(
+            Rpc.Debug.Subscriptions.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Debug.Subscriptions.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Debug.Subscriptions.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun debugSpace(request: Rpc.Debug.SpaceSummary.Request): Rpc.Debug.SpaceSummary.Response {
         val encoded = Service.debugSpaceSummary(Rpc.Debug.SpaceSummary.Request.ADAPTER.encode(request))
         val response = Rpc.Debug.SpaceSummary.Response.ADAPTER.decode(encoded)

@@ -87,7 +87,7 @@ class BlockViewDiffUtil(
         if (newBlock is Focusable && oldBlock is Focusable) {
             if (newBlock.isFocused != oldBlock.isFocused) {
                 changes.add(FOCUS_CHANGED)
-                Timber.d("Focus changed!")
+                Timber.d("Focus changed to [${newBlock.isFocused}] for block ${newBlock.id}")
             } else
                 Timber.d("Focus hasn't changed")
         }

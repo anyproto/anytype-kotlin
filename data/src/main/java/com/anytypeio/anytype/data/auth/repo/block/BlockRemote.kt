@@ -181,6 +181,8 @@ interface BlockRemote {
 
     suspend fun debugLocalStore(path: String): String
 
+    suspend fun debugSubscriptions(): List<Id>
+
     suspend fun setObjectDetail(
         ctx: Id,
         key: String,

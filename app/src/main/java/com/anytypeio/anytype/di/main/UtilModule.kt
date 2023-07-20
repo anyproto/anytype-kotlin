@@ -52,7 +52,7 @@ object UtilModule {
 
         @Binds
         @Singleton
-        fun bindDomainLogger(logger: BasicLogger): Logger
+        fun bindLogger(logger: BasicLogger): Logger
 
         @Binds
         @Singleton

@@ -14,9 +14,13 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.debugging.DebugConfig
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
+import com.anytypeio.anytype.other.BasicLogger
+import com.anytypeio.anytype.other.DefaultDebugConfig
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -45,6 +49,14 @@ object UtilModule {
 
     @Module
     interface Bindings {
+
+        @Binds
+        @Singleton
+        fun bindLogger(logger: BasicLogger): Logger
+
+        @Binds
+        @Singleton
+        fun bindDebugConfig(config: DefaultDebugConfig): DebugConfig
 
         @Binds
         @Singleton

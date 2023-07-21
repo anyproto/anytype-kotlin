@@ -29,12 +29,16 @@ import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.debugging.DebugConfig
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.page.Redo
 import com.anytypeio.anytype.domain.page.Undo
 
 class BlockDataRepository(
-    private val remote: BlockRemote
+    private val remote: BlockRemote,
+    private val debugConfig: DebugConfig,
+    private val logger: Logger
 ) : BlockRepository {
 
     override suspend fun openObject(id: Id): ObjectView = remote.openObject(id = id)
@@ -420,7 +424,17 @@ class BlockDataRepository(
 
     override suspend fun cancelObjectSearchSubscription(
         subscriptions: List<Id>
-    ) = remote.cancelObjectSearchSubscription(subscriptions)
+    ) = remote.cancelObjectSearchSubscription(subscriptions).also {
+        if (debugConfig.traceSubscriptions) {
+            try {
+                logger.logWarning(
+                    "Number of subscriptions after unsubscribe: ${remote.debugSubscriptions()}"
+                )
+            } catch (e: Exception) {
+                logger.logException(e)
+            }
+        }
+    }
 
     override suspend fun addRelationToObject(
         ctx: Id, relation: Id

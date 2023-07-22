@@ -51,7 +51,8 @@ class ObjectTypesSubscriptionManager (
                     Relations.DESCRIPTION,
                     Relations.ICON_EMOJI,
                     Relations.SOURCE_OBJECT,
-                    Relations.IS_READ_ONLY
+                    Relations.IS_READ_ONLY,
+                    Relations.RECOMMENDED_LAYOUT
                 ),
                 ignoreWorkspace = true
             )

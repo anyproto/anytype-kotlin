@@ -8,7 +8,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.templates.TemplateBlankViewModel
+import com.anytypeio.anytype.presentation.templates.TemplateBlankViewModelFactory
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.templates.TemplateBlankFragment
 import dagger.Binds
@@ -45,15 +45,17 @@ object TemplateBlankModule {
     @Provides
     fun provideCoverImageHashProvider(): CoverImageHashProvider = DefaultCoverImageHashProvider()
 
+    @JvmStatic
+    @TemplateBlankScope
+    @Provides
+    fun provideViewModelFactory(
+        renderer: DefaultBlockViewRenderer
+    ): ViewModelProvider.Factory = TemplateBlankViewModelFactory(
+        renderer = renderer
+    )
 
     @Module
     interface Declarations {
-
-        @TemplateBlankScope
-        @Binds
-        fun bindViewModelFactory(
-            factory: TemplateBlankViewModel.Factory
-        ): ViewModelProvider.Factory
 
         @TemplateBlankScope
         @Binds

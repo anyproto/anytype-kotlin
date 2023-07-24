@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
+import com.anytypeio.anytype.core_utils.ext.moveOnTop
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -34,6 +35,7 @@ import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import timber.log.Timber
 
 fun ObjectState.DataView.featuredRelations(
     ctx: Id,
@@ -336,10 +338,14 @@ fun List<DVViewerRelation>.updateViewerRelations(updates: List<DVViewerRelationU
                 )
             }
             is DVViewerRelationUpdate.Move -> {
-                relations.moveAfterIndexInLine(
-                    predicateIndex = { relation -> relation.key == update.afterId },
-                    predicateMove = { relation -> update.ids.contains(relation.key) }
-                )
+                if (update.afterId.isNotEmpty()) {
+                    relations.moveAfterIndexInLine(
+                        predicateIndex = { relation -> relation.key == update.afterId },
+                        predicateMove = { relation -> update.ids.contains(relation.key) }
+                    )
+                } else {
+                    relations.moveOnTop { update.ids.contains(it.key) }
+                }
             }
             is DVViewerRelationUpdate.Remove -> {
                 relations.retainAll {

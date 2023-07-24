@@ -129,3 +129,11 @@ fun <T> MutableList<T>.moveAfterIndexInLine(
         addAll(size, split.first)
     }
 }
+
+fun <T> MutableList<T>.moveOnTop(
+    predicate: (T) -> Boolean
+) {
+    val (first, last) = partition(predicate)
+    clear()
+    addAll(first + last)
+}

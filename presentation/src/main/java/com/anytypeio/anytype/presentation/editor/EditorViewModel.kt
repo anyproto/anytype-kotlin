@@ -2933,6 +2933,7 @@ class EditorViewModel(
                 is Content.Text -> {
                     when {
                         content.style == Content.Text.Style.TITLE -> addNewBlockAtTheEnd()
+                        content.style == Content.Text.Style.CODE_SNIPPET -> addNewBlockAtTheEnd()
                         content.text.isNotEmpty() -> addNewBlockAtTheEnd()
                         content.text.isEmpty() -> {
                             val stores = orchestrator.stores

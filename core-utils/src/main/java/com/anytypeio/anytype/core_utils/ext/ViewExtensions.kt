@@ -131,3 +131,22 @@ fun EditText.showKeyboard() {
         }
     }
 }
+
+inline fun <reified T>RecyclerView.isLastOfType() : Boolean {
+    val count = itemDecorationCount
+    return if (count > 0) {
+        val lastIndex = count - 1
+        val lastDecorator = getItemDecorationAt(lastIndex)
+        lastDecorator is T
+    } else {
+        false
+    }
+}
+
+fun RecyclerView.lastDecorator() : RecyclerView.ItemDecoration? {
+    val count = itemDecorationCount
+    return if (count > 0)
+        getItemDecorationAt(count - 1)
+    else
+        null
+}

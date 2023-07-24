@@ -125,8 +125,10 @@ class CreateObjectTest {
             verifyBlocking(getTemplates, times(1)) { run(GetTemplates.Params(defaultType)) }
             val commands = Command.CreateObject(
                 prefilled = buildMap { put(Relations.TYPE, defaultType) },
-                template = templateBook,
+                template = null,
                 internalFlags = listOf(
+                    InternalFlags.ShouldSelectType,
+                    InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 )
             )
@@ -181,8 +183,10 @@ class CreateObjectTest {
             verifyBlocking(getTemplates, times(1)) { run(GetTemplates.Params(type)) }
             val commands = Command.CreateObject(
                 prefilled = buildMap { put(Relations.TYPE, type) },
-                template = template,
+                template = null,
                 internalFlags = listOf(
+                    InternalFlags.ShouldSelectType,
+                    InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 )
             )

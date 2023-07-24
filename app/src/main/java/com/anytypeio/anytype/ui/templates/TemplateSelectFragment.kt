@@ -33,7 +33,7 @@ class TemplateSelectFragment :
 
     private val type: Id get() = arg(OBJECT_TYPE_KEY)
     private val ctx: Id get() = arg(CTX_KEY)
-    private val withoutEmptyTemplate: Boolean get() = argBoolean(WITH_EMPTY_TEMPLATE_KEY)
+    private val withoutBlankTemplate: Boolean get() = argBoolean(WITH_BLANK_TEMPLATE_KEY)
 
     private lateinit var templatesAdapter: TemplateSelectAdapter
 
@@ -60,9 +60,9 @@ class TemplateSelectFragment :
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.viewState) { render(it) }
-        jobs += subscribe(vm.isDismissed) { if (it) exit() }
+        jobs += lifecycleScope.subscribe(vm.isDismissed) { if (it) exit() }
         super.onStart()
-        vm.onStart(type = type, withoutBlankTemplate = withoutEmptyTemplate)
+        vm.onStart(type = type, withoutBlankTemplate = withoutBlankTemplate)
     }
 
     private fun render(viewState: TemplateSelectViewModel.ViewState) {
@@ -119,7 +119,7 @@ class TemplateSelectFragment :
     )
 
     companion object {
-        const val WITH_EMPTY_TEMPLATE_KEY = "arg.template.with_empty_template"
+        const val WITH_BLANK_TEMPLATE_KEY = "arg.template.with_empty_template"
         const val OBJECT_TYPE_KEY = "arg.template.object_type"
         const val CTX_KEY = "arg.template.ctx"
     }

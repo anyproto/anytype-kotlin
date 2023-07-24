@@ -31,6 +31,8 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.DebugConfig
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
@@ -196,10 +198,14 @@ object DataModule {
     @Provides
     @Singleton
     fun provideBlockRepository(
-        blockRemote: BlockRemote
+        blockRemote: BlockRemote,
+        debugConfig: DebugConfig,
+        logger: Logger
     ): BlockRepository {
         return BlockDataRepository(
-            remote = blockRemote
+            remote = blockRemote,
+            debugConfig = debugConfig,
+            logger = logger
         )
     }
 

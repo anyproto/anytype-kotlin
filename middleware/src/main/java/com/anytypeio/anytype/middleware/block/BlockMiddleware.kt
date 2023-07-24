@@ -397,8 +397,11 @@ class BlockMiddleware(
     override suspend fun debugObject(objectId: Id, path: String): String =
         middleware.debugObject(objectId = objectId, path = path)
 
-    override suspend fun debugLocalStore(path: String): String =
-        middleware.debugExportLocalStore(path)
+    override suspend fun debugLocalStore(
+        path: String
+    ): String = middleware.debugExportLocalStore(path)
+
+    override suspend fun debugSubscriptions(): List<Id> = middleware.debugSubscriptions()
 
     override suspend fun turnInto(
         context: String,

@@ -4624,8 +4624,14 @@ class EditorViewModel(
                 }
             }
             is SlashItem.Media -> {
-                cutSlashFilter(targetId = targetId)
-                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
+                // TODO join cutting and block creation operations and merge its payload changes
+                // TODO unify focus handling
+                cutSlashFilter(
+                    targetId = targetId,
+                    setPendingCursor = false,
+                    clearFocusFromView = true
+                )
+                controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStopAndClearFocus)
                 onSlashMediaItemClicked(item = item)
             }
             is SlashItem.ObjectType -> {
@@ -4702,13 +4708,22 @@ class EditorViewModel(
         }
     }
 
-    private fun cutSlashFilter(targetId: Id): Boolean {
+    private fun cutSlashFilter(
+        targetId: Id,
+        setPendingCursor: Boolean = true,
+        clearFocusFromView: Boolean = false
+    ): Boolean {
 
         //saving cursor on slash start index
-        setPendingCursorToPosition(targetId = targetId, position = slashStartIndex)
+        if (setPendingCursor) {
+            setPendingCursorToPosition(targetId = targetId, position = slashStartIndex)
+        }
 
-        // cut text from List<BlockView> and rerender views
-        val newBlockView = cutSlashFilterFromViews(targetId)
+        // cut text from List<BlockView> and re-render views
+        val newBlockView = cutSlashFilterFromViews(
+            targetId = targetId,
+            clearFocusFromView = clearFocusFromView
+        )
 
         // cut text from List<Block> and send TextUpdate Intent
         if (newBlockView != null) {
@@ -4724,7 +4739,10 @@ class EditorViewModel(
         return newBlockView?.text?.isEmpty() ?: false
     }
 
-    private fun cutSlashFilterFromViews(targetId: Id): BlockView.Text? {
+    private fun cutSlashFilterFromViews(
+        targetId: Id,
+        clearFocusFromView: Boolean = false
+    ): BlockView.Text? {
         Timber.d("cutSlashFilterFromViews, targetId:[$targetId], slashStartIndex:[$slashStartIndex], slashFilter:[$slashFilter]")
         val blockView = views.firstOrNull { it.id == targetId }
         if (blockView is BlockView.Text) {
@@ -4732,6 +4750,9 @@ class EditorViewModel(
                 from = slashStartIndex,
                 partLength = slashFilter.length
             )
+            if (clearFocusFromView) {
+                new.isFocused = false
+            }
             val update = views.update(new)
             viewModelScope.launch {
                 orchestrator.stores.views.update(update)
@@ -4950,23 +4971,18 @@ class EditorViewModel(
     private fun onSlashMediaItemClicked(item: SlashItem.Media) {
         when (item) {
             SlashItem.Media.Bookmark -> {
-                onHideKeyboardClicked()
                 onAddBookmarkBlockClicked()
             }
             SlashItem.Media.Code -> {
-                onHideKeyboardClicked()
                 onAddTextBlockClicked(style = Content.Text.Style.CODE_SNIPPET)
             }
             SlashItem.Media.File -> {
-                onHideKeyboardClicked()
                 onAddFileBlockClicked(Content.File.Type.FILE)
             }
             SlashItem.Media.Picture -> {
-                onHideKeyboardClicked()
                 onAddFileBlockClicked(Content.File.Type.IMAGE)
             }
             SlashItem.Media.Video -> {
-                onHideKeyboardClicked()
                 onAddFileBlockClicked(Content.File.Type.VIDEO)
             }
         }

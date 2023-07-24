@@ -420,6 +420,10 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun debugExportLocalStore(request: Rpc.Debug.ExportLocalstore.Request): Rpc.Debug.ExportLocalstore.Response
+
+    @Throws(Exception::class)
+    fun debugSubscriptions(request: Rpc.Debug.Subscriptions.Request): Rpc.Debug.Subscriptions.Response
+
     //endregion
 
     //region WIDGETS commands

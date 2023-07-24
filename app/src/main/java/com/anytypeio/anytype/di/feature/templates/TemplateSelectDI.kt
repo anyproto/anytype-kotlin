@@ -12,7 +12,6 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import kotlinx.coroutines.Dispatchers
 
 @Subcomponent(
     modules = [TemplateSelectModule::class, TemplateSelectModule.Bindings::class]

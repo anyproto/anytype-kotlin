@@ -41,11 +41,8 @@ photoViewVersion = '2.3.0'
 daggerVersion = '2.45'
 javaxAnnotationsVersion = '1.0'
 javaxInjectVersion = '1'
-retrofitVersion = '2.3.0'
-okhttpLoggingInterceptorVersion = '3.8.1'
 gsonVersion = '2.10'
 betterLinkMethodVersion = '2.2.0'
-tableViewVersion = '0.8.9.4'
 picktVersion = '2.0.2'
 zxingVersion = '4.1.0'
 urlcleanerVersion = '0.4.0'
@@ -59,14 +56,12 @@ liveDataTestingVersion = '1.2.0'
 espressoVersion = '3.4.0'
 disableAnimationVersion = '2.0.0'
 leakCanaryVersion = '1.5'
-stethoVersion = '1.5.1'
 timberVersion = '5.0.1'
 crashlyticsVersion = '18.3.1'
 protobufJavaVersion = '3.9.2'
 protocVersion = '3.9.0'
 roomVersion = '2.4.3'
 amplitudeVersion = '2.36.1'
-okhttpVersion = '4.2.2'
 coilComposeVersion = '2.2.2'
 sentryVersion = '6.0.0'
 
@@ -129,10 +124,7 @@ dagger = { module = "com.google.dagger:dagger", version.ref = "daggerVersion" }
 javaxAnnotation = { module = "javax.annotation:jsr250-api", version.ref = "javaxAnnotationsVersion" }
 javaxInject = { module = "javax.inject:javax.inject", version.ref = "javaxInjectVersion" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
-retrofit = { module = "com.squareup.retrofit2:converter-gson", version.ref = "retrofitVersion" }
-okhttpLoggingInterceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "okhttpLoggingInterceptorVersion" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
-tableView = { module = "com.github.evrencoskun:TableView", version.ref = "tableViewVersion" }
 pickT = { module = "com.github.HBiSoft:PickiT", version.ref = "picktVersion" }
 zxing = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingVersion" }
 urlcleaner = { module = "com.shekhargulati.urlcleaner:urlcleaner", version.ref = "urlcleanerVersion" }
@@ -144,7 +136,6 @@ androidXTestCore = { module = "androidx.test:core", version.ref = "androidxTestC
 androidxSecurityCrypto = { module = "androidx.security:security-crypto", version.ref = "androidxSecurityCryptoVersion" }
 preference = { module = "androidx.preference:preference", version.ref = "androidxPreferenceVersion" }
 leakCanaryAndroid = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanaryVersion" }
-stetho = { module = "com.facebook.stetho:stetho", version.ref = "stethoVersion" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectricLatestVersion" }
 kluent = { module = "org.amshove.kluent:kluent-android", version.ref = "kluentVersion" }
 timberJUnit = { module = "net.lachlanmckee:timber-junit-rule", version.ref = "timberJunitVersion" }
@@ -164,7 +155,6 @@ roomKtx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 annotations = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 roomTesting = { module = "androidx.room:room-testing", version.ref = "roomVersion" }
 amplitude = { module = "com.amplitude:android-sdk", version.ref = "amplitudeVersion" }
-okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttpVersion" }
 sentry = { module = "io.sentry:sentry-android", version.ref = "sentryVersion" }
 sentryTimber = { module = "io.sentry:sentry-android-timber", version.ref = "sentryVersion" }
 navigationCompose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationComposeVersion" }

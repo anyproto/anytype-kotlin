@@ -62,6 +62,7 @@ import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
+import com.anytypeio.anytype.core_ui.tools.LastItemBottomOffsetDecorator
 import com.anytypeio.anytype.core_ui.tools.MarkupColorToolbarFooter
 import com.anytypeio.anytype.core_ui.tools.MentionFooterItemDecorator
 import com.anytypeio.anytype.core_ui.tools.NoteHeaderItemDecorator
@@ -85,6 +86,7 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.hide
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.lastDecorator
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.screen
 import com.anytypeio.anytype.core_utils.ext.show
@@ -242,6 +244,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             padding = dimen(R.dimen.scroll_and_move_start_end_padding),
             indentation = dimen(R.dimen.indent),
             descriptor = scrollAndMoveTargetDescriptor
+        )
+    }
+
+    private val defaultBottomOffsetDecorator by lazy {
+        LastItemBottomOffsetDecorator(
+            dimen(R.dimen.dp_48)
         )
     }
 
@@ -503,6 +511,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             itemAnimator = null
             adapter = blockAdapter
             addOnScrollListener(titleVisibilityDetector)
+            addItemDecoration(defaultBottomOffsetDecorator)
         }
 
         binding.toolbar.apply {
@@ -1376,7 +1385,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 binding.styleToolbarMain.setSelectedStyle(this.state)
                 if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
                     keyboardDelayJobs += lifecycleScope.launch {
-                        if (binding.recycler.itemDecorationCount == 0) {
+                        if (binding.recycler.lastDecorator() == defaultBottomOffsetDecorator) {
                             binding.recycler.addItemDecoration(styleToolbarFooter)
                         }
                         proceedWithHidingSoftInput()
@@ -1441,7 +1450,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
                     keyboardDelayJobs += lifecycleScope.launch {
-                        if (binding.recycler.itemDecorationCount == 0) {
+                        if (binding.recycler.lastDecorator() == defaultBottomOffsetDecorator) {
                             binding.recycler.addItemDecoration(styleToolbarFooter)
                         }
                         proceedWithHidingSoftInput()
@@ -1533,7 +1542,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 )
                 if (behavior.state == BottomSheetBehavior.STATE_HIDDEN) {
                     keyboardDelayJobs += lifecycleScope.launch {
-                        if (binding.recycler.itemDecorationCount == 0) {
+                        if (binding.recycler.lastDecorator() == defaultBottomOffsetDecorator) {
                             binding.recycler.addItemDecoration(styleToolbarFooter)
                         }
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -1765,15 +1774,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun enterScrollAndMove() {
-        if (binding.recycler.itemDecorationCount == 0 || binding.recycler.getItemDecorationAt(0) !is ScrollAndMoveTargetHighlighter) {
-
-//            val offset = recycler.computeVerticalScrollOffset()
-//
-//            lifecycleScope.launch {
-//                recycler.layoutChanges().take(1).collect {
-//                    if (offset < screen.y / 3) recycler.scrollBy(0, screen.y / 3)
-//                }
-//            }
+        if (binding.recycler.lastDecorator() !is ScrollAndMoveTargetHighlighter) {
 
             binding.recycler.addItemDecoration(scrollAndMoveTargetHighlighter)
 

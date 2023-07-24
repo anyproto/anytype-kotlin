@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.StubCodeSnippet
 import com.anytypeio.anytype.core_models.StubHeader
 import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubSmartBlock
@@ -326,6 +327,51 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         )
 
         val document = listOf(page, header, title, table)
+
+        stubInterceptEvents()
+        stubOpenDocument(document)
+        stubCreateBlock(root)
+
+        val vm = buildViewModel()
+
+        vm.onStart(root)
+
+        // TESTING
+
+        vm.onOutsideClicked()
+
+        verifyBlocking(createBlock, times(1)) {
+            async(
+                params = eq(
+                    CreateBlock.Params(
+                        target = "",
+                        context = root,
+                        position = Position.INNER,
+                        prototype = Block.Prototype.Text(
+                            style = Block.Content.Text.Style.P
+                        )
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should create a new paragraph on outside-clicked event if the last block is a code snippet block`() {
+
+        // SETUP
+
+        val snippet = StubCodeSnippet(children = listOf())
+        val title = StubTitle()
+        val header = StubHeader(children = listOf(title.id))
+        val page = Block(
+            id = root,
+            children = listOf(header.id) + listOf(snippet.id),
+            fields = Block.Fields.empty(),
+            content = Block.Content.Smart
+        )
+
+        val document = listOf(page, header, title, snippet)
 
         stubInterceptEvents()
         stubOpenDocument(document)

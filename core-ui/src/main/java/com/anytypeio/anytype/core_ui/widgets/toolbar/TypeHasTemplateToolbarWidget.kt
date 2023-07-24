@@ -16,9 +16,11 @@ class TypeHasTemplateToolbarWidget @JvmOverloads constructor(
         LayoutInflater.from(context), this, true
     )
 
-    var count: Int = 0
-        set(value) {
-            field = value
-            binding.tvTitle.text = resources.getString(R.string.this_type_has_templates, value)
-        }
+    fun setText(count: Int, typeName: String) {
+        binding.tvTitle.text = context.getString(
+            R.string.this_type_has_templates,
+            typeName,
+            count
+        )
+    }
 }

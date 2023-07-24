@@ -2,8 +2,10 @@ package com.anytypeio.anytype
 
 import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
+import com.anytypeio.anytype.core_utils.ext.moveOnTop
 import com.anytypeio.anytype.core_utils.ext.shift
 import com.anytypeio.anytype.core_utils.ext.swap
+import kotlin.test.assertTrue
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -107,5 +109,17 @@ class UtilsTest {
         val expected = mutableListOf(0, 1, 4, 9, 16, 25, 36, 49, 64, 81, 10, 11, 120)
 
         assertEquals(expected, list)
+    }
+
+    @Test
+    fun test() {
+
+        val given = mutableListOf(1, 2, 3, 4, 5)
+
+        given.moveOnTop { it == 5 }
+
+        val expected = mutableListOf(5, 1, 2, 3, 4)
+
+        assertTrue { given == expected }
     }
 }

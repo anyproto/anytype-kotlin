@@ -31,16 +31,12 @@ class CreateObject(
             null
         }
 
-        val template = objectTemplates?.singleOrNull()?.id
-
         val internalFlags = buildList {
-            if (objectTemplates != null && objectTemplates.size > 1) {
+            if (!objectTemplates.isNullOrEmpty()) {
                 add(InternalFlags.ShouldSelectType)
                 add(InternalFlags.ShouldSelectTemplate)
             } else {
-                if (template == null) {
-                    add(InternalFlags.ShouldSelectType)
-                }
+                add(InternalFlags.ShouldSelectType)
             }
             add(InternalFlags.ShouldEmptyDelete)
         }
@@ -50,7 +46,7 @@ class CreateObject(
         }
 
         val command = Command.CreateObject(
-            template = template,
+            template = null,
             prefilled = prefilled,
             internalFlags = internalFlags
         )
@@ -60,7 +56,7 @@ class CreateObject(
         return Result(
             objectId = result.id,
             event = result.event,
-            appliedTemplate = template,
+            appliedTemplate = null,
             type = type
         )
     }

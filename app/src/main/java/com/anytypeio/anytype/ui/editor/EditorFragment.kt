@@ -62,6 +62,7 @@ import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
+import com.anytypeio.anytype.core_ui.tools.LastItemBottomOffsetDecorator
 import com.anytypeio.anytype.core_ui.tools.MarkupColorToolbarFooter
 import com.anytypeio.anytype.core_ui.tools.MentionFooterItemDecorator
 import com.anytypeio.anytype.core_ui.tools.NoteHeaderItemDecorator
@@ -242,6 +243,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             padding = dimen(R.dimen.scroll_and_move_start_end_padding),
             indentation = dimen(R.dimen.indent),
             descriptor = scrollAndMoveTargetDescriptor
+        )
+    }
+
+    private val defaultBottomOffsetDecorator by lazy {
+        LastItemBottomOffsetDecorator(
+            dimen(R.dimen.dp_48)
         )
     }
 
@@ -503,6 +510,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             itemAnimator = null
             adapter = blockAdapter
             addOnScrollListener(titleVisibilityDetector)
+            addItemDecoration(defaultBottomOffsetDecorator)
         }
 
         binding.toolbar.apply {

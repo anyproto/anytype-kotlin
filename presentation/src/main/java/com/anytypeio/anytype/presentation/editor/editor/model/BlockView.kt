@@ -639,6 +639,7 @@ sealed class BlockView : ViewType {
         abstract var coverGradient: String?
         override val color: ThemeColor = ThemeColor.DEFAULT
         abstract override val background: ThemeColor
+        abstract val hint: String?
 
         val hasCover get() = coverColor != null || coverImage != null || coverGradient != null
 
@@ -660,7 +661,8 @@ sealed class BlockView : ViewType {
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
-            override val searchFields: List<Searchable.Field> = emptyList()
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val hint: String? = null
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_TITLE
         }
@@ -683,7 +685,8 @@ sealed class BlockView : ViewType {
             override val image: String? = null,
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
-            override val searchFields: List<Searchable.Field> = emptyList()
+            override val searchFields: List<Searchable.Field> = emptyList(),
+            override val hint: String? = null
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_PROFILE_TITLE
         }
@@ -707,6 +710,7 @@ sealed class BlockView : ViewType {
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
             var isChecked: Boolean = false,
+            override val hint: String? = null
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_TODO_TITLE
         }
@@ -728,7 +732,8 @@ sealed class BlockView : ViewType {
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val color: ThemeColor = ThemeColor.DEFAULT,
             override val mode: Mode = Mode.READ,
-            override var cursor: Int? = null
+            override var cursor: Int? = null,
+            override val hint: String? = null
         ) : Title() {
             override fun getViewType() = HOLDER_ARCHIVE_TITLE
         }

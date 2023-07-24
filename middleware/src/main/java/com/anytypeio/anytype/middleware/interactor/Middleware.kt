@@ -782,6 +782,15 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun debugSubscriptions(): List<Id> {
+        val request = Rpc.Debug.Subscriptions.Request()
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugSubscriptions(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.subscriptions
+    }
+
+    @Throws(Exception::class)
     fun debugObject(objectId: Id, path: String): String {
         val request = Rpc.Debug.Tree.Request(
             treeId = objectId,

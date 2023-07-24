@@ -447,7 +447,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 val behavior = BottomSheetBehavior.from(binding.typeHasTemplateToolbar)
                 when (state) {
                     is SelectTemplateViewState.Active -> {
-                        binding.typeHasTemplateToolbar.count = state.count
+                        binding.typeHasTemplateToolbar.setText(state.count, state.typeName)
                         behavior.state = BottomSheetBehavior.STATE_EXPANDED
                         behavior.addBottomSheetCallback(onHideBottomSheetCallback)
                     }

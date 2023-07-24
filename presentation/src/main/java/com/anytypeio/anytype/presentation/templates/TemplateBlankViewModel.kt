@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.presentation.templates
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
@@ -13,9 +11,12 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
+import com.anytypeio.anytype.presentation.templates.TemplateConstants.BLANK_ROOT_ID
+import com.anytypeio.anytype.presentation.templates.TemplateConstants.BLANK_TITLE
+import com.anytypeio.anytype.presentation.templates.TemplateConstants.HEADER_ID
+import com.anytypeio.anytype.presentation.templates.TemplateConstants.TITLE_ID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 import timber.log.Timber
 
 class TemplateBlankViewModel(
@@ -75,8 +76,8 @@ class TemplateBlankViewModel(
 
         val customDetails =
             Block.Details(mapOf(BLANK_ROOT_ID to objectDetails, typeId to typeDetails))
-        viewModelScope.launch {
 
+        viewModelScope.launch {
             val blockViews = page.asMap().render(
                 mode = Editor.Mode.Read,
                 root = page.first(),
@@ -97,24 +98,5 @@ class TemplateBlankViewModel(
                 }
             }
         }
-    }
-
-    class Factory @Inject constructor(
-        private val renderer: DefaultBlockViewRenderer,
-    ) : ViewModelProvider.Factory {
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return TemplateBlankViewModel(
-                renderer = renderer
-            ) as T
-        }
-    }
-
-    companion object {
-        const val BLANK_TITLE = "Blank template"
-        const val BLANK_ROOT_ID = "blank_template_root_id"
-        const val HEADER_ID = "header"
-        const val TITLE_ID = "blockTitle"
     }
 }

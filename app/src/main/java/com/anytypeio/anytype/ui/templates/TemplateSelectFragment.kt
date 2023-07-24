@@ -56,11 +56,11 @@ class TemplateSelectFragment :
     private suspend fun setupClickEventHandlers() {
         setupUseTemplateClicks()
         setupCancelClicks()
-        setupDismissStatusObserver()
     }
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.viewState) { render(it) }
+        jobs += subscribe(vm.isDismissed) { if (it) exit() }
         super.onStart()
         vm.onStart(type = type, withoutBlankTemplate = withoutEmptyTemplate)
     }
@@ -97,10 +97,6 @@ class TemplateSelectFragment :
 
     private suspend fun setupCancelClicks() {
         binding.btnCancel.clicks().collect { exit() }
-    }
-
-    private suspend fun setupDismissStatusObserver() {
-        vm.isDismissed.collect { isDismissed -> if (isDismissed) exit() }
     }
 
     private fun exit() {

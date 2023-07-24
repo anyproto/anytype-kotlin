@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +26,7 @@ class TemplateSelectViewModel(
     private val applyTemplate: ApplyTemplate
 ) : BaseViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
-    val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
+    val isDismissed = MutableStateFlow(false)
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Init)
     val viewState: StateFlow<ViewState> = _viewState
@@ -84,7 +83,7 @@ class TemplateSelectViewModel(
             is ViewState.Success -> {
                 when (val template = state.templates[currentItem]) {
                     is TemplateView.Blank -> {
-                        dismiss()
+                        isDismissed.value = true
                     }
                     is TemplateView.Template -> {
                         proceedWithApplyingTemplate(ctx, template)
@@ -93,6 +92,7 @@ class TemplateSelectViewModel(
             }
             else -> {
                 Timber.e("onUseTemplate: unexpected state $state")
+                isDismissed.value = true
             }
         }
     }
@@ -102,21 +102,15 @@ class TemplateSelectViewModel(
         viewModelScope.launch {
             applyTemplate.async(params).fold(
                 onSuccess = {
+                    isDismissed.value = true
                     Timber.d("Template ${template.id} applied successfully")
-                    dismiss()
                 },
                 onFailure = {
+                    isDismissed.value = true
                     Timber.e(it, "Error while applying template")
                     sendToast("Something went wrong. Please, try again later.")
-                    dismiss()
                 }
             )
-        }
-    }
-
-    private fun dismiss() {
-        viewModelScope.launch {
-            isDismissed.emit(true)
         }
     }
 

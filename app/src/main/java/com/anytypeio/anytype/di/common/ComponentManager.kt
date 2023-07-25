@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.common
 
 import android.content.Context
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.feature.AddFileRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationModule
@@ -102,6 +103,7 @@ import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
+import timber.log.Timber
 
 class ComponentManager(
     private val main: MainComponent,
@@ -955,7 +957,7 @@ class ComponentManager(
 
     class Component<T>(private val builder: () -> T) {
 
-        private var instance: T? = null
+        var instance: T? = null
 
         fun get() = instance ?: builder().also { instance = it }
 
@@ -966,6 +968,14 @@ class ComponentManager(
         }
 
         fun isInitialized() = instance != null
+
+        override fun toString(): String {
+            return if (BuildConfig.DEBUG) {
+                instance?.toString().orEmpty()
+            } else {
+                super.toString()
+            }
+        }
     }
 
     class ComponentMap<T>(private val builder: () -> T) {
@@ -979,6 +989,16 @@ class ComponentManager(
         fun release(id: String) {
             map.remove(id)
         }
+
+        fun isInitialized() = map.isEmpty()
+
+        override fun toString(): String {
+            return if (BuildConfig.DEBUG) {
+                map.toString()
+            } else {
+                super.toString()
+            }
+        }
     }
 
     class DependentComponentMap<T>(private val builder: (Id) -> T) {
@@ -991,6 +1011,16 @@ class ComponentManager(
 
         fun release(id: Id) {
             map.remove(id)
+        }
+
+        fun isInitialized() = map.isEmpty()
+
+        override fun toString(): String {
+            return if (BuildConfig.DEBUG) {
+                map.toString()
+            } else {
+                super.toString()
+            }
         }
     }
 
@@ -1009,5 +1039,43 @@ class ComponentManager(
 
     private inline fun <reified T : ComponentDependencies> findComponentDependencies(): T {
         return provider.dependencies[T::class.java] as T
+    }
+
+    /**
+     * Can be used for debugging and tracing unreleased components.
+     */
+    fun logUnreleasedComponents() {
+        if (BuildConfig.DEBUG) {
+            javaClass.declaredFields.forEach { field ->
+                val component = field.get(this)
+                if (component != null) {
+                    when (component) {
+                        is Component<*> -> {
+                            if (component.isInitialized()) {
+                                Timber.d(
+                                    "Unreleased component: $component"
+                                )
+                            }
+                        }
+
+                        is DependentComponentMap<*> -> {
+                            if (component.isInitialized()) {
+                                Timber.d(
+                                    "Unreleased component: $component"
+                                )
+                            }
+                        }
+
+                        is ComponentMap<*> -> {
+                            if (component.isInitialized()) {
+                                Timber.d(
+                                    "Unreleased component: $component"
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

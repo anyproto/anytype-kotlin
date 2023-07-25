@@ -990,7 +990,7 @@ class ComponentManager(
             map.remove(id)
         }
 
-        fun isInitialized() = map.isEmpty()
+        fun isInitialized() = map.isNotEmpty()
 
         override fun toString(): String {
             return if (BuildConfig.DEBUG) {
@@ -1013,7 +1013,7 @@ class ComponentManager(
             map.remove(id)
         }
 
-        fun isInitialized() = map.isEmpty()
+        fun isInitialized() = map.isNotEmpty()
 
         override fun toString(): String {
             return if (BuildConfig.DEBUG) {

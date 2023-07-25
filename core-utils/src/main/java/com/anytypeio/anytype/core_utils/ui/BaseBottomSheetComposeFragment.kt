@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
 
@@ -28,6 +29,7 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
     private val currentNavigationId by lazy { getNavigationId() }
     private val throttleFlow = MutableSharedFlow<() -> Unit>(0)
 
+    @Deprecated("Not safe enough.")
     protected fun safeNavigate(
         @IdRes id: Int,
         args: Bundle? = null
@@ -35,7 +37,11 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
         jobs += this.lifecycleScope.launch {
             throttleFlow.emit {
                 if (currentNavigationId == getNavigationId()) {
-                    findNavController().navigate(id, args)
+                    try {
+                        findNavController().navigate(id, args)
+                    } catch (e: Exception) {
+                        Timber.e(e, "safeNavigateMethod is not safe!")
+                    }
                 }
             }
         }

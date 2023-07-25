@@ -555,6 +555,7 @@ class ObjectSetViewModel(
     }
 
     private suspend fun proceedWithClosingAndExit() {
+        Timber.d("Closing...")
         closeBlock.async(context).fold(
             onSuccess = { dispatch(AppNavigation.Command.Exit) },
             onFailure = {
@@ -1168,7 +1169,6 @@ class ObjectSetViewModel(
         Timber.d("onCleared, ")
         super.onCleared()
         titleUpdateChannel.cancel()
-        stateReducer.clear()
     }
 
     fun onHomeButtonClicked() {

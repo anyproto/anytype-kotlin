@@ -957,7 +957,7 @@ class ComponentManager(
 
     class Component<T>(private val builder: () -> T) {
 
-        var instance: T? = null
+        private var instance: T? = null
 
         fun get() = instance ?: builder().also { instance = it }
 

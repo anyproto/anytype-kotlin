@@ -1052,25 +1052,17 @@ class ComponentManager(
                     when (component) {
                         is Component<*> -> {
                             if (component.isInitialized()) {
-                                Timber.d(
-                                    "Unreleased component: $component"
-                                )
+                                Timber.d("Unreleased component: $component")
                             }
                         }
-
                         is DependentComponentMap<*> -> {
                             if (component.isInitialized()) {
-                                Timber.d(
-                                    "Unreleased component: $component"
-                                )
+                                Timber.d("Unreleased component: $component")
                             }
                         }
-
                         is ComponentMap<*> -> {
                             if (component.isInitialized()) {
-                                Timber.d(
-                                    "Unreleased component: $component"
-                                )
+                                Timber.d("Unreleased component: $component")
                             }
                         }
                     }

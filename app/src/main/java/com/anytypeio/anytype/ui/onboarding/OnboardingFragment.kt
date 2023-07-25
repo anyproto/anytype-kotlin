@@ -264,11 +264,7 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.VOID
-
-                val component = componentManager().onboardingNewVoidComponent.ReleaseOn(
-                    viewLifecycleOwner = viewLifecycleOwner,
-                    state = Lifecycle.State.DESTROYED
-                )
+                val component = componentManager().onboardingNewVoidComponent
                 val vm = daggerViewModel { component.get().getViewModel() }
 
                 VoidScreenWrapper(
@@ -295,6 +291,9 @@ class OnboardingFragment : Fragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.toasts.collect { toast(it) }
+                }
+                DisposableEffect(Unit) {
+                    onDispose { component.release() }
                 }
             }
             composable(
@@ -389,10 +388,7 @@ class OnboardingFragment : Fragment() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun Recovery(navController: NavHostController) {
-        val component = componentManager().onboardingMnemonicLoginComponent.ReleaseOn(
-            viewLifecycleOwner = viewLifecycleOwner,
-            state = Lifecycle.State.DESTROYED
-        )
+        val component = componentManager().onboardingMnemonicLoginComponent
         val vm = daggerViewModel { component.get().getViewModel() }
         val isQrWarningDialogVisible = remember { mutableStateOf(false) }
 
@@ -445,6 +441,9 @@ class OnboardingFragment : Fragment() {
                 onDismissRequest = { isQrWarningDialogVisible.value = false }
             )
         }
+        DisposableEffect(Unit) {
+            onDispose { component.release() }
+        }
     }
 
     private fun proceedWithQrCodeActivity(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
@@ -465,10 +464,7 @@ class OnboardingFragment : Fragment() {
     private fun enterTheVoid(
         navController: NavHostController
     ) {
-        val component = componentManager().onboardingLoginSetupComponent.ReleaseOn(
-            viewLifecycleOwner = viewLifecycleOwner,
-            state = Lifecycle.State.DESTROYED
-        )
+        val component = componentManager().onboardingLoginSetupComponent
         val vm = daggerViewModel { component.get().getViewModel() }
         EnteringTheVoidScreen(
             error = vm.error.collectAsState().value,
@@ -499,14 +495,14 @@ class OnboardingFragment : Fragment() {
         LaunchedEffect(Unit) {
             vm.toasts.collect { toast(it) }
         }
+        DisposableEffect(Unit) {
+            onDispose { component.release() }
+        }
     }
 
     @Composable
     private fun CreateSoulAnimation(contentPaddingTop: Int) {
-        val component = componentManager().onboardingSoulCreationAnimComponent.ReleaseOn(
-            viewLifecycleOwner = viewLifecycleOwner,
-            state = Lifecycle.State.DESTROYED
-        )
+        val component = componentManager().onboardingSoulCreationAnimComponent
         CreateSoulAnimWrapper(
             contentPaddingTop = contentPaddingTop,
             viewModel = daggerViewModel { component.get().getViewModel() },
@@ -514,15 +510,15 @@ class OnboardingFragment : Fragment() {
                 findNavController().navigate(R.id.action_openHome)
             }
         )
+        DisposableEffect(Unit) {
+            onDispose { component.release() }
+        }
     }
 
 
     @Composable
     private fun CreateSoul(navController: NavHostController, contentPaddingTop: Int) {
-        val component = componentManager().onboardingSoulCreationComponent.ReleaseOn(
-            viewLifecycleOwner = viewLifecycleOwner,
-            state = Lifecycle.State.DESTROYED
-        )
+        val component = componentManager().onboardingSoulCreationComponent
         val vm = daggerViewModel { component.get().getViewModel() }
 
         val focusManager = LocalFocusManager.current
@@ -552,6 +548,9 @@ class OnboardingFragment : Fragment() {
                 toast(it)
             }
         }
+        DisposableEffect(Unit) {
+            onDispose { component.release() }
+        }
     }
 
     @Composable
@@ -560,10 +559,7 @@ class OnboardingFragment : Fragment() {
         contentPaddingTop: Int,
         mnemonicColorPalette: List<Color>
     ) {
-        val component = componentManager().onboardingMnemonicComponent.ReleaseOn(
-            viewLifecycleOwner = viewLifecycleOwner,
-            state = Lifecycle.State.DESTROYED
-        )
+        val component = componentManager().onboardingMnemonicComponent
         val vm = daggerViewModel { component.get().getViewModel() }
         MnemonicPhraseScreenWrapper(
             contentPaddingTop = contentPaddingTop,
@@ -576,6 +572,9 @@ class OnboardingFragment : Fragment() {
             vm = vm,
             mnemonicColorPalette = mnemonicColorPalette
         )
+        DisposableEffect(Unit) {
+            onDispose { component.release() }
+        }
     }
 
     private fun copyMnemonicToClipboard(mnemonicPhrase: String) {
@@ -593,10 +592,7 @@ class OnboardingFragment : Fragment() {
 
     @Composable
     private fun Auth(navController: NavHostController) {
-        val component = componentManager().onboardingStartComponent.ReleaseOn(
-            viewLifecycleOwner = viewLifecycleOwner,
-            state = Lifecycle.State.DESTROYED
-        )
+        val component = componentManager().onboardingStartComponent
         val vm = daggerViewModel { component.get().getViewModel() }
         AuthScreenWrapper(vm = vm)
         LaunchedEffect(Unit) {
@@ -641,6 +637,9 @@ class OnboardingFragment : Fragment() {
                     }
                 }
             }
+        }
+        DisposableEffect(Unit) {
+            onDispose { component.release() }
         }
     }
 
@@ -696,31 +695,13 @@ class OnboardingFragment : Fragment() {
         return player
     }
 
-    @Composable
-    fun <T> ComponentManager.Component<T>.ReleaseOn(
-        viewLifecycleOwner: LifecycleOwner,
-        state: Lifecycle.State
-    ): ComponentManager.Component<T> {
-        val that = this
-        DisposableEffect(
-            key1 = viewLifecycleOwner.lifecycle.currentState.isAtLeast(state),
-            effect = {
-                onDispose {
-                    if (viewLifecycleOwner.lifecycle.currentState == state) {
-                        that.release()
-                    }
-                }
-            }
-        )
-        return that
-    }
-
     fun injectDependencies() {
         componentManager().onboardingComponent.get().inject(this)
     }
 
     fun releaseDependencies() {
         componentManager().onboardingComponent.release()
+        componentManager().logUnreleasedComponents()
     }
 }
 

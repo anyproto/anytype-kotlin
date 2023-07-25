@@ -3478,18 +3478,23 @@ class EditorViewModel(
         }
     }
 
-    fun onCopy(
-        range: IntRange?
-    ) {
+    fun onCopy(range: IntRange?) {
         Timber.d("onCopy, ")
         viewModelScope.launch {
-            orchestrator.proxies.intents.send(
-                Intent.Clipboard.Copy(
-                    context = context,
-                    range = range,
-                    blocks = listOf(blocks.first { it.id == focus.value })
+            val target = blocks.find { it.id == focus.value }
+            if (target != null) {
+                orchestrator.proxies.intents.send(
+                    Intent.Clipboard.Copy(
+                        context = context,
+                        range = range,
+                        blocks = listOf(target)
+                    )
                 )
-            )
+            } else {
+                Timber.e("Error while copying: target not found").also {
+                    sendToast("Something went wrong. Please try again.")
+                }
+            }
         }
     }
 

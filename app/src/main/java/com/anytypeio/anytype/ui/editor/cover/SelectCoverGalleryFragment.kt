@@ -53,23 +53,26 @@ abstract class SelectCoverGalleryFragment :
         )
     }
 
-    val getContent = registerForActivityResult(GetImageContract()) { uri: Uri? ->
-        if (uri != null) {
-            try {
-                val path = uri.parseImagePath(requireContext())
-                vm.onImagePicked(ctx, path)
-            } catch (e: Exception) {
-                toast("Error while parsing path for cover image")
-                Timber.d(e, "Error while parsing path for cover image")
-            }
-        } else {
-            toast("Error while upload cover image, URI is null")
-            Timber.e("Error while upload cover image, URI is null")
-        }
+    private val getContent = try { getContentLauncher() } catch (e: Exception) {
+        null
     }
 
-    private val permissionReadStorage =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
+    private fun getContentLauncher() = registerForActivityResult(GetImageContract()) { uri: Uri? ->
+            if (uri != null) {
+                try {
+                    val path = uri.parseImagePath(requireContext())
+                    vm.onImagePicked(ctx, path)
+                } catch (e: Exception) {
+                    toast("Error while parsing path for cover image")
+                    Timber.d(e, "Error while parsing path for cover image")
+                }
+            } else {
+                toast("Error while upload cover image, URI is null")
+                Timber.e("Error while upload cover image, URI is null")
+            }
+    }
+
+    private val permissionReadStorage = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
             val readResult = grantResults[Manifest.permission.READ_EXTERNAL_STORAGE]
             if (readResult == true) {
                 openGallery()
@@ -159,7 +162,12 @@ abstract class SelectCoverGalleryFragment :
     }
 
     private fun openGallery() {
-        getContent.launch(SELECT_IMAGE_CODE)
+        try {
+            getContent?.launch(SELECT_IMAGE_CODE)
+        } catch (e: Exception) {
+            Timber.e(e, "Error while opening gallery")
+            toast("Error while opening gallery: ${e.message}")
+        }
     }
 
     private fun hasReadStoragePermission(): Boolean = ContextCompat.checkSelfPermission(

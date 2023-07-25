@@ -42,7 +42,7 @@ interface AppNavigation {
     fun exit()
     fun exitToDesktop()
     fun openDebugSettings()
-    fun openPageSearch()
+    fun openPageSearch(ctx: Id? = null)
     fun exitToDesktopAndOpenPage(pageId: String)
     fun exitToInvitationCodeScreen()
     fun openUpdateAppScreen()
@@ -104,7 +104,7 @@ interface AppNavigation {
         object OpenDebugSettingsScreen : Command()
 
         data class ExitToDesktopAndOpenPage(val pageId: String) : Command()
-        object OpenPageSearch : Command()
+        data class OpenPageSearch(val ctx: Id? = null) : Command()
 
         data class OpenSetOrCollection(val target: String, val isPopUpToDashboard: Boolean = false) :
             Command()

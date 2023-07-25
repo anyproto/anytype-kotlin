@@ -61,7 +61,7 @@ class NavigationRouter(
                     command.pageId
                 )
 
-                is AppNavigation.Command.OpenPageSearch -> navigation.openPageSearch()
+                is AppNavigation.Command.OpenPageSearch -> navigation.openPageSearch(command.ctx)
                 is AppNavigation.Command.OpenUpdateAppScreen -> navigation.openUpdateAppScreen()
                 is AppNavigation.Command.DeletedAccountScreen -> navigation.deletedAccountScreen(
                     command.deadline

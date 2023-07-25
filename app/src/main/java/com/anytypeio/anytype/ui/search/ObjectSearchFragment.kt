@@ -17,10 +17,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.features.navigation.DefaultObjectViewAdapter
 import com.anytypeio.anytype.core_ui.features.search.ObjectSearchDividerItemDecoration
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.imm
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
@@ -44,6 +46,8 @@ class ObjectSearchFragment :
     @Inject
     lateinit var factory: ObjectSearchViewModelFactory
 
+    private val ctx: Id? get() = argOrNull(CTX_KEY)
+
     private lateinit var clearSearchText: View
     private lateinit var filterInputField: EditText
 
@@ -51,7 +55,9 @@ class ObjectSearchFragment :
 
     private val searchAdapter by lazy {
         DefaultObjectViewAdapter(
-            onDefaultObjectClicked = vm::onObjectClicked
+            onDefaultObjectClicked = { obj ->
+                vm.onObjectClicked(view = obj, ctx = ctx)
+            }
         )
     }
 
@@ -215,5 +221,6 @@ class ObjectSearchFragment :
 
     companion object {
         const val EMPTY_FILTER_TEXT = ""
+        const val CTX_KEY = "arg.search.ctx"
     }
 }

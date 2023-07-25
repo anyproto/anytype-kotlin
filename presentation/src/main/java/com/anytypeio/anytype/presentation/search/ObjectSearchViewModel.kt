@@ -151,6 +151,16 @@ open class ObjectSearchViewModel(
         userInput.value = searchText
     }
 
+    fun onObjectClicked(view: DefaultObjectView, ctx: Id?) {
+        val target = view.id
+        // Workaround for avoiding placing the same object in the navigation stack
+        if (target == ctx) {
+            proceedWithExit()
+        } else {
+            onObjectClicked(view)
+        }
+    }
+
     open fun onObjectClicked(view: DefaultObjectView) {
         val target = view.id
         sendSearchResultEvent(target)
@@ -164,9 +174,11 @@ open class ObjectSearchViewModel(
             ObjectType.Layout.BOOKMARK -> {
                 navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = target)))
             }
+
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 navigate(EventWrapper(AppNavigation.Command.LaunchObjectSet(target = target)))
             }
+
             else -> {
                 Timber.e("Unexpected layout: ${view.layout}")
             }
@@ -198,6 +210,10 @@ open class ObjectSearchViewModel(
     )
 
     override fun onDialogCancelled() {
+        proceedWithExit()
+    }
+
+    private fun proceedWithExit() {
         navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
     }
 

@@ -4118,7 +4118,7 @@ class EditorViewModel(
             eventName = searchScreenShow,
             props = Props(mapOf(EventsPropertiesKey.context to analyticsContext))
         )
-        navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
+        navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch(context)))
     }
 
     private fun onMultiSelectModeBlockClicked() {

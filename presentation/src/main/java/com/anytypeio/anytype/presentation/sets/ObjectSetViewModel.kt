@@ -1229,7 +1229,8 @@ class ObjectSetViewModel(
     fun onSearchButtonClicked() {
         viewModelScope.launch {
             closeBlock.async(context).fold(
-                onSuccess = { dispatch(AppNavigation.Command.OpenPageSearch) },
+                onSuccess = {
+                    dispatch(AppNavigation.Command.OpenPageSearch(context)) },
                 onFailure = { Timber.e(it, "Error while closing object set: $context") }
             )
         }

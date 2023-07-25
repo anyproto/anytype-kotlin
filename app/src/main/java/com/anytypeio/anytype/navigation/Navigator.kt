@@ -13,6 +13,7 @@ import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARG
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteStorageFragment
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
@@ -192,8 +193,11 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.action_profileScreen_to_debugSettingsFragment)
     }
 
-    override fun openPageSearch() {
-        navController?.navigate(R.id.pageSearchFragment)
+    override fun openPageSearch(ctx: Id?) {
+        navController?.navigate(
+            R.id.pageSearchFragment,
+            bundleOf(ObjectSearchFragment.CTX_KEY to ctx)
+        )
     }
 
     override fun exitToDesktopAndOpenPage(pageId: String) {

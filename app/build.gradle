@@ -207,7 +207,6 @@ dependencies {
     implementation libs.exoPlayerUi
 
     implementation libs.amplitude
-    implementation libs.okhttp
 
     implementation libs.shimmerLayout
     implementation libs.photoView

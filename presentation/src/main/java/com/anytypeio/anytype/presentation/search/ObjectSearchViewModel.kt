@@ -198,11 +198,7 @@ open class ObjectSearchViewModel(
     )
 
     override fun onDialogCancelled() {
-        navigateToDesktop()
-    }
-
-    private fun navigateToDesktop() {
-        navigation.postValue(EventWrapper(AppNavigation.Command.ExitToDesktop))
+        navigation.postValue(EventWrapper(AppNavigation.Command.Exit))
     }
 
     companion object {

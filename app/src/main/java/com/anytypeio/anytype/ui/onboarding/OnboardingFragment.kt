@@ -701,7 +701,6 @@ class OnboardingFragment : Fragment() {
 
     fun releaseDependencies() {
         componentManager().onboardingComponent.release()
-        componentManager().logUnreleasedComponents()
     }
 }
 

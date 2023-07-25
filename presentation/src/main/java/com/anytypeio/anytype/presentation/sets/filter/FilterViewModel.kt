@@ -115,23 +115,29 @@ open class FilterViewModel(
     private fun initStates() {
         jobs += viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
-                val viewer = state.viewerById(session.currentViewerId.value) ?: return@collect
-                val key = relationKey
-                if (key != null) {
-                    val relation = storeOfRelations.getByKey(key)
-                    if (relation != null) {
-                        this@FilterViewModel.relation = relation
-                        setRelationState(
-                            viewer = viewer,
-                            relation = relation
-                        )
-                        setConditionState(viewer, relation, filterIndex)
-                        setValueStates(
-                            condition = conditionState.value?.condition,
-                            index = filterIndex
-                        )
-                    } else {
-                        Timber.e("Couldn't find relation in StoreOfRelations by relationKey:[$relationKey]")
+                try {
+                    val viewer = state.viewerById(session.currentViewerId.value) ?: return@collect
+                    val key = relationKey
+                    if (key != null) {
+                        val relation = storeOfRelations.getByKey(key)
+                        if (relation != null) {
+                            this@FilterViewModel.relation = relation
+                            setRelationState(
+                                viewer = viewer,
+                                relation = relation
+                            )
+                            setConditionState(viewer, relation, filterIndex)
+                            setValueStates(
+                                condition = conditionState.value?.condition,
+                                index = filterIndex
+                            )
+                        } else {
+                            Timber.e("Couldn't find relation in StoreOfRelations by relationKey:[$relationKey]")
+                        }
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "Error in the filter flow").also {
+                        commands.emit(Commands.Toast("Something went wrong. Please try again"))
                     }
                 }
             }

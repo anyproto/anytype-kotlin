@@ -43,7 +43,6 @@ plugins {
     alias(libs.plugins.wire) apply false
     alias(libs.plugins.dokka) apply false
     alias(libs.plugins.firebaseDistribution) apply false
-    alias(libs.plugins.crashlytics) apply false
     alias(libs.plugins.navigation) apply false
     alias(libs.plugins.gms) apply false
 }

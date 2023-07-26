@@ -20,7 +20,7 @@ jobs:
         id: members
         uses: octokit/request-action@v2.x
         with:
-          route: GET /orgs/anyproto/members
+          route: GET /orgs/anyproto/members?per_page=100
         env:
           GITHUB_TOKEN: ${{ secrets.ANY_CLA_TOKEN }}
 

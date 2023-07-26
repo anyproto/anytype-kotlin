@@ -57,7 +57,6 @@ espressoVersion = '3.4.0'
 disableAnimationVersion = '2.0.0'
 leakCanaryVersion = '1.5'
 timberVersion = '5.0.1'
-crashlyticsVersion = '18.3.1'
 protobufJavaVersion = '3.9.2'
 protocVersion = '3.9.0'
 roomVersion = '2.4.3'
@@ -128,7 +127,6 @@ timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersio
 pickT = { module = "com.github.HBiSoft:PickiT", version.ref = "picktVersion" }
 zxing = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingVersion" }
 urlcleaner = { module = "com.shekhargulati.urlcleaner:urlcleaner", version.ref = "urlcleanerVersion" }
-crashlytics = { module = "com.google.firebase:firebase-crashlytics", version.ref = "crashlyticsVersion" }
 shimmerLayout = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmerLayoutVersion" }
 archCoreTesting = { module = "androidx.arch.core:core-testing", version.ref = "androidxCoreTestingVersion" }
 liveDataTesting = { module = "com.jraska.livedata:testing-ktx", version.ref = "liveDataTestingVersion" }
@@ -170,7 +168,6 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "kotlinVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
 wire = { id = "com.squareup.wire", version = "4.4.3" }
 firebaseDistribution = { id = "com.google.firebase.appdistribution", version = "3.1.1" }
-crashlytics = { id = "com.google.firebase.crashlytics", version = "2.9.2" }
 navigation = { id = "androidx.navigation.safeargs", version.ref = "navigationVersion" }
 navigationKotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigationVersion" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinVersion" }

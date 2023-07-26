@@ -3,8 +3,10 @@ package com.anytypeio.anytype.presentation.onboarding.signup
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -12,11 +14,14 @@ import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.presentation.auth.account.SetupNewAccountViewState
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
@@ -36,7 +41,9 @@ class OnboardingVoidViewModel @Inject constructor(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
     private val logout: Logout,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val configStorage: ConfigStorage,
+    private val crashReporter: CrashReporter,
 ): BaseViewModel() {
 
     val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
@@ -70,6 +77,7 @@ class OnboardingVoidViewModel @Inject constructor(
     }
 
     private fun proceedWithCreatingAccount() {
+        val startTime = System.currentTimeMillis()
         createAccount.invoke(
             scope = viewModelScope,
             params = CreateAccount.Params(
@@ -80,11 +88,28 @@ class OnboardingVoidViewModel @Inject constructor(
         ) { result ->
             result.either(
                 fnL = { error ->
-                    Timber.d("Error while creating account: ${error.message}")
+                    Timber.d("Error while creating account: ${error.message ?: "Unknown error"}").also {
+                        when(error) {
+                            CreateAccountException.NetworkError -> {
+                                sendToast(
+                                    "Failed to create your account due to a network error: ${error.message ?: "Unknown error"}"
+                                )
+                            }
+                            CreateAccountException.OfflineDevice -> {
+                                sendToast("Your device seems to be offline. Please, check your connection and try again.")
+                            }
+                            else -> {
+                                sendToast("Error while creating an account: ${error.message ?: "Unknown error"}")
+                            }
+                        }
+                    }
                 },
-                fnR = { account ->
-//                    updateUserProps(account.id)
-//                    sendAuthEvent(startTime)
+                fnR = {
+                    createAccountAnalytics(startTime)
+                    val config = configStorage.getOrNull()
+                    if (config != null) {
+                        crashReporter.setUser(config.analytics)
+                    }
                     relationsSubscriptionManager.onStart()
                     objectTypesSubscriptionManager.onStart()
                     proceedWithSettingUpMobileUseCase()
@@ -175,6 +200,16 @@ class OnboardingVoidViewModel @Inject constructor(
         }
     }
 
+    private fun createAccountAnalytics(startTime: Long) {
+        viewModelScope.launch {
+            analytics.proceedWithAccountEvent(
+                startTime = startTime,
+                configStorage = configStorage,
+                eventName = EventsDictionary.createAccount
+            )
+        }
+    }
+
     private fun sendAnalyticsOnboardingScreen() {
         viewModelScope.sendAnalyticsOnboardingScreenEvent(analytics,
             EventsDictionary.ScreenOnboardingStep.PHRASE
@@ -196,7 +231,9 @@ class OnboardingVoidViewModel @Inject constructor(
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val checkAuthorizationStatus: CheckAuthorizationStatus,
         private val logout: Logout,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val configStorage: ConfigStorage,
+        private val crashReporter: CrashReporter
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -210,7 +247,9 @@ class OnboardingVoidViewModel @Inject constructor(
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
                 logout = logout,
                 checkAuthorizationStatus = checkAuthorizationStatus,
-                analytics = analytics
+                analytics = analytics,
+                crashReporter = crashReporter,
+                configStorage = configStorage
             ) as T
         }
     }

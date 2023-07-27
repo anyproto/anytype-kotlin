@@ -1363,7 +1363,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1373,7 +1373,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1383,7 +1383,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1717,7 +1717,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1727,7 +1727,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1737,7 +1737,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
                 keys = ListWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1774,7 +1774,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
             )
         }
@@ -1785,7 +1785,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
             )
         }
@@ -1826,7 +1826,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
             )
         }
@@ -1837,7 +1837,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     workspace = config.workspace,
                     keys = ListWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT
+                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
             )
         }
@@ -2338,7 +2338,7 @@ class HomeScreenViewModelTest {
                 )
             },
             sorts = emptyList(),
-            limit = WidgetConfig.DEFAULT_LIST_MAX_COUNT,
+            limit = WidgetConfig.DEFAULT_LIST_LIMIT,
             keys = buildList {
                 addAll(ObjectSearchConstants.defaultDataViewKeys)
                 add(Relations.DESCRIPTION)

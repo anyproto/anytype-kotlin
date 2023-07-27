@@ -802,7 +802,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 workspace = config.workspace,
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                limit = TreeWidgetContainer.NO_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -812,7 +812,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                limit = TreeWidgetContainer.NO_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -822,7 +822,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                limit = TreeWidgetContainer.NO_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1499,7 +1499,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 workspace = config.workspace,
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                limit = TreeWidgetContainer.NO_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1509,7 +1509,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                limit = TreeWidgetContainer.NO_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1519,7 +1519,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                limit = TreeWidgetContainer.NO_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1546,7 +1546,7 @@ class HomeScreenViewModelTest {
                     subscription = favoriteSource.id,
                     workspace = config.workspace,
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                    limit = TreeWidgetContainer.NO_LIMIT
                 )
             )
         }
@@ -1557,7 +1557,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     workspace = config.workspace,
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                    limit = TreeWidgetContainer.NO_LIMIT
                 )
             )
         }
@@ -1568,7 +1568,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     workspace = config.workspace,
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                    limit = TreeWidgetContainer.NO_LIMIT
                 )
             )
         }
@@ -1599,7 +1599,7 @@ class HomeScreenViewModelTest {
                     subscription = favoriteSource.id,
                     workspace = config.workspace,
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                    limit = TreeWidgetContainer.NO_LIMIT
                 )
             )
         }
@@ -1610,7 +1610,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     workspace = config.workspace,
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                    limit = TreeWidgetContainer.NO_LIMIT
                 )
             )
         }
@@ -1621,7 +1621,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     workspace = config.workspace,
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.DEFAULT_TREE_MAX_COUNT
+                    limit = TreeWidgetContainer.NO_LIMIT
                 )
             )
         }

@@ -18,7 +18,7 @@ version=`curl -H "Accept: application/vnd.github.v3+json" -sL https://$GITHUB/re
 tag=`echo $version | jq ".tag_name"`
 asset_id=`echo $version | jq ".assets | map(select(.name | match(\"android_lib_\";\"i\")))[0].id"`
 
-if [ "$asset_id" = "null" ]; then
+if [[ "$asset_id" = "null" || "$asset_id" = "" ]]; then
   echo "ERROR: version not found"
   exit 1
 fi;

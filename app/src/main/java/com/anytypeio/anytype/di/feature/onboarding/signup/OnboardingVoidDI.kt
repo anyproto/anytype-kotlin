@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature.onboarding.signup
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
@@ -105,4 +106,5 @@ interface OnboardingVoidDependencies : ComponentDependencies {
     fun metricsProvider(): MetricsProvider
     fun dispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
+    fun crashReporter(): CrashReporter
 }

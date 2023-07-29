@@ -175,6 +175,21 @@ fun StubQuote(
     fields = Block.Fields.empty()
 )
 
+fun StubCodeSnippet(
+    text: String = MockDataFactory.randomString(),
+    children: List<Id> = emptyList(),
+    marks: List<Block.Content.Text.Mark> = emptyList()
+): Block = Block(
+    id = MockDataFactory.randomUuid(),
+    content = StubTextContent(
+        text = text,
+        style = Block.Content.Text.Style.CODE_SNIPPET,
+        marks = marks
+    ),
+    children = children,
+    fields = Block.Fields.empty()
+)
+
 fun StubCallout(
     text: String = MockDataFactory.randomString(),
     children: List<Id> = emptyList(),

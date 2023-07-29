@@ -3,7 +3,6 @@ plugins {
     id "kotlin-android"
     id "kotlin-kapt"
     id "androidx.navigation.safeargs.kotlin"
-    id "com.google.firebase.crashlytics"
     id "com.google.firebase.appdistribution"
 }
 
@@ -208,7 +207,6 @@ dependencies {
     implementation libs.exoPlayerUi
 
     implementation libs.amplitude
-    implementation libs.okhttp
 
     implementation libs.shimmerLayout
     implementation libs.photoView

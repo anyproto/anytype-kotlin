@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--typography, buttons 05.04-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -22,8 +21,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="12dp"
+        android:layout_marginTop="11dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="11dp"
         android:gravity="center"
         android:maxLines="1"
         android:singleLine="true"
@@ -51,7 +51,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="@string/without_template" />
+            android:text="@string/cancel" />
 
         <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
             android:id="@+id/btnUseTemplate"

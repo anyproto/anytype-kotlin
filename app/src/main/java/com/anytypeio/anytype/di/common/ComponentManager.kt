@@ -92,6 +92,7 @@ import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
+import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeCreationComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeEditComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
@@ -813,6 +814,10 @@ class ComponentManager(
             .objectTypeChangeComponent()
             .module(ObjectTypeChangeModule)
             .build()
+    }
+
+    val templateBlankComponent = Component {
+        DaggerTemplateBlankComponent.factory().create(findComponentDependencies())
     }
 
     // Settings

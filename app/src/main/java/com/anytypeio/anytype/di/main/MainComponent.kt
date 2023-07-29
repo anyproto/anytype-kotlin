@@ -37,6 +37,7 @@ import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
+import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectSubComponent
 import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
 import com.anytypeio.anytype.di.feature.types.TypeCreationDependencies
@@ -93,7 +94,8 @@ interface MainComponent :
     OnboardingSoulCreationDependencies,
     OnboardingLoginSetupDependencies,
     AboutAppDependencies,
-    OnboardingSoulCreationAnimDependencies {
+    OnboardingSoulCreationAnimDependencies,
+    TemplateBlankDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -245,5 +247,8 @@ private abstract class ComponentDependenciesModule private constructor() {
     @ComponentDependenciesKey(OnboardingSoulCreationAnimDependencies::class)
     abstract fun provideOnboardingSoulCreationAnimDependencies(component: MainComponent): ComponentDependencies
 
-
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(TemplateBlankDependencies::class)
+    abstract fun provideTemplateBlankDependencies(component: MainComponent): ComponentDependencies
 }

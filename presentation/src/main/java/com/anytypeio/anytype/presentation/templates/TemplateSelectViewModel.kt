@@ -38,7 +38,10 @@ class TemplateSelectViewModel(
         viewModelScope.launch {
             val objType = storeOfObjectTypes.get(type)
             if (objType != null) {
+                Timber.d("onStart, Object type $objType")
                 proceedWithGettingTemplates(objType, withoutBlankTemplate)
+            } else {
+                Timber.e("onStart, Object type $type not found")
             }
         }
     }
@@ -49,9 +52,9 @@ class TemplateSelectViewModel(
         val params = GetTemplates.Params(objType.id)
         viewModelScope.launch {
             getTemplates.async(params)
-                .fold(
-                    onSuccess = { buildTemplateViews(objType, it, withoutBlankTemplate) },
-                    onFailure = { Timber.e(it, "Error while getting templates") })
+                    .fold(
+                            onSuccess = { buildTemplateViews(objType, it, withoutBlankTemplate) },
+                            onFailure = { Timber.e(it, "Error while getting templates") })
         }
     }
 

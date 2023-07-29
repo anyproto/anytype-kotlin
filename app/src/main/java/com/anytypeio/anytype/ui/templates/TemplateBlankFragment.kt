@@ -115,8 +115,13 @@ class TemplateBlankFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fra
         inflater, container, false
     )
 
-    override fun onClipboardAction(action: ClipboardInterceptor.Action) {}
-    override fun onBookmarkPasted(url: Url) {}
+    override fun onClipboardAction(action: ClipboardInterceptor.Action) {
+        // Do nothing
+    }
+
+    override fun onBookmarkPasted(url: Url) {
+        // Do nothing
+    }
 
     companion object {
         fun new(

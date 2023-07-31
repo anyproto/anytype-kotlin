@@ -1215,9 +1215,7 @@ class EditorViewModel(
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
-        if (isObjectTypesWidgetVisible) {
-            proceedWithOptOutTypeInternalFlag()
-        }
+        sendHideObjectTypeWidgetEvent()
     }
 
     fun onDescriptionBlockTextChanged(view: BlockView.Description) {
@@ -1232,9 +1230,7 @@ class EditorViewModel(
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
-        if (isObjectTypesWidgetVisible) {
-            proceedWithOptOutTypeInternalFlag()
-        }
+        sendHideObjectTypeWidgetEvent()
     }
 
     fun onTextBlockTextChanged(view: BlockView.Text) {
@@ -1260,9 +1256,7 @@ class EditorViewModel(
         }
 
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
-        if (isObjectTypesWidgetVisible) {
-            proceedWithOptOutTypeInternalFlag()
-        }
+        sendHideObjectTypeWidgetEvent()
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
@@ -1441,9 +1435,7 @@ class EditorViewModel(
     ) {
         Timber.d("onEndLineEnterClicked, id:[$id] text:[$text] marks:[$marks]")
 
-        if (isObjectTypesWidgetVisible) {
-            proceedWithOptOutTypeInternalFlag()
-        }
+        sendHideObjectTypeWidgetEvent()
 
         val target = blocks.first { it.id == id }
 
@@ -2911,9 +2903,7 @@ class EditorViewModel(
     fun onOutsideClicked() {
         Timber.d("onOutsideClicked, ")
 
-        if (isObjectTypesWidgetVisible) {
-            proceedWithOptOutTypeInternalFlag()
-        }
+        sendHideObjectTypeWidgetEvent()
 
         if (mode is EditorMode.Styling) {
             onExitBlockStyleToolbarClicked()
@@ -5354,9 +5344,7 @@ class EditorViewModel(
         Timber.d("onKeyPressedEvent, event:[$event]")
         when (event) {
             is KeyPressedEvent.OnTitleBlockEnterKeyEvent -> {
-                if (isObjectTypesWidgetVisible) {
-                    proceedWithOptOutTypeInternalFlag()
-                }
+                sendHideObjectTypeWidgetEvent()
                 proceedWithTitleEnterClicked(
                     title = event.target,
                     text = event.text,

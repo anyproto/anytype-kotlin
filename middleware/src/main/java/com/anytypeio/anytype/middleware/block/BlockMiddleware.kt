@@ -792,4 +792,8 @@ class BlockMiddleware(
     override suspend fun fileSpaceUsage(): FileLimits {
         return middleware.fileSpaceUsage()
     }
+
+    override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {
+        return middleware.setInternalFlags(command)
+    }
 }

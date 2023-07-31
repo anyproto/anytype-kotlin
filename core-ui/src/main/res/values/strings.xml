@@ -553,7 +553,7 @@
     <string name="swipe_down_to_skip">Swipe down to skip</string>
     <string name="show">Show</string>
 
-    <string name="this_type_has_templates">This type has %1$d templates</string>
+    <string name="this_type_has_templates">Type \"%1$s\" has %2$d templates</string>
 
     <string name="item_relation_create_from_scratch_title">Type</string>
     <string name="btn_restore">Restore</string>

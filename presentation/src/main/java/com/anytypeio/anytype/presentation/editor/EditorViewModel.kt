@@ -311,7 +311,8 @@ class EditorViewModel(
         when (state) {
             is SelectTemplateState.Available -> {
                 SelectTemplateViewState.Active(
-                    count = state.templates.size
+                    count = state.templates.size,
+                    typeName = state.typeName
                 )
             }
             else -> SelectTemplateViewState.Idle
@@ -415,7 +416,6 @@ class EditorViewModel(
                             EventWrapper(
                                 AppNavigation.Command.OpenTemplates(
                                     type = state.type,
-                                    templates = state.templates,
                                     ctx = context
                                 )
                             )
@@ -6188,12 +6188,18 @@ class EditorViewModel(
 
     private fun proceedWithTemplateSelection(typeId: Id) {
         viewModelScope.launch {
-            onEvent(
-                SelectTemplateEvent.OnStart(
-                    ctx = context,
-                    type = typeId
+            val objType = storeOfObjectTypes.get(typeId)
+            if (objType != null) {
+                onEvent(
+                    SelectTemplateEvent.OnStart(
+                        ctx = context,
+                        type = typeId,
+                        typeName = objType.name.orEmpty()
+                    )
                 )
-            )
+            } else {
+                Timber.e("Error while getting object type from storeOfObjectTypes by id: $typeId")
+            }
         }
     }
 

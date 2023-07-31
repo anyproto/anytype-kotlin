@@ -69,8 +69,7 @@ class NavigationRouter(
 
                 is AppNavigation.Command.OpenTemplates -> navigation.openTemplates(
                     ctx = command.ctx,
-                    type = command.type,
-                    templates = command.templates
+                    type = command.type
                 )
 
                 is AppNavigation.Command.OpenLibrary -> navigation.openLibrary()

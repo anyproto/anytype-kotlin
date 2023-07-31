@@ -64,6 +64,9 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             focus(item.isFocused)
         }
         content.pauseTextWatchers {
+            if (item.hint != null) {
+                content.hint = item.hint
+            }
             content.setText(item.text, TextView.BufferType.EDITABLE)
         }
         cover?.setOnClickListener { onCoverClicked() }

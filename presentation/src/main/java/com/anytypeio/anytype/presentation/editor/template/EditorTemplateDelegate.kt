@@ -27,21 +27,11 @@ class DefaultEditorTemplateDelegate(
                 try {
                     val templates = getTemplates.run(GetTemplates.Params(event.type))
                     if (templates.isNotEmpty()) {
-                        if (templates.size == 1) {
-                            // No need to choose template if there is only one available template.
-                            applyTemplate.run(
-                                ApplyTemplate.Params(
-                                    ctx = event.ctx,
-                                    template = templates.first().id
-                                )
-                            )
-                            SelectTemplateState.Idle
-                        } else {
-                            SelectTemplateState.Available(
-                                templates = templates.map { it.id },
-                                type = event.type
-                            )
-                        }
+                        SelectTemplateState.Available(
+                            templates = templates.map { it.id },
+                            type = event.type,
+                            typeName = event.typeName
+                        )
                     } else {
                         SelectTemplateState.Idle
                     }
@@ -77,7 +67,8 @@ sealed class SelectTemplateState {
      */
     data class Available(
         val type: Id,
-        val templates: List<Id>
+        val templates: List<Id>,
+        val typeName: String
     ) : SelectTemplateState()
 
     /**
@@ -94,7 +85,7 @@ sealed class SelectTemplateState {
 }
 
 sealed class SelectTemplateEvent {
-    data class OnStart(val ctx: Id, val type: Id) : SelectTemplateEvent()
+    data class OnStart(val ctx: Id, val type: Id, val typeName: String) : SelectTemplateEvent()
     object OnSkipped : SelectTemplateEvent()
     object OnAccepted : SelectTemplateEvent()
 }

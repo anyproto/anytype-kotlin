@@ -95,6 +95,7 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
+import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.ObjectTypesWidgetEvent
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Intent
@@ -4291,12 +4292,9 @@ class EditorViewModel(
                         analytics = analytics,
                         objType = storeOfObjectTypes.get(type)
                     )
-                    if (isObjectTypesWidgetVisible) {
-                        proceedWithOptOutTypeInternalFlag()
-                    }
+                    sendHideObjectTypeWidgetEvent()
                     if (applyTemplate) {
-                        proceedWithTemplateSelection(type)
-                        proceedWithOptOutTemplateInternalFlag()
+                        proceedWithCheckingInternalFlagShouldSelectTemplate(type = type)
                     }
                 }
             }
@@ -5886,29 +5884,16 @@ class EditorViewModel(
 
     fun onObjectTypesWidgetDoneClicked() {
         Timber.d("onObjectTypesWidgetDoneClicked, ")
-        proceedWithOptOutTypeInternalFlag()
-        val details = orchestrator.stores.details.current()
-        val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
-        if (wrapper.internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
-            if (wrapper.type.isNotEmpty()) {
-                proceedWithTemplateSelection(typeId = wrapper.type.first())
-                proceedWithOptOutTemplateInternalFlag()
-            }
-        }
+        proceedWithCheckingInternalFlagShouldSelectTemplate(null)
     }
 
     private fun proceedWithShowingObjectTypesWidget() {
         val restrictions = orchestrator.stores.objectRestrictions.current()
         if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
+            Timber.d("proceedWithShowingObjectTypesWidget, type change is restricted")
             return
         }
-        val details = orchestrator.stores.details.current()
-        val objectDetails = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
-
-        val internalFlags = objectDetails.internalFlags
-        if (internalFlags.contains(InternalFlags.ShouldSelectType)) {
-            proceedWithGettingObjectTypesForObjectTypeWidget()
-        }
+        proceedWithCheckingInternalFlagShouldSelectType()
     }
 
     private fun proceedWithGettingObjectTypesForObjectTypeWidget() {
@@ -6186,19 +6171,27 @@ class EditorViewModel(
         viewModelScope.launch { onEvent(SelectTemplateEvent.OnSkipped) }
     }
 
-    private fun proceedWithTemplateSelection(typeId: Id) {
+    private fun proceedWithTemplateSelection(type: Id?) {
+        val objectTypeId = if (type != null) {
+            type
+        } else {
+            val details = orchestrator.stores.details.current()
+            val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+            wrapper.type.firstOrNull()
+        }
+        if (objectTypeId == null) return
         viewModelScope.launch {
-            val objType = storeOfObjectTypes.get(typeId)
+            val objType = storeOfObjectTypes.get(objectTypeId)
             if (objType != null) {
                 onEvent(
                     SelectTemplateEvent.OnStart(
                         ctx = context,
-                        type = typeId,
+                        type = objectTypeId,
                         typeName = objType.name.orEmpty()
                     )
                 )
             } else {
-                Timber.e("Error while getting object type from storeOfObjectTypes by id: $typeId")
+                Timber.e("Error while getting object type from storeOfObjectTypes by id: $type")
             }
         }
     }
@@ -6894,8 +6887,31 @@ class EditorViewModel(
     //endregion
 
     //region INTERNAL FLAGS
+    private fun proceedWithCheckingInternalFlagShouldSelectType() {
+        val internalFlags = getInternalFlagsFromDetails()
+        if (internalFlags.contains(InternalFlags.ShouldSelectType)) {
+            //We use this flag to show object type widget and then we don't need it anymore
+            proceedWithGettingObjectTypesForObjectTypeWidget()
+            proceedWithOptOutTypeInternalFlag()
+        } else {
+            Timber.d("Object doesn't have internal flag: ${InternalFlags.ShouldSelectType}")
+        }
+    }
+
+    private fun proceedWithCheckingInternalFlagShouldSelectTemplate(type: Id?) {
+        val internalFlags = getInternalFlagsFromDetails()
+        if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
+            //We use this flag to show template widget and then we don't need it anymore
+            proceedWithTemplateSelection(type)
+            proceedWithOptOutTemplateInternalFlag()
+        } else {
+            Timber.d("Object doesn't have internal flag: ${InternalFlags.ShouldSelectTemplate}")
+        }
+    }
+
     private fun proceedWithOptOutTypeInternalFlag() {
         val internalFlags = getInternalFlagsFromDetails()
+        if (!internalFlags.contains(InternalFlags.ShouldSelectType)) return
         val flagsWithoutType = filterOutInternalFlags(
                 flags = internalFlags,
                 out = InternalFlags.ShouldSelectType
@@ -6908,6 +6924,7 @@ class EditorViewModel(
 
     private fun proceedWithOptOutTemplateInternalFlag() {
         val internalFlags = getInternalFlagsFromDetails()
+        if (!internalFlags.contains(InternalFlags.ShouldSelectTemplate)) return
         val flagsWithoutTemplate = filterOutInternalFlags(
             flags = internalFlags,
             out = InternalFlags.ShouldSelectTemplate
@@ -6946,7 +6963,7 @@ class EditorViewModel(
     }
 
     private fun sendHideObjectTypeWidgetEvent() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide)
+        if (isObjectTypesWidgetVisible) controlPanelInteractor.onEvent(ObjectTypesWidgetEvent.Hide)
     }
     //endregion
 }

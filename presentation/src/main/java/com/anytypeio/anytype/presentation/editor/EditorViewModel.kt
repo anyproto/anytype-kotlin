@@ -5872,7 +5872,7 @@ class EditorViewModel(
 
     fun onObjectTypesWidgetDoneClicked() {
         Timber.d("onObjectTypesWidgetDoneClicked, ")
-        proceedWithCheckingInternalFlagShouldSelectTemplate(null)
+        proceedWithCheckingInternalFlagShouldSelectTemplate()
     }
 
     private fun proceedWithShowingObjectTypesWidget() {
@@ -6160,21 +6160,22 @@ class EditorViewModel(
     }
 
     private fun proceedWithTemplateSelection(type: Id?) {
-        val objectTypeId = if (type != null) {
-            type
+        val objectTypeId = type ?: getObjectTypeFromDetails()
+        if (objectTypeId != null) {
+            handleObjectType(type = objectTypeId)
         } else {
-            val details = orchestrator.stores.details.current()
-            val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
-            wrapper.type.firstOrNull()
+            Timber.e("proceedWithTemplateSelection, error while getting object type from details")
         }
-        if (objectTypeId == null) return
+    }
+
+    private fun handleObjectType(type: Id) {
         viewModelScope.launch {
-            val objType = storeOfObjectTypes.get(objectTypeId)
+            val objType = storeOfObjectTypes.get(type)
             if (objType != null) {
                 onEvent(
                     SelectTemplateEvent.OnStart(
                         ctx = context,
-                        type = objectTypeId,
+                        type = type,
                         typeName = objType.name.orEmpty()
                     )
                 )
@@ -6184,6 +6185,11 @@ class EditorViewModel(
         }
     }
 
+    private fun getObjectTypeFromDetails(): Id? {
+        val details = orchestrator.stores.details.current()
+        val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+        return wrapper.getProperType()
+    }
     //endregion
 
     //region SIMPLE TABLES
@@ -6886,7 +6892,7 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithCheckingInternalFlagShouldSelectTemplate(type: Id?) {
+    private fun proceedWithCheckingInternalFlagShouldSelectTemplate(type: Id? = null) {
         val internalFlags = getInternalFlagsFromDetails()
         if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
             //We use this flag to show template widget and then we don't need it anymore

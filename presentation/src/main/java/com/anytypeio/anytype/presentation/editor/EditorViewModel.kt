@@ -73,6 +73,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -286,7 +287,8 @@ class EditorViewModel(
     private val workspaceManager: WorkspaceManager,
     private val getObjectTypes: GetObjectTypes,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
-    private val addRelationToObject: AddRelationToObject
+    private val addRelationToObject: AddRelationToObject,
+    private val setObjectInternalFlags: SetObjectInternalFlags
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -1213,7 +1215,7 @@ class EditorViewModel(
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
         if (isObjectTypesWidgetVisible) {
-            proceedWithHidingObjectTypeWidget()
+            proceedWithFilteringFlagsAndHideObjectTypeWidget()
         }
     }
 
@@ -1230,7 +1232,7 @@ class EditorViewModel(
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
         if (isObjectTypesWidgetVisible) {
-            proceedWithHidingObjectTypeWidget()
+            proceedWithFilteringFlagsAndHideObjectTypeWidget()
         }
     }
 
@@ -1258,7 +1260,7 @@ class EditorViewModel(
 
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
         if (isObjectTypesWidgetVisible) {
-            proceedWithHidingObjectTypeWidget()
+            proceedWithFilteringFlagsAndHideObjectTypeWidget()
         }
     }
 
@@ -1439,7 +1441,7 @@ class EditorViewModel(
         Timber.d("onEndLineEnterClicked, id:[$id] text:[$text] marks:[$marks]")
 
         if (isObjectTypesWidgetVisible) {
-            proceedWithHidingObjectTypeWidget()
+            proceedWithFilteringFlagsAndHideObjectTypeWidget()
         }
 
         val target = blocks.first { it.id == id }
@@ -2909,7 +2911,7 @@ class EditorViewModel(
         Timber.d("onOutsideClicked, ")
 
         if (isObjectTypesWidgetVisible) {
-            proceedWithHidingObjectTypeWidget()
+            proceedWithFilteringFlagsAndHideObjectTypeWidget()
         }
 
         if (mode is EditorMode.Styling) {
@@ -4290,7 +4292,7 @@ class EditorViewModel(
                         objType = storeOfObjectTypes.get(type)
                     )
                     if (isObjectTypesWidgetVisible) {
-                        proceedWithHidingObjectTypeWidget()
+                        proceedWithFilteringFlagsAndHideObjectTypeWidget()
                     }
                     if (applyTemplate) {
                         proceedWithTemplateSelection(type)
@@ -5354,7 +5356,7 @@ class EditorViewModel(
         when (event) {
             is KeyPressedEvent.OnTitleBlockEnterKeyEvent -> {
                 if (isObjectTypesWidgetVisible) {
-                    proceedWithHidingObjectTypeWidget()
+                    proceedWithFilteringFlagsAndHideObjectTypeWidget()
                 }
                 proceedWithTitleEnterClicked(
                     title = event.target,
@@ -5883,7 +5885,7 @@ class EditorViewModel(
 
     fun onObjectTypesWidgetDoneClicked() {
         Timber.d("onObjectTypesWidgetDoneClicked, ")
-        proceedWithHidingObjectTypeWidget()
+        proceedWithFilteringFlagsAndHideObjectTypeWidget()
         val details = orchestrator.stores.details.current()
         val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
         if (wrapper.internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
@@ -5957,10 +5959,6 @@ class EditorViewModel(
                 )
             }
         )
-    }
-
-    private fun proceedWithHidingObjectTypeWidget() {
-        controlPanelInteractor.onEvent(ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide)
     }
 
     private fun proceedWithOpeningSelectingObjectTypeScreen() {
@@ -6890,6 +6888,50 @@ class EditorViewModel(
                     }
                 }
         }
+    }
+    //endregion
+
+    //region INTERNAL FLAGS
+    private fun proceedWithFilteringFlagsAndHideObjectTypeWidget() {
+        val details = orchestrator.stores.details.current()
+        val obj = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+        val internalFlags = obj.internalFlags
+        val flagsWithoutType = filterOutInternalFlags(
+                flags = internalFlags,
+                out = InternalFlags.ShouldSelectType
+        )
+        updateFlagsAndProceed(
+                flags = flagsWithoutType,
+                action = this::sendHideObjectTypeWidgetEvent
+        )
+    }
+
+    private fun filterOutInternalFlags(flags: List<InternalFlags>, out: InternalFlags): List<InternalFlags> {
+        return flags.filter { it != out }
+    }
+
+    private fun updateFlagsAndProceed(flags: List<InternalFlags>, action: () -> Unit) {
+        viewModelScope.launch {
+            val params = SetObjectInternalFlags.Params(
+                    ctx = context,
+                    flags = flags
+            )
+            setObjectInternalFlags.async(params).fold(
+                    onSuccess = {
+                        dispatcher.send(it)
+                        Timber.d("Internal flags updated")
+                        action.invoke()
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while updating internal flags")
+                        action.invoke()
+                    }
+            )
+        }
+    }
+
+    private fun sendHideObjectTypeWidgetEvent() {
+        controlPanelInteractor.onEvent(ControlPanelMachine.Event.ObjectTypesWidgetEvent.Hide)
     }
     //endregion
 }

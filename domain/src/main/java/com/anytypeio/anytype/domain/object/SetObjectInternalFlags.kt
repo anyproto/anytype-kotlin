@@ -21,7 +21,7 @@ class SetObjectInternalFlags(
         return repo.setInternalFlags(command)
     }
 
-    class Params(
+    data class Params(
             val ctx: Id,
             val flags: List<InternalFlags>
     )

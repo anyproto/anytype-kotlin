@@ -6888,7 +6888,7 @@ class EditorViewModel(
             proceedWithGettingObjectTypesForObjectTypeWidget()
             proceedWithOptOutTypeInternalFlag()
         } else {
-            Timber.d("Object doesn't have internal flag: ${InternalFlags.ShouldSelectType}")
+            Timber.d("Object doesn't have internal flag: ShouldSelectType")
         }
     }
 
@@ -6899,7 +6899,7 @@ class EditorViewModel(
             proceedWithTemplateSelection(type)
             proceedWithOptOutTemplateInternalFlag()
         } else {
-            Timber.d("Object doesn't have internal flag: ${InternalFlags.ShouldSelectTemplate}")
+            Timber.d("Object doesn't have internal flag: ShouldSelectTemplate")
         }
     }
 

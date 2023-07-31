@@ -1215,7 +1215,7 @@ class EditorViewModel(
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
         if (isObjectTypesWidgetVisible) {
-            proceedWithFilteringFlagsAndHideObjectTypeWidget()
+            proceedWithOptOutTypeInternalFlag()
         }
     }
 
@@ -1232,7 +1232,7 @@ class EditorViewModel(
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
         if (isObjectTypesWidgetVisible) {
-            proceedWithFilteringFlagsAndHideObjectTypeWidget()
+            proceedWithOptOutTypeInternalFlag()
         }
     }
 
@@ -1260,7 +1260,7 @@ class EditorViewModel(
 
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
         if (isObjectTypesWidgetVisible) {
-            proceedWithFilteringFlagsAndHideObjectTypeWidget()
+            proceedWithOptOutTypeInternalFlag()
         }
     }
 
@@ -1441,7 +1441,7 @@ class EditorViewModel(
         Timber.d("onEndLineEnterClicked, id:[$id] text:[$text] marks:[$marks]")
 
         if (isObjectTypesWidgetVisible) {
-            proceedWithFilteringFlagsAndHideObjectTypeWidget()
+            proceedWithOptOutTypeInternalFlag()
         }
 
         val target = blocks.first { it.id == id }
@@ -2911,7 +2911,7 @@ class EditorViewModel(
         Timber.d("onOutsideClicked, ")
 
         if (isObjectTypesWidgetVisible) {
-            proceedWithFilteringFlagsAndHideObjectTypeWidget()
+            proceedWithOptOutTypeInternalFlag()
         }
 
         if (mode is EditorMode.Styling) {
@@ -4292,10 +4292,11 @@ class EditorViewModel(
                         objType = storeOfObjectTypes.get(type)
                     )
                     if (isObjectTypesWidgetVisible) {
-                        proceedWithFilteringFlagsAndHideObjectTypeWidget()
+                        proceedWithOptOutTypeInternalFlag()
                     }
                     if (applyTemplate) {
                         proceedWithTemplateSelection(type)
+                        proceedWithOptOutTemplateInternalFlag()
                     }
                 }
             }
@@ -5356,7 +5357,7 @@ class EditorViewModel(
         when (event) {
             is KeyPressedEvent.OnTitleBlockEnterKeyEvent -> {
                 if (isObjectTypesWidgetVisible) {
-                    proceedWithFilteringFlagsAndHideObjectTypeWidget()
+                    proceedWithOptOutTypeInternalFlag()
                 }
                 proceedWithTitleEnterClicked(
                     title = event.target,
@@ -5885,12 +5886,13 @@ class EditorViewModel(
 
     fun onObjectTypesWidgetDoneClicked() {
         Timber.d("onObjectTypesWidgetDoneClicked, ")
-        proceedWithFilteringFlagsAndHideObjectTypeWidget()
+        proceedWithOptOutTypeInternalFlag()
         val details = orchestrator.stores.details.current()
         val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
         if (wrapper.internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
             if (wrapper.type.isNotEmpty()) {
                 proceedWithTemplateSelection(typeId = wrapper.type.first())
+                proceedWithOptOutTemplateInternalFlag()
             }
         }
     }
@@ -6892,10 +6894,8 @@ class EditorViewModel(
     //endregion
 
     //region INTERNAL FLAGS
-    private fun proceedWithFilteringFlagsAndHideObjectTypeWidget() {
-        val details = orchestrator.stores.details.current()
-        val obj = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
-        val internalFlags = obj.internalFlags
+    private fun proceedWithOptOutTypeInternalFlag() {
+        val internalFlags = getInternalFlagsFromDetails()
         val flagsWithoutType = filterOutInternalFlags(
                 flags = internalFlags,
                 out = InternalFlags.ShouldSelectType
@@ -6906,11 +6906,26 @@ class EditorViewModel(
         )
     }
 
+    private fun proceedWithOptOutTemplateInternalFlag() {
+        val internalFlags = getInternalFlagsFromDetails()
+        val flagsWithoutTemplate = filterOutInternalFlags(
+            flags = internalFlags,
+            out = InternalFlags.ShouldSelectTemplate
+        )
+        updateFlagsAndProceed(flags = flagsWithoutTemplate)
+    }
+
+    private fun getInternalFlagsFromDetails(): List<InternalFlags> {
+        val details = orchestrator.stores.details.current()
+        val obj = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+        return obj.internalFlags
+    }
+
     private fun filterOutInternalFlags(flags: List<InternalFlags>, out: InternalFlags): List<InternalFlags> {
         return flags.filter { it != out }
     }
 
-    private fun updateFlagsAndProceed(flags: List<InternalFlags>, action: () -> Unit) {
+    private fun updateFlagsAndProceed(flags: List<InternalFlags>, action: () -> Unit = {}) {
         viewModelScope.launch {
             val params = SetObjectInternalFlags.Params(
                     ctx = context,

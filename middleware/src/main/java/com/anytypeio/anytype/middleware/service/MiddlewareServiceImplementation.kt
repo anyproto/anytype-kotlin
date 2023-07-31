@@ -1611,4 +1611,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun setInternalFlags(request: Rpc.Object.SetInternalFlags.Request): Rpc.Object.SetInternalFlags.Response {
+        val encoded = Service.objectSetInternalFlags(
+            Rpc.Object.SetInternalFlags.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.SetInternalFlags.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.SetInternalFlags.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

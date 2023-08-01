@@ -5949,6 +5949,10 @@ class EditorViewModel(
         }
         dispatch(command)
     }
+
+    private fun sendHideObjectTypeWidgetEvent() {
+        if (isObjectTypesWidgetVisible) controlPanelInteractor.onEvent(ObjectTypesWidgetEvent.Hide)
+    }
     //endregion
 
     //region OBJECT APPEARANCE SETTING
@@ -6946,10 +6950,6 @@ class EditorViewModel(
                     }
             )
         }
-    }
-
-    private fun sendHideObjectTypeWidgetEvent() {
-        if (isObjectTypesWidgetVisible) controlPanelInteractor.onEvent(ObjectTypesWidgetEvent.Hide)
     }
     //endregion
 }

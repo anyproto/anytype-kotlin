@@ -4284,7 +4284,7 @@ class EditorViewModel(
                     )
                     sendHideObjectTypeWidgetEvent()
                     if (applyTemplate) {
-                        proceedWithCheckingInternalFlagShouldSelectTemplate(type = type)
+                        proceedWithCheckingInternalFlagShouldSelectTemplate(objTypeId = type)
                     }
                 }
             }
@@ -6159,28 +6159,19 @@ class EditorViewModel(
         viewModelScope.launch { onEvent(SelectTemplateEvent.OnSkipped) }
     }
 
-    private fun proceedWithTemplateSelection(type: Id?) {
-        val objectTypeId = type ?: getObjectTypeFromDetails()
-        if (objectTypeId != null) {
-            handleObjectType(type = objectTypeId)
-        } else {
-            Timber.e("proceedWithTemplateSelection, error while getting object type from details")
-        }
-    }
-
-    private fun handleObjectType(type: Id) {
+    private fun proceedWithStartTemplateEvent(objTypeId: Id) {
         viewModelScope.launch {
-            val objType = storeOfObjectTypes.get(type)
+            val objType = storeOfObjectTypes.get(objTypeId)
             if (objType != null) {
                 onEvent(
                     SelectTemplateEvent.OnStart(
                         ctx = context,
-                        type = type,
+                        type = objTypeId,
                         typeName = objType.name.orEmpty()
                     )
                 )
             } else {
-                Timber.e("Error while getting object type from storeOfObjectTypes by id: $type")
+                Timber.e("Error while getting object type from storeOfObjectTypes by id: $objTypeId")
             }
         }
     }
@@ -6892,11 +6883,12 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithCheckingInternalFlagShouldSelectTemplate(type: Id? = null) {
+    private fun proceedWithCheckingInternalFlagShouldSelectTemplate(objTypeId: Id? = null) {
         val internalFlags = getInternalFlagsFromDetails()
         if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
             //We use this flag to show template widget and then we don't need it anymore
-            proceedWithTemplateSelection(type)
+            val properObjTypeId = objTypeId ?: getObjectTypeFromDetails() ?: return
+            proceedWithStartTemplateEvent(objTypeId = properObjTypeId)
             proceedWithOptOutTemplateInternalFlag()
         } else {
             Timber.d("Object doesn't have internal flag: ShouldSelectTemplate")

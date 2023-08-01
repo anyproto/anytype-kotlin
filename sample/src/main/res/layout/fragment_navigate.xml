@@ -94,6 +94,6 @@
         android:text="Dialogs Compose"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button20" />
+        app:layout_constraintTop_toBottomOf="@+id/btnCompose" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

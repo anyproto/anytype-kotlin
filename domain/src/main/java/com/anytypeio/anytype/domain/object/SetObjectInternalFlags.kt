@@ -9,20 +9,20 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 class SetObjectInternalFlags(
-        private val repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<SetObjectInternalFlags.Params, Payload>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): Payload {
         val command = Command.SetInternalFlags(
-                ctx = params.ctx,
-                flags = params.flags
+            ctx = params.ctx,
+            flags = params.flags
         )
         return repo.setInternalFlags(command)
     }
 
     data class Params(
-            val ctx: Id,
-            val flags: List<InternalFlags>
+        val ctx: Id,
+        val flags: List<InternalFlags>
     )
 }

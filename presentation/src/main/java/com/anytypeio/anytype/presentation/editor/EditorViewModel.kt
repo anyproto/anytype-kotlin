@@ -5872,6 +5872,7 @@ class EditorViewModel(
 
     fun onObjectTypesWidgetDoneClicked() {
         Timber.d("onObjectTypesWidgetDoneClicked, ")
+        sendHideObjectTypeWidgetEvent()
         proceedWithCheckingInternalFlagShouldSelectTemplate()
     }
 

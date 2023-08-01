@@ -2,6 +2,9 @@ package com.anytypeio.anytype.core_ui.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
@@ -563,4 +566,25 @@ fun MyWarningButton() {
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
     )
+}
+
+class ButtonPrimarySmallIcon @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+) : LinearLayout(context, attrs) {
+
+    private lateinit var button: TextView
+
+    init {
+        init(context)
+    }
+
+    private fun init(context: Context) {
+        LayoutInflater.from(context).inflate(R.layout.ds_button_icon, this, true)
+        button = findViewById(R.id.button)
+    }
+
+    fun setButtonText(text: String) {
+        button.text = text
+    }
 }

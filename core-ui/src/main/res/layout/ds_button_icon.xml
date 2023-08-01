@@ -20,7 +20,7 @@
         android:id="@+id/divider"
         android:layout_width="1dp"
         android:layout_height="match_parent"
-        android:background="#1AFFFFFF" />
+        android:background="@color/ds_button_icon_divider" />
 
     <ImageView
         android:id="@+id/icon"

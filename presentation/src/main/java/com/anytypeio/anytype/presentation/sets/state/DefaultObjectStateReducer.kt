@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ext.amend
 import com.anytypeio.anytype.core_models.ext.remove
 import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.core_utils.ext.replace
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.presentation.sets.updateFields
 import com.anytypeio.anytype.presentation.sets.updateFilters
 import com.anytypeio.anytype.presentation.sets.updateSorts
@@ -22,7 +23,7 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
-class DefaultObjectStateReducer : ObjectStateReducer {
+class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageType) : ObjectStateReducer {
 
     private val eventChannel: Channel<List<Event>> = Channel()
     override val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
@@ -173,7 +174,8 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                 details = event.details.details,
                 objectRestrictions = event.objectRestrictions,
                 dataViewRestrictions = event.dataViewRestrictions,
-                objectRelationLinks = event.relationLinks
+                objectRelationLinks = event.relationLinks,
+                defaultObjectType = getCollectionDefaultObjectType()
             )
             ObjectType.Layout.SET.code -> ObjectState.DataView.Set(
                 root = event.root,
@@ -369,7 +371,8 @@ class DefaultObjectStateReducer : ObjectStateReducer {
                     details = state.details,
                     objectRestrictions = state.objectRestrictions,
                     dataViewRestrictions = state.dataViewRestrictions,
-                    objectRelationLinks = state.objectRelationLinks
+                    objectRelationLinks = state.objectRelationLinks,
+                    defaultObjectType = getCollectionDefaultObjectType()
                 )
             }
             else -> state
@@ -568,5 +571,9 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         eventChannel.close()
         state.value = ObjectState.Init
         _effects.tryEmit(emptyList())
+    }
+
+    private suspend fun getCollectionDefaultObjectType() : String? {
+        return getDefaultPageType.run(Unit).type
     }
 }

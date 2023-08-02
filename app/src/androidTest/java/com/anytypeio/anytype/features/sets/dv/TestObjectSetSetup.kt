@@ -127,6 +127,9 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
+    @Mock
+    lateinit var getDefaultType: GetDefaultPageType
+
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultPageType: GetDefaultPageType
 
@@ -235,7 +238,7 @@ abstract class TestObjectSetSetup {
             database = database,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
             storeOfRelations = storeOfRelations,
-            objectStateReducer = DefaultObjectStateReducer(),
+            objectStateReducer = DefaultObjectStateReducer(getDefaultType),
             dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer),
             workspaceManager = workspaceManager,
             objectToCollection = convertObjectToCollection,

@@ -170,6 +170,9 @@ open class ObjectSetViewModelTestSetup {
 
     val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
 
+    val defaultObjectPageType = MockDataFactory.randomString()
+    val defaultObjectPageTypeName = MockDataFactory.randomString()
+
     lateinit var dispatchers: AppCoroutineDispatchers
 
     fun givenViewModel(): ObjectSetViewModel {
@@ -365,7 +368,7 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    fun stubGetDefaultPageType(type: String, name: String) {
+    fun stubGetDefaultPageType(type: String = defaultObjectPageType, name: String = defaultObjectPageTypeName) {
         getDefaultPageType.stub {
             onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(type = type, name = name)
         }

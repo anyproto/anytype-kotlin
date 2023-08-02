@@ -35,6 +35,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         mockObjectCollection = MockCollection(context = root)
+        stubGetDefaultPageType()
     }
 
     @After

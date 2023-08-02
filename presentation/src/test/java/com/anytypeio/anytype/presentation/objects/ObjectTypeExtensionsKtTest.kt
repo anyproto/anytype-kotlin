@@ -15,7 +15,7 @@ class ObjectTypeExtensionsTest {
             id = ObjectTypeIds.PAGE,
             recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
         )
-        val result = objectType.isTemplateAllowed()
+        val result = objectType.isTemplatesAllowed()
         assertTrue(result)
     }
 
@@ -25,7 +25,7 @@ class ObjectTypeExtensionsTest {
             id = ObjectTypeIds.PAGE,
             recommendedLayout = ObjectType.Layout.DASHBOARD.code.toDouble()
         )
-        val result = objectType.isTemplateAllowed()
+        val result = objectType.isTemplatesAllowed()
         assertFalse(result)
     }
 
@@ -35,7 +35,7 @@ class ObjectTypeExtensionsTest {
             id = ObjectTypeIds.BOOKMARK,
             recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
         )
-        val result = objectType.isTemplateAllowed()
+        val result = objectType.isTemplatesAllowed()
         assertFalse(result)
     }
 
@@ -45,7 +45,7 @@ class ObjectTypeExtensionsTest {
             id = ObjectTypeIds.FILE,
             recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
         )
-        val result = objectType.isTemplateAllowed()
+        val result = objectType.isTemplatesAllowed()
         assertFalse(result)
     }
 
@@ -55,7 +55,7 @@ class ObjectTypeExtensionsTest {
             id = ObjectTypeIds.NOTE,
             recommendedLayout = ObjectType.Layout.NOTE.code.toDouble()
         )
-        val result = objectType.isTemplateAllowed()
+        val result = objectType.isTemplatesAllowed()
         assertFalse(result)
     }
 
@@ -65,7 +65,7 @@ class ObjectTypeExtensionsTest {
             id = ObjectTypeIds.SET,
             recommendedLayout = ObjectType.Layout.SET.code.toDouble()
         )
-        val result = objectType.isTemplateAllowed()
+        val result = objectType.isTemplatesAllowed()
         assertFalse(result)
     }
 
@@ -75,7 +75,7 @@ class ObjectTypeExtensionsTest {
             id = ObjectTypeIds.COLLECTION,
             recommendedLayout = ObjectType.Layout.COLLECTION.code.toDouble()
         )
-        val result = objectType.isTemplateAllowed()
+        val result = objectType.isTemplatesAllowed()
         assertFalse(result)
     }
 }

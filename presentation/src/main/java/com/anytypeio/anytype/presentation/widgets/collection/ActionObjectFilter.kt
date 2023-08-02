@@ -13,12 +13,13 @@ class ActionObjectFilter @Inject constructor() {
 
     fun filter(subscription: Subscription, views: List<CollectionObjectView>): List<ObjectAction> {
         return when (subscription) {
-            Subscription.Recent, Subscription.Sets, Subscription.Collections ->
+            Subscription.Recent, Subscription.RecentLocal, Subscription.Sets, Subscription.Collections ->
                 buildList {
                     if (views.someNonFavorites()) add(ADD_TO_FAVOURITE)
                     if (views.someFavorites()) add(REMOVE_FROM_FAVOURITE)
                     add(MOVE_TO_BIN)
                 }
+
             Subscription.Bin -> listOf(DELETE, RESTORE)
             Subscription.Favorites -> listOf(REMOVE_FROM_FAVOURITE, MOVE_TO_BIN)
             Subscription.None -> emptyList()

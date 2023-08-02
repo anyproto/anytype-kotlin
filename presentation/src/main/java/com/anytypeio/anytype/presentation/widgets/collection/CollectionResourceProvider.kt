@@ -33,6 +33,7 @@ class CollectionResourceProvider @Inject constructor(
     fun subscriptionName(subscription: Subscription): String {
         return when (subscription) {
             Subscription.Recent -> context.getString(R.string.recent)
+            Subscription.RecentLocal -> context.getString(R.string.recently_opened)
             Subscription.Sets -> context.getString(R.string.sets)
             Subscription.Favorites -> context.getString(R.string.favorites)
             Subscription.Bin -> context.getString(R.string.bin)

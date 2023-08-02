@@ -1316,16 +1316,23 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
         eventName = EventsDictionary.changeWidgetSource,
         props = Props(
             buildMap {
-                when(view) {
+                when (view) {
                     BundledWidgetSourceView.Collections -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
                     }
+
                     BundledWidgetSourceView.Favorites -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
+
                     BundledWidgetSourceView.Recent -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT)
                     }
+
+                    BundledWidgetSourceView.RecentLocal -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
+                    }
+
                     BundledWidgetSourceView.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
@@ -1406,12 +1413,19 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                     Widget.Source.Bundled.Collections -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
                     }
+
                     Widget.Source.Bundled.Favorites -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
+
                     Widget.Source.Bundled.Recent -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT)
                     }
+
+                    Widget.Source.Bundled.RecentLocal -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
+                    }
+
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
@@ -1439,12 +1453,19 @@ fun CoroutineScope.sendSelectHomeTabEvent(
                     Widget.Source.Bundled.Collections -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
                     }
+
                     Widget.Source.Bundled.Favorites -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
+
                     Widget.Source.Bundled.Recent -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_RECENT)
                     }
+
+                    Widget.Source.Bundled.RecentLocal -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
+                    }
+
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
@@ -1506,12 +1527,19 @@ fun CoroutineScope.sendReorderWidgetEvent(
                     Widget.Source.Bundled.Collections -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
                     }
+
                     Widget.Source.Bundled.Favorites -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
+
                     Widget.Source.Bundled.Recent -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT)
                     }
+
+                    Widget.Source.Bundled.RecentLocal -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
+                    }
+
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }

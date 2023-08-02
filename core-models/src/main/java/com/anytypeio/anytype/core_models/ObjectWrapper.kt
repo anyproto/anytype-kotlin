@@ -19,6 +19,7 @@ sealed class ObjectWrapper {
         private val default = map.withDefault { null }
 
         val lastModifiedDate: Any? by default
+        val lastOpenedDate: Any? by default
 
         val name: String? by default
 

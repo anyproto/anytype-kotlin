@@ -142,6 +142,9 @@ open class ObjectSetFragment :
     private val addNewButton: TextView
         get() = binding.dataViewHeader.addNewButton
 
+    private val addNewIconButton: LinearLayout
+        get() = binding.dataViewHeader.addNewIconButton
+
     private val customizeViewButton: ImageView
         get() = binding.dataViewHeader.customizeViewButton
 
@@ -471,12 +474,11 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.isTemplatesAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
                 setViewer(viewer = null)
-
             }
             is DataViewViewState.Set.Default -> {
                 topToolbarThreeDotsButton.visible()
@@ -485,7 +487,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.isTemplatesAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)
@@ -518,6 +520,17 @@ open class ObjectSetFragment :
             getString(R.string.untitled)
         } else {
             title
+        }
+    }
+
+    private fun setupNewButtons(isTemplatesAllowed: Boolean) {
+        if (isTemplatesAllowed) {
+            addNewButton.gone()
+            addNewIconButton.visible()
+        } else {
+            addNewButton.visible()
+            addNewButton.isEnabled = true
+            addNewIconButton.gone()
         }
     }
 

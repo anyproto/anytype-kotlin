@@ -54,6 +54,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
@@ -503,8 +504,14 @@ class ObjectSetViewModel(
                 when {
                     query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
                     render == null -> DataViewViewState.Set.NoView
-                    render.isEmpty() -> DataViewViewState.Set.NoItems(title = render.title)
-                    else -> DataViewViewState.Set.Default(viewer = render)
+                    render.isEmpty() -> DataViewViewState.Set.NoItems(
+                        title = render.title,
+                        isTemplatesAllowed = objectState.isTemplatesAllowed(setOfValue)
+                    )
+                    else -> DataViewViewState.Set.Default(
+                        viewer = render,
+                        isTemplatesAllowed = objectState.isTemplatesAllowed(setOfValue)
+                    )
                 }
             }
         }

@@ -14,8 +14,8 @@ sealed class DataViewViewState {
     sealed class Set : DataViewViewState() {
         object NoQuery : Set()
         object NoView : Set()
-        data class NoItems(val title: String) : Set()
-        data class Default(val viewer: Viewer?) : Set()
+        data class NoItems(val title: String, val isTemplatesAllowed: Boolean) : Set()
+        data class Default(val viewer: Viewer?, val isTemplatesAllowed: Boolean) : Set()
     }
 
     object Init: DataViewViewState()

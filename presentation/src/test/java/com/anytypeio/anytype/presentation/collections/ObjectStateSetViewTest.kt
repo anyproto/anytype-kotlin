@@ -14,7 +14,9 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -407,5 +409,81 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
         stateFlow.ensureAllEventsConsumed()
         viewerFlow.ensureAllEventsConsumed()
+    }
+
+    @Test
+    fun `displaying set with templates allowed when opening object set of pages`() = runTest {
+        // SETUP
+
+        mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.PAGE)
+        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubOpenObject(
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            details = mockObjectSet.details
+        )
+        stubSubscriptionResults(
+            subscription = mockObjectSet.subscriptionId,
+            workspace = mockObjectSet.workspaceId,
+            storeOfRelations = storeOfRelations,
+            keys = mockObjectSet.dvKeys,
+            sources = listOf(ObjectTypeIds.PAGE),
+            dvFilters = mockObjectSet.filters
+        )
+
+        // TESTING
+        viewModel.onStart(ctx = root)
+
+        // ASSERT STATES
+        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+        val stateFlow = stateReducer.state.testIn(backgroundScope)
+
+        // ASSERT STATES
+        assertIs<ObjectState.Init>(stateFlow.awaitItem())
+        assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+
+        val item = viewerFlow.awaitItem()
+        assertIs<DataViewViewState.Set.NoItems>(item)
+        assertTrue(item.isTemplatesAllowed)
+    }
+
+    @Test
+    fun `displaying set without templates allowed when opening object set of notes`() = runTest {
+        // SETUP
+
+        mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.NOTE)
+        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubOpenObject(
+            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
+            details = mockObjectSet.details
+        )
+        stubSubscriptionResults(
+            subscription = mockObjectSet.subscriptionId,
+            workspace = mockObjectSet.workspaceId,
+            storeOfRelations = storeOfRelations,
+            keys = mockObjectSet.dvKeys,
+            sources = listOf(ObjectTypeIds.NOTE),
+            dvFilters = mockObjectSet.filters
+        )
+
+        // TESTING
+        viewModel.onStart(ctx = root)
+
+        // ASSERT STATES
+        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+        val stateFlow = stateReducer.state.testIn(backgroundScope)
+
+        // ASSERT STATES
+        assertIs<ObjectState.Init>(stateFlow.awaitItem())
+        assertIs<ObjectState.DataView.Set>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+
+        val item = viewerFlow.awaitItem()
+        assertIs<DataViewViewState.Set.NoItems>(item)
+        assertFalse(item.isTemplatesAllowed)
     }
 }

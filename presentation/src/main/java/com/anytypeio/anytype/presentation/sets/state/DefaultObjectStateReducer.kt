@@ -43,7 +43,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         eventChannel.send(events)
     }
 
-    override fun reduce(state: ObjectState, events: List<Event>): Transformation {
+    override suspend fun reduce(state: ObjectState, events: List<Event>): Transformation {
         var current = Transformation(state = state)
         events.forEach { event ->
             val transformed = reduce(current.state, event)
@@ -55,7 +55,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         return current
     }
 
-    private fun reduce(state: ObjectState, event: Event): Transformation {
+    private suspend fun reduce(state: ObjectState, event: Event): Transformation {
         val effects = mutableListOf<StateSideEffect>()
         val newState : ObjectState = when (event) {
             is Command.ShowObject -> {
@@ -165,7 +165,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
     /**
      * @see Command.ShowObject
      */
-    private fun handleShowObject(event: Command.ShowObject): ObjectState {
+    private suspend fun handleShowObject(event: Command.ShowObject): ObjectState {
         val objectState = when (val layout = event.details.details[event.root]?.layout?.toInt()) {
             ObjectType.Layout.COLLECTION.code -> ObjectState.DataView.Collection(
                 root = event.root,
@@ -338,7 +338,7 @@ class DefaultObjectStateReducer : ObjectStateReducer {
         }
     }
 
-    private fun handleSetIsCollection(
+    private suspend fun handleSetIsCollection(
         state: ObjectState,
         event: Command.DataView.SetIsCollection
     ): ObjectState {

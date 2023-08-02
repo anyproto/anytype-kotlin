@@ -776,7 +776,7 @@ class ObjectSetReducerTest {
     }
 
     @Test
-    fun `when relation deleted from dataview, should delete it from relationLinks`() {
+    fun `when relation deleted from dataview, should delete it from relationLinks`() = runTest {
         val title = StubTitle()
 
         val relationKey1 = MockDataFactory.randomUuid()

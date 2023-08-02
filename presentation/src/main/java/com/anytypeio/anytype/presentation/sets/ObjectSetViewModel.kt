@@ -462,8 +462,18 @@ class ObjectSetViewModel(
 
                 when {
                     viewer == null -> DataViewViewState.Collection.NoView
-                    viewer.isEmpty() -> DataViewViewState.Collection.NoItems(title = viewer.title)
-                    else -> DataViewViewState.Collection.Default(viewer = viewer)
+                    viewer.isEmpty() -> {
+                        DataViewViewState.Collection.NoItems(
+                            title = viewer.title,
+                            isTemplatesAllowed = objectState.isTemplatesAllowed(storeOfObjectTypes)
+                        )
+                    }
+                    else -> {
+                        DataViewViewState.Collection.Default(
+                            viewer = viewer,
+                            isTemplatesAllowed = objectState.isTemplatesAllowed(storeOfObjectTypes)
+                        )
+                    }
                 }
             }
         }

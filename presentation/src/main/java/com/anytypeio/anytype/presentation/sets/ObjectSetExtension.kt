@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -374,6 +375,12 @@ fun ObjectState.DataView.Set.isTemplatesAllowed(setOfValue: List<Id>): Boolean {
     val objectDetails = details[setOfValue.first()]?.map.orEmpty()
     val objectWrapper = ObjectWrapper.Type(objectDetails)
     return objectWrapper.isTemplatesAllowed()
+}
+
+suspend fun ObjectState.DataView.Collection.isTemplatesAllowed(storeOfObjectTypes: StoreOfObjectTypes): Boolean {
+    if (defaultObjectType == null) return false
+    val objType = storeOfObjectTypes.get(defaultObjectType)
+    return objType?.isTemplatesAllowed() ?: false
 }
 
 private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {

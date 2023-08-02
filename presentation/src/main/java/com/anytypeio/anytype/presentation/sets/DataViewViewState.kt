@@ -7,8 +7,8 @@ sealed class DataViewViewState {
 
     sealed class Collection : DataViewViewState() {
         object NoView : Collection()
-        data class NoItems(val title: String) : Collection()
-        data class Default(val viewer: Viewer?) : Collection()
+        data class NoItems(val title: String, val isTemplatesAllowed: Boolean = false) : Collection()
+        data class Default(val viewer: Viewer?, val isTemplatesAllowed: Boolean = false) : Collection()
     }
 
     sealed class Set : DataViewViewState() {

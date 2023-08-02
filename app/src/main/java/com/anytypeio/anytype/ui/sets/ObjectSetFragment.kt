@@ -435,7 +435,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.isTemplatesAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
@@ -448,7 +448,7 @@ open class ObjectSetFragment :
                 initView.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.isTemplatesAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()

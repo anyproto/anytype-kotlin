@@ -461,8 +461,18 @@ class ObjectSetViewModel(
 
                 when {
                     viewer == null -> DataViewViewState.Collection.NoView
-                    viewer.isEmpty() -> DataViewViewState.Collection.NoItems(title = viewer.title)
-                    else -> DataViewViewState.Collection.Default(viewer = viewer)
+                    viewer.isEmpty() -> {
+                        DataViewViewState.Collection.NoItems(
+                            title = viewer.title,
+                            isTemplatesAllowed = objectState.isTemplatesAllowed(storeOfObjectTypes)
+                        )
+                    }
+                    else -> {
+                        DataViewViewState.Collection.Default(
+                            viewer = viewer,
+                            isTemplatesAllowed = objectState.isTemplatesAllowed(storeOfObjectTypes)
+                        )
+                    }
                 }
             }
         }
@@ -503,8 +513,14 @@ class ObjectSetViewModel(
                 when {
                     query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
                     render == null -> DataViewViewState.Set.NoView
-                    render.isEmpty() -> DataViewViewState.Set.NoItems(title = render.title)
-                    else -> DataViewViewState.Set.Default(viewer = render)
+                    render.isEmpty() -> DataViewViewState.Set.NoItems(
+                        title = render.title,
+                        isTemplatesAllowed = objectState.isTemplatesAllowed(setOfValue)
+                    )
+                    else -> DataViewViewState.Set.Default(
+                        viewer = render,
+                        isTemplatesAllowed = objectState.isTemplatesAllowed(setOfValue)
+                    )
                 }
             }
         }
@@ -811,12 +827,16 @@ class ObjectSetViewModel(
     }
 
     fun onCreateNewDataViewObject() {
-        Timber.d("onCreateNewRecord, ")
+        Timber.d("onCreateNewDataViewObject, ")
         val state = stateReducer.state.value.dataViewState() ?: return
         when (state) {
             is ObjectState.DataView.Collection -> proceedWithAddingObjectToCollection()
             is ObjectState.DataView.Set -> proceedWithCreatingSetObject(state)
         }
+    }
+
+    fun onNewButtonIconClicked() {
+        Timber.d("onNewButtonIconClicked, ")
     }
 
     private fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set) {

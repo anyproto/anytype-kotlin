@@ -21,11 +21,13 @@ import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.isSystemKey
@@ -35,7 +37,6 @@ import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import timber.log.Timber
 
 fun ObjectState.DataView.featuredRelations(
     ctx: Id,
@@ -368,6 +369,18 @@ fun ObjectState.DataView.Set.getSetOfValue(ctx: Id): List<Id> {
 
 fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): List<Id> {
     return query.filter(::isValidObject)
+}
+
+fun ObjectState.DataView.Set.isTemplatesAllowed(setOfValue: List<Id>): Boolean {
+    val objectDetails = details[setOfValue.first()]?.map.orEmpty()
+    val objectWrapper = ObjectWrapper.Type(objectDetails)
+    return objectWrapper.isTemplatesAllowed()
+}
+
+suspend fun ObjectState.DataView.Collection.isTemplatesAllowed(storeOfObjectTypes: StoreOfObjectTypes): Boolean {
+    if (defaultObjectType == null) return false
+    val objType = storeOfObjectTypes.get(defaultObjectType)
+    return objType?.isTemplatesAllowed() ?: false
 }
 
 private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {

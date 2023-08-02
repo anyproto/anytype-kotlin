@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -50,6 +51,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         objectCollection = MockCollection(context = root)
+        stubGetDefaultPageType()
     }
 
     @After
@@ -62,7 +64,6 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should add new relation to data view`() = runTest {
         // SETUP
-
         stubWorkspaceManager(objectCollection.workspaceId)
         stubStoreOfRelations(objectCollection)
         stubSubscriptionResults(
@@ -201,7 +202,8 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         rootObject.id to Block.Fields(rootObject.map)
                     ),
                     objectRestrictions = listOf(),
-                    dataViewRestrictions = listOf()
+                    dataViewRestrictions = listOf(),
+                    defaultObjectType = defaultObjectPageType
                 ),
                 actual = first
             )
@@ -292,7 +294,8 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         relationObject4.id to Block.Fields(relationObject4.map)
                     ),
                     objectRestrictions = listOf(),
-                    dataViewRestrictions = listOf()
+                    dataViewRestrictions = listOf(),
+                    defaultObjectType = defaultObjectPageType
                 ),
                 actual = second
             )

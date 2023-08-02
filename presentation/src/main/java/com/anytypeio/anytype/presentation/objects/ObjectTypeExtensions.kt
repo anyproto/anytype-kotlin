@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.presentation.objects
 
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts.editorLayouts
 
 /**
  * The method allows you to get object type views for using in the editor and set
@@ -49,4 +51,16 @@ fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
         return@forEach
     }
     return result.sortedWith(ObjectTypeViewComparator())
+}
+
+/**
+ *
+ * This method is used to understand if objects of this type can use templates.
+ *
+ * @return `true` if templates are allowed for this type of object, `false` otherwise.
+ */
+fun ObjectWrapper.Type.isTemplatesAllowed(): Boolean {
+    val showTemplates = !ObjectTypeIds.getNoTemplates().contains(this.id)
+    val allowedObject = editorLayouts.contains(recommendedLayout)
+    return showTemplates && allowedObject
 }

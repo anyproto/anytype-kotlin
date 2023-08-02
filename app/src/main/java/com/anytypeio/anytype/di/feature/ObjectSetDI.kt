@@ -351,7 +351,9 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideObjectStateReducer(): ObjectStateReducer = DefaultObjectStateReducer()
+    fun provideObjectStateReducer(
+        getDefaultPageType: GetDefaultPageType
+    ): ObjectStateReducer = DefaultObjectStateReducer(getDefaultPageType)
 
     @JvmStatic
     @Provides

@@ -46,6 +46,7 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
+import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -142,6 +143,9 @@ open class ObjectSetFragment :
     private val addNewButton: TextView
         get() = binding.dataViewHeader.addNewButton
 
+    private val addNewIconButton: ButtonPrimarySmallIcon
+        get() = binding.dataViewHeader.addNewIconButton
+
     private val customizeViewButton: ImageView
         get() = binding.dataViewHeader.customizeViewButton
 
@@ -214,6 +218,8 @@ open class ObjectSetFragment :
 
         with(lifecycleScope) {
             subscribe(addNewButton.clicks().throttleFirst()) { vm.onCreateNewDataViewObject() }
+            subscribe(addNewIconButton.buttonClicks()) { vm.onCreateNewDataViewObject() }
+            subscribe(addNewIconButton.iconClicks()) { vm.onNewButtonIconClicked() }
             subscribe(dataViewInfo.clicks().throttleFirst()) { type ->
                 when (type) {
                     DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.onCreateObjectInCollectionClicked()
@@ -432,7 +438,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.isTemplatesAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
@@ -445,7 +451,7 @@ open class ObjectSetFragment :
                 initView.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.isTemplatesAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
@@ -471,12 +477,11 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.isTemplatesAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
                 setViewer(viewer = null)
-
             }
             is DataViewViewState.Set.Default -> {
                 topToolbarThreeDotsButton.visible()
@@ -485,7 +490,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.isTemplatesAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)
@@ -518,6 +523,17 @@ open class ObjectSetFragment :
             getString(R.string.untitled)
         } else {
             title
+        }
+    }
+
+    private fun setupNewButtons(isTemplatesAllowed: Boolean) {
+        if (isTemplatesAllowed) {
+            addNewButton.gone()
+            addNewIconButton.visible()
+        } else {
+            addNewButton.visible()
+            addNewButton.isEnabled = true
+            addNewIconButton.gone()
         }
     }
 

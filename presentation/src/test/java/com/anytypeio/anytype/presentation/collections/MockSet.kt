@@ -20,7 +20,7 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import net.bytebuddy.utility.RandomString
 
-class MockSet(context: String, setOfValue: String = "setOf-${RandomString.make()}") {
+class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.make()}") {
 
     val root = context
     val title =
@@ -34,7 +34,7 @@ class MockSet(context: String, setOfValue: String = "setOf-${RandomString.make()
     )
     val workspaceId = "workspace-${RandomString.make()}"
     val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(context)
-    val setOf = setOfValue
+    val setOf get() = setOfValue
     val setOfNote = ObjectTypeIds.NOTE
 
     // RELATION OBJECTS
@@ -180,7 +180,8 @@ class MockSet(context: String, setOfValue: String = "setOf-${RandomString.make()
             setOf to Block.Fields(
                 map = mapOf(
                     Relations.ID to setOf,
-                    Relations.TYPE to ObjectTypeIds.OBJECT_TYPE
+                    Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+                    Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
                 )
             )
         )

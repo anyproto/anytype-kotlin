@@ -31,6 +31,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
+        stubGetDefaultPageType()
     }
 
     @After

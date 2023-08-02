@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.views
 import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
@@ -36,8 +37,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
 
 class ButtonPrimaryXSmall @JvmOverloads constructor(
     context: Context,
@@ -574,17 +577,22 @@ class ButtonPrimarySmallIcon @JvmOverloads constructor(
 ) : LinearLayout(context, attrs) {
 
     private lateinit var button: TextView
+    private lateinit var icon: ImageView
 
     init {
         init(context)
     }
-
+    
     private fun init(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.ds_button_icon, this, true)
         button = findViewById(R.id.button)
+        icon = findViewById(R.id.icon)
     }
 
     fun setButtonText(text: String) {
         button.text = text
     }
+
+    fun buttonClicks() = button.clicks().throttleFirst()
+    fun iconClicks() = icon.clicks().throttleFirst()
 }

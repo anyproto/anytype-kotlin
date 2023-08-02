@@ -54,7 +54,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
@@ -828,12 +827,16 @@ class ObjectSetViewModel(
     }
 
     fun onCreateNewDataViewObject() {
-        Timber.d("onCreateNewRecord, ")
+        Timber.d("onCreateNewDataViewObject, ")
         val state = stateReducer.state.value.dataViewState() ?: return
         when (state) {
             is ObjectState.DataView.Collection -> proceedWithAddingObjectToCollection()
             is ObjectState.DataView.Set -> proceedWithCreatingSetObject(state)
         }
+    }
+
+    fun onNewButtonIconClicked() {
+        Timber.d("onNewButtonIconClicked, ")
     }
 
     private fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set) {

@@ -46,6 +46,7 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
+import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
@@ -142,7 +143,7 @@ open class ObjectSetFragment :
     private val addNewButton: TextView
         get() = binding.dataViewHeader.addNewButton
 
-    private val addNewIconButton: LinearLayout
+    private val addNewIconButton: ButtonPrimarySmallIcon
         get() = binding.dataViewHeader.addNewIconButton
 
     private val customizeViewButton: ImageView
@@ -217,6 +218,8 @@ open class ObjectSetFragment :
 
         with(lifecycleScope) {
             subscribe(addNewButton.clicks().throttleFirst()) { vm.onCreateNewDataViewObject() }
+            subscribe(addNewIconButton.buttonClicks()) { vm.onCreateNewDataViewObject() }
+            subscribe(addNewIconButton.iconClicks()) { vm.onNewButtonIconClicked() }
             subscribe(dataViewInfo.clicks().throttleFirst()) { type ->
                 when (type) {
                     DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.onCreateObjectInCollectionClicked()

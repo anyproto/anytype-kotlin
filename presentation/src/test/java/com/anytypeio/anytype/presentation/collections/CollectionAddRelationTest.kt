@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -201,7 +202,8 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         rootObject.id to Block.Fields(rootObject.map)
                     ),
                     objectRestrictions = listOf(),
-                    dataViewRestrictions = listOf()
+                    dataViewRestrictions = listOf(),
+                    defaultObjectType = MockDataFactory.randomString()
                 ),
                 actual = first
             )
@@ -292,7 +294,8 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                         relationObject4.id to Block.Fields(relationObject4.map)
                     ),
                     objectRestrictions = listOf(),
-                    dataViewRestrictions = listOf()
+                    dataViewRestrictions = listOf(),
+                    defaultObjectType = MockDataFactory.randomString()
                 ),
                 actual = second
             )

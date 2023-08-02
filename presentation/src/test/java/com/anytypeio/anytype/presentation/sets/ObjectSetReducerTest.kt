@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.StubFilter
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubSort
 import com.anytypeio.anytype.core_models.StubTitle
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
@@ -24,6 +25,8 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Rule
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObjectSetReducerTest {
@@ -36,11 +39,15 @@ class ObjectSetReducerTest {
     @get:Rule
     val coroutineTestRule = DefaultCoroutineTestRule()
 
+    @Mock
+    lateinit var getDefaultPageType: GetDefaultPageType
+
     private lateinit var reducer: ObjectStateReducer
 
     @Before
     fun reduce() {
-        reducer = DefaultObjectStateReducer()
+        MockitoAnnotations.openMocks(this)
+        reducer = DefaultObjectStateReducer(getDefaultPageType)
     }
 
     @After

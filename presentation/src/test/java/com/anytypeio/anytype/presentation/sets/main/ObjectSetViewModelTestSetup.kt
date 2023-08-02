@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -54,6 +55,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
+import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
@@ -147,7 +149,10 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
-    var stateReducer = DefaultObjectStateReducer()
+    @Mock
+    lateinit var getDefaultPageType: GetDefaultPageType
+
+    lateinit var stateReducer : ObjectStateReducer
 
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
     lateinit var dataViewSubscription: DataViewSubscription
@@ -169,6 +174,7 @@ open class ObjectSetViewModelTestSetup {
 
     fun givenViewModel(): ObjectSetViewModel {
         repo = mock(verboseLogging = true)
+        stateReducer = DefaultObjectStateReducer(getDefaultPageType = getDefaultPageType)
         dispatchers = AppCoroutineDispatchers(
             io = rule.dispatcher,
             computation = rule.dispatcher,
@@ -353,9 +359,15 @@ open class ObjectSetViewModelTestSetup {
         )
     }
 
-    fun stubStoreOfObjectTypes() {
+    fun stubStoreOfObjectTypes(map: Map<String, Any?> = emptyMap()) {
         storeOfObjectTypes.stub {
-            onBlocking { get(any()) } doReturn ObjectWrapper.Type(map = emptyMap())
+            onBlocking { get(any()) } doReturn ObjectWrapper.Type(map = map)
+        }
+    }
+
+    fun stubGetDefaultPageType(type: String, name: String) {
+        getDefaultPageType.stub {
+            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(type = type, name = name)
         }
     }
 }

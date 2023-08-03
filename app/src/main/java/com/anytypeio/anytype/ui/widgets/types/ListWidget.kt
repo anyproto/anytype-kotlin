@@ -76,6 +76,7 @@ fun ListWidgetCard(
                 title = when(item.type) {
                     Type.Favorites -> stringResource(id = R.string.favorites)
                     Type.Recent -> stringResource(id = R.string.recent)
+                    Type.RecentLocal -> stringResource(id = R.string.recently_opened)
                     Type.Sets -> stringResource(id = R.string.sets)
                     Type.Collections -> stringResource(id = R.string.collections)
                 },
@@ -154,8 +155,11 @@ fun CompactListWidgetList(
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
                 Text(
-                    text = element.obj.getWidgetObjectName() ?: stringResource(id = R.string.untitled),
-                    modifier = Modifier.padding(start = 8.dp).fillMaxWidth(),
+                    text = element.obj.getWidgetObjectName()
+                        ?: stringResource(id = R.string.untitled),
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .fillMaxWidth(),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = PreviewTitle2Medium,

@@ -71,7 +71,7 @@ class TemplateSelectViewModel(
                     layout = objType.recommendedLayout?.code ?: 0
                 )
             )
-            addAll(templates.map { TemplateView.Template(it.id) })
+            addAll(templates.map { TemplateView.Template(id = it.id, name = it.name.orEmpty()) })
         }
         _viewState.emit(
             ViewState.Success(
@@ -142,11 +142,4 @@ class TemplateSelectViewModel(
         object ErrorGettingType : ViewState()
     }
 
-    sealed class TemplateView {
-        data class Blank(
-            val typeId: Id, val typeName: String, val layout: Int
-        ) : TemplateView()
-
-        data class Template(val id: Id) : TemplateView()
-    }
 }

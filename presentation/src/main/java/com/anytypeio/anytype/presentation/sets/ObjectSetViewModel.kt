@@ -64,6 +64,8 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.TemplateView
+import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -150,6 +152,7 @@ class ObjectSetViewModel(
     val header: StateFlow<SetOrCollectionHeaderState> = _header
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
+    val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.empty())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -837,6 +840,14 @@ class ObjectSetViewModel(
 
     fun onNewButtonIconClicked() {
         Timber.d("onNewButtonIconClicked, ")
+    }
+
+    fun onHideTemplatesWidget() {
+        Timber.d("onHideTemplatesWidget, ")
+        templatesWidgetState.value = TemplatesWidgetUiState(
+            items = emptyList(),
+            showWidget = false
+        )
     }
 
     private fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set) {

@@ -20,6 +20,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
@@ -30,6 +31,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -48,6 +50,7 @@ import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
+import com.anytypeio.anytype.core_ui.widgets.ObjectTypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
@@ -315,6 +318,16 @@ open class ObjectSetFragment :
                 vm.onObjectSetQueryPicked(query = query)
             } else {
                 toast("Error while setting the Set query. The query is empty")
+            }
+        }
+
+        binding.composeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ObjectTypeTemplatesWidget(
+                    state = vm.templatesWidgetState.collectAsStateWithLifecycle().value,
+                    onShadowClick = vm::onHideTemplatesWidget
+                )
             }
         }
     }
@@ -1079,10 +1092,16 @@ open class ObjectSetFragment :
             if (childFragmentManager.backStackEntryCount > 0) {
                 childFragmentManager.popBackStack()
             } else {
-                if (vm.isCustomizeViewPanelVisible.value) {
-                    vm.onHideViewerCustomizeSwiped()
-                } else {
-                    vm.onSystemBackPressed()
+                when {
+                    vm.isCustomizeViewPanelVisible.value -> {
+                        vm.onHideViewerCustomizeSwiped()
+                    }
+                    vm.templatesWidgetState.value.showWidget -> {
+                        vm.onHideTemplatesWidget()
+                    }
+                    else -> {
+                        vm.onSystemBackPressed()
+                    }
                 }
             }
         }

@@ -147,13 +147,22 @@ class BundledWidgetSourceHolder(
                     ivIcon.setIcon(ObjectIcon.Basic.Emoji("⭐️"))
                 }
             }
+
             BundledWidgetSourceView.Recent -> {
                 with(binding) {
                     tvTitle.setText(R.string.recent)
-                    tvSubtitle.setText(R.string.recently_opened_objects)
-                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("🗓"))
+                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("📝"))
                 }
             }
+
+            BundledWidgetSourceView.RecentLocal -> {
+                with(binding) {
+                    tvTitle.setText(R.string.recently_opened)
+                    tvSubtitle.setText(R.string.recently_opened_objects)
+                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("📅"))
+                }
+            }
+
             BundledWidgetSourceView.Sets -> {
                 with(binding) {
                     tvTitle.setText(R.string.sets)

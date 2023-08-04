@@ -252,7 +252,9 @@ class CollectionViewModel(
         ) { objs, query, types ->
             val result = objs.filter { obj ->
                 obj.getProperName().contains(query, true)
-            }.toViews(urlBuilder, types).map { ObjectView(it) }.tryAddSections()
+            }.toViews(urlBuilder, types)
+                .map { ObjectView(it) }
+                .tryAddSections()
             if (result.isEmpty() && query.isNotEmpty())
                 listOf(CollectionView.EmptySearch(query))
             else
@@ -261,16 +263,22 @@ class CollectionViewModel(
             Timber.e(it, "Error in subscription flow")
         }
 
-    private fun List<ObjectView>.tryAddSections() =
-        if (subscription == Subscription.Recent)
-            this.groupBy { dateProvider.getRelativeTimeSpanString(it.obj.lastModifiedDate) }
+    private fun List<ObjectView>.tryAddSections(): List<CollectionView> {
+        return if (subscription == Subscription.Recent || subscription == Subscription.RecentLocal)
+            this.groupBy {
+                dateProvider.getRelativeTimeSpanString(
+                    if (subscription == Subscription.Recent) it.obj.lastModifiedDate
+                    else it.obj.lastOpenedDate
+                )
+            }
                 .flatMap { (key, value) ->
-                    buildList<CollectionView> {
+                    buildList {
                         add(CollectionView.SectionView(key.toString()))
                         addAll(value)
                     }
                 }
         else this
+    }
 
     private fun List<ObjectWrapper.Basic>.toOrder(favs: Map<Id, FavoritesOrder>): List<ObjectWrapper.Basic> {
         if (favs.size != this.size) {

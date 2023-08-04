@@ -25,6 +25,7 @@ object WidgetAnalytics {
 
     const val WIDGET_SOURCE_FAVORITES = "Favorites"
     const val WIDGET_SOURCE_RECENT = "Recent"
+    const val WIDGET_SOURCE_RECENT_LOCAL = "RecentLocal"
     const val WIDGET_SOURCE_SETS = "Sets"
     const val WIDGET_SOURCE_COLLECTIONS = "Sets"
 

@@ -621,6 +621,7 @@ class HomeScreenViewModel(
                 // TODO switch to bundled widgets id
                 navigate(Navigation.ExpandWidget(Subscription.Sets))
             }
+
             is Widget.Source.Bundled.Recent -> {
                 viewModelScope.sendSelectHomeTabEvent(
                     analytics = analytics,
@@ -629,6 +630,16 @@ class HomeScreenViewModel(
                 // TODO switch to bundled widgets id
                 navigate(Navigation.ExpandWidget(Subscription.Recent))
             }
+
+            is Widget.Source.Bundled.RecentLocal -> {
+                viewModelScope.sendSelectHomeTabEvent(
+                    analytics = analytics,
+                    bundled = source
+                )
+                // TODO switch to bundled widgets id
+                navigate(Navigation.ExpandWidget(Subscription.RecentLocal))
+            }
+
             is Widget.Source.Bundled.Collections -> {
                 viewModelScope.sendSelectHomeTabEvent(
                     analytics = analytics,
@@ -637,6 +648,7 @@ class HomeScreenViewModel(
                 // TODO switch to bundled widgets id
                 navigate(Navigation.ExpandWidget(Subscription.Collections))
             }
+
             is Widget.Source.Default -> {
                 if (source.obj.isArchived != true) {
                     dispatchSelectHomeTabCustomSourceEvent(source)

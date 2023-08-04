@@ -73,6 +73,11 @@ sealed class Widget {
                 override val id: Id = BundledWidgetSourceIds.RECENT
                 override val type: Id? = null
             }
+
+            object RecentLocal : Bundled() {
+                override val id: Id = BundledWidgetSourceIds.RECENT_LOCAL
+                override val type: Id? = null
+            }
         }
     }
 }
@@ -163,10 +168,11 @@ fun List<Block>.parseWidgets(
 
 fun Id.bundled() : Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.RECENT -> Widget.Source.Bundled.Recent
+    BundledWidgetSourceIds.RECENT_LOCAL -> Widget.Source.Bundled.RecentLocal
     BundledWidgetSourceIds.SETS -> Widget.Source.Bundled.Sets
     BundledWidgetSourceIds.COLLECTIONS -> Widget.Source.Bundled.Collections
     BundledWidgetSourceIds.FAVORITE -> Widget.Source.Bundled.Favorites
-    else -> throw throw IllegalStateException()
+    else -> throw IllegalStateException("Widget bundled id can't be $this")
 }
 
 typealias WidgetId = Id

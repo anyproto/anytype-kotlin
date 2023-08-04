@@ -111,6 +111,7 @@ class ListWidgetContainer(
 
     private fun resolveType() = when (subscription) {
         BundledWidgetSourceIds.RECENT -> WidgetView.ListOfObjects.Type.Recent
+        BundledWidgetSourceIds.RECENT_LOCAL -> WidgetView.ListOfObjects.Type.RecentLocal
         BundledWidgetSourceIds.SETS -> WidgetView.ListOfObjects.Type.Sets
         BundledWidgetSourceIds.FAVORITE -> WidgetView.ListOfObjects.Type.Favorites
         BundledWidgetSourceIds.COLLECTIONS -> WidgetView.ListOfObjects.Type.Collections
@@ -140,6 +141,17 @@ class ListWidgetContainer(
                     limit = limit
                 )
             }
+
+            BundledWidgetSourceIds.RECENT_LOCAL -> {
+                StoreSearchParams(
+                    subscription = subscription,
+                    sorts = ObjectSearchConstants.sortTabRecentLocal,
+                    filters = ObjectSearchConstants.filterTabRecentLocal(workspace),
+                    keys = keys,
+                    limit = limit
+                )
+            }
+
             BundledWidgetSourceIds.SETS -> {
                 StoreSearchParams(
                     subscription = subscription,

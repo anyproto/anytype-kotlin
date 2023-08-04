@@ -9,16 +9,24 @@ import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
  */
 sealed class BundledWidgetSourceView : DefaultSearchItem {
     abstract val id: Id
+
     object Favorites : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.FAVORITE
     }
-    object Sets: BundledWidgetSourceView() {
+
+    object Sets : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.SETS
     }
-    object Collections: BundledWidgetSourceView() {
+
+    object Collections : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.COLLECTIONS
     }
-    object Recent: BundledWidgetSourceView() {
+
+    object Recent : BundledWidgetSourceView() {
         override val id: Id get() = BundledWidgetSourceIds.RECENT
+    }
+
+    object RecentLocal : BundledWidgetSourceView() {
+        override val id: Id get() = BundledWidgetSourceIds.RECENT_LOCAL
     }
 }

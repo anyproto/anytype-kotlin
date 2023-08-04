@@ -52,6 +52,7 @@ import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
@@ -59,6 +60,9 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
+import com.anytypeio.anytype.presentation.editor.template.DefaultSetTemplateDelegate
+import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
@@ -195,7 +199,8 @@ object ObjectSetModule {
         @Named("object-set-store") objectStore: ObjectStore,
         addObjectToCollection: AddObjectToCollection,
         convertObjectToCollection: ConvertObjectToCollection,
-        storeOfObjectTypes: StoreOfObjectTypes
+        storeOfObjectTypes: StoreOfObjectTypes,
+        templateDelegate: EditorTemplateDelegate
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -225,7 +230,8 @@ object ObjectSetModule {
         objectStore = objectStore,
         addObjectToCollection = addObjectToCollection,
         objectToCollection = convertObjectToCollection,
-        storeOfObjectTypes = storeOfObjectTypes
+        storeOfObjectTypes = storeOfObjectTypes,
+        templateDelegate = templateDelegate
     )
 
     @JvmStatic
@@ -324,6 +330,15 @@ object ObjectSetModule {
     ): InterceptEvents = InterceptEvents(
         channel = channel,
         context = Dispatchers.IO
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideTemplateDelegate(
+        getTemplates: GetTemplates
+    ): EditorTemplateDelegate = DefaultSetTemplateDelegate(
+        getTemplates = getTemplates
     )
 
     @JvmStatic

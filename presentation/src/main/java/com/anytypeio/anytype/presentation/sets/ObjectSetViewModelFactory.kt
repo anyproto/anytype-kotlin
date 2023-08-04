@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -60,7 +61,8 @@ class ObjectSetViewModelFactory(
     private val objectStore: ObjectStore,
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val templateDelegate: EditorTemplateDelegate
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -93,7 +95,8 @@ class ObjectSetViewModelFactory(
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            templateDelegate = templateDelegate
         ) as T
     }
 }

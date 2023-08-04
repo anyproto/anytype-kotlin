@@ -59,6 +59,50 @@ class DefaultEditorTemplateDelegate(
     }
 }
 
+class DefaultSetTemplateDelegate(
+    private val getTemplates: GetTemplates
+) : EditorTemplateDelegate {
+
+    private val events = MutableSharedFlow<SelectTemplateEvent>(replay = 0)
+
+    override val templateDelegateState = events.scan(SelectTemplateState.init()) { state, event ->
+        when (event) {
+            is SelectTemplateEvent.OnStart -> {
+                try {
+                    val templates = getTemplates.run(GetTemplates.Params(event.type))
+                    if (templates.isNotEmpty()) {
+                        SelectTemplateState.Available(
+                            templates = templates.map { it.id },
+                            type = event.type,
+                            typeName = event.typeName
+                        )
+                    } else {
+                        SelectTemplateState.Idle
+                    }
+                } catch (e: Exception) {
+                    SelectTemplateState.Idle
+                }
+            }
+            is SelectTemplateEvent.OnSkipped -> SelectTemplateState.Idle
+            is SelectTemplateEvent.OnAccepted -> {
+                if (state is SelectTemplateState.Available)
+                    SelectTemplateState.Accepted(
+                        type = state.type,
+                        templates = state.templates
+                    )
+                else
+                    SelectTemplateState.Idle
+            }
+        }
+    }.catch { e ->
+        Timber.e(e, "Error while processing templates ")
+    }
+
+    override suspend fun onEvent(e: SelectTemplateEvent) {
+        events.emit(e)
+    }
+}
+
 sealed class SelectTemplateState {
     object Idle : SelectTemplateState()
 

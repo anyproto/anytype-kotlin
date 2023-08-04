@@ -72,6 +72,7 @@ class SelectWidgetSourceViewModel(
                                             BundledWidgetSourceView.Sets,
                                             BundledWidgetSourceView.Collections,
                                             BundledWidgetSourceView.Recent,
+                                            BundledWidgetSourceView.RecentLocal,
                                         )
                                     )
                                     add(ObjectSearchSection.SelectWidgetSource.FromMyObjects)

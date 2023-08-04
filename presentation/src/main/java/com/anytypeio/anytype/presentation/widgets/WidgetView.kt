@@ -77,6 +77,7 @@ sealed class WidgetView {
         ) : WidgetView.Element
         sealed class Type {
             object Recent : Type()
+            object RecentLocal : Type()
             object Favorites : Type()
             object Sets: Type()
             object Collections: Type()

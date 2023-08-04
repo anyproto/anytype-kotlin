@@ -63,6 +63,7 @@ fun List<ObjectWrapper.Basic>.toViews(
             builder = urlBuilder
         ),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
+        lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
         isFavorite = obj.isFavorite ?: false
     )
 }

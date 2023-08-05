@@ -1,17 +1,31 @@
 package com.anytypeio.anytype.presentation.editor.template
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.channels.consumeEach
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 interface EditorTemplateDelegate {
     val templateDelegateState: Flow<SelectTemplateState>
     suspend fun onEvent(e: SelectTemplateEvent)
+    fun clear()
 }
 
 class DefaultEditorTemplateDelegate(
@@ -25,12 +39,13 @@ class DefaultEditorTemplateDelegate(
         when (event) {
             is SelectTemplateEvent.OnStart -> {
                 try {
+                    if (event.type == null) return@scan SelectTemplateState.Idle
                     val templates = getTemplates.run(GetTemplates.Params(event.type))
                     if (templates.isNotEmpty()) {
                         SelectTemplateState.Available(
-                            templates = templates.map { it.id },
+                            templates = templates,
                             type = event.type,
-                            typeName = event.typeName
+                            typeName = event.typeName.orEmpty()
                         )
                     } else {
                         SelectTemplateState.Idle
@@ -39,16 +54,19 @@ class DefaultEditorTemplateDelegate(
                     SelectTemplateState.Idle
                 }
             }
+
             is SelectTemplateEvent.OnSkipped -> SelectTemplateState.Idle
             is SelectTemplateEvent.OnAccepted -> {
                 if (state is SelectTemplateState.Available)
                     SelectTemplateState.Accepted(
                         type = state.type,
-                        templates = state.templates
+                        templates = state.templates.map { it.id },
                     )
                 else
                     SelectTemplateState.Idle
             }
+
+            else -> SelectTemplateState.Idle
         }
     }.catch { e ->
         Timber.e(e, "Error while processing templates ")
@@ -57,49 +75,100 @@ class DefaultEditorTemplateDelegate(
     override suspend fun onEvent(e: SelectTemplateEvent) {
         events.emit(e)
     }
+
+    override fun clear() {}
 }
 
 class DefaultSetTemplateDelegate(
-    private val getTemplates: GetTemplates
+    private val getTemplates: GetTemplates,
+    private val getDefaultPageType: GetDefaultPageType,
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    dispatchers: AppCoroutineDispatchers
 ) : EditorTemplateDelegate {
 
-    private val events = MutableSharedFlow<SelectTemplateEvent>(replay = 0)
+    private val events = Channel<SelectTemplateEvent>(Channel.BUFFERED)
 
-    override val templateDelegateState = events.scan(SelectTemplateState.init()) { state, event ->
-        when (event) {
-            is SelectTemplateEvent.OnStart -> {
-                try {
-                    val templates = getTemplates.run(GetTemplates.Params(event.type))
-                    if (templates.isNotEmpty()) {
-                        SelectTemplateState.Available(
-                            templates = templates.map { it.id },
-                            type = event.type,
-                            typeName = event.typeName
-                        )
-                    } else {
-                        SelectTemplateState.Idle
-                    }
-                } catch (e: Exception) {
-                    SelectTemplateState.Idle
-                }
-            }
-            is SelectTemplateEvent.OnSkipped -> SelectTemplateState.Idle
-            is SelectTemplateEvent.OnAccepted -> {
-                if (state is SelectTemplateState.Available)
-                    SelectTemplateState.Accepted(
-                        type = state.type,
-                        templates = state.templates
-                    )
-                else
-                    SelectTemplateState.Idle
-            }
+    private val _state =
+        MutableStateFlow<SelectTemplateState>(SelectTemplateState.Idle)
+    override val templateDelegateState: Flow<SelectTemplateState> get() = _state.asStateFlow()
+
+    private val job = SupervisorJob()
+    private val scope = CoroutineScope(dispatchers.io + job)
+
+    init {
+        scope.launch {
+            events.consumeEach { event -> processEvent(event) }
         }
-    }.catch { e ->
-        Timber.e(e, "Error while processing templates ")
+    }
+
+    private suspend fun processEvent(
+        event: SelectTemplateEvent
+    ) {
+        when (event) {
+            is SelectTemplateEvent.OnStart -> processTemplates(event)
+            is SelectTemplateEvent.OnSkipped -> setStateIdle()
+            is SelectTemplateEvent.OnAccepted -> {}
+        }
+    }
+
+    private suspend fun processTemplates(
+        event: SelectTemplateEvent.OnStart
+    ) {
+        val objectType = getObjectType(event.type)
+        if (objectType == null) {
+            _state.value = SelectTemplateState.Error("Couldn't find ${event.typeName}")
+            return
+        }
+        return if (objectType.isTemplatesAllowed()) {
+            proceedWithGettingTemplates(objectType.id)
+        } else {
+            _state.value = SelectTemplateState.Error("Templates are not allowed for ${objectType.name}")
+        }
+    }
+
+    private suspend fun getObjectType(type: Id?): ObjectWrapper.Type? {
+        return if (type == null) {
+            val defaultObjectType = getDefaultPageType.run(Unit).type ?: return null
+            storeOfObjectTypes.get(defaultObjectType)
+        } else {
+            storeOfObjectTypes.get(type)
+        }
+    }
+
+    private suspend fun proceedWithGettingTemplates(type: Id, typeName: String? = null) {
+        val params = GetTemplates.Params(type)
+        getTemplates.async(params).fold(
+            onSuccess = { templates ->
+                Timber.d("proceedWithGettingTemplates success: $templates")
+                if (templates.isNotEmpty()) {
+                    _state.value = SelectTemplateState.Available(
+                        templates = templates,
+                        type = type,
+                        typeName = typeName.orEmpty()
+                    )
+                } else {
+                    _state.value =
+                        SelectTemplateState.Error("There is no templates for this type")
+                }
+            },
+            onFailure = {
+                Timber.e(it, "Error while getting templates")
+                _state.value =
+                    SelectTemplateState.Error("Error while getting templates")
+            }
+        )
+    }
+
+    private fun setStateIdle() {
+        _state.value = SelectTemplateState.Idle
     }
 
     override suspend fun onEvent(e: SelectTemplateEvent) {
-        events.emit(e)
+        events.send(e)
+    }
+
+    override fun clear() {
+        job.cancel()
     }
 }
 
@@ -111,7 +180,7 @@ sealed class SelectTemplateState {
      */
     data class Available(
         val type: Id,
-        val templates: List<Id>,
+        val templates: List<ObjectWrapper.Basic>,
         val typeName: String
     ) : SelectTemplateState()
 
@@ -123,13 +192,17 @@ sealed class SelectTemplateState {
         val templates: List<Id>
     ) : SelectTemplateState()
 
+    data class Error(val msg: String) : SelectTemplateState()
+
     companion object {
         fun init(): SelectTemplateState = Idle
     }
 }
 
 sealed class SelectTemplateEvent {
-    data class OnStart(val ctx: Id, val type: Id, val typeName: String) : SelectTemplateEvent()
+    data class OnStart(val ctx: Id, val type: Id? = null, val typeName: String? = null) :
+        SelectTemplateEvent()
+
     object OnSkipped : SelectTemplateEvent()
     object OnAccepted : SelectTemplateEvent()
 }

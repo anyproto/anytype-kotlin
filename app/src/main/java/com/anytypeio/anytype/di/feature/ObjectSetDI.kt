@@ -336,9 +336,15 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideTemplateDelegate(
-        getTemplates: GetTemplates
+        getTemplates: GetTemplates,
+        getDefaultPageType: GetDefaultPageType,
+        storeOfObjectTypes: StoreOfObjectTypes,
+        dispatchers: AppCoroutineDispatchers
     ): EditorTemplateDelegate = DefaultSetTemplateDelegate(
-        getTemplates = getTemplates
+        getTemplates = getTemplates,
+        getDefaultPageType = getDefaultPageType,
+        storeOfObjectTypes = storeOfObjectTypes,
+        dispatchers = dispatchers
     )
 
     @JvmStatic

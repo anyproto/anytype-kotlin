@@ -309,6 +309,10 @@ class ObjectSetViewModel(
                                 TemplateView.Template(
                                     id = template.id,
                                     name = template.name.orEmpty(),
+                                    typeId = state.type,
+                                    emoji = template.iconEmoji,
+                                    image = template.iconImage,
+                                    layout = template.layout ?: ObjectType.Layout.BASIC
                                 )
                             },
                             showWidget = true
@@ -869,12 +873,12 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onCreateNewDataViewObject() {
+    fun onCreateNewDataViewObject(templatesId: Id? = null) {
         Timber.d("onCreateNewDataViewObject, ")
         val state = stateReducer.state.value.dataViewState() ?: return
         when (state) {
-            is ObjectState.DataView.Collection -> proceedWithAddingObjectToCollection()
-            is ObjectState.DataView.Set -> proceedWithCreatingSetObject(state)
+            is ObjectState.DataView.Collection -> proceedWithAddingObjectToCollection(templatesId)
+            is ObjectState.DataView.Set -> proceedWithCreatingSetObject(state, templatesId)
         }
     }
 
@@ -892,7 +896,7 @@ class ObjectSetViewModel(
         )
     }
 
-    private fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set) {
+    private fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set, templateId: Id?) {
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
@@ -922,7 +926,8 @@ class ObjectSetViewModel(
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = sourceId,
-                                        filters = viewer.filters
+                                        filters = viewer.filters,
+                                        template = templateId
                                     )
                                 )
                             }
@@ -931,7 +936,8 @@ class ObjectSetViewModel(
                             proceedWithCreatingDataViewObject(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
-                                    relations = setObject.setOf
+                                    relations = setObject.setOf,
+                                    template = templateId
                                 )
                             )
                         }
@@ -952,8 +958,11 @@ class ObjectSetViewModel(
         proceedWithAddingObjectToCollection()
     }
 
-    private fun proceedWithAddingObjectToCollection() {
-        proceedWithCreatingDataViewObject(CreateDataViewObject.Params.Collection) { result ->
+    private fun proceedWithAddingObjectToCollection(templateId: Id? = null) {
+        val createObjectParams = CreateDataViewObject.Params.Collection(
+            templateId = templateId
+        )
+        proceedWithCreatingDataViewObject(createObjectParams) { result ->
             val params = AddObjectToCollection.Params(
                 ctx = context,
                 after = "",
@@ -990,7 +999,7 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithNewDataViewObject(params: CreateDataViewObject.Params, newObject: Id) {
         when (params) {
-            CreateDataViewObject.Params.Collection -> {
+            is CreateDataViewObject.Params.Collection -> {
                 proceedWithOpeningObject(newObject)
             }
             is CreateDataViewObject.Params.SetByRelation -> {
@@ -1527,6 +1536,19 @@ class ObjectSetViewModel(
             toast("Unable to define a source for a new object.")
         }
         return sourceId
+    }
+
+    fun onTemplateItemClicked(item: TemplateView) {
+        when(item) {
+            is TemplateView.Blank -> {
+                templatesWidgetState.value = TemplatesWidgetUiState.empty()
+                onCreateNewDataViewObject()
+            }
+            is TemplateView.Template -> {
+                templatesWidgetState.value = TemplatesWidgetUiState.empty()
+                onCreateNewDataViewObject(templatesId = item.id)
+            }
+        }
     }
     //endregion
 

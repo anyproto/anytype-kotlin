@@ -326,7 +326,8 @@ open class ObjectSetFragment :
             setContent {
                 ObjectTypeTemplatesWidget(
                     state = vm.templatesWidgetState.collectAsStateWithLifecycle().value,
-                    onShadowClick = vm::onHideTemplatesWidget
+                    onShadowClick = vm::onHideTemplatesWidget,
+                    itemClick = vm::onTemplateItemClicked
                 )
             }
         }

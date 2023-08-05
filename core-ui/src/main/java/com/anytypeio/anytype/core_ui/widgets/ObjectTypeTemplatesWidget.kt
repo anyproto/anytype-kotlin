@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,6 +54,7 @@ import kotlin.math.roundToInt
 fun ObjectTypeTemplatesWidget(
     state: TemplatesWidgetUiState,
     onShadowClick: () -> Unit,
+    itemClick: (TemplateView) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -146,7 +148,7 @@ fun ObjectTypeTemplatesWidget(
                             )
                         }
                     }
-                    TemplatesList(state.items)
+                    TemplatesList(state.items, itemClick)
                 }
             }
         }
@@ -155,7 +157,8 @@ fun ObjectTypeTemplatesWidget(
 
 @Composable
 private fun TemplatesList(
-    items: List<TemplateView>
+    items: List<TemplateView>,
+    itemClick: (TemplateView) -> Unit
 ) {
     LazyRow(
         modifier = Modifier
@@ -178,6 +181,9 @@ private fun TemplatesList(
                         )
                         .height(224.dp)
                         .width(120.dp)
+                        .clickable {
+                            itemClick(item)
+                        }
                 ) {
                     Column {
                         TemplateItemContent(item)

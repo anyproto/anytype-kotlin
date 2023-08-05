@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -48,12 +49,16 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
+import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
+import com.anytypeio.anytype.presentation.editor.template.SelectTemplateEvent
+import com.anytypeio.anytype.presentation.editor.template.SelectTemplateState
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
@@ -63,8 +68,8 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.widgets.TemplateView
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -118,8 +123,10 @@ class ObjectSetViewModel(
     private val objectStore: ObjectStore,
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
-    private val storeOfObjectTypes: StoreOfObjectTypes
-) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val templateDelegate: EditorTemplateDelegate
+) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
+    EditorTemplateDelegate by templateDelegate {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
     val error = MutableStateFlow<String?>(null)
@@ -279,6 +286,31 @@ class ObjectSetViewModel(
         subscribeToEvents(ctx = ctx)
         subscribeToThreadStatus(ctx = ctx)
         proceedWithOpeningCurrentObject(ctx = ctx)
+        subscribeToTemplatesDelegateState()
+    }
+
+    private fun subscribeToTemplatesDelegateState() {
+        viewModelScope.launch {
+            templateDelegateState.collect { state ->
+                Timber.v("Template delegate state: $state")
+                when (state) {
+                    is SelectTemplateState.Accepted -> {}
+                    is SelectTemplateState.Available -> {
+                        templatesWidgetState.value = TemplatesWidgetUiState(
+                            items = state.templates.map { template ->
+                                TemplateView.Template(
+                                    id = template.id,
+                                    name = template.name.orEmpty(),
+                                )
+                            },
+                            showWidget = true
+                        )
+                    }
+                    SelectTemplateState.Idle -> {}
+                    is SelectTemplateState.Error -> {}
+                }
+            }
+        }
     }
 
     private fun subscribeToEvents(ctx: Id) {
@@ -840,6 +872,8 @@ class ObjectSetViewModel(
 
     fun onNewButtonIconClicked() {
         Timber.d("onNewButtonIconClicked, ")
+        val state = stateReducer.state.value.dataViewState() ?: return
+        processObjectState(state)
     }
 
     fun onHideTemplatesWidget() {
@@ -1200,6 +1234,7 @@ class ObjectSetViewModel(
         super.onCleared()
         titleUpdateChannel.cancel()
         stateReducer.clear()
+        templateDelegate.clear()
     }
 
     fun onHomeButtonClicked() {
@@ -1421,6 +1456,72 @@ class ObjectSetViewModel(
             )
         }
     }
+
+    // region TEMPLATES
+    private fun processObjectState(state: ObjectState.DataView) {
+        when (state) {
+            is ObjectState.DataView.Collection -> proceedWithAddingObjectToCollection()
+            is ObjectState.DataView.Set -> processSetState(state)
+        }
+    }
+
+    private fun processSetState(state: ObjectState.DataView.Set) {
+        val sourceId = proceedWithGettingSetSourceId(state) ?: return showUnableToDefineSourceToast()
+        val sourceMap = state.details[sourceId] ?: return showUnableToDefineSourceToast()
+        when (sourceMap.type.firstOrNull()) {
+            ObjectTypeIds.RELATION -> startDefaultObjectTypesTemplatesEvent()
+            ObjectTypeIds.OBJECT_TYPE -> startTemplateEventIfAllowed(sourceMap, sourceId)
+            else -> {}
+        }
+    }
+
+    private fun startDefaultObjectTypesTemplatesEvent() {
+        viewModelScope.launch {
+            onEvent(
+                SelectTemplateEvent.OnStart(
+                    ctx = context
+                )
+            )
+        }
+    }
+
+    private fun startTemplateEventIfAllowed(sourceMap: Block.Fields, sourceId: Id) {
+        val objectType = ObjectWrapper.Type(sourceMap.map)
+        if (objectType.isTemplatesAllowed()) {
+            viewModelScope.launch {
+                onEvent(
+                    SelectTemplateEvent.OnStart(
+                        ctx = context,
+                        type = sourceId,
+                        typeName = sourceMap.name.orEmpty()
+                    )
+                )
+            }
+        } else {
+            Timber.e("Templates are not allowed for type:[${sourceMap.name}]")
+            toast("Templates are not allowed for type:[${sourceMap.name}]")
+        }
+    }
+
+    private fun showUnableToDefineSourceToast() {
+        toast("Unable to define a source for a new object.")
+    }
+
+    private fun proceedWithGettingSetSourceId(currentState: ObjectState.DataView.Set): Id? {
+        if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT) || !currentState.isInitialized) {
+            toast(NOT_ALLOWED)
+            return null
+        }
+
+        val setObject = ObjectWrapper.Basic(currentState.details[context]?.map ?: emptyMap())
+        val sourceId = setObject.setOf.singleOrNull()
+        if (sourceId == null) {
+            Timber.e("Unable to define a source for a new object.")
+            toast("Unable to define a source for a new object.")
+        }
+        return sourceId
+    }
+    //endregion
 
     companion object {
         const val NOT_ALLOWED = "Not allowed for this set"

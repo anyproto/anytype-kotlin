@@ -48,12 +48,15 @@ import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.template.DefaultSetTemplateDelegate
+import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
+import com.anytypeio.anytype.presentation.sets.SetTemplatesDelegateTest
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
@@ -152,6 +155,8 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var getDefaultPageType: GetDefaultPageType
 
+    lateinit var templatesDelegate: EditorTemplateDelegate
+
     lateinit var stateReducer : ObjectStateReducer
 
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
@@ -190,6 +195,12 @@ open class ObjectSetViewModelTestSetup {
             dispatchers = dispatchers
         )
         dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer)
+        templatesDelegate = DefaultSetTemplateDelegate(
+            getTemplates = getTemplates,
+            storeOfObjectTypes = storeOfObjectTypes,
+            getDefaultPageType = getDefaultPageType,
+            dispatchers = dispatchers
+        )
         return ObjectSetViewModel(
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
@@ -219,7 +230,8 @@ open class ObjectSetViewModelTestSetup {
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            templateDelegate = templatesDelegate
         )
     }
 
@@ -371,6 +383,12 @@ open class ObjectSetViewModelTestSetup {
     fun stubGetDefaultPageType(type: String = defaultObjectPageType, name: String = defaultObjectPageTypeName) {
         getDefaultPageType.stub {
             onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(type = type, name = name)
+        }
+    }
+
+    fun stubGetTemplates() {
+        getTemplates.stub {
+            onBlocking { run(any()) }.thenReturn(emptyList())
         }
     }
 }

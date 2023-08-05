@@ -119,7 +119,6 @@ class SetTemplatesDelegateTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfObjectTypes(setOfMap)
-        stubTemplatesDelegate()
 
         val details = Block.Details(
             details = mapOf(
@@ -179,7 +178,6 @@ class SetTemplatesDelegateTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfObjectTypes(setOfMap)
-        stubTemplatesDelegate()
 
         val details = Block.Details(
             details = mapOf(
@@ -241,7 +239,6 @@ class SetTemplatesDelegateTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfObjectTypes(setOfMap)
-        stubTemplatesDelegate()
 
         val details = Block.Details(
             details = mapOf(
@@ -301,7 +298,6 @@ class SetTemplatesDelegateTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfObjectTypes(setOfMap)
-        stubTemplatesDelegate()
 
         val details = Block.Details(
             details = mapOf(
@@ -362,7 +358,6 @@ class SetTemplatesDelegateTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfObjectTypes(defaultTypeMap)
-        stubTemplatesDelegate()
         stubGetDefaultPageType(type = defaultType, name = defaultTypeName)
 
         val details = Block.Details(
@@ -432,7 +427,6 @@ class SetTemplatesDelegateTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfObjectTypes(defaultTypeMap)
-        stubTemplatesDelegate()
         stubGetDefaultPageType(type = defaultType, name = defaultTypeName)
 
         val details = Block.Details(

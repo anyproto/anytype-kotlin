@@ -51,6 +51,7 @@ import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.editor.template.DefaultSetTemplateDelegate
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
@@ -132,6 +133,7 @@ abstract class TestObjectSetSetup {
 
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultPageType: GetDefaultPageType
+    lateinit var templatesDelegate: DefaultSetTemplateDelegate
 
     private val session = ObjectSetSession()
     private val dispatcher: Dispatcher<Payload> = Dispatcher.Default()
@@ -216,6 +218,12 @@ abstract class TestObjectSetSetup {
             channel = subscriptionEventChannel,
             dispatchers = dispatchers
         )
+        templatesDelegate = DefaultSetTemplateDelegate(
+            getTemplates = getTemplates,
+            storeOfObjectTypes = storeOfObjectTypes,
+            getDefaultPageType = getDefaultPageType,
+            dispatchers = dispatchers
+        )
         TestObjectSetFragment.testVmFactory = ObjectSetViewModelFactory(
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
@@ -245,7 +253,8 @@ abstract class TestObjectSetSetup {
             setQueryToObjectSet = setQueryToObjectSet,
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            templateDelegate = templatesDelegate,
         )
     }
 

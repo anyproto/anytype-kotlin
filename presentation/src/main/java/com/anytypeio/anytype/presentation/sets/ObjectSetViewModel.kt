@@ -1460,7 +1460,7 @@ class ObjectSetViewModel(
     // region TEMPLATES
     private fun processObjectState(state: ObjectState.DataView) {
         when (state) {
-            is ObjectState.DataView.Collection -> proceedWithAddingObjectToCollection()
+            is ObjectState.DataView.Collection -> startDefaultObjectTypesTemplatesEvent()
             is ObjectState.DataView.Set -> processSetState(state)
         }
     }

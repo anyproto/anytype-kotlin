@@ -6196,8 +6196,7 @@ class EditorViewModel(
                 onEvent(
                     SelectTemplateEvent.OnStart(
                         ctx = context,
-                        type = typeId,
-                        typeName = objType.name.orEmpty()
+                        objType = objType
                     )
                 )
             } else {

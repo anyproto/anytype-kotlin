@@ -296,8 +296,16 @@ class ObjectSetViewModel(
                 when (state) {
                     is SelectTemplateState.Accepted -> {}
                     is SelectTemplateState.Available -> {
+
+                        val blankTemplate = listOf(
+                            TemplateView.Blank(
+                                typeId = state.type,
+                                typeName = state.typeName,
+                                layout = state.layout.code
+                            )
+                        )
                         templatesWidgetState.value = TemplatesWidgetUiState(
-                            items = state.templates.map { template ->
+                            items = blankTemplate + state.templates.map { template ->
                                 TemplateView.Template(
                                     id = template.id,
                                     name = template.name.orEmpty(),
@@ -1492,8 +1500,7 @@ class ObjectSetViewModel(
                 onEvent(
                     SelectTemplateEvent.OnStart(
                         ctx = context,
-                        type = sourceId,
-                        typeName = sourceMap.name.orEmpty()
+                        objType = objectType
                     )
                 )
             }

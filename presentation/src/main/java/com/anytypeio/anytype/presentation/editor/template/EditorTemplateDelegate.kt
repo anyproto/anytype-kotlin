@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.template
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
@@ -39,13 +40,14 @@ class DefaultEditorTemplateDelegate(
         when (event) {
             is SelectTemplateEvent.OnStart -> {
                 try {
-                    if (event.type == null) return@scan SelectTemplateState.Idle
-                    val templates = getTemplates.run(GetTemplates.Params(event.type))
+                    if (event.objType == null) return@scan SelectTemplateState.Idle
+                    val templates = getTemplates.run(GetTemplates.Params(event.objType.id))
                     if (templates.isNotEmpty()) {
                         SelectTemplateState.Available(
                             templates = templates,
-                            type = event.type,
-                            typeName = event.typeName.orEmpty()
+                            type = event.objType.id,
+                            typeName = event.objType.name.orEmpty(),
+                            layout = event.objType.recommendedLayout ?: ObjectType.Layout.BASIC
                         )
                     } else {
                         SelectTemplateState.Idle
@@ -114,13 +116,13 @@ class DefaultSetTemplateDelegate(
     private suspend fun processTemplates(
         event: SelectTemplateEvent.OnStart
     ) {
-        val objectType = getObjectType(event.type)
+        val objectType = getObjectType(event.objType?.id)
         if (objectType == null) {
-            _state.value = SelectTemplateState.Error("Couldn't find ${event.typeName}")
+            _state.value = SelectTemplateState.Error("Couldn't find ${event.objType?.name}")
             return
         }
         return if (objectType.isTemplatesAllowed()) {
-            proceedWithGettingTemplates(objectType.id)
+            proceedWithGettingTemplates(objectType)
         } else {
             _state.value = SelectTemplateState.Error("Templates are not allowed for ${objectType.name}")
         }
@@ -135,16 +137,17 @@ class DefaultSetTemplateDelegate(
         }
     }
 
-    private suspend fun proceedWithGettingTemplates(type: Id, typeName: String? = null) {
-        val params = GetTemplates.Params(type)
+    private suspend fun proceedWithGettingTemplates(objType: ObjectWrapper.Type) {
+        val params = GetTemplates.Params(objType.id)
         getTemplates.async(params).fold(
             onSuccess = { templates ->
                 Timber.d("proceedWithGettingTemplates success: $templates")
                 if (templates.isNotEmpty()) {
                     _state.value = SelectTemplateState.Available(
                         templates = templates,
-                        type = type,
-                        typeName = typeName.orEmpty()
+                        type = objType.id,
+                        typeName = objType.name.orEmpty(),
+                        layout = objType.recommendedLayout ?: ObjectType.Layout.BASIC
                     )
                 } else {
                     _state.value =
@@ -180,8 +183,9 @@ sealed class SelectTemplateState {
      */
     data class Available(
         val type: Id,
+        val typeName: String,
+        val layout: ObjectType.Layout,
         val templates: List<ObjectWrapper.Basic>,
-        val typeName: String
     ) : SelectTemplateState()
 
     /**
@@ -200,9 +204,7 @@ sealed class SelectTemplateState {
 }
 
 sealed class SelectTemplateEvent {
-    data class OnStart(val ctx: Id, val type: Id? = null, val typeName: String? = null) :
-        SelectTemplateEvent()
-
+    data class OnStart(val ctx: Id, val objType: ObjectWrapper.Type? = null) : SelectTemplateEvent()
     object OnSkipped : SelectTemplateEvent()
     object OnAccepted : SelectTemplateEvent()
 }

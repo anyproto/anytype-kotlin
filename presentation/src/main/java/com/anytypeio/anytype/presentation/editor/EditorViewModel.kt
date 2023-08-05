@@ -423,6 +423,9 @@ class EditorViewModel(
                     }
                     is SelectTemplateState.Available -> {}
                     SelectTemplateState.Idle -> {}
+                    is SelectTemplateState.Error -> {
+                        sendToast(state.msg)
+                    }
                 }
             }
         }

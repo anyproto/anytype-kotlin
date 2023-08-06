@@ -513,13 +513,19 @@ class ObjectSetViewModel(
                     viewer.isEmpty() -> {
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
-                            isTemplatesAllowed = objectState.isTemplatesAllowed(storeOfObjectTypes)
+                            isTemplatesAllowed = objectState.isTemplatesAllowed(
+                                storeOfObjectTypes = storeOfObjectTypes,
+                                getDefaultPageType = getDefaultPageType
+                            )
                         )
                     }
                     else -> {
                         DataViewViewState.Collection.Default(
                             viewer = viewer,
-                            isTemplatesAllowed = objectState.isTemplatesAllowed(storeOfObjectTypes)
+                            isTemplatesAllowed = objectState.isTemplatesAllowed(
+                                storeOfObjectTypes = storeOfObjectTypes,
+                                getDefaultPageType = getDefaultPageType
+                            )
                         )
                     }
                 }
@@ -564,11 +570,19 @@ class ObjectSetViewModel(
                     render == null -> DataViewViewState.Set.NoView
                     render.isEmpty() -> DataViewViewState.Set.NoItems(
                         title = render.title,
-                        isTemplatesAllowed = objectState.isTemplatesAllowed(setOfValue)
+                        isTemplatesAllowed = objectState.isTemplatesAllowed(
+                            setOfValue = setOfValue,
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            getDefaultPageType = getDefaultPageType
+                        )
                     )
                     else -> DataViewViewState.Set.Default(
                         viewer = render,
-                        isTemplatesAllowed = objectState.isTemplatesAllowed(setOfValue)
+                        isTemplatesAllowed = objectState.isTemplatesAllowed(
+                            setOfValue = setOfValue,
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            getDefaultPageType = getDefaultPageType
+                        )
                     )
                 }
             }

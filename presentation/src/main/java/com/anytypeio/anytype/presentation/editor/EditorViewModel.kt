@@ -423,9 +423,6 @@ class EditorViewModel(
                     }
                     is SelectTemplateState.Available -> {}
                     SelectTemplateState.Idle -> {}
-                    is SelectTemplateState.Error -> {
-                        sendToast(state.msg)
-                    }
                 }
             }
         }
@@ -6196,7 +6193,8 @@ class EditorViewModel(
                 onEvent(
                     SelectTemplateEvent.OnStart(
                         ctx = context,
-                        objType = objType
+                        type = typeId,
+                        typeName = objType.name.orEmpty()
                     )
                 )
             } else {

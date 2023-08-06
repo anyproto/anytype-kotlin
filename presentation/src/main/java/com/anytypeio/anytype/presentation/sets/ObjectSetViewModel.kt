@@ -50,7 +50,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
@@ -123,11 +122,9 @@ class ObjectSetViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val templateDelegate: EditorTemplateDelegate,
     private val getDefaultPageType: GetDefaultPageType,
     private val getTemplates: GetTemplates
-) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
-    EditorTemplateDelegate by templateDelegate {
+) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
     val error = MutableStateFlow<String?>(null)
@@ -1250,7 +1247,6 @@ class ObjectSetViewModel(
         super.onCleared()
         titleUpdateChannel.cancel()
         stateReducer.clear()
-        templateDelegate.clear()
     }
 
     fun onHomeButtonClicked() {

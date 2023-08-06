@@ -321,7 +321,7 @@ class ObjectSetViewModel(
                         )
                     }
                     SelectTemplateState.Idle -> {}
-                    is SelectTemplateState.Error -> {}
+                    is SelectTemplateState.Error -> { toast(state.msg)}
                 }
             }
         }

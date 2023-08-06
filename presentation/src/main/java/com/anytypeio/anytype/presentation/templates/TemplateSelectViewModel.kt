@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.base.fold
@@ -71,7 +72,16 @@ class TemplateSelectViewModel(
                     layout = objType.recommendedLayout?.code ?: 0
                 )
             )
-            addAll(templates.map { TemplateView.Template(id = it.id, name = it.name.orEmpty()) })
+            addAll(templates.map {
+                TemplateView.Template(
+                    id = it.id,
+                    name = it.name.orEmpty(),
+                    layout = it.layout ?: ObjectType.Layout.BASIC,
+                    emoji = it.iconEmoji.orEmpty(),
+                    image = it.iconImage.orEmpty(),
+                    typeId = objType.id,
+                )
+            })
         }
         _viewState.emit(
             ViewState.Success(

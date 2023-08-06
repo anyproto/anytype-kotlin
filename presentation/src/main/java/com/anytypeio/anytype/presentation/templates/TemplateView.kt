@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 sealed class TemplateView {
 
     data class Blank(
-        val typeId: Id, val typeName: String, val layout: Int
+        val typeId: Id, val typeName: String = "", val layout: Int
     ) : TemplateView()
 
     data class Template(

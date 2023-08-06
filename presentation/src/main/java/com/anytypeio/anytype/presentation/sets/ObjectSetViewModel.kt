@@ -1491,52 +1491,60 @@ class ObjectSetViewModel(
     }
 
     // region TEMPLATES
-    private fun processObjectState(state: ObjectState.DataView) {
+    private suspend fun gettingTemplatesForDataViewState(state: ObjectState.DataView) {
         when (state) {
-            is ObjectState.DataView.Collection -> startDefaultObjectTypesTemplatesEvent()
-            is ObjectState.DataView.Set -> processSetState(state)
+            is ObjectState.DataView.Collection -> {
+                proceedWithGettingTemplates(typeId = null)
+            }
+            is ObjectState.DataView.Set -> {
+                val sourceId = proceedWithGettingSetSourceId(state)
+                val sourceMap = state.details[sourceId] ?: return
+                when (sourceMap.type.firstOrNull()) {
+                    ObjectTypeIds.RELATION -> proceedWithGettingTemplates(typeId = null)
+                    ObjectTypeIds.OBJECT_TYPE -> proceedWithGettingTemplates(typeId = sourceId)
+                    else -> {}
+                }
+            }
         }
     }
 
-    private fun processSetState(state: ObjectState.DataView.Set) {
-        val sourceId = proceedWithGettingSetSourceId(state) ?: return showUnableToDefineSourceToast()
-        val sourceMap = state.details[sourceId] ?: return showUnableToDefineSourceToast()
-        when (sourceMap.type.firstOrNull()) {
-            ObjectTypeIds.RELATION -> startDefaultObjectTypesTemplatesEvent()
-            ObjectTypeIds.OBJECT_TYPE -> startTemplateEventIfAllowed(sourceMap, sourceId)
-            else -> {}
-        }
-    }
-
-    private fun startDefaultObjectTypesTemplatesEvent() {
-        viewModelScope.launch {
-            onEvent(
-                SelectTemplateEvent.OnStart(
-                    ctx = context
-                )
-            )
-        }
-    }
-
-    private fun startTemplateEventIfAllowed(sourceMap: Block.Fields, sourceId: Id) {
-        val objectType = ObjectWrapper.Type(sourceMap.map)
-        if (objectType.isTemplatesAllowed()) {
+    private suspend fun proceedWithGettingTemplates(typeId: Id?) {
+        val objectType = getObjectType(typeId)
+        if (objectType?.isTemplatesAllowed() == true) {
             viewModelScope.launch {
-                onEvent(
-                    SelectTemplateEvent.OnStart(
-                        ctx = context,
-                        objType = objectType
-                    )
+                getTemplates.execute(GetTemplates.Params(objectType.id)).fold(
+                    onSuccess = { templates ->
+                        _templatesStore.value =
+                            templates.map { it.toTemplateView(typeId = objectType.id) }
+                    },
+                    onFailure = { e ->
+                        Timber.e(e, "Error getting templates for type ${objectType.id}")
+                    }
                 )
             }
-        } else {
-            Timber.e("Templates are not allowed for type:[${sourceMap.name}]")
-            toast("Templates are not allowed for type:[${sourceMap.name}]")
         }
     }
 
-    private fun showUnableToDefineSourceToast() {
-        toast("Unable to define a source for a new object.")
+    private suspend fun getObjectType(type: Id?): ObjectWrapper.Type? {
+        return if (type == null) {
+            val defaultObjectType = getDefaultPageType.run(Unit).type ?: return null
+            storeOfObjectTypes.get(defaultObjectType)
+        } else {
+            storeOfObjectTypes.get(type)
+        }
+    }
+
+    fun onTemplateItemClicked(item: TemplateView) {
+        when(item) {
+            is TemplateView.Blank -> {
+                templatesWidgetState.value = TemplatesWidgetUiState.empty()
+                onCreateNewDataViewObject()
+            }
+            is TemplateView.Template -> {
+                templatesWidgetState.value = TemplatesWidgetUiState.empty()
+                onCreateNewDataViewObject(templatesId = item.id)
+            }
+        }
     }
 
     private fun proceedWithGettingSetSourceId(currentState: ObjectState.DataView.Set): Id? {
@@ -1552,19 +1560,6 @@ class ObjectSetViewModel(
             toast("Unable to define a source for a new object.")
         }
         return sourceId
-    }
-
-    fun onTemplateItemClicked(item: TemplateView) {
-        when(item) {
-            is TemplateView.Blank -> {
-                templatesWidgetState.value = TemplatesWidgetUiState.empty()
-                onCreateNewDataViewObject()
-            }
-            is TemplateView.Template -> {
-                templatesWidgetState.value = TemplatesWidgetUiState.empty()
-                onCreateNewDataViewObject(templatesId = item.id)
-            }
-        }
     }
     //endregion
 

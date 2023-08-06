@@ -246,7 +246,7 @@ abstract class TestObjectSetSetup {
             database = database,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
             storeOfRelations = storeOfRelations,
-            objectStateReducer = DefaultObjectStateReducer(getDefaultType),
+            objectStateReducer = DefaultObjectStateReducer(),
             dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer),
             workspaceManager = workspaceManager,
             objectToCollection = convertObjectToCollection,
@@ -255,6 +255,7 @@ abstract class TestObjectSetSetup {
             addObjectToCollection = addObjectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
             templateDelegate = templatesDelegate,
+            getDefaultPageType = getDefaultPageType
         )
     }
 

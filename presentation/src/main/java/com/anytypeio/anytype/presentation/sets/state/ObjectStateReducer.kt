@@ -11,6 +11,6 @@ interface ObjectStateReducer {
 
     suspend fun run()
     suspend fun dispatch(events: List<Event>)
-    suspend fun reduce(state: ObjectState, events: List<Event>): DefaultObjectStateReducer.Transformation
+    fun reduce(state: ObjectState, events: List<Event>): DefaultObjectStateReducer.Transformation
     fun clear()
 }

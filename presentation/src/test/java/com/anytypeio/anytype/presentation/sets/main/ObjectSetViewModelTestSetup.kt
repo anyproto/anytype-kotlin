@@ -182,7 +182,6 @@ open class ObjectSetViewModelTestSetup {
 
     fun givenViewModel(): ObjectSetViewModel {
         repo = mock(verboseLogging = true)
-        stateReducer = DefaultObjectStateReducer(getDefaultPageType = getDefaultPageType)
         dispatchers = AppCoroutineDispatchers(
             io = rule.dispatcher,
             computation = rule.dispatcher,
@@ -231,7 +230,8 @@ open class ObjectSetViewModelTestSetup {
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             storeOfObjectTypes = storeOfObjectTypes,
-            templateDelegate = templatesDelegate
+            templateDelegate = templatesDelegate,
+            getDefaultPageType = getDefaultPageType
         )
     }
 

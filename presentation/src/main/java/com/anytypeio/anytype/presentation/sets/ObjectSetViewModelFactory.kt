@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -62,7 +63,8 @@ class ObjectSetViewModelFactory(
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val templateDelegate: EditorTemplateDelegate
+    private val templateDelegate: EditorTemplateDelegate,
+    private val getDefaultPageType: GetDefaultPageType
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -96,7 +98,8 @@ class ObjectSetViewModelFactory(
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
-            templateDelegate = templateDelegate
+            templateDelegate = templateDelegate,
+            getDefaultPageType = getDefaultPageType
         ) as T
     }
 }

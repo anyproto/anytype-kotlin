@@ -52,7 +52,6 @@ import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
-import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
@@ -60,7 +59,6 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.template.DefaultSetTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
@@ -200,7 +198,8 @@ object ObjectSetModule {
         addObjectToCollection: AddObjectToCollection,
         convertObjectToCollection: ConvertObjectToCollection,
         storeOfObjectTypes: StoreOfObjectTypes,
-        templateDelegate: EditorTemplateDelegate
+        templateDelegate: EditorTemplateDelegate,
+        getDefaultPageType: GetDefaultPageType
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -231,7 +230,8 @@ object ObjectSetModule {
         addObjectToCollection = addObjectToCollection,
         objectToCollection = convertObjectToCollection,
         storeOfObjectTypes = storeOfObjectTypes,
-        templateDelegate = templateDelegate
+        templateDelegate = templateDelegate,
+        getDefaultPageType = getDefaultPageType
     )
 
     @JvmStatic

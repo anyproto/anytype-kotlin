@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -124,7 +125,8 @@ class ObjectSetViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val templateDelegate: EditorTemplateDelegate
+    private val templateDelegate: EditorTemplateDelegate,
+    private val getDefaultPageType: GetDefaultPageType
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     EditorTemplateDelegate by templateDelegate {
 

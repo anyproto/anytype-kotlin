@@ -59,8 +59,6 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.editor.template.DefaultSetTemplateDelegate
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
@@ -198,8 +196,8 @@ object ObjectSetModule {
         addObjectToCollection: AddObjectToCollection,
         convertObjectToCollection: ConvertObjectToCollection,
         storeOfObjectTypes: StoreOfObjectTypes,
-        templateDelegate: EditorTemplateDelegate,
-        getDefaultPageType: GetDefaultPageType
+        getDefaultPageType: GetDefaultPageType,
+        getTemplates: GetTemplates
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -230,8 +228,8 @@ object ObjectSetModule {
         addObjectToCollection = addObjectToCollection,
         objectToCollection = convertObjectToCollection,
         storeOfObjectTypes = storeOfObjectTypes,
-        templateDelegate = templateDelegate,
-        getDefaultPageType = getDefaultPageType
+        getDefaultPageType = getDefaultPageType,
+        getTemplates = getTemplates
     )
 
     @JvmStatic
@@ -330,21 +328,6 @@ object ObjectSetModule {
     ): InterceptEvents = InterceptEvents(
         channel = channel,
         context = Dispatchers.IO
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideTemplateDelegate(
-        getTemplates: GetTemplates,
-        getDefaultPageType: GetDefaultPageType,
-        storeOfObjectTypes: StoreOfObjectTypes,
-        dispatchers: AppCoroutineDispatchers
-    ): EditorTemplateDelegate = DefaultSetTemplateDelegate(
-        getTemplates = getTemplates,
-        getDefaultPageType = getDefaultPageType,
-        storeOfObjectTypes = storeOfObjectTypes,
-        dispatchers = dispatchers
     )
 
     @JvmStatic

@@ -23,12 +23,12 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -63,8 +63,8 @@ class ObjectSetViewModelFactory(
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val templateDelegate: EditorTemplateDelegate,
-    private val getDefaultPageType: GetDefaultPageType
+    private val getDefaultPageType: GetDefaultPageType,
+    private val getTemplates: GetTemplates
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -98,8 +98,8 @@ class ObjectSetViewModelFactory(
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
-            templateDelegate = templateDelegate,
-            getDefaultPageType = getDefaultPageType
+            getDefaultPageType = getDefaultPageType,
+            getTemplates = getTemplates
         ) as T
     }
 }

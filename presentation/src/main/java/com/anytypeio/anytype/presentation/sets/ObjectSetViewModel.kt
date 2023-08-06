@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -42,6 +41,7 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
@@ -51,8 +51,6 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
-import com.anytypeio.anytype.presentation.editor.template.SelectTemplateEvent
-import com.anytypeio.anytype.presentation.editor.template.SelectTemplateState
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
@@ -126,7 +124,8 @@ class ObjectSetViewModel(
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val templateDelegate: EditorTemplateDelegate,
-    private val getDefaultPageType: GetDefaultPageType
+    private val getDefaultPageType: GetDefaultPageType,
+    private val getTemplates: GetTemplates
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     EditorTemplateDelegate by templateDelegate {
 
@@ -154,6 +153,8 @@ class ObjectSetViewModel(
     private val _currentViewer: MutableStateFlow<DataViewViewState> =
         MutableStateFlow(DataViewViewState.Init)
     val currentViewer = _currentViewer
+
+    private val _templatesStore = MutableStateFlow<List<TemplateView>>(emptyList())
 
     private val _header = MutableStateFlow<SetOrCollectionHeaderState>(
         SetOrCollectionHeaderState.None
@@ -185,6 +186,7 @@ class ObjectSetViewModel(
                         urlBuilder = urlBuilder,
                         coverImageHashProvider = coverImageHashProvider
                     )
+                    gettingTemplatesForDataViewState(state)
                 }
         }
 
@@ -288,43 +290,6 @@ class ObjectSetViewModel(
         subscribeToEvents(ctx = ctx)
         subscribeToThreadStatus(ctx = ctx)
         proceedWithOpeningCurrentObject(ctx = ctx)
-        subscribeToTemplatesDelegateState()
-    }
-
-    private fun subscribeToTemplatesDelegateState() {
-        viewModelScope.launch {
-            templateDelegateState.collect { state ->
-                Timber.v("Template delegate state: $state")
-                when (state) {
-                    is SelectTemplateState.Accepted -> {}
-                    is SelectTemplateState.Available -> {
-
-                        val blankTemplate = listOf(
-                            TemplateView.Blank(
-                                typeId = state.type,
-                                typeName = state.typeName,
-                                layout = state.layout.code
-                            )
-                        )
-                        templatesWidgetState.value = TemplatesWidgetUiState(
-                            items = blankTemplate + state.templates.map { template ->
-                                TemplateView.Template(
-                                    id = template.id,
-                                    name = template.name.orEmpty(),
-                                    typeId = state.type,
-                                    emoji = template.iconEmoji,
-                                    image = template.iconImage,
-                                    layout = template.layout ?: ObjectType.Layout.BASIC
-                                )
-                            },
-                            showWidget = true
-                        )
-                    }
-                    SelectTemplateState.Idle -> {}
-                    is SelectTemplateState.Error -> { toast(state.msg)}
-                }
-            }
-        }
     }
 
     private fun subscribeToEvents(ctx: Id) {
@@ -454,9 +419,10 @@ class ObjectSetViewModel(
             combine(
                 database.index,
                 stateReducer.state,
-                session.currentViewerId
-            ) { dataViewState, objectState, currentViewId ->
-                processViewState(dataViewState, objectState, currentViewId)
+                session.currentViewerId,
+                _templatesStore
+            ) { dataViewState, objectState, currentViewId, templates ->
+                processViewState(dataViewState, objectState, currentViewId, templates)
             }.distinctUntilChanged().collect { viewState ->
                 Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
                 _currentViewer.value = viewState
@@ -467,18 +433,21 @@ class ObjectSetViewModel(
     private suspend fun processViewState(
         dataViewState: DataViewState,
         objectState: ObjectState,
-        currentViewId: String?
+        currentViewId: String?,
+        templates: List<TemplateView>
     ): DataViewViewState {
         return when (objectState) {
             is ObjectState.DataView.Collection -> processCollectionState(
-                dataViewState,
-                objectState,
-                currentViewId
+                dataViewState = dataViewState,
+                objectState = objectState,
+                currentViewId = currentViewId,
+                templates = templates
             )
             is ObjectState.DataView.Set -> processSetState(
-                dataViewState,
-                objectState,
-                currentViewId
+                dataViewState = dataViewState,
+                objectState = objectState,
+                currentViewId = currentViewId,
+                templates = templates
             )
             ObjectState.Init -> DataViewViewState.Init
             ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
@@ -488,7 +457,8 @@ class ObjectSetViewModel(
     private suspend fun processCollectionState(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Collection,
-        currentViewId: String?
+        currentViewId: String?,
+        templates: List<TemplateView>
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
@@ -513,18 +483,20 @@ class ObjectSetViewModel(
                     viewer.isEmpty() -> {
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
-                            isTemplatesAllowed = objectState.isTemplatesAllowed(
+                            isTemplatesPresent = objectState.isTemplatesPresent(
                                 storeOfObjectTypes = storeOfObjectTypes,
-                                getDefaultPageType = getDefaultPageType
+                                getDefaultPageType = getDefaultPageType,
+                                templates = templates
                             )
                         )
                     }
                     else -> {
                         DataViewViewState.Collection.Default(
                             viewer = viewer,
-                            isTemplatesAllowed = objectState.isTemplatesAllowed(
+                            isTemplatesPresent = objectState.isTemplatesPresent(
                                 storeOfObjectTypes = storeOfObjectTypes,
-                                getDefaultPageType = getDefaultPageType
+                                getDefaultPageType = getDefaultPageType,
+                                templates = templates
                             )
                         )
                     }
@@ -536,7 +508,8 @@ class ObjectSetViewModel(
     private suspend fun processSetState(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Set,
-        currentViewId: String?
+        currentViewId: String?,
+        templates: List<TemplateView>
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
@@ -570,18 +543,20 @@ class ObjectSetViewModel(
                     render == null -> DataViewViewState.Set.NoView
                     render.isEmpty() -> DataViewViewState.Set.NoItems(
                         title = render.title,
-                        isTemplatesAllowed = objectState.isTemplatesAllowed(
+                        isTemplatesPresent = objectState.isTemplatesPresent(
                             setOfValue = setOfValue,
                             storeOfObjectTypes = storeOfObjectTypes,
-                            getDefaultPageType = getDefaultPageType
+                            getDefaultPageType = getDefaultPageType,
+                            templates = templates
                         )
                     )
                     else -> DataViewViewState.Set.Default(
                         viewer = render,
-                        isTemplatesAllowed = objectState.isTemplatesAllowed(
+                        isTemplatesPresent = objectState.isTemplatesPresent(
                             setOfValue = setOfValue,
                             storeOfObjectTypes = storeOfObjectTypes,
-                            getDefaultPageType = getDefaultPageType
+                            getDefaultPageType = getDefaultPageType,
+                            templates = templates
                         )
                     )
                 }
@@ -900,8 +875,10 @@ class ObjectSetViewModel(
 
     fun onNewButtonIconClicked() {
         Timber.d("onNewButtonIconClicked, ")
-        val state = stateReducer.state.value.dataViewState() ?: return
-        processObjectState(state)
+        templatesWidgetState.value = TemplatesWidgetUiState(
+            items = _templatesStore.value,
+            showWidget = true
+        )
     }
 
     fun onHideTemplatesWidget() {
@@ -1514,8 +1491,11 @@ class ObjectSetViewModel(
             viewModelScope.launch {
                 getTemplates.execute(GetTemplates.Params(objectType.id)).fold(
                     onSuccess = { templates ->
-                        _templatesStore.value =
-                            templates.map { it.toTemplateView(typeId = objectType.id) }
+                        if (templates.isNotEmpty()) {
+                            _templatesStore.value =
+                                listOf(templates.first().toTemplateViewBlank(objectType.id)) +
+                                        templates.map { it.toTemplateView(typeId = objectType.id) }
+                        }
                     },
                     onFailure = { e ->
                         Timber.e(e, "Error getting templates for type ${objectType.id}")

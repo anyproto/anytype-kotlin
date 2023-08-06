@@ -481,23 +481,23 @@ class ObjectSetViewModel(
                 when {
                     viewer == null -> DataViewViewState.Collection.NoView
                     viewer.isEmpty() -> {
+                        val isTemplatesPresent = templates.isNotEmpty() &&
+                                storeOfObjectTypes.isTemplatesAllowedForDefaultType(
+                                    getDefaultPageType = getDefaultPageType
+                                )
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
-                            isTemplatesPresent = objectState.isTemplatesPresent(
-                                storeOfObjectTypes = storeOfObjectTypes,
-                                getDefaultPageType = getDefaultPageType,
-                                templates = templates
-                            )
+                            isTemplatesPresent = isTemplatesPresent
                         )
                     }
                     else -> {
+                        val isTemplatesPresent = templates.isNotEmpty() &&
+                                storeOfObjectTypes.isTemplatesAllowedForDefaultType(
+                                    getDefaultPageType = getDefaultPageType
+                                )
                         DataViewViewState.Collection.Default(
                             viewer = viewer,
-                            isTemplatesPresent = objectState.isTemplatesPresent(
-                                storeOfObjectTypes = storeOfObjectTypes,
-                                getDefaultPageType = getDefaultPageType,
-                                templates = templates
-                            )
+                            isTemplatesPresent = isTemplatesPresent
                         )
                     }
                 }
@@ -541,24 +541,30 @@ class ObjectSetViewModel(
                 when {
                     query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
                     render == null -> DataViewViewState.Set.NoView
-                    render.isEmpty() -> DataViewViewState.Set.NoItems(
-                        title = render.title,
-                        isTemplatesPresent = objectState.isTemplatesPresent(
-                            setOfValue = setOfValue,
-                            storeOfObjectTypes = storeOfObjectTypes,
-                            getDefaultPageType = getDefaultPageType,
-                            templates = templates
+                    render.isEmpty() -> {
+                        val isTemplatesAllowed = templates.isNotEmpty() &&
+                                objectState.isTemplatesAllowed(
+                                    setOfValue,
+                                    storeOfObjectTypes,
+                                    getDefaultPageType
+                                )
+                        DataViewViewState.Set.NoItems(
+                            title = render.title,
+                            isTemplatesPresent = isTemplatesAllowed
                         )
-                    )
-                    else -> DataViewViewState.Set.Default(
-                        viewer = render,
-                        isTemplatesPresent = objectState.isTemplatesPresent(
-                            setOfValue = setOfValue,
-                            storeOfObjectTypes = storeOfObjectTypes,
-                            getDefaultPageType = getDefaultPageType,
-                            templates = templates
+                    }
+                    else -> {
+                        val isTemplatesAllowed = templates.isNotEmpty() &&
+                                objectState.isTemplatesAllowed(
+                                    setOfValue,
+                                    storeOfObjectTypes,
+                                    getDefaultPageType
+                                )
+                        DataViewViewState.Set.Default(
+                            viewer = render,
+                            isTemplatesPresent = isTemplatesAllowed
                         )
-                    )
+                    }
                 }
             }
         }

@@ -32,7 +32,8 @@ sealed class ObjectState {
             override val details: Map<Id, Block.Fields> = emptyMap(),
             override val objectRestrictions: List<ObjectRestriction> = emptyList(),
             override val dataViewRestrictions: List<DataViewRestrictions> = emptyList(),
-            override val objectRelationLinks: List<RelationLink> = emptyList()
+            override val objectRelationLinks: List<RelationLink> = emptyList(),
+            val defaultObjectType: String?
         ) : DataView() {
 
             override val isInitialized get() = blocks.any { it.content is DV }

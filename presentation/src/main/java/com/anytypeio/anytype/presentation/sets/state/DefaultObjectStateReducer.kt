@@ -175,7 +175,7 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
                 objectRestrictions = event.objectRestrictions,
                 dataViewRestrictions = event.dataViewRestrictions,
                 objectRelationLinks = event.relationLinks,
-                defaultObjectType = getCollectionDefaultObjectType()
+                defaultObjectType = getAppDefaultObjectType()
             )
             ObjectType.Layout.SET.code -> ObjectState.DataView.Set(
                 root = event.root,
@@ -183,7 +183,8 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
                 details = event.details.details,
                 objectRestrictions = event.objectRestrictions,
                 dataViewRestrictions = event.dataViewRestrictions,
-                objectRelationLinks = event.relationLinks
+                objectRelationLinks = event.relationLinks,
+                defaultObjectType = getAppDefaultObjectType()
             )
             else -> {
                 Timber.e("Wrong layout type: $layout")
@@ -372,7 +373,7 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
                     objectRestrictions = state.objectRestrictions,
                     dataViewRestrictions = state.dataViewRestrictions,
                     objectRelationLinks = state.objectRelationLinks,
-                    defaultObjectType = getCollectionDefaultObjectType()
+                    defaultObjectType = getAppDefaultObjectType()
                 )
             }
             else -> state
@@ -573,7 +574,7 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
         _effects.tryEmit(emptyList())
     }
 
-    private suspend fun getCollectionDefaultObjectType() : String? {
+    private suspend fun getAppDefaultObjectType() : String? {
         return getDefaultPageType.run(Unit).type
     }
 }

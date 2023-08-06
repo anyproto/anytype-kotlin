@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -32,6 +33,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.title
+import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
@@ -371,16 +373,36 @@ fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): Lis
     return query.filter(::isValidObject)
 }
 
-fun ObjectState.DataView.Set.isTemplatesAllowed(setOfValue: List<Id>): Boolean {
+suspend fun ObjectState.DataView.Set.isTemplatesAllowed(
+    setOfValue: List<Id>,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    getDefaultPageType: GetDefaultPageType
+): Boolean {
     val objectDetails = details[setOfValue.first()]?.map.orEmpty()
-    val objectWrapper = ObjectWrapper.Type(objectDetails)
-    return objectWrapper.isTemplatesAllowed()
+    return when (objectDetails.type){
+        ObjectTypeIds.OBJECT_TYPE -> {
+            val objectWrapper = ObjectWrapper.Type(objectDetails)
+            objectWrapper.isTemplatesAllowed()
+        }
+        ObjectTypeIds.RELATION -> {
+            //We have set of relations, need to check default object type
+            storeOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType)
+        }
+        else -> false
+    }
 }
 
-suspend fun ObjectState.DataView.Collection.isTemplatesAllowed(storeOfObjectTypes: StoreOfObjectTypes): Boolean {
-    if (defaultObjectType == null) return false
-    val objType = storeOfObjectTypes.get(defaultObjectType)
-    return objType?.isTemplatesAllowed() ?: false
+suspend fun ObjectState.DataView.Collection.isTemplatesAllowed(
+    storeOfObjectTypes: StoreOfObjectTypes,
+    getDefaultPageType: GetDefaultPageType
+): Boolean {
+    return storeOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType)
+}
+
+suspend fun StoreOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType: GetDefaultPageType): Boolean {
+    val defaultObjectType = getDefaultPageType.run(Unit).type ?: return false
+    val defaultObjType = get(defaultObjectType) ?: return false
+    return defaultObjType.isTemplatesAllowed()
 }
 
 private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {

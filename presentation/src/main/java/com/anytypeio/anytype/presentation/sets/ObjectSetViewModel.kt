@@ -884,12 +884,9 @@ class ObjectSetViewModel(
         )
     }
 
-    fun onHideTemplatesWidget() {
-        Timber.d("onHideTemplatesWidget, ")
-        templatesWidgetState.value = TemplatesWidgetUiState(
-            items = emptyList(),
-            showWidget = false
-        )
+    fun onDismissTemplatesWidget() {
+        Timber.d("onDismissTemplatesWidget, ")
+        templatesWidgetState.value = templatesWidgetState.value.copy(showWidget = false)
     }
 
     private fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set, templateId: Id?) {

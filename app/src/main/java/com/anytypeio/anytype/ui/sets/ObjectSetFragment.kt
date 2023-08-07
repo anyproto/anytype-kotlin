@@ -326,7 +326,8 @@ open class ObjectSetFragment :
             setContent {
                 ObjectTypeTemplatesWidget(
                     state = vm.templatesWidgetState.collectAsStateWithLifecycle().value,
-                    onShadowClick = vm::onHideTemplatesWidget
+                    onShadowClick = vm::onHideTemplatesWidget,
+                    itemClick = vm::onTemplateItemClicked
                 )
             }
         }
@@ -451,7 +452,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isTemplatesAllowed)
+                setupNewButtons(state.isTemplatesPresent)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
@@ -464,7 +465,7 @@ open class ObjectSetFragment :
                 initView.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isTemplatesAllowed)
+                setupNewButtons(state.isTemplatesPresent)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
@@ -490,7 +491,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isTemplatesAllowed)
+                setupNewButtons(state.isTemplatesPresent)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
@@ -503,7 +504,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isTemplatesAllowed)
+                setupNewButtons(state.isTemplatesPresent)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)

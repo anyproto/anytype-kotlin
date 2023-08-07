@@ -33,12 +33,12 @@ class CreateDataViewObject(
         return when (params) {
             is Params.SetByType -> {
                 val command = Command.CreateObject(
-                    template = resolveTemplateForNewObject(type = params.type),
+                    template = params.template,
                     prefilled = resolveSetByTypePrefilledObjectData(
                         filters = params.filters,
                         type = params.type
                     ),
-                    internalFlags = listOf(InternalFlags.ShouldSelectTemplate)
+                    internalFlags = listOf()
                 )
                 val result = repo.createObject(command)
                 Result(
@@ -49,16 +49,13 @@ class CreateDataViewObject(
             is Params.SetByRelation -> {
                 val type = resolveDefaultObjectType()
                 val command = Command.CreateObject(
-                    template = resolveTemplateForNewObject(type = type),
+                    template = params.template,
                     prefilled = resolveSetByRelationPrefilledObjectData(
                         filters = params.filters,
                         relations = params.relations,
                         type = type
                     ),
-                    internalFlags = listOf(
-                        InternalFlags.ShouldSelectType,
-                        InternalFlags.ShouldSelectTemplate
-                    )
+                    internalFlags = listOf()
                 )
                 val result = repo.createObject(command)
                 Result(
@@ -66,19 +63,16 @@ class CreateDataViewObject(
                     objectType = type
                 )
             }
-            Params.Collection -> {
+            is Params.Collection -> {
                 val type = resolveDefaultObjectType()
                 val command = Command.CreateObject(
-                    template = resolveTemplateForNewObject(type = type),
+                    template = params.templateId,
                     prefilled = resolveSetByRelationPrefilledObjectData(
                         filters = emptyList(),
                         relations = emptyList(),
                         type = type
                     ),
-                    internalFlags = listOf(
-                        InternalFlags.ShouldSelectType,
-                        InternalFlags.ShouldSelectTemplate
-                    )
+                    internalFlags = listOf()
                 )
                 val result = repo.createObject(command)
                 Result(
@@ -180,15 +174,19 @@ class CreateDataViewObject(
     sealed class Params {
         data class SetByType(
             val type: Id,
-            val filters: List<DVFilter>
+            val filters: List<DVFilter>,
+            val template: Id?
         ) : Params()
 
         data class SetByRelation(
             val filters: List<DVFilter>,
-            val relations: List<Id>
+            val relations: List<Id>,
+            val template: Id?
         ) : Params()
 
-        object Collection : Params()
+        data class Collection(
+            val templateId: Id?
+        ) : Params()
     }
 
     data class Result(

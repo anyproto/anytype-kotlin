@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.ext.amend
 import com.anytypeio.anytype.core_models.ext.remove
 import com.anytypeio.anytype.core_models.ext.unset
 import com.anytypeio.anytype.core_utils.ext.replace
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.presentation.sets.updateFields
 import com.anytypeio.anytype.presentation.sets.updateFilters
 import com.anytypeio.anytype.presentation.sets.updateSorts
@@ -23,7 +22,7 @@ import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
-class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageType) : ObjectStateReducer {
+class DefaultObjectStateReducer : ObjectStateReducer {
 
     private val eventChannel: Channel<List<Event>> = Channel()
     override val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
@@ -44,7 +43,7 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
         eventChannel.send(events)
     }
 
-    override suspend fun reduce(state: ObjectState, events: List<Event>): Transformation {
+    override fun reduce(state: ObjectState, events: List<Event>): Transformation {
         var current = Transformation(state = state)
         events.forEach { event ->
             val transformed = reduce(current.state, event)
@@ -56,7 +55,7 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
         return current
     }
 
-    private suspend fun reduce(state: ObjectState, event: Event): Transformation {
+    private fun reduce(state: ObjectState, event: Event): Transformation {
         val effects = mutableListOf<StateSideEffect>()
         val newState : ObjectState = when (event) {
             is Command.ShowObject -> {
@@ -166,7 +165,7 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
     /**
      * @see Command.ShowObject
      */
-    private suspend fun handleShowObject(event: Command.ShowObject): ObjectState {
+    private fun handleShowObject(event: Command.ShowObject): ObjectState {
         val objectState = when (val layout = event.details.details[event.root]?.layout?.toInt()) {
             ObjectType.Layout.COLLECTION.code -> ObjectState.DataView.Collection(
                 root = event.root,
@@ -174,8 +173,7 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
                 details = event.details.details,
                 objectRestrictions = event.objectRestrictions,
                 dataViewRestrictions = event.dataViewRestrictions,
-                objectRelationLinks = event.relationLinks,
-                defaultObjectType = getCollectionDefaultObjectType()
+                objectRelationLinks = event.relationLinks
             )
             ObjectType.Layout.SET.code -> ObjectState.DataView.Set(
                 root = event.root,
@@ -340,7 +338,7 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
         }
     }
 
-    private suspend fun handleSetIsCollection(
+    private fun handleSetIsCollection(
         state: ObjectState,
         event: Command.DataView.SetIsCollection
     ): ObjectState {
@@ -371,8 +369,7 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
                     details = state.details,
                     objectRestrictions = state.objectRestrictions,
                     dataViewRestrictions = state.dataViewRestrictions,
-                    objectRelationLinks = state.objectRelationLinks,
-                    defaultObjectType = getCollectionDefaultObjectType()
+                    objectRelationLinks = state.objectRelationLinks
                 )
             }
             else -> state
@@ -571,9 +568,5 @@ class DefaultObjectStateReducer(private val getDefaultPageType: GetDefaultPageTy
         eventChannel.close()
         state.value = ObjectState.Init
         _effects.tryEmit(emptyList())
-    }
-
-    private suspend fun getCollectionDefaultObjectType() : String? {
-        return getDefaultPageType.run(Unit).type
     }
 }

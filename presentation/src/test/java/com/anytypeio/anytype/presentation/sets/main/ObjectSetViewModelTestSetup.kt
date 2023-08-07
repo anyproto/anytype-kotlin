@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -152,7 +153,7 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var getDefaultPageType: GetDefaultPageType
 
-    lateinit var stateReducer : ObjectStateReducer
+    var stateReducer = DefaultObjectStateReducer()
 
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
     lateinit var dataViewSubscription: DataViewSubscription
@@ -177,7 +178,6 @@ open class ObjectSetViewModelTestSetup {
 
     fun givenViewModel(): ObjectSetViewModel {
         repo = mock(verboseLogging = true)
-        stateReducer = DefaultObjectStateReducer(getDefaultPageType = getDefaultPageType)
         dispatchers = AppCoroutineDispatchers(
             io = rule.dispatcher,
             computation = rule.dispatcher,
@@ -219,7 +219,9 @@ open class ObjectSetViewModelTestSetup {
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            getDefaultPageType = getDefaultPageType,
+            getTemplates = getTemplates
         )
     }
 
@@ -268,25 +270,6 @@ open class ObjectSetViewModelTestSetup {
                     )
                 )
             )
-        }
-    }
-
-    fun stubGetTemplates(
-        type: String,
-        templates: List<Id> = emptyList()
-    ) {
-        getTemplates.stub {
-            onBlocking {
-                run(
-                    GetTemplates.Params(type)
-                )
-            } doReturn templates.map {
-                ObjectWrapper.Basic(
-                    map = mapOf(
-                        Relations.ID to it
-                    )
-                )
-            }
         }
     }
 
@@ -371,6 +354,18 @@ open class ObjectSetViewModelTestSetup {
     fun stubGetDefaultPageType(type: String = defaultObjectPageType, name: String = defaultObjectPageTypeName) {
         getDefaultPageType.stub {
             onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(type = type, name = name)
+        }
+    }
+
+    fun stubGetTemplates(
+        type: String = MockDataFactory.randomString(),
+        templates: List<ObjectWrapper.Basic> = emptyList()
+    ) {
+        val params = GetTemplates.Params(
+            type = type
+        )
+        getTemplates.stub {
+            onBlocking { execute(params) }.thenReturn(Resultat.success(templates))
         }
     }
 }

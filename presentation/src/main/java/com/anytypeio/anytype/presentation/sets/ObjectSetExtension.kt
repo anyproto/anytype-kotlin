@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVSor
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerFields
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerRelationUpdate
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -32,11 +34,13 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.title
+import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.templates.TemplateView
 
 fun ObjectState.DataView.featuredRelations(
     ctx: Id,
@@ -371,16 +375,29 @@ fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): Lis
     return query.filter(::isValidObject)
 }
 
-fun ObjectState.DataView.Set.isTemplatesAllowed(setOfValue: List<Id>): Boolean {
+suspend fun ObjectState.DataView.Set.isTemplatesAllowed(
+    setOfValue: List<Id>,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    getDefaultPageType: GetDefaultPageType
+): Boolean {
     val objectDetails = details[setOfValue.first()]?.map.orEmpty()
-    val objectWrapper = ObjectWrapper.Type(objectDetails)
-    return objectWrapper.isTemplatesAllowed()
+    return when (objectDetails.type){
+        ObjectTypeIds.OBJECT_TYPE -> {
+            val objectWrapper = ObjectWrapper.Type(objectDetails)
+            objectWrapper.isTemplatesAllowed()
+        }
+        ObjectTypeIds.RELATION -> {
+            //We have set of relations, need to check default object type
+            storeOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType)
+        }
+        else -> false
+    }
 }
 
-suspend fun ObjectState.DataView.Collection.isTemplatesAllowed(storeOfObjectTypes: StoreOfObjectTypes): Boolean {
-    if (defaultObjectType == null) return false
-    val objType = storeOfObjectTypes.get(defaultObjectType)
-    return objType?.isTemplatesAllowed() ?: false
+suspend fun StoreOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType: GetDefaultPageType): Boolean {
+    val defaultObjectType = getDefaultPageType.run(Unit).type ?: return false
+    val defaultObjType = get(defaultObjectType) ?: return false
+    return defaultObjType.isTemplatesAllowed()
 }
 
 private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {
@@ -408,3 +425,21 @@ fun Viewer.isEmpty(): Boolean =
         is Viewer.ListView -> this.items.isEmpty()
         is Viewer.Unsupported -> false
     }
+
+fun ObjectWrapper.Basic.toTemplateView(typeId: Id): TemplateView.Template {
+    return TemplateView.Template(
+        id = id,
+        name = name.orEmpty(),
+        typeId = typeId,
+        emoji = iconEmoji,
+        image = iconImage,
+        layout = layout ?: ObjectType.Layout.BASIC
+    )
+}
+
+fun ObjectWrapper.Basic.toTemplateViewBlank(typeId: Id): TemplateView.Blank {
+    return TemplateView.Blank(
+        typeId = typeId,
+        layout = layout?.code ?: ObjectType.Layout.BASIC.code
+    )
+}

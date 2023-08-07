@@ -238,14 +238,16 @@ abstract class TestObjectSetSetup {
             database = database,
             dataViewSubscriptionContainer = dataViewSubscriptionContainer,
             storeOfRelations = storeOfRelations,
-            objectStateReducer = DefaultObjectStateReducer(getDefaultType),
+            objectStateReducer = DefaultObjectStateReducer(),
             dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer),
             workspaceManager = workspaceManager,
             objectToCollection = convertObjectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            getDefaultPageType = getDefaultPageType,
+            getTemplates = getTemplates
         )
     }
 

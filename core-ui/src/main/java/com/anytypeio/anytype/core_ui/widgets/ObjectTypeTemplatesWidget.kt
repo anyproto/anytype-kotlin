@@ -8,6 +8,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,7 +45,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.presentation.widgets.TemplateView
+import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlin.math.roundToInt
 
@@ -53,6 +54,7 @@ import kotlin.math.roundToInt
 fun ObjectTypeTemplatesWidget(
     state: TemplatesWidgetUiState,
     onShadowClick: () -> Unit,
+    itemClick: (TemplateView) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -146,7 +148,7 @@ fun ObjectTypeTemplatesWidget(
                             )
                         }
                     }
-                    TemplatesList(state.items)
+                    TemplatesList(state.items, itemClick)
                 }
             }
         }
@@ -155,7 +157,8 @@ fun ObjectTypeTemplatesWidget(
 
 @Composable
 private fun TemplatesList(
-    items: List<TemplateView>
+    items: List<TemplateView>,
+    itemClick: (TemplateView) -> Unit
 ) {
     LazyRow(
         modifier = Modifier
@@ -178,6 +181,9 @@ private fun TemplatesList(
                         )
                         .height(224.dp)
                         .width(120.dp)
+                        .clickable {
+                            itemClick(item)
+                        }
                 ) {
                     Column {
                         TemplateItemContent(item)
@@ -191,24 +197,16 @@ private fun TemplatesList(
 @Composable
 private fun TemplateItemContent(item: TemplateView) {
     when (item) {
-        TemplateView.Blank -> {
+        is TemplateView.Blank -> {
             Spacer(modifier = Modifier.height(28.dp))
             TemplateItemTitle(text = stringResource(id = R.string.blank))
         }
-
-        is TemplateView.NoIcon -> {
+        is TemplateView.Template -> {
             Spacer(modifier = Modifier.height(28.dp))
-            TemplateItemTitle(text = item.title)
+            TemplateItemTitle(text = item.name)
             Spacer(modifier = Modifier.height(12.dp))
             TemplateItemRectangles()
         }
-
-        is TemplateView.Cover -> TODO()
-        is TemplateView.CoverWithIcon -> TODO()
-        is TemplateView.Icon -> TODO()
-        is TemplateView.Image -> TODO()
-        is TemplateView.Profile -> TODO()
-        is TemplateView.Task -> TODO()
     }
 }
 

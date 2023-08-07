@@ -25,8 +25,6 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.After
 import org.junit.Rule
-import org.mockito.Mock
-import org.mockito.MockitoAnnotations
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObjectSetReducerTest {
@@ -39,15 +37,11 @@ class ObjectSetReducerTest {
     @get:Rule
     val coroutineTestRule = DefaultCoroutineTestRule()
 
-    @Mock
-    lateinit var getDefaultPageType: GetDefaultPageType
-
     private lateinit var reducer: ObjectStateReducer
 
     @Before
     fun reduce() {
-        MockitoAnnotations.openMocks(this)
-        reducer = DefaultObjectStateReducer(getDefaultPageType)
+        reducer = DefaultObjectStateReducer()
     }
 
     @After
@@ -783,7 +777,7 @@ class ObjectSetReducerTest {
     }
 
     @Test
-    fun `when relation deleted from dataview, should delete it from relationLinks`() = runTest {
+    fun `when relation deleted from dataview, should delete it from relationLinks`() {
         val title = StubTitle()
 
         val relationKey1 = MockDataFactory.randomUuid()

@@ -257,8 +257,7 @@ message Rpc {
                 }
                 string storePath = 3; // Path to local storage
                 int64 icon = 4; // Option of pre-installed icon
-
-                string alphaInviteCode = 20; // DEPRECATED
+                bool disableLocalNetworkSync = 5; // Disable local network discovery
             }
 
             /**
@@ -363,6 +362,7 @@ message Rpc {
                 option (no_auth) = true;
                 string id = 1; // Id of a selected account
                 string rootPath = 2; // Root path is optional, set if this is a first request
+                bool disableLocalNetworkSync = 3; // Disable local network discovery
             }
 
             /**
@@ -547,6 +547,27 @@ message Rpc {
                     }
                 }
             }
+        }
+
+        message EnableLocalNetworkSync {
+            message Request {
+            }
+            message Response {
+                Error error = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        ACCOUNT_IS_NOT_RUNNING = 4;
+                    }
+                }
+            }
+
         }
     }
 
@@ -1498,6 +1519,7 @@ message Rpc {
                 }
             }
         }
+
         message SetInternalFlags {
             message Request {
                 string contextId = 1;
@@ -1734,6 +1756,28 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         // ...
+                    }
+                }
+            }
+        }
+
+        message ListSetObjectType {
+            message Request {
+                repeated string objectIds = 1;
+                string objectTypeId = 2;
+            }
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        UNKNOWN_OBJECT_TYPE_URL = 3;
                     }
                 }
             }
@@ -5350,6 +5394,26 @@ message Rpc {
             message Response {
                 Error error = 1;
                 repeated string subscriptions = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        message OpenedObjects {
+            message Request {}
+
+            message Response {
+                Error error = 1;
+                repeated string objectIDs = 2;
 
                 message Error {
                     Code code = 1;

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -31,6 +32,9 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -38,8 +42,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -48,44 +54,70 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ObjectTypeTemplatesWidget(
     state: TemplatesWidgetUiState,
-    onShadowClick: () -> Unit,
-    itemClick: (TemplateView) -> Unit
+    onDismiss: () -> Unit,
+    itemClick: (TemplateView) -> Unit,
+    scope: CoroutineScope
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomCenter,
     ) {
+
+        val currentState by rememberUpdatedState(state)
+        val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
+
         AnimatedVisibility(
-            visible = state.showWidget,
+            visible = currentState.showWidget,
             enter = fadeIn(),
-            exit = fadeOut()
+            exit = fadeOut(tween(200)
+            )
         ) {
             Box(
                 Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.4f))
-                    .noRippleClickable { onShadowClick() }
+                    .noRippleClickable { onDismiss() }
             )
         }
-        val swipeableState = rememberSwipeableState(0)
+
+        if (swipeableState.isAnimationRunning) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    onDismiss()
+                }
+            }
+        }
+
+        if (!currentState.showWidget) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    scope.launch { swipeableState.snapTo(DragStates.VISIBLE) }
+                }
+            }
+        }
+
         val sizePx = with(LocalDensity.current) { 312.dp.toPx() }
 
         AnimatedVisibility(
-            visible = state.showWidget,
+            visible = currentState.showWidget,
             enter = slideInVertically { it },
-            exit = slideOutVertically { it },
+            exit = slideOutVertically(tween(200)) { it },
             modifier = Modifier
                 .swipeable(
                     state = swipeableState,
                     orientation = Orientation.Vertical,
                     anchors = mapOf(
-                        0f to 0,
-                        sizePx to 1
+                        0f to DragStates.VISIBLE,
+                        sizePx to DragStates.DISMISSED
                     ),
                     thresholds = { _, _ -> FractionalThreshold(0.3f) }
                 )
@@ -148,7 +180,13 @@ fun ObjectTypeTemplatesWidget(
                             )
                         }
                     }
-                    TemplatesList(state.items, itemClick)
+                    TemplatesList(currentState.items) {
+                        scope.launch {
+                            onDismiss()
+                            delay(200L)
+                            itemClick(it)
+                        }
+                    }
                 }
             }
         }
@@ -262,10 +300,33 @@ private fun TemplateItemRectangles() {
     }
 }
 
+private enum class DragStates {
+    VISIBLE,
+    DISMISSED
+}
 
-//@Preview
-//@Composable
-//fun ComposablePreview() {
-//    val items = listOf(TemplateView.Blank, TemplateView.NoIcon("Title1983"))
-//    ObjectTypeTemplatesWidget(items = items, show = true)
-//}
+
+@Preview
+@Composable
+fun ComposablePreview() {
+    val items = listOf(
+        TemplateView.Blank(
+            typeId = "page",
+            typeName = "Page",
+            layout = ObjectType.Layout.BASIC.code
+        ),
+        TemplateView.Template(
+            id = "1",
+            name = "Template 1",
+            typeId = "page",
+            layout = ObjectType.Layout.BASIC,
+            image = null,
+            emoji = null
+        ),
+    )
+    val state = TemplatesWidgetUiState(items = items, showWidget = true)
+    ObjectTypeTemplatesWidget(state = state, onDismiss = {}, itemClick = {}, scope = CoroutineScope(
+        Dispatchers.Main
+    )
+    )
+}

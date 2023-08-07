@@ -145,21 +145,21 @@ fun ObjectTypeTemplatesWidget(
                             .fillMaxWidth()
                             .height(48.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.CenterStart)
-                        ) {
-                            Text(
-                                modifier = Modifier.padding(
-                                    start = 16.dp,
-                                    top = 12.dp,
-                                    bottom = 12.dp,
-                                    end = 16.dp
-                                ),
-                                text = stringResource(id = R.string.edit),
-                                style = BodyCalloutRegular
-                            )
-                        }
+//                        Box(
+//                            modifier = Modifier
+//                                .align(Alignment.CenterStart),
+//                        ) {
+//                            Text(
+//                                modifier = Modifier.padding(
+//                                    start = 16.dp,
+//                                    top = 12.dp,
+//                                    bottom = 12.dp,
+//                                    end = 16.dp
+//                                ),
+//                                text = stringResource(id = R.string.edit),
+//                                style = BodyCalloutRegular
+//                            )
+//                        }
                         Box(modifier = Modifier.align(Alignment.Center)) {
                             Text(
                                 text = stringResource(R.string.type_templates_widget_title),
@@ -167,18 +167,18 @@ fun ObjectTypeTemplatesWidget(
                                 color = colorResource(R.color.text_primary)
                             )
                         }
-                        Box(modifier = Modifier.align(Alignment.CenterEnd)) {
-                            Image(
-                                modifier = Modifier.padding(
-                                    start = 16.dp,
-                                    top = 12.dp,
-                                    bottom = 12.dp,
-                                    end = 16.dp
-                                ),
-                                painter = painterResource(id = R.drawable.ic_default_plus),
-                                contentDescription = null
-                            )
-                        }
+//                        Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+//                            Image(
+//                                modifier = Modifier.padding(
+//                                    start = 16.dp,
+//                                    top = 12.dp,
+//                                    bottom = 12.dp,
+//                                    end = 16.dp
+//                                ),
+//                                painter = painterResource(id = R.drawable.ic_default_plus),
+//                                contentDescription = null
+//                            )
+//                        }
                     }
                     TemplatesList(currentState.items) {
                         scope.launch {

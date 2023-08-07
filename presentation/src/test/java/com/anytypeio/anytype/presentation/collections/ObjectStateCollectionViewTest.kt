@@ -1,14 +1,21 @@
 package com.anytypeio.anytype.presentation.collections
 
 import app.cash.turbine.testIn
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
+import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -29,6 +36,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         mockObjectCollection = MockCollection(context = root)
+        stubGetDefaultPageType()
     }
 
     @After
@@ -487,6 +495,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             ),
             dvSorts = listOf(mockObjectCollection.sortGallery)
         )
+        stubGetTemplates()
 
         // TESTING
         viewModel.onStart(ctx = root)
@@ -509,5 +518,168 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             assertEquals(mockObjectCollection.obj4.id, rows[3].objectId)
             assertEquals(mockObjectCollection.obj5.id, rows[4].objectId)
         }
+    }
+
+    @Test
+    fun `should be collection with templates present when default type is custom with proper recommended layout`() = runTest {
+        // SETUP
+
+        val defaultObjectType = MockDataFactory.randomString()
+        val defaultObjectTypeName = "CustomName"
+
+        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubGetDefaultPageType(defaultObjectType, defaultObjectTypeName)
+        stubGetTemplates(
+            type = defaultObjectType,
+            templates = listOf(StubObject(objectType = defaultObjectType))
+        )
+
+        stubOpenObject(
+            doc = listOf(
+                mockObjectCollection.header,
+                mockObjectCollection.title,
+                mockObjectCollection.dataView
+            ),
+            details = mockObjectCollection.details
+        )
+        stubStoreOfObjectTypes(
+            mapOf(
+                Relations.ID to defaultObjectType,
+                Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+                Relations.NAME to defaultObjectTypeName
+            )
+        )
+        stubStoreOfRelations(mockObjectCollection)
+        stubSubscriptionResults(
+            subscription = mockObjectCollection.subscriptionId,
+            workspace = mockObjectCollection.workspaceId,
+            collection = root,
+            storeOfRelations = storeOfRelations,
+            keys = mockObjectCollection.dvKeys,
+            dvSorts = mockObjectCollection.sorts
+        )
+
+        // TESTING
+        viewModel.onStart(ctx = root)
+
+        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+        val stateFlow = stateReducer.state.testIn(backgroundScope)
+
+        // ASSERT STATES
+        assertIs<ObjectState.Init>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+        assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+
+        val item = viewerFlow.awaitItem()
+        assertIs<DataViewViewState.Collection.NoItems>(item)
+        assertTrue(item.hasTemplates)
+    }
+
+    @Test
+    fun `should be collection without templates allowed when default type is custom with not proper recommended layout`() = runTest {
+        // SETUP
+
+        val defaultObjectType = MockDataFactory.randomString()
+        val defaultObjectTypeName = "CustomName"
+
+        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubGetDefaultPageType(defaultObjectType, defaultObjectTypeName)
+
+        stubOpenObject(
+            doc = listOf(
+                mockObjectCollection.header,
+                mockObjectCollection.title,
+                mockObjectCollection.dataView
+            ),
+            details = mockObjectCollection.details
+        )
+        stubStoreOfObjectTypes(
+            mapOf(
+                Relations.ID to defaultObjectType,
+                Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.SET.code.toDouble(),
+                Relations.NAME to defaultObjectTypeName
+            )
+        )
+        stubStoreOfRelations(mockObjectCollection)
+        stubSubscriptionResults(
+            subscription = mockObjectCollection.subscriptionId,
+            workspace = mockObjectCollection.workspaceId,
+            collection = root,
+            storeOfRelations = storeOfRelations,
+            keys = mockObjectCollection.dvKeys,
+            dvSorts = mockObjectCollection.sorts
+        )
+
+        // TESTING
+        viewModel.onStart(ctx = root)
+
+        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+        val stateFlow = stateReducer.state.testIn(backgroundScope)
+
+        // ASSERT STATES
+        assertIs<ObjectState.Init>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+        assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+
+        val item = viewerFlow.awaitItem()
+        assertIs<DataViewViewState.Collection.NoItems>(item)
+        assertFalse(item.hasTemplates)
+    }
+
+    @Test
+    fun `should be collection without templates allowed when default type is NOTE`() = runTest {
+        // SETUP
+
+        val defaultObjectType = ObjectTypeIds.NOTE
+        val defaultObjectTypeName = "Note"
+
+        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubGetDefaultPageType(defaultObjectType, defaultObjectTypeName)
+
+        stubOpenObject(
+            doc = listOf(
+                mockObjectCollection.header,
+                mockObjectCollection.title,
+                mockObjectCollection.dataView
+            ),
+            details = mockObjectCollection.details
+        )
+        stubStoreOfObjectTypes(
+            mapOf(
+                Relations.ID to defaultObjectType,
+                Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),
+                Relations.NAME to defaultObjectTypeName
+            )
+        )
+        stubStoreOfRelations(mockObjectCollection)
+        stubSubscriptionResults(
+            subscription = mockObjectCollection.subscriptionId,
+            workspace = mockObjectCollection.workspaceId,
+            collection = root,
+            storeOfRelations = storeOfRelations,
+            keys = mockObjectCollection.dvKeys,
+            dvSorts = mockObjectCollection.sorts
+        )
+
+        // TESTING
+        viewModel.onStart(ctx = root)
+
+        val viewerFlow = viewModel.currentViewer.testIn(backgroundScope)
+        val stateFlow = stateReducer.state.testIn(backgroundScope)
+
+        // ASSERT STATES
+        assertIs<ObjectState.Init>(stateFlow.awaitItem())
+        assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
+        assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
+
+        val item = viewerFlow.awaitItem()
+        assertIs<DataViewViewState.Collection.NoItems>(item)
+        assertFalse(item.hasTemplates)
     }
 }

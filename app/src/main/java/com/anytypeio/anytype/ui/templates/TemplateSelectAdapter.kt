@@ -2,14 +2,14 @@ package com.anytypeio.anytype.ui.templates
 
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.anytypeio.anytype.presentation.templates.TemplateSelectViewModel
+import com.anytypeio.anytype.presentation.templates.TemplateView
 
 class TemplateSelectAdapter(
-    private var items: List<TemplateSelectViewModel.TemplateView>,
+    private var items: List<TemplateView>,
     fragment: Fragment
 ) : FragmentStateAdapter(fragment) {
 
-    fun update(newItems: List<TemplateSelectViewModel.TemplateView>) {
+    fun update(newItems: List<TemplateView>) {
         items = newItems
         notifyDataSetChanged()
     }
@@ -18,12 +18,12 @@ class TemplateSelectAdapter(
 
     override fun createFragment(position: Int): Fragment {
         return when (val templateView = items[position]) {
-            is TemplateSelectViewModel.TemplateView.Blank -> TemplateBlankFragment.new(
+            is TemplateView.Blank -> TemplateBlankFragment.new(
                 typeId = templateView.typeId,
                 typeName = templateView.typeName,
                 layout = templateView.layout
             )
-            is TemplateSelectViewModel.TemplateView.Template -> TemplateFragment.new(
+            is TemplateView.Template -> TemplateFragment.new(
                 templateView.id
             )
         }

@@ -118,7 +118,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
 
             // ASSERT ERROR TOAST
             viewModel.toasts.test {
-                viewModel.onCreateNewDataViewObject()
+                viewModel.proceedWithCreatingNewDataViewObject()
                 assertEquals(ObjectSetViewModel.NOT_ALLOWED, awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }

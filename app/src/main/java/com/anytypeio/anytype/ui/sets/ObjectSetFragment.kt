@@ -20,6 +20,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.appcompat.widget.AppCompatEditText
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
@@ -30,6 +31,7 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -46,7 +48,9 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
+import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
+import com.anytypeio.anytype.core_ui.widgets.ObjectTypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
@@ -142,6 +146,9 @@ open class ObjectSetFragment :
     private val addNewButton: TextView
         get() = binding.dataViewHeader.addNewButton
 
+    private val addNewIconButton: ButtonPrimarySmallIcon
+        get() = binding.dataViewHeader.addNewIconButton
+
     private val customizeViewButton: ImageView
         get() = binding.dataViewHeader.customizeViewButton
 
@@ -213,12 +220,14 @@ open class ObjectSetFragment :
         binding.root.setTransitionListener(transitionListener)
 
         with(lifecycleScope) {
-            subscribe(addNewButton.clicks().throttleFirst()) { vm.onCreateNewDataViewObject() }
+            subscribe(addNewButton.clicks().throttleFirst()) { vm.proceedWithCreatingNewDataViewObject() }
+            subscribe(addNewIconButton.buttonClicks()) { vm.proceedWithCreatingNewDataViewObject() }
+            subscribe(addNewIconButton.iconClicks()) { vm.onNewButtonIconClicked() }
             subscribe(dataViewInfo.clicks().throttleFirst()) { type ->
                 when (type) {
                     DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.onCreateObjectInCollectionClicked()
                     DataViewInfo.TYPE.SET_NO_QUERY -> vm.onSelectQueryButtonClicked()
-                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.onCreateNewDataViewObject()
+                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.proceedWithCreatingNewDataViewObject()
                     DataViewInfo.TYPE.INIT -> {}
                 }
             }
@@ -309,6 +318,18 @@ open class ObjectSetFragment :
                 vm.onObjectSetQueryPicked(query = query)
             } else {
                 toast("Error while setting the Set query. The query is empty")
+            }
+        }
+
+        binding.templatesWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ObjectTypeTemplatesWidget(
+                    state = vm.templatesWidgetState.collectAsStateWithLifecycle().value,
+                    onDismiss = vm::onDismissTemplatesWidget,
+                    itemClick = vm::onTemplateItemClicked,
+                    scope = lifecycleScope
+                )
             }
         }
     }
@@ -432,7 +453,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.hasTemplates)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
@@ -445,7 +466,7 @@ open class ObjectSetFragment :
                 initView.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.hasTemplates)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
@@ -471,12 +492,11 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.hasTemplates)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
                 setViewer(viewer = null)
-
             }
             is DataViewViewState.Set.Default -> {
                 topToolbarThreeDotsButton.visible()
@@ -485,7 +505,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                addNewButton.isEnabled = true
+                setupNewButtons(state.hasTemplates)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)
@@ -518,6 +538,17 @@ open class ObjectSetFragment :
             getString(R.string.untitled)
         } else {
             title
+        }
+    }
+
+    private fun setupNewButtons(isTemplatesAllowed: Boolean) {
+        if (isTemplatesAllowed) {
+            addNewButton.gone()
+            addNewIconButton.visible()
+        } else {
+            addNewButton.visible()
+            addNewButton.isEnabled = true
+            addNewIconButton.gone()
         }
     }
 
@@ -1063,10 +1094,16 @@ open class ObjectSetFragment :
             if (childFragmentManager.backStackEntryCount > 0) {
                 childFragmentManager.popBackStack()
             } else {
-                if (vm.isCustomizeViewPanelVisible.value) {
-                    vm.onHideViewerCustomizeSwiped()
-                } else {
-                    vm.onSystemBackPressed()
+                when {
+                    vm.isCustomizeViewPanelVisible.value -> {
+                        vm.onHideViewerCustomizeSwiped()
+                    }
+                    vm.templatesWidgetState.value.showWidget -> {
+                        vm.onDismissTemplatesWidget()
+                    }
+                    else -> {
+                        vm.onSystemBackPressed()
+                    }
                 }
             }
         }

@@ -50,6 +50,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         objectCollection = MockCollection(context = root)
+        stubGetDefaultPageType()
     }
 
     @After
@@ -62,7 +63,6 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should add new relation to data view`() = runTest {
         // SETUP
-
         stubWorkspaceManager(objectCollection.workspaceId)
         stubStoreOfRelations(objectCollection)
         stubSubscriptionResults(

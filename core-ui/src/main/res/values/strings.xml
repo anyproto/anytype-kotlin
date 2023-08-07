@@ -643,5 +643,7 @@
     <string name="menu_type_open_set">Open set of %1$s</string>
     <string name="menu_type_create_set">Create set of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
+    <string name="type_templates_widget_title">Select template</string>
+    <string name="blank">Blank</string>
 
 </resources>

@@ -365,7 +365,7 @@ open class ObjectSetViewModelTestSetup {
             type = type
         )
         getTemplates.stub {
-            onBlocking { execute(params) }.thenReturn(Resultat.success(templates))
+            onBlocking { async(params) }.thenReturn(Resultat.success(templates))
         }
     }
 }

@@ -87,7 +87,7 @@ class CollectionTemplatesDelegateTest: ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        verify(getTemplates, times(1)).execute(
+        verify(getTemplates, times(1)).async(
             GetTemplates.Params(type = defaultType)
         )
 

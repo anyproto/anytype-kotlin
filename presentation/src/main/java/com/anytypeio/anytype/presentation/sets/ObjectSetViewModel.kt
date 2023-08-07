@@ -1481,7 +1481,7 @@ class ObjectSetViewModel(
                 when (sourceMap.type.firstOrNull()) {
                     ObjectTypeIds.RELATION -> proceedWithGettingTemplates(typeId = null)
                     ObjectTypeIds.OBJECT_TYPE -> proceedWithGettingTemplates(typeId = sourceId)
-                    else -> {}
+                    else -> { Timber.d("Ignoring type of source") }
                 }
             }
         }
@@ -1504,6 +1504,8 @@ class ObjectSetViewModel(
                     }
                 )
             }
+        } else {
+            Timber.d("Templates are not allowed for type:[${objectType?.id}]")
         }
     }
 

@@ -4,6 +4,7 @@ import app.cash.turbine.testIn
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
@@ -494,6 +495,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             ),
             dvSorts = listOf(mockObjectCollection.sortGallery)
         )
+        stubGetTemplates()
 
         // TESTING
         viewModel.onStart(ctx = root)
@@ -519,7 +521,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `should be collection with templates allowed when default type is custom with proper recommended layout`() = runTest {
+    fun `should be collection with templates present when default type is custom with proper recommended layout`() = runTest {
         // SETUP
 
         val defaultObjectType = MockDataFactory.randomString()
@@ -529,6 +531,10 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubGetDefaultPageType(defaultObjectType, defaultObjectTypeName)
+        stubGetTemplates(
+            type = defaultObjectType,
+            templates = listOf(StubObject(objectType = defaultObjectType))
+        )
 
         stubOpenObject(
             doc = listOf(
@@ -568,7 +574,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Collection.NoItems>(item)
-        assertTrue(item.isTemplatesAllowed)
+        assertTrue(item.isTemplatesPresent)
     }
 
     @Test
@@ -621,7 +627,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Collection.NoItems>(item)
-        assertFalse(item.isTemplatesAllowed)
+        assertFalse(item.isTemplatesPresent)
     }
 
     @Test
@@ -674,6 +680,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Collection.NoItems>(item)
-        assertFalse(item.isTemplatesAllowed)
+        assertFalse(item.isTemplatesPresent)
     }
 }

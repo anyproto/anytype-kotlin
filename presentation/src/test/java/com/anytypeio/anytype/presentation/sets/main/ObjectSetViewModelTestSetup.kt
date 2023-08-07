@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -48,15 +49,12 @@ import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.editor.template.DefaultSetTemplateDelegate
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
-import com.anytypeio.anytype.presentation.sets.SetTemplatesDelegateTest
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
@@ -155,9 +153,7 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var getDefaultPageType: GetDefaultPageType
 
-    lateinit var templatesDelegate: EditorTemplateDelegate
-
-    lateinit var stateReducer : ObjectStateReducer
+    var stateReducer = DefaultObjectStateReducer()
 
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
     lateinit var dataViewSubscription: DataViewSubscription
@@ -194,12 +190,6 @@ open class ObjectSetViewModelTestSetup {
             dispatchers = dispatchers
         )
         dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer)
-        templatesDelegate = DefaultSetTemplateDelegate(
-            getTemplates = getTemplates,
-            storeOfObjectTypes = storeOfObjectTypes,
-            getDefaultPageType = getDefaultPageType,
-            dispatchers = dispatchers
-        )
         return ObjectSetViewModel(
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
@@ -230,8 +220,8 @@ open class ObjectSetViewModelTestSetup {
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             storeOfObjectTypes = storeOfObjectTypes,
-            templateDelegate = templatesDelegate,
-            getDefaultPageType = getDefaultPageType
+            getDefaultPageType = getDefaultPageType,
+            getTemplates = getTemplates
         )
     }
 
@@ -280,25 +270,6 @@ open class ObjectSetViewModelTestSetup {
                     )
                 )
             )
-        }
-    }
-
-    fun stubGetTemplates(
-        type: String,
-        templates: List<Id> = emptyList()
-    ) {
-        getTemplates.stub {
-            onBlocking {
-                run(
-                    GetTemplates.Params(type)
-                )
-            } doReturn templates.map {
-                ObjectWrapper.Basic(
-                    map = mapOf(
-                        Relations.ID to it
-                    )
-                )
-            }
         }
     }
 
@@ -386,9 +357,15 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    fun stubGetTemplates() {
+    fun stubGetTemplates(
+        type: String = MockDataFactory.randomString(),
+        templates: List<ObjectWrapper.Basic> = emptyList()
+    ) {
+        val params = GetTemplates.Params(
+            type = type
+        )
         getTemplates.stub {
-            onBlocking { run(any()) }.thenReturn(emptyList())
+            onBlocking { execute(params) }.thenReturn(Resultat.success(templates))
         }
     }
 }

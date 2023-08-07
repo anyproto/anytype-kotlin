@@ -7,12 +7,14 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
@@ -412,10 +414,16 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `displaying set with templates allowed when opening object set of pages`() = runTest {
+    fun `displaying set with templates present when opening object set of pages with templates`() = runTest {
         // SETUP
 
         mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.PAGE)
+        val pageTypeMap = mapOf(
+            Relations.ID to ObjectTypeIds.PAGE,
+            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+            Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+            Relations.NAME to MockDataFactory.randomString()
+        )
         stubWorkspaceManager(mockObjectSet.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -430,6 +438,12 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             keys = mockObjectSet.dvKeys,
             sources = listOf(ObjectTypeIds.PAGE),
             dvFilters = mockObjectSet.filters
+        )
+        stubStoreOfObjectTypes(pageTypeMap)
+        stubGetTemplates(
+            type = ObjectTypeIds.PAGE,
+            templates = listOf(StubObject(objectType = ObjectTypeIds.PAGE)
+            )
         )
 
         // TESTING
@@ -446,7 +460,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Set.NoItems>(item)
-        assertTrue(item.isTemplatesAllowed)
+        assertTrue(item.isTemplatesPresent)
     }
 
     @Test
@@ -484,6 +498,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Set.NoItems>(item)
-        assertFalse(item.isTemplatesAllowed)
+        assertFalse(item.isTemplatesPresent)
     }
 }

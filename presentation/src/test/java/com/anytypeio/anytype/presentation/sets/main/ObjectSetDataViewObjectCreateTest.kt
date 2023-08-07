@@ -57,7 +57,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         doReturn(Unit).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
                 type = mockObjectSet.setOf,
-                filters = mockObjectSet.filters
+                filters = mockObjectSet.filters,
+                template = null
             )
         )
 
@@ -79,7 +80,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
                 async(
                     CreateDataViewObject.Params.SetByType(
                         type = mockObjectSet.setOf,
-                        filters = mockObjectSet.filters
+                        filters = mockObjectSet.filters,
+                        template = null
                     )
                 )
             }

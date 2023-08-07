@@ -12,7 +12,6 @@ class ResolveListener(
 ) : NsdManager.ResolveListener {
 
     override fun onResolveFailed(serviceInfo: NsdServiceInfo, errorCode: Int) {
-        Timber.e("Mdns discovery resolve failed: $serviceInfo, error: $errorCode")
         try {
             semaphore.release()
         } catch (e: Exception) {

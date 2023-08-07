@@ -326,8 +326,9 @@ open class ObjectSetFragment :
             setContent {
                 ObjectTypeTemplatesWidget(
                     state = vm.templatesWidgetState.collectAsStateWithLifecycle().value,
-                    onShadowClick = vm::onHideTemplatesWidget,
-                    itemClick = vm::onTemplateItemClicked
+                    onDismiss = vm::onDismissTemplatesWidget,
+                    itemClick = vm::onTemplateItemClicked,
+                    scope = lifecycleScope
                 )
             }
         }
@@ -1098,7 +1099,7 @@ open class ObjectSetFragment :
                         vm.onHideViewerCustomizeSwiped()
                     }
                     vm.templatesWidgetState.value.showWidget -> {
-                        vm.onHideTemplatesWidget()
+                        vm.onDismissTemplatesWidget()
                     }
                     else -> {
                         vm.onSystemBackPressed()

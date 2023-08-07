@@ -580,10 +580,10 @@ class ButtonPrimarySmallIcon @JvmOverloads constructor(
     private lateinit var icon: ImageView
 
     init {
-        init(context)
+        setup(context)
     }
     
-    private fun init(context: Context) {
+    private fun setup(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.ds_button_icon, this, true)
         button = findViewById(R.id.button)
         icon = findViewById(R.id.icon)

@@ -26,7 +26,7 @@ object ObjectTypeIds {
 
     const val DEFAULT_OBJECT_TYPE_PREFIX = "ot-"
 
-    fun getNoTemplates(): List<String> =
+    fun getTypesWithoutTemplates(): List<String> =
         listOf(BOOKMARK, NOTE).plus(getFileTypes()).plus(getSetTypes())
             .plus(getSystemTypes())
 
@@ -38,10 +38,7 @@ object ObjectTypeIds {
         RELATION,
         RELATION_OPTION,
         DASHBOARD,
-        DATE
-    ).plus(getStoreTypes())
-
-    fun getStoreTypes(): List<String> = listOf(
+        DATE,
         MarketplaceObjectTypeIds.OBJECT_TYPE,
         MarketplaceObjectTypeIds.RELATION
     )

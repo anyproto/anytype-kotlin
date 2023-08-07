@@ -92,7 +92,7 @@
             motion:layout_constraintTop_toTopOf="parent"
             motion:visibilityMode="ignore" />
         <Constraint
-            android:id="@id/composeView">
+            android:id="@id/templatesWidget">
             <PropertySet
                 app:applyMotionScene="false"
                 app:visibilityMode="ignore"/>
@@ -180,7 +180,7 @@
             motion:visibilityMode="ignore" />
 
         <Constraint
-            android:id="@id/composeView">
+            android:id="@id/templatesWidget">
             <PropertySet
                 app:applyMotionScene="false"
                 app:visibilityMode="ignore"/>

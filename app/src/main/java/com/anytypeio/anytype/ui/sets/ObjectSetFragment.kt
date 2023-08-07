@@ -220,14 +220,14 @@ open class ObjectSetFragment :
         binding.root.setTransitionListener(transitionListener)
 
         with(lifecycleScope) {
-            subscribe(addNewButton.clicks().throttleFirst()) { vm.onCreateNewDataViewObject() }
-            subscribe(addNewIconButton.buttonClicks()) { vm.onCreateNewDataViewObject() }
+            subscribe(addNewButton.clicks().throttleFirst()) { vm.proceedWithCreatingNewDataViewObject() }
+            subscribe(addNewIconButton.buttonClicks()) { vm.proceedWithCreatingNewDataViewObject() }
             subscribe(addNewIconButton.iconClicks()) { vm.onNewButtonIconClicked() }
             subscribe(dataViewInfo.clicks().throttleFirst()) { type ->
                 when (type) {
                     DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.onCreateObjectInCollectionClicked()
                     DataViewInfo.TYPE.SET_NO_QUERY -> vm.onSelectQueryButtonClicked()
-                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.onCreateNewDataViewObject()
+                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.proceedWithCreatingNewDataViewObject()
                     DataViewInfo.TYPE.INIT -> {}
                 }
             }
@@ -321,7 +321,7 @@ open class ObjectSetFragment :
             }
         }
 
-        binding.composeView.apply {
+        binding.templatesWidget.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 ObjectTypeTemplatesWidget(
@@ -453,7 +453,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isTemplatesPresent)
+                setupNewButtons(state.hasTemplates)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
@@ -466,7 +466,7 @@ open class ObjectSetFragment :
                 initView.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isTemplatesPresent)
+                setupNewButtons(state.hasTemplates)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
@@ -492,7 +492,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isTemplatesPresent)
+                setupNewButtons(state.hasTemplates)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
@@ -505,7 +505,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.isTemplatesPresent)
+                setupNewButtons(state.hasTemplates)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)

@@ -395,9 +395,13 @@ suspend fun ObjectState.DataView.Set.isTemplatesAllowed(
 }
 
 suspend fun StoreOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType: GetDefaultPageType): Boolean {
-    val defaultObjectType = getDefaultPageType.run(Unit).type ?: return false
-    val defaultObjType = get(defaultObjectType) ?: return false
-    return defaultObjType.isTemplatesAllowed()
+    try {
+        val defaultObjectType = getDefaultPageType.run(Unit).type ?: return false
+        val defaultObjType = get(defaultObjectType) ?: return false
+        return defaultObjType.isTemplatesAllowed()
+    } catch (e: Exception){
+        return false
+    }
 }
 
 private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {

@@ -73,7 +73,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             val second = awaitItem()
             assertIs<DataViewViewState.Set.Default>(second)
 
-            viewModel.onCreateNewDataViewObject()
+            viewModel.proceedWithCreatingNewDataViewObject()
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {

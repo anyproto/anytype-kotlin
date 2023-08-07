@@ -460,7 +460,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Set.NoItems>(item)
-        assertTrue(item.isTemplatesPresent)
+        assertTrue(item.hasTemplates)
     }
 
     @Test
@@ -498,6 +498,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Set.NoItems>(item)
-        assertFalse(item.isTemplatesPresent)
+        assertFalse(item.hasTemplates)
     }
 }

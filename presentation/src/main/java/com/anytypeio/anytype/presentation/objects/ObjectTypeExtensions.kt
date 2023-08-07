@@ -60,7 +60,7 @@ fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
  * @return `true` if templates are allowed for this type of object, `false` otherwise.
  */
 fun ObjectWrapper.Type.isTemplatesAllowed(): Boolean {
-    val showTemplates = !ObjectTypeIds.getNoTemplates().contains(this.id)
+    val showTemplates = !ObjectTypeIds.getTypesWithoutTemplates().contains(this.id)
     val allowedObject = editorLayouts.contains(recommendedLayout)
     return showTemplates && allowedObject
 }

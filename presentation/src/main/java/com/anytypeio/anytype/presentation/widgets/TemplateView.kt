@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.presentation.templates.TemplateView
 
-class TemplatesWidgetUiState(
+data class TemplatesWidgetUiState(
     val items: List<TemplateView>,
     val showWidget: Boolean
 ) {

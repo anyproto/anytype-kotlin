@@ -882,6 +882,14 @@ class ObjectSetViewModel(
             items = _templateViews.value,
             showWidget = true
         )
+        viewModelScope.launch {
+            logEvent(
+                state = stateReducer.state.value,
+                analytics = analytics,
+                event = ObjectStateAnalyticsEvent.SHOW_TEMPLATES
+
+            )
+        }
     }
 
     fun onDismissTemplatesWidget() {
@@ -1519,10 +1527,24 @@ class ObjectSetViewModel(
         when(item) {
             is TemplateView.Blank -> {
                 templatesWidgetState.value = TemplatesWidgetUiState.empty()
+                viewModelScope.launch {
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.SELECT_TEMPLATE
+                    )
+                }
                 proceedWithCreatingNewDataViewObject()
             }
             is TemplateView.Template -> {
                 templatesWidgetState.value = TemplatesWidgetUiState.empty()
+                viewModelScope.launch {
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.SELECT_TEMPLATE
+                    )
+                }
                 proceedWithCreatingNewDataViewObject(templatesId = item.id)
             }
         }

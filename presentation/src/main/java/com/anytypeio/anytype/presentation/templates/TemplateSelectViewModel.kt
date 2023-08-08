@@ -4,6 +4,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -13,6 +15,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import kotlinx.coroutines.launch
@@ -24,7 +27,8 @@ import timber.log.Timber
 class TemplateSelectViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getTemplates: GetTemplates,
-    private val applyTemplate: ApplyTemplate
+    private val applyTemplate: ApplyTemplate,
+    private val analytics: Analytics
 ) : BaseViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val isDismissed = MutableStateFlow(false)
@@ -102,6 +106,9 @@ class TemplateSelectViewModel(
                         proceedWithApplyingTemplate(ctx, template)
                     }
                 }
+                viewModelScope.launch {
+                    sendAnalyticsSelectTemplateEvent(analytics)
+                }
             }
             else -> {
                 Timber.e("onUseTemplate: unexpected state $state")
@@ -130,7 +137,8 @@ class TemplateSelectViewModel(
     class Factory @Inject constructor(
         private val applyTemplate: ApplyTemplate,
         private val getTemplates: GetTemplates,
-        private val storeOfObjectTypes: StoreOfObjectTypes
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -138,7 +146,8 @@ class TemplateSelectViewModel(
             return TemplateSelectViewModel(
                 applyTemplate = applyTemplate,
                 getTemplates = getTemplates,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                analytics = analytics
             ) as T
         }
     }

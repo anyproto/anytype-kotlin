@@ -8,6 +8,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.addView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeFilterValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeSortValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
+import com.anytypeio.anytype.analytics.base.EventsDictionary.clickNewOption
 import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.removeFilter
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeSort
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.repositionView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.selectTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.setScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.setSelectQuery
 import com.anytypeio.anytype.analytics.base.EventsDictionary.switchView
@@ -1201,6 +1203,37 @@ fun CoroutineScope.logEvent(
                 )
             )
         }
+
+        ObjectStateAnalyticsEvent.SELECT_TEMPLATE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = selectTemplate,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.SHOW_TEMPLATES -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = clickNewOption,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route
+                )
+            )
+        }
     }
 }
 
@@ -1242,7 +1275,9 @@ enum class ObjectStateAnalyticsEvent {
     ADD_SORT,
     CHANGE_SORT_VALUE,
     REMOVE_SORT,
-    OBJECT_CREATE
+    OBJECT_CREATE,
+    SELECT_TEMPLATE,
+    SHOW_TEMPLATES
 }
 
 fun CoroutineScope.sendEditWidgetsEvent(

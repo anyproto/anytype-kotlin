@@ -148,6 +148,14 @@ object EventsDictionary {
     const val screenHome = "ScreenHome"
     const val selectHomeTab = "SelectHomeTab"
 
+    //Templates
+    const val selectTemplate = "SelectTemplate"
+    const val clickNewOption = "ClickNewOption"
+    const val changeDefaultTemplate = "ChangeDefaultTemplate"
+    const val editTemplate = "EditTemplate"
+    const val duplicateTemplate = "DuplicateTemplate"
+    const val createTemplate = "CreateTemplate"
+
     // Onboarding events
     const val screenOnboarding = "ScreenOnboarding"
     const val clickOnboarding = "ClickOnboarding"

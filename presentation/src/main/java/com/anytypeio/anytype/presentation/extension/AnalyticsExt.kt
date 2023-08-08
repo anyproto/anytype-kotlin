@@ -1717,3 +1717,17 @@ fun CoroutineScope.sendAnalyticsOnboardingLoginEvent(
         )
     )
 }
+
+fun CoroutineScope.sendAnalyticsSelectTemplateEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = selectTemplate,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.route, "Navigation")
+            }
+        )
+    )
+}

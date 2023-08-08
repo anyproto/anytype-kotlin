@@ -50,6 +50,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -346,6 +347,9 @@ open class EditorPresentationTestSetup {
     lateinit var fileLimitsEventChannel: FileLimitsEventChannel
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
+    @Mock
+    lateinit var setObjectInternalFlags: SetObjectInternalFlags
+
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
 
         val storage = Editor.Storage()
@@ -467,7 +471,8 @@ open class EditorPresentationTestSetup {
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
-            addRelationToObject = addRelationToObject
+            addRelationToObject = addRelationToObject,
+            setObjectInternalFlags = setObjectInternalFlags
         )
     }
 
@@ -744,6 +749,18 @@ open class EditorPresentationTestSetup {
             onBlocking {
                 async(any())
             } doReturn Resultat.success(types)
+        }
+    }
+
+    fun stubFileLimitEvents() {
+        interceptFileLimitEvents.stub {
+            onBlocking { run(Unit) } doReturn emptyFlow()
+        }
+    }
+
+    fun stubSetInternalFlags() {
+        setObjectInternalFlags.stub {
+            onBlocking { async(any()) } doReturn Resultat.success(Payload(root, emptyList()))
         }
     }
 }

@@ -143,6 +143,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun setObjectSource(request: Rpc.Object.SetSource.Request): Rpc.Object.SetSource.Response
 
+    @Throws(Exception::class)
+    fun setInternalFlags(request: Rpc.Object.SetInternalFlags.Request): Rpc.Object.SetInternalFlags.Response
+
     //endregion
 
     //region OBJECT'S RELATIONS command

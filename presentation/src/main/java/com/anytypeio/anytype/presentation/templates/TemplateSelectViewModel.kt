@@ -127,6 +127,10 @@ class TemplateSelectViewModel(
         }
     }
 
+    fun onCancelButtonClicked() {
+        isDismissed.value = true
+    }
+
     class Factory @Inject constructor(
         private val applyTemplate: ApplyTemplate,
         private val getTemplates: GetTemplates,
@@ -149,7 +153,6 @@ class TemplateSelectViewModel(
         ) : ViewState()
 
         object Init : ViewState()
-        object ErrorGettingType : ViewState()
     }
 
 }

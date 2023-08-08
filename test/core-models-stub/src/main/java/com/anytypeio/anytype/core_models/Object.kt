@@ -62,7 +62,8 @@ fun StubObjectType(
     iconEmoji: String? = null,
     isReadOnly: Boolean? = null,
     isHidden: Boolean? = null,
-    sourceObject: Id? = null
+    sourceObject: Id? = null,
+    recommendedLayout: Double? = null
 ): ObjectWrapper.Type = ObjectWrapper.Type(
     map = mapOf(
         Relations.ID to id,
@@ -76,6 +77,7 @@ fun StubObjectType(
         Relations.ICON_EMOJI to iconEmoji,
         Relations.IS_READ_ONLY to isReadOnly,
         Relations.IS_HIDDEN to isHidden,
-        Relations.SOURCE_OBJECT to sourceObject
+        Relations.SOURCE_OBJECT to sourceObject,
+        Relations.RECOMMENDED_LAYOUT to recommendedLayout
     )
 )

@@ -1,7 +1,9 @@
 package com.anytypeio.anytype.domain.templates
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -10,7 +12,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 /**
@@ -28,13 +29,13 @@ class GetTemplates(
                     filters = listOf(
                         DVFilter(
                             relation = Relations.IS_ARCHIVED,
-                            condition = DVFilterCondition.EQUAL,
-                            value = false
+                            condition = DVFilterCondition.NOT_EQUAL,
+                            value = true
                         ),
                         DVFilter(
                             relation = Relations.IS_DELETED,
-                            condition = DVFilterCondition.EQUAL,
-                            value = false
+                            condition = DVFilterCondition.NOT_EQUAL,
+                            value = true
                         ),
                         DVFilter(
                             relation = Relations.TYPE,
@@ -47,11 +48,25 @@ class GetTemplates(
                             value = params.type
                         )
                     ),
-                    keys = listOf(Relations.ID, Relations.NAME),
-                    sorts = emptyList(),
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.NAME,
+                        Relations.LAYOUT,
+                        Relations.ICON_EMOJI,
+                        Relations.ICON_IMAGE,
+                        Relations.ICON_OPTION,
+                        Relations.COVER_ID,
+                        Relations.COVER_TYPE
+                    ),
+                    sorts = listOf(
+                        DVSort(
+                            relationKey = Relations.CREATED_DATE,
+                            type = Block.Content.DataView.Sort.Type.DESC
+                        )
+                    ),
                     fulltext = "",
                     offset = 0,
-                    limit = 0
+                    limit = 100
                 ).map { obj ->
                     ObjectWrapper.Basic(obj)
                 }

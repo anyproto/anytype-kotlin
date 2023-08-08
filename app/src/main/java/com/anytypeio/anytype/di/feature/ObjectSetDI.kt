@@ -195,7 +195,9 @@ object ObjectSetModule {
         @Named("object-set-store") objectStore: ObjectStore,
         addObjectToCollection: AddObjectToCollection,
         convertObjectToCollection: ConvertObjectToCollection,
-        storeOfObjectTypes: StoreOfObjectTypes
+        storeOfObjectTypes: StoreOfObjectTypes,
+        getDefaultPageType: GetDefaultPageType,
+        getTemplates: GetTemplates
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -225,7 +227,9 @@ object ObjectSetModule {
         objectStore = objectStore,
         addObjectToCollection = addObjectToCollection,
         objectToCollection = convertObjectToCollection,
-        storeOfObjectTypes = storeOfObjectTypes
+        storeOfObjectTypes = storeOfObjectTypes,
+        getDefaultPageType = getDefaultPageType,
+        getTemplates = getTemplates
     )
 
     @JvmStatic

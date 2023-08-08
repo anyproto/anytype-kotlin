@@ -30,6 +30,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         objectCollection = MockCollection(context = root)
+        stubGetDefaultPageType()
     }
 
     @After

@@ -25,28 +25,14 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
-        android:layout_marginEnd="@dimen/dp_16"
         android:contentDescription="@string/content_description_customize_view_button"
         android:paddingStart="@dimen/dp_20"
+        android:paddingEnd="@dimen/dp_8"
         android:src="@drawable/bg_viewer_settings_icon_bg"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/addNewButton"
+        app:layout_constraintEnd_toStartOf="@+id/barrier"
         app:layout_constraintTop_toTopOf="parent"
         tools:enabled="true" />
-
-    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryXSmall
-        android:id="@+id/addNewButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/dp_20"
-        android:paddingStart="10dp"
-        android:paddingTop="5dp"
-        android:paddingEnd="10dp"
-        android:paddingBottom="5dp"
-        android:text="@string/button_new"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:layout_width="match_parent"
@@ -55,5 +41,39 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:barrierDirection="left"
+        app:barrierMargin="-8dp"
+        app:constraint_referenced_ids="addNewButton,addNewIconButton" />
+
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryXSmall
+        android:id="@+id/addNewButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
+        android:text="@string/button_new"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
+        android:id="@+id/addNewIconButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingEnd="@dimen/dp_20"
+        android:paddingBottom="10dp"
+        android:text="@string/button_new"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

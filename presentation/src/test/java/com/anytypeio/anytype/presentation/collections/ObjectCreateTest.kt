@@ -31,6 +31,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
+        stubGetDefaultPageType()
     }
 
     @After
@@ -69,7 +70,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
                 type = ObjectTypeIds.NOTE,
-                filters = mockObjectSet.filters
+                filters = mockObjectSet.filters,
+                template = null
             )
         )
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -79,7 +81,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        viewModel.onCreateNewDataViewObject()
+        viewModel.proceedWithCreatingNewDataViewObject()
 
         advanceUntilIdle()
 
@@ -87,7 +89,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             async(
                 CreateDataViewObject.Params.SetByType(
                     type = ObjectTypeIds.NOTE,
-                    filters = mockObjectSet.filters
+                    filters = mockObjectSet.filters,
+                    template = null
                 )
             )
         }
@@ -125,7 +128,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
                 type = ObjectTypeIds.PAGE,
-                filters = mockObjectSet.filters
+                filters = mockObjectSet.filters,
+                template = null
             )
         )
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -136,7 +140,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        viewModel.onCreateNewDataViewObject()
+        viewModel.proceedWithCreatingNewDataViewObject()
 
         assertIs<ObjectSetCommand.Modal.SetNameForCreatedObject>(commandFlow.awaitItem())
 
@@ -146,7 +150,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             async(
                 CreateDataViewObject.Params.SetByType(
                     type = ObjectTypeIds.PAGE,
-                    filters = mockObjectSet.filters
+                    filters = mockObjectSet.filters,
+                    template = null
                 )
             )
         }
@@ -184,7 +189,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByRelation(
                 relations = listOf(mockObjectSet.relationObject3.id),
-                filters = mockObjectSet.filters
+                filters = mockObjectSet.filters,
+                template = null
             )
         )
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -194,7 +200,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        viewModel.onCreateNewDataViewObject()
+        viewModel.proceedWithCreatingNewDataViewObject()
 
         advanceUntilIdle()
 
@@ -202,7 +208,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             async(
                 CreateDataViewObject.Params.SetByRelation(
                     relations = listOf(mockObjectSet.relationObject3.id),
-                    filters = mockObjectSet.filters
+                    filters = mockObjectSet.filters,
+                    template = null
                 )
             )
         }
@@ -244,7 +251,9 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             objectType = ObjectTypeIds.NOTE
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
-            CreateDataViewObject.Params.Collection
+            CreateDataViewObject.Params.Collection(
+                templateId = null
+            )
         )
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
 
@@ -253,12 +262,12 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        viewModel.onCreateNewDataViewObject()
+        viewModel.proceedWithCreatingNewDataViewObject()
 
         advanceUntilIdle()
 
         verifyBlocking(createDataViewObject, times(1)) {
-            async(CreateDataViewObject.Params.Collection)
+            async(CreateDataViewObject.Params.Collection(null))
         }
 
         verifyBlocking(closeBlock, times(1)) { async(objectCollection.root)}

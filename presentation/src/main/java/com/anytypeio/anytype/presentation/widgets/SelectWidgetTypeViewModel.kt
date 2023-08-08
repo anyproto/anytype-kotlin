@@ -45,7 +45,10 @@ class SelectWidgetTypeViewModel(
     ) {
         Timber.d("onStart for existing widget")
         if (BundledWidgetSourceIds.ids.contains(source)) {
-            if (source == BundledWidgetSourceIds.FAVORITE || source == BundledWidgetSourceIds.RECENT) {
+            if (source == BundledWidgetSourceIds.FAVORITE
+                || source == BundledWidgetSourceIds.RECENT
+                || source == BundledWidgetSourceIds.RECENT_LOCAL
+            ) {
                 views.value = listOf(
                     WidgetTypeView.CompactList().setIsSelected(currentType),
                     WidgetTypeView.List().setIsSelected(currentType),
@@ -74,7 +77,10 @@ class SelectWidgetTypeViewModel(
     fun onStartForNewWidget(layout: Int, source: Id) {
         Timber.d("onStart for new widget")
         if (BundledWidgetSourceIds.ids.contains(source)) {
-            if (source == BundledWidgetSourceIds.FAVORITE || source == BundledWidgetSourceIds.RECENT) {
+            if (source == BundledWidgetSourceIds.FAVORITE
+                || source == BundledWidgetSourceIds.RECENT
+                || source == BundledWidgetSourceIds.RECENT_LOCAL
+            ) {
                 views.value = listOf(
                     WidgetTypeView.CompactList(isSelected = false),
                     WidgetTypeView.List(isSelected = false),

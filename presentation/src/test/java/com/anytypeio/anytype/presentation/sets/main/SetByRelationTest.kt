@@ -48,7 +48,6 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
             details = mockObjectSet.details
         )
-        stubGetTemplates(type = mockObjectSet.setOf)
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             workspace = mockObjectSet.workspaceId,
@@ -61,7 +60,8 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         doReturn(Unit).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
                 type = mockObjectSet.setOf,
-                filters = mockObjectSet.filters
+                filters = mockObjectSet.filters,
+                template = null
             )
         )
 
@@ -76,14 +76,15 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             val second = awaitItem()
             assertIs<DataViewViewState.Set.Default>(second)
 
-            viewModel.onCreateNewDataViewObject()
+            viewModel.proceedWithCreatingNewDataViewObject()
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByType(
                         type = mockObjectSet.setOf,
-                        filters = mockObjectSet.filters
+                        filters = mockObjectSet.filters,
+                        template = null
                     )
                 )
             }
@@ -101,7 +102,6 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
             details = mockObjectSet.detailsSetByRelation
         )
-        stubGetTemplates(type = mockObjectSet.setOf)
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
             workspace = mockObjectSet.workspaceId,
@@ -114,7 +114,8 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         doReturn(Unit).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByRelation(
                 relations = listOf(mockObjectSet.relationObject3.id),
-                filters = mockObjectSet.filters
+                filters = mockObjectSet.filters,
+                template = null
             )
         )
 
@@ -129,14 +130,15 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             val second = awaitItem()
             assertIs<DataViewViewState.Set.Default>(second)
 
-            viewModel.onCreateNewDataViewObject()
+            viewModel.proceedWithCreatingNewDataViewObject()
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByRelation(
                         relations = listOf(mockObjectSet.relationObject3.id),
-                        filters = mockObjectSet.filters
+                        filters = mockObjectSet.filters,
+                        template = null
                     )
                 )
             }

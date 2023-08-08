@@ -25,6 +25,25 @@ object ObjectTypeIds {
     const val SPACE = "ot-space"
 
     const val DEFAULT_OBJECT_TYPE_PREFIX = "ot-"
+
+    fun getTypesWithoutTemplates(): List<String> =
+        listOf(BOOKMARK, NOTE).plus(getFileTypes()).plus(getSetTypes())
+            .plus(getSystemTypes())
+
+    fun getFileTypes(): List<String> = listOf(FILE, IMAGE, AUDIO, VIDEO)
+
+    fun getSystemTypes(): List<String> = listOf(
+        OBJECT_TYPE,
+        TEMPLATE,
+        RELATION,
+        RELATION_OPTION,
+        DASHBOARD,
+        DATE,
+        MarketplaceObjectTypeIds.OBJECT_TYPE,
+        MarketplaceObjectTypeIds.RELATION
+    )
+
+    fun getSetTypes(): List<String> = listOf(SET, COLLECTION)
 }
 
 object MarketplaceObjectTypeIds {

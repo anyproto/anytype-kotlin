@@ -581,6 +581,7 @@ message Account {
         string localStoragePath = 103; // path to local storage
         string timeZone = 104; // time zone from config
         string analyticsId = 105;
+        string networkId = 106; // network id to which anytype is connected
     }
 
 }

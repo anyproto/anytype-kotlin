@@ -421,4 +421,6 @@ sealed class Command {
 
     data class AddObjectToCollection(val ctx: Id, val afterId: Id, val ids: List<Id>)
     data class SetQueryToSet(val ctx: Id, val query: String)
+
+    data class SetInternalFlags(val ctx: Id, val flags: List<InternalFlags>)
 }

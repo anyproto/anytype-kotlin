@@ -5,9 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -20,7 +18,6 @@ import com.anytypeio.anytype.databinding.FragmentTemplateSelectBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.templates.TemplateSelectViewModel
 import com.google.android.material.tabs.TabLayoutMediator
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class TemplateSelectFragment :
@@ -40,9 +37,15 @@ class TemplateSelectFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViewPagerAndTabs()
-        viewLifecycleOwner.lifecycleScope.launch {
-            viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                setupClickEventHandlers()
+        with(lifecycleScope) {
+            subscribe(binding.btnCancel.clicks()) {
+                vm.onCancelButtonClicked()
+            }
+            subscribe(binding.btnUseTemplate.clicks()) {
+                vm.onUseTemplateButtonPressed(
+                    currentItem = binding.templateViewPager.currentItem,
+                    ctx = ctx
+                )
             }
         }
     }
@@ -51,11 +54,6 @@ class TemplateSelectFragment :
         templatesAdapter = TemplateSelectAdapter(mutableListOf(), this)
         binding.templateViewPager.adapter = templatesAdapter
         TabLayoutMediator(binding.tabs, binding.templateViewPager) { _, _ -> }.attach()
-    }
-
-    private suspend fun setupClickEventHandlers() {
-        setupUseTemplateClicks()
-        setupCancelClicks()
     }
 
     override fun onStart() {
@@ -67,7 +65,6 @@ class TemplateSelectFragment :
 
     private fun render(viewState: TemplateSelectViewModel.ViewState) {
         when (viewState) {
-            TemplateSelectViewModel.ViewState.ErrorGettingType -> TODO()
             TemplateSelectViewModel.ViewState.Init -> {
                 binding.tvTemplateCountOrTutorial.text = null
                 binding.btnCancel.isEnabled = true
@@ -84,19 +81,6 @@ class TemplateSelectFragment :
                 templatesAdapter.update(viewState.templates)
             }
         }
-    }
-
-    private suspend fun setupUseTemplateClicks() {
-        binding.btnUseTemplate.clicks().collect {
-            vm.onUseTemplateButtonPressed(
-                currentItem = binding.templateViewPager.currentItem,
-                ctx = ctx
-            )
-        }
-    }
-
-    private suspend fun setupCancelClicks() {
-        binding.btnCancel.clicks().collect { exit() }
     }
 
     private fun exit() {

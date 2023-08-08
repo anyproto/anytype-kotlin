@@ -56,6 +56,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -235,6 +236,14 @@ object EditorSessionModule {
 
     @JvmStatic
     @Provides
+    @PerScreen
+    fun provideSetObjectInternalFlags(
+            repo: BlockRepository,
+            dispatchers: AppCoroutineDispatchers
+    ) : SetObjectInternalFlags = SetObjectInternalFlags(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
     fun providePageViewModelFactory(
         openPage: OpenPage,
         closePage: CloseBlock,
@@ -271,7 +280,8 @@ object EditorSessionModule {
         getObjectTypes: GetObjectTypes,
         objectToCollection: ConvertObjectToCollection,
         interceptFileLimitEvents: InterceptFileLimitEvents,
-        addRelationToObject: AddRelationToObject
+        addRelationToObject: AddRelationToObject,
+        setObjectInternalFlags: SetObjectInternalFlags
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -308,7 +318,8 @@ object EditorSessionModule {
         getObjectTypes = getObjectTypes,
         objectToCollection = objectToCollection,
         interceptFileLimitEvents = interceptFileLimitEvents,
-        addRelationToObject = addRelationToObject
+        addRelationToObject = addRelationToObject,
+        setObjectInternalFlags = setObjectInternalFlags
     )
 
 

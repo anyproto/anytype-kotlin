@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -79,7 +80,8 @@ open class  EditorViewModelFactory(
     private val getObjectTypes: GetObjectTypes,
     private val objectToCollection: ConvertObjectToCollection,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
-    private val addRelationToObject: AddRelationToObject
+    private val addRelationToObject: AddRelationToObject,
+    private val setObjectInternalFlags: SetObjectInternalFlags
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -120,7 +122,8 @@ open class  EditorViewModelFactory(
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
-            addRelationToObject = addRelationToObject
+            addRelationToObject = addRelationToObject,
+            setObjectInternalFlags = setObjectInternalFlags
         ) as T
     }
 }

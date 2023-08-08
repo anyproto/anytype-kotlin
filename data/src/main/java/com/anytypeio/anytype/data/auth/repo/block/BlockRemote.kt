@@ -360,4 +360,6 @@ interface BlockRemote {
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
     suspend fun fileSpaceUsage(): FileLimits
+
+    suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
 }

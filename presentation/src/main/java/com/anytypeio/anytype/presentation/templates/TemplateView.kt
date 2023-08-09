@@ -2,6 +2,8 @@ package com.anytypeio.anytype.presentation.templates
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 
 sealed class TemplateView {
 
@@ -15,6 +17,9 @@ sealed class TemplateView {
         val typeId: Id,
         val layout: ObjectType.Layout,
         val emoji: String?,
-        val image: String?
+        val image: String?,
+        val coverColor: CoverColor?,
+        val coverImage: Url?,
+        val coverGradient: String?
     ) : TemplateView()
 }

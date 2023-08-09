@@ -6,7 +6,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -37,10 +36,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
@@ -48,16 +52,19 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -78,7 +85,8 @@ fun ObjectTypeTemplatesWidget(
         AnimatedVisibility(
             visible = currentState.showWidget,
             enter = fadeIn(),
-            exit = fadeOut(tween(200)
+            exit = fadeOut(
+                tween(200)
             )
         ) {
             Box(
@@ -131,8 +139,7 @@ fun ObjectTypeTemplatesWidget(
                     .background(
                         color = colorResource(id = R.color.background_primary),
                         shape = RoundedCornerShape(size = 16.dp)
-                    )
-                ,
+                    ),
             ) {
                 Column(
                     modifier = Modifier
@@ -232,6 +239,7 @@ private fun TemplatesList(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun TemplateItemContent(item: TemplateView) {
     when (item) {
@@ -239,7 +247,91 @@ private fun TemplateItemContent(item: TemplateView) {
             Spacer(modifier = Modifier.height(28.dp))
             TemplateItemTitle(text = stringResource(id = R.string.blank))
         }
+
         is TemplateView.Template -> {
+            val coverColor = item.coverColor
+            val coverImage = item.coverImage
+            val coverGradient = item.coverGradient
+            val isCoverPresent = coverColor != null || coverImage != null || coverGradient != null
+            if (isCoverPresent) {
+                Box(
+                    modifier = Modifier
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                ) {
+                    when {
+                        coverColor != null -> {
+                            Box(
+                                modifier = Modifier
+                                    .height(74.dp)
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = Color(coverColor.color),
+                                        shape = RoundedCornerShape(
+                                            topStart = 16.dp,
+                                            topEnd = 16.dp
+                                        )
+                                    ),
+                            )
+                        }
+
+                        coverImage != null -> {
+                            GlideImage(
+                                model = coverImage,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(74.dp)
+                                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+                                contentDescription = stringResource(id = R.string.content_description_document_cover),
+                                contentScale = ContentScale.Crop,
+                            )
+                        }
+
+                        coverGradient != null -> {
+                            val resourceId = when (coverGradient) {
+                                CoverGradient.YELLOW -> R.drawable.cover_gradient_yellow
+                                CoverGradient.RED -> R.drawable.cover_gradient_red
+                                CoverGradient.BLUE -> R.drawable.cover_gradient_blue
+                                CoverGradient.TEAL -> R.drawable.cover_gradient_teal
+                                CoverGradient.PINK_ORANGE -> R.drawable.wallpaper_gradient_1
+                                CoverGradient.BLUE_PINK -> R.drawable.wallpaper_gradient_2
+                                CoverGradient.GREEN_ORANGE -> R.drawable.wallpaper_gradient_3
+                                CoverGradient.SKY -> R.drawable.wallpaper_gradient_4
+                                else -> {
+                                    Timber.e("Unknown cover gradient: $coverGradient")
+                                    0
+                                }
+                            }
+                            val drawable = LocalContext.current.getDrawable(resourceId)
+                            Box(
+                                modifier = Modifier
+                                    .height(74.dp)
+                                    .fillMaxWidth()
+                                    .clip(
+                                        shape = RoundedCornerShape(
+                                            topStart = 16.dp,
+                                            topEnd = 16.dp
+                                        )
+                                    )
+                                    .drawBehind {
+                                        drawIntoCanvas { canvas ->
+                                            drawable?.let {
+                                                it.setBounds(
+                                                    0,
+                                                    0,
+                                                    size.width.roundToInt(),
+                                                    size.height.roundToInt()
+                                                )
+                                                it.draw(canvas.nativeCanvas)
+                                            }
+                                        }
+                                    }
+                            )
+                        }
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(28.dp))
             TemplateItemTitle(text = item.name)
             Spacer(modifier = Modifier.height(12.dp))
@@ -321,7 +413,10 @@ fun ComposablePreview() {
             typeId = "page",
             layout = ObjectType.Layout.BASIC,
             image = null,
-            emoji = null
+            emoji = null,
+            coverColor = null,
+            coverGradient = null,
+            coverImage = null,
         ),
     )
     val state = TemplatesWidgetUiState(items = items, showWidget = true)

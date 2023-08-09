@@ -1501,7 +1501,13 @@ class ObjectSetViewModel(
                         if (templates.isNotEmpty()) {
                             _templateViews.value =
                                 listOf(templates.first().toTemplateViewBlank(objectType.id)) +
-                                        templates.map { it.toTemplateView(typeId = objectType.id) }
+                                        templates.map {
+                                            it.toTemplateView(
+                                                typeId = objectType.id,
+                                                urlBuilder = urlBuilder,
+                                                coverImageHashProvider = coverImageHashProvider
+                                            )
+                                        }
                         }
                     },
                     onFailure = { e ->

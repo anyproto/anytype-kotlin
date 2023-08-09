@@ -63,6 +63,7 @@ roomVersion = '2.4.3'
 amplitudeVersion = '2.36.1'
 coilComposeVersion = '2.2.2'
 sentryVersion = '6.0.0'
+glideComposeVersion = '1.0.0-alpha.3'
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
@@ -92,6 +93,7 @@ wireRuntime = { module = "com.squareup.wire:wire-runtime", version.ref = "wireVe
 gsonWire = { module = "com.squareup.wire:wire-gson-support", version.ref = "wireVersion" }
 glide = { module = "com.github.bumptech.glide:glide", version.ref = "glideVersion" }
 glideCompiler = { module = "com.github.bumptech.glide:compiler", version.ref = "glideVersion" }
+glideCompose = { module = "com.github.bumptech.glide:compose" , version.ref = "glideComposeVersion"}
 coilCompose = { module = "io.coil-kt:coil-compose", version.ref = "coilComposeVersion"  }
 mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockitoKotlinVersion" }
 junit = { module = "junit:junit", version.ref = "junitVersion" }

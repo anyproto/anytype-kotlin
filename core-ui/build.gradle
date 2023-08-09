@@ -38,6 +38,7 @@ dependencies {
     implementation libs.recyclerView
     implementation libs.constraintLayout
     implementation libs.glide
+    implementation libs.glideCompose
     implementation libs.shimmerLayout
     implementation libs.timber
     implementation libs.betterLinkMovement

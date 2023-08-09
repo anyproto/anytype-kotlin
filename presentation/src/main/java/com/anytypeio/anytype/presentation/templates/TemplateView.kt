@@ -21,5 +21,10 @@ sealed class TemplateView {
         val coverColor: CoverColor?,
         val coverImage: Url?,
         val coverGradient: String?
-    ) : TemplateView()
+    ) : TemplateView() {
+
+        fun isCoverPresent(): Boolean {
+            return coverColor != null || coverImage != null || coverGradient != null
+        }
+    }
 }

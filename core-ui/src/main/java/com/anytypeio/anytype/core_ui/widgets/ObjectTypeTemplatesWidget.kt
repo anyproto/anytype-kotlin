@@ -239,7 +239,6 @@ private fun TemplatesList(
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun TemplateItemContent(item: TemplateView) {
     when (item) {
@@ -247,96 +246,107 @@ private fun TemplateItemContent(item: TemplateView) {
             Spacer(modifier = Modifier.height(28.dp))
             TemplateItemTitle(text = stringResource(id = R.string.blank))
         }
-
         is TemplateView.Template -> {
-            val coverColor = item.coverColor
-            val coverImage = item.coverImage
-            val coverGradient = item.coverGradient
-            val isCoverPresent = coverColor != null || coverImage != null || coverGradient != null
-            if (isCoverPresent) {
-                Box(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                ) {
-                    when {
-                        coverColor != null -> {
-                            Box(
-                                modifier = Modifier
-                                    .height(74.dp)
-                                    .fillMaxWidth()
-                                    .background(
-                                        color = Color(coverColor.color),
-                                        shape = RoundedCornerShape(
-                                            topStart = 16.dp,
-                                            topEnd = 16.dp
-                                        )
-                                    ),
-                            )
-                        }
-
-                        coverImage != null -> {
-                            GlideImage(
-                                model = coverImage,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(74.dp)
-                                    .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
-                                contentDescription = stringResource(id = R.string.content_description_document_cover),
-                                contentScale = ContentScale.Crop,
-                            )
-                        }
-
-                        coverGradient != null -> {
-                            val resourceId = when (coverGradient) {
-                                CoverGradient.YELLOW -> R.drawable.cover_gradient_yellow
-                                CoverGradient.RED -> R.drawable.cover_gradient_red
-                                CoverGradient.BLUE -> R.drawable.cover_gradient_blue
-                                CoverGradient.TEAL -> R.drawable.cover_gradient_teal
-                                CoverGradient.PINK_ORANGE -> R.drawable.wallpaper_gradient_1
-                                CoverGradient.BLUE_PINK -> R.drawable.wallpaper_gradient_2
-                                CoverGradient.GREEN_ORANGE -> R.drawable.wallpaper_gradient_3
-                                CoverGradient.SKY -> R.drawable.wallpaper_gradient_4
-                                else -> {
-                                    Timber.e("Unknown cover gradient: $coverGradient")
-                                    0
-                                }
-                            }
-                            val drawable = LocalContext.current.getDrawable(resourceId)
-                            Box(
-                                modifier = Modifier
-                                    .height(74.dp)
-                                    .fillMaxWidth()
-                                    .clip(
-                                        shape = RoundedCornerShape(
-                                            topStart = 16.dp,
-                                            topEnd = 16.dp
-                                        )
-                                    )
-                                    .drawBehind {
-                                        drawIntoCanvas { canvas ->
-                                            drawable?.let {
-                                                it.setBounds(
-                                                    0,
-                                                    0,
-                                                    size.width.roundToInt(),
-                                                    size.height.roundToInt()
-                                                )
-                                                it.draw(canvas.nativeCanvas)
-                                            }
-                                        }
-                                    }
-                            )
-                        }
-                    }
-                }
+            if (item.isCoverPresent()) {
+                TemplateItemCoverAndIcon(item = item)
             }
-
             Spacer(modifier = Modifier.height(28.dp))
             TemplateItemTitle(text = item.name)
             Spacer(modifier = Modifier.height(12.dp))
             TemplateItemRectangles()
         }
+    }
+}
+
+@Composable
+private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
+    Box(
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+    ) {
+        TemplateItemCoverColor(item = item)
+        TemplateItemCoverImage(item = item)
+        TemplateItemCoverGradient(item = item)
+    }
+}
+
+@Composable
+private fun TemplateItemCoverColor(item: TemplateView.Template) {
+    item.coverColor?.let {
+        Box(
+            modifier = Modifier
+                .height(74.dp)
+                .fillMaxWidth()
+                .background(
+                    color = Color(it.color),
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp
+                    )
+                ),
+        )
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+private fun TemplateItemCoverImage(item: TemplateView.Template) {
+    item.coverImage?.let {
+        GlideImage(
+            model = it,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(74.dp)
+                .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)),
+            contentDescription = stringResource(id = R.string.content_description_document_cover),
+            contentScale = ContentScale.Crop,
+        )
+    }
+}
+
+@Composable
+private fun TemplateItemCoverGradient(item: TemplateView.Template) {
+    item.coverGradient?.let {
+        val resourceId = when (it) {
+            CoverGradient.YELLOW -> R.drawable.cover_gradient_yellow
+            CoverGradient.RED -> R.drawable.cover_gradient_red
+            CoverGradient.BLUE -> R.drawable.cover_gradient_blue
+            CoverGradient.TEAL -> R.drawable.cover_gradient_teal
+            CoverGradient.PINK_ORANGE -> R.drawable.wallpaper_gradient_1
+            CoverGradient.BLUE_PINK -> R.drawable.wallpaper_gradient_2
+            CoverGradient.GREEN_ORANGE -> R.drawable.wallpaper_gradient_3
+            CoverGradient.SKY -> R.drawable.wallpaper_gradient_4
+            else -> {
+                Timber.e("Unknown cover gradient: $it")
+                0
+            }
+        }
+        val drawable = LocalContext.current.getDrawable(resourceId)
+        Box(
+            modifier = Modifier
+                .height(74.dp)
+                .fillMaxWidth()
+                .clip(
+                    shape = RoundedCornerShape(
+                        topStart = 16.dp,
+                        topEnd = 16.dp
+                    )
+                )
+                .drawBehind {
+                    drawIntoCanvas { canvas ->
+                        drawable?.let {
+                            it.setBounds(
+                                0,
+                                0,
+                                size.width.roundToInt(),
+                                size.height.roundToInt()
+                            )
+                            it.draw(canvas.nativeCanvas)
+                        }
+                    }
+                }
+        )
     }
 }
 

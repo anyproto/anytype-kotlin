@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
+import android.util.Log
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
@@ -446,8 +447,8 @@ fun ObjectWrapper.Basic.toTemplateView(
         id = id,
         name = name.orEmpty(),
         typeId = typeId,
-        emoji = iconEmoji,
-        image = iconImage,
+        emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
+        image = if (!iconImage.isNullOrBlank()) urlBuilder.thumbnail(iconImage!!) else null,
         layout = layout ?: ObjectType.Layout.BASIC,
         coverColor = coverContainer?.coverColor,
         coverImage = coverContainer?.coverImage,

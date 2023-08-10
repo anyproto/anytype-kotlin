@@ -26,5 +26,9 @@ sealed class TemplateView {
         fun isCoverPresent(): Boolean {
             return coverColor != null || coverImage != null || coverGradient != null
         }
+
+        fun isImageOrEmojiPresent(): Boolean {
+            return image != null || emoji != null
+        }
     }
 }

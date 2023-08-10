@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,16 +15,19 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
@@ -45,20 +49,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -246,14 +251,92 @@ private fun TemplateItemContent(item: TemplateView) {
             Spacer(modifier = Modifier.height(28.dp))
             TemplateItemTitle(text = stringResource(id = R.string.blank))
         }
+
         is TemplateView.Template -> {
             if (item.isCoverPresent()) {
                 TemplateItemCoverAndIcon(item = item)
+                if (!item.isImageOrEmojiPresent()) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                } else {
+                    Spacer(modifier = Modifier.height(6.dp))
+                }
+            } else {
+                if (item.isImageOrEmojiPresent()) {
+                    val modifier = Modifier
+                        .width(48.dp)
+                        .height(60.dp)
+                        .padding(start = 16.dp, top = 28.dp)
+                    TemplateItemIconOrImage(item = item, modifier = modifier)
+                } else {
+                    Spacer(modifier = Modifier.height(28.dp))
+                }
             }
-            Spacer(modifier = Modifier.height(28.dp))
-            TemplateItemTitle(text = item.name)
+            if (item.layout == ObjectType.Layout.TODO) {
+                TemplateItemTodoTitle(text = item.name)
+            } else {
+                TemplateItemTitle(text = item.name)
+            }
             Spacer(modifier = Modifier.height(12.dp))
             TemplateItemRectangles()
+        }
+    }
+}
+
+@Composable
+private fun TemplateItemIconOrImage(
+    item: TemplateView.Template,
+    modifier: Modifier = Modifier
+) {
+    item.image?.let {
+        val isProfile = item.layout == ObjectType.Layout.PROFILE
+        val modifier1 = if (isProfile) {
+            modifier
+                .width(32.dp)
+                .height(32.dp)
+                .padding(0.dp)
+                .clip(CircleShape)
+        } else {
+            modifier.clip(RoundedCornerShape(3.dp))
+        }
+        Image(
+            painter = rememberAsyncImagePainter(
+                model = it,
+                error = painterResource(id = R.drawable.ic_home_widget_space)
+            ),
+            contentDescription = "Custom image template's icon",
+            modifier = modifier1
+                .border(
+                    width = 2.dp,
+                    color = colorResource(id = R.color.background_primary),
+                    shape = RoundedCornerShape(3.dp)
+                ),
+            contentScale = ContentScale.Crop
+        )
+    }
+    item.emoji?.let {
+        Box(
+            modifier = modifier
+                .clip(RoundedCornerShape(8.dp))
+                .background(
+                    color = colorResource(id = R.color.shape_tertiary)
+                )
+                .border(
+                    width = 2.dp,
+                    color = colorResource(id = R.color.background_primary),
+                    shape = RoundedCornerShape(8.dp)
+                )
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = Emojifier.safeUri(it),
+                    error = painterResource(id = R.drawable.ic_home_widget_space)
+                ),
+                contentDescription = "Emoji template's icon",
+                modifier = Modifier
+                    .size(20.dp)
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Crop
+            )
         }
     }
 }
@@ -268,6 +351,22 @@ private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
         TemplateItemCoverColor(item = item)
         TemplateItemCoverImage(item = item)
         TemplateItemCoverGradient(item = item)
+        when (item.layout) {
+            ObjectType.Layout.TODO -> {}
+            ObjectType.Layout.PROFILE -> {
+                val modifier = Modifier
+                    .align(Alignment.Center)
+                    .padding(top = 50.dp)
+                TemplateItemIconOrImage(item = item, modifier = modifier)
+            }
+            else -> {
+                val modifier = Modifier
+                    .width(48.dp)
+                    .height(82.dp)
+                    .padding(start = 16.dp, top = 50.dp)
+                TemplateItemIconOrImage(item = item, modifier = modifier)
+            }
+        }
     }
 }
 
@@ -289,12 +388,14 @@ private fun TemplateItemCoverColor(item: TemplateView.Template) {
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 private fun TemplateItemCoverImage(item: TemplateView.Template) {
     item.coverImage?.let {
-        GlideImage(
-            model = it,
+        Image(
+            painter = rememberAsyncImagePainter(
+                model = it,
+                error = painterResource(id = R.drawable.ic_home_widget_space)
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(74.dp)
@@ -307,7 +408,7 @@ private fun TemplateItemCoverImage(item: TemplateView.Template) {
 
 @Composable
 private fun TemplateItemCoverGradient(item: TemplateView.Template) {
-    item.coverGradient?.let {
+    item.coverGradient?.let { it ->
         val resourceId = when (it) {
             CoverGradient.YELLOW -> R.drawable.cover_gradient_yellow
             CoverGradient.RED -> R.drawable.cover_gradient_red
@@ -335,14 +436,14 @@ private fun TemplateItemCoverGradient(item: TemplateView.Template) {
                 )
                 .drawBehind {
                     drawIntoCanvas { canvas ->
-                        drawable?.let {
-                            it.setBounds(
+                        drawable?.let { d ->
+                            d.setBounds(
                                 0,
                                 0,
                                 size.width.roundToInt(),
                                 size.height.roundToInt()
                             )
-                            it.draw(canvas.nativeCanvas)
+                            d.draw(canvas.nativeCanvas)
                         }
                     }
                 }
@@ -357,11 +458,37 @@ private fun TemplateItemTitle(text: String) {
             start = 16.dp,
             end = 16.dp
         ),
-        text = text,
+        text = text.ifBlank { stringResource(id = R.string.untitled) },
         style = Caption2Semibold.copy(
             color = colorResource(id = R.color.text_primary)
         ),
+        maxLines = 2
     )
+}
+
+@Composable
+private fun TemplateItemTodoTitle(text: String) {
+    Row {
+        Image(
+            painter = painterResource(id = R.drawable.ic_todo_title_checkbox),
+            contentDescription = "Todo icon",
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .size(14.dp)
+                .align(Alignment.CenterVertically)
+        )
+        Text(
+            modifier = Modifier.padding(
+                start = 4.dp,
+                end = 16.dp
+            ),
+            text = text.ifBlank { stringResource(id = R.string.untitled) },
+            style = Caption2Semibold.copy(
+                color = colorResource(id = R.color.text_primary)
+            ),
+            maxLines = 1
+        )
+    }
 }
 
 @Composable

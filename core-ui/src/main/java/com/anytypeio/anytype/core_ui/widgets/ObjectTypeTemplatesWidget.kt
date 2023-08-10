@@ -322,12 +322,7 @@ private fun TemplateItemIconOrImage(
                 error = painterResource(id = R.drawable.ic_home_widget_space)
             ),
             contentDescription = "Custom image template's icon",
-            modifier = modifier
-                .border(
-                    width = 2.dp,
-                    color = colorResource(id = R.color.background_primary),
-                    shape = RoundedCornerShape(3.dp)
-                ),
+            modifier = modifier,
             contentScale = ContentScale.Crop
         )
     }

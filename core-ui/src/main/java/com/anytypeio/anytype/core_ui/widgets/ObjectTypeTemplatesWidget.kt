@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -235,9 +236,7 @@ private fun TemplatesList(
                             itemClick(item)
                         }
                 ) {
-                    Column {
-                        TemplateItemContent(item)
-                    }
+                    TemplateItemContent(item)
                 }
             }
         )
@@ -246,38 +245,62 @@ private fun TemplatesList(
 
 @Composable
 private fun TemplateItemContent(item: TemplateView) {
-    when (item) {
-        is TemplateView.Blank -> {
-            Spacer(modifier = Modifier.height(28.dp))
-            TemplateItemTitle(text = stringResource(id = R.string.blank))
-        }
+    Column {
+        when (item) {
+            is TemplateView.Blank -> {
+                Spacer(modifier = Modifier.height(28.dp))
+                TemplateItemTitle(text = stringResource(id = R.string.blank))
+            }
 
-        is TemplateView.Template -> {
-            if (item.isCoverPresent()) {
-                TemplateItemCoverAndIcon(item = item)
-                if (!item.isImageOrEmojiPresent()) {
-                    Spacer(modifier = Modifier.height(12.dp))
+            is TemplateView.Template -> {
+                if (item.isCoverPresent()) {
+                    TemplateItemCoverAndIcon(item = item)
+                    if (!item.isImageOrEmojiPresent()) {
+                        Spacer(modifier = Modifier.height(12.dp))
+                    } else {
+                        Spacer(modifier = Modifier.height(6.dp))
+                    }
                 } else {
-                    Spacer(modifier = Modifier.height(6.dp))
+                    if (item.layout == ObjectType.Layout.TODO) {
+                        Spacer(modifier = Modifier.height(28.dp))
+                        TemplateItemTodoTitle(text = item.name)
+                    } else {
+                        if (item.isImageOrEmojiPresent()) {
+                            if (item.layout == ObjectType.Layout.PROFILE) {
+                                Box(
+                                    modifier = Modifier
+                                        .wrapContentWidth()
+                                        .height(60.dp)
+                                        .padding(top = 28.dp)
+                                        .align(Alignment.CenterHorizontally)
+                                ) {
+                                    val modifier = Modifier
+                                        .size(32.dp)
+                                        .clip(CircleShape)
+                                    TemplateItemIconOrImage(item = item, modifier = modifier)
+                                }
+                                TemplateItemTitle(text = item.name, modifier = Modifier.align(Alignment.CenterHorizontally))
+                            } else {
+                                val modifier = Modifier
+                                    .width(48.dp)
+                                    .height(60.dp)
+                                    .padding(start = 16.dp, top = 28.dp)
+                                    .clip(RoundedCornerShape(3.dp))
+                                TemplateItemIconOrImage(item = item, modifier = modifier)
+                                TemplateItemTitle(text = item.name)
+                            }
+                        } else {
+                            Spacer(modifier = Modifier.height(28.dp))
+                        }
+                    }
+//
+//
+//
+
                 }
-            } else {
-                if (item.isImageOrEmojiPresent()) {
-                    val modifier = Modifier
-                        .width(48.dp)
-                        .height(60.dp)
-                        .padding(start = 16.dp, top = 28.dp)
-                    TemplateItemIconOrImage(item = item, modifier = modifier)
-                } else {
-                    Spacer(modifier = Modifier.height(28.dp))
-                }
+                Spacer(modifier = Modifier.height(12.dp))
+                TemplateItemRectangles()
             }
-            if (item.layout == ObjectType.Layout.TODO) {
-                TemplateItemTodoTitle(text = item.name)
-            } else {
-                TemplateItemTitle(text = item.name)
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            TemplateItemRectangles()
         }
     }
 }
@@ -288,23 +311,23 @@ private fun TemplateItemIconOrImage(
     modifier: Modifier = Modifier
 ) {
     item.image?.let {
-        val isProfile = item.layout == ObjectType.Layout.PROFILE
-        val modifier1 = if (isProfile) {
-            modifier
-                .width(32.dp)
-                .height(32.dp)
-                .padding(0.dp)
-                .clip(CircleShape)
-        } else {
-            modifier.clip(RoundedCornerShape(3.dp))
-        }
+//        val isProfile = item.layout == ObjectType.Layout.PROFILE
+//        val modifier1 = if (isProfile) {
+//            modifier
+//                .width(32.dp)
+//                .height(32.dp)
+//                .padding(0.dp)
+//                .clip(CircleShape)
+//        } else {
+//            modifier.clip(RoundedCornerShape(3.dp))
+//        }
         Image(
             painter = rememberAsyncImagePainter(
                 model = it,
                 error = painterResource(id = R.drawable.ic_home_widget_space)
             ),
             contentDescription = "Custom image template's icon",
-            modifier = modifier1
+            modifier = modifier
                 .border(
                     width = 2.dp,
                     color = colorResource(id = R.color.background_primary),
@@ -359,6 +382,7 @@ private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
                     .padding(top = 50.dp)
                 TemplateItemIconOrImage(item = item, modifier = modifier)
             }
+
             else -> {
                 val modifier = Modifier
                     .width(48.dp)
@@ -452,9 +476,9 @@ private fun TemplateItemCoverGradient(item: TemplateView.Template) {
 }
 
 @Composable
-private fun TemplateItemTitle(text: String) {
+private fun TemplateItemTitle(text: String, modifier: Modifier = Modifier) {
     Text(
-        modifier = Modifier.padding(
+        modifier = modifier.padding(
             start = 16.dp,
             end = 16.dp
         ),

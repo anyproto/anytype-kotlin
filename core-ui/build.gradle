@@ -52,6 +52,7 @@ dependencies {
     implementation libs.composeMaterial3
     implementation libs.composeToolingPreview
     debugImplementation libs.composeTooling
+    implementation libs.coilCompose
 
     testImplementation libs.fragmentTesting
     testImplementation project(':test:android-utils')

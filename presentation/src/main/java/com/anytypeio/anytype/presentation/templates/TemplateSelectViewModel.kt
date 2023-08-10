@@ -6,18 +6,23 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.event.EventAnalytics
+import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
+import com.anytypeio.anytype.presentation.relations.getCover
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,7 +33,9 @@ class TemplateSelectViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getTemplates: GetTemplates,
     private val applyTemplate: ApplyTemplate,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val coverImageHashProvider: CoverImageHashProvider,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val isDismissed = MutableStateFlow(false)
@@ -77,6 +84,10 @@ class TemplateSelectViewModel(
                 )
             )
             addAll(templates.map {
+                val coverContainer = if (it.coverType != CoverType.NONE) {
+                    BasicObjectCoverWrapper(it)
+                        .getCover(urlBuilder, coverImageHashProvider)
+                } else null
                 TemplateView.Template(
                     id = it.id,
                     name = it.name.orEmpty(),
@@ -84,6 +95,9 @@ class TemplateSelectViewModel(
                     emoji = it.iconEmoji.orEmpty(),
                     image = it.iconImage.orEmpty(),
                     typeId = objType.id,
+                    coverColor = coverContainer?.coverColor,
+                    coverImage = coverContainer?.coverImage,
+                    coverGradient = coverContainer?.coverGradient
                 )
             })
         }
@@ -142,7 +156,9 @@ class TemplateSelectViewModel(
         private val applyTemplate: ApplyTemplate,
         private val getTemplates: GetTemplates,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val coverImageHashProvider: CoverImageHashProvider,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -151,7 +167,9 @@ class TemplateSelectViewModel(
                 applyTemplate = applyTemplate,
                 getTemplates = getTemplates,
                 storeOfObjectTypes = storeOfObjectTypes,
-                analytics = analytics
+                analytics = analytics,
+                coverImageHashProvider = coverImageHashProvider,
+                urlBuilder = urlBuilder
             ) as T
         }
     }

@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.presentation.sets
 
+import android.util.Log
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
@@ -30,8 +32,10 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
+import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
+import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.relations.type
@@ -430,14 +434,25 @@ fun Viewer.isEmpty(): Boolean =
         is Viewer.Unsupported -> false
     }
 
-fun ObjectWrapper.Basic.toTemplateView(typeId: Id): TemplateView.Template {
+fun ObjectWrapper.Basic.toTemplateView(
+    typeId: Id,
+    urlBuilder: UrlBuilder,
+    coverImageHashProvider: CoverImageHashProvider
+): TemplateView.Template {
+    val coverContainer = if (coverType != CoverType.NONE) {
+        BasicObjectCoverWrapper(this)
+            .getCover(urlBuilder, coverImageHashProvider)
+    } else null
     return TemplateView.Template(
         id = id,
         name = name.orEmpty(),
         typeId = typeId,
-        emoji = iconEmoji,
-        image = iconImage,
-        layout = layout ?: ObjectType.Layout.BASIC
+        emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
+        image = if (!iconImage.isNullOrBlank()) urlBuilder.thumbnail(iconImage!!) else null,
+        layout = layout ?: ObjectType.Layout.BASIC,
+        coverColor = coverContainer?.coverColor,
+        coverImage = coverContainer?.coverImage,
+        coverGradient = coverContainer?.coverGradient
     )
 }
 

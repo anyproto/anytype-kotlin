@@ -254,11 +254,17 @@ private fun TemplateItemContent(item: TemplateView) {
 
             is TemplateView.Template -> {
                 if (item.isCoverPresent()) {
-                    TemplateItemCoverAndIcon(item = item)
-                    if (!item.isImageOrEmojiPresent()) {
+                    TemplateItemCoverAndIcon(item)
+                    if (item.layout == ObjectType.Layout.TODO) {
                         Spacer(modifier = Modifier.height(12.dp))
+                        TemplateItemTodoTitle(text = item.name)
                     } else {
-                        Spacer(modifier = Modifier.height(6.dp))
+                        if (!item.isImageOrEmojiPresent()) {
+                            Spacer(modifier = Modifier.height(12.dp))
+                        } else {
+                            Spacer(modifier = Modifier.height(6.dp))
+                        }
+                        TemplateItemTitle(text = item.name)
                     }
                 } else {
                     if (item.layout == ObjectType.Layout.TODO) {
@@ -279,7 +285,10 @@ private fun TemplateItemContent(item: TemplateView) {
                                         .clip(CircleShape)
                                     TemplateItemIconOrImage(item = item, modifier = modifier)
                                 }
-                                TemplateItemTitle(text = item.name, modifier = Modifier.align(Alignment.CenterHorizontally))
+                                TemplateItemTitle(
+                                    text = item.name,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                )
                             } else {
                                 val modifier = Modifier
                                     .width(48.dp)
@@ -293,10 +302,6 @@ private fun TemplateItemContent(item: TemplateView) {
                             Spacer(modifier = Modifier.height(28.dp))
                         }
                     }
-//
-//
-//
-
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 TemplateItemRectangles()
@@ -311,16 +316,6 @@ private fun TemplateItemIconOrImage(
     modifier: Modifier = Modifier
 ) {
     item.image?.let {
-//        val isProfile = item.layout == ObjectType.Layout.PROFILE
-//        val modifier1 = if (isProfile) {
-//            modifier
-//                .width(32.dp)
-//                .height(32.dp)
-//                .padding(0.dp)
-//                .clip(CircleShape)
-//        } else {
-//            modifier.clip(RoundedCornerShape(3.dp))
-//        }
         Image(
             painter = rememberAsyncImagePainter(
                 model = it,

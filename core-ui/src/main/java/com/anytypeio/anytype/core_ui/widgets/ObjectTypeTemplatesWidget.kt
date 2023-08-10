@@ -372,10 +372,19 @@ private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
         when (item.layout) {
             ObjectType.Layout.TODO -> {}
             ObjectType.Layout.PROFILE -> {
-                val modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(top = 50.dp)
-                TemplateItemIconOrImage(item = item, modifier = modifier)
+                Box(
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .height(82.dp)
+                        .padding(top = 50.dp)
+                        .align(Alignment.TopCenter)
+                ) {
+                    val modifier = Modifier
+                        .size(32.dp)
+                        .clip(CircleShape)
+                        .align(Alignment.Center)
+                    TemplateItemIconOrImage(item = item, modifier = modifier)
+                }
             }
 
             else -> {

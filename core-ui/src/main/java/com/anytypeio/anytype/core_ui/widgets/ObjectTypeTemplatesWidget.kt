@@ -52,6 +52,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -264,7 +265,14 @@ private fun TemplateItemContent(item: TemplateView) {
                         } else {
                             Spacer(modifier = Modifier.height(6.dp))
                         }
-                        TemplateItemTitle(text = item.name)
+                        if (item.layout == ObjectType.Layout.PROFILE) {
+                            TemplateItemTitle(
+                                text = item.name,
+                                textAlign = TextAlign.Center,
+                            )
+                        } else {
+                            TemplateItemTitle(text = item.name)
+                        }
                     }
                 } else {
                     if (item.layout == ObjectType.Layout.TODO) {
@@ -285,9 +293,10 @@ private fun TemplateItemContent(item: TemplateView) {
                                         .clip(CircleShape)
                                     TemplateItemIconOrImage(item = item, modifier = modifier)
                                 }
+                                Spacer(modifier = Modifier.height(6.dp))
                                 TemplateItemTitle(
                                     text = item.name,
-                                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                                    textAlign = TextAlign.Center
                                 )
                             } else {
                                 val modifier = Modifier
@@ -475,9 +484,9 @@ private fun TemplateItemCoverGradient(item: TemplateView.Template) {
 }
 
 @Composable
-private fun TemplateItemTitle(text: String, modifier: Modifier = Modifier) {
+private fun TemplateItemTitle(text: String, textAlign: TextAlign = TextAlign.Start) {
     Text(
-        modifier = modifier.padding(
+        modifier = Modifier.padding(
             start = 16.dp,
             end = 16.dp
         ),
@@ -485,7 +494,8 @@ private fun TemplateItemTitle(text: String, modifier: Modifier = Modifier) {
         style = Caption2Semibold.copy(
             color = colorResource(id = R.color.text_primary)
         ),
-        maxLines = 2
+        maxLines = 2,
+        textAlign = textAlign
     )
 }
 

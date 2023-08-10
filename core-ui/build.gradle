@@ -38,7 +38,6 @@ dependencies {
     implementation libs.recyclerView
     implementation libs.constraintLayout
     implementation libs.glide
-    implementation libs.glideCompose
     implementation libs.shimmerLayout
     implementation libs.timber
     implementation libs.betterLinkMovement
@@ -53,6 +52,7 @@ dependencies {
     implementation libs.composeMaterial3
     implementation libs.composeToolingPreview
     debugImplementation libs.composeTooling
+    implementation libs.coilCompose
 
     testImplementation libs.fragmentTesting
     testImplementation project(':test:android-utils')

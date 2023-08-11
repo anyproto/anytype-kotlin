@@ -880,7 +880,10 @@ class ObjectSetViewModel(
         Timber.d("onNewButtonIconClicked, ")
         templatesWidgetState.value = TemplatesWidgetUiState(
             items = _templateViews.value,
-            showWidget = true
+            showWidget = true,
+            isEditing = false,
+            isMoreMenuVisible = false,
+            moreMenuTemplate = null
         )
         viewModelScope.launch {
             logEvent(
@@ -1569,6 +1572,21 @@ class ObjectSetViewModel(
             toast("Unable to define a source for a new object.")
         }
         return sourceId
+    }
+
+    fun onEditTemplateButtonClicked() {
+        templatesWidgetState.value = templatesWidgetState.value.copy(isEditing = true)
+    }
+
+    fun onDoneTemplateButtonClicked() {
+        templatesWidgetState.value = templatesWidgetState.value.copy(isEditing = false)
+    }
+
+    fun onMoreTemplateButtonClicked(template: TemplateView.Template) {
+        templatesWidgetState.value = templatesWidgetState.value.copy(
+            isMoreMenuVisible = true,
+            moreMenuTemplate = template
+        )
     }
     //endregion
 

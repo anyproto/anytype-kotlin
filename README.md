@@ -15,7 +15,7 @@ Official Anytype client for Android.
     gpr.key=GITHUB_PERSONAL_ACCESS_TOKEN
     ```
 
-Your Github ID (starting with '#' character) can be found [here](https://caius.github.io/github_id/). As to your personal Github access token, you can generate it in `Developer settings` in your profile settings on Github. 
+Your Github ID (starting with '#' character) can be found [here](https://caius.github.io/github_id/). As to your personal Github access token, you can generate it in [Developer settings](https://github.com/settings/tokens/new?scopes=read:packages&description=anytype%20GPR) in your profile settings on Github. 
 
 - Create `apikeys.properties` file in root project folder:
 

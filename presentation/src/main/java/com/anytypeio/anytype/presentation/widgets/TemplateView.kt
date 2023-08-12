@@ -10,7 +10,7 @@ data class TemplatesWidgetUiState(
     val moreMenuTemplate: TemplateView.Template?
 ) {
     companion object {
-        fun empty() = TemplatesWidgetUiState(
+        fun reset() = TemplatesWidgetUiState(
             items = emptyList(),
             showWidget = false,
             isEditing = false,

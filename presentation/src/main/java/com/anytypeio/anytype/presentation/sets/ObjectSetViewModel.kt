@@ -72,6 +72,7 @@ import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -159,7 +160,7 @@ class ObjectSetViewModel(
     val header: StateFlow<SetOrCollectionHeaderState> = _header
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
-    val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.empty())
+    val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.reset())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -895,11 +896,6 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onDismissTemplatesWidget() {
-        Timber.d("onDismissTemplatesWidget, ")
-        templatesWidgetState.value = templatesWidgetState.value.copy(showWidget = false)
-    }
-
     private fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set, templateId: Id?) {
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
@@ -1533,9 +1529,14 @@ class ObjectSetViewModel(
     }
 
     fun onTemplateItemClicked(item: TemplateView) {
+        val state = templatesWidgetState.value
+        if (state.isMoreMenuVisible) {
+            templatesWidgetState.value = state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
+            return
+        }
         when(item) {
             is TemplateView.Blank -> {
-                templatesWidgetState.value = TemplatesWidgetUiState.empty()
+                templatesWidgetState.value = TemplatesWidgetUiState.reset()
                 viewModelScope.launch {
                     logEvent(
                         state = stateReducer.state.value,
@@ -1543,10 +1544,13 @@ class ObjectSetViewModel(
                         event = ObjectStateAnalyticsEvent.SELECT_TEMPLATE
                     )
                 }
-                proceedWithCreatingNewDataViewObject()
+                viewModelScope.launch {
+                    delay(200)
+                    proceedWithCreatingNewDataViewObject()
+                }
             }
             is TemplateView.Template -> {
-                templatesWidgetState.value = TemplatesWidgetUiState.empty()
+                templatesWidgetState.value = TemplatesWidgetUiState.reset()
                 viewModelScope.launch {
                     logEvent(
                         state = stateReducer.state.value,
@@ -1554,7 +1558,10 @@ class ObjectSetViewModel(
                         event = ObjectStateAnalyticsEvent.SELECT_TEMPLATE
                     )
                 }
-                proceedWithCreatingNewDataViewObject(templatesId = item.id)
+                viewModelScope.launch {
+                    delay(200)
+                    proceedWithCreatingNewDataViewObject(templatesId = item.id)
+                }
             }
         }
     }
@@ -1579,14 +1586,42 @@ class ObjectSetViewModel(
     }
 
     fun onDoneTemplateButtonClicked() {
-        templatesWidgetState.value = templatesWidgetState.value.copy(isEditing = false)
+        Timber.d("onDoneTemplateButtonClicked, ")
+        templatesWidgetState.value = if (templatesWidgetState.value.isMoreMenuVisible) {
+            templatesWidgetState.value.copy(
+                isMoreMenuVisible = false,
+                moreMenuTemplate = null
+            )
+        } else {
+            templatesWidgetState.value.copy(
+                isEditing = false
+            )
+        }
     }
 
     fun onMoreTemplateButtonClicked(template: TemplateView.Template) {
-        templatesWidgetState.value = templatesWidgetState.value.copy(
-            isMoreMenuVisible = true,
-            moreMenuTemplate = template
-        )
+        Timber.d("onMoreTemplateButtonClicked, template:[$template], isMoreMenuVisible:[${templatesWidgetState.value.isMoreMenuVisible}]")
+        templatesWidgetState.value = if (templatesWidgetState.value.isMoreMenuVisible) {
+            templatesWidgetState.value.copy(
+                isMoreMenuVisible = false,
+                moreMenuTemplate = null
+            )
+        } else {
+            templatesWidgetState.value.copy(
+                isMoreMenuVisible = true,
+                moreMenuTemplate = template
+            )
+        }
+    }
+
+    fun onDismissTemplatesWidget() {
+        Timber.d("onDismissTemplatesWidget, ")
+        val state = templatesWidgetState.value
+        templatesWidgetState.value = when {
+            state.isMoreMenuVisible -> state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
+            state.showWidget -> TemplatesWidgetUiState.reset()
+            else -> state
+        }
     }
     //endregion
 

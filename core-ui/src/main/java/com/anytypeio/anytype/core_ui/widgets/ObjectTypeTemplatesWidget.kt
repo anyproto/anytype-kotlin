@@ -1,9 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -78,7 +76,6 @@ import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -95,7 +92,7 @@ fun ObjectTypeTemplatesWidget(
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter,
+        contentAlignment = Alignment.BottomStart,
     ) {
 
         val currentState by rememberUpdatedState(state)
@@ -134,6 +131,15 @@ fun ObjectTypeTemplatesWidget(
 
         val sizePx = with(LocalDensity.current) { 312.dp.toPx() }
 
+        var currentClickedMoreButtonCoordinates: IntOffset by remember {
+            mutableStateOf(
+                IntOffset(
+                    0,
+                    0
+                )
+            )
+        }
+
         AnimatedVisibility(
             visible = currentState.showWidget,
             enter = slideInVertically { it },
@@ -160,7 +166,6 @@ fun ObjectTypeTemplatesWidget(
                         shape = RoundedCornerShape(size = 16.dp)
                     ),
             ) {
-                var currentClickedMoreButtonCoordinates: IntOffset by remember { mutableStateOf(IntOffset(0, 0)) }
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -230,79 +235,115 @@ fun ObjectTypeTemplatesWidget(
                         state = currentState,
                         moreClick = { template, intOffset ->
                             currentClickedMoreButtonCoordinates = intOffset
-                            Log.d("Test1983", "Clicked on More with coordinates: $intOffset")
                             moreClick(template)
                         },
                         itemClick = {
-                            scope.launch {
-                                onDismiss()
-                                delay(200L)
-                                itemClick(it)
-                            }
+                            itemClick(it)
                         }
                     )
                 }
-                AnimatedVisibility(
-                    //modifier = Modifier.offset(y = currentClickedMoreButtonCoordinates.y.dp),
-                    visible = currentState.isMoreMenuVisible,
-                    enter = fadeIn(tween(200)) + expandVertically(
-                        expandFrom = Alignment.Top,
-                        animationSpec = tween(200)
-                    ),
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .shadow(
-                                elevation = 40.dp,
-                                spotColor = Color(0x40000000),
-                                ambientColor = Color(0x40000000)
-                            )
-                            .padding(0.dp)
-                            .width(244.dp)
-                            .height(176.dp)
-                            .background(
-                                color = Color(0xFFFFFFFF),
-                                shape = RoundedCornerShape(size = 10.dp)
-                            ),
-                        verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
-                        horizontalAlignment = Alignment.Start,
-                    ) {
-                        Text(
-                            modifier = Modifier.clickable { Timber.d("Click : ${currentState.moreMenuTemplate}") },
-                            text = "Default for this view",
-                            style = BodyCalloutRegular,
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                    }
-                }
             }
+        }
+        if (currentState.isMoreMenuVisible) {
+            MoreMenu(
+                templateView = currentState.moreMenuTemplate,
+                currentState = currentState,
+                currentCoord = currentClickedMoreButtonCoordinates
+            )
         }
     }
 }
 
 @Composable
-private fun MoreMenu(templateView: TemplateView.Template?) {
+private fun MoreMenu(
+    templateView: TemplateView.Template?,
+    currentState: TemplatesWidgetUiState,
+    currentCoord: IntOffset
+) {
+
+    val offsetX = if (currentState.isMoreMenuVisible) {
+        val moreButtonXCoordinatesDp =
+            with(LocalDensity.current) { currentCoord.x.toDp() }
+        if (moreButtonXCoordinatesDp > 244.dp) {
+            moreButtonXCoordinatesDp - 244.dp
+        } else {
+            0.dp
+        }
+    } else {
+        0.dp
+    }
     Column(
         modifier = Modifier
+            .size(244.dp, 176.dp)
+            .offset(x = offsetX, y = -260.dp)
             .shadow(
                 elevation = 40.dp,
                 spotColor = Color(0x40000000),
                 ambientColor = Color(0x40000000)
             )
-            .padding(0.dp)
-            .width(244.dp)
-            .height(176.dp)
-            .background(color = Color(0xFFFFFFFF), shape = RoundedCornerShape(size = 10.dp)),
-        verticalArrangement = Arrangement.spacedBy(0.dp, Alignment.Top),
-        horizontalAlignment = Alignment.Start,
+            .background(
+                color = colorResource(id = R.color.background_primary),
+                shape = RoundedCornerShape(size = 10.dp)
+            )
     ) {
         Text(
-            modifier = Modifier.clickable { Timber.d("Click : $templateView") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(top = 11.dp, bottom = 11.dp)
+                .clickable { Timber.d("Click : ${currentState.moreMenuTemplate}") },
             text = "Default for this view",
             style = BodyCalloutRegular,
-            color = colorResource(id = R.color.text_primary)
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center
+        )
+        Divider()
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(top = 11.dp, bottom = 11.dp)
+                .clickable { Timber.d("Click : ${currentState.moreMenuTemplate}") },
+            text = "Edit template",
+            style = BodyCalloutRegular,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center
+        )
+        Divider()
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(top = 11.dp, bottom = 11.dp)
+                .clickable { Timber.d("Click : ${currentState.moreMenuTemplate}") },
+            text = "Duplicate",
+            style = BodyCalloutRegular,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center
+        )
+        Divider()
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(top = 11.dp, bottom = 11.dp)
+                .clickable { Timber.d("Click : ${currentState.moreMenuTemplate}") },
+            text = "Delete",
+            style = BodyCalloutRegular,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center
         )
     }
+}
+
+@Composable
+private fun Divider() {
+    Spacer(
+        modifier = Modifier
+            .height(0.5.dp)
+            .fillMaxWidth()
+            .background(color = colorResource(id = R.color.shape_primary))
+    )
 }
 
 @Composable
@@ -354,7 +395,14 @@ private fun TemplatesList(
                                 .align(Alignment.TopEnd)
                                 .padding(1.dp)
                         ) {
-                            var currentCoordinates: IntOffset by remember { mutableStateOf(IntOffset(0, 0)) }
+                            var currentCoordinates: IntOffset by remember {
+                                mutableStateOf(
+                                    IntOffset(
+                                        0,
+                                        0
+                                    )
+                                )
+                            }
                             Image(
                                 modifier = Modifier
                                     .width(28.dp)
@@ -731,7 +779,7 @@ fun ComposablePreview() {
         isEditing = true,
         isMoreMenuVisible = true,
         moreMenuTemplate = null
-        )
+    )
     ObjectTypeTemplatesWidget(
         state = state,
         onDismiss = {},

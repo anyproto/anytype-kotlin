@@ -462,3 +462,10 @@ fun ObjectWrapper.Basic.toTemplateViewBlank(typeId: Id): TemplateView.Blank {
         layout = layout?.code ?: ObjectType.Layout.BASIC.code
     )
 }
+
+fun ObjectWrapper.Type.toTemplateViewBlank(): TemplateView.Blank {
+    return TemplateView.Blank(
+        typeId = id,
+        layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code
+    )
+}

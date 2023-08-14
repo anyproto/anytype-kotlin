@@ -66,6 +66,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
@@ -1621,6 +1622,15 @@ class ObjectSetViewModel(
             state.isMoreMenuVisible -> state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
             state.showWidget -> TemplatesWidgetUiState.reset()
             else -> state
+        }
+    }
+
+    fun onMoreMenuClicked(click: TemplateMenuClick) {
+        when (click) {
+            is TemplateMenuClick.Default -> TODO()
+            is TemplateMenuClick.Delete -> TODO()
+            is TemplateMenuClick.Duplicate -> TODO()
+            is TemplateMenuClick.Edit -> TODO()
         }
     }
     //endregion

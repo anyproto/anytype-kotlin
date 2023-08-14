@@ -7,7 +7,6 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,7 +30,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -75,6 +73,7 @@ import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlin.math.roundToInt
@@ -92,7 +91,8 @@ fun ObjectTypeTemplatesWidget(
     moreClick: (TemplateView.Template) -> Unit,
     editClick: () -> Unit,
     doneClick: () -> Unit,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    menuClick: (TemplateMenuClick) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -253,11 +253,12 @@ fun ObjectTypeTemplatesWidget(
                 }
             }
         }
-        if (currentState.isMoreMenuVisible) {
+        if (currentState.isMoreMenuVisible && currentState.moreMenuTemplate != null) {
             MoreMenu(
-                templateView = currentState.moreMenuTemplate,
+                templateView = currentState.moreMenuTemplate!!,
                 currentState = currentState,
-                currentCoord = currentClickedMoreButtonCoordinates
+                currentCoordinates = currentClickedMoreButtonCoordinates,
+                menuClick = menuClick
             )
         }
     }
@@ -265,14 +266,14 @@ fun ObjectTypeTemplatesWidget(
 
 @Composable
 private fun MoreMenu(
-    templateView: TemplateView.Template?,
+    templateView: TemplateView.Template,
     currentState: TemplatesWidgetUiState,
-    currentCoord: IntOffset
+    currentCoordinates: IntOffset,
+    menuClick: (TemplateMenuClick) -> Unit
 ) {
-
     val offsetX = if (currentState.isMoreMenuVisible) {
         val moreButtonXCoordinatesDp =
-            with(LocalDensity.current) { currentCoord.x.toDp() }
+            with(LocalDensity.current) { currentCoordinates.x.toDp() }
         if (moreButtonXCoordinatesDp > 244.dp) {
             moreButtonXCoordinatesDp - 244.dp
         } else {
@@ -295,54 +296,41 @@ private fun MoreMenu(
                 shape = RoundedCornerShape(size = 10.dp)
             )
     ) {
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(top = 11.dp, bottom = 11.dp)
-                .clickable { Timber.d("Click : ${currentState.moreMenuTemplate}") },
-            text = "Default for this view",
-            style = BodyCalloutRegular,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center
+        MenuItem(
+            click = { menuClick(TemplateMenuClick.Default(templateView)) },
+            text = stringResource(id = R.string.templates_menu_default_for_view)
         )
         Divider()
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(top = 11.dp, bottom = 11.dp)
-                .clickable { Timber.d("Click : ${currentState.moreMenuTemplate}") },
-            text = "Edit template",
-            style = BodyCalloutRegular,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center
+        MenuItem(
+            click = { menuClick(TemplateMenuClick.Edit(templateView)) },
+            text = stringResource(id = R.string.templates_menu_edit)
         )
         Divider()
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(top = 11.dp, bottom = 11.dp)
-                .clickable { Timber.d("Click : ${currentState.moreMenuTemplate}") },
-            text = "Duplicate",
-            style = BodyCalloutRegular,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center
+        MenuItem(
+            click = { menuClick(TemplateMenuClick.Duplicate(templateView)) },
+            text = stringResource(id = R.string.templates_menu_duplicate)
         )
         Divider()
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(top = 11.dp, bottom = 11.dp)
-                .clickable { Timber.d("Click : ${currentState.moreMenuTemplate}") },
-            text = "Delete",
-            style = BodyCalloutRegular,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center
+        MenuItem(
+            click = { menuClick(TemplateMenuClick.Delete(templateView)) },
+            text = stringResource(id = R.string.templates_menu_delete)
         )
     }
+}
+
+@Composable
+private fun MenuItem(click: () -> Unit, text: String) {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(top = 11.dp, bottom = 11.dp)
+            .clickable { click() },
+        text = text,
+        style = BodyCalloutRegular,
+        color = colorResource(id = R.color.text_primary),
+        textAlign = TextAlign.Center
+    )
 }
 
 @Composable
@@ -800,6 +788,7 @@ fun ComposablePreview() {
         moreClick = {},
         scope = CoroutineScope(
             Dispatchers.Main
-        )
+        ),
+        menuClick = {}
     )
 }

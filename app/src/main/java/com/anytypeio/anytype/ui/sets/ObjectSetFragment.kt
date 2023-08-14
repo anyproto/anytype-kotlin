@@ -331,6 +331,7 @@ open class ObjectSetFragment :
                     editClick = vm::onEditTemplateButtonClicked,
                     doneClick = vm::onDoneTemplateButtonClicked,
                     moreClick = vm::onMoreTemplateButtonClicked,
+                    menuClick = vm::onMoreMenuClicked,
                     scope = lifecycleScope
                 )
             }

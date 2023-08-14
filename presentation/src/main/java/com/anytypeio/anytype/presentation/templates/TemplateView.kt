@@ -32,3 +32,10 @@ sealed class TemplateView {
         }
     }
 }
+
+sealed class TemplateMenuClick {
+    data class Default(val templateView: TemplateView.Template): TemplateMenuClick()
+    data class Edit(val templateView: TemplateView.Template): TemplateMenuClick()
+    data class Duplicate(val templateView: TemplateView.Template): TemplateMenuClick()
+    data class Delete(val templateView: TemplateView.Template): TemplateMenuClick()
+}

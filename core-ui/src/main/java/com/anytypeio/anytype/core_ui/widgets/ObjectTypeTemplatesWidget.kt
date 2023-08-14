@@ -282,7 +282,7 @@ private fun MoreMenu(
                 ambientColor = Color(0x40000000)
             )
             .background(
-                color = colorResource(id = R.color.background_primary),
+                color = colorResource(id = R.color.background_secondary),
                 shape = RoundedCornerShape(size = 10.dp)
             )
     ) {

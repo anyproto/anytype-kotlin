@@ -364,12 +364,17 @@ private fun TemplatesList(
                         .height(231.dp)
                         .width(127.dp)
                 ) {
+                    val (borderWidth, borderColor) = if (item.isDefault) {
+                        Pair(2.dp, colorResource(id = R.color.palette_system_amber_50))
+                    } else {
+                        Pair(1.dp, colorResource(id = R.color.shape_primary))
+                    }
                     Box(
                         modifier = Modifier
                             .padding(top = 7.dp, end = 7.dp)
                             .border(
-                                width = 1.dp,
-                                color = colorResource(id = R.color.shape_primary),
+                                width = borderWidth,
+                                color = borderColor,
                                 shape = RoundedCornerShape(size = 16.dp)
                             )
                             .height(224.dp)

@@ -1495,6 +1495,8 @@ class ObjectSetViewModel(
     }
 
     private suspend fun proceedWithGettingTemplates(typeId: Id?) {
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val objectType = resolveObjectType(typeId)
         if (objectType?.isTemplatesAllowed() == true) {
             viewModelScope.launch {
@@ -1507,7 +1509,9 @@ class ObjectSetViewModel(
                                             it.toTemplateView(
                                                 typeId = objectType.id,
                                                 urlBuilder = urlBuilder,
-                                                coverImageHashProvider = coverImageHashProvider
+                                                coverImageHashProvider = coverImageHashProvider,
+                                                objectTypeDefaultTemplate = objectType.defaultTemplateId,
+                                                viewerDefaultTemplate = viewer.defaultTemplateId
                                             )
                                         }
                         }

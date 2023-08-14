@@ -7,8 +7,13 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 
 sealed class TemplateView {
 
+    abstract val isDefault: Boolean
+
     data class Blank(
-        val typeId: Id, val typeName: String = "", val layout: Int
+        val typeId: Id,
+        val typeName: String = "",
+        val layout: Int,
+        override val isDefault: Boolean = false
     ) : TemplateView()
 
     data class Template(
@@ -20,7 +25,8 @@ sealed class TemplateView {
         val image: String?,
         val coverColor: CoverColor?,
         val coverImage: Url?,
-        val coverGradient: String?
+        val coverGradient: String?,
+        override val isDefault: Boolean = false
     ) : TemplateView() {
 
         fun isCoverPresent(): Boolean {
@@ -34,8 +40,8 @@ sealed class TemplateView {
 }
 
 sealed class TemplateMenuClick {
-    data class Default(val templateView: TemplateView.Template): TemplateMenuClick()
-    data class Edit(val templateView: TemplateView.Template): TemplateMenuClick()
-    data class Duplicate(val templateView: TemplateView.Template): TemplateMenuClick()
-    data class Delete(val templateView: TemplateView.Template): TemplateMenuClick()
+    data class Default(val templateView: TemplateView.Template) : TemplateMenuClick()
+    data class Edit(val templateView: TemplateView.Template) : TemplateMenuClick()
+    data class Duplicate(val templateView: TemplateView.Template) : TemplateMenuClick()
+    data class Delete(val templateView: TemplateView.Template) : TemplateMenuClick()
 }

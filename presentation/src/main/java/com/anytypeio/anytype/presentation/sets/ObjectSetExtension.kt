@@ -77,7 +77,7 @@ fun ObjectState.DataView.header(
     ctx: Id,
     urlBuilder: UrlBuilder,
     coverImageHashProvider: CoverImageHashProvider
-) : SetOrCollectionHeaderState {
+): SetOrCollectionHeaderState {
     val title = blocks.title()
     return if (title != null) {
         val wrapper = ObjectWrapper.Basic(
@@ -385,7 +385,7 @@ suspend fun ObjectState.DataView.Set.isTemplatesAllowed(
     getDefaultPageType: GetDefaultPageType
 ): Boolean {
     val objectDetails = details[setOfValue.first()]?.map.orEmpty()
-    return when (objectDetails.type){
+    return when (objectDetails.type) {
         ObjectTypeIds.OBJECT_TYPE -> {
             val objectWrapper = ObjectWrapper.Type(objectDetails)
             objectWrapper.isTemplatesAllowed()
@@ -403,7 +403,7 @@ suspend fun StoreOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageTy
         val defaultObjectType = getDefaultPageType.run(Unit).type ?: return false
         val defaultObjType = get(defaultObjectType) ?: return false
         return defaultObjType.isTemplatesAllowed()
-    } catch (e: Exception){
+    } catch (e: Exception) {
         return false
     }
 }
@@ -437,12 +437,15 @@ fun Viewer.isEmpty(): Boolean =
 fun ObjectWrapper.Basic.toTemplateView(
     typeId: Id,
     urlBuilder: UrlBuilder,
-    coverImageHashProvider: CoverImageHashProvider
+    coverImageHashProvider: CoverImageHashProvider,
+    objectTypeDefaultTemplate: Id? = null,
+    viewerDefaultTemplate: Id? = null
 ): TemplateView.Template {
     val coverContainer = if (coverType != CoverType.NONE) {
         BasicObjectCoverWrapper(this)
             .getCover(urlBuilder, coverImageHashProvider)
     } else null
+    val isDefault = viewerDefaultTemplate == id || objectTypeDefaultTemplate == id
     return TemplateView.Template(
         id = id,
         name = name.orEmpty(),
@@ -452,13 +455,20 @@ fun ObjectWrapper.Basic.toTemplateView(
         layout = layout ?: ObjectType.Layout.BASIC,
         coverColor = coverContainer?.coverColor,
         coverImage = coverContainer?.coverImage,
-        coverGradient = coverContainer?.coverGradient
+        coverGradient = coverContainer?.coverGradient,
+        isDefault = isDefault
     )
 }
 
-fun ObjectWrapper.Basic.toTemplateViewBlank(typeId: Id): TemplateView.Blank {
+fun ObjectWrapper.Basic.toTemplateViewBlank(
+    typeId: Id,
+    objectTypeDefaultTemplate: Id? = null,
+    viewerDefaultTemplate: Id? = null
+): TemplateView.Blank {
+    val isDefault = viewerDefaultTemplate.isNullOrBlank() && objectTypeDefaultTemplate.isNullOrBlank()
     return TemplateView.Blank(
         typeId = typeId,
-        layout = layout?.code ?: ObjectType.Layout.BASIC.code
+        layout = layout?.code ?: ObjectType.Layout.BASIC.code,
+        isDefault = isDefault
     )
 }

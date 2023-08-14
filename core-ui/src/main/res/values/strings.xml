@@ -113,6 +113,7 @@
     <string name="modal_table">Table</string>
     <string name="modal_list">List</string>
     <string name="cancel">Cancel</string>
+    <string name="skip">Skip</string>
     <string name="add">Add</string>
     <string name="duplicate">Duplicate</string>
     <string name="customize_view">Customize view</string>

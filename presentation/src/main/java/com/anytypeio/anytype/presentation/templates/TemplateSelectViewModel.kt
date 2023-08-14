@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -134,7 +133,7 @@ class TemplateSelectViewModel(
         }
     }
 
-    fun onCancelButtonClicked() {
+    fun onSkipButtonClicked() {
         isDismissed.value = true
     }
 

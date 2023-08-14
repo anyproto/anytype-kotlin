@@ -197,7 +197,8 @@ object ObjectSetModule {
         convertObjectToCollection: ConvertObjectToCollection,
         storeOfObjectTypes: StoreOfObjectTypes,
         getDefaultPageType: GetDefaultPageType,
-        getTemplates: GetTemplates
+        getTemplates: GetTemplates,
+        updateDataViewViewer: UpdateDataViewViewer
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -229,7 +230,8 @@ object ObjectSetModule {
         objectToCollection = convertObjectToCollection,
         storeOfObjectTypes = storeOfObjectTypes,
         getDefaultPageType = getDefaultPageType,
-        getTemplates = getTemplates
+        getTemplates = getTemplates,
+        updateDataViewViewer = updateDataViewViewer
     )
 
     @JvmStatic

@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,8 +27,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
@@ -162,7 +166,7 @@ fun ObjectTypeTemplatesWidget(
                     .height(312.dp)
                     .padding(start = 8.dp, end = 8.dp, bottom = 31.dp)
                     .background(
-                        color = colorResource(id = R.color.background_primary),
+                        color = colorResource(id = R.color.background_secondary),
                         shape = RoundedCornerShape(size = 16.dp)
                     ),
             ) {
@@ -231,6 +235,7 @@ fun ObjectTypeTemplatesWidget(
 //                            )
 //                        }
                     }
+                    val itemsScroll = rememberLazyListState()
                     TemplatesList(
                         state = currentState,
                         moreClick = { template, intOffset ->
@@ -239,8 +244,12 @@ fun ObjectTypeTemplatesWidget(
                         },
                         itemClick = {
                             itemClick(it)
-                        }
+                        },
+                        scrollState = itemsScroll
                     )
+                    if (currentState.isMoreMenuVisible && itemsScroll.isScrollInProgress) {
+                        onDismiss()
+                    }
                 }
             }
         }
@@ -348,11 +357,13 @@ private fun Divider() {
 
 @Composable
 private fun TemplatesList(
+    scrollState: LazyListState,
     state: TemplatesWidgetUiState,
     itemClick: (TemplateView) -> Unit,
     moreClick: (TemplateView.Template, IntOffset) -> Unit
 ) {
     LazyRow(
+        state = scrollState,
         modifier = Modifier
             .padding(top = 8.dp)
             .height(224.dp)

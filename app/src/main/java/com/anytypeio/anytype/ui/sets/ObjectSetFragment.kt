@@ -328,6 +328,10 @@ open class ObjectSetFragment :
                     state = vm.templatesWidgetState.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onDismissTemplatesWidget,
                     itemClick = vm::onTemplateItemClicked,
+                    editClick = vm::onEditTemplateButtonClicked,
+                    doneClick = vm::onDoneTemplateButtonClicked,
+                    moreClick = vm::onMoreTemplateButtonClicked,
+                    menuClick = vm::onMoreMenuClicked,
                     scope = lifecycleScope
                 )
             }

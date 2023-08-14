@@ -247,7 +247,8 @@ abstract class TestObjectSetSetup {
             addObjectToCollection = addObjectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
             getDefaultPageType = getDefaultPageType,
-            getTemplates = getTemplates
+            getTemplates = getTemplates,
+            updateDataViewViewer = updateDataViewViewer,
         )
     }
 

@@ -286,7 +286,8 @@ data class Block(
                 val cardSize: Size = Size.SMALL,
                 val hideIcon: Boolean = false,
                 val coverFit: Boolean = false,
-                val coverRelationKey: String? = null
+                val coverRelationKey: String? = null,
+                val defaultTemplateId: Id? = null,
             ) {
 
                 enum class Type(val formattedName: String) {

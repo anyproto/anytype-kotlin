@@ -645,5 +645,10 @@
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
     <string name="type_templates_widget_title">Select template</string>
     <string name="blank">Blank</string>
+    
+    <string name="templates_menu_default_for_view">Default for this view</string>
+    <string name="templates_menu_edit">Edit template</string>
+    <string name="templates_menu_duplicate">Duplicate</string>
+    <string name="templates_menu_delete">Delete</string>
 
 </resources>

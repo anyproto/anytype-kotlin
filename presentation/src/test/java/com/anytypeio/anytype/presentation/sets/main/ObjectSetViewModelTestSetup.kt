@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -153,6 +154,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var getDefaultPageType: GetDefaultPageType
 
+    @Mock
+    lateinit var updateDataViewViewer: UpdateDataViewViewer
+
     var stateReducer = DefaultObjectStateReducer()
 
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
@@ -221,7 +225,8 @@ open class ObjectSetViewModelTestSetup {
             setQueryToObjectSet = setQueryToObjectSet,
             storeOfObjectTypes = storeOfObjectTypes,
             getDefaultPageType = getDefaultPageType,
-            getTemplates = getTemplates
+            getTemplates = getTemplates,
+            updateDataViewViewer = updateDataViewViewer,
         )
     }
 

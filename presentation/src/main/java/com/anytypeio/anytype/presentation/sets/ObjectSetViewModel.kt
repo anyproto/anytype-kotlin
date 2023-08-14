@@ -539,24 +539,22 @@ class ObjectSetViewModel(
                     query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
                     render == null -> DataViewViewState.Set.NoView
                     render.isEmpty() -> {
-                        val isTemplatesAllowed = templates.isNotEmpty() &&
-                                objectState.isTemplatesAllowed(
-                                    setOfValue,
-                                    storeOfObjectTypes,
-                                    getDefaultPageType
-                                )
+                        val isTemplatesAllowed = objectState.isTemplatesAllowed(
+                            setOfValue,
+                            storeOfObjectTypes,
+                            getDefaultPageType
+                        )
                         DataViewViewState.Set.NoItems(
                             title = render.title,
                             hasTemplates = isTemplatesAllowed
                         )
                     }
                     else -> {
-                        val isTemplatesAllowed = templates.isNotEmpty() &&
-                                objectState.isTemplatesAllowed(
-                                    setOfValue,
-                                    storeOfObjectTypes,
-                                    getDefaultPageType
-                                )
+                        val isTemplatesAllowed = objectState.isTemplatesAllowed(
+                            setOfValue,
+                            storeOfObjectTypes,
+                            getDefaultPageType
+                        )
                         DataViewViewState.Set.Default(
                             viewer = render,
                             hasTemplates = isTemplatesAllowed
@@ -1502,6 +1500,8 @@ class ObjectSetViewModel(
                             _templateViews.value =
                                 listOf(templates.first().toTemplateViewBlank(objectType.id)) +
                                         templates.map { it.toTemplateView(typeId = objectType.id) }
+                        } else {
+                            _templateViews.value = listOf(objectType.toTemplateViewBlank())
                         }
                     },
                     onFailure = { e ->

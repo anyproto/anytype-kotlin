@@ -1629,10 +1629,30 @@ class ObjectSetViewModel(
 
     fun onMoreMenuClicked(click: TemplateMenuClick) {
         when (click) {
-            is TemplateMenuClick.Default -> TODO()
+            is TemplateMenuClick.Default -> proceedWithUpdatingViewDefaultTemplate()
             is TemplateMenuClick.Delete -> TODO()
             is TemplateMenuClick.Duplicate -> TODO()
             is TemplateMenuClick.Edit -> TODO()
+        }
+    }
+
+    private fun proceedWithUpdatingViewDefaultTemplate() {
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        val params = UpdateDataViewViewer.Params.Template(
+            context = context,
+            target = viewer.id,
+            viewer = viewer.copy(defaultTemplateId = template.id)
+        )
+        viewModelScope.launch {
+            updateDataViewViewer(params).proceed(
+                success = { payload -> dispatcher.send(payload) },
+                failure = { e ->
+                    Timber.e(e, "Error while setting default template")
+                    toast("Error while setting default template")
+                }
+            )
         }
     }
     //endregion

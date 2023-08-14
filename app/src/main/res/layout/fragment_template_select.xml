@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/defaultCanvasColor"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context="com.anytypeio.anytype.ui.templates.TemplateSelectFragment">
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
@@ -44,14 +45,14 @@
         android:orientation="horizontal">
 
         <com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge
-            android:id="@+id/btnCancel"
+            android:id="@+id/btnSkip"
             android:layout_width="0dp"
             android:layout_height="@dimen/dp_48"
             android:layout_gravity="center_vertical"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
-            android:text="@string/cancel" />
+            android:text="@string/skip" />
 
         <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
             android:id="@+id/btnUseTemplate"

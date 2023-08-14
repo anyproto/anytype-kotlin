@@ -136,12 +136,7 @@ fun ObjectTypeTemplatesWidget(
         val sizePx = with(LocalDensity.current) { 312.dp.toPx() }
 
         var currentClickedMoreButtonCoordinates: IntOffset by remember {
-            mutableStateOf(
-                IntOffset(
-                    0,
-                    0
-                )
-            )
+            mutableStateOf(IntOffset(0, 0))
         }
 
         AnimatedVisibility(
@@ -395,12 +390,7 @@ private fun TemplatesList(
                                 .padding(1.dp)
                         ) {
                             var currentCoordinates: IntOffset by remember {
-                                mutableStateOf(
-                                    IntOffset(
-                                        0,
-                                        0
-                                    )
-                                )
+                                mutableStateOf(IntOffset(0, 0))
                             }
                             Image(
                                 modifier = Modifier

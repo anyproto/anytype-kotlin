@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.presentation.sets
 
+import android.util.Log
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
@@ -11,6 +13,7 @@ import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVSor
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerFields
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerRelationUpdate
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
@@ -20,22 +23,28 @@ import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
+import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
+import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.title
+import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import timber.log.Timber
+import com.anytypeio.anytype.presentation.templates.TemplateView
 
 fun ObjectState.DataView.featuredRelations(
     ctx: Id,
@@ -370,6 +379,35 @@ fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): Lis
     return query.filter(::isValidObject)
 }
 
+suspend fun ObjectState.DataView.Set.isTemplatesAllowed(
+    setOfValue: List<Id>,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    getDefaultPageType: GetDefaultPageType
+): Boolean {
+    val objectDetails = details[setOfValue.first()]?.map.orEmpty()
+    return when (objectDetails.type){
+        ObjectTypeIds.OBJECT_TYPE -> {
+            val objectWrapper = ObjectWrapper.Type(objectDetails)
+            objectWrapper.isTemplatesAllowed()
+        }
+        ObjectTypeIds.RELATION -> {
+            //We have set of relations, need to check default object type
+            storeOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType)
+        }
+        else -> false
+    }
+}
+
+suspend fun StoreOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType: GetDefaultPageType): Boolean {
+    try {
+        val defaultObjectType = getDefaultPageType.run(Unit).type ?: return false
+        val defaultObjType = get(defaultObjectType) ?: return false
+        return defaultObjType.isTemplatesAllowed()
+    } catch (e: Exception){
+        return false
+    }
+}
+
 private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {
     val objectDetails = details[objectId] ?: return false
     val objectWrapper = ObjectWrapper.Basic(objectDetails.map)
@@ -395,3 +433,32 @@ fun Viewer.isEmpty(): Boolean =
         is Viewer.ListView -> this.items.isEmpty()
         is Viewer.Unsupported -> false
     }
+
+fun ObjectWrapper.Basic.toTemplateView(
+    typeId: Id,
+    urlBuilder: UrlBuilder,
+    coverImageHashProvider: CoverImageHashProvider
+): TemplateView.Template {
+    val coverContainer = if (coverType != CoverType.NONE) {
+        BasicObjectCoverWrapper(this)
+            .getCover(urlBuilder, coverImageHashProvider)
+    } else null
+    return TemplateView.Template(
+        id = id,
+        name = name.orEmpty(),
+        typeId = typeId,
+        emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
+        image = if (!iconImage.isNullOrBlank()) urlBuilder.thumbnail(iconImage!!) else null,
+        layout = layout ?: ObjectType.Layout.BASIC,
+        coverColor = coverContainer?.coverColor,
+        coverImage = coverContainer?.coverImage,
+        coverGradient = coverContainer?.coverGradient
+    )
+}
+
+fun ObjectWrapper.Basic.toTemplateViewBlank(typeId: Id): TemplateView.Blank {
+    return TemplateView.Blank(
+        typeId = typeId,
+        layout = layout?.code ?: ObjectType.Layout.BASIC.code
+    )
+}

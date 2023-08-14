@@ -250,6 +250,8 @@ class TreeWidgetContainer(
         val keys = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
             add(Relations.LINKS)
+            add(Relations.LAST_MODIFIED_DATE)
+            add(Relations.LAST_OPENED_DATE)
         }
     }
 }

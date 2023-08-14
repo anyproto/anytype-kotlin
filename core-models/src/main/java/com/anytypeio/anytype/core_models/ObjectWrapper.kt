@@ -19,6 +19,7 @@ sealed class ObjectWrapper {
         private val default = map.withDefault { null }
 
         val lastModifiedDate: Any? by default
+        val lastOpenedDate: Any? by default
 
         val name: String? by default
 
@@ -154,6 +155,13 @@ sealed class ObjectWrapper {
         val iconEmoji: String? by default
         val isDeleted: Boolean? by default
         val recommendedRelations: List<Id> get() = getValues(Relations.RECOMMENDED_RELATIONS)
+        val recommendedLayout: ObjectType.Layout?
+            get() = when (val value = map[Relations.RECOMMENDED_LAYOUT]) {
+                is Double -> ObjectType.Layout.values().singleOrNull { layout ->
+                    layout.code == value.toInt()
+                }
+                else -> null
+            }
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {

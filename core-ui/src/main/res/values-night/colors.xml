@@ -95,5 +95,6 @@
     <color name="snackbar_background">#FFFFFF</color>
 
     <color name="widget_divider">#24DAD7CA</color>
+    <color name="ds_button_icon_divider">#1A000000</color>
 
 </resources>

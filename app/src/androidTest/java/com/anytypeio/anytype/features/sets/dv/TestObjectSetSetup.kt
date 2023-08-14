@@ -127,6 +127,9 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
+    @Mock
+    lateinit var getDefaultType: GetDefaultPageType
+
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultPageType: GetDefaultPageType
 
@@ -242,7 +245,10 @@ abstract class TestObjectSetSetup {
             setQueryToObjectSet = setQueryToObjectSet,
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            getDefaultPageType = getDefaultPageType,
+            getTemplates = getTemplates,
+            updateDataViewViewer = updateDataViewViewer,
         )
     }
 

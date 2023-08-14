@@ -8,6 +8,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.addView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeFilterValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeSortValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
+import com.anytypeio.anytype.analytics.base.EventsDictionary.clickNewOption
 import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.removeFilter
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeSort
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.repositionView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.selectTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.setScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.setSelectQuery
 import com.anytypeio.anytype.analytics.base.EventsDictionary.switchView
@@ -1201,6 +1203,37 @@ fun CoroutineScope.logEvent(
                 )
             )
         }
+
+        ObjectStateAnalyticsEvent.SELECT_TEMPLATE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = selectTemplate,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route
+                )
+            )
+        }
+        ObjectStateAnalyticsEvent.SHOW_TEMPLATES -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = clickNewOption,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route
+                )
+            )
+        }
     }
 }
 
@@ -1242,7 +1275,9 @@ enum class ObjectStateAnalyticsEvent {
     ADD_SORT,
     CHANGE_SORT_VALUE,
     REMOVE_SORT,
-    OBJECT_CREATE
+    OBJECT_CREATE,
+    SELECT_TEMPLATE,
+    SHOW_TEMPLATES
 }
 
 fun CoroutineScope.sendEditWidgetsEvent(
@@ -1316,16 +1351,23 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
         eventName = EventsDictionary.changeWidgetSource,
         props = Props(
             buildMap {
-                when(view) {
+                when (view) {
                     BundledWidgetSourceView.Collections -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
                     }
+
                     BundledWidgetSourceView.Favorites -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
+
                     BundledWidgetSourceView.Recent -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT)
                     }
+
+                    BundledWidgetSourceView.RecentLocal -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
+                    }
+
                     BundledWidgetSourceView.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
@@ -1406,12 +1448,19 @@ fun CoroutineScope.sendDeleteWidgetEvent(
                     Widget.Source.Bundled.Collections -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
                     }
+
                     Widget.Source.Bundled.Favorites -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
+
                     Widget.Source.Bundled.Recent -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT)
                     }
+
+                    Widget.Source.Bundled.RecentLocal -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
+                    }
+
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
@@ -1439,12 +1488,19 @@ fun CoroutineScope.sendSelectHomeTabEvent(
                     Widget.Source.Bundled.Collections -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
                     }
+
                     Widget.Source.Bundled.Favorites -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
+
                     Widget.Source.Bundled.Recent -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_RECENT)
                     }
+
+                    Widget.Source.Bundled.RecentLocal -> {
+                        put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
+                    }
+
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TAB, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
@@ -1506,12 +1562,19 @@ fun CoroutineScope.sendReorderWidgetEvent(
                     Widget.Source.Bundled.Collections -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_COLLECTIONS)
                     }
+
                     Widget.Source.Bundled.Favorites -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_FAVORITES)
                     }
+
                     Widget.Source.Bundled.Recent -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT)
                     }
+
+                    Widget.Source.Bundled.RecentLocal -> {
+                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_RECENT_LOCAL)
+                    }
+
                     Widget.Source.Bundled.Sets -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_SETS)
                     }
@@ -1650,6 +1713,20 @@ fun CoroutineScope.sendAnalyticsOnboardingLoginEvent(
         props = Props(
             buildMap {
                 put(EventsPropertiesKey.type, type.value)
+            }
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsSelectTemplateEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = selectTemplate,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.route, "Navigation")
             }
         )
     )

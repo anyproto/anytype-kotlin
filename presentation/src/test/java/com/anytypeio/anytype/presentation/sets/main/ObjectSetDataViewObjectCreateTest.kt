@@ -57,7 +57,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         doReturn(Unit).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
                 type = mockObjectSet.setOf,
-                filters = mockObjectSet.filters
+                filters = mockObjectSet.filters,
+                template = null
             )
         )
 
@@ -72,14 +73,15 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             val second = awaitItem()
             assertIs<DataViewViewState.Set.Default>(second)
 
-            viewModel.onCreateNewDataViewObject()
+            viewModel.proceedWithCreatingNewDataViewObject()
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByType(
                         type = mockObjectSet.setOf,
-                        filters = mockObjectSet.filters
+                        filters = mockObjectSet.filters,
+                        template = null
                     )
                 )
             }

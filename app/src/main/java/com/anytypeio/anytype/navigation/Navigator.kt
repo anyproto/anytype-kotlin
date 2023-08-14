@@ -268,13 +268,11 @@ class Navigator : AppNavigation {
     override fun openTemplates(
         ctx: Id,
         type: String,
-        templates: List<Id>
     ) {
         navController?.navigate(
-            R.id.templateSelectScreen,
-            bundleOf(
+            resId = R.id.templateSelectScreen,
+            args = bundleOf(
                 TemplateSelectFragment.CTX_KEY to ctx,
-                TemplateSelectFragment.TEMPLATE_IDS_KEY to templates,
                 TemplateSelectFragment.OBJECT_TYPE_KEY to type
             )
         )

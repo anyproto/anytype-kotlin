@@ -52,8 +52,7 @@ interface AppNavigation {
 
     fun openTemplates(
         ctx: Id,
-        type: String,
-        templates: List<Id>
+        type: String
     )
 
     fun openLibrary()
@@ -117,8 +116,7 @@ interface AppNavigation {
 
         data class OpenTemplates(
             val ctx: Id,
-            val type: String,
-            val templates: List<Id>
+            val type: String
         ) : Command()
 
         object OpenLibrary: Command()

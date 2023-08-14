@@ -23,6 +23,14 @@ sealed class Subscription(
         filters = { workspaceId -> ObjectSearchConstants.filterTabRecent(workspaceId) }
     )
 
+    object RecentLocal : Subscription(
+        Subscriptions.SUBSCRIPTION_RECENT_LOCAL,
+        SUBSCRIPTION_DEFAULT_KEYS + Relations.LAST_OPENED_DATE,
+        ObjectSearchConstants.sortTabRecentLocal,
+        ObjectSearchConstants.limitTabRecent,
+        filters = { workspaceId -> ObjectSearchConstants.filterTabRecentLocal(workspaceId) }
+    )
+
     object Bin : Subscription(
         Subscriptions.SUBSCRIPTION_ARCHIVED,
         SUBSCRIPTION_DEFAULT_KEYS,
@@ -78,6 +86,7 @@ class SubscriptionMapper {
     fun map(id: Id): Subscription {
         return when (id) {
             Subscriptions.SUBSCRIPTION_RECENT -> Subscription.Recent
+            Subscriptions.SUBSCRIPTION_RECENT_LOCAL -> Subscription.RecentLocal
             Subscriptions.SUBSCRIPTION_ARCHIVED -> Subscription.Bin
             Subscriptions.SUBSCRIPTION_SETS -> Subscription.Sets
             Subscriptions.SUBSCRIPTION_FAVORITES -> Subscription.Favorites

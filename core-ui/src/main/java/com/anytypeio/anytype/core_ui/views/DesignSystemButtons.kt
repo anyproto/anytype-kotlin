@@ -2,6 +2,10 @@ package com.anytypeio.anytype.core_ui.views
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.LayoutInflater
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
@@ -33,8 +37,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
 
 class ButtonPrimaryXSmall @JvmOverloads constructor(
     context: Context,
@@ -563,4 +569,30 @@ fun MyWarningButton() {
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
     )
+}
+
+class ButtonPrimarySmallIcon @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+) : LinearLayout(context, attrs) {
+
+    private lateinit var button: TextView
+    private lateinit var icon: ImageView
+
+    init {
+        setup(context)
+    }
+    
+    private fun setup(context: Context) {
+        LayoutInflater.from(context).inflate(R.layout.ds_button_icon, this, true)
+        button = findViewById(R.id.button)
+        icon = findViewById(R.id.icon)
+    }
+
+    fun setButtonText(text: String) {
+        button.text = text
+    }
+
+    fun buttonClicks() = button.clicks().throttleFirst()
+    fun iconClicks() = icon.clicks().throttleFirst()
 }

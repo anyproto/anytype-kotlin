@@ -61,7 +61,8 @@ object WidgetConfig {
 object BundledWidgetSourceIds {
     const val FAVORITE = "favorite"
     const val RECENT = "recent"
+    const val RECENT_LOCAL = "recentOpen"
     const val SETS = "set"
     const val COLLECTIONS = "collection"
-    val ids = listOf(FAVORITE, RECENT, SETS, COLLECTIONS)
+    val ids = listOf(FAVORITE, RECENT, RECENT_LOCAL, SETS, COLLECTIONS)
 }

@@ -325,9 +325,57 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.LAST_OPENED_DATE,
+            relation = Relations.TYPE,
+            condition = DVFilterCondition.NOT_IN,
+            value = listOf(
+                OBJECT_TYPE,
+                RELATION,
+                TEMPLATE,
+                IMAGE,
+                FILE,
+                VIDEO,
+                AUDIO,
+                DASHBOARD,
+                RELATION_OPTION,
+                DASHBOARD,
+                DATE
+            )
+        ),
+        DVFilter(
+            relation = Relations.LAST_MODIFIED_DATE,
             condition = DVFilterCondition.NOT_EQUAL,
             value = null
+        ),
+        DVFilter(
+            relation = Relations.WORKSPACE_ID,
+            condition = DVFilterCondition.EQUAL,
+            value = workspaceId
+        )
+    )
+
+    val sortTabRecent = listOf(
+        DVSort(
+            relationKey = Relations.LAST_MODIFIED_DATE,
+            type = DVSortType.DESC,
+            includeTime = true
+        )
+    )
+
+    fun filterTabRecentLocal(workspaceId: String) = listOf(
+        DVFilter(
+            relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
         ),
         DVFilter(
             relation = Relations.TYPE,
@@ -347,13 +395,18 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
+            relation = Relations.LAST_OPENED_DATE,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = null
+        ),
+        DVFilter(
             relation = Relations.WORKSPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = workspaceId
         )
     )
 
-    val sortTabRecent = listOf(
+    val sortTabRecentLocal = listOf(
         DVSort(
             relationKey = Relations.LAST_OPENED_DATE,
             type = DVSortType.DESC,

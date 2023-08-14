@@ -16,13 +16,16 @@ import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -54,6 +57,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
+import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
@@ -147,6 +151,12 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
+    @Mock
+    lateinit var getDefaultPageType: GetDefaultPageType
+
+    @Mock
+    lateinit var updateDataViewViewer: UpdateDataViewViewer
+
     var stateReducer = DefaultObjectStateReducer()
 
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
@@ -164,6 +174,9 @@ open class ObjectSetViewModelTestSetup {
     private val database = ObjectSetDatabase(objectStore)
 
     val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
+
+    val defaultObjectPageType = MockDataFactory.randomString()
+    val defaultObjectPageTypeName = MockDataFactory.randomString()
 
     lateinit var dispatchers: AppCoroutineDispatchers
 
@@ -210,7 +223,10 @@ open class ObjectSetViewModelTestSetup {
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            getDefaultPageType = getDefaultPageType,
+            getTemplates = getTemplates,
+            updateDataViewViewer = updateDataViewViewer,
         )
     }
 
@@ -259,25 +275,6 @@ open class ObjectSetViewModelTestSetup {
                     )
                 )
             )
-        }
-    }
-
-    fun stubGetTemplates(
-        type: String,
-        templates: List<Id> = emptyList()
-    ) {
-        getTemplates.stub {
-            onBlocking {
-                run(
-                    GetTemplates.Params(type)
-                )
-            } doReturn templates.map {
-                ObjectWrapper.Basic(
-                    map = mapOf(
-                        Relations.ID to it
-                    )
-                )
-            }
         }
     }
 
@@ -353,9 +350,27 @@ open class ObjectSetViewModelTestSetup {
         )
     }
 
-    fun stubStoreOfObjectTypes() {
+    fun stubStoreOfObjectTypes(map: Map<String, Any?> = emptyMap()) {
         storeOfObjectTypes.stub {
-            onBlocking { get(any()) } doReturn ObjectWrapper.Type(map = emptyMap())
+            onBlocking { get(any()) } doReturn ObjectWrapper.Type(map = map)
+        }
+    }
+
+    fun stubGetDefaultPageType(type: String = defaultObjectPageType, name: String = defaultObjectPageTypeName) {
+        getDefaultPageType.stub {
+            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(type = type, name = name)
+        }
+    }
+
+    fun stubGetTemplates(
+        type: String = MockDataFactory.randomString(),
+        templates: List<ObjectWrapper.Basic> = emptyList()
+    ) {
+        val params = GetTemplates.Params(
+            type = type
+        )
+        getTemplates.stub {
+            onBlocking { async(params) }.thenReturn(Resultat.success(templates))
         }
     }
 }

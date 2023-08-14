@@ -61,6 +61,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -352,6 +353,7 @@ open class EditorViewModelTest {
     private lateinit var objectToSet: ConvertObjectToSet
     private lateinit var clearBlockContent: ClearBlockContent
     private lateinit var clearBlockStyle: ClearBlockStyle
+    private lateinit var setObjectInternalFlags: SetObjectInternalFlags
 
     val root = MockDataFactory.randomUuid()
 
@@ -3812,6 +3814,7 @@ open class EditorViewModelTest {
         clearBlockContent = ClearBlockContent(repo)
         clearBlockStyle = ClearBlockStyle(repo)
         interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
+        setObjectInternalFlags = SetObjectInternalFlags(repo, dispatchers)
 
         workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
         runBlocking {
@@ -3904,7 +3907,8 @@ open class EditorViewModelTest {
             workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
-            addRelationToObject = addRelationToObject
+            addRelationToObject = addRelationToObject,
+            setObjectInternalFlags = setObjectInternalFlags
         )
     }
 

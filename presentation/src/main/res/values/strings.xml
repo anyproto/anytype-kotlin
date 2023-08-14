@@ -13,7 +13,8 @@
     <string name="unselect_all">Unselect all</string>
     <string name="sets">Sets</string>
     <string name="favorites">Favorites</string>
-    <string name="recent">Recent</string>
+    <string name="recent">Recently edited</string>
+    <string name="recently_opened">Recently opened</string>
     <string name="bin">Bin</string>
     <string name="collections">Collections</string>
     <string name="synced_files">Synced files</string>

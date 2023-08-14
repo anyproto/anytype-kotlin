@@ -2185,6 +2185,20 @@ class Middleware @Inject constructor(
         return response.event.toPayload()
     }
 
+    @Throws(Exception::class)
+    fun setInternalFlags(
+        command: Command.SetInternalFlags
+    ): Payload {
+        val request = Rpc.Object.SetInternalFlags.Request(
+            contextId = command.ctx,
+            internalFlags = command.flags.toMiddlewareModel()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.setInternalFlags(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
+    }
+
     fun addObjectToCollection(command: Command.AddObjectToCollection): Payload {
         val request = Rpc.ObjectCollection.Add.Request(
             contextId = command.ctx,

@@ -24,8 +24,10 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -40,6 +42,7 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
@@ -54,6 +57,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
@@ -63,10 +67,14 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
+import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -116,7 +124,10 @@ class ObjectSetViewModel(
     private val objectStore: ObjectStore,
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val getDefaultPageType: GetDefaultPageType,
+    private val getTemplates: GetTemplates,
+    private val updateDataViewViewer: UpdateDataViewViewer
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -144,12 +155,15 @@ class ObjectSetViewModel(
         MutableStateFlow(DataViewViewState.Init)
     val currentViewer = _currentViewer
 
+    private val _templateViews = MutableStateFlow<List<TemplateView>>(emptyList())
+
     private val _header = MutableStateFlow<SetOrCollectionHeaderState>(
         SetOrCollectionHeaderState.None
     )
     val header: StateFlow<SetOrCollectionHeaderState> = _header
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
+    val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.reset())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -173,6 +187,7 @@ class ObjectSetViewModel(
                         urlBuilder = urlBuilder,
                         coverImageHashProvider = coverImageHashProvider
                     )
+                    gettingTemplatesForDataViewState(state)
                 }
         }
 
@@ -405,9 +420,10 @@ class ObjectSetViewModel(
             combine(
                 database.index,
                 stateReducer.state,
-                session.currentViewerId
-            ) { dataViewState, objectState, currentViewId ->
-                processViewState(dataViewState, objectState, currentViewId)
+                session.currentViewerId,
+                _templateViews
+            ) { dataViewState, objectState, currentViewId, templates ->
+                processViewState(dataViewState, objectState, currentViewId, templates)
             }.distinctUntilChanged().collect { viewState ->
                 Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
                 _currentViewer.value = viewState
@@ -418,18 +434,21 @@ class ObjectSetViewModel(
     private suspend fun processViewState(
         dataViewState: DataViewState,
         objectState: ObjectState,
-        currentViewId: String?
+        currentViewId: String?,
+        templates: List<TemplateView>
     ): DataViewViewState {
         return when (objectState) {
             is ObjectState.DataView.Collection -> processCollectionState(
-                dataViewState,
-                objectState,
-                currentViewId
+                dataViewState = dataViewState,
+                objectState = objectState,
+                currentViewId = currentViewId,
+                templates = templates
             )
             is ObjectState.DataView.Set -> processSetState(
-                dataViewState,
-                objectState,
-                currentViewId
+                dataViewState = dataViewState,
+                objectState = objectState,
+                currentViewId = currentViewId,
+                templates = templates
             )
             ObjectState.Init -> DataViewViewState.Init
             ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
@@ -439,7 +458,8 @@ class ObjectSetViewModel(
     private suspend fun processCollectionState(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Collection,
-        currentViewId: String?
+        currentViewId: String?,
+        templates: List<TemplateView>
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
@@ -461,8 +481,26 @@ class ObjectSetViewModel(
 
                 when {
                     viewer == null -> DataViewViewState.Collection.NoView
-                    viewer.isEmpty() -> DataViewViewState.Collection.NoItems(title = viewer.title)
-                    else -> DataViewViewState.Collection.Default(viewer = viewer)
+                    viewer.isEmpty() -> {
+                        val isTemplatesPresent = templates.isNotEmpty() &&
+                                storeOfObjectTypes.isTemplatesAllowedForDefaultType(
+                                    getDefaultPageType = getDefaultPageType
+                                )
+                        DataViewViewState.Collection.NoItems(
+                            title = viewer.title,
+                            hasTemplates = isTemplatesPresent
+                        )
+                    }
+                    else -> {
+                        val isTemplatesPresent = templates.isNotEmpty() &&
+                                storeOfObjectTypes.isTemplatesAllowedForDefaultType(
+                                    getDefaultPageType = getDefaultPageType
+                                )
+                        DataViewViewState.Collection.Default(
+                            viewer = viewer,
+                            hasTemplates = isTemplatesPresent
+                        )
+                    }
                 }
             }
         }
@@ -471,7 +509,8 @@ class ObjectSetViewModel(
     private suspend fun processSetState(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Set,
-        currentViewId: String?
+        currentViewId: String?,
+        templates: List<TemplateView>
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
@@ -503,8 +542,30 @@ class ObjectSetViewModel(
                 when {
                     query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
                     render == null -> DataViewViewState.Set.NoView
-                    render.isEmpty() -> DataViewViewState.Set.NoItems(title = render.title)
-                    else -> DataViewViewState.Set.Default(viewer = render)
+                    render.isEmpty() -> {
+                        val isTemplatesAllowed = templates.isNotEmpty() &&
+                                objectState.isTemplatesAllowed(
+                                    setOfValue,
+                                    storeOfObjectTypes,
+                                    getDefaultPageType
+                                )
+                        DataViewViewState.Set.NoItems(
+                            title = render.title,
+                            hasTemplates = isTemplatesAllowed
+                        )
+                    }
+                    else -> {
+                        val isTemplatesAllowed = templates.isNotEmpty() &&
+                                objectState.isTemplatesAllowed(
+                                    setOfValue,
+                                    storeOfObjectTypes,
+                                    getDefaultPageType
+                                )
+                        DataViewViewState.Set.Default(
+                            viewer = render,
+                            hasTemplates = isTemplatesAllowed
+                        )
+                    }
                 }
             }
         }
@@ -810,16 +871,35 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onCreateNewDataViewObject() {
-        Timber.d("onCreateNewRecord, ")
+    fun proceedWithCreatingNewDataViewObject(templatesId: Id? = null) {
+        Timber.d("proceedWithCreatingNewDataViewObject, templatesId:[$templatesId]")
         val state = stateReducer.state.value.dataViewState() ?: return
         when (state) {
-            is ObjectState.DataView.Collection -> proceedWithAddingObjectToCollection()
-            is ObjectState.DataView.Set -> proceedWithCreatingSetObject(state)
+            is ObjectState.DataView.Collection -> proceedWithAddingObjectToCollection(templatesId)
+            is ObjectState.DataView.Set -> proceedWithCreatingSetObject(state, templatesId)
         }
     }
 
-    private fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set) {
+    fun onNewButtonIconClicked() {
+        Timber.d("onNewButtonIconClicked, ")
+        templatesWidgetState.value = TemplatesWidgetUiState(
+            items = _templateViews.value,
+            showWidget = true,
+            isEditing = false,
+            isMoreMenuVisible = false,
+            moreMenuTemplate = null
+        )
+        viewModelScope.launch {
+            logEvent(
+                state = stateReducer.state.value,
+                analytics = analytics,
+                event = ObjectStateAnalyticsEvent.SHOW_TEMPLATES
+
+            )
+        }
+    }
+
+    private fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set, templateId: Id?) {
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
@@ -849,7 +929,8 @@ class ObjectSetViewModel(
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = sourceId,
-                                        filters = viewer.filters
+                                        filters = viewer.filters,
+                                        template = templateId
                                     )
                                 )
                             }
@@ -858,7 +939,8 @@ class ObjectSetViewModel(
                             proceedWithCreatingDataViewObject(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
-                                    relations = setObject.setOf
+                                    relations = setObject.setOf,
+                                    template = templateId
                                 )
                             )
                         }
@@ -879,8 +961,11 @@ class ObjectSetViewModel(
         proceedWithAddingObjectToCollection()
     }
 
-    private fun proceedWithAddingObjectToCollection() {
-        proceedWithCreatingDataViewObject(CreateDataViewObject.Params.Collection) { result ->
+    private fun proceedWithAddingObjectToCollection(templateId: Id? = null) {
+        val createObjectParams = CreateDataViewObject.Params.Collection(
+            templateId = templateId
+        )
+        proceedWithCreatingDataViewObject(createObjectParams) { result ->
             val params = AddObjectToCollection.Params(
                 ctx = context,
                 after = "",
@@ -917,7 +1002,7 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithNewDataViewObject(params: CreateDataViewObject.Params, newObject: Id) {
         when (params) {
-            CreateDataViewObject.Params.Collection -> {
+            is CreateDataViewObject.Params.Collection -> {
                 proceedWithOpeningObject(newObject)
             }
             is CreateDataViewObject.Params.SetByRelation -> {
@@ -1390,6 +1475,187 @@ class ObjectSetViewModel(
             )
         }
     }
+
+    // region TEMPLATES
+    private suspend fun gettingTemplatesForDataViewState(state: ObjectState.DataView) {
+        when (state) {
+            is ObjectState.DataView.Collection -> {
+                proceedWithGettingTemplates(typeId = null)
+            }
+            is ObjectState.DataView.Set -> {
+                val sourceId = proceedWithGettingSetSourceId(state)
+                val sourceMap = state.details[sourceId] ?: return
+                when (sourceMap.type.firstOrNull()) {
+                    ObjectTypeIds.RELATION -> proceedWithGettingTemplates(typeId = null)
+                    ObjectTypeIds.OBJECT_TYPE -> proceedWithGettingTemplates(typeId = sourceId)
+                    else -> { Timber.d("Ignoring type of source") }
+                }
+            }
+        }
+    }
+
+    private suspend fun proceedWithGettingTemplates(typeId: Id?) {
+        val objectType = resolveObjectType(typeId)
+        if (objectType?.isTemplatesAllowed() == true) {
+            viewModelScope.launch {
+                getTemplates.async(GetTemplates.Params(objectType.id)).fold(
+                    onSuccess = { templates ->
+                        if (templates.isNotEmpty()) {
+                            _templateViews.value =
+                                listOf(templates.first().toTemplateViewBlank(objectType.id)) +
+                                        templates.map {
+                                            it.toTemplateView(
+                                                typeId = objectType.id,
+                                                urlBuilder = urlBuilder,
+                                                coverImageHashProvider = coverImageHashProvider
+                                            )
+                                        }
+                        }
+                    },
+                    onFailure = { e ->
+                        Timber.e(e, "Error getting templates for type ${objectType.id}")
+                    }
+                )
+            }
+        } else {
+            Timber.d("Templates are not allowed for type:[${objectType?.id}]")
+        }
+    }
+
+    private suspend fun resolveObjectType(type: Id?): ObjectWrapper.Type? {
+        return if (type == null) {
+            val defaultObjectType = getDefaultPageType.run(Unit).type ?: return null
+            storeOfObjectTypes.get(defaultObjectType)
+        } else {
+            storeOfObjectTypes.get(type)
+        }
+    }
+
+    fun onTemplateItemClicked(item: TemplateView) {
+        val state = templatesWidgetState.value
+        if (state.isMoreMenuVisible) {
+            templatesWidgetState.value = state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
+            return
+        }
+        when(item) {
+            is TemplateView.Blank -> {
+                templatesWidgetState.value = TemplatesWidgetUiState.reset()
+                viewModelScope.launch {
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.SELECT_TEMPLATE
+                    )
+                }
+                viewModelScope.launch {
+                    delay(200)
+                    proceedWithCreatingNewDataViewObject()
+                }
+            }
+            is TemplateView.Template -> {
+                templatesWidgetState.value = TemplatesWidgetUiState.reset()
+                viewModelScope.launch {
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.SELECT_TEMPLATE
+                    )
+                }
+                viewModelScope.launch {
+                    delay(200)
+                    proceedWithCreatingNewDataViewObject(templatesId = item.id)
+                }
+            }
+        }
+    }
+
+    private fun proceedWithGettingSetSourceId(currentState: ObjectState.DataView.Set): Id? {
+        if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT) || !currentState.isInitialized) {
+            toast(NOT_ALLOWED)
+            return null
+        }
+
+        val setObject = ObjectWrapper.Basic(currentState.details[context]?.map ?: emptyMap())
+        val sourceId = setObject.setOf.singleOrNull()
+        if (sourceId == null) {
+            Timber.e("Unable to define a source for a new object.")
+            toast("Unable to define a source for a new object.")
+        }
+        return sourceId
+    }
+
+    fun onEditTemplateButtonClicked() {
+        templatesWidgetState.value = templatesWidgetState.value.copy(isEditing = true)
+    }
+
+    fun onDoneTemplateButtonClicked() {
+        Timber.d("onDoneTemplateButtonClicked, ")
+        templatesWidgetState.value = if (templatesWidgetState.value.isMoreMenuVisible) {
+            templatesWidgetState.value.copy(
+                isMoreMenuVisible = false,
+                moreMenuTemplate = null
+            )
+        } else {
+            templatesWidgetState.value.copy(
+                isEditing = false
+            )
+        }
+    }
+
+    fun onMoreTemplateButtonClicked(template: TemplateView.Template) {
+        Timber.d("onMoreTemplateButtonClicked, template:[$template], isMoreMenuVisible:[${templatesWidgetState.value.isMoreMenuVisible}]")
+        templatesWidgetState.value = if (templatesWidgetState.value.isMoreMenuVisible) {
+            templatesWidgetState.value.copy(
+                isMoreMenuVisible = false,
+                moreMenuTemplate = null
+            )
+        } else {
+            templatesWidgetState.value.copy(
+                isMoreMenuVisible = true,
+                moreMenuTemplate = template
+            )
+        }
+    }
+
+    fun onDismissTemplatesWidget() {
+        Timber.d("onDismissTemplatesWidget, ")
+        val state = templatesWidgetState.value
+        templatesWidgetState.value = when {
+            state.isMoreMenuVisible -> state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
+            state.showWidget -> TemplatesWidgetUiState.reset()
+            else -> state
+        }
+    }
+
+    fun onMoreMenuClicked(click: TemplateMenuClick) {
+        when (click) {
+            is TemplateMenuClick.Default -> proceedWithUpdatingViewDefaultTemplate()
+            is TemplateMenuClick.Delete -> TODO()
+            is TemplateMenuClick.Duplicate -> TODO()
+            is TemplateMenuClick.Edit -> TODO()
+        }
+    }
+
+    private fun proceedWithUpdatingViewDefaultTemplate() {
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        val params = UpdateDataViewViewer.Params.Template(
+            context = context,
+            target = viewer.id,
+            viewer = viewer.copy(defaultTemplateId = template.id)
+        )
+        viewModelScope.launch {
+            updateDataViewViewer(params).proceed(
+                success = { payload -> dispatcher.send(payload) },
+                failure = { e ->
+                    Timber.e(e, "Error while setting default template")
+                    toast("Error while setting default template")
+                }
+            )
+        }
+    }
+    //endregion
 
     companion object {
         const val NOT_ALLOWED = "Not allowed for this set"

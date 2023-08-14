@@ -553,7 +553,7 @@
     <string name="swipe_down_to_skip">Swipe down to skip</string>
     <string name="show">Show</string>
 
-    <string name="this_type_has_templates">This type has %1$d templates</string>
+    <string name="this_type_has_templates">Type \"%1$s\" has %2$d templates</string>
 
     <string name="item_relation_create_from_scratch_title">Type</string>
     <string name="btn_restore">Restore</string>
@@ -610,7 +610,7 @@
     <string name="object_search_recently_opened_section_title">Recently opened</string>
     <string name="widget_source_anytype_library">Anytype Library</string>
     <string name="your_favorite_objects">Your favorite objects</string>
-    <string name="recently_opened_objects">Recently opened objects</string>
+    <string name="on_this_device">On this device</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
 
     <string name="content_description_customize_view_button">Customize-view button</string>
@@ -643,5 +643,12 @@
     <string name="menu_type_open_set">Open set of %1$s</string>
     <string name="menu_type_create_set">Create set of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
+    <string name="type_templates_widget_title">Select template</string>
+    <string name="blank">Blank</string>
+    
+    <string name="templates_menu_default_for_view">Default for this view</string>
+    <string name="templates_menu_edit">Edit template</string>
+    <string name="templates_menu_duplicate">Duplicate</string>
+    <string name="templates_menu_delete">Delete</string>
 
 </resources>

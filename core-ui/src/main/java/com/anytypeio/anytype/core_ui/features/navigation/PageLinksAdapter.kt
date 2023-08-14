@@ -143,28 +143,37 @@ class BundledWidgetSourceHolder(
             BundledWidgetSourceView.Favorites -> {
                 with(binding) {
                     tvTitle.setText(R.string.favorites)
-                    tvSubtitle.setText(R.string.your_favorite_objects)
+                    tvSubtitle.text = ""
                     ivIcon.setIcon(ObjectIcon.Basic.Emoji("⭐️"))
                 }
             }
+
             BundledWidgetSourceView.Recent -> {
                 with(binding) {
                     tvTitle.setText(R.string.recent)
-                    tvSubtitle.setText(R.string.recently_opened_objects)
-                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("🗓"))
+                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("📝"))
                 }
             }
+
+            BundledWidgetSourceView.RecentLocal -> {
+                with(binding) {
+                    tvTitle.setText(R.string.recently_opened)
+                    tvSubtitle.setText(R.string.on_this_device)
+                    ivIcon.setIcon(ObjectIcon.Basic.Emoji("📅"))
+                }
+            }
+
             BundledWidgetSourceView.Sets -> {
                 with(binding) {
                     tvTitle.setText(R.string.sets)
-                    tvSubtitle.setText(R.string.sets_of_objects)
+                    tvSubtitle.text = ""
                     ivIcon.setIcon(ObjectIcon.Basic.Emoji("📚"))
                 }
             }
             BundledWidgetSourceView.Collections -> {
                 with(binding) {
                     tvTitle.setText(R.string.collections)
-                    tvSubtitle.setText(R.string.collection_widget_description)
+                    tvSubtitle.text = ""
                     ivIcon.setIcon(ObjectIcon.Basic.Emoji("📂"))
                 }
             }

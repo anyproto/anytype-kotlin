@@ -60,6 +60,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
+import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -269,6 +270,9 @@ open class EditorTestSetup {
     @Mock
     lateinit var fileLimitsEventChannel: FileLimitsEventChannel
 
+    @Mock
+    lateinit var setObjectInternalFlags: SetObjectInternalFlags
+
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     lateinit var addRelationToObject: AddRelationToObject
@@ -466,7 +470,8 @@ open class EditorTestSetup {
             getObjectTypes = getObjectTypes,
             objectToCollection = objectToCollection,
             interceptFileLimitEvents = interceptFileLimitEvents,
-            addRelationToObject = addRelationToObject
+            addRelationToObject = addRelationToObject,
+            setObjectInternalFlags = setObjectInternalFlags
         )
     }
 

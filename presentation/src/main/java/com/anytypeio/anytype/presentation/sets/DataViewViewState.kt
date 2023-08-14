@@ -7,15 +7,15 @@ sealed class DataViewViewState {
 
     sealed class Collection : DataViewViewState() {
         object NoView : Collection()
-        data class NoItems(val title: String) : Collection()
-        data class Default(val viewer: Viewer?) : Collection()
+        data class NoItems(val title: String, val hasTemplates: Boolean = false) : Collection()
+        data class Default(val viewer: Viewer?, val hasTemplates: Boolean = false) : Collection()
     }
 
     sealed class Set : DataViewViewState() {
         object NoQuery : Set()
         object NoView : Set()
-        data class NoItems(val title: String) : Set()
-        data class Default(val viewer: Viewer?) : Set()
+        data class NoItems(val title: String, val hasTemplates: Boolean) : Set()
+        data class Default(val viewer: Viewer?, val hasTemplates: Boolean) : Set()
     }
 
     object Init: DataViewViewState()

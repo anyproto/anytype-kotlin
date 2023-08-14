@@ -32,6 +32,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root)
+        stubGetDefaultPageType()
     }
 
     @After

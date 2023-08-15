@@ -462,8 +462,8 @@ fun ObjectWrapper.Basic.toTemplateView(
 
 fun ObjectWrapper.Basic.toTemplateViewBlank(
     typeId: Id,
-    objectTypeDefaultTemplate: Id? = null,
-    viewerDefaultTemplate: Id? = null
+    objectTypeDefaultTemplate: Id?,
+    viewerDefaultTemplate: Id?
 ): TemplateView.Blank {
     val isDefault = viewerDefaultTemplate.isNullOrBlank() && objectTypeDefaultTemplate.isNullOrBlank()
     return TemplateView.Blank(

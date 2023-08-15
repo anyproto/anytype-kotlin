@@ -1504,7 +1504,10 @@ class ObjectSetViewModel(
                     onSuccess = { templates ->
                         if (templates.isNotEmpty()) {
                             _templateViews.value =
-                                listOf(templates.first().toTemplateViewBlank(objectType.id)) +
+                                listOf(templates.first().toTemplateViewBlank(
+                                    typeId = objectType.id,
+                                    objectTypeDefaultTemplate = objectType.defaultTemplateId,
+                                    viewerDefaultTemplate = viewer.defaultTemplateId)) +
                                         templates.map {
                                             it.toTemplateView(
                                                 typeId = objectType.id,

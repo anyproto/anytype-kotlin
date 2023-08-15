@@ -166,7 +166,9 @@ object DataModule {
     ): SharedPreferences = try {
         initializeEncryptedPrefs(context)
     } catch (e: Exception) {
+        // https://issuetracker.google.com/issues/164901843
         Timber.e(e, "Error while initializing encrypted prefs")
+        // Clearing pre-existing prefs
         context
             .getSharedPreferences(ENCRYPTED_PREFS_NAME, Context.MODE_PRIVATE)
             .edit()

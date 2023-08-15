@@ -538,7 +538,6 @@ class OnboardingFragment : Fragment() {
                         navController.navigate(
                             route = OnboardingNavigation.createSoulAnim
                         )
-                        vm.sendAnalyticsOnboardingScreen()
                     }
                 }
             }

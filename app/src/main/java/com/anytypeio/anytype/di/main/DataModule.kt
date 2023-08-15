@@ -59,6 +59,7 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Named
 import javax.inject.Singleton
+import timber.log.Timber
 
 @Module(includes = [DataModule.Bindings::class])
 object DataModule {
@@ -162,8 +163,22 @@ object DataModule {
     @Named("encrypted")
     fun provideEncryptedSharedPreferences(
         context: Context
-    ): SharedPreferences = EncryptedSharedPreferences.create(
-        "encrypted_prefs",
+    ): SharedPreferences = try {
+        initializeEncryptedPrefs(context)
+    } catch (e: Exception) {
+        // https://issuetracker.google.com/issues/164901843
+        Timber.e(e, "Error while initializing encrypted prefs")
+        // Clearing pre-existing prefs
+        context
+            .getSharedPreferences(ENCRYPTED_PREFS_NAME, Context.MODE_PRIVATE)
+            .edit()
+            .clear()
+            .commit()
+        initializeEncryptedPrefs(context)
+    }
+
+    private fun initializeEncryptedPrefs(context: Context) = EncryptedSharedPreferences.create(
+        ENCRYPTED_PREFS_NAME,
         MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
         context,
         EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
@@ -312,3 +327,5 @@ object DataModule {
         fun bindMiddlewareService(middleware: MiddlewareServiceImplementation): MiddlewareService
     }
 }
+
+const val ENCRYPTED_PREFS_NAME = "encrypted_prefs"

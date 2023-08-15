@@ -1649,7 +1649,7 @@ class ObjectSetViewModel(
         val template = templatesWidgetState.value.moreMenuTemplate ?: return
         val params = UpdateDataViewViewer.Params.Template(
             context = context,
-            target = viewer.id,
+            target = state.dataViewBlock.id,
             viewer = viewer.copy(defaultTemplateId = template.id)
         )
         viewModelScope.launch {

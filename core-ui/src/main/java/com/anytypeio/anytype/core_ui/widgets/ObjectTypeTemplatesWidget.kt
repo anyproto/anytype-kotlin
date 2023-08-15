@@ -279,7 +279,8 @@ private fun MoreMenu(
     }
     Column(
         modifier = Modifier
-            .size(244.dp, 176.dp)
+            .width(244.dp)
+            .wrapContentHeight()
             .offset(x = offsetX, y = -260.dp)
             .shadow(
                 elevation = 40.dp,
@@ -291,11 +292,13 @@ private fun MoreMenu(
                 shape = RoundedCornerShape(size = 10.dp)
             )
     ) {
-        MenuItem(
-            click = { menuClick(TemplateMenuClick.Default(templateView)) },
-            text = stringResource(id = R.string.templates_menu_default_for_view)
-        )
-        Divider()
+        if(currentState.isDefaultStateEnabled) {
+            MenuItem(
+                click = { menuClick(TemplateMenuClick.Default(templateView)) },
+                text = stringResource(id = R.string.templates_menu_default_for_view)
+            )
+            Divider()
+        }
         MenuItem(
             click = { menuClick(TemplateMenuClick.Edit(templateView)) },
             text = stringResource(id = R.string.templates_menu_edit)
@@ -364,7 +367,7 @@ private fun TemplatesList(
                         .height(231.dp)
                         .width(127.dp)
                 ) {
-                    val (borderWidth, borderColor) = if (item.isDefault) {
+                    val (borderWidth, borderColor) = if (state.isDefaultStateEnabled && item.isDefault) {
                         Pair(2.dp, colorResource(id = R.color.palette_system_amber_50))
                     } else {
                         Pair(1.dp, colorResource(id = R.color.shape_primary))

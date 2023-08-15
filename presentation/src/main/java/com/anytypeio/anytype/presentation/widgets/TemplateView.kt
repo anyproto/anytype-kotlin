@@ -7,7 +7,8 @@ data class TemplatesWidgetUiState(
     val showWidget: Boolean,
     val isEditing: Boolean,
     val isMoreMenuVisible: Boolean,
-    val moreMenuTemplate: TemplateView.Template?
+    val moreMenuTemplate: TemplateView.Template?,
+    val isDefaultStateEnabled: Boolean = false
 ) {
     companion object {
         fun reset() = TemplatesWidgetUiState(
@@ -15,7 +16,8 @@ data class TemplatesWidgetUiState(
             showWidget = false,
             isEditing = false,
             isMoreMenuVisible = false,
-            moreMenuTemplate = null
+            moreMenuTemplate = null,
+            isDefaultStateEnabled = false
         )
     }
 }

@@ -35,6 +35,9 @@ class OnboardingSoulCreationViewModel @Inject constructor(
         val config = configStorage.getOrNull()
         if (config != null) {
             viewModelScope.launch {
+                sendAnalyticsOnboardingScreenEvent(analytics,
+                    EventsDictionary.ScreenOnboardingStep.SOUL_CREATING
+                )
                 setObjectDetails.async(
                     SetObjectDetails.Params(
                         ctx = config.profile, details = mapOf(Relations.NAME to name)
@@ -59,6 +62,10 @@ class OnboardingSoulCreationViewModel @Inject constructor(
         val config = configStorage.getOrNull()
         if (config != null) {
             viewModelScope.launch {
+                sendAnalyticsOnboardingScreenEvent(
+                    analytics = analytics,
+                    step = EventsDictionary.ScreenOnboardingStep.SPACE_CREATING
+                )
                 setObjectDetails.async(
                     SetObjectDetails.Params(
                         ctx = config.workspace,
@@ -69,10 +76,6 @@ class OnboardingSoulCreationViewModel @Inject constructor(
                         Timber.e(it, "Error while updating object details")
                     },
                     onSuccess = {
-                        sendAnalyticsOnboardingScreenEvent(
-                            analytics = analytics,
-                            step = EventsDictionary.ScreenOnboardingStep.SPACE_CREATING
-                        )
                         _navigationFlow.emit(Navigation.OpenSoulCreationAnim(name))
                     }
                 )
@@ -86,12 +89,6 @@ class OnboardingSoulCreationViewModel @Inject constructor(
 
     private fun toast(msg: String) {
         viewModelScope.launch { toasts.emit(msg) }
-    }
-
-    fun sendAnalyticsOnboardingScreen() {
-        viewModelScope.sendAnalyticsOnboardingScreenEvent(analytics,
-            EventsDictionary.ScreenOnboardingStep.SOUL_CREATING
-        )
     }
 
     sealed interface Navigation {

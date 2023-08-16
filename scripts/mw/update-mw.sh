@@ -4,15 +4,6 @@ REPO="anyproto/anytype-heart"
 FILE="lib.tar.gz"
 GITHUB="api.github.com"
 
-echo "Enter your github token (check your github.properties file)"
-
-read -r TOKEN
-
-if [ "$TOKEN" = "" ]; then
-  echo "ERROR: token is empty"
-  exit 1
-fi;
-
 echo "Enter MW version without any prefix (for instance: 0.26.0)"
 
 read -r MW_VERSION
@@ -22,12 +13,12 @@ if [ "$MW_VERSION" = "" ]; then
   exit 1
 fi;
 
-version=`curl -H "Authorization: token $TOKEN" -H "Accept: application/vnd.github.v3+json" -sL https://$GITHUB/repos/$REPO/releases/tags/v$MW_VERSION | jq .`
+version=`curl -H "Accept: application/vnd.github.v3+json" -sL https://$GITHUB/repos/$REPO/releases/tags/v$MW_VERSION | jq .`
 
 tag=`echo $version | jq ".tag_name"`
 asset_id=`echo $version | jq ".assets | map(select(.name | match(\"android_lib_\";\"i\")))[0].id"`
 
-if [ "$asset_id" = "null" ]; then
+if [[ "$asset_id" = "null" || "$asset_id" = "" ]]; then
   echo "ERROR: version not found"
   exit 1
 fi;
@@ -35,7 +26,7 @@ fi;
 printf "Version: $tag\n"
 printf "Found asset: $asset_id\n"
 echo -n "Downloading file... "
-curl -sL -H 'Accept: application/octet-stream' https://$TOKEN:@$GITHUB/repos/$REPO/releases/assets/$asset_id > $FILE
+curl -sL -H 'Accept: application/octet-stream' https://$GITHUB/repos/$REPO/releases/assets/$asset_id > $FILE
 printf "Done\n"
 
 echo -n "Uncompressing... "

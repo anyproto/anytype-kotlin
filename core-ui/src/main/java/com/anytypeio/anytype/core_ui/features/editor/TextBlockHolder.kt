@@ -373,14 +373,20 @@ interface TextBlockHolder : TextHolder {
     private fun setupCustomInsertionActionMode(isWithBookmark: Boolean = true) {
         content.customInsertionActionModeCallback = object : ActionMode.Callback2() {
             override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-                if (getLink() != null) {
-                    menu.addLink()
-                    if (isWithBookmark) {
-                        menu.add(0, R.id.menuBookmark, 3, R.string.bookmark)
+                return try {
+                    if (getLink() != null) {
+                        menu.addLink()
+                        if (isWithBookmark) {
+                            menu.add(0, R.id.menuBookmark, 3, R.string.bookmark)
+                        }
+                        menu.pasteToText()
                     }
-                    menu.pasteToText()
+                    true
+                } catch (e: Exception) {
+                    false.also {
+                        Timber.d(e, "Error while creating action mode")
+                    }
                 }
-                return true
             }
 
             override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {
@@ -417,11 +423,17 @@ interface TextBlockHolder : TextHolder {
         }
         content.customSelectionActionModeCallback = object : ActionMode.Callback2() {
             override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
-                if (getLink() != null) {
-                    menu.addLink()
-                    menu.pasteToText()
+                return try {
+                    if (getLink() != null) {
+                        menu.addLink()
+                        menu.pasteToText()
+                    }
+                    return true
+                } catch (e: Exception) {
+                    false.also {
+                        Timber.d(e, "Error while creating action mode")
+                    }
                 }
-                return true
             }
 
             override fun onPrepareActionMode(mode: ActionMode, menu: Menu): Boolean {

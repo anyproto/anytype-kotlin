@@ -148,7 +148,7 @@ class TemplateSelectViewModel(
         }
     }
 
-    fun onCancelButtonClicked() {
+    fun onSkipButtonClicked() {
         isDismissed.value = true
     }
 

@@ -36,6 +36,9 @@ class AmplitudeTracker(
         analytics
             .observeEvents()
             .collect { event ->
+                if (BuildConfig.DEBUG) {
+                    Timber.d("Analytics Amplitude(event = $event)")
+                }
                 if (BuildConfig.SEND_EVENTS && event is EventAnalytics.Anytype) {
                     val props = event.props.getEventProperties(
                         startTime = event.duration?.start,
@@ -43,9 +46,6 @@ class AmplitudeTracker(
                         renderTime = event.duration?.render
                     )
                     tracker.logEvent(event.name, props)
-                    if (BuildConfig.DEBUG) {
-                        Timber.d("Analytics Amplitude(event = $event)")
-                    }
                 }
             }
     }

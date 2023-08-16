@@ -845,4 +845,8 @@ class BlockDataRepository(
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {
         return remote.setInternalFlags(command)
     }
+
+    override suspend fun duplicateObjectsList(ids: List<Id>): List<Id> {
+        return remote.duplicateObjectsList(ids)
+    }
 }

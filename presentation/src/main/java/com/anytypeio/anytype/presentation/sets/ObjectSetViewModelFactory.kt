@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.DuplicateObjectsList
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -66,7 +67,8 @@ class ObjectSetViewModelFactory(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getDefaultPageType: GetDefaultPageType,
     private val getTemplates: GetTemplates,
-    private val updateDataViewViewer: UpdateDataViewViewer
+    private val updateDataViewViewer: UpdateDataViewViewer,
+    private val duplicateObjectsList: DuplicateObjectsList
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -102,7 +104,8 @@ class ObjectSetViewModelFactory(
             storeOfObjectTypes = storeOfObjectTypes,
             getDefaultPageType = getDefaultPageType,
             getTemplates = getTemplates,
-            updateDataViewViewer = updateDataViewViewer
+            updateDataViewViewer = updateDataViewViewer,
+            duplicateObjectsList = duplicateObjectsList
         ) as T
     }
 }

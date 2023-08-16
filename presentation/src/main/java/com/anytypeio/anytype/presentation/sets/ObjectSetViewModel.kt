@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.DuplicateObjectsList
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -127,7 +128,8 @@ class ObjectSetViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getDefaultPageType: GetDefaultPageType,
     private val getTemplates: GetTemplates,
-    private val updateDataViewViewer: UpdateDataViewViewer
+    private val updateDataViewViewer: UpdateDataViewViewer,
+    private val duplicateObjectsList: DuplicateObjectsList
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -1638,7 +1640,7 @@ class ObjectSetViewModel(
         when (click) {
             is TemplateMenuClick.Default -> proceedWithUpdatingViewDefaultTemplate()
             is TemplateMenuClick.Delete -> TODO()
-            is TemplateMenuClick.Duplicate -> TODO()
+            is TemplateMenuClick.Duplicate -> proceedWithDuplicateTemplates()
             is TemplateMenuClick.Edit -> TODO()
         }
     }
@@ -1658,6 +1660,26 @@ class ObjectSetViewModel(
                 failure = { e ->
                     Timber.e(e, "Error while setting default template")
                     toast("Error while setting default template")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithDuplicateTemplates() {
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        val params = DuplicateObjectsList.Params(
+            ctx = context,
+            ids = listOf(template.id)
+        )
+        viewModelScope.launch {
+            duplicateObjectsList.async(params).fold(
+                onSuccess = { ids ->
+                    Timber.d("Successfully duplicated templates: $ids")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while duplicating templates")
+                    toast("Error while duplicating templates")
                 }
             )
         }

@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.DuplicateObjectsList
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -166,6 +167,17 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideDuplicateObjectsListUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DuplicateObjectsList = DuplicateObjectsList(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideObjectSetViewModelFactory(
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
@@ -198,7 +210,8 @@ object ObjectSetModule {
         storeOfObjectTypes: StoreOfObjectTypes,
         getDefaultPageType: GetDefaultPageType,
         getTemplates: GetTemplates,
-        updateDataViewViewer: UpdateDataViewViewer
+        updateDataViewViewer: UpdateDataViewViewer,
+        duplicateObjectsList: DuplicateObjectsList
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -231,7 +244,8 @@ object ObjectSetModule {
         storeOfObjectTypes = storeOfObjectTypes,
         getDefaultPageType = getDefaultPageType,
         getTemplates = getTemplates,
-        updateDataViewViewer = updateDataViewViewer
+        updateDataViewViewer = updateDataViewViewer,
+        duplicateObjectsList = duplicateObjectsList
     )
 
     @JvmStatic

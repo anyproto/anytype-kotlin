@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets
 
+import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -311,13 +312,14 @@ private fun MoreMenu(
         Divider()
         MenuItem(
             click = { menuClick(TemplateMenuClick.Delete(templateView)) },
-            text = stringResource(id = R.string.templates_menu_delete)
+            text = stringResource(id = R.string.templates_menu_delete),
+            color = R.color.palette_system_red
         )
     }
 }
 
 @Composable
-private fun MenuItem(click: () -> Unit, text: String) {
+private fun MenuItem(click: () -> Unit, text: String, @ColorRes color: Int = R.color.text_primary) {
     Text(
         modifier = Modifier
             .fillMaxWidth()
@@ -326,7 +328,7 @@ private fun MenuItem(click: () -> Unit, text: String) {
             .clickable { click() },
         text = text,
         style = BodyCalloutRegular,
-        color = colorResource(id = R.color.text_primary),
+        color = colorResource(id = color),
         textAlign = TextAlign.Center
     )
 }

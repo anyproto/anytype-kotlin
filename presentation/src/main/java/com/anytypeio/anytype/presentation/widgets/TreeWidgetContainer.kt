@@ -31,6 +31,8 @@ class TreeWidgetContainer(
     isSessionActive: Flow<Boolean>
 ) : WidgetContainer {
 
+    private val rootLevelLimit = WidgetConfig.resolveTreeWidgetLimit(widget.limit)
+
     private val nodes = mutableMapOf<Id, List<Id>>()
 
     override val view = isSessionActive.flatMapLatest { isActive ->
@@ -88,7 +90,6 @@ class TreeWidgetContainer(
                     )
                 }
             }
-
             is Widget.Source.Default -> {
                 container.subscribe(
                     StoreSearchByIdsParams(
@@ -186,7 +187,11 @@ class TreeWidgetContainer(
         path: TreePath,
         data: Map<Id, ObjectWrapper.Basic>
     ): List<WidgetView.Tree.Element> = buildList {
-        links.forEach { link ->
+        links.forEachIndexed { index, link ->
+            // Applying limit only for root level:
+            if (level == 0 && rootLevelLimit > 0 && index == rootLevelLimit) {
+                return@buildList
+            }
             val obj = data[link]
             if (obj != null) {
                 val currentLinkPath = path + link
@@ -235,13 +240,13 @@ class TreeWidgetContainer(
         )
     }
 
-    private fun resolveLimit(): Int = DEFAULT_TREE_MAX_COUNT
+    private fun resolveLimit(): Int = NO_LIMIT
 
     companion object {
         const val ROOT_INDENT = 0
         const val MAX_INDENT = 3
         const val SEPARATOR = "/"
-        const val DEFAULT_TREE_MAX_COUNT = 0
+        const val NO_LIMIT = 0
         val keys = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
             add(Relations.LINKS)

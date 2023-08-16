@@ -113,6 +113,7 @@
     <string name="modal_table">Table</string>
     <string name="modal_list">List</string>
     <string name="cancel">Cancel</string>
+    <string name="skip">Skip</string>
     <string name="add">Add</string>
     <string name="duplicate">Duplicate</string>
     <string name="customize_view">Customize view</string>
@@ -610,7 +611,7 @@
     <string name="object_search_recently_opened_section_title">Recently opened</string>
     <string name="widget_source_anytype_library">Anytype Library</string>
     <string name="your_favorite_objects">Your favorite objects</string>
-    <string name="recently_opened_objects">Recently opened objects</string>
+    <string name="on_this_device">On this device</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
 
     <string name="content_description_customize_view_button">Customize-view button</string>
@@ -643,5 +644,12 @@
     <string name="menu_type_open_set">Open set of %1$s</string>
     <string name="menu_type_create_set">Create set of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
+    <string name="type_templates_widget_title">Select template</string>
+    <string name="blank">Blank</string>
+    
+    <string name="templates_menu_default_for_view">Default for this view</string>
+    <string name="templates_menu_edit">Edit template</string>
+    <string name="templates_menu_duplicate">Duplicate</string>
+    <string name="templates_menu_delete">Delete</string>
 
 </resources>

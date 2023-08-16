@@ -133,6 +133,13 @@ class UpdateDataViewViewer(
                     viewer = params.viewer
                 )
             }
+            is Params.Template -> {
+                repo.updateDataViewViewer(
+                    context = params.context,
+                    target = params.target,
+                    viewer = params.viewer
+                )
+            }
         }
     }
 
@@ -187,6 +194,12 @@ class UpdateDataViewViewer(
         }
 
         data class Fields(
+            val context: Id,
+            val target: Id,
+            val viewer: DVViewer
+        ) : Params()
+
+        data class Template(
             val context: Id,
             val target: Id,
             val viewer: DVViewer

@@ -841,4 +841,8 @@ class BlockDataRepository(
     override suspend fun fileSpaceUsage(): FileLimits {
         return remote.fileSpaceUsage()
     }
+
+    override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {
+        return remote.setInternalFlags(command)
+    }
 }

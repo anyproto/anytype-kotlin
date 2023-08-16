@@ -267,6 +267,14 @@ val Caption2Regular = TextStyle(
     letterSpacing = (-0.006).em
 )
 
+val Caption2Semibold = TextStyle(
+    fontFamily = fontInterSemibold,
+    fontWeight = FontWeight.W600,
+    fontSize = 11.sp,
+    lineHeight = 14.sp,
+    letterSpacing = (-0.006).em
+)
+
 //UX/Button/Medium
 val ButtonMedium = TextStyle(
     fontFamily = fontInterMedium,

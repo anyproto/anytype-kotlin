@@ -40,9 +40,9 @@ fun TreeWidgetObjectIcon(
         is ObjectIcon.Profile.Avatar -> {
             Box(
                 modifier = modifier
+                    .padding(start = paddingStart, end = paddingEnd)
                     .height(18.dp)
                     .width(18.dp)
-                    .padding(start = paddingStart, end = paddingEnd)
                     .background(
                         shape = CircleShape,
                         color = colorResource(id = R.color.shape_primary)

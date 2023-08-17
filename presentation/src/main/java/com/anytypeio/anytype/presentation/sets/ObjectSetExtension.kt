@@ -473,3 +473,10 @@ fun ObjectWrapper.Basic.toTemplateViewBlank(
         isDefault = isDefault
     )
 }
+
+fun ObjectWrapper.Type.toTemplateViewBlank(): TemplateView.Blank {
+    return TemplateView.Blank(
+        typeId = id,
+        layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code
+    )
+}

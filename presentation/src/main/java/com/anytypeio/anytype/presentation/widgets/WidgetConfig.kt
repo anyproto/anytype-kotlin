@@ -30,22 +30,32 @@ object WidgetConfig {
             if (compactListLimitOptions.contains(limit)) {
                 limit
             } else {
-                DEFAULT_COMPACT_LIST_MAX_COUNT
+                DEFAULT_COMPACT_LIST_LIMIT
             }
         } else {
             if (listLimitOptions.contains(limit)) {
                 limit
             } else {
-                DEFAULT_LIST_MAX_COUNT
+                DEFAULT_LIST_LIMIT
             }
         }
     }
 
-    const val DEFAULT_LIST_MAX_COUNT = 4
-    const val DEFAULT_COMPACT_LIST_MAX_COUNT = 6
+    fun resolveTreeWidgetLimit(limit: Int) : Int {
+        return if (treeLimitOptions.contains(limit)) {
+            limit
+        } else {
+            DEFAULT_TREE_LIMIT
+        }
+    }
 
-    private val listLimitOptions = intArrayOf(DEFAULT_LIST_MAX_COUNT, 6, 8)
-    private val compactListLimitOptions = intArrayOf(DEFAULT_COMPACT_LIST_MAX_COUNT, 10, 14)
+    const val DEFAULT_LIST_LIMIT = 4
+    const val DEFAULT_COMPACT_LIST_LIMIT = 6
+    const val DEFAULT_TREE_LIMIT = 6
+
+    private val listLimitOptions = intArrayOf(DEFAULT_LIST_LIMIT, 6, 8)
+    private val compactListLimitOptions = intArrayOf(DEFAULT_COMPACT_LIST_LIMIT, 10, 14)
+    private val treeLimitOptions = intArrayOf(DEFAULT_TREE_LIMIT, 10, 14)
 }
 
 object BundledWidgetSourceIds {

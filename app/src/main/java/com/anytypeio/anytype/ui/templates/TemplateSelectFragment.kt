@@ -38,8 +38,8 @@ class TemplateSelectFragment :
         super.onViewCreated(view, savedInstanceState)
         setupViewPagerAndTabs()
         with(lifecycleScope) {
-            subscribe(binding.btnCancel.clicks()) {
-                vm.onCancelButtonClicked()
+            subscribe(binding.btnSkip.clicks()) {
+                vm.onSkipButtonClicked()
             }
             subscribe(binding.btnUseTemplate.clicks()) {
                 vm.onUseTemplateButtonPressed(
@@ -67,7 +67,7 @@ class TemplateSelectFragment :
         when (viewState) {
             TemplateSelectViewModel.ViewState.Init -> {
                 binding.tvTemplateCountOrTutorial.text = null
-                binding.btnCancel.isEnabled = true
+                binding.btnSkip.isEnabled = true
                 binding.btnUseTemplate.isEnabled = false
             }
 

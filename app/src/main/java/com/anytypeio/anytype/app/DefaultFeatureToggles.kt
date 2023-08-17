@@ -33,4 +33,6 @@ class DefaultFeatureToggles @Inject constructor(
     override val isAutoUpdateEnabled: Boolean = false
 
     override val isConciseLogging: Boolean = true
+
+    override val enableSpaces: Boolean = true
 }

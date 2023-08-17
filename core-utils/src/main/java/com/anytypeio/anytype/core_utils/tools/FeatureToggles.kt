@@ -18,4 +18,5 @@ interface FeatureToggles {
 
     val isNewOnBoardingEnabled: Boolean
 
+    val enableSpaces: Boolean
 }

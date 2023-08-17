@@ -21,6 +21,7 @@ import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import javax.inject.Named
 
 @Subcomponent(modules = [ProfileModule::class])
 @PerScreen
@@ -44,7 +45,7 @@ object ProfileModule {
     fun provideViewModelFactory(
         deleteAccount: DeleteAccount,
         analytics: Analytics,
-        storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        @Named ("profile") storelessSubscriptionContainer: StorelessSubscriptionContainer,
         setObjectDetails: SetObjectDetails,
         configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
@@ -113,6 +114,7 @@ object ProfileModule {
     @JvmStatic
     @Provides
     @PerScreen
+    @Named("profile")
     fun provideStoreLessSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,

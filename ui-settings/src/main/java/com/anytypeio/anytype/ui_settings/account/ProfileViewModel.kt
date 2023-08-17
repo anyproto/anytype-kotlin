@@ -23,6 +23,7 @@ import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEven
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import javax.inject.Named
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -34,7 +35,7 @@ import timber.log.Timber
 class ProfileViewModel(
     private val analytics: Analytics,
     private val deleteAccount: DeleteAccount,
-    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    @Named ("profile") private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val setObjectDetails: SetObjectDetails,
     private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
@@ -156,7 +157,7 @@ class ProfileViewModel(
     class Factory(
         private val deleteAccount: DeleteAccount,
         private val analytics: Analytics,
-        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        @Named ("profile") private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val setObjectDetails: SetObjectDetails,
         private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,

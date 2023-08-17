@@ -1453,7 +1453,7 @@ class Middleware @Inject constructor(
     fun objectSetIsArchived(
         ctx: Id,
         isArchived: Boolean
-    ): Payload {
+    ) {
         val request = Rpc.Object.SetIsArchived.Request(
             contextId = ctx,
             isArchived = isArchived
@@ -1461,7 +1461,6 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSetIsArchived(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
     }
 
     @Deprecated(

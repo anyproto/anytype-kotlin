@@ -463,7 +463,7 @@ class BlockMiddleware(
     override suspend fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean
-    ): Payload = middleware.objectSetIsArchived(ctx = ctx, isArchived = isArchived)
+    ) = middleware.objectSetIsArchived(ctx = ctx, isArchived = isArchived)
 
     override suspend fun deleteObjects(targets: List<Id>) = middleware.objectListDelete(
         targets = targets

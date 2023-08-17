@@ -23,3 +23,12 @@ or you can simply load them in the current terminal window by `source ~/.zprofil
 - Install `NDK 23.2.8568313` via an Android SDK Package Manager
 
 Now you can build the middleware library for android.
+
+# How to setup custom middleware (go) library for Anytype Android project
+
+1. Put your custom 'libs.aar' to the `/libs` directory.
+2. Update proto files in `protocol` module.
+3. Specify `version` for your custom library in `/libs/build.gradle` file. To avoid conflicts, this version should be higher than the latest release version in `anytype-heart' repository.
+4. Run the following Gradle command: `./gradlew libs:publishToMavenLocal`.
+5. Specify `version` from step 3 in `libs.version` file as `middlewareVersion`.
+6. Rebuild project.

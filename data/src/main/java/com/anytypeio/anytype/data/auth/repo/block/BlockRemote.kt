@@ -206,7 +206,7 @@ interface BlockRemote {
     suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean): Payload
     suspend fun setObjectListIsFavorite(objectIds: List<Id>, isFavorite: Boolean)
 
-    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean): Payload
+    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean)
 
     suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
     suspend fun deleteObjects(targets: List<Id>)

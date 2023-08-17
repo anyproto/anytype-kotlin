@@ -80,6 +80,7 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -209,9 +210,9 @@ object ObjectSetModule {
         convertObjectToCollection: ConvertObjectToCollection,
         storeOfObjectTypes: StoreOfObjectTypes,
         getDefaultPageType: GetDefaultPageType,
-        getTemplates: GetTemplates,
         updateDataViewViewer: UpdateDataViewViewer,
-        duplicateObjectsList: DuplicateObjectsList
+        duplicateObjectsList: DuplicateObjectsList,
+        templatesContainer: ObjectTypeTemplatesContainer
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -243,9 +244,9 @@ object ObjectSetModule {
         objectToCollection = convertObjectToCollection,
         storeOfObjectTypes = storeOfObjectTypes,
         getDefaultPageType = getDefaultPageType,
-        getTemplates = getTemplates,
         updateDataViewViewer = updateDataViewViewer,
-        duplicateObjectsList = duplicateObjectsList
+        duplicateObjectsList = duplicateObjectsList,
+        templatesContainer = templatesContainer
     )
 
     @JvmStatic

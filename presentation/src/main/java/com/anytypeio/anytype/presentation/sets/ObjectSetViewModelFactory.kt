@@ -33,6 +33,7 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectSetViewModelFactory(
@@ -66,9 +67,9 @@ class ObjectSetViewModelFactory(
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getDefaultPageType: GetDefaultPageType,
-    private val getTemplates: GetTemplates,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val duplicateObjectsList: DuplicateObjectsList
+    private val duplicateObjectsList: DuplicateObjectsList,
+    private val templatesContainer: ObjectTypeTemplatesContainer
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -103,9 +104,9 @@ class ObjectSetViewModelFactory(
             objectToCollection = objectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
             getDefaultPageType = getDefaultPageType,
-            getTemplates = getTemplates,
             updateDataViewViewer = updateDataViewViewer,
-            duplicateObjectsList = duplicateObjectsList
+            duplicateObjectsList = duplicateObjectsList,
+            templatesContainer = templatesContainer
         ) as T
     }
 }

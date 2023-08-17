@@ -1720,6 +1720,11 @@ class ObjectSetViewModel(
 
     private fun proceedWithEditingTemplate() {
         val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        templatesWidgetState.value = templatesWidgetState.value.copy(
+            isEditing = false,
+            isMoreMenuVisible = false,
+            moreMenuTemplate = null
+        )
         viewModelScope.launch {
             proceedWithOpeningObject(template.id)
         }

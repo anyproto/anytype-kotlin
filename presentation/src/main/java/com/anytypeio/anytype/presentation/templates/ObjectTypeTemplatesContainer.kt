@@ -32,7 +32,7 @@ class DefaultObjectTypeTemplatesContainer(
             emptyFlow()
         } else {
             val params = StoreSearchParams(
-                subscription = TEMPLATES_SUBSCRIPTION,
+                subscription = TYPE_TEMPLATES_SUBSCRIPTION_ID,
                 sorts = listOf(
                     DVSort(
                         relationKey = Relations.CREATED_DATE,
@@ -91,10 +91,10 @@ class DefaultObjectTypeTemplatesContainer(
     }
 
     override suspend fun unsubscribe() {
-        storage.unsubscribe(listOf(TEMPLATES_SUBSCRIPTION))
+        storage.unsubscribe(listOf(TYPE_TEMPLATES_SUBSCRIPTION_ID))
     }
 
     companion object {
-        const val TEMPLATES_SUBSCRIPTION = "object-type-templates-subscription"
+        const val TYPE_TEMPLATES_SUBSCRIPTION_ID = "object-type-templates-subscription"
     }
 }

@@ -5,6 +5,7 @@ import android.R.id.paste
 import android.content.Context
 import android.graphics.Canvas
 import android.os.Parcelable
+import android.text.InputType
 import android.text.Spanned
 import android.text.TextWatcher
 import android.text.util.Linkify
@@ -98,7 +99,12 @@ class TextInputWidget : AppCompatEditText {
     }
 
     fun enableEditMode() {
-        multilineIme(action = inputAction.toIMECode())
+        setRawInputType(
+            InputType.TYPE_CLASS_TEXT
+                    or InputType.TYPE_TEXT_FLAG_CAP_SENTENCES
+                    or InputType.TYPE_TEXT_FLAG_AUTO_CORRECT
+        )
+        imeOptions = inputAction.toIMECode()
         setTextIsSelectable(true)
         inReadMode = false
     }

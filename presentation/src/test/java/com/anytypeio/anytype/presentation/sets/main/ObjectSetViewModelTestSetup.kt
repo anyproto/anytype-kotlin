@@ -28,10 +28,12 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.DuplicateObjectsList
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -61,6 +63,8 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
+import com.anytypeio.anytype.presentation.templates.DefaultObjectTypeTemplatesContainer
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -155,6 +159,15 @@ open class ObjectSetViewModelTestSetup {
     lateinit var getDefaultPageType: GetDefaultPageType
 
     @Mock
+    lateinit var duplicateObjectsList: DuplicateObjectsList
+
+    @Mock
+    lateinit var setObjectListIsArchived: SetObjectListIsArchived
+
+    @Mock
+    lateinit var templatesContainer: ObjectTypeTemplatesContainer
+
+    @Mock
     lateinit var updateDataViewViewer: UpdateDataViewViewer
 
     var stateReducer = DefaultObjectStateReducer()
@@ -225,8 +238,10 @@ open class ObjectSetViewModelTestSetup {
             setQueryToObjectSet = setQueryToObjectSet,
             storeOfObjectTypes = storeOfObjectTypes,
             getDefaultPageType = getDefaultPageType,
-            getTemplates = getTemplates,
             updateDataViewViewer = updateDataViewViewer,
+            templatesContainer = templatesContainer,
+            setObjectListIsArchived = setObjectListIsArchived,
+            duplicateObjectsList = duplicateObjectsList
         )
     }
 
@@ -362,15 +377,12 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    fun stubGetTemplates(
+    fun stubTemplatesContainer(
         type: String = MockDataFactory.randomString(),
         templates: List<ObjectWrapper.Basic> = emptyList()
     ) {
-        val params = GetTemplates.Params(
-            type = type
-        )
-        getTemplates.stub {
-            onBlocking { async(params) }.thenReturn(Resultat.success(templates))
+        templatesContainer.stub {
+            onBlocking { subscribe(type) }.thenReturn(flowOf(templates))
         }
     }
 }

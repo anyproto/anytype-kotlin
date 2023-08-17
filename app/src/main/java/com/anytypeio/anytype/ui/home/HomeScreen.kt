@@ -91,6 +91,7 @@ fun HomeScreen(
     onExitEditMode: () -> Unit,
     onSearchClicked: () -> Unit,
     onLibraryClicked: () -> Unit,
+    onOpenSpacesClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onSpaceClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
@@ -109,6 +110,7 @@ fun HomeScreen(
             onChangeWidgetView = onChangeWidgetView,
             onEditWidgets = onEditWidgets,
             onLibraryClicked = onLibraryClicked,
+            onOpenSpacesClicked = onOpenSpacesClicked,
             onMove = onMove
         )
         AnimatedVisibility(
@@ -172,6 +174,7 @@ private fun WidgetList(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onEditWidgets: () -> Unit,
     onLibraryClicked: () -> Unit,
+    onOpenSpacesClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
 ) {
     val views = remember { mutableStateOf(widgets) }
@@ -427,6 +430,25 @@ private fun WidgetList(
                         onClick = { onBundledWidgetHeaderClicked(item.id) },
                         mode = mode
                     )
+                }
+                is WidgetView.Space -> {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(top = 6.dp)
+                            .animateItemPlacement(
+                                spring(
+                                    stiffness = Spring.StiffnessHigh,
+                                    visibilityThreshold = IntOffset.Zero
+                                )
+                            )
+                    ) {
+                        WidgetActionButton(
+                            label = "Open spaces",
+                            onClick = onOpenSpacesClicked,
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
+                    }
                 }
                 is WidgetView.Library -> {
                     LibraryWidgetCard(

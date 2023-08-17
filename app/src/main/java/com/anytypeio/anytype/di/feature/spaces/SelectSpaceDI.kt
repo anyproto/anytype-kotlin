@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import dagger.Binds
@@ -31,6 +35,9 @@ interface SelectSpaceComponent {
 object SelectSpaceModule {
     @Module
     interface Declarations {
+        @PerScreen
+        @Binds
+        fun container(container: StorelessSubscriptionContainer.Impl): StorelessSubscriptionContainer
         @Binds
         @PerScreen
         fun bindViewModelFactory(factory: SelectSpaceViewModel.Factory): ViewModelProvider.Factory
@@ -38,5 +45,8 @@ object SelectSpaceModule {
 }
 
 interface SelectSpaceDependencies : ComponentDependencies {
+    fun repo(): BlockRepository
+    fun subscriptionEventChannel(): SubscriptionEventChannel
     fun analytics(): Analytics
+    fun dispatchers(): AppCoroutineDispatchers
 }

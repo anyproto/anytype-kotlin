@@ -86,6 +86,8 @@ sealed class WidgetView {
 
     data class Bin(override val id: Id) : WidgetView()
 
+    data class Space(override val id: Id) : WidgetView()
+
     object Library : WidgetView() {
         override val id: Id get() = "id.button.library"
     }

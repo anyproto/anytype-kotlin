@@ -145,6 +145,9 @@
         <action
             android:id="@+id/action_open_settings"
             app:destination="@id/settingsScreen" />
+        <action
+            android:id="@+id/action_open_spaces"
+            app:destination="@id/selectSpaceScreen" />
     </fragment>
 
     <fragment
@@ -164,6 +167,10 @@
     <dialog
         android:id="@+id/selectWidgetTypeScreen"
         android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment"/>
+
+    <fragment
+        android:id="@+id/selectSpaceScreen"
+        android:name="com.anytypeio.anytype.ui.spaces.SelectSpaceFragment"/>
 
     <dialog
         android:id="@+id/settingsScreen"

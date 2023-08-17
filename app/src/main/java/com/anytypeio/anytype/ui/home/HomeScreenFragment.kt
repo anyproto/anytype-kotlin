@@ -86,6 +86,9 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onSpaceClicked = {
                         navigation().openSettings()
                     },
+                    onOpenSpacesClicked = {
+                        findNavController().navigate(R.id.action_open_spaces)
+                    },
                     onBundledWidgetClicked = vm::onBundledWidgetClicked,
                     onMove = vm::onMove
                 )

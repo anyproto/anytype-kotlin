@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjectsList
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -129,7 +130,8 @@ class ObjectSetViewModel(
     private val getDefaultPageType: GetDefaultPageType,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val duplicateObjectsList: DuplicateObjectsList,
-    private val templatesContainer: ObjectTypeTemplatesContainer
+    private val templatesContainer: ObjectTypeTemplatesContainer,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -1640,10 +1642,11 @@ class ObjectSetViewModel(
     }
 
     fun onMoreMenuClicked(click: TemplateMenuClick) {
+        Timber.d("onMoreMenuClicked, click:[$click]")
         when (click) {
             is TemplateMenuClick.Default -> proceedWithUpdatingViewDefaultTemplate()
-            is TemplateMenuClick.Delete -> TODO()
-            is TemplateMenuClick.Duplicate -> proceedWithDuplicateTemplates()
+            is TemplateMenuClick.Delete -> proceedWithDeletionTemplate()
+            is TemplateMenuClick.Duplicate -> proceedWithDuplicateTemplate()
             is TemplateMenuClick.Edit -> TODO()
         }
     }
@@ -1668,10 +1671,15 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun proceedWithDuplicateTemplates() {
+    private fun proceedWithDuplicateTemplate() {
         val template = templatesWidgetState.value.moreMenuTemplate ?: return
         val params = DuplicateObjectsList.Params(
             ids = listOf(template.id)
+        )
+        templatesWidgetState.value = templatesWidgetState.value.copy(
+            isEditing = false,
+            isMoreMenuVisible = false,
+            moreMenuTemplate = null
         )
         viewModelScope.launch {
             duplicateObjectsList.async(params).fold(
@@ -1681,6 +1689,30 @@ class ObjectSetViewModel(
                 onFailure = { e ->
                     Timber.e(e, "Error while duplicating templates")
                     toast("Error while duplicating templates")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithDeletionTemplate() {
+        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(template.id),
+            isArchived = true
+        )
+        templatesWidgetState.value = templatesWidgetState.value.copy(
+            isEditing = false,
+            isMoreMenuVisible = false,
+            moreMenuTemplate = null
+        )
+        viewModelScope.launch {
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = { ids ->
+                    Timber.d("Successfully archived templates: $ids")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while deleting templates")
+                    toast("Error while deleting templates")
                 }
             )
         }

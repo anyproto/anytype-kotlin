@@ -37,6 +37,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
@@ -212,7 +213,8 @@ object ObjectSetModule {
         getDefaultPageType: GetDefaultPageType,
         updateDataViewViewer: UpdateDataViewViewer,
         duplicateObjectsList: DuplicateObjectsList,
-        templatesContainer: ObjectTypeTemplatesContainer
+        templatesContainer: ObjectTypeTemplatesContainer,
+        setObjectListIsArchived: SetObjectListIsArchived
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -246,7 +248,8 @@ object ObjectSetModule {
         getDefaultPageType = getDefaultPageType,
         updateDataViewViewer = updateDataViewViewer,
         duplicateObjectsList = duplicateObjectsList,
-        templatesContainer = templatesContainer
+        templatesContainer = templatesContainer,
+        setObjectListIsArchived = setObjectListIsArchived
     )
 
     @JvmStatic
@@ -494,6 +497,14 @@ object ObjectSetModule {
     fun provideDownload(repo: UnsplashRepository): DownloadUnsplashImage = DownloadUnsplashImage(
         repo = repo
     )
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun getSetObjectListIsArchived(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
 
     @JvmStatic
     @Provides

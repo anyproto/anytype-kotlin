@@ -611,7 +611,7 @@
     <string name="object_search_recently_opened_section_title">Recently opened</string>
     <string name="widget_source_anytype_library">Anytype Library</string>
     <string name="your_favorite_objects">Your favorite objects</string>
-    <string name="recently_opened_objects">Recently opened objects</string>
+    <string name="on_this_device">On this device</string>
     <string name="sets_of_objects">Sets of objects from your workspace</string>
 
     <string name="content_description_customize_view_button">Customize-view button</string>

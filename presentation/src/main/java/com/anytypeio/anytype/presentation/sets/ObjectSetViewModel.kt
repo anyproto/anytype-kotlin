@@ -1669,10 +1669,8 @@ class ObjectSetViewModel(
     }
 
     private fun proceedWithDuplicateTemplates() {
-        val state = stateReducer.state.value.dataViewState() ?: return
         val template = templatesWidgetState.value.moreMenuTemplate ?: return
         val params = DuplicateObjectsList.Params(
-            ctx = context,
             ids = listOf(template.id)
         )
         viewModelScope.launch {

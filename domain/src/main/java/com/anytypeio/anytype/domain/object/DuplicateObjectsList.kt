@@ -15,7 +15,6 @@ class DuplicateObjectsList(
     }
 
     data class Params(
-        val ctx: Id,
         val ids: List<Id>
     )
 }

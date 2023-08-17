@@ -68,13 +68,17 @@ class CreateObjectTest {
         val commands = Command.CreateObject(
             prefilled = emptyMap(),
             template = null,
-            internalFlags = listOf(InternalFlags.ShouldSelectType, InternalFlags.ShouldEmptyDelete)
+            internalFlags = listOf(
+                InternalFlags.ShouldSelectType,
+                InternalFlags.ShouldSelectTemplate,
+                InternalFlags.ShouldEmptyDelete
+            )
         )
         verifyBlocking(repo, times(1)) { createObject(commands) }
     }
 
     @Test
-    fun `when type is null and default type is note without template - should send proper params`() =
+    fun `when type is null and default type is note - should send proper params`() =
         runBlocking {
 
             //SETUP
@@ -90,12 +94,12 @@ class CreateObjectTest {
             createObject.run(params)
 
             //ASSERT
-            verifyBlocking(getTemplates, times(1)) { run(GetTemplates.Params(defaultType)) }
             val commands = Command.CreateObject(
                 prefilled = buildMap { put(Relations.TYPE, defaultType) },
                 template = null,
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
+                    InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 )
             )
@@ -122,7 +126,6 @@ class CreateObjectTest {
             createObject.run(params)
 
             //ASSERT
-            verifyBlocking(getTemplates, times(1)) { run(GetTemplates.Params(defaultType)) }
             val commands = Command.CreateObject(
                 prefilled = buildMap { put(Relations.TYPE, defaultType) },
                 template = null,
@@ -150,12 +153,12 @@ class CreateObjectTest {
 
             //ASSERT
             verifyNoInteractions(getDefaultPageType)
-            verifyBlocking(getTemplates, times(1)) { run(GetTemplates.Params(type)) }
             val commands = Command.CreateObject(
                 prefilled = buildMap { put(Relations.TYPE, type) },
                 template = null,
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
+                    InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 )
             )
@@ -180,7 +183,6 @@ class CreateObjectTest {
 
             //ASSERT
             verifyNoInteractions(getDefaultPageType)
-            verifyBlocking(getTemplates, times(1)) { run(GetTemplates.Params(type)) }
             val commands = Command.CreateObject(
                 prefilled = buildMap { put(Relations.TYPE, type) },
                 template = null,
@@ -219,7 +221,6 @@ class CreateObjectTest {
 
             //ASSERT
             verifyNoInteractions(getDefaultPageType)
-            verifyBlocking(getTemplates, times(1)) { run(GetTemplates.Params(type)) }
             val commands = Command.CreateObject(
                 prefilled = buildMap { put(Relations.TYPE, type) },
                 template = null,

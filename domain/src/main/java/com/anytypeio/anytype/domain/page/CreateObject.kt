@@ -25,19 +25,9 @@ class CreateObject(
 
         val type = params.type ?: getDefaultPageType.run(Unit).type
 
-        val objectTemplates = if (type != null) {
-            getTemplates.run(GetTemplates.Params(type = type))
-        } else {
-            null
-        }
-
         val internalFlags = buildList {
-            if (!objectTemplates.isNullOrEmpty()) {
-                add(InternalFlags.ShouldSelectType)
-                add(InternalFlags.ShouldSelectTemplate)
-            } else {
-                add(InternalFlags.ShouldSelectType)
-            }
+            add(InternalFlags.ShouldSelectType)
+            add(InternalFlags.ShouldSelectTemplate)
             add(InternalFlags.ShouldEmptyDelete)
         }
 

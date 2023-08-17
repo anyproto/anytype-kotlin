@@ -504,7 +504,7 @@ class BlockDataRepository(
     override suspend fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean
-    ): Payload = remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
+    ) = remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
 
     override suspend fun setObjectListIsArchived(
         targets: List<Id>,

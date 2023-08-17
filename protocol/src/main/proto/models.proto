@@ -574,7 +574,8 @@ message Account {
         string marketplaceWorkspaceId = 11; // marketplace workspace id
 
         string deviceId = 8;
-        string accountSpaceId = 9; // marketplace template id
+        string accountSpaceId = 9;
+        string workspaceObjectId = 12;
         string widgetsId = 10;
 
         string gatewayUrl = 101; // gateway url for fetching static files

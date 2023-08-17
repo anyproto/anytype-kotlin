@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer.Companion.SUBSCRIPTION_PROFILE
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
@@ -35,7 +36,7 @@ import timber.log.Timber
 class ProfileViewModel(
     private val analytics: Analytics,
     private val deleteAccount: DeleteAccount,
-    @Named ("profile") private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    @Named (SUBSCRIPTION_PROFILE) private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val setObjectDetails: SetObjectDetails,
     private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
@@ -157,7 +158,7 @@ class ProfileViewModel(
     class Factory(
         private val deleteAccount: DeleteAccount,
         private val analytics: Analytics,
-        @Named ("profile") private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        @Named (SUBSCRIPTION_PROFILE) private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val setObjectDetails: SetObjectDetails,
         private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,

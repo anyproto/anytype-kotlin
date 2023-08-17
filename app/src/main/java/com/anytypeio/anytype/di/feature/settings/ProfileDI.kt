@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugSpace
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer.Companion.SUBSCRIPTION_PROFILE
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -45,7 +46,7 @@ object ProfileModule {
     fun provideViewModelFactory(
         deleteAccount: DeleteAccount,
         analytics: Analytics,
-        @Named ("profile") storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        @Named (SUBSCRIPTION_PROFILE) storelessSubscriptionContainer: StorelessSubscriptionContainer,
         setObjectDetails: SetObjectDetails,
         configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
@@ -114,7 +115,7 @@ object ProfileModule {
     @JvmStatic
     @Provides
     @PerScreen
-    @Named("profile")
+    @Named(SUBSCRIPTION_PROFILE)
     fun provideStoreLessSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceContentSaver
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer.Companion.SUBSCRIPTION_SETTINGS
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -21,6 +22,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import javax.inject.Named
 
 @Subcomponent(
     modules = [
@@ -46,6 +48,7 @@ object MainSettingsModule {
     @JvmStatic
     @Provides
     @PerScreen
+    @Named(SUBSCRIPTION_SETTINGS)
     fun provideStoreLessSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
@@ -77,7 +80,7 @@ object MainSettingsModule {
     @PerScreen
     fun provideViewModelFactory(
         analytics: Analytics,
-        storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        @Named(SUBSCRIPTION_SETTINGS) storelessSubscriptionContainer: StorelessSubscriptionContainer,
         configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
         setObjectDetails: SetObjectDetails,

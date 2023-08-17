@@ -1647,7 +1647,7 @@ class ObjectSetViewModel(
             is TemplateMenuClick.Default -> proceedWithUpdatingViewDefaultTemplate()
             is TemplateMenuClick.Delete -> proceedWithDeletionTemplate()
             is TemplateMenuClick.Duplicate -> proceedWithDuplicateTemplate()
-            is TemplateMenuClick.Edit -> TODO()
+            is TemplateMenuClick.Edit -> proceedWithEditingTemplate()
         }
     }
 
@@ -1715,6 +1715,13 @@ class ObjectSetViewModel(
                     toast("Error while deleting templates")
                 }
             )
+        }
+    }
+
+    private fun proceedWithEditingTemplate() {
+        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        viewModelScope.launch {
+            proceedWithOpeningObject(template.id)
         }
     }
     //endregion

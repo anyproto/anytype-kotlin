@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -40,6 +41,14 @@ class SelectSpaceViewModel @Inject constructor(
                 spaces.value = it
             }
         }
+    }
+
+    fun onSpaceClicked(space: Id) {
+        // TODO
+    }
+
+    fun onCreateSpaceClicked() {
+        // TODO
     }
 
     class Factory @Inject constructor(

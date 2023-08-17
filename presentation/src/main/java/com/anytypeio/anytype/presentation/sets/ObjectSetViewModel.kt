@@ -167,7 +167,7 @@ class ObjectSetViewModel(
     val header: StateFlow<SetOrCollectionHeaderState> = _header
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
-    val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.reset())
+    val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.init())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -1553,7 +1553,7 @@ class ObjectSetViewModel(
         }
         when(item) {
             is TemplateView.Blank -> {
-                templatesWidgetState.value = TemplatesWidgetUiState.reset()
+                templatesWidgetState.value = templatesWidgetState.value.dismiss()
                 viewModelScope.launch {
                     logEvent(
                         state = stateReducer.state.value,
@@ -1567,7 +1567,7 @@ class ObjectSetViewModel(
                 }
             }
             is TemplateView.Template -> {
-                templatesWidgetState.value = TemplatesWidgetUiState.reset()
+                templatesWidgetState.value = templatesWidgetState.value.dismiss()
                 viewModelScope.launch {
                     logEvent(
                         state = stateReducer.state.value,
@@ -1636,7 +1636,7 @@ class ObjectSetViewModel(
         val state = templatesWidgetState.value
         templatesWidgetState.value = when {
             state.isMoreMenuVisible -> state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
-            state.showWidget -> TemplatesWidgetUiState.reset()
+            state.showWidget -> templatesWidgetState.value.dismiss()
             else -> state
         }
     }

@@ -43,7 +43,6 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
@@ -68,6 +67,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -127,9 +127,9 @@ class ObjectSetViewModel(
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getDefaultPageType: GetDefaultPageType,
-    private val getTemplates: GetTemplates,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val duplicateObjectsList: DuplicateObjectsList
+    private val duplicateObjectsList: DuplicateObjectsList,
+    private val templatesContainer: ObjectTypeTemplatesContainer
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -256,6 +256,12 @@ class ObjectSetViewModel(
                     )
                     else -> {}
                 }
+            }
+        }
+
+        viewModelScope.launch {
+            _templateViews.collectLatest {
+                templatesWidgetState.value = templatesWidgetState.value.copy(items = it)
             }
         }
     }
@@ -882,8 +888,7 @@ class ObjectSetViewModel(
 
     fun onNewButtonIconClicked() {
         Timber.d("onNewButtonIconClicked, ")
-        templatesWidgetState.value = TemplatesWidgetUiState(
-            items = _templateViews.value,
+        templatesWidgetState.value = templatesWidgetState.value.copy(
             showWidget = true,
             isEditing = false,
             isMoreMenuVisible = false,
@@ -1251,6 +1256,7 @@ class ObjectSetViewModel(
 
     override fun onCleared() {
         Timber.d("onCleared, ")
+        viewModelScope.launch { templatesContainer.unsubscribe() }
         super.onCleared()
         titleUpdateChannel.cancel()
         stateReducer.clear()
@@ -1480,49 +1486,48 @@ class ObjectSetViewModel(
     private suspend fun gettingTemplatesForDataViewState(state: ObjectState.DataView) {
         when (state) {
             is ObjectState.DataView.Collection -> {
-                proceedWithGettingTemplates(typeId = null)
+                subscribeForTypeTemplates(typeId = null)
             }
             is ObjectState.DataView.Set -> {
                 val sourceId = proceedWithGettingSetSourceId(state)
                 val sourceMap = state.details[sourceId] ?: return
                 when (sourceMap.type.firstOrNull()) {
-                    ObjectTypeIds.RELATION -> proceedWithGettingTemplates(typeId = null)
-                    ObjectTypeIds.OBJECT_TYPE -> proceedWithGettingTemplates(typeId = sourceId)
+                    ObjectTypeIds.RELATION -> subscribeForTypeTemplates(typeId = null)
+                    ObjectTypeIds.OBJECT_TYPE -> subscribeForTypeTemplates(typeId = sourceId)
                     else -> { Timber.d("Ignoring type of source") }
                 }
             }
         }
     }
 
-    private suspend fun proceedWithGettingTemplates(typeId: Id?) {
+    private suspend fun subscribeForTypeTemplates(typeId: Id?) {
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val objectType = resolveObjectType(typeId)
         if (objectType?.isTemplatesAllowed() == true) {
             viewModelScope.launch {
-                getTemplates.async(GetTemplates.Params(objectType.id)).fold(
-                    onSuccess = { templates ->
-                        if (templates.isNotEmpty()) {
-                            _templateViews.value =
-                                listOf(templates.first().toTemplateViewBlank(
-                                    typeId = objectType.id,
-                                    objectTypeDefaultTemplate = objectType.defaultTemplateId,
-                                    viewerDefaultTemplate = viewer.defaultTemplateId)) +
-                                        templates.map {
-                                            it.toTemplateView(
-                                                typeId = objectType.id,
-                                                urlBuilder = urlBuilder,
-                                                coverImageHashProvider = coverImageHashProvider,
-                                                objectTypeDefaultTemplate = objectType.defaultTemplateId,
-                                                viewerDefaultTemplate = viewer.defaultTemplateId
-                                            )
-                                        }
-                        }
-                    },
-                    onFailure = { e ->
-                        Timber.e(e, "Error getting templates for type ${objectType.id}")
+                templatesContainer.subscribe(objectType.id)
+                    .catch { error ->
+                        Timber.e(error, "Error while getting templates for type ${objectType.id}")
+                        toast("Error while getting templates for type ${objectType.id}")
+                        _templateViews.value = emptyList()
                     }
-                )
+                    .map { results ->
+                        Timber.d("subscribeForTypeTemplates, new templates size:[${results.size}]")
+                        val blankTemplate = listOf(objectType.toTemplateViewBlank())
+                        blankTemplate + results
+                            .map { objTemplate ->
+                                objTemplate.toTemplateView(
+                                    typeId = objectType.id,
+                                    urlBuilder = urlBuilder,
+                                    coverImageHashProvider = coverImageHashProvider,
+                                    objectTypeDefaultTemplate = objectType.defaultTemplateId,
+                                    viewerDefaultTemplate = viewer.defaultTemplateId
+                                )
+                            }
+                    }.collectLatest {
+                        _templateViews.value = it
+                    }
             }
         } else {
             Timber.d("Templates are not allowed for type:[${objectType?.id}]")

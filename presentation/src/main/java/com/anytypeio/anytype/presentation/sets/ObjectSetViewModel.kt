@@ -30,7 +30,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
-import com.anytypeio.anytype.domain.`object`.DuplicateObjectsList
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -129,7 +129,7 @@ class ObjectSetViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getDefaultPageType: GetDefaultPageType,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val duplicateObjectsList: DuplicateObjectsList,
+    private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
@@ -1673,7 +1673,7 @@ class ObjectSetViewModel(
 
     private fun proceedWithDuplicateTemplate() {
         val template = templatesWidgetState.value.moreMenuTemplate ?: return
-        val params = DuplicateObjectsList.Params(
+        val params = DuplicateObjects.Params(
             ids = listOf(template.id)
         )
         templatesWidgetState.value = templatesWidgetState.value.copy(
@@ -1682,7 +1682,7 @@ class ObjectSetViewModel(
             moreMenuTemplate = null
         )
         viewModelScope.launch {
-            duplicateObjectsList.async(params).fold(
+            duplicateObjects.async(params).fold(
                 onSuccess = { ids ->
                     Timber.d("Successfully duplicated templates: $ids")
                 },

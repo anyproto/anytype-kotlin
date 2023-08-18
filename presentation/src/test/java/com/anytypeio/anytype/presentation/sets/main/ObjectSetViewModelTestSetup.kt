@@ -10,13 +10,11 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
-import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -28,7 +26,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
-import com.anytypeio.anytype.domain.`object`.DuplicateObjectsList
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -59,11 +57,9 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
-import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
-import com.anytypeio.anytype.presentation.templates.DefaultObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -159,7 +155,7 @@ open class ObjectSetViewModelTestSetup {
     lateinit var getDefaultPageType: GetDefaultPageType
 
     @Mock
-    lateinit var duplicateObjectsList: DuplicateObjectsList
+    lateinit var duplicateObjects: DuplicateObjects
 
     @Mock
     lateinit var setObjectListIsArchived: SetObjectListIsArchived
@@ -241,7 +237,7 @@ open class ObjectSetViewModelTestSetup {
             updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
-            duplicateObjectsList = duplicateObjectsList
+            duplicateObjects = duplicateObjects
         )
     }
 

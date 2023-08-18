@@ -14,7 +14,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
-import com.anytypeio.anytype.domain.`object`.DuplicateObjectsList
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -26,7 +26,6 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
@@ -69,7 +68,7 @@ class ObjectSetViewModelFactory(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getDefaultPageType: GetDefaultPageType,
     private val updateDataViewViewer: UpdateDataViewViewer,
-    private val duplicateObjectsList: DuplicateObjectsList,
+    private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModelProvider.Factory {
@@ -107,7 +106,7 @@ class ObjectSetViewModelFactory(
             storeOfObjectTypes = storeOfObjectTypes,
             getDefaultPageType = getDefaultPageType,
             updateDataViewViewer = updateDataViewViewer,
-            duplicateObjectsList = duplicateObjectsList,
+            duplicateObjects = duplicateObjects,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived
         ) as T

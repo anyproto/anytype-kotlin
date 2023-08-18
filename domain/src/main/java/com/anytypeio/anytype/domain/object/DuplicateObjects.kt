@@ -5,10 +5,10 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class DuplicateObjectsList(
+class DuplicateObjects(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<DuplicateObjectsList.Params, List<Id>>(dispatchers.io) {
+) : ResultInteractor<DuplicateObjects.Params, List<Id>>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): List<Id> {
         return repo.duplicateObjectsList(params.ids)

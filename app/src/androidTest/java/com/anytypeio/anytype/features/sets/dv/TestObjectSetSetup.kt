@@ -28,7 +28,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
-import com.anytypeio.anytype.domain.`object`.DuplicateObjectsList
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -59,7 +59,6 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
-import com.anytypeio.anytype.presentation.templates.DefaultObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -71,7 +70,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 abstract class TestObjectSetSetup {
@@ -133,7 +131,7 @@ abstract class TestObjectSetSetup {
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     @Mock
-    lateinit var duplicateObjectsList: DuplicateObjectsList
+    lateinit var duplicateObjects: DuplicateObjects
 
     @Mock
     lateinit var setObjectListIsArchived: SetObjectListIsArchived
@@ -261,7 +259,7 @@ abstract class TestObjectSetSetup {
             updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
-            duplicateObjectsList = duplicateObjectsList
+            duplicateObjects = duplicateObjects
         )
     }
 

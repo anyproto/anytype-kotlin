@@ -32,7 +32,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
-import com.anytypeio.anytype.domain.`object`.DuplicateObjectsList
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -172,7 +172,7 @@ object ObjectSetModule {
     fun provideDuplicateObjectsListUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): DuplicateObjectsList = DuplicateObjectsList(
+    ): DuplicateObjects = DuplicateObjects(
         repo = repo,
         dispatchers = dispatchers
     )
@@ -212,7 +212,7 @@ object ObjectSetModule {
         storeOfObjectTypes: StoreOfObjectTypes,
         getDefaultPageType: GetDefaultPageType,
         updateDataViewViewer: UpdateDataViewViewer,
-        duplicateObjectsList: DuplicateObjectsList,
+        duplicateObjects: DuplicateObjects,
         templatesContainer: ObjectTypeTemplatesContainer,
         setObjectListIsArchived: SetObjectListIsArchived
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
@@ -247,7 +247,7 @@ object ObjectSetModule {
         storeOfObjectTypes = storeOfObjectTypes,
         getDefaultPageType = getDefaultPageType,
         updateDataViewViewer = updateDataViewViewer,
-        duplicateObjectsList = duplicateObjectsList,
+        duplicateObjects = duplicateObjects,
         templatesContainer = templatesContainer,
         setObjectListIsArchived = setObjectListIsArchived
     )

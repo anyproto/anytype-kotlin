@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
+import com.anytypeio.anytype.ui.editor.EditorComposeScreen.Companion.ARG_ID
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
@@ -81,9 +82,9 @@ class Navigator : AppNavigation {
 
     override fun openDocument(id: String) {
         navController?.navigate(
-            R.id.objectNavigation,
+            R.id.pageScreenCompose,
             Bundle().apply {
-                putString(EditorFragment.ID_KEY, id)
+                putString(ARG_ID, id)
             }
         )
     }

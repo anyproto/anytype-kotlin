@@ -63,6 +63,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -369,10 +370,14 @@ private fun TemplatesList(
                         .height(231.dp)
                         .width(127.dp)
                 ) {
-                    val (borderWidth, borderColor) = if (state.isDefaultStateEnabled && item.isDefault) {
-                        Pair(2.dp, colorResource(id = R.color.palette_system_amber_50))
+                    val borderWidth: Dp
+                    val borderColor: Color
+                    if (state.isDefaultStateEnabled && item.isDefault) {
+                        borderWidth = 2.dp
+                        borderColor = colorResource(id = R.color.palette_system_amber_50)
                     } else {
-                        Pair(1.dp, colorResource(id = R.color.shape_primary))
+                        borderWidth = 1.dp
+                        borderColor = colorResource(id = R.color.shape_primary)
                     }
                     Box(
                         modifier = Modifier

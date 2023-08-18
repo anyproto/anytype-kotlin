@@ -16,7 +16,7 @@ class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.AppBottomSecondarySheetDialogTheme)
-        val editorFragment = EditorFragment.newInstance(ctx, false)
+        val editorFragment = EditorFragment.newInstance(ctx)
         childFragmentManager.beginTransaction()
             .add(R.id.fragment_container_view, editorFragment)
             .commit()

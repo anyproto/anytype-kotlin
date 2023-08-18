@@ -2095,6 +2095,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     )
 
     companion object {
+
+        fun newInstance(id: String): EditorFragment = EditorFragment().apply {
+            arguments = bundleOf(ID_KEY to id)
+        }
+
         const val ID_KEY = "id"
 
         const val DEFAULT_ANIM_DURATION = 150L

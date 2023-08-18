@@ -58,7 +58,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
                 dvFilters = mockObjectSet.filters
             )
             stubStoreOfObjectTypes(pageTypeMap)
-            stubGetTemplates(
+            stubTemplatesContainer(
                 type = ObjectTypeIds.PAGE,
                 templates = listOf(templateView)
             )
@@ -84,7 +84,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
         val state = templatesFlow.awaitItem()
         assertIs<TemplatesWidgetUiState>(state)
         assertEquals(
-            TemplatesWidgetUiState.reset(), state
+            TemplatesWidgetUiState.init(), state
         )
     }
     //endregion
@@ -100,7 +100,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             viewModel.onNewButtonIconClicked()
             val second = awaitItem()
             assertEquals(
-                TemplatesWidgetUiState.reset().copy(showWidget = true), second
+                TemplatesWidgetUiState.init().copy(showWidget = true), second
             )
         }
     }
@@ -116,7 +116,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             awaitItem()
             viewModel.onDismissTemplatesWidget()
             val result = awaitItem()
-            assertEquals(TemplatesWidgetUiState.reset(), result)
+            assertEquals(TemplatesWidgetUiState.init(), result)
         }
     }
 
@@ -131,7 +131,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             awaitItem()
             viewModel.onTemplateItemClicked(item = StubTemplateView(id = templateView.id))
             val result = awaitItem()
-            assertEquals(TemplatesWidgetUiState.reset(), result)
+            assertEquals(TemplatesWidgetUiState.init(), result)
         }
     }
     //endregion
@@ -149,7 +149,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             viewModel.onEditTemplateButtonClicked()
             val third = awaitItem()
             assertEquals(
-                TemplatesWidgetUiState.reset().copy(
+                TemplatesWidgetUiState.init().copy(
                     showWidget = true,
                     isEditing = true
                 ), third
@@ -171,7 +171,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             viewModel.onDoneTemplateButtonClicked()
             val fourth = awaitItem()
             assertEquals(
-                TemplatesWidgetUiState.reset().copy(
+                TemplatesWidgetUiState.init().copy(
                     showWidget = true,
                     isEditing = false
                 ), fourth
@@ -192,7 +192,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             awaitItem()
             viewModel.onTemplateItemClicked(item = StubTemplateView(id = templateView.id))
             val fourth = awaitItem()
-            assertEquals(TemplatesWidgetUiState.reset(), fourth)
+            assertEquals(TemplatesWidgetUiState.init(), fourth)
         }
     }
 
@@ -209,7 +209,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             awaitItem()
             viewModel.onDismissTemplatesWidget()
             val fourth = awaitItem()
-            assertEquals(TemplatesWidgetUiState.reset(), fourth)
+            assertEquals(TemplatesWidgetUiState.init(), fourth)
         }
     }
     //endregion
@@ -232,7 +232,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             viewModel.onMoreTemplateButtonClicked(template = templateView)
             val fourth = awaitItem()
             assertEquals(
-                TemplatesWidgetUiState.reset().copy(
+                TemplatesWidgetUiState.init().copy(
                     showWidget = true,
                     isEditing = true,
                     isMoreMenuVisible = true,
@@ -261,7 +261,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             viewModel.onDismissTemplatesWidget()
             val result = awaitItem()
             assertEquals(
-                TemplatesWidgetUiState.reset().copy(
+                TemplatesWidgetUiState.init().copy(
                     showWidget = true,
                     isEditing = true,
                     isMoreMenuVisible = false,
@@ -290,7 +290,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             viewModel.onTemplateItemClicked(item = templateView)
             val result = awaitItem()
             assertEquals(
-                TemplatesWidgetUiState.reset().copy(
+                TemplatesWidgetUiState.init().copy(
                     showWidget = true,
                     isEditing = true,
                     isMoreMenuVisible = false,
@@ -319,7 +319,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             viewModel.onDoneTemplateButtonClicked()
             val result = awaitItem()
             assertEquals(
-                TemplatesWidgetUiState.reset().copy(
+                TemplatesWidgetUiState.init().copy(
                     showWidget = true,
                     isEditing = true,
                     isMoreMenuVisible = false,
@@ -348,7 +348,7 @@ class ObjectSetTemplatesMenuTest : ObjectSetViewModelTestSetup() {
             viewModel.onMoreTemplateButtonClicked(template = templateView)
             val result = awaitItem()
             assertEquals(
-                TemplatesWidgetUiState.reset().copy(
+                TemplatesWidgetUiState.init().copy(
                     showWidget = true,
                     isEditing = true,
                     isMoreMenuVisible = false,

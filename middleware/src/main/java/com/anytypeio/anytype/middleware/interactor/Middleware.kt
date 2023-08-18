@@ -2231,6 +2231,19 @@ class Middleware @Inject constructor(
         return response.toCoreModel()
     }
 
+    @Throws(Exception::class)
+    fun duplicateObjectsList(
+        objects: List<Id>
+    ): List<Id> {
+        val request = Rpc.Object.ListDuplicate.Request(
+            objectIds = objects
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectsListDuplicate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.ids
+    }
+
     private fun logRequest(any: Any) {
         logger.logRequest(any).also {
             if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {

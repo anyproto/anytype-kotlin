@@ -729,7 +729,8 @@ class ObjectSetReducerTest {
                 coverFit = newCoverFit,
                 coverRelationKey = relationKey1,
                 hideIcon = false,
-                type = Block.Content.DataView.Viewer.Type.GRID
+                type = Block.Content.DataView.Viewer.Type.GRID,
+                defaultTemplateId = null
             )
         )
 

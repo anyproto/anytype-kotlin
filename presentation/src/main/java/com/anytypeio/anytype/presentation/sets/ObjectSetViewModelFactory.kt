@@ -14,7 +14,9 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -24,7 +26,6 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
@@ -32,6 +33,7 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
 class ObjectSetViewModelFactory(
@@ -65,8 +67,10 @@ class ObjectSetViewModelFactory(
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getDefaultPageType: GetDefaultPageType,
-    private val getTemplates: GetTemplates,
-    private val updateDataViewViewer: UpdateDataViewViewer
+    private val updateDataViewViewer: UpdateDataViewViewer,
+    private val duplicateObjects: DuplicateObjects,
+    private val templatesContainer: ObjectTypeTemplatesContainer,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -101,8 +105,10 @@ class ObjectSetViewModelFactory(
             objectToCollection = objectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
             getDefaultPageType = getDefaultPageType,
-            getTemplates = getTemplates,
-            updateDataViewViewer = updateDataViewViewer
+            updateDataViewViewer = updateDataViewViewer,
+            duplicateObjects = duplicateObjects,
+            templatesContainer = templatesContainer,
+            setObjectListIsArchived = setObjectListIsArchived
         ) as T
     }
 }

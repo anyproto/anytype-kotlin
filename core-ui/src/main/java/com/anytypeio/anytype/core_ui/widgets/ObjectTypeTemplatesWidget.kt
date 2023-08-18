@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets
 
+import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -62,6 +63,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
@@ -279,7 +281,8 @@ private fun MoreMenu(
     }
     Column(
         modifier = Modifier
-            .size(244.dp, 176.dp)
+            .width(244.dp)
+            .wrapContentHeight()
             .offset(x = offsetX, y = -260.dp)
             .shadow(
                 elevation = 40.dp,
@@ -291,11 +294,13 @@ private fun MoreMenu(
                 shape = RoundedCornerShape(size = 10.dp)
             )
     ) {
-        MenuItem(
-            click = { menuClick(TemplateMenuClick.Default(templateView)) },
-            text = stringResource(id = R.string.templates_menu_default_for_view)
-        )
-        Divider()
+        if(currentState.isDefaultStateEnabled) {
+            MenuItem(
+                click = { menuClick(TemplateMenuClick.Default(templateView)) },
+                text = stringResource(id = R.string.templates_menu_default_for_view)
+            )
+            Divider()
+        }
         MenuItem(
             click = { menuClick(TemplateMenuClick.Edit(templateView)) },
             text = stringResource(id = R.string.templates_menu_edit)
@@ -308,13 +313,14 @@ private fun MoreMenu(
         Divider()
         MenuItem(
             click = { menuClick(TemplateMenuClick.Delete(templateView)) },
-            text = stringResource(id = R.string.templates_menu_delete)
+            text = stringResource(id = R.string.templates_menu_delete),
+            color = R.color.palette_system_red
         )
     }
 }
 
 @Composable
-private fun MenuItem(click: () -> Unit, text: String) {
+private fun MenuItem(click: () -> Unit, text: String, @ColorRes color: Int = R.color.text_primary) {
     Text(
         modifier = Modifier
             .fillMaxWidth()
@@ -323,7 +329,7 @@ private fun MenuItem(click: () -> Unit, text: String) {
             .clickable { click() },
         text = text,
         style = BodyCalloutRegular,
-        color = colorResource(id = R.color.text_primary),
+        color = colorResource(id = color),
         textAlign = TextAlign.Center
     )
 }
@@ -364,12 +370,21 @@ private fun TemplatesList(
                         .height(231.dp)
                         .width(127.dp)
                 ) {
+                    val borderWidth: Dp
+                    val borderColor: Color
+                    if (state.isDefaultStateEnabled && item.isDefault) {
+                        borderWidth = 2.dp
+                        borderColor = colorResource(id = R.color.palette_system_amber_50)
+                    } else {
+                        borderWidth = 1.dp
+                        borderColor = colorResource(id = R.color.shape_primary)
+                    }
                     Box(
                         modifier = Modifier
                             .padding(top = 7.dp, end = 7.dp)
                             .border(
-                                width = 1.dp,
-                                color = colorResource(id = R.color.shape_primary),
+                                width = borderWidth,
+                                color = borderColor,
                                 shape = RoundedCornerShape(size = 16.dp)
                             )
                             .height(224.dp)

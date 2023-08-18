@@ -7,15 +7,25 @@ data class TemplatesWidgetUiState(
     val showWidget: Boolean,
     val isEditing: Boolean,
     val isMoreMenuVisible: Boolean,
-    val moreMenuTemplate: TemplateView.Template?
+    val moreMenuTemplate: TemplateView.Template?,
+    val isDefaultStateEnabled: Boolean = false
 ) {
+    fun dismiss() = copy(
+        showWidget = false,
+        isEditing = false,
+        isMoreMenuVisible = false,
+        moreMenuTemplate = null,
+        isDefaultStateEnabled = false
+    )
+
     companion object {
-        fun reset() = TemplatesWidgetUiState(
+        fun init() = TemplatesWidgetUiState(
             items = emptyList(),
             showWidget = false,
             isEditing = false,
             isMoreMenuVisible = false,
-            moreMenuTemplate = null
+            moreMenuTemplate = null,
+            isDefaultStateEnabled = false
         )
     }
 }

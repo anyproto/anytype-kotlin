@@ -413,4 +413,5 @@ interface BlockRepository {
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
     suspend fun fileSpaceUsage(): FileLimits
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
+    suspend fun duplicateObjectsList(ids: List<Id>): List<Id>
 }

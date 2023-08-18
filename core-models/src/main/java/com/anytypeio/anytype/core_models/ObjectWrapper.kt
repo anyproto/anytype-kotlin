@@ -162,6 +162,7 @@ sealed class ObjectWrapper {
                 }
                 else -> null
             }
+        val defaultTemplateId: Id? by default
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {

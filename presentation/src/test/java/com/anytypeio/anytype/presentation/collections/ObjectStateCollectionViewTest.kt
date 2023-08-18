@@ -495,7 +495,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             ),
             dvSorts = listOf(mockObjectCollection.sortGallery)
         )
-        stubGetTemplates()
+        stubTemplatesContainer()
 
         // TESTING
         viewModel.onStart(ctx = root)
@@ -531,7 +531,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubGetDefaultPageType(defaultObjectType, defaultObjectTypeName)
-        stubGetTemplates(
+        stubTemplatesContainer(
             type = defaultObjectType,
             templates = listOf(StubObject(objectType = defaultObjectType))
         )

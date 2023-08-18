@@ -19,7 +19,6 @@ object TemplatesModule {
     @JvmStatic
     @Provides
     @Singleton
-    @Named(SUBSCRIPTION_TEMPLATES)
     fun provideStorelessContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
@@ -31,7 +30,7 @@ object TemplatesModule {
     @Provides
     @Singleton
     fun provideTemplatesContainer(
-        @Named(SUBSCRIPTION_TEMPLATES) storage: StorelessSubscriptionContainer,
+        storage: StorelessSubscriptionContainer,
         workspaceManager: WorkspaceManager
     ): ObjectTypeTemplatesContainer =
         DefaultObjectTypeTemplatesContainer(

@@ -23,7 +23,7 @@ sealed interface ObjectTypeTemplatesContainer {
 }
 
 class DefaultObjectTypeTemplatesContainer(
-    @Named(SUBSCRIPTION_TEMPLATES) private val storage: StorelessSubscriptionContainer,
+    private val storage: StorelessSubscriptionContainer,
     private val workspaceManager: WorkspaceManager
 ) : ObjectTypeTemplatesContainer {
 

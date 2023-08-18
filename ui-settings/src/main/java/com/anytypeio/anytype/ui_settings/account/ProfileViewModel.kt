@@ -36,7 +36,7 @@ import timber.log.Timber
 class ProfileViewModel(
     private val analytics: Analytics,
     private val deleteAccount: DeleteAccount,
-    @Named (SUBSCRIPTION_PROFILE) private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val setObjectDetails: SetObjectDetails,
     private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
@@ -158,7 +158,7 @@ class ProfileViewModel(
     class Factory(
         private val deleteAccount: DeleteAccount,
         private val analytics: Analytics,
-        @Named (SUBSCRIPTION_PROFILE) private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val setObjectDetails: SetObjectDetails,
         private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,

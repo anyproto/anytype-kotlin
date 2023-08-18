@@ -36,7 +36,7 @@ import timber.log.Timber
 
 class MainSettingsViewModel(
     private val analytics: Analytics,
-    @Named(SUBSCRIPTION_SETTINGS) private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
     private val setObjectDetails: SetObjectDetails,
@@ -218,7 +218,7 @@ class MainSettingsViewModel(
 
     class Factory(
         private val analytics: Analytics,
-        @Named(SUBSCRIPTION_SETTINGS) private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,
         private val setObjectDetails: SetObjectDetails,

@@ -12,17 +12,14 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugSpace
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer.Companion.SUBSCRIPTION_PROFILE
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.settings.ProfileFragment
 import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
-import javax.inject.Named
 
 @Subcomponent(modules = [ProfileModule::class])
 @PerScreen
@@ -46,7 +43,7 @@ object ProfileModule {
     fun provideViewModelFactory(
         deleteAccount: DeleteAccount,
         analytics: Analytics,
-        @Named (SUBSCRIPTION_PROFILE) storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        storelessSubscriptionContainer: StorelessSubscriptionContainer,
         setObjectDetails: SetObjectDetails,
         configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
@@ -111,20 +108,6 @@ object ProfileModule {
     fun provideSetDocumentImageIcon(
         repo: BlockRepository
     ): SetDocumentImageIcon = SetDocumentImageIcon(repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    @Named(SUBSCRIPTION_PROFILE)
-    fun provideStoreLessSubscriptionContainer(
-        repo: BlockRepository,
-        channel: SubscriptionEventChannel,
-        dispatchers: AppCoroutineDispatchers
-    ): StorelessSubscriptionContainer = StorelessSubscriptionContainer.Impl(
-        repo = repo,
-        channel = channel,
-        dispatchers = dispatchers
-    )
 
     @Module
     interface Bindings {

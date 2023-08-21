@@ -52,11 +52,6 @@ message Change {
             DetailsSet detailsSet = 100;
             DetailsUnset detailsUnset = 101;
 
-            // deprecated
-            _RelationAdd old_relationAdd = 102;
-            _RelationRemove old_relationRemove = 103;
-            _RelationUpdate old_relationUpdate = 104;
-
             ObjectTypeAdd objectTypeAdd = 105;
             ObjectTypeRemove objectTypeRemove = 106;
             StoreKeySet storeKeySet = 107;
@@ -64,6 +59,7 @@ message Change {
 
             StoreSliceUpdate storeSliceUpdate = 109;
         }
+        reserved 102,103,104; // old unsupported relation changes
     }
 
     message BlockCreate {
@@ -109,40 +105,14 @@ message Change {
         repeated string relationKey = 1;
     }
 
-    message _RelationAdd {
-        anytype.model.Relation relation = 2;
-    }
-
-    message _RelationUpdate {
-        message Dict {
-            repeated anytype.model.Relation.Option dict = 2;
-        }
-
-        message ObjectTypes {
-            repeated string objectTypes = 1;
-        }
-
-        string key = 1;
-        oneof value {
-            anytype.model.RelationFormat format = 2;
-            string name = 3;
-            google.protobuf.Value defaultValue = 4;
-            ObjectTypes objectTypes = 5;
-            bool multi = 6;
-            Dict selectDict = 7;
-        }
-    }
-
-    message _RelationRemove {
-        string key = 1;
-    }
-
     message ObjectTypeAdd {
         string url = 1;
+        string key = 2;
     }
 
     message ObjectTypeRemove {
         string url = 1;
+        string key = 2;
     }
 
     message StoreKeySet {

@@ -130,7 +130,7 @@ interface BlockRepository {
 
     suspend fun undo(command: Command.Undo): Undo.Result
 
-    suspend fun importUseCaseSkip()
+    suspend fun importUseCaseSkip(space: Id)
 
     suspend fun redo(command: Command.Redo): Redo.Result
 

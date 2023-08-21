@@ -30,6 +30,7 @@ object Relations {
     const val FEATURED_RELATIONS = "featuredRelations"
     const val SNIPPET = "snippet"
     const val WORKSPACE_ID = "workspaceId"
+    const val SPACE_ID = "spaceId"
     const val SET_OF = "setOf"
     const val URL = "url"
     const val SOURCE = "source"

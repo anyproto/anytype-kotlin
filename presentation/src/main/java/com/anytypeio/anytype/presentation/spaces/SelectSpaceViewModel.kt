@@ -28,6 +28,7 @@ class SelectSpaceViewModel @Inject constructor(
             storelessSubscriptionContainer.subscribe(
                 StoreSearchParams(
                     subscription = "test",
+                    keys = listOf(Relations.ID, Relations.SPACE_ID, Relations.NAME),
                     filters = listOf(
                         DVFilter(
                             relation = Relations.LAYOUT,

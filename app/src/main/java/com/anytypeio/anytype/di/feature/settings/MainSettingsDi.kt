@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -42,19 +41,6 @@ interface MainSettingsSubComponent {
 
 @Module
 object MainSettingsModule {
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideStoreLessSubscriptionContainer(
-        repo: BlockRepository,
-        channel: SubscriptionEventChannel,
-        dispatchers: AppCoroutineDispatchers
-    ): StorelessSubscriptionContainer = StorelessSubscriptionContainer.Impl(
-        repo = repo,
-        channel = channel,
-        dispatchers = dispatchers
-    )
 
     @JvmStatic
     @Provides

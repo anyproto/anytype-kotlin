@@ -146,6 +146,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun setInternalFlags(request: Rpc.Object.SetInternalFlags.Request): Rpc.Object.SetInternalFlags.Response
 
+    @Throws(Exception::class)
+    fun objectsListDuplicate(request: Rpc.Object.ListDuplicate.Request): Rpc.Object.ListDuplicate.Response
+
     //endregion
 
     //region OBJECT'S RELATIONS command

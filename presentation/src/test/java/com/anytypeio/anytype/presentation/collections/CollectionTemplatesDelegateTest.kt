@@ -54,7 +54,7 @@ class CollectionTemplatesDelegateTest: ObjectSetViewModelTestSetup() {
         stubInterceptThreadStatus()
         stubStoreOfObjectTypes(defaultTypeMap)
         stubGetDefaultPageType(type = defaultType, name = defaultTypeName)
-        stubGetTemplates(type = defaultType)
+        stubTemplatesContainer(type = defaultType)
 
         val details = Block.Details(
             details = mapOf(
@@ -87,9 +87,7 @@ class CollectionTemplatesDelegateTest: ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        verify(getTemplates, times(1)).async(
-            GetTemplates.Params(type = defaultType)
-        )
+        verify(templatesContainer, times(1)).subscribe(defaultType)
 
         verifyNoInteractions(createDataViewObject)
     }

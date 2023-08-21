@@ -52,6 +52,10 @@ class SelectSpaceViewModel @Inject constructor(
         // TODO
     }
 
+    fun onStop() {
+        // TODO unsubscribe
+    }
+
     class Factory @Inject constructor(
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer
     ) : ViewModelProvider.Factory {

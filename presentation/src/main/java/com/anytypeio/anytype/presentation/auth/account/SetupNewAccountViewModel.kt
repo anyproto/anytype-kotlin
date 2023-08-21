@@ -32,6 +32,7 @@ sealed class SetupNewAccountViewState {
     data class ErrorNetwork(val msg: String) : SetupNewAccountViewState()
 }
 
+@Deprecated("To be deleted")
 class SetupNewAccountViewModel(
     private val session: Session,
     private val createAccount: CreateAccount,
@@ -120,7 +121,9 @@ class SetupNewAccountViewModel(
 
     private fun setupUseCase() {
         viewModelScope.launch {
-            setupMobileUseCaseSkip.execute(Unit).fold(
+            setupMobileUseCaseSkip.execute(
+                SetupMobileUseCaseSkip.Params(configStorage.get().space)
+            ).fold(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
                     navigateToDashboard()

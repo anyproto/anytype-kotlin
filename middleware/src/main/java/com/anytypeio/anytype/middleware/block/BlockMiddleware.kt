@@ -693,6 +693,10 @@ class BlockMiddleware(
         )
     }
 
+    override suspend fun createWorkspace(details: Struct): Id = middleware.workspaceCreate(
+        details = details
+    )
+
     override suspend fun addObjectToWorkspace(objects: List<Id>): List<Id> {
         return middleware.workspaceObjectListAdd(objects)
     }

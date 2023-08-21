@@ -742,6 +742,10 @@ class BlockDataRepository(
         )
     }
 
+    override suspend fun createWorkspace(details: Struct): Id = remote.createWorkspace(
+        details = details
+    )
+
     override suspend fun addObjectToWorkspace(objects: List<Id>): List<Id> {
         return remote.addObjectToWorkspace(
             objects = objects

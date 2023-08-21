@@ -2689,7 +2689,7 @@ private fun TextHolder.inReadMode() = content.javaClass.declaredFields.filterNot
         isAccessible = true
     }.getBoolean(content)
 
-private fun getTextWriteParams() = InputType.TYPE_TEXT_FLAG_MULTI_LINE or
+private fun getTextWriteParams() = InputType.TYPE_CLASS_TEXT or
         InputType.TYPE_TEXT_FLAG_CAP_SENTENCES or
         InputType.TYPE_TEXT_FLAG_AUTO_CORRECT
 

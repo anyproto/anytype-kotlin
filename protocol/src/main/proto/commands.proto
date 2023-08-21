@@ -318,7 +318,7 @@ message Rpc {
                         NO_ACCOUNTS_FOUND = 101;
                         NEED_TO_RECOVER_WALLET_FIRST = 102;
                         FAILED_TO_CREATE_LOCAL_REPO = 103;
-                        LOCAL_REPO_EXISTS_BUT_CORRUPTED = 104;
+                        LOCAL_REPO_EXISTS_BUT_CORRUPTED = 104; // Unused
                         FAILED_TO_RUN_NODE = 105;
                         WALLET_RECOVER_NOT_PERFORMED = 106;
                         FAILED_TO_STOP_RUNNING_NODE = 107;
@@ -1321,6 +1321,7 @@ message Rpc {
 
         message GroupsSubscribe {
             message Request {
+                string spaceId = 6;
                 string subId = 1;
                 string relationKey = 2;
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 3;
@@ -5387,6 +5388,28 @@ message Rpc {
                 Error error = 1;
                 string spaceId = 2;
                 repeated TreeInfo infos = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message StackGoroutines {
+            message Request {
+                string path = 1;
+            }
+
+            message Response {
+                Error error = 1;
 
                 message Error {
                     Code code = 1;

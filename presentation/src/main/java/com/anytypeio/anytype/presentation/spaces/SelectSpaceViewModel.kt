@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -27,6 +28,7 @@ class SelectSpaceViewModel @Inject constructor(
             storelessSubscriptionContainer.subscribe(
                 StoreSearchParams(
                     subscription = "test",
+                    keys = listOf(Relations.ID, Relations.SPACE_ID, Relations.NAME),
                     filters = listOf(
                         DVFilter(
                             relation = Relations.LAYOUT,
@@ -40,6 +42,18 @@ class SelectSpaceViewModel @Inject constructor(
                 spaces.value = it
             }
         }
+    }
+
+    fun onSpaceClicked(space: Id) {
+        // TODO
+    }
+
+    fun onCreateSpaceClicked() {
+        // TODO
+    }
+
+    fun onStop() {
+        // TODO unsubscribe
     }
 
     class Factory @Inject constructor(

@@ -168,7 +168,7 @@
         android:id="@+id/selectWidgetTypeScreen"
         android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment"/>
 
-    <fragment
+    <dialog
         android:id="@+id/selectSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.SelectSpaceFragment"/>
 

@@ -1624,4 +1624,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun objectsListDuplicate(request: Rpc.Object.ListDuplicate.Request): Rpc.Object.ListDuplicate.Response {
+        val encoded = Service.objectListDuplicate(
+            Rpc.Object.ListDuplicate.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.ListDuplicate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.ListDuplicate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

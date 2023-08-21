@@ -30,8 +30,10 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
+import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -42,7 +44,6 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
@@ -67,6 +68,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -126,8 +128,10 @@ class ObjectSetViewModel(
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getDefaultPageType: GetDefaultPageType,
-    private val getTemplates: GetTemplates,
-    private val updateDataViewViewer: UpdateDataViewViewer
+    private val updateDataViewViewer: UpdateDataViewViewer,
+    private val duplicateObjects: DuplicateObjects,
+    private val templatesContainer: ObjectTypeTemplatesContainer,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -163,7 +167,7 @@ class ObjectSetViewModel(
     val header: StateFlow<SetOrCollectionHeaderState> = _header
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
-    val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.reset())
+    val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.init())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -254,6 +258,12 @@ class ObjectSetViewModel(
                     )
                     else -> {}
                 }
+            }
+        }
+
+        viewModelScope.launch {
+            _templateViews.collectLatest {
+                templatesWidgetState.value = templatesWidgetState.value.copy(items = it)
             }
         }
     }
@@ -880,8 +890,7 @@ class ObjectSetViewModel(
 
     fun onNewButtonIconClicked() {
         Timber.d("onNewButtonIconClicked, ")
-        templatesWidgetState.value = TemplatesWidgetUiState(
-            items = _templateViews.value,
+        templatesWidgetState.value = templatesWidgetState.value.copy(
             showWidget = true,
             isEditing = false,
             isMoreMenuVisible = false,
@@ -1249,6 +1258,7 @@ class ObjectSetViewModel(
 
     override fun onCleared() {
         Timber.d("onCleared, ")
+        viewModelScope.launch { templatesContainer.unsubscribe() }
         super.onCleared()
         titleUpdateChannel.cancel()
         stateReducer.clear()
@@ -1478,42 +1488,48 @@ class ObjectSetViewModel(
     private suspend fun gettingTemplatesForDataViewState(state: ObjectState.DataView) {
         when (state) {
             is ObjectState.DataView.Collection -> {
-                proceedWithGettingTemplates(typeId = null)
+                subscribeForTypeTemplates(typeId = null)
             }
             is ObjectState.DataView.Set -> {
                 val sourceId = proceedWithGettingSetSourceId(state)
                 val sourceMap = state.details[sourceId] ?: return
                 when (sourceMap.type.firstOrNull()) {
-                    ObjectTypeIds.RELATION -> proceedWithGettingTemplates(typeId = null)
-                    ObjectTypeIds.OBJECT_TYPE -> proceedWithGettingTemplates(typeId = sourceId)
+                    ObjectTypeIds.RELATION -> subscribeForTypeTemplates(typeId = null)
+                    ObjectTypeIds.OBJECT_TYPE -> subscribeForTypeTemplates(typeId = sourceId)
                     else -> { Timber.d("Ignoring type of source") }
                 }
             }
         }
     }
 
-    private suspend fun proceedWithGettingTemplates(typeId: Id?) {
+    private suspend fun subscribeForTypeTemplates(typeId: Id?) {
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val objectType = resolveObjectType(typeId)
         if (objectType?.isTemplatesAllowed() == true) {
             viewModelScope.launch {
-                getTemplates.async(GetTemplates.Params(objectType.id)).fold(
-                    onSuccess = { templates ->
-                        if (templates.isNotEmpty()) {
-                            _templateViews.value =
-                                listOf(templates.first().toTemplateViewBlank(objectType.id)) +
-                                        templates.map {
-                                            it.toTemplateView(
-                                                typeId = objectType.id,
-                                                urlBuilder = urlBuilder,
-                                                coverImageHashProvider = coverImageHashProvider
-                                            )
-                                        }
-                        }
-                    },
-                    onFailure = { e ->
-                        Timber.e(e, "Error getting templates for type ${objectType.id}")
+                templatesContainer.subscribe(objectType.id)
+                    .catch { error ->
+                        Timber.e(error, "Error while getting templates for type ${objectType.id}")
+                        toast("Error while getting templates for type ${objectType.id}")
+                        _templateViews.value = emptyList()
                     }
-                )
+                    .map { results ->
+                        Timber.d("subscribeForTypeTemplates, new templates size:[${results.size}]")
+                        val blankTemplate = listOf(objectType.toTemplateViewBlank())
+                        blankTemplate + results
+                            .map { objTemplate ->
+                                objTemplate.toTemplateView(
+                                    typeId = objectType.id,
+                                    urlBuilder = urlBuilder,
+                                    coverImageHashProvider = coverImageHashProvider,
+                                    objectTypeDefaultTemplate = objectType.defaultTemplateId,
+                                    viewerDefaultTemplate = viewer.defaultTemplateId
+                                )
+                            }
+                    }.collectLatest {
+                        _templateViews.value = it
+                    }
             }
         } else {
             Timber.d("Templates are not allowed for type:[${objectType?.id}]")
@@ -1537,7 +1553,7 @@ class ObjectSetViewModel(
         }
         when(item) {
             is TemplateView.Blank -> {
-                templatesWidgetState.value = TemplatesWidgetUiState.reset()
+                templatesWidgetState.value = templatesWidgetState.value.dismiss()
                 viewModelScope.launch {
                     logEvent(
                         state = stateReducer.state.value,
@@ -1551,7 +1567,7 @@ class ObjectSetViewModel(
                 }
             }
             is TemplateView.Template -> {
-                templatesWidgetState.value = TemplatesWidgetUiState.reset()
+                templatesWidgetState.value = templatesWidgetState.value.dismiss()
                 viewModelScope.launch {
                     logEvent(
                         state = stateReducer.state.value,
@@ -1620,17 +1636,18 @@ class ObjectSetViewModel(
         val state = templatesWidgetState.value
         templatesWidgetState.value = when {
             state.isMoreMenuVisible -> state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
-            state.showWidget -> TemplatesWidgetUiState.reset()
+            state.showWidget -> templatesWidgetState.value.dismiss()
             else -> state
         }
     }
 
     fun onMoreMenuClicked(click: TemplateMenuClick) {
+        Timber.d("onMoreMenuClicked, click:[$click]")
         when (click) {
             is TemplateMenuClick.Default -> proceedWithUpdatingViewDefaultTemplate()
-            is TemplateMenuClick.Delete -> TODO()
-            is TemplateMenuClick.Duplicate -> TODO()
-            is TemplateMenuClick.Edit -> TODO()
+            is TemplateMenuClick.Delete -> proceedWithDeletionTemplate()
+            is TemplateMenuClick.Duplicate -> proceedWithDuplicateTemplate()
+            is TemplateMenuClick.Edit -> proceedWithEditingTemplate()
         }
     }
 
@@ -1640,7 +1657,7 @@ class ObjectSetViewModel(
         val template = templatesWidgetState.value.moreMenuTemplate ?: return
         val params = UpdateDataViewViewer.Params.Template(
             context = context,
-            target = viewer.id,
+            target = state.dataViewBlock.id,
             viewer = viewer.copy(defaultTemplateId = template.id)
         )
         viewModelScope.launch {
@@ -1651,6 +1668,65 @@ class ObjectSetViewModel(
                     toast("Error while setting default template")
                 }
             )
+        }
+    }
+
+    private fun proceedWithDuplicateTemplate() {
+        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        val params = DuplicateObjects.Params(
+            ids = listOf(template.id)
+        )
+        templatesWidgetState.value = templatesWidgetState.value.copy(
+            isEditing = false,
+            isMoreMenuVisible = false,
+            moreMenuTemplate = null
+        )
+        viewModelScope.launch {
+            duplicateObjects.async(params).fold(
+                onSuccess = { ids ->
+                    Timber.d("Successfully duplicated templates: $ids")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while duplicating templates")
+                    toast("Error while duplicating templates")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithDeletionTemplate() {
+        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(template.id),
+            isArchived = true
+        )
+        templatesWidgetState.value = templatesWidgetState.value.copy(
+            isEditing = false,
+            isMoreMenuVisible = false,
+            moreMenuTemplate = null
+        )
+        viewModelScope.launch {
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = { ids ->
+                    Timber.d("Successfully archived templates: $ids")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while deleting templates")
+                    toast("Error while deleting templates")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithEditingTemplate() {
+        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        templatesWidgetState.value = templatesWidgetState.value.copy(
+            isEditing = false,
+            isMoreMenuVisible = false,
+            moreMenuTemplate = null
+        )
+        viewModelScope.launch {
+            proceedWithOpeningObject(template.id)
         }
     }
     //endregion

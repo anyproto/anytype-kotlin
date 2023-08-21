@@ -59,6 +59,7 @@ object Relations {
 
     const val RECOMMENDED_LAYOUT = "recommendedLayout"
     const val RECOMMENDED_RELATIONS = "recommendedRelations"
+    const val DEFAULT_TEMPLATE_ID = "defaultTemplateId"
 
     val systemRelationKeys = listOf(
         "id",

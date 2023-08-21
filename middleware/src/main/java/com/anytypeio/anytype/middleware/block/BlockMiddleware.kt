@@ -800,4 +800,8 @@ class BlockMiddleware(
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {
         return middleware.setInternalFlags(command)
     }
+
+    override suspend fun duplicateObjectsList(ids: List<Id>): List<Id> {
+        return middleware.duplicateObjectsList(ids)
+    }
 }

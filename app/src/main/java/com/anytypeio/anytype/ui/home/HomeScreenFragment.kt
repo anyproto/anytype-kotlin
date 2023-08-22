@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -175,14 +174,7 @@ class HomeScreenFragment : BaseComposeFragment() {
     private fun proceed(destination: Navigation) {
         Timber.d("New destination: $destination")
         when (destination) {
-            is Navigation.OpenObject -> {
-                findNavController().navigate(
-                    R.id.nav_editor_modal,
-                    bundleOf(
-                        EditorModalFragment.ARG_ID to destination.ctx
-                    )
-                )
-            }
+            is Navigation.OpenObject -> navigation().openDocument(destination.ctx)
             is Navigation.OpenSet -> navigation().openObjectSet(destination.ctx)
             is Navigation.ExpandWidget -> navigation().launchCollections(destination.subscription)
         }

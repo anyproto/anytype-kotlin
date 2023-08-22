@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
@@ -35,6 +36,7 @@ import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
+import com.anytypeio.anytype.middleware.mappers.config
 import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.mw
 import com.anytypeio.anytype.middleware.mappers.parse
@@ -1932,6 +1934,22 @@ class Middleware @Inject constructor(
         val response = service.workspaceCreate(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.spaceId
+    }
+
+    @Throws(Exception::class)
+    fun workspaceInfo(space: Id): Config {
+        val request = Rpc.Workspace.Info.Request(
+            spaceId = space
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.workspaceInfo(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        val info = response.info
+        if (info != null) {
+            return info.config()
+        } else {
+            throw IllegalStateException("Workspace info is empty")
+        }
     }
 
     @Throws(Exception::class)

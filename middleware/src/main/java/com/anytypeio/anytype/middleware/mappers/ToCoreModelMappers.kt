@@ -2,9 +2,11 @@ package com.anytypeio.anytype.middleware.mappers
 
 import anytype.ResponseEvent
 import anytype.Rpc
+import anytype.model.Account
 import anytype.model.Restrictions
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVDateFormat
@@ -739,3 +741,14 @@ fun Rpc.File.SpaceUsage.Response.toCoreModel(): FileLimits {
 fun List<Rpc.Debug.TreeInfo>.toCoreModel(): String {
     return GsonBuilder().setPrettyPrinting().create().toJson(this)
 }
+
+fun Account.Info.config() : Config = Config(
+    home = homeObjectId,
+    profile = profileObjectId,
+    gateway = gatewayUrl,
+    space = accountSpaceId,
+    workspace = workspaceObjectId,
+    widgets = widgetsId,
+    analytics = analyticsId,
+    device = deviceId
+)

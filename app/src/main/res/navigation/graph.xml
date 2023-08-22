@@ -173,6 +173,10 @@
         android:name="com.anytypeio.anytype.ui.spaces.SelectSpaceFragment"/>
 
     <dialog
+        android:id="@+id/createSpaceScreen"
+        android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment"/>
+
+    <dialog
         android:id="@+id/settingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.MainSettingFragment"
         android:label="SettingScreen">

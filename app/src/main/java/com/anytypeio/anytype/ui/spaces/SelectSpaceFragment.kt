@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -45,7 +46,7 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(
                 typography = typography
             ) {
-                val spaces = vm.spaces.collectAsState().value
+                val spaces = vm.views.collectAsState().value
                 Box(modifier = Modifier.padding(20.dp)) {
                     if (spaces.isNotEmpty()) {
                         LazyColumn {
@@ -55,9 +56,17 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                                     Column {
                                         Text(
                                             text = item.name ?: "Untitled",
-                                            modifier = Modifier.padding(
-                                                vertical = 8.dp
-                                            )
+                                            modifier = Modifier
+                                                .padding(
+                                                    vertical = 8.dp
+                                                )
+                                                .noRippleClickable {
+                                                    vm.onSpaceClicked(item)
+                                                },
+                                            color = if (item.isSelected)
+                                                colorResource(id = R.color.palette_dark_blue)
+                                            else
+                                                colorResource(id = R.color.text_primary)
                                         )
                                         Divider(
                                             modifier = Modifier.padding(vertical = 8.dp),

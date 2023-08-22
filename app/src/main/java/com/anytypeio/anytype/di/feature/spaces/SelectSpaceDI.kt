@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import dagger.Binds
@@ -49,4 +50,5 @@ interface SelectSpaceDependencies : ComponentDependencies {
     fun subscriptionEventChannel(): SubscriptionEventChannel
     fun analytics(): Analytics
     fun dispatchers(): AppCoroutineDispatchers
+    fun spaceManager(): SpaceManager
 }

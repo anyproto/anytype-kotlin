@@ -32,6 +32,7 @@ class NavigationRouter(
                 is AppNavigation.Command.ConfirmPinCodeScreen -> navigation.confirmPinCode(command.code)
                 is AppNavigation.Command.OpenSettings -> navigation.openSettings()
                 is AppNavigation.Command.OpenObject -> navigation.openDocument(command.id)
+                is AppNavigation.Command.OpenModalDocument -> navigation.openModalDocument(command.id)
                 is AppNavigation.Command.OpenSetOrCollection -> navigation.openObjectSet(
                     command.target,
                     command.isPopUpToDashboard

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.ui.auth.Keys
 import com.anytypeio.anytype.ui.auth.account.CreateAccountFragment.Companion.ARGS_CODE
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteStorageFragment
@@ -84,6 +85,15 @@ class Navigator : AppNavigation {
             R.id.objectNavigation,
             Bundle().apply {
                 putString(EditorFragment.ID_KEY, id)
+            }
+        )
+    }
+
+    override fun openModalDocument(id: String) {
+        navController?.navigate(
+            R.id.nav_editor_modal,
+            Bundle().apply {
+                putString(EditorModalFragment.ARG_ID, id)
             }
         )
     }

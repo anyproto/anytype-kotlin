@@ -2,6 +2,7 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
@@ -320,6 +321,7 @@ interface BlockRemote {
     ): Payload
 
     suspend fun createWorkspace(details: Struct): Id
+    suspend fun getSpaceConfig(space: Id): Config
     suspend fun addObjectToWorkspace(objects: List<Id>): List<Id>
     suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id>
 

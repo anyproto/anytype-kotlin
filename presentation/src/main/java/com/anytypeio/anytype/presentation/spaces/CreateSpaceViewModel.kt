@@ -9,12 +9,15 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class CreateSpaceViewModel @Inject constructor(
     private val createSpace: CreateSpace
 ) : BaseViewModel() {
+
+    val isDismissed = MutableStateFlow(false)
 
     fun onCreateSpace(name: String) {
         viewModelScope.launch {
@@ -26,7 +29,9 @@ class CreateSpaceViewModel @Inject constructor(
                 )
             ).fold(
                 onSuccess = { space: Id ->
-                    Timber.d("Successfully created space: $space")
+                    Timber.d("Successfully created space: $space").also {
+                        isDismissed.value = true
+                    }
                 },
                 onFailure = {
                     Timber.e(it, "Error while creating space").also {

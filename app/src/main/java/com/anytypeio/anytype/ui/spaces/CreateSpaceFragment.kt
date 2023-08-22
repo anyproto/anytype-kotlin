@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
+import androidx.navigation.findNavController
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -72,6 +73,13 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.toasts.collect() { toast(it) }
+                }
+                LaunchedEffect(Unit) {
+                    vm.isDismissed.collect { isDismissed ->
+                        if (isDismissed) {
+                            findNavController().popBackStack()
+                        }
+                    }
                 }
             }
         }

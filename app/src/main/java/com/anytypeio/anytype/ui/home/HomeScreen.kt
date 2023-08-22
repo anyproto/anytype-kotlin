@@ -435,7 +435,7 @@ private fun WidgetList(
                     Box(
                         Modifier
                             .fillMaxWidth()
-                            .padding(top = 6.dp)
+                            .padding(vertical = 12.dp)
                             .animateItemPlacement(
                                 spring(
                                     stiffness = Spring.StiffnessHigh,

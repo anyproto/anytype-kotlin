@@ -43,7 +43,6 @@ class SelectSpaceViewModel @Inject constructor(
                 ),
                 spaceManager.observe()
             ) { spaces, config ->
-                Timber.d("New emission")
                 spaces.mapNotNull { wrapper ->
                     val space = wrapper.getValue<String>(Relations.SPACE_ID)
                     if (space != null) {

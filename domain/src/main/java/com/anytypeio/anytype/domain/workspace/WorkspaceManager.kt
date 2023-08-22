@@ -37,7 +37,7 @@ interface SpaceManager {
         private val configStorage: ConfigStorage
     ) : SpaceManager {
 
-        val currentSpace = MutableStateFlow("")
+        private val currentSpace = MutableStateFlow("")
         private val info = mutableMapOf<Id, Config>()
 
         override suspend fun set(space: Id)  = withContext(dispatchers.io) {

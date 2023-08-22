@@ -3001,6 +3001,7 @@ class EditorViewModel(
     }
 
     private fun onPageClicked(blockLinkId: Id) {
+        if (isObjectTemplate()) return
         val block = blocks.firstOrNull { it.id == blockLinkId }
         when (val content = block?.content) {
             is Content.Link -> {
@@ -3932,6 +3933,7 @@ class EditorViewModel(
                 }
             }
             is ListenerType.Relation.ObjectType -> {
+                if (isObjectTemplate()) return
                 viewModelScope.launch {
                     val params = FindObjectSetForType.Params(
                         type = clicked.typeId,
@@ -5770,6 +5772,7 @@ class EditorViewModel(
     }
 
     fun onMentionClicked(target: String) {
+        if (isObjectTemplate()) return
         proceedWithOpeningObjectByLayout(target)
     }
 
@@ -6185,6 +6188,11 @@ class EditorViewModel(
         val details = orchestrator.stores.details.current()
         val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
         return wrapper.getProperType()
+    }
+
+    private fun isObjectTemplate(): Boolean {
+        val details = orchestrator.stores.details.current().details[context]
+        return details?.type?.firstOrNull() == ObjectTypeIds.TEMPLATE
     }
     //endregion
 

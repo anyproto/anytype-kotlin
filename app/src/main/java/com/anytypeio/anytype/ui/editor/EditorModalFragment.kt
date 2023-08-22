@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.MyFragmentContainerBinding
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment
 
 class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>() {
 
@@ -16,7 +17,7 @@ class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>(
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.AppBottomSecondarySheetDialogTheme)
-        val editorFragment = EditorFragment.newInstance(ctx)
+        val editorFragment = EditorTemplateFragment.newInstance(ctx)
         childFragmentManager.beginTransaction()
             .add(R.id.fragment_container_view, editorFragment)
             .commit()

@@ -89,12 +89,10 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun openModalDocument(id: String) {
+    override fun openModalEditor(id: String) {
         navController?.navigate(
             R.id.nav_editor_modal,
-            Bundle().apply {
-                putString(EditorModalFragment.ARG_ID, id)
-            }
+            bundleOf(EditorModalFragment.ARG_ID to id)
         )
     }
 

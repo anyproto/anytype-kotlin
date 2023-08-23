@@ -21,7 +21,7 @@ interface AppNavigation {
 
     fun openObjectSet(target: String, isPopUpToDashboard: Boolean = false)
     fun openDocument(id: String)
-    fun openModalDocument(id: String)
+    fun openModalEditor(id: String)
 
     fun launchDocument(id: String)
     fun launchCollections(subscription: Subscription)
@@ -86,7 +86,7 @@ interface AppNavigation {
         data class LaunchDocument(val id: String) : Command()
         data class LaunchObjectFromSplash(val target: Id) : Command()
         data class LaunchObjectSetFromSplash(val target: Id) : Command()
-        data class OpenModalDocument(val id: String) : Command()
+        data class OpenModalEditor(val id: String) : Command()
 
         object OpenSettings : Command()
         object OpenKeychainScreen : Command()

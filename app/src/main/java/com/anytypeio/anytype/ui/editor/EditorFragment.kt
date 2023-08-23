@@ -175,7 +175,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private val keyboardDelayJobs = mutableListOf<Job>()
 
-    val ctx get() = arg<Id>(ID_KEY)
+    protected val ctx get() = arg<Id>(ID_KEY)
 
     private val screen: Point by lazy { screen() }
 
@@ -263,7 +263,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private val styleToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
     private val actionToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
 
-    val vm by viewModels<EditorViewModel> { factory }
+    protected val vm by viewModels<EditorViewModel> { factory }
 
     private val blockAdapter by lazy {
         BlockAdapter(

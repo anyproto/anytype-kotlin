@@ -80,5 +80,6 @@ class EditorTemplateFragment : EditorFragment() {
             }
 
         const val ARG_TEMPLATE_ID = "template_id"
+        const val SELECTED_TEMPLATE_INITIAL_VALUE = ""
     }
 }

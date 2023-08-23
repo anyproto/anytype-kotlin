@@ -160,6 +160,7 @@ class ObjectSetViewModel(
     val currentViewer = _currentViewer
 
     private val _templateViews = MutableStateFlow<List<TemplateView>>(emptyList())
+    private val _dvViews = MutableStateFlow<List<ManageViewerViewModel.ViewerView>>(emptyList())
 
     private val _header = MutableStateFlow<SetOrCollectionHeaderState>(
         SetOrCollectionHeaderState.None
@@ -168,6 +169,7 @@ class ObjectSetViewModel(
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
     val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.init())
+    val dvViewsWidgetState = MutableStateFlow(DVViewsWidgetUiState.init())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -264,6 +266,12 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             _templateViews.collectLatest {
                 templatesWidgetState.value = templatesWidgetState.value.copy(items = it)
+            }
+        }
+
+        viewModelScope.launch {
+            _dvViews.collectLatest {
+                dvViewsWidgetState.value = dvViewsWidgetState.value.copy(items = it)
             }
         }
     }
@@ -458,7 +466,6 @@ class ObjectSetViewModel(
                 dataViewState = dataViewState,
                 objectState = objectState,
                 currentViewId = currentViewId,
-                templates = templates
             )
             ObjectState.Init -> DataViewViewState.Init
             ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
@@ -477,6 +484,7 @@ class ObjectSetViewModel(
 
         return when (dataViewState) {
             DataViewState.Init -> {
+                _dvViews.value = emptyList()
                 if (dvViewer == null) {
                     DataViewViewState.Collection.NoView
                 } else {
@@ -484,6 +492,7 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
+                _dvViews.value = objectState.viewers.toView(session)
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -520,7 +529,6 @@ class ObjectSetViewModel(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Set,
         currentViewId: String?,
-        templates: List<TemplateView>
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
@@ -530,6 +538,7 @@ class ObjectSetViewModel(
 
         return when (dataViewState) {
             DataViewState.Init -> {
+                _dvViews.value = emptyList()
                 when {
                     setOfValue.isEmpty() || query.isEmpty() -> DataViewViewState.Set.NoQuery
                     viewer == null -> DataViewViewState.Set.NoView
@@ -537,6 +546,7 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
+                _dvViews.value = objectState.viewers.toView(session)
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -1043,16 +1053,12 @@ class ObjectSetViewModel(
 
     fun onExpandViewerMenuClicked() {
         Timber.d("onExpandViewerMenuClicked, ")
-        val state = stateReducer.state.value.dataViewState() ?: return
         if (isRestrictionPresent(DataViewRestriction.VIEWS)
         ) {
             toast(NOT_ALLOWED)
         } else {
-            dispatch(
-                ObjectSetCommand.Modal.ManageViewer(
-                    ctx = context,
-                    dataview = state.dataViewBlock.id
-                )
+            dvViewsWidgetState.value = dvViewsWidgetState.value.copy(
+                showWidget = true
             )
         }
     }

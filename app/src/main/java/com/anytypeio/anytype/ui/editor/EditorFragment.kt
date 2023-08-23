@@ -84,6 +84,7 @@ import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.focusAndShowKeyboard
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.hide
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.lastDecorator
@@ -174,7 +175,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private val keyboardDelayJobs = mutableListOf<Job>()
 
-    private val ctx get() = arg<Id>(ID_KEY)
+    val ctx get() = arg<Id>(ID_KEY)
 
     private val screen: Point by lazy { screen() }
 
@@ -262,7 +263,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private val styleToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
     private val actionToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
 
-    private val vm by viewModels<EditorViewModel> { factory }
+    val vm by viewModels<EditorViewModel> { factory }
 
     private val blockAdapter by lazy {
         BlockAdapter(
@@ -375,7 +376,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private val titleVisibilityDetector by lazy {
+    val titleVisibilityDetector by lazy {
         EditorHeaderOverlayDetector(
             threshold = dimen(R.dimen.default_toolbar_height),
             thresholdPadding = dimen(R.dimen.dp_8)
@@ -1219,7 +1220,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun resetDocumentTitle(state: ViewState.Success) {
+    open fun resetDocumentTitle(state: ViewState.Success) {
         val title = state.blocks.firstOrNull { view ->
             view is BlockView.Title.Basic || view is BlockView.Title.Profile || view is BlockView.Title.Todo
         }
@@ -1302,7 +1303,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun render(state: ControlPanelState) {
+    open fun render(state: ControlPanelState) {
 
         keyboardDelayJobs.cancel()
 

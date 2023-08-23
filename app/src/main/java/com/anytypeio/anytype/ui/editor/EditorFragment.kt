@@ -706,7 +706,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     }
 
-    private fun setupWindowInsetAnimation() {
+    open fun setupWindowInsetAnimation() {
         if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             binding.objectTypesToolbar.syncTranslationWithImeVisibility(
                 dispatchMode = DISPATCH_MODE_STOP

@@ -57,6 +57,9 @@ class EditorTemplateFragment : EditorFragment() {
         jobs.clear()
     }
 
+    override fun onApplyWindowRootInsets() {}
+    override fun setupWindowInsetAnimation() {}
+
     override fun resetDocumentTitle(state: ViewState.Success) {}
 
     override fun render(state: ControlPanelState) {

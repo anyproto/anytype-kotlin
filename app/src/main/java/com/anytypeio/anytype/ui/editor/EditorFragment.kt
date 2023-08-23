@@ -903,7 +903,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         isFavorite = command.isFavorite,
                         isLocked = command.isLocked,
                         isProfile = false,
-                        fromName = getFrom()
+                        fromName = getFrom(),
+                        isTemplate = command.isTemplate
                     )
                     fr.showChildFragment()
                 }
@@ -919,6 +920,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isLocked,
                             ObjectMenuBaseFragment.IS_PROFILE_KEY to true,
                             ObjectMenuBaseFragment.FROM_NAME to getFrom(),
+                            ObjectMenuBaseFragment.IS_TEMPLATE_KEY to false
                         )
                     )
                 }

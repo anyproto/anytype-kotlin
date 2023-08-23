@@ -14,8 +14,9 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import timber.log.Timber
 
-class EditorTemplateFragment: EditorFragment() {
+class EditorTemplateFragment : EditorFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -36,8 +37,10 @@ class EditorTemplateFragment: EditorFragment() {
             setTextAppearance(R.style.TextView_UXStyle_Titles_2_Medium)
         }
         binding.btnSelectTemplate.setOnClickListener {
+            Timber.d("Select template clicked, get back to Set")
             findNavController().apply {
-                previousBackStackEntry?.savedStateHandle?.set("template", ctx)
+
+                previousBackStackEntry?.savedStateHandle?.set(ARG_TEMPLATE_ID, ctx)
                 popBackStack(R.id.editorModalScreen, true)
             }
         }
@@ -50,7 +53,7 @@ class EditorTemplateFragment: EditorFragment() {
 
     override fun onStart() {
         super.onStart()
-        binding.topToolbar.title.text = "Edit Template"
+        binding.topToolbar.title.text = getString(R.string.templates_menu_edit)
         jobs.clear()
     }
 
@@ -69,5 +72,7 @@ class EditorTemplateFragment: EditorFragment() {
         fun newInstance(id: String): EditorTemplateFragment = EditorTemplateFragment().apply {
             arguments = bundleOf(ID_KEY to id)
         }
+
+        const val ARG_TEMPLATE_ID = "template_id"
     }
 }

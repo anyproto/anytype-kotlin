@@ -99,6 +99,7 @@ import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.bumptech.glide.Glide
 import javax.inject.Inject
 import kotlinx.coroutines.flow.launchIn
@@ -336,6 +337,8 @@ open class ObjectSetFragment :
                 )
             }
         }
+
+        observeSelectingTemplate()
     }
 
     private fun setupWindowInsetAnimation() {
@@ -1166,6 +1169,16 @@ open class ObjectSetFragment :
     ): FragmentObjectSetBinding = FragmentObjectSetBinding.inflate(
         inflater, container, false
     )
+
+    private fun observeSelectingTemplate() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData(
+            ARG_TEMPLATE_ID,
+            ""
+        )?.observe(viewLifecycleOwner) { template ->
+            Timber.d("Get result from EditorTemplateFragment: $template")
+            vm.proceedWithCreatingNewDataViewObject(template)
+        }
+    }
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.object_set.context"

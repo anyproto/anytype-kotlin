@@ -304,4 +304,14 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
+    <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
+        android:id="@+id/btnSelectTemplate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/dp_20"
+        android:layout_marginEnd="@dimen/dp_20"
+        android:text="Select Template"
+        android:visibility="gone"
+        android:layout_gravity="bottom|center_horizontal"/>
+
 </FrameLayout>

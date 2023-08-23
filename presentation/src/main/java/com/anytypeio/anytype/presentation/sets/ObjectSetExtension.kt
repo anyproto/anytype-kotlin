@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import android.util.Log
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
@@ -479,4 +478,18 @@ fun ObjectWrapper.Type.toTemplateViewBlank(): TemplateView.Blank {
         typeId = id,
         layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code
     )
+}
+
+fun List<DVViewer>.toView(session: ObjectSetSession): List<ManageViewerViewModel.ViewerView> {
+    return mapIndexed { index, viewer ->
+        ManageViewerViewModel.ViewerView(
+            id = viewer.id,
+            name = viewer.name,
+            type = viewer.type,
+            isActive = if (session.currentViewerId.value != null)
+                viewer.id == session.currentViewerId.value
+            else
+                index == 0,
+        )
+    }
 }

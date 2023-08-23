@@ -74,7 +74,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isArchived = false,
                 isFavorite = false,
                 isLocked = false,
-                fromName = ""
+                fromName = "",
+                isTemplate = false
             )
         }
     }
@@ -108,7 +109,8 @@ class EditorMenuTest : EditorPresentationTestSetup() {
                 isArchived = false,
                 isFavorite = false,
                 isLocked = false,
-                fromName = ""
+                fromName = "",
+                isTemplate = false
             )
         }
     }

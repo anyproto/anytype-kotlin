@@ -99,6 +99,8 @@ import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.SELECTED_TEMPLATE_INITIAL_VALUE
 import com.bumptech.glide.Glide
 import javax.inject.Inject
 import kotlinx.coroutines.flow.launchIn
@@ -336,6 +338,8 @@ open class ObjectSetFragment :
                 )
             }
         }
+
+        observeSelectingTemplate()
 
         binding.viewsWidget.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
@@ -1173,6 +1177,16 @@ open class ObjectSetFragment :
     ): FragmentObjectSetBinding = FragmentObjectSetBinding.inflate(
         inflater, container, false
     )
+
+    private fun observeSelectingTemplate() {
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
+            ARG_TEMPLATE_ID,
+            SELECTED_TEMPLATE_INITIAL_VALUE
+        )?.observe(viewLifecycleOwner) { template: Id ->
+            Timber.d("Get result from EditorTemplateFragment: $template")
+            if (template.isNotEmpty()) vm.proceedWithCreatingNewDataViewObject(template)
+        }
+    }
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.object_set.context"

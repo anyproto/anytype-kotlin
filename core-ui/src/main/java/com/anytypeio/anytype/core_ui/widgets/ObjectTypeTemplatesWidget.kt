@@ -191,7 +191,7 @@ fun ObjectTypeTemplatesWidget(
                                             bottom = 12.dp,
                                             end = 16.dp
                                         )
-                                        .clickable { doneClick() },
+                                        .noRippleClickable { doneClick() },
                                     text = stringResource(id = R.string.done),
                                     style = BodyCalloutRegular,
                                     color = colorResource(id = R.color.glyph_active)
@@ -205,7 +205,7 @@ fun ObjectTypeTemplatesWidget(
                                             bottom = 12.dp,
                                             end = 16.dp
                                         )
-                                        .clickable { editClick() },
+                                        .noRippleClickable { editClick() },
                                     text = stringResource(id = R.string.edit),
                                     style = BodyCalloutRegular,
                                     color = colorResource(id = R.color.glyph_active)
@@ -326,7 +326,7 @@ private fun MenuItem(click: () -> Unit, text: String, @ColorRes color: Int = R.c
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(top = 11.dp, bottom = 11.dp)
-            .clickable { click() },
+            .noRippleClickable { click() },
         text = text,
         style = BodyCalloutRegular,
         color = colorResource(id = color),

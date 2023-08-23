@@ -20,6 +20,9 @@ class EditorTemplateFragment : EditorFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        binding.root.apply {
+            background = null
+        }
         binding.recycler.updateLayoutParams<ConstraintLayout.LayoutParams> {
             topMargin = dimen(R.dimen.default_toolbar_height)
         }

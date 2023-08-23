@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.editor
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -21,6 +22,17 @@ class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>(
         childFragmentManager.beginTransaction()
             .add(R.id.fragment_container_view, editorFragment)
             .commit()
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        setFullHeightSheet()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        expand()
     }
 
     override fun injectDependencies() {}

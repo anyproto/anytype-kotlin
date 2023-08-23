@@ -1208,6 +1208,21 @@ class ObjectSetViewModel(
         }
     }
 
+    private suspend fun proceedWithOpeningTemplate(target: Id) {
+        isCustomizeViewPanelVisible.value = false
+        jobs += viewModelScope.launch {
+            closeBlock.async(context).fold(
+                onSuccess = {
+                    navigate(EventWrapper(AppNavigation.Command.OpenModalDocument(id = target)))
+                },
+                onFailure = {
+                    Timber.e(it, "Error while closing object set: $context")
+                    navigate(EventWrapper(AppNavigation.Command.OpenModalDocument(id = target)))
+                }
+            )
+        }
+    }
+
     private suspend fun proceedWithOpeningObjectCollection(target: Id) {
         isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {

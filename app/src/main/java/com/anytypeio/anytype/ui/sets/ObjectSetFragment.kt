@@ -336,6 +336,13 @@ open class ObjectSetFragment :
                 )
             }
         }
+
+        binding.viewsWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+
+            }
+        }
     }
 
     private fun setupWindowInsetAnimation() {

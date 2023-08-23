@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.View
 import android.widget.LinearLayout
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.constraintlayout.widget.Constraints
 import androidx.core.os.bundleOf
 import androidx.core.view.updateLayoutParams
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
+import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.ui.editor.EditorFragment
 
 class EditorTemplateFragment: EditorFragment() {
@@ -32,6 +35,12 @@ class EditorTemplateFragment: EditorFragment() {
         binding.topToolbar.title.apply {
             setTextAppearance(R.style.TextView_UXStyle_Titles_2_Medium)
         }
+        binding.btnSelectTemplate.setOnClickListener {
+            findNavController().apply {
+                previousBackStackEntry?.savedStateHandle?.set("template", ctx)
+                popBackStack(R.id.editorModalScreen, true)
+            }
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -46,6 +55,15 @@ class EditorTemplateFragment: EditorFragment() {
     }
 
     override fun resetDocumentTitle(state: ViewState.Success) {}
+
+    override fun render(state: ControlPanelState) {
+        super.render(state)
+        if (state.navigationToolbar.isVisible) {
+            binding.btnSelectTemplate.visible()
+        } else {
+            binding.btnSelectTemplate.gone()
+        }
+    }
 
     companion object {
         fun newInstance(id: String): EditorTemplateFragment = EditorTemplateFragment().apply {

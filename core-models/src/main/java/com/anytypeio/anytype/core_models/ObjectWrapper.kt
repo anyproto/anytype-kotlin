@@ -224,6 +224,13 @@ sealed class ObjectWrapper {
         val color: String = relationOptionColor.orEmpty()
     }
 
+    data class Workspace(override val map: Struct) : ObjectWrapper() {
+        private val default = map.withDefault { null }
+        val id: Id by default
+        val name: String? by default
+        val spaceId: String? by default
+    }
+
     inline fun <reified T> getValue(relation: Key): T? {
         val value = map.getOrDefault(relation, null)
         return if (value is T)

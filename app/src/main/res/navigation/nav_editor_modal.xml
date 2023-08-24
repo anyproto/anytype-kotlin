@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_editor_modal"
+    app:startDestination="@id/editorModalScreen">
+
+    <dialog
+        android:id="@+id/editorModalScreen"
+        android:name="com.anytypeio.anytype.ui.editor.EditorModalFragment"
+        android:label="EditorModalFragment" />
+
+    <fragment
+        android:id="@+id/pageScreen"
+        android:name="com.anytypeio.anytype.ui.editor.EditorFragment"
+        android:label="Page screen"
+        tools:layout="@layout/fragment_editor">
+        <action
+            android:id="@+id/action_pageScreen_to_objectCoverScreen"
+            app:destination="@id/objectCoverScreen"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+        <action
+            android:id="@+id/action_pageScreen_to_objectIconPickerScreen"
+            app:destination="@id/objectIconPickerScreen"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </fragment>
+    <dialog
+        android:id="@+id/objectRelationListScreen"
+        android:name="com.anytypeio.anytype.ui.relations.ObjectRelationListFragment"
+        android:label="Object-Relation-List-Screen" />
+    <dialog
+        android:id="@+id/objectRelationValueScreen"
+        android:name="com.anytypeio.anytype.ui.relations.RelationValueFragment"
+        android:label="Object-Relation-Value-Screen" />
+    <dialog
+        android:id="@+id/objectIconPickerScreen"
+        android:name="com.anytypeio.anytype.ui.editor.modals.ObjectIconPickerFragment"
+        android:label="Object-Icon-Picker-Screen" />
+    <dialog
+        android:id="@+id/objectMainMenuScreen"
+        android:name="com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment"
+        android:label="Doc-Menu-Bottom-Sheet-Screen" />
+    <dialog
+        android:id="@+id/objectCoverScreen"
+        android:name="com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment"
+        android:label="Object-Cover-Screen" />
+    <dialog
+        android:id="@+id/objectCoverUnsplashScreen"
+        android:name="com.anytypeio.anytype.ui.editor.cover.ObjectUnsplashFragment"
+        android:label="Object-Cover-Unsplash-Screen" />
+    <dialog
+        android:id="@+id/relationAddToObjectBlockFragment"
+        android:name="com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment"
+        android:label="RelationAddToObjectBlockFragment">
+        <action
+            android:id="@+id/action_relationAddToObjectBlockFragment_to_relationCreateFromScratchForObjectBlockFragment"
+            app:destination="@id/relationCreateFromScratchForObjectBlockFragment"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:exitAnim="@anim/nav_default_exit_anim"
+            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
+            app:popExitAnim="@anim/nav_default_pop_exit_anim" />
+    </dialog>
+    <dialog
+        android:id="@+id/relationCreateFromScratchForObjectBlockFragment"
+        android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment"
+        android:label="RelationCreateFromScratchForObjectBlockFragment" />
+</navigation>

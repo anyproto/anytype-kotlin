@@ -43,7 +43,8 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
             isProfile: Boolean,
             isFavorite: Boolean,
             isLocked: Boolean,
-            fromName: String?
+            fromName: String?,
+            isTemplate: Boolean
         ) = ObjectMenuFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
@@ -51,7 +52,8 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
                 IS_PROFILE_KEY to isProfile,
                 IS_FAVORITE_KEY to isFavorite,
                 IS_LOCKED_KEY to isLocked,
-                FROM_NAME to fromName
+                FROM_NAME to fromName,
+                IS_TEMPLATE_KEY to isTemplate
             )
         }
     }

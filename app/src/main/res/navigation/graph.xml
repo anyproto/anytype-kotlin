@@ -70,6 +70,8 @@
             android:label="RelationCreateFromScratchForObjectBlockFragment" />
     </navigation>
 
+    <include app:graph="@navigation/nav_editor_modal" />
+
     <navigation
         android:id="@+id/dataViewNavigation"
         app:startDestination="@id/objectSetScreen">

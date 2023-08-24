@@ -85,14 +85,16 @@ abstract class ObjectMenuViewModelBase(
         isFavorite: Boolean,
         isArchived: Boolean,
         isProfile: Boolean,
-        isLocked: Boolean
+        isLocked: Boolean,
+        isTemplate: Boolean
     ) {
         Timber.d("onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isProfile:[$isProfile], isLocked:[$isLocked]")
         actions.value = buildActions(
             ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,
-            isProfile = isProfile
+            isProfile = isProfile,
+            isTemplate = isTemplate
         )
         jobs += viewModelScope.launch {
             menuOptionsProvider.provide(ctx, isLocked).collect(_options)
@@ -105,7 +107,8 @@ abstract class ObjectMenuViewModelBase(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isProfile: Boolean
+        isProfile: Boolean,
+        isTemplate: Boolean = false
     ): List<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {

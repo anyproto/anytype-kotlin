@@ -64,12 +64,16 @@ class ObjectMenuViewModel(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isProfile: Boolean
+        isProfile: Boolean,
+        isTemplate: Boolean
     ): List<ObjectAction> = buildList {
-        if (isFavorite) {
-            add(ObjectAction.REMOVE_FROM_FAVOURITE)
-        } else {
-            add(ObjectAction.ADD_TO_FAVOURITE)
+
+        if (!isTemplate) {
+            if (isFavorite) {
+                add(ObjectAction.REMOVE_FROM_FAVOURITE)
+            } else {
+                add(ObjectAction.ADD_TO_FAVOURITE)
+            }
         }
         if (!isProfile) {
             if (isArchived) {
@@ -82,17 +86,21 @@ class ObjectMenuViewModel(
         if (!isProfile && !objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
             add(ObjectAction.DUPLICATE)
         }
-        add(ObjectAction.LINK_TO)
-
-        val root = storage.document.get().find { it.id == ctx }
-        if (root != null) {
-            if (root.fields.isLocked == true) {
-                add(ObjectAction.UNLOCK)
-            } else {
-                add(ObjectAction.LOCK)
-            }
+        if (!isTemplate) {
+            add(ObjectAction.LINK_TO)
         }
-        add(ObjectAction.SEARCH_ON_PAGE)
+
+        if (!isTemplate) {
+            val root = storage.document.get().find { it.id == ctx }
+            if (root != null) {
+                if (root.fields.isLocked == true) {
+                    add(ObjectAction.UNLOCK)
+                } else {
+                    add(ObjectAction.LOCK)
+                }
+            }
+            add(ObjectAction.SEARCH_ON_PAGE)
+        }
     }
 
     override fun onDiagnosticsClicked(ctx: Id) {

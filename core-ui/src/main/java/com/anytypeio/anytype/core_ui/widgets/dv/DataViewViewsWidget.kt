@@ -11,12 +11,14 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -39,6 +41,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -47,7 +50,9 @@ import androidx.constraintlayout.compose.Visibility
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.DragStates
@@ -88,7 +93,7 @@ fun DataViewViewsWidget(
                 Modifier
                     .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.4f))
-                    .noRippleClickable { click.invoke(Dismiss) }
+                    .noRippleThrottledClickable { click.invoke(Dismiss) }
             )
         }
 
@@ -231,10 +236,10 @@ private fun ViewsItem(
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp)
     ) {
-        val (delete, text, edit, dnd) = createRefs()
+        val (delete, text, edit, dnd, unsupported) = createRefs()
         Image(
             modifier = Modifier
-                .noRippleClickable {
+                .noRippleThrottledClickable {
                     click.invoke(Delete(view.id))
                 }
                 .constrainAs(delete) {
@@ -260,7 +265,7 @@ private fun ViewsItem(
         )
         Image(
             modifier = Modifier
-                .noRippleClickable {
+                .noRippleThrottledClickable {
                     click.invoke(Edit(view.id))
                 }
                 .constrainAs(edit) {
@@ -274,20 +279,35 @@ private fun ViewsItem(
         )
         Text(
             modifier = Modifier
-                .noRippleClickable {
+                .constrainAs(unsupported) {
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                    end.linkTo(edit.start)
+                    visibility = if (!state.isEditing && view.isUnsupported) Visibility.Visible else Visibility.Gone
+                },
+            text = stringResource(id = R.string.unsupported),
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption2Regular,
+            textAlign = TextAlign.Left
+        )
+        Text(
+            modifier = Modifier
+                .noRippleThrottledClickable {
                     //click(Position(view.id)
                 }
                 .constrainAs(text) {
                     start.linkTo(delete.end, margin = 12.dp, goneMargin = 0.dp)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
-                    end.linkTo(edit.start, margin = 20.dp, goneMargin = 0.dp)
+                    end.linkTo(unsupported.start, margin = 8.dp, goneMargin = 38.dp)
                     width = Dimension.fillToConstraints
                 },
             text = view.name,
             color = colorResource(id = if (view.isActive) R.color.text_primary else R.color.glyph_active),
             style = HeadlineSubheading,
-            textAlign = TextAlign.Left
+            textAlign = TextAlign.Left,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
     }
 }
@@ -302,9 +322,10 @@ private fun ActionText(text: String, click: () -> Unit) {
                 bottom = 12.dp,
                 end = 16.dp
             )
-            .noRippleClickable { click() },
+            .noRippleThrottledClickable { click() },
         text = text,
         style = BodyCalloutRegular,
-        color = colorResource(id = R.color.glyph_active)
+        color = colorResource(id = R.color.glyph_active),
+        textAlign = TextAlign.Center
     )
 }

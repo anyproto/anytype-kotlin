@@ -17,7 +17,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class CreateDataViewViewerViewModel(
-    private val addDataViewViewer: AddDataViewViewer,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val objectState: MutableStateFlow<ObjectState>
@@ -33,32 +32,32 @@ class CreateDataViewViewerViewModel(
     ) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            addDataViewViewer(
-                AddDataViewViewer.Params(
-                    ctx = ctx,
-                    target = target,
-                    name = name,
-                    type = dvType
-                )
-            ).process(
-                failure = { error ->
-                    Timber.e(error, ERROR_ADD_NEW_VIEW).also {
-                        state.value = ViewState.Error(ERROR_ADD_NEW_VIEW)
-                    }
-                },
-                success = {
-                    dispatcher.send(it).also {
-                        logEvent(
-                            state = objectState.value,
-                            analytics = analytics,
-                            event = ObjectStateAnalyticsEvent.ADD_VIEW,
-                            startTime = startTime,
-                            type = dvType.formattedName
-                        )
-                        state.value = ViewState.Completed
-                    }
-                }
-            )
+//            addDataViewViewer(
+//                AddDataViewViewer.Params(
+//                    ctx = ctx,
+//                    target = target,
+//                    name = name,
+//                    type = dvType
+//                )
+//            ).process(
+//                failure = { error ->
+//                    Timber.e(error, ERROR_ADD_NEW_VIEW).also {
+//                        state.value = ViewState.Error(ERROR_ADD_NEW_VIEW)
+//                    }
+//                },
+//                success = {
+//                    dispatcher.send(it).also {
+//                        logEvent(
+//                            state = objectState.value,
+//                            analytics = analytics,
+//                            event = ObjectStateAnalyticsEvent.ADD_VIEW,
+//                            startTime = startTime,
+//                            type = dvType.formattedName
+//                        )
+//                        state.value = ViewState.Completed
+//                    }
+//                }
+//            )
         }
     }
 
@@ -79,7 +78,6 @@ class CreateDataViewViewerViewModel(
 
 
     class Factory(
-        private val addDataViewViewer: AddDataViewViewer,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
         private val objectState: MutableStateFlow<ObjectState>
@@ -87,7 +85,6 @@ class CreateDataViewViewerViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return CreateDataViewViewerViewModel(
-                addDataViewViewer = addDataViewViewer,
                 dispatcher = dispatcher,
                 analytics = analytics,
                 objectState = objectState

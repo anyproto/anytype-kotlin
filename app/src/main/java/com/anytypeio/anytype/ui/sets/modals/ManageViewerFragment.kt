@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+@Deprecated("to be removed")
 class ManageViewerFragment : BaseBottomSheetFragment<FragmentManageViewerBinding>(),
     OnStartDragListener {
 

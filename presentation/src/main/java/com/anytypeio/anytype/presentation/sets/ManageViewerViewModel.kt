@@ -23,13 +23,12 @@ import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Deprecated("to be removed")
 class ManageViewerViewModel(
     private val objectState: StateFlow<ObjectState>,
     private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
-    private val deleteDataViewViewer: DeleteDataViewViewer,
-    private val setDataViewViewerPosition: SetDataViewViewerPosition
 ) : BaseListViewModel<ViewerView>() {
 
     val isEditEnabled = MutableStateFlow(false)
@@ -71,26 +70,26 @@ class ManageViewerViewModel(
                 if (newPosition == 0 && session.currentViewerId.value.isNullOrEmpty()) {
                     session.currentViewerId.value = views.value.firstOrNull()?.id
                 }
-                setDataViewViewerPosition.stream(
-                    params = SetDataViewViewerPosition.Params(
-                        ctx = ctx,
-                        dv = dv,
-                        viewer = viewer,
-                        pos = newPosition
-                    )
-                ).collect { result ->
-                    logEvent(
-                        state = objectState.value,
-                        analytics = analytics,
-                        event = ObjectStateAnalyticsEvent.REPOSITION_VIEW,
-                        startTime = startTime,
-                        type = views.value.find { it.id  == viewer }?.type?.formattedName
-                    )
-                    result.fold(
-                        onSuccess = { dispatcher.send(it) },
-                        onFailure = { Timber.e(it, "Error while changing view order") }
-                    )
-                }
+//                setDataViewViewerPosition.stream(
+//                    params = SetDataViewViewerPosition.Params(
+//                        ctx = ctx,
+//                        dv = dv,
+//                        viewer = viewer,
+//                        pos = newPosition
+//                    )
+//                ).collect { result ->
+//                    logEvent(
+//                        state = objectState.value,
+//                        analytics = analytics,
+//                        event = ObjectStateAnalyticsEvent.REPOSITION_VIEW,
+//                        startTime = startTime,
+//                        type = views.value.find { it.id  == viewer }?.type?.formattedName
+//                    )
+//                    result.fold(
+//                        onSuccess = { dispatcher.send(it) },
+//                        onFailure = { Timber.e(it, "Error while changing view order") }
+//                    )
+//                }
             }
         } else {
             sendToast("Something went wrong. Please, try again later.")
@@ -109,16 +108,16 @@ class ManageViewerViewModel(
         view: ViewerView
     ) {
         viewModelScope.launch {
-            deleteDataViewViewer(
-                DeleteDataViewViewer.Params(
-                    ctx = ctx,
-                    dataview = dv,
-                    viewer = view.id
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while deleting view") },
-                success = { dispatcher.send(it) }
-            )
+//            deleteDataViewViewer(
+//                DeleteDataViewViewer.Params(
+//                    ctx = ctx,
+//                    dataview = dv,
+//                    viewer = view.id
+//                )
+//            ).process(
+//                failure = { Timber.e(it, "Error while deleting view") },
+//                success = { dispatcher.send(it) }
+//            )
         }
     }
 
@@ -166,8 +165,6 @@ class ManageViewerViewModel(
         private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
-        private val deleteDataViewViewer: DeleteDataViewViewer,
-        private val setDataViewViewerPosition: SetDataViewViewerPosition
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -176,8 +173,6 @@ class ManageViewerViewModel(
                 session = session,
                 dispatcher = dispatcher,
                 analytics = analytics,
-                deleteDataViewViewer = deleteDataViewViewer,
-                setDataViewViewerPosition = setDataViewViewerPosition
             ) as T
         }
     }

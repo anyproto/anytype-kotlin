@@ -23,6 +23,7 @@ sealed class ObjectSetCommand {
             val viewer: Id
         ) : Modal()
 
+        @Deprecated("To be deleted")
         data class ManageViewer(val ctx: Id, val dataview: Id) : Modal()
 
         data class OpenSettings(

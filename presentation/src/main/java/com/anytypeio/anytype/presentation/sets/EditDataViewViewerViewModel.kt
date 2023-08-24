@@ -18,10 +18,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class EditDataViewViewerViewModel(
-    private val renameDataViewViewer: RenameDataViewViewer,
-    private val deleteDataViewViewer: DeleteDataViewViewer,
-    private val duplicateDataViewViewer: DuplicateDataViewViewer,
-    private val updateDataViewViewer: UpdateDataViewViewer,
     private val dispatcher: Dispatcher<Payload>,
     private val objectState: StateFlow<ObjectState>,
     private val objectSetSession: ObjectSetSession,
@@ -61,30 +57,30 @@ class EditDataViewViewerViewModel(
         val startTime = System.currentTimeMillis()
         val state = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
-            duplicateDataViewViewer(
-                DuplicateDataViewViewer.Params(
-                    context = ctx,
-                    target = state.dataViewBlock.id,
-                    viewer = state.viewers.first { it.id == viewer }
-                )
-            ).process(
-                failure = { e ->
-                    Timber.e(e, "Error while duplicating viewer: $viewer")
-                    _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
-                },
-                success = {
-                    dispatcher.send(it).also {
-                        logEvent(
-                            state = objectState.value,
-                            analytics = analytics,
-                            event = ObjectStateAnalyticsEvent.DUPLICATE_VIEW,
-                            startTime = startTime,
-                            type = viewerType.formattedName
-                        )
-                        isDismissed.emit(true)
-                    }
-                }
-            )
+//            duplicateDataViewViewer(
+//                DuplicateDataViewViewer.Params(
+//                    context = ctx,
+//                    target = state.dataViewBlock.id,
+//                    viewer = state.viewers.first { it.id == viewer }
+//                )
+//            ).process(
+//                failure = { e ->
+//                    Timber.e(e, "Error while duplicating viewer: $viewer")
+//                    _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
+//                },
+//                success = {
+//                    dispatcher.send(it).also {
+//                        logEvent(
+//                            state = objectState.value,
+//                            analytics = analytics,
+//                            event = ObjectStateAnalyticsEvent.DUPLICATE_VIEW,
+//                            startTime = startTime,
+//                            type = viewerType.formattedName
+//                        )
+//                        isDismissed.emit(true)
+//                    }
+//                }
+//            )
         }
     }
 
@@ -125,32 +121,32 @@ class EditDataViewViewerViewModel(
     ) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            deleteDataViewViewer(
-                DeleteDataViewViewer.Params(
-                    ctx = ctx,
-                    viewer = viewer,
-                    dataview = dv
-                )
-            ).process(
-                failure = { e ->
-                    Timber.e(e, "Error while deleting viewer: $viewer")
-                    _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
-                },
-                success = { firstPayload ->
-                    dispatcher.send(firstPayload)
-                    logEvent(
-                        state = objectState.value,
-                        analytics = analytics,
-                        event = ObjectStateAnalyticsEvent.REMOVE_VIEW,
-                        startTime = startTime
-                    )
-                    if (nextViewerId != null) {
-                        objectSetSession.currentViewerId.value = nextViewerId
-                        paginator.offset.value = 0
-                    }
-                    isDismissed.emit(true)
-                }
-            )
+//            deleteDataViewViewer(
+//                DeleteDataViewViewer.Params(
+//                    ctx = ctx,
+//                    viewer = viewer,
+//                    dataview = dv
+//                )
+//            ).process(
+//                failure = { e ->
+//                    Timber.e(e, "Error while deleting viewer: $viewer")
+//                    _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
+//                },
+//                success = { firstPayload ->
+//                    dispatcher.send(firstPayload)
+//                    logEvent(
+//                        state = objectState.value,
+//                        analytics = analytics,
+//                        event = ObjectStateAnalyticsEvent.REMOVE_VIEW,
+//                        startTime = startTime
+//                    )
+//                    if (nextViewerId != null) {
+//                        objectSetSession.currentViewerId.value = nextViewerId
+//                        paginator.offset.value = 0
+//                    }
+//                    isDismissed.emit(true)
+//                }
+//            )
         }
     }
 
@@ -195,32 +191,32 @@ class EditDataViewViewerViewModel(
         if (viewer != null) {
             viewModelScope.launch {
                 isLoading.value = true
-                updateDataViewViewer(
-                    UpdateDataViewViewer.Params.Fields(
-                        context = ctx,
-                        target = state.dataViewBlock.id,
-                        viewer = viewer.copy(type = type, name = name)
-                    )
-                ).process(
-                    success = { payload ->
-                        dispatcher.send(payload).also {
-                            logEvent(
-                                state = objectState.value,
-                                analytics = analytics,
-                                event = ObjectStateAnalyticsEvent.CHANGE_VIEW_TYPE,
-                                startTime = startTime,
-                                type = type.formattedName
-                            )
-                            isLoading.value = false
-                            isDismissed.emit(true)
-                        }
-                    },
-                    failure = {
-                        isLoading.value = false
-                        Timber.e(it, "Error while updating Viewer type")
-                        isDismissed.emit(true)
-                    }
-                )
+//                updateDataViewViewer(
+//                    UpdateDataViewViewer.Params.Fields(
+//                        context = ctx,
+//                        target = state.dataViewBlock.id,
+//                        viewer = viewer.copy(type = type, name = name)
+//                    )
+//                ).process(
+//                    success = { payload ->
+//                        dispatcher.send(payload).also {
+//                            logEvent(
+//                                state = objectState.value,
+//                                analytics = analytics,
+//                                event = ObjectStateAnalyticsEvent.CHANGE_VIEW_TYPE,
+//                                startTime = startTime,
+//                                type = type.formattedName
+//                            )
+//                            isLoading.value = false
+//                            isDismissed.emit(true)
+//                        }
+//                    },
+//                    failure = {
+//                        isLoading.value = false
+//                        Timber.e(it, "Error while updating Viewer type")
+//                        isDismissed.emit(true)
+//                    }
+//                )
             }
         } else {
             sendToast("View not found. Please, try again later.")
@@ -238,10 +234,6 @@ class EditDataViewViewerViewModel(
     }
 
     class Factory(
-        private val renameDataViewViewer: RenameDataViewViewer,
-        private val deleteDataViewViewer: DeleteDataViewViewer,
-        private val duplicateDataViewViewer: DuplicateDataViewViewer,
-        private val updateDataViewViewer: UpdateDataViewViewer,
         private val dispatcher: Dispatcher<Payload>,
         private val objectState: StateFlow<ObjectState>,
         private val objectSetSession: ObjectSetSession,
@@ -251,10 +243,6 @@ class EditDataViewViewerViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return EditDataViewViewerViewModel(
-                renameDataViewViewer = renameDataViewViewer,
-                deleteDataViewViewer = deleteDataViewViewer,
-                duplicateDataViewViewer = duplicateDataViewViewer,
-                updateDataViewViewer = updateDataViewViewer,
                 dispatcher = dispatcher,
                 objectState = objectState,
                 objectSetSession = objectSetSession,

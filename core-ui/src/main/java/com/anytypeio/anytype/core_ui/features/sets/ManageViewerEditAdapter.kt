@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_utils.ui.ItemTouchHelperViewHolder
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
 import com.anytypeio.anytype.presentation.sets.ManageViewerViewModel.ViewerView
 
+@Deprecated("to be removed")
 class ManageViewerEditAdapter(
     private val onDragListener: OnStartDragListener,
     private val onButtonMoreClicked: (ViewerView) -> Unit,
@@ -95,6 +96,7 @@ class ManageViewerEditAdapter(
     }
 }
 
+@Deprecated("to be removed")
 class ManageViewerDoneAdapter(
     private val onViewerClicked: (ViewerView) -> Unit
 ) : AbstractAdapter<ViewerView>(emptyList()) {

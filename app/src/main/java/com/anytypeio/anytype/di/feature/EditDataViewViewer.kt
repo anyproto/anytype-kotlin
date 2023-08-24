@@ -36,45 +36,16 @@ object EditDataViewViewerModule {
     @Provides
     @PerModal
     fun provideEditDataViewViewerViewModelFactory(
-        renameDataViewViewer: RenameDataViewViewer,
-        deleteDataViewViewer: DeleteDataViewViewer,
-        duplicateDataViewViewer: DuplicateDataViewViewer,
-        updateDataViewViewer: UpdateDataViewViewer,
         dispatcher: Dispatcher<Payload>,
         state: MutableStateFlow<ObjectState>,
         objectSetSession: ObjectSetSession,
         paginator: ObjectSetPaginator,
         analytics: Analytics
     ): EditDataViewViewerViewModel.Factory = EditDataViewViewerViewModel.Factory(
-        renameDataViewViewer = renameDataViewViewer,
-        deleteDataViewViewer = deleteDataViewViewer,
-        duplicateDataViewViewer = duplicateDataViewViewer,
-        updateDataViewViewer = updateDataViewViewer,
         dispatcher = dispatcher,
         objectState = state,
         objectSetSession = objectSetSession,
         paginator = paginator,
         analytics = analytics
     )
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideRenameDataViewViewerUseCase(
-        repo: BlockRepository
-    ): RenameDataViewViewer = RenameDataViewViewer(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideDuplicateDataViewViewerUseCase(
-        repo: BlockRepository
-    ): DuplicateDataViewViewer = DuplicateDataViewViewer(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideDeleteDataViewViewerUseCase(
-        repo: BlockRepository
-    ): DeleteDataViewViewer = DeleteDataViewViewer(repo = repo)
 }

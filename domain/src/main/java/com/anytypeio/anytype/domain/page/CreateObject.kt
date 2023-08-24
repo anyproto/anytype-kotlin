@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -21,6 +22,7 @@ class CreateObject @Inject constructor(
     private val getDefaultPageType: GetDefaultPageType,
     private val getTemplates: GetTemplates,
     private val spaceManager: SpaceManager,
+    private val configStorage: ConfigStorage,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateObject.Param, CreateObject.Result>(dispatchers.io) {
 
@@ -42,7 +44,9 @@ class CreateObject @Inject constructor(
             template = null,
             prefilled = prefilled,
             internalFlags = internalFlags,
-            space = spaceManager.get()
+            space = spaceManager.get().ifEmpty {
+                configStorage.getOrNull()?.space.orEmpty()
+            }
         )
 
         val result = repo.createObject(command)

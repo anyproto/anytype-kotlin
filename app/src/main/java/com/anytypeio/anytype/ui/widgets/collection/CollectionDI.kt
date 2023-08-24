@@ -154,13 +154,15 @@ object CollectionModule {
         getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic
@@ -170,12 +172,16 @@ object CollectionModule {
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
         workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
         workspaceManager = workspaceManager,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic

@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -272,13 +273,15 @@ object ObjectSetModule {
         getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic
@@ -296,12 +299,16 @@ object ObjectSetModule {
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
         workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
         workspaceManager = workspaceManager,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic

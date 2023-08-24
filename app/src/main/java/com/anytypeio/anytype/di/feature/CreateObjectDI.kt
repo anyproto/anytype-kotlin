@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -39,13 +40,15 @@ object CreateObjectModule {
         getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic
@@ -55,12 +58,16 @@ object CreateObjectModule {
         blockRepository: BlockRepository,
         userSettingsRepository: UserSettingsRepository,
         workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
-        userSettingsRepository,
-        blockRepository,
-        workspaceManager,
-        dispatchers
+        userSettingsRepository = userSettingsRepository,
+        blockRepository = blockRepository,
+        workspaceManager = workspaceManager,
+        dispatchers = dispatchers,
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic

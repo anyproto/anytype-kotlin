@@ -62,6 +62,8 @@ object Relations {
     const val RECOMMENDED_RELATIONS = "recommendedRelations"
     const val DEFAULT_TEMPLATE_ID = "defaultTemplateId"
 
+    const val UNIQUE_KEY = "uniqueKey"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

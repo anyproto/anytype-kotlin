@@ -4,9 +4,11 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
@@ -83,12 +85,16 @@ object ObjectTypeChangeModule {
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
         workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
         workspaceManager = workspaceManager,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
 }

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import android.util.Log
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter

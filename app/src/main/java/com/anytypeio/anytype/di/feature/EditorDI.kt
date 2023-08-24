@@ -44,6 +44,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.download.DownloadFile
@@ -987,12 +988,16 @@ object EditorUseCaseModule {
         repo: UserSettingsRepository,
         blockRepository: BlockRepository,
         workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
-        repo,
-        blockRepository,
-        workspaceManager,
-        dispatchers
+        userSettingsRepository = repo,
+        blockRepository = blockRepository,
+        workspaceManager = workspaceManager,
+        spaceManager = spaceManager,
+        dispatchers = dispatchers,
+        configStorage = configStorage
     )
 
     @JvmStatic
@@ -1187,13 +1192,15 @@ object EditorUseCaseModule {
         getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @Module

@@ -113,12 +113,16 @@ object SplashModule {
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
         workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
-        userSettingsRepository,
-        blockRepository,
-        workspaceManager,
-        dispatchers
+        userSettingsRepository = userSettingsRepository,
+        blockRepository = blockRepository,
+        workspaceManager = workspaceManager,
+        spaceManager = spaceManager,
+        dispatchers = dispatchers,
+        configStorage = configStorage
     )
 
     @JvmStatic
@@ -135,13 +139,15 @@ object SplashModule {
         getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic

@@ -43,6 +43,7 @@ import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 
 fun ObjectState.DataView.featuredRelations(
@@ -480,9 +481,9 @@ fun ObjectWrapper.Type.toTemplateViewBlank(): TemplateView.Blank {
     )
 }
 
-fun List<DVViewer>.toView(session: ObjectSetSession): List<ManageViewerViewModel.ViewerView> {
+fun List<DVViewer>.toView(session: ObjectSetSession): List<ViewerView> {
     return mapIndexed { index, viewer ->
-        ManageViewerViewModel.ViewerView(
+        ViewerView(
             id = viewer.id,
             name = viewer.name,
             type = viewer.type,

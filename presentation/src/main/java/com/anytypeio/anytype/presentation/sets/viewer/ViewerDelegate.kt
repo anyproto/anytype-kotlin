@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPosition
+import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
 import timber.log.Timber
@@ -28,9 +29,12 @@ sealed class ViewerEvent {
 
     data class UpdatePosition(val ctx: Id, val dv: Id, val viewer: Id, val position: Int) :
         ViewerEvent()
+
+    data class SetActive(val viewer: Id) : ViewerEvent()
 }
 
 class DefaultViewerDelegate @Inject constructor(
+    private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val deleteDataViewViewer: DeleteDataViewViewer,
@@ -73,6 +77,10 @@ class DefaultViewerDelegate @Inject constructor(
                 viewer = event.viewer,
                 position = event.position
             )
+
+            is ViewerEvent.SetActive -> {
+                session.currentViewerId.value = event.viewer
+            }
         }
     }
 

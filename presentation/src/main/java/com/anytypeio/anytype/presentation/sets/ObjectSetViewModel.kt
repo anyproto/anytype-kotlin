@@ -1761,8 +1761,6 @@ class ObjectSetViewModel(
 
     // region VIEWS
     fun onDVViewsWidgetClicked(click: DVViewsWidgetUiState.Clicks) {
-        Log.d("Test1983", "Viewer click : $click")
-        //return
         when (click) {
             DVViewsWidgetUiState.Clicks.Dismiss -> {
                 dvViewsWidgetState.value = dvViewsWidgetState.value.copy(
@@ -1777,19 +1775,23 @@ class ObjectSetViewModel(
             }
             is DVViewsWidgetUiState.Clicks.Delete -> {
                 val state = stateReducer.state.value.dataViewState() ?: return
-                val viewer = state.viewerById(session.currentViewerId.value) ?: return
                 viewModelScope.launch {
                     onEvent(
                         ViewerEvent.Delete(
                             ctx = context,
                             dv = state.dataViewBlock.id,
-                            viewer = viewer.id,
+                            viewer = click.viewer,
                         )
                     )
                 }
             }
             is DVViewsWidgetUiState.Clicks.Edit -> TODO()
             is DVViewsWidgetUiState.Clicks.Position -> TODO()
+            is DVViewsWidgetUiState.Clicks.SetActive -> {
+                viewModelScope.launch {
+                    onEvent(ViewerEvent.SetActive(viewer = click.id))
+                }
+            }
         }
 
     }

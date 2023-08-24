@@ -685,6 +685,7 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideViewerDelegate(
+        session: ObjectSetSession,
         addDataViewViewer: AddDataViewViewer,
         renameDataViewViewer: RenameDataViewViewer,
         duplicateDataViewViewer: DuplicateDataViewViewer,
@@ -693,6 +694,7 @@ object ObjectSetModule {
         analytics: Analytics,
         dispatcher: Dispatcher<Payload>
     ): ViewerDelegate = DefaultViewerDelegate(
+        session = session,
         addDataViewViewer = addDataViewViewer,
         renameDataViewViewer = renameDataViewViewer,
         duplicateDataViewViewer = duplicateDataViewViewer,

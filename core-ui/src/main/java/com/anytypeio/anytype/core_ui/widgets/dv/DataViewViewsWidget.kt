@@ -293,7 +293,9 @@ private fun ViewsItem(
         Text(
             modifier = Modifier
                 .noRippleThrottledClickable {
-                    //click(Position(view.id)
+                    if (!state.isEditing) {
+                        click.invoke(DVViewsWidgetUiState.Clicks.SetActive(view.id))
+                    }
                 }
                 .constrainAs(text) {
                     start.linkTo(delete.end, margin = 12.dp, goneMargin = 0.dp)

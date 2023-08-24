@@ -26,9 +26,10 @@ data class DVViewsWidgetUiState(
         object Dismiss : Clicks()
         object EditMode : Clicks()
         object DoneMode : Clicks()
-        data class Delete(val id: Id) : Clicks()
+        data class Delete(val viewer: Id) : Clicks()
         data class Edit(val id: Id) : Clicks()
         data class Position(val id: Id, val position: Int) : Clicks()
+        data class SetActive(val id: Id) : Clicks()
     }
 }
 

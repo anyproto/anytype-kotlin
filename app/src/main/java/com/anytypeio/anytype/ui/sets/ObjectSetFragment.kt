@@ -52,6 +52,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.ObjectTypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
+import com.anytypeio.anytype.core_ui.widgets.dv.DataViewViewsWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
 import com.anytypeio.anytype.core_utils.OnSwipeListener
@@ -344,7 +345,11 @@ open class ObjectSetFragment :
         binding.viewsWidget.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-
+                DataViewViewsWidget(
+                    state = vm.dvViewsWidgetState.collectAsStateWithLifecycle().value,
+                    scope = lifecycleScope,
+                    click = vm::onDVViewsWidgetClicked
+                )
             }
         }
     }

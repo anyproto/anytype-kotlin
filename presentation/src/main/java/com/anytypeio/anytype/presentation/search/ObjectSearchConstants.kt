@@ -31,7 +31,7 @@ import com.anytypeio.anytype.core_models.Relations
 object ObjectSearchConstants {
 
     //region SEARCH OBJECTS
-    fun filterSearchObjects(workspaceId: String) = listOf(
+    fun filterSearchObjects(spaceId: String) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -47,6 +47,7 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
+        // TODO switch to layout.
         DVFilter(
             relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
@@ -64,9 +65,9 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = spaceId
         )
     )
 

@@ -41,7 +41,12 @@ interface SpaceManager {
         private val currentSpace = MutableStateFlow("")
         private val info = mutableMapOf<Id, Config>()
 
-        override suspend fun get(): Id = currentSpace.value
+        override suspend fun get(): Id {
+            val curr = currentSpace.value
+            return curr.ifEmpty {
+                configStorage.getOrNull()?.space.orEmpty()
+            }
+        }
 
         override suspend fun set(space: Id)  = withContext(dispatchers.io) {
             if (!info.containsKey(space)) {

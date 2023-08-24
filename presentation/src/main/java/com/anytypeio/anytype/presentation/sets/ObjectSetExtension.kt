@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVFilterUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVSortUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerFields
@@ -491,6 +492,7 @@ fun List<DVViewer>.toView(session: ObjectSetSession): List<ViewerView> {
                 viewer.id == session.currentViewerId.value
             else
                 index == 0,
+            isUnsupported = viewer.type == DVViewerType.BOARD
         )
     }
 }

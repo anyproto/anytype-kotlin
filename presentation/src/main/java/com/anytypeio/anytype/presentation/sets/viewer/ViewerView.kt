@@ -9,6 +9,7 @@ data class ViewerView(
     val type: DVViewerType,
     val isActive: Boolean,
     val showActionMenu: Boolean = false,
+    val isUnsupported: Boolean = false
 )
 
 

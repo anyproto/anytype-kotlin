@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
@@ -136,12 +137,14 @@ object HomeScreenModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
         getDefaultEditorType: GetDefaultPageType,
-        getTemplates: GetTemplates
+        getTemplates: GetTemplates,
+        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
         dispatchers = dispatchers,
         getTemplates = getTemplates,
-        getDefaultPageType = getDefaultEditorType
+        getDefaultPageType = getDefaultEditorType,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -245,4 +248,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun appActionManager(): AppActionManager
     fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun spaceManager(): SpaceManager
 }

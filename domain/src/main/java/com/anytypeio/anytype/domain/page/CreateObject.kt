@@ -10,14 +10,17 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import javax.inject.Inject
 
 /**
  * Use case for creating a new object
  */
-class CreateObject(
+class CreateObject @Inject constructor(
     private val repo: BlockRepository,
     private val getDefaultPageType: GetDefaultPageType,
     private val getTemplates: GetTemplates,
+    private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateObject.Param, CreateObject.Result>(dispatchers.io) {
 
@@ -38,7 +41,8 @@ class CreateObject(
         val command = Command.CreateObject(
             template = null,
             prefilled = prefilled,
-            internalFlags = internalFlags
+            internalFlags = internalFlags,
+            space = spaceManager.get()
         )
 
         val result = repo.createObject(command)

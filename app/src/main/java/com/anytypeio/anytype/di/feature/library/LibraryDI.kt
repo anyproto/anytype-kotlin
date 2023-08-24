@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryResourceManager
@@ -130,12 +131,14 @@ object LibraryModule {
         repo: BlockRepository,
         getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -198,6 +201,6 @@ interface LibraryDependencies : ComponentDependencies {
     fun channel(): SubscriptionEventChannel
     fun dispatchers(): AppCoroutineDispatchers
     fun userSettingsRepository(): UserSettingsRepository
-
     fun analytics(): Analytics
+    fun spaceManager(): SpaceManager
 }

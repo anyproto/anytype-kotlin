@@ -97,6 +97,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -730,12 +731,14 @@ object EditorUseCaseModule {
         repo: BlockRepository,
         getDefaultPageType: GetDefaultPageType,
         getTemplates: GetTemplates,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): CreateObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
         repo = repo,
         getDefaultPageType = getDefaultPageType,
         getTemplates = getTemplates,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -1183,12 +1186,14 @@ object EditorUseCaseModule {
         repo: BlockRepository,
         getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @Module

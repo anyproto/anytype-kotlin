@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relation
@@ -17,15 +16,18 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import javax.inject.Inject
 
 /**
  * Use-case for creating a new record inside data view's database.
  */
-class CreateDataViewObject(
+class CreateDataViewObject @Inject constructor(
     private val repo: BlockRepository,
     private val getTemplates: GetTemplates,
     private val getDefaultPageType: GetDefaultPageType,
     private val storeOfRelations: StoreOfRelations,
+    private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateDataViewObject.Params, CreateDataViewObject.Result>(dispatchers.io) {
 
@@ -38,7 +40,8 @@ class CreateDataViewObject(
                         filters = params.filters,
                         type = params.type
                     ),
-                    internalFlags = listOf()
+                    internalFlags = listOf(),
+                    space = spaceManager.get()
                 )
                 val result = repo.createObject(command)
                 Result(
@@ -55,7 +58,8 @@ class CreateDataViewObject(
                         relations = params.relations,
                         type = type
                     ),
-                    internalFlags = listOf()
+                    internalFlags = listOf(),
+                    space = spaceManager.get()
                 )
                 val result = repo.createObject(command)
                 Result(
@@ -72,7 +76,8 @@ class CreateDataViewObject(
                         relations = emptyList(),
                         type = type
                     ),
-                    internalFlags = listOf()
+                    internalFlags = listOf(),
+                    space = spaceManager.get()
                 )
                 val result = repo.createObject(command)
                 Result(

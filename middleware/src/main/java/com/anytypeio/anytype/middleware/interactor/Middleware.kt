@@ -866,7 +866,8 @@ class Middleware @Inject constructor(
         val request = Rpc.Object.Create.Request(
             details = command.prefilled,
             templateId = command.template.orEmpty(),
-            internalFlags = command.internalFlags.toMiddlewareModel()
+            internalFlags = command.internalFlags.toMiddlewareModel(),
+            spaceId = command.space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreate(request)

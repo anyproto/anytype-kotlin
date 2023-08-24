@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.di.feature
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -8,6 +7,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.CreateObjectViewModel
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
@@ -38,12 +38,14 @@ object CreateObjectModule {
         repo: BlockRepository,
         getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 
 /**
  * UseCase for creating a new object as mention or as text link markup
@@ -16,6 +17,7 @@ class CreateObjectAsMentionOrLink(
     private val repo: BlockRepository,
     private val getDefaultPageType: GetDefaultPageType,
     private val getTemplates: GetTemplates,
+    private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateObjectAsMentionOrLink.Params, CreateObjectAsMentionOrLink.Result>(
     dispatchers.io
@@ -39,7 +41,8 @@ class CreateObjectAsMentionOrLink(
         val command = Command.CreateObject(
             template = template,
             prefilled = prefilled,
-            internalFlags = listOf()
+            internalFlags = listOf(),
+            space = spaceManager.get()
         )
         val result = repo.createObject(command)
 

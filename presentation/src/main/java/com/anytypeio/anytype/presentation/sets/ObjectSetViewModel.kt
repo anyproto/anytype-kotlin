@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -68,6 +69,9 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerEvent
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
@@ -131,8 +135,9 @@ class ObjectSetViewModel(
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
-    private val setObjectListIsArchived: SetObjectListIsArchived
-) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val viewerDelegate: ViewerDelegate
+) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
     val error = MutableStateFlow<String?>(null)
@@ -160,7 +165,7 @@ class ObjectSetViewModel(
     val currentViewer = _currentViewer
 
     private val _templateViews = MutableStateFlow<List<TemplateView>>(emptyList())
-    private val _dvViews = MutableStateFlow<List<ManageViewerViewModel.ViewerView>>(emptyList())
+    private val _dvViews = MutableStateFlow<List<ViewerView>>(emptyList())
 
     private val _header = MutableStateFlow<SetOrCollectionHeaderState>(
         SetOrCollectionHeaderState.None
@@ -1752,6 +1757,51 @@ class ObjectSetViewModel(
             proceedWithOpeningTemplate(template.id)
         }
     }
+    //endregion
+
+    // region VIEWS
+    fun onDVViewsWidgetClicked(click: DVViewsWidgetUiState.Clicks) {
+        Log.d("Test1983", "Viewer click : $click")
+        //return
+        when (click) {
+            DVViewsWidgetUiState.Clicks.Dismiss -> {
+                dvViewsWidgetState.value = dvViewsWidgetState.value.copy(
+                    showWidget = false,
+                    isEditing = false)
+            }
+            DVViewsWidgetUiState.Clicks.DoneMode -> {
+                dvViewsWidgetState.value = dvViewsWidgetState.value.copy(isEditing = false)
+            }
+            DVViewsWidgetUiState.Clicks.EditMode -> {
+                dvViewsWidgetState.value = dvViewsWidgetState.value.copy(isEditing = true)
+            }
+            is DVViewsWidgetUiState.Clicks.Delete -> {
+                val state = stateReducer.state.value.dataViewState() ?: return
+                val viewer = state.viewerById(session.currentViewerId.value) ?: return
+                viewModelScope.launch {
+                    onEvent(
+                        ViewerEvent.Delete(
+                            ctx = context,
+                            dv = state.dataViewBlock.id,
+                            viewer = viewer.id,
+                        )
+                    )
+                }
+            }
+            is DVViewsWidgetUiState.Clicks.Edit -> TODO()
+            is DVViewsWidgetUiState.Clicks.Position -> TODO()
+        }
+
+    }
+
+    fun onEditViewsButtonClicked() {
+        dvViewsWidgetState.value = dvViewsWidgetState.value.copy(isEditing = true)
+    }
+
+    fun onDoneViewsButtonClicked() {
+        dvViewsWidgetState.value = dvViewsWidgetState.value.copy(isEditing = false)
+    }
+
     //endregion
 
     companion object {

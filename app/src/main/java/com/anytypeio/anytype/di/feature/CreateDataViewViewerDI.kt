@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.feature;
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.presentation.sets.CreateDataViewViewerViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -34,20 +33,11 @@ object CreateDataViewViewerModule {
     @PerModal
     fun provideCreateDataViewViewerViewModelFactory(
         dispatcher: Dispatcher<Payload>,
-        addDataViewViewer: AddDataViewViewer,
         analytics: Analytics,
         objectState: MutableStateFlow<ObjectState>
     ): CreateDataViewViewerViewModel.Factory = CreateDataViewViewerViewModel.Factory(
         dispatcher = dispatcher,
-        addDataViewViewer = addDataViewViewer,
         analytics = analytics,
         objectState = objectState
     )
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideAddDataViewViewerUseCase(
-        repo: BlockRepository
-    ): AddDataViewViewer = AddDataViewViewer(repo = repo)
 }

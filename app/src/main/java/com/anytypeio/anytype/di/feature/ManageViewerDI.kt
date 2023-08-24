@@ -40,32 +40,10 @@ object ManageViewerModule {
         session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
-        deleteDataViewViewer: DeleteDataViewViewer,
-        setDataViewViewerPosition: SetDataViewViewerPosition
     ): ManageViewerViewModel.Factory = ManageViewerViewModel.Factory(
         objectState = state,
         session = session,
         dispatcher = dispatcher,
         analytics = analytics,
-        deleteDataViewViewer = deleteDataViewViewer,
-        setDataViewViewerPosition = setDataViewViewerPosition
-    )
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideDeleteDataViewViewerUseCase(
-        repo: BlockRepository
-    ): DeleteDataViewViewer = DeleteDataViewViewer(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideSetDataViewViewerPosition(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): SetDataViewViewerPosition = SetDataViewViewerPosition(
-        repo = repo,
-        dispatchers = dispatchers
     )
 }

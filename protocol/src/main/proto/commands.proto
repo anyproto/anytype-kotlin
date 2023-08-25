@@ -5096,7 +5096,7 @@ message Rpc {
                 }
             }
 
-            message Sort {
+            message SSort {
                 message Request {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to update

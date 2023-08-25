@@ -182,7 +182,8 @@ sealed class Command {
         val prefilled: Struct,
         val template: Id?,
         val internalFlags: List<InternalFlags>,
-        val space: Id
+        val space: Id,
+        val type: Key
     )
 
     class Move(

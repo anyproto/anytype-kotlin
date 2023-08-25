@@ -41,7 +41,8 @@ class CreateDataViewObject @Inject constructor(
                         type = params.type
                     ),
                     internalFlags = listOf(),
-                    space = spaceManager.get()
+                    space = spaceManager.get(),
+                    type = params.type
                 )
                 val result = repo.createObject(command)
                 Result(
@@ -59,7 +60,8 @@ class CreateDataViewObject @Inject constructor(
                         type = type
                     ),
                     internalFlags = listOf(),
-                    space = spaceManager.get()
+                    space = spaceManager.get(),
+                    type = type
                 )
                 val result = repo.createObject(command)
                 Result(
@@ -77,7 +79,8 @@ class CreateDataViewObject @Inject constructor(
                         type = type
                     ),
                     internalFlags = listOf(),
-                    space = spaceManager.get()
+                    space = spaceManager.get(),
+                    type = type
                 )
                 val result = repo.createObject(command)
                 Result(

@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -36,17 +35,14 @@ class CreateObject @Inject constructor(
             add(InternalFlags.ShouldEmptyDelete)
         }
 
-        val prefilled = buildMap {
-            if (type != null) put(Relations.TYPE, type)
-        }
-
         val command = Command.CreateObject(
             template = null,
-            prefilled = prefilled,
+            prefilled = emptyMap(),
             internalFlags = internalFlags,
             space = spaceManager.get().ifEmpty {
                 configStorage.getOrNull()?.space.orEmpty()
-            }
+            },
+            type = type.orEmpty()
         )
 
         val result = repo.createObject(command)

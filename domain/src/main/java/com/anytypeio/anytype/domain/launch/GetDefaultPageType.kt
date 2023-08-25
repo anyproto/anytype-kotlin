@@ -77,7 +77,7 @@ class GetDefaultPageType @Inject constructor(
         } else {
             null
         }
-        return Response(note?.id, note?.name)
+        return Response(note?.uniqueKey, note?.name)
     }
 
     private suspend fun searchObjectByIdAndWorkspaceId(

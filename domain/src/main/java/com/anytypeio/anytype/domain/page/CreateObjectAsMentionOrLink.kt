@@ -42,7 +42,8 @@ class CreateObjectAsMentionOrLink(
             template = template,
             prefilled = prefilled,
             internalFlags = listOf(),
-            space = spaceManager.get()
+            space = spaceManager.get(),
+            type = type.orEmpty()
         )
         val result = repo.createObject(command)
 

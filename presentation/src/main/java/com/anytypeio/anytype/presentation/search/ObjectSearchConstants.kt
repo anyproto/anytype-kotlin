@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.FileSyncStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.AUDIO
 import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
@@ -47,21 +48,17 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
-        // TODO switch to layout.
         DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.NOT_IN,
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.IN,
             value = listOf(
-                OBJECT_TYPE,
-                RELATION,
-                TEMPLATE,
-                IMAGE,
-                FILE,
-                VIDEO,
-                AUDIO,
-                DASHBOARD,
-                DATE,
-                RELATION_OPTION
+                ObjectType.Layout.BASIC.code.toDouble(),
+                ObjectType.Layout.PROFILE.code.toDouble(),
+                ObjectType.Layout.SET.code.toDouble(),
+                ObjectType.Layout.COLLECTION.code.toDouble(),
+                ObjectType.Layout.TODO.code.toDouble(),
+                ObjectType.Layout.NOTE.code.toDouble(),
+                ObjectType.Layout.BOOKMARK.code.toDouble()
             )
         ),
         DVFilter(

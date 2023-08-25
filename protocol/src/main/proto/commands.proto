@@ -894,6 +894,7 @@ message Rpc {
                 repeated anytype.model.InternalFlag internalFlags = 2;
                 string templateId = 3;
                 string spaceId = 4;
+                string objectTypeUniqueKey = 5;
             }
 
             message Response {
@@ -1532,7 +1533,7 @@ message Rpc {
         message SetObjectType {
             message Request {
                 string contextId = 1;
-                string objectTypeUrl = 3;
+                string objectTypeUniqueKey = 3;
             }
             message Response {
                 Error error = 1;
@@ -1796,7 +1797,7 @@ message Rpc {
         message ListSetObjectType {
             message Request {
                 repeated string objectIds = 1;
-                string objectTypeId = 2;
+                string objectTypeUniqueKey = 2;
             }
             message Response {
                 Error error = 1;
@@ -2725,8 +2726,7 @@ message Rpc {
         }
         message CreateFromObjectType {
             message Request {
-                // id of desired object type
-                string objectType = 1;
+                string objectTypeUniqueKey = 1;
             }
 
             message Response {
@@ -3380,7 +3380,7 @@ message Rpc {
             message Request {
                 string contextId = 1;
                 repeated string blockIds = 2;
-                string objectType = 3;
+                string objectTypeUniqueKey = 3;
             }
 
             message Response {
@@ -4378,6 +4378,7 @@ message Rpc {
                 string templateId = 5; // optional template id for creating from template
                 repeated anytype.model.InternalFlag internalFlags = 7;
                 string spaceId = 8;
+                string objectTypeUniqueKey = 9;
 
                 // link block params
                 string targetId = 2; // id of the closest simple block

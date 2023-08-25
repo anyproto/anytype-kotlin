@@ -1759,8 +1759,8 @@ class ObjectSetViewModel(
     //endregion
 
     // region VIEWS
-    fun onDVViewsWidgetClicked(click: DVViewsWidgetUiState.Action) {
-        when (click) {
+    fun onViewersWidgetAction(action: DVViewsWidgetUiState.Action) {
+        when (action) {
             DVViewsWidgetUiState.Action.Dismiss -> {
                 dvViewsWidgetState.value = dvViewsWidgetState.value.copy(
                     showWidget = false,
@@ -1780,33 +1780,33 @@ class ObjectSetViewModel(
                         ViewerEvent.Delete(
                             ctx = context,
                             dv = state.dataViewBlock.id,
-                            viewer = click.viewer,
+                            viewer = action.viewer,
                         )
                     )
                 }
             }
             is DVViewsWidgetUiState.Action.Edit -> TODO()
             is DVViewsWidgetUiState.Action.OnMove -> {
-                Timber.d("onMove Viewer, from:[$click.from], to:[$click.to]")
-                if (click.from == click.to) return
+                Timber.d("onMove Viewer, from:[$action.from], to:[$action.to]")
+                if (action.from == action.to) return
                 val state = stateReducer.state.value.dataViewState() ?: return
-                if (click.to == 0 && session.currentViewerId.value.isNullOrEmpty()) {
-                    session.currentViewerId.value = click.currentViews.firstOrNull()?.id
+                if (action.to == 0 && session.currentViewerId.value.isNullOrEmpty()) {
+                    session.currentViewerId.value = action.currentViews.firstOrNull()?.id
                 }
                 viewModelScope.launch {
                     viewerDelegate.onEvent(
                         ViewerEvent.UpdatePosition(
                             ctx = context,
                             dv = state.dataViewBlock.id,
-                            viewer = click.currentViews[click.to].id,
-                            position = click.to
+                            viewer = action.currentViews[action.to].id,
+                            position = action.to
                         )
                     )
                 }
             }
             is DVViewsWidgetUiState.Action.SetActive -> {
                 viewModelScope.launch {
-                    onEvent(ViewerEvent.SetActive(viewer = click.id))
+                    onEvent(ViewerEvent.SetActive(viewer = action.id))
                 }
             }
         }

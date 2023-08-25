@@ -74,6 +74,7 @@ import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -347,7 +348,7 @@ open class ObjectSetFragment :
             setContent {
                 DataViewViewsWidget(
                     state = vm.dvViewsWidgetState.collectAsStateWithLifecycle().value,
-                    action = vm::onDVViewsWidgetClicked
+                    action = vm::onViewersWidgetAction
                 )
             }
         }
@@ -1119,6 +1120,9 @@ open class ObjectSetFragment :
                     }
                     vm.templatesWidgetState.value.showWidget -> {
                         vm.onDismissTemplatesWidget()
+                    }
+                    vm.dvViewsWidgetState.value.showWidget -> {
+                        vm.onViewersWidgetAction(DVViewsWidgetUiState.Action.Dismiss)
                     }
                     else -> {
                         vm.onSystemBackPressed()

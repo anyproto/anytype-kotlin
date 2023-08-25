@@ -1809,6 +1809,10 @@ class ObjectSetViewModel(
                     onEvent(ViewerEvent.SetActive(viewer = action.id))
                 }
             }
+
+            ViewersWidgetUi.Action.Plus -> {
+
+            }
         }
 
     }

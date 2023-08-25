@@ -37,6 +37,8 @@ data class ViewersWidgetUi(
         ) : Action()
 
         data class SetActive(val id: Id) : Action()
+
+        object Plus : Action()
     }
 }
 

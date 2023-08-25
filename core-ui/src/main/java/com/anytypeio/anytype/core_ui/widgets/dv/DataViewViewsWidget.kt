@@ -1,37 +1,30 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
 import android.view.HapticFeedbackConstants
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
-import androidx.compose.material.rememberSwipeableState
-import androidx.compose.material.swipeable
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,14 +34,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -60,301 +51,279 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState
 import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState.Action.Delete
 import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState.Action.Dismiss
 import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState.Action.DoneMode
 import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState.Action.Edit
 import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState.Action.EditMode
-import kotlin.math.roundToInt
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
 import org.burnoutcrew.reorderable.reorderable
 
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun DataViewViewsWidget(
-    scope: CoroutineScope,
     state: DVViewsWidgetUiState,
     action: (DVViewsWidgetUiState.Action) -> Unit
 ) {
+    val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomStart)
-    {
+    LaunchedEffect(key1 = state, block = {
+        if (state.showWidget) sheetState.show() else sheetState.hide()
+    })
 
-        val currentState by rememberUpdatedState(state)
-        val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
-
-        val views = remember { mutableStateOf(currentState.items) }
-        views.value = currentState.items
-
-        val isEditing = remember { mutableStateOf(currentState.isEditing) }
-        isEditing.value = currentState.isEditing
-
-        AnimatedVisibility(
-            visible = currentState.showWidget,
-            enter = fadeIn(),
-            exit = fadeOut(
-                tween(200)
-            )
-        ) {
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f))
-                    .noRippleThrottledClickable { action.invoke(Dismiss) }
-            )
-        }
-
-        if (swipeableState.isAnimationRunning) {
-            DisposableEffect(Unit) {
-                onDispose {
-                    action(Dismiss)
-                }
+    DisposableEffect(
+        key1 = (sheetState.targetValue == ModalBottomSheetValue.Hidden
+                && sheetState.isVisible)
+    ) {
+        onDispose {
+            if (sheetState.currentValue == ModalBottomSheetValue.Hidden) {
+                action(Dismiss)
             }
         }
+    }
 
-        if (!currentState.showWidget) {
-            DisposableEffect(Unit) {
-                onDispose {
-                    scope.launch { swipeableState.snapTo(DragStates.VISIBLE) }
-                }
-            }
+    ModalBottomSheetLayout(
+        sheetState = sheetState,
+        sheetBackgroundColor = Color.Transparent,
+        sheetShape = RoundedCornerShape(16.dp),
+        sheetContent = {
+            DataViewViewsWidgetContent(state, action)
+        },
+        content = {
+            Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.4f))
+                .noRippleThrottledClickable { action.invoke(Dismiss) }
         }
+    )
+}
 
-        val sizePx = with(LocalDensity.current) { 312.dp.toPx() }
+@Composable
+private fun DataViewViewsWidgetContent(
+    state: DVViewsWidgetUiState,
+    action: (DVViewsWidgetUiState.Action) -> Unit
+) {
+    val currentState by rememberUpdatedState(state)
 
-        AnimatedVisibility(
-            visible = currentState.showWidget,
-            enter = slideInVertically { it },
-            exit = slideOutVertically(tween(200)) { it },
+    val views = remember { mutableStateOf(currentState.items) }
+    views.value = currentState.items
+
+    val isEditing = remember { mutableStateOf(currentState.isEditing) }
+    isEditing.value = currentState.isEditing
+    
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .shadow(
+                elevation = 40.dp,
+                spotColor = Color(0x40000000),
+                ambientColor = Color(0x40000000)
+            )
+            .padding(start = 8.dp, end = 8.dp, bottom = 31.dp)
+            .background(
+                color = colorResource(id = R.color.background_secondary),
+                shape = RoundedCornerShape(size = 16.dp)
+            ),
+    ) {
+        Column(
             modifier = Modifier
-                .swipeable(
-                    state = swipeableState,
-                    orientation = Orientation.Vertical,
-                    anchors = mapOf(
-                        0f to DragStates.VISIBLE,
-                        sizePx to DragStates.DISMISSED
-                    ),
-                    thresholds = { _, _ -> FractionalThreshold(0.3f) }
-                )
-                .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(bottom = 16.dp)
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
-                    .shadow(
-                        elevation = 40.dp,
-                        spotColor = Color(0x40000000),
-                        ambientColor = Color(0x40000000)
-                    )
-                    .padding(start = 8.dp, end = 8.dp, bottom = 31.dp)
-                    .background(
-                        color = colorResource(id = R.color.background_secondary),
-                        shape = RoundedCornerShape(size = 16.dp)
-                    ),
+                    .height(48.dp)
             ) {
-                Column(
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(bottom = 16.dp)
+                        .align(Alignment.CenterStart),
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                    ) {
-                        Box(
+                    if (currentState.isEditing) {
+                        ActionText(
+                            text = stringResource(id = R.string.done),
+                            click = { action(DoneMode) }
+                        )
+                    } else {
+                        ActionText(
+                            text = stringResource(id = R.string.edit),
+                            click = { action(EditMode) }
+                        )
+                    }
+                }
+                Box(modifier = Modifier.align(Alignment.Center)) {
+                    Text(
+                        text = stringResource(R.string.views),
+                        style = Title1,
+                        color = colorResource(R.color.text_primary)
+                    )
+                }
+                Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                    Image(
+                        modifier = Modifier.padding(
+                            start = 16.dp,
+                            top = 12.dp,
+                            bottom = 12.dp,
+                            end = 16.dp
+                        ),
+                        painter = painterResource(id = R.drawable.ic_default_plus),
+                        contentDescription = null
+                    )
+                }
+            }
+
+            val lazyListState = rememberReorderableLazyListState(
+                onMove = { from, to ->
+                    views.value = views.value.toMutableList().apply {
+                        add(to.index, removeAt(from.index))
+                    }
+                },
+                onDragEnd = { from, to ->
+                    action(
+                        DVViewsWidgetUiState.Action.OnMove(
+                            currentViews = views.value,
+                            from = from,
+                            to = to
+                        )
+                    )
+                }
+            )
+
+            LazyColumn(
+                state = lazyListState.listState,
+                modifier = Modifier
+                    .reorderable(lazyListState)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            ) {
+                itemsIndexed(
+                    items = views.value,
+                    key = { _, item -> item.id }) { index, view ->
+                    ReorderableItem(
+                        reorderableState = lazyListState,
+                        key = view.id
+                    ) { isDragging ->
+                        val currentItem = LocalView.current
+                        if (isDragging) {
+                            currentItem.isHapticFeedbackEnabled = true
+                            currentItem.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                        }
+                        val alpha =
+                            animateFloatAsState(if (isDragging) 0.8f else 1.0f, label = "")
+                        ConstraintLayout(
                             modifier = Modifier
-                                .align(Alignment.CenterStart),
+                                .height(52.dp)
+                                .fillMaxWidth()
+                                .padding(start = 20.dp, end = 20.dp)
+                                .animateContentSize(
+                                    animationSpec = spring(
+                                        stiffness = Spring.StiffnessLow
+                                    )
+                                )
+                                .alpha(alpha.value)
                         ) {
-                            if (currentState.isEditing) {
-                                ActionText(
-                                    text = stringResource(id = R.string.done),
-                                    click = { action(DoneMode) }
-                                )
-                            } else {
-                                ActionText(
-                                    text = stringResource(id = R.string.edit),
-                                    click = { action(EditMode) }
-                                )
-                            }
-                        }
-                        Box(modifier = Modifier.align(Alignment.Center)) {
-                            Text(
-                                text = stringResource(R.string.views),
-                                style = Title1,
-                                color = colorResource(R.color.text_primary)
-                            )
-                        }
-                        Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                            val (delete, text, edit, dnd, unsupported) = createRefs()
                             Image(
-                                modifier = Modifier.padding(
-                                    start = 16.dp,
-                                    top = 12.dp,
-                                    bottom = 12.dp,
-                                    end = 16.dp
-                                ),
-                                painter = painterResource(id = R.drawable.ic_default_plus),
-                                contentDescription = null
+                                modifier = Modifier
+                                    .noRippleThrottledClickable {
+                                        action.invoke(Delete(view.id))
+                                    }
+                                    .constrainAs(delete) {
+                                        start.linkTo(parent.start)
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                        visibility =
+                                            if (isEditing.value && !view.isActive) Visibility.Visible else Visibility.Gone
+                                    },
+                                painter = painterResource(id = R.drawable.ic_relation_delete),
+                                contentDescription = "Delete view"
+                            )
+                            Image(
+                                modifier = Modifier
+                                    .detectReorder(lazyListState)
+                                    .constrainAs(dnd) {
+                                        end.linkTo(parent.end)
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                        visibility =
+                                            if (isEditing.value) Visibility.Visible else Visibility.Gone
+
+                                    },
+                                painter = painterResource(id = R.drawable.ic_dnd),
+                                contentDescription = "Dnd view"
+                            )
+                            Image(
+                                modifier = Modifier
+                                    .noRippleThrottledClickable {
+                                        action.invoke(Edit(view.id))
+                                    }
+                                    .constrainAs(edit) {
+                                        end.linkTo(dnd.start, margin = 16.dp)
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                        visibility =
+                                            if (isEditing.value) Visibility.Visible else Visibility.Gone
+                                    },
+                                painter = painterResource(id = R.drawable.ic_edit_24),
+                                contentDescription = "Edit view"
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .constrainAs(unsupported) {
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                        end.linkTo(edit.start)
+                                        visibility =
+                                            if (!isEditing.value && view.isUnsupported) Visibility.Visible else Visibility.Gone
+                                    },
+                                text = stringResource(id = R.string.unsupported),
+                                color = colorResource(id = R.color.text_secondary),
+                                style = Caption2Regular,
+                                textAlign = TextAlign.Left
+                            )
+                            Text(
+                                modifier = Modifier
+                                    .noRippleThrottledClickable {
+                                        if (!isEditing.value) {
+                                            action.invoke(
+                                                DVViewsWidgetUiState.Action.SetActive(
+                                                    view.id
+                                                )
+                                            )
+                                        }
+                                    }
+                                    .constrainAs(text) {
+                                        start.linkTo(
+                                            delete.end,
+                                            margin = 12.dp,
+                                            goneMargin = 0.dp
+                                        )
+                                        top.linkTo(parent.top)
+                                        bottom.linkTo(parent.bottom)
+                                        end.linkTo(
+                                            unsupported.start,
+                                            margin = 8.dp,
+                                            goneMargin = 38.dp
+                                        )
+                                        width = Dimension.fillToConstraints
+                                    },
+                                text = view.name,
+                                color = colorResource(id = if (view.isActive) R.color.text_primary else R.color.glyph_active),
+                                style = HeadlineSubheading,
+                                textAlign = TextAlign.Left,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
                     }
-
-                    val lazyListState = rememberReorderableLazyListState(
-                        onMove = { from, to ->
-                            views.value = views.value.toMutableList().apply {
-                                add(to.index, removeAt(from.index))
-                            }
-                        },
-                        onDragEnd = { from, to ->
-                            action(
-                                DVViewsWidgetUiState.Action.OnMove(
-                                    currentViews = views.value,
-                                    from = from,
-                                    to = to
-                                )
-                            )
-                        }
-                    )
-
-                    LazyColumn(
-                        state = lazyListState.listState,
-                        modifier = Modifier
-                            .reorderable(lazyListState)
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                    ) {
-                        itemsIndexed(
-                            items = views.value,
-                            key = { _, item -> item.id }) { index, view ->
-                            ReorderableItem(
-                                reorderableState = lazyListState,
-                                key = view.id
-                            ) { isDragging ->
-                                val currentItem = LocalView.current
-                                if (isDragging) {
-                                    currentItem.isHapticFeedbackEnabled = true
-                                    currentItem.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                                }
-                                val alpha =
-                                    animateFloatAsState(if (isDragging) 0.8f else 1.0f, label = "")
-                                ConstraintLayout(
-                                    modifier = Modifier
-                                        .height(52.dp)
-                                        .fillMaxWidth()
-                                        .padding(start = 20.dp, end = 20.dp)
-                                        .animateContentSize(
-                                            animationSpec = spring(
-                                                stiffness = Spring.StiffnessLow
-                                            )
-                                        )
-                                        .alpha(alpha.value)
-                                ) {
-                                    val (delete, text, edit, dnd, unsupported) = createRefs()
-                                    Image(
-                                        modifier = Modifier
-                                            .noRippleThrottledClickable {
-                                                action.invoke(Delete(view.id))
-                                            }
-                                            .constrainAs(delete) {
-                                                start.linkTo(parent.start)
-                                                top.linkTo(parent.top)
-                                                bottom.linkTo(parent.bottom)
-                                                visibility =
-                                                    if (isEditing.value && !view.isActive) Visibility.Visible else Visibility.Gone
-                                            },
-                                        painter = painterResource(id = R.drawable.ic_relation_delete),
-                                        contentDescription = "Delete view"
-                                    )
-                                    Image(
-                                        modifier = Modifier
-                                            .detectReorder(lazyListState)
-                                            .constrainAs(dnd) {
-                                                end.linkTo(parent.end)
-                                                top.linkTo(parent.top)
-                                                bottom.linkTo(parent.bottom)
-                                                visibility =
-                                                    if (isEditing.value) Visibility.Visible else Visibility.Gone
-
-                                            },
-                                        painter = painterResource(id = R.drawable.ic_dnd),
-                                        contentDescription = "Dnd view"
-                                    )
-                                    Image(
-                                        modifier = Modifier
-                                            .noRippleThrottledClickable {
-                                                action.invoke(Edit(view.id))
-                                            }
-                                            .constrainAs(edit) {
-                                                end.linkTo(dnd.start, margin = 16.dp)
-                                                top.linkTo(parent.top)
-                                                bottom.linkTo(parent.bottom)
-                                                visibility =
-                                                    if (isEditing.value) Visibility.Visible else Visibility.Gone
-                                            },
-                                        painter = painterResource(id = R.drawable.ic_edit_24),
-                                        contentDescription = "Edit view"
-                                    )
-                                    Text(
-                                        modifier = Modifier
-                                            .constrainAs(unsupported) {
-                                                top.linkTo(parent.top)
-                                                bottom.linkTo(parent.bottom)
-                                                end.linkTo(edit.start)
-                                                visibility =
-                                                    if (!isEditing.value && view.isUnsupported) Visibility.Visible else Visibility.Gone
-                                            },
-                                        text = stringResource(id = R.string.unsupported),
-                                        color = colorResource(id = R.color.text_secondary),
-                                        style = Caption2Regular,
-                                        textAlign = TextAlign.Left
-                                    )
-                                    Text(
-                                        modifier = Modifier
-                                            .noRippleThrottledClickable {
-                                                if (!isEditing.value) {
-                                                    action.invoke(
-                                                        DVViewsWidgetUiState.Action.SetActive(
-                                                            view.id
-                                                        )
-                                                    )
-                                                }
-                                            }
-                                            .constrainAs(text) {
-                                                start.linkTo(
-                                                    delete.end,
-                                                    margin = 12.dp,
-                                                    goneMargin = 0.dp
-                                                )
-                                                top.linkTo(parent.top)
-                                                bottom.linkTo(parent.bottom)
-                                                end.linkTo(
-                                                    unsupported.start,
-                                                    margin = 8.dp,
-                                                    goneMargin = 38.dp
-                                                )
-                                                width = Dimension.fillToConstraints
-                                            },
-                                        text = view.name,
-                                        color = colorResource(id = if (view.isActive) R.color.text_primary else R.color.glyph_active),
-                                        style = HeadlineSubheading,
-                                        textAlign = TextAlign.Left,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            }
-                            if (index != views.value.size - 1) {
-                                Divider()
-                            }
-                        }
+                    if (index != views.value.size - 1) {
+                        Divider()
                     }
                 }
             }

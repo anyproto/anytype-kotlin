@@ -347,8 +347,7 @@ open class ObjectSetFragment :
             setContent {
                 DataViewViewsWidget(
                     state = vm.dvViewsWidgetState.collectAsStateWithLifecycle().value,
-                    scope = lifecycleScope,
-                    click = vm::onDVViewsWidgetClicked
+                    action = vm::onDVViewsWidgetClicked
                 )
             }
         }

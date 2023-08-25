@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -1760,20 +1759,21 @@ class ObjectSetViewModel(
     //endregion
 
     // region VIEWS
-    fun onDVViewsWidgetClicked(click: DVViewsWidgetUiState.Clicks) {
+    fun onDVViewsWidgetClicked(click: DVViewsWidgetUiState.Action) {
         when (click) {
-            DVViewsWidgetUiState.Clicks.Dismiss -> {
+            DVViewsWidgetUiState.Action.Dismiss -> {
                 dvViewsWidgetState.value = dvViewsWidgetState.value.copy(
                     showWidget = false,
-                    isEditing = false)
+                    isEditing = false
+                )
             }
-            DVViewsWidgetUiState.Clicks.DoneMode -> {
+            DVViewsWidgetUiState.Action.DoneMode -> {
                 dvViewsWidgetState.value = dvViewsWidgetState.value.copy(isEditing = false)
             }
-            DVViewsWidgetUiState.Clicks.EditMode -> {
+            DVViewsWidgetUiState.Action.EditMode -> {
                 dvViewsWidgetState.value = dvViewsWidgetState.value.copy(isEditing = true)
             }
-            is DVViewsWidgetUiState.Clicks.Delete -> {
+            is DVViewsWidgetUiState.Action.Delete -> {
                 val state = stateReducer.state.value.dataViewState() ?: return
                 viewModelScope.launch {
                     onEvent(
@@ -1785,9 +1785,26 @@ class ObjectSetViewModel(
                     )
                 }
             }
-            is DVViewsWidgetUiState.Clicks.Edit -> TODO()
-            is DVViewsWidgetUiState.Clicks.Position -> TODO()
-            is DVViewsWidgetUiState.Clicks.SetActive -> {
+            is DVViewsWidgetUiState.Action.Edit -> TODO()
+            is DVViewsWidgetUiState.Action.OnMove -> {
+                Timber.d("onMove Viewer, from:[$click.from], to:[$click.to]")
+                if (click.from == click.to) return
+                val state = stateReducer.state.value.dataViewState() ?: return
+                if (click.to == 0 && session.currentViewerId.value.isNullOrEmpty()) {
+                    session.currentViewerId.value = click.currentViews.firstOrNull()?.id
+                }
+                viewModelScope.launch {
+                    viewerDelegate.onEvent(
+                        ViewerEvent.UpdatePosition(
+                            ctx = context,
+                            dv = state.dataViewBlock.id,
+                            viewer = click.currentViews[click.to].id,
+                            position = click.to
+                        )
+                    )
+                }
+            }
+            is DVViewsWidgetUiState.Action.SetActive -> {
                 viewModelScope.launch {
                     onEvent(ViewerEvent.SetActive(viewer = click.id))
                 }
@@ -1795,15 +1812,6 @@ class ObjectSetViewModel(
         }
 
     }
-
-    fun onEditViewsButtonClicked() {
-        dvViewsWidgetState.value = dvViewsWidgetState.value.copy(isEditing = true)
-    }
-
-    fun onDoneViewsButtonClicked() {
-        dvViewsWidgetState.value = dvViewsWidgetState.value.copy(isEditing = false)
-    }
-
     //endregion
 
     companion object {

@@ -2,6 +2,8 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
+import com.anytypeio.anytype.presentation.widgets.FromIndex
+import com.anytypeio.anytype.presentation.widgets.ToIndex
 
 data class DVViewsWidgetUiState(
     val showWidget: Boolean,
@@ -22,14 +24,14 @@ data class DVViewsWidgetUiState(
         )
     }
 
-    sealed class Clicks {
-        object Dismiss : Clicks()
-        object EditMode : Clicks()
-        object DoneMode : Clicks()
-        data class Delete(val viewer: Id) : Clicks()
-        data class Edit(val id: Id) : Clicks()
-        data class Position(val id: Id, val position: Int) : Clicks()
-        data class SetActive(val id: Id) : Clicks()
+    sealed class Action {
+        object Dismiss : Action()
+        object EditMode : Action()
+        object DoneMode : Action()
+        data class Delete(val viewer: Id) : Action()
+        data class Edit(val id: Id) : Action()
+        data class OnMove(val currentViews: List<ViewerView>, val from: FromIndex, val to: ToIndex) : Action()
+        data class SetActive(val id: Id) : Action()
     }
 }
 

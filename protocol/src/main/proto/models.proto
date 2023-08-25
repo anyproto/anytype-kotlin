@@ -14,6 +14,7 @@ message SmartBlockSnapshotBase {
     google.protobuf.Struct collections = 6;
     repeated string removedCollectionKeys = 8;
     repeated RelationLink relationLinks = 7;
+    string key = 9; // this field is not passing to the crdt changes and can be only set in the snapshot
 }
 
 enum SmartBlockType {
@@ -32,10 +33,12 @@ enum SmartBlockType {
 
     BundledRelation = 0x200; // DEPRECATED
     SubObject = 0x201;
-    BundledObjectType = 0x202;
+    BundledObjectType = 0x202;  // DEPRECATED
     AnytypeProfile = 0x203;
     Date = 0x204;
     Workspace = 0x206;
+    STRelation = 0x209;
+    STType = 0x210;
 
     MissingObject = 0x207;
 }
@@ -644,6 +647,7 @@ message Restrictions {
 message Object {
     message ChangePayload {
         SmartBlockType smartBlockType = 1;
+        string key = 2;
     }
 }
 
@@ -659,6 +663,7 @@ message ObjectType {
     repeated SmartBlockType types = 8;
     bool isArchived = 9; // sets locally to hide object type from set and some other places
     bool installedByDefault = 11;
+    string key = 12; // name of objectType (can be localized for bundled types)
 
     enum Layout {
         basic = 0;
@@ -676,6 +681,10 @@ message ObjectType {
         relationOptionsList = 12;
         relationOption = 13;
         collection = 14;
+        audio = 15;
+        video = 16;
+        date = 17;
+
 
         database = 20; // to be released later
     }

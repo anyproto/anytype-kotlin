@@ -5,7 +5,7 @@ import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.widgets.FromIndex
 import com.anytypeio.anytype.presentation.widgets.ToIndex
 
-data class DVViewsWidgetUiState(
+data class ViewersWidgetUi(
     val showWidget: Boolean,
     val isEditing: Boolean,
     val items: List<ViewerView>
@@ -17,7 +17,7 @@ data class DVViewsWidgetUiState(
     )
 
     companion object {
-        fun init() = DVViewsWidgetUiState(
+        fun init() = ViewersWidgetUi(
             showWidget = false,
             isEditing = false,
             items = emptyList()
@@ -30,7 +30,12 @@ data class DVViewsWidgetUiState(
         object DoneMode : Action()
         data class Delete(val viewer: Id) : Action()
         data class Edit(val id: Id) : Action()
-        data class OnMove(val currentViews: List<ViewerView>, val from: FromIndex, val to: ToIndex) : Action()
+        data class OnMove(
+            val currentViews: List<ViewerView>,
+            val from: FromIndex,
+            val to: ToIndex
+        ) : Action()
+
         data class SetActive(val id: Id) : Action()
     }
 }

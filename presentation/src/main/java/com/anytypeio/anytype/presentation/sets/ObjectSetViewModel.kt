@@ -173,7 +173,7 @@ class ObjectSetViewModel(
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
     val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.init())
-    val dvViewsWidgetState = MutableStateFlow(DVViewsWidgetUiState.init())
+    val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -275,7 +275,7 @@ class ObjectSetViewModel(
 
         viewModelScope.launch {
             _dvViews.collectLatest {
-                dvViewsWidgetState.value = dvViewsWidgetState.value.copy(items = it)
+                viewersWidgetState.value = viewersWidgetState.value.copy(items = it)
             }
         }
     }
@@ -1061,7 +1061,7 @@ class ObjectSetViewModel(
         ) {
             toast(NOT_ALLOWED)
         } else {
-            dvViewsWidgetState.value = dvViewsWidgetState.value.copy(
+            viewersWidgetState.value = viewersWidgetState.value.copy(
                 showWidget = true
             )
         }
@@ -1759,21 +1759,21 @@ class ObjectSetViewModel(
     //endregion
 
     // region VIEWS
-    fun onViewersWidgetAction(action: DVViewsWidgetUiState.Action) {
+    fun onViewersWidgetAction(action: ViewersWidgetUi.Action) {
         when (action) {
-            DVViewsWidgetUiState.Action.Dismiss -> {
-                dvViewsWidgetState.value = dvViewsWidgetState.value.copy(
+            ViewersWidgetUi.Action.Dismiss -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(
                     showWidget = false,
                     isEditing = false
                 )
             }
-            DVViewsWidgetUiState.Action.DoneMode -> {
-                dvViewsWidgetState.value = dvViewsWidgetState.value.copy(isEditing = false)
+            ViewersWidgetUi.Action.DoneMode -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(isEditing = false)
             }
-            DVViewsWidgetUiState.Action.EditMode -> {
-                dvViewsWidgetState.value = dvViewsWidgetState.value.copy(isEditing = true)
+            ViewersWidgetUi.Action.EditMode -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(isEditing = true)
             }
-            is DVViewsWidgetUiState.Action.Delete -> {
+            is ViewersWidgetUi.Action.Delete -> {
                 val state = stateReducer.state.value.dataViewState() ?: return
                 viewModelScope.launch {
                     onEvent(
@@ -1785,8 +1785,8 @@ class ObjectSetViewModel(
                     )
                 }
             }
-            is DVViewsWidgetUiState.Action.Edit -> TODO()
-            is DVViewsWidgetUiState.Action.OnMove -> {
+            is ViewersWidgetUi.Action.Edit -> TODO()
+            is ViewersWidgetUi.Action.OnMove -> {
                 Timber.d("onMove Viewer, from:[$action.from], to:[$action.to]")
                 if (action.from == action.to) return
                 val state = stateReducer.state.value.dataViewState() ?: return
@@ -1804,7 +1804,7 @@ class ObjectSetViewModel(
                     )
                 }
             }
-            is DVViewsWidgetUiState.Action.SetActive -> {
+            is ViewersWidgetUi.Action.SetActive -> {
                 viewModelScope.launch {
                     onEvent(ViewerEvent.SetActive(viewer = action.id))
                 }

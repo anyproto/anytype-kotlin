@@ -52,7 +52,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.ObjectTypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
-import com.anytypeio.anytype.core_ui.widgets.dv.DataViewViewsWidget
+import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
 import com.anytypeio.anytype.core_utils.OnSwipeListener
@@ -74,7 +74,7 @@ import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
-import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState
+import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -346,8 +346,8 @@ open class ObjectSetFragment :
         binding.viewsWidget.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                DataViewViewsWidget(
-                    state = vm.dvViewsWidgetState.collectAsStateWithLifecycle().value,
+                ViewersWidget(
+                    state = vm.viewersWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewersWidgetAction
                 )
             }
@@ -1121,8 +1121,8 @@ open class ObjectSetFragment :
                     vm.templatesWidgetState.value.showWidget -> {
                         vm.onDismissTemplatesWidget()
                     }
-                    vm.dvViewsWidgetState.value.showWidget -> {
-                        vm.onViewersWidgetAction(DVViewsWidgetUiState.Action.Dismiss)
+                    vm.viewersWidgetState.value.showWidget -> {
+                        vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)
                     }
                     else -> {
                         vm.onSystemBackPressed()

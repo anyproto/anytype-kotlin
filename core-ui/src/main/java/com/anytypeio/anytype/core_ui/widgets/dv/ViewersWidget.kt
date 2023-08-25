@@ -51,12 +51,12 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState
-import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState.Action.Delete
-import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState.Action.Dismiss
-import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState.Action.DoneMode
-import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState.Action.Edit
-import com.anytypeio.anytype.presentation.sets.DVViewsWidgetUiState.Action.EditMode
+import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
+import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.Delete
+import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.Dismiss
+import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.DoneMode
+import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.Edit
+import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi.Action.EditMode
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorder
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
@@ -65,9 +65,9 @@ import org.burnoutcrew.reorderable.reorderable
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun DataViewViewsWidget(
-    state: DVViewsWidgetUiState,
-    action: (DVViewsWidgetUiState.Action) -> Unit
+fun ViewersWidget(
+    state: ViewersWidgetUi,
+    action: (ViewersWidgetUi.Action) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
@@ -91,7 +91,7 @@ fun DataViewViewsWidget(
         sheetBackgroundColor = Color.Transparent,
         sheetShape = RoundedCornerShape(16.dp),
         sheetContent = {
-            DataViewViewsWidgetContent(state, action)
+            ViewersWidgetContent(state, action)
         },
         content = {
             Modifier
@@ -103,9 +103,9 @@ fun DataViewViewsWidget(
 }
 
 @Composable
-private fun DataViewViewsWidgetContent(
-    state: DVViewsWidgetUiState,
-    action: (DVViewsWidgetUiState.Action) -> Unit
+private fun ViewersWidgetContent(
+    state: ViewersWidgetUi,
+    action: (ViewersWidgetUi.Action) -> Unit
 ) {
     val currentState by rememberUpdatedState(state)
 
@@ -186,7 +186,7 @@ private fun DataViewViewsWidgetContent(
                 },
                 onDragEnd = { from, to ->
                     action(
-                        DVViewsWidgetUiState.Action.OnMove(
+                        ViewersWidgetUi.Action.OnMove(
                             currentViews = views.value,
                             from = from,
                             to = to
@@ -292,7 +292,7 @@ private fun DataViewViewsWidgetContent(
                                     .noRippleThrottledClickable {
                                         if (!isEditing.value) {
                                             action.invoke(
-                                                DVViewsWidgetUiState.Action.SetActive(
+                                                ViewersWidgetUi.Action.SetActive(
                                                     view.id
                                                 )
                                             )

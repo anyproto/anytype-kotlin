@@ -442,8 +442,12 @@ class BlockMiddleware(
     override suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload =
         middleware.blockRelationAdd(command)
 
-    override suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload =
-        middleware.objectSetObjectType(ctx = ctx, typeId = typeId)
+    override suspend fun setObjectTypeToObject(
+        ctx: Id, objectTypeKey: Id
+    ): Payload = middleware.objectSetObjectType(
+        ctx = ctx,
+        objectTypeKey = objectTypeKey
+    )
 
     override suspend fun addToFeaturedRelations(
         ctx: Id,

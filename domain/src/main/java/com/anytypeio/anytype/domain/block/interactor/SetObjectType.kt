@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.block.interactor
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
@@ -13,12 +14,12 @@ class SetObjectType(
     override suspend fun run(params: Params): Either<Throwable, Payload> = safe {
         repo.setObjectTypeToObject(
             ctx = params.context,
-            typeId = params.typeId
+            objectTypeKey = params.objectTypeKey
         )
     }
 
     class Params(
         val context: Id,
-        val typeId: Id
+        val objectTypeKey: Key
     )
 }

@@ -479,8 +479,9 @@ class BlockDataRepository(
     override suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload =
         remote.addRelationToBlock(command)
 
-    override suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload =
-        remote.setObjectTypeToObject(ctx = ctx, typeId = typeId)
+    override suspend fun setObjectTypeToObject(
+        ctx: Id, objectTypeKey: Key
+    ): Payload = remote.setObjectTypeToObject(ctx = ctx, objectTypeKey = objectTypeKey)
 
     override suspend fun addToFeaturedRelations(
         ctx: Id,

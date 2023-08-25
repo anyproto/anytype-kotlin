@@ -1513,10 +1513,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectSetObjectType(ctx: Id, typeId: Id): Payload {
+    fun objectSetObjectType(ctx: Id, objectTypeKey: Key): Payload {
         val request = Rpc.Object.SetObjectType.Request(
             contextId = ctx,
-            objectTypeUrl = typeId
+            objectTypeUniqueKey = objectTypeKey
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSetObjectType(request)

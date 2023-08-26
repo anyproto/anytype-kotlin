@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
+import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -112,7 +113,8 @@ object ObjectMenuModule {
         updateFields: UpdateFields,
         featureToggles: FeatureToggles,
         delegator: Delegator<Action>,
-        addObjectToCollection: AddObjectToCollection
+        addObjectToCollection: AddObjectToCollection,
+        createTemplateFromObject: CreateTemplateFromObject
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -127,7 +129,8 @@ object ObjectMenuModule {
         updateFields = updateFields,
         delegator = delegator,
         menuOptionsProvider = createMenuOptionsProvider(storage, featureToggles),
-        addObjectToCollection = addObjectToCollection
+        addObjectToCollection = addObjectToCollection,
+        createTemplateFromObject = createTemplateFromObject
     )
 
     @JvmStatic

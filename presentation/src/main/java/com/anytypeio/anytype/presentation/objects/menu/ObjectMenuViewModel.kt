@@ -8,6 +8,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
@@ -18,11 +19,15 @@ import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.ObjectAction
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
@@ -43,7 +48,8 @@ class ObjectMenuViewModel(
     private val storage: Editor.Storage,
     private val analytics: Analytics,
     private val updateFields: UpdateFields,
-    private val addObjectToCollection: AddObjectToCollection
+    private val addObjectToCollection: AddObjectToCollection,
+    private val createTemplateFromObject: CreateTemplateFromObject
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -87,6 +93,7 @@ class ObjectMenuViewModel(
             add(ObjectAction.DUPLICATE)
         }
         if (!isTemplate) {
+            add(ObjectAction.USE_AS_TEMPLATE)
             add(ObjectAction.LINK_TO)
         }
 
@@ -229,11 +236,49 @@ class ObjectMenuViewModel(
                 }
                 isDismissed.value = true
             }
+            ObjectAction.USE_AS_TEMPLATE -> {
+                proceedWithCreatingTemplateFromObject(ctx)
+            }
             ObjectAction.MOVE_TO,
             ObjectAction.MOVE_TO_BIN,
-            ObjectAction.USE_AS_TEMPLATE,
             ObjectAction.DELETE_FILES -> {
                 throw IllegalStateException("$action is unsupported")
+            }
+        }
+    }
+
+    private fun proceedWithCreatingTemplateFromObject(ctx: Id) {
+        viewModelScope.launch {
+            val params = CreateTemplateFromObject.Params(obj = ctx)
+            createTemplateFromObject.async(params).fold(
+                onSuccess = { template ->
+                    sendTemplateToast(ctx)
+                    commands.emit(Command.OpenTemplate(template))
+                    isDismissed.value = true
+                },
+                onFailure = {
+                    Timber.e(it, "Error while creating template from object")
+                    _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                }
+            )
+        }
+    }
+
+    private fun sendTemplateToast(ctx: Id) {
+        //todo Доделать
+        viewModelScope.launch {
+            val type = storage.details.current().details[ctx]?.type?.firstOrNull()
+            if (type != null) {
+                val objType = ObjectWrapper.Basic(storage.details.current().details[type]?.map ?: emptyMap())
+                commands.emit(
+                    Command.OpenSnackbar(
+                        id = "111",
+                        currentObjectName = "222",
+                        targetObjectName = objType.getProperName(),
+                        icon = ObjectIcon.from(objType, objType.layout, urlBuilder),
+                        isCollection = true
+                    )
+                )
             }
         }
     }
@@ -307,7 +352,8 @@ class ObjectMenuViewModel(
         private val updateFields: UpdateFields,
         private val delegator: Delegator<Action>,
         private val menuOptionsProvider: ObjectMenuOptionsProvider,
-        private val addObjectToCollection: AddObjectToCollection
+        private val addObjectToCollection: AddObjectToCollection,
+        private val createTemplateFromObject: CreateTemplateFromObject
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -324,7 +370,8 @@ class ObjectMenuViewModel(
                 updateFields = updateFields,
                 delegator = delegator,
                 menuOptionsProvider = menuOptionsProvider,
-                addObjectToCollection = addObjectToCollection
+                addObjectToCollection = addObjectToCollection,
+                createTemplateFromObject = createTemplateFromObject
             ) as T
         }
     }

@@ -17,5 +17,5 @@ class CreateTemplateFromObject @Inject constructor(
         return repo.createTemplateFromObject(params.obj)
     }
 
-    data class Params(val ctx: Id, val obj: Id)
+    data class Params(val obj: Id)
 }

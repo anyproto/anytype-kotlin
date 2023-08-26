@@ -41,7 +41,7 @@ abstract class ObjectMenuViewModelBase(
     private val removeFromFavorite: RemoveFromFavorite,
     private val addBackLinkToObject: AddBackLinkToObject,
     protected val delegator: Delegator<Action>,
-    private val urlBuilder: UrlBuilder,
+    protected val urlBuilder: UrlBuilder,
     protected val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
@@ -340,6 +340,7 @@ abstract class ObjectMenuViewModelBase(
             val icon: ObjectIcon,
             val isCollection: Boolean = false
         ) : Command()
+        data class OpenTemplate(val template: Id) : Command()
     }
 
     companion object {

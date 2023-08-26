@@ -800,4 +800,8 @@ class BlockMiddleware(
     override suspend fun duplicateObjectsList(ids: List<Id>): List<Id> {
         return middleware.duplicateObjectsList(ids)
     }
+
+    override suspend fun createTemplateFromObject(ctx: Id): Id {
+        return middleware.createTemplateFromObject(ctx)
+    }
 }

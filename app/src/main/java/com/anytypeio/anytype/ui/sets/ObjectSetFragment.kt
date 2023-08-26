@@ -340,7 +340,7 @@ open class ObjectSetFragment :
 
         observeSelectingTemplate()
 
-        binding.viewsWidget.apply {
+        binding.viewersWidget.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 ViewersWidget(

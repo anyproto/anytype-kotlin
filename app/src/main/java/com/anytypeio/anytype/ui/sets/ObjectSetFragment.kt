@@ -95,9 +95,6 @@ import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
-import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
-import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
-import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
@@ -888,24 +885,6 @@ open class ObjectSetFragment :
                         RelationValueBaseFragment.IS_LOCKED_KEY to false
                     )
                 )
-            }
-            is ObjectSetCommand.Modal.CreateViewer -> {
-                val fr = CreateDataViewViewerFragment.new(
-                    ctx = command.ctx,
-                    target = command.target
-                )
-                fr.showChildFragment(EMPTY_TAG)
-            }
-            is ObjectSetCommand.Modal.EditDataViewViewer -> {
-                val fr = EditDataViewViewerFragment.new(
-                    ctx = command.ctx,
-                    viewer = command.viewer
-                )
-                fr.showChildFragment(EMPTY_TAG)
-            }
-            is ObjectSetCommand.Modal.ManageViewer -> {
-                val fr = ManageViewerFragment.new(ctx = command.ctx, dv = command.dataview)
-                fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.OpenSettings -> {
                 val fr = ObjectSetSettingsFragment.new(

@@ -1071,12 +1071,6 @@ class ObjectSetViewModel(
         Timber.d("onViewerEditClicked, ")
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
-        dispatch(
-            ObjectSetCommand.Modal.EditDataViewViewer(
-                ctx = context,
-                viewer = viewer.id
-            )
-        )
     }
 
     fun onMenuClicked() {

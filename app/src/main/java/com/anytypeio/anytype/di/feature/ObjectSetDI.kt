@@ -5,7 +5,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
@@ -118,13 +117,10 @@ interface ObjectSetSubComponent {
     fun objectSetRecordComponent(): ObjectSetRecordSubComponent.Builder
     fun objectSetCreateBookmarkRecordComponent(): ObjectSetCreateBookmarkRecordSubComponent.Builder
     fun viewerFilterBySubComponent(): ViewerFilterSubComponent.Builder
-    fun createDataViewViewerSubComponent(): CreateDataViewViewerSubComponent.Builder
-    fun editDataViewViewerComponent(): EditDataViewViewerSubComponent.Builder
 
     fun dataViewObjectRelationValueComponent(): DataViewObjectRelationValueSubComponent.Builder
     fun setOrCollectionRelationValueComponent() : SetOrCollectionRelationValueSubComponent.Builder
 
-    fun manageViewerComponent(): ManageViewerSubComponent.Builder
     fun objectSetSettingsComponent(): ObjectSetSettingsSubComponent.Builder
     fun viewerCardSizeSelectComponent(): ViewerCardSizeSelectSubcomponent.Builder
     fun viewerImagePreviewSelectComponent(): ViewerImagePreviewSelectSubcomponent.Builder

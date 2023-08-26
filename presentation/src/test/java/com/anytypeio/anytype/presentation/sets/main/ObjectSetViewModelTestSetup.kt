@@ -60,6 +60,7 @@ import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -166,6 +167,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var updateDataViewViewer: UpdateDataViewViewer
 
+    @Mock
+    lateinit var viewerDelegate: ViewerDelegate
+
     var stateReducer = DefaultObjectStateReducer()
 
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
@@ -237,7 +241,8 @@ open class ObjectSetViewModelTestSetup {
             updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
-            duplicateObjects = duplicateObjects
+            duplicateObjects = duplicateObjects,
+            viewerDelegate = viewerDelegate
         )
     }
 

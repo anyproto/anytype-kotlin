@@ -2246,11 +2246,8 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun createTemplateFromObject(
-        ctx: Id,
-        source: Id,
-        target: Id,
-        position: Position
-    ): String {
+        ctx: Id
+    ): Id {
         val request = Rpc.Template.CreateFromObject.Request(
             contextId = ctx
         )

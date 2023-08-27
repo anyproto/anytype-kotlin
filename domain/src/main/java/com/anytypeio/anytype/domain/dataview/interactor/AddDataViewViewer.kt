@@ -1,20 +1,22 @@
 package com.anytypeio.anytype.domain.dataview.interactor
 
-import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
 
 /**
  * Use-case for adding a new viewer to DV.
  */
 class AddDataViewViewer(
-    private val repo: BlockRepository
-) : BaseUseCase<Payload, AddDataViewViewer.Params>() {
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<AddDataViewViewer.Params, Payload>(dispatchers.io) {
 
-    override suspend fun run(params: Params) = safe {
-        repo.addDataViewViewer(
+    override suspend fun doWork(params: Params): Payload {
+        return repo.addDataViewViewer(
             ctx = params.ctx,
             target = params.target,
             name = params.name,

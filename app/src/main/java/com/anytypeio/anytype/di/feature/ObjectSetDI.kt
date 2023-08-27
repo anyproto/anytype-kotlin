@@ -23,7 +23,12 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
+import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
+import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPosition
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -81,6 +86,8 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
+import com.anytypeio.anytype.presentation.sets.viewer.DefaultViewerDelegate
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
@@ -110,13 +117,10 @@ interface ObjectSetSubComponent {
     fun objectSetRecordComponent(): ObjectSetRecordSubComponent.Builder
     fun objectSetCreateBookmarkRecordComponent(): ObjectSetCreateBookmarkRecordSubComponent.Builder
     fun viewerFilterBySubComponent(): ViewerFilterSubComponent.Builder
-    fun createDataViewViewerSubComponent(): CreateDataViewViewerSubComponent.Builder
-    fun editDataViewViewerComponent(): EditDataViewViewerSubComponent.Builder
 
     fun dataViewObjectRelationValueComponent(): DataViewObjectRelationValueSubComponent.Builder
     fun setOrCollectionRelationValueComponent() : SetOrCollectionRelationValueSubComponent.Builder
 
-    fun manageViewerComponent(): ManageViewerSubComponent.Builder
     fun objectSetSettingsComponent(): ObjectSetSettingsSubComponent.Builder
     fun viewerCardSizeSelectComponent(): ViewerCardSizeSelectSubcomponent.Builder
     fun viewerImagePreviewSelectComponent(): ViewerImagePreviewSelectSubcomponent.Builder
@@ -214,7 +218,8 @@ object ObjectSetModule {
         updateDataViewViewer: UpdateDataViewViewer,
         duplicateObjects: DuplicateObjects,
         templatesContainer: ObjectTypeTemplatesContainer,
-        setObjectListIsArchived: SetObjectListIsArchived
+        setObjectListIsArchived: SetObjectListIsArchived,
+        viewerDelegate: ViewerDelegate
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -249,7 +254,8 @@ object ObjectSetModule {
         updateDataViewViewer = updateDataViewViewer,
         duplicateObjects = duplicateObjects,
         templatesContainer = templatesContainer,
-        setObjectListIsArchived = setObjectListIsArchived
+        setObjectListIsArchived = setObjectListIsArchived,
+        viewerDelegate = viewerDelegate
     )
 
     @JvmStatic
@@ -630,4 +636,67 @@ object ObjectSetModule {
             defaultProvider: DefaultCoverImageHashProvider
         ): CoverImageHashProvider
     }
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideAddDataViewViewerUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): AddDataViewViewer = AddDataViewViewer(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRenameDataViewViewerUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): RenameDataViewViewer = RenameDataViewViewer(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDuplicateDataViewViewerUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DuplicateDataViewViewer = DuplicateDataViewViewer(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDeleteDataViewViewerUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DeleteDataViewViewer = DeleteDataViewViewer(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetDataViewViewerPositionUseCase(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDataViewViewerPosition = SetDataViewViewerPosition(repo = repo, dispatchers = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideViewerDelegate(
+        session: ObjectSetSession,
+        addDataViewViewer: AddDataViewViewer,
+        renameDataViewViewer: RenameDataViewViewer,
+        duplicateDataViewViewer: DuplicateDataViewViewer,
+        deleteDataViewViewer: DeleteDataViewViewer,
+        setDataViewViewerPosition: SetDataViewViewerPosition,
+        analytics: Analytics,
+        dispatcher: Dispatcher<Payload>
+    ): ViewerDelegate = DefaultViewerDelegate(
+        session = session,
+        addDataViewViewer = addDataViewViewer,
+        renameDataViewViewer = renameDataViewViewer,
+        duplicateDataViewViewer = duplicateDataViewViewer,
+        deleteDataViewViewer = deleteDataViewViewer,
+        setDataViewViewerPosition = setDataViewViewerPosition,
+        analytics = analytics,
+        dispatcher = dispatcher
+    )
 }

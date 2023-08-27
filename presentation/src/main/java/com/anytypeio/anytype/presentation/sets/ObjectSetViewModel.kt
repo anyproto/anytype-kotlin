@@ -68,6 +68,9 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerEvent
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
@@ -131,8 +134,9 @@ class ObjectSetViewModel(
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
-    private val setObjectListIsArchived: SetObjectListIsArchived
-) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val viewerDelegate: ViewerDelegate
+) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
     val error = MutableStateFlow<String?>(null)
@@ -160,6 +164,7 @@ class ObjectSetViewModel(
     val currentViewer = _currentViewer
 
     private val _templateViews = MutableStateFlow<List<TemplateView>>(emptyList())
+    private val _dvViews = MutableStateFlow<List<ViewerView>>(emptyList())
 
     private val _header = MutableStateFlow<SetOrCollectionHeaderState>(
         SetOrCollectionHeaderState.None
@@ -168,6 +173,7 @@ class ObjectSetViewModel(
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
     val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.init())
+    val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -264,6 +270,12 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             _templateViews.collectLatest {
                 templatesWidgetState.value = templatesWidgetState.value.copy(items = it)
+            }
+        }
+
+        viewModelScope.launch {
+            _dvViews.collectLatest {
+                viewersWidgetState.value = viewersWidgetState.value.copy(items = it)
             }
         }
     }
@@ -458,7 +470,6 @@ class ObjectSetViewModel(
                 dataViewState = dataViewState,
                 objectState = objectState,
                 currentViewId = currentViewId,
-                templates = templates
             )
             ObjectState.Init -> DataViewViewState.Init
             ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
@@ -477,6 +488,7 @@ class ObjectSetViewModel(
 
         return when (dataViewState) {
             DataViewState.Init -> {
+                _dvViews.value = emptyList()
                 if (dvViewer == null) {
                     DataViewViewState.Collection.NoView
                 } else {
@@ -484,6 +496,7 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
+                _dvViews.value = objectState.viewers.toView(session)
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -520,7 +533,6 @@ class ObjectSetViewModel(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Set,
         currentViewId: String?,
-        templates: List<TemplateView>
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
@@ -530,6 +542,7 @@ class ObjectSetViewModel(
 
         return when (dataViewState) {
             DataViewState.Init -> {
+                _dvViews.value = emptyList()
                 when {
                     setOfValue.isEmpty() || query.isEmpty() -> DataViewViewState.Set.NoQuery
                     viewer == null -> DataViewViewState.Set.NoView
@@ -537,6 +550,7 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
+                _dvViews.value = objectState.viewers.toView(session)
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -1043,16 +1057,12 @@ class ObjectSetViewModel(
 
     fun onExpandViewerMenuClicked() {
         Timber.d("onExpandViewerMenuClicked, ")
-        val state = stateReducer.state.value.dataViewState() ?: return
         if (isRestrictionPresent(DataViewRestriction.VIEWS)
         ) {
             toast(NOT_ALLOWED)
         } else {
-            dispatch(
-                ObjectSetCommand.Modal.ManageViewer(
-                    ctx = context,
-                    dataview = state.dataViewBlock.id
-                )
+            viewersWidgetState.value = viewersWidgetState.value.copy(
+                showWidget = true
             )
         }
     }
@@ -1061,12 +1071,6 @@ class ObjectSetViewModel(
         Timber.d("onViewerEditClicked, ")
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
-        dispatch(
-            ObjectSetCommand.Modal.EditDataViewViewer(
-                ctx = context,
-                viewer = viewer.id
-            )
-        )
     }
 
     fun onMenuClicked() {
@@ -1745,6 +1749,66 @@ class ObjectSetViewModel(
             delay(200)
             proceedWithOpeningTemplate(template.id)
         }
+    }
+    //endregion
+
+    // region VIEWS
+    fun onViewersWidgetAction(action: ViewersWidgetUi.Action) {
+        when (action) {
+            ViewersWidgetUi.Action.Dismiss -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(
+                    showWidget = false,
+                    isEditing = false
+                )
+            }
+            ViewersWidgetUi.Action.DoneMode -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(isEditing = false)
+            }
+            ViewersWidgetUi.Action.EditMode -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(isEditing = true)
+            }
+            is ViewersWidgetUi.Action.Delete -> {
+                val state = stateReducer.state.value.dataViewState() ?: return
+                viewModelScope.launch {
+                    onEvent(
+                        ViewerEvent.Delete(
+                            ctx = context,
+                            dv = state.dataViewBlock.id,
+                            viewer = action.viewer,
+                        )
+                    )
+                }
+            }
+            is ViewersWidgetUi.Action.Edit -> TODO()
+            is ViewersWidgetUi.Action.OnMove -> {
+                Timber.d("onMove Viewer, from:[$action.from], to:[$action.to]")
+                if (action.from == action.to) return
+                val state = stateReducer.state.value.dataViewState() ?: return
+                if (action.to == 0 && session.currentViewerId.value.isNullOrEmpty()) {
+                    session.currentViewerId.value = action.currentViews.firstOrNull()?.id
+                }
+                viewModelScope.launch {
+                    viewerDelegate.onEvent(
+                        ViewerEvent.UpdatePosition(
+                            ctx = context,
+                            dv = state.dataViewBlock.id,
+                            viewer = action.currentViews[action.to].id,
+                            position = action.to
+                        )
+                    )
+                }
+            }
+            is ViewersWidgetUi.Action.SetActive -> {
+                viewModelScope.launch {
+                    onEvent(ViewerEvent.SetActive(viewer = action.id))
+                }
+            }
+
+            ViewersWidgetUi.Action.Plus -> {
+
+            }
+        }
+
     }
     //endregion
 

@@ -59,6 +59,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -138,6 +139,9 @@ abstract class TestObjectSetSetup {
 
     @Mock
     lateinit var templatesContainer: ObjectTypeTemplatesContainer
+
+    @Mock
+    lateinit var viewerDelegate: ViewerDelegate
 
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultPageType: GetDefaultPageType
@@ -259,7 +263,8 @@ abstract class TestObjectSetSetup {
             updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
-            duplicateObjects = duplicateObjects
+            duplicateObjects = duplicateObjects,
+            viewerDelegate = viewerDelegate
         )
     }
 

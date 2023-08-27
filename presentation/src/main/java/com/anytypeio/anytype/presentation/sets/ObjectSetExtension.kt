@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import android.util.Log
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
@@ -8,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVFilterUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVSortUpdate
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerFields
@@ -44,6 +44,7 @@ import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 
 fun ObjectState.DataView.featuredRelations(
@@ -479,4 +480,19 @@ fun ObjectWrapper.Type.toTemplateViewBlank(): TemplateView.Blank {
         typeId = id,
         layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code
     )
+}
+
+fun List<DVViewer>.toView(session: ObjectSetSession): List<ViewerView> {
+    return mapIndexed { index, viewer ->
+        ViewerView(
+            id = viewer.id,
+            name = viewer.name,
+            type = viewer.type,
+            isActive = if (session.currentViewerId.value != null)
+                viewer.id == session.currentViewerId.value
+            else
+                index == 0,
+            isUnsupported = viewer.type == DVViewerType.BOARD
+        )
+    }
 }

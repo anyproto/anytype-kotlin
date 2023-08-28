@@ -340,7 +340,11 @@ abstract class ObjectMenuViewModelBase(
             val icon: ObjectIcon,
             val isCollection: Boolean = false
         ) : Command()
-        data class OpenTemplate(val template: Id) : Command()
+        data class OpenTemplate(
+            val template: Id,
+            val typeName: String,
+            val icon: ObjectIcon
+        ) : Command()
     }
 
     companion object {

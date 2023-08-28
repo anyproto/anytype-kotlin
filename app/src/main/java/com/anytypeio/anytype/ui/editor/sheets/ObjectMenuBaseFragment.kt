@@ -131,14 +131,15 @@ abstract class ObjectMenuBaseFragment :
             ObjectMenuViewModelBase.Command.OpenLinkToChooser -> openLinkChooser()
             is ObjectMenuViewModelBase.Command.OpenSnackbar -> openSnackbar(command)
             is ObjectMenuViewModelBase.Command.ShareDebugTree -> shareFile(command.uri)
-            is ObjectMenuViewModelBase.Command.OpenTemplate -> openTemplate(command.template)
+            is ObjectMenuViewModelBase.Command.OpenTemplate -> openTemplate(command)
         }
     }
 
-    private fun openTemplate(template: Id) {
+    private fun openTemplate(command: ObjectMenuViewModelBase.Command.OpenTemplate) {
+        toast(getString(R.string.snackbar_template_add) + command.typeName)
         findNavController().navigate(
             R.id.nav_editor_modal,
-            bundleOf(EditorModalFragment.ARG_ID to template)
+            bundleOf(EditorModalFragment.ARG_ID to command.template)
         )
     }
 

@@ -19,7 +19,6 @@ import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.presentation.common.Action
@@ -252,8 +251,7 @@ class ObjectMenuViewModel(
             val params = CreateTemplateFromObject.Params(obj = ctx)
             createTemplateFromObject.async(params).fold(
                 onSuccess = { template ->
-                    sendTemplateToast(ctx)
-                    commands.emit(Command.OpenTemplate(template))
+                    commands.emit(createOpenTemplateCommand(ctx, template))
                     isDismissed.value = true
                 },
                 onFailure = {
@@ -264,23 +262,15 @@ class ObjectMenuViewModel(
         }
     }
 
-    private fun sendTemplateToast(ctx: Id) {
-        //todo Доделать
-        viewModelScope.launch {
-            val type = storage.details.current().details[ctx]?.type?.firstOrNull()
-            if (type != null) {
-                val objType = ObjectWrapper.Basic(storage.details.current().details[type]?.map ?: emptyMap())
-                commands.emit(
-                    Command.OpenSnackbar(
-                        id = "111",
-                        currentObjectName = "222",
-                        targetObjectName = objType.getProperName(),
-                        icon = ObjectIcon.from(objType, objType.layout, urlBuilder),
-                        isCollection = true
-                    )
-                )
-            }
-        }
+    private fun createOpenTemplateCommand(ctx: Id, template: Id): Command.OpenTemplate {
+        val type = storage.details.current().details[ctx]?.type?.firstOrNull()
+        val objType =
+            ObjectWrapper.Basic(storage.details.current().details[type]?.map ?: emptyMap())
+        return Command.OpenTemplate(
+            template = template,
+            icon = ObjectIcon.from(objType, objType.layout, urlBuilder),
+            typeName = objType.getProperName()
+        )
     }
 
     private fun proceedWithUpdatingLockStatus(

@@ -29,6 +29,7 @@ object Relations {
     const val DONE = "done"
     const val FEATURED_RELATIONS = "featuredRelations"
     const val SNIPPET = "snippet"
+    @Deprecated("To be deleted")
     const val WORKSPACE_ID = "workspaceId"
     const val SPACE_ID = "spaceId"
     const val SET_OF = "setOf"

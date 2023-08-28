@@ -684,7 +684,7 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = MARKETPLACE_ID
         )

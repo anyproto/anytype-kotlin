@@ -72,6 +72,7 @@ class ObjectTypeChangeViewModel(
             Timber.d("Built views: ${it.size}")
         }
     }.catch {
+        Timber.e(it, "Error in pipeline")
         sendToast("Error occurred: $it. Please try again later.")
     }
 
@@ -150,11 +151,13 @@ class ObjectTypeChangeViewModel(
                     success = { objects ->
                         if (objects.isNotEmpty()) {
                             commands.emit(Command.TypeAdded(type = name))
-                            // TODO Multispaces - Dispatch type
-//                            proceedWithDispatchingType(
-//                                id = objects.first(),
-//                                name = name
-//                            )
+                            proceedWithDispatchingType(
+                                id = objects.first(),
+                                key = key,
+                                name = name
+                            )
+                        } else {
+                            Timber.w("Empty result")
                         }
                     },
                     failure = {

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
 class ObjectTypeChangeViewModelFactory(
@@ -13,6 +14,7 @@ class ObjectTypeChangeViewModelFactory(
     private val addObjectToWorkspace: AddObjectToWorkspace,
     private val dispatchers: AppCoroutineDispatchers,
     private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager,
     private val getDefaultPageType: GetDefaultPageType
 ) : ViewModelProvider.Factory {
 
@@ -23,6 +25,7 @@ class ObjectTypeChangeViewModelFactory(
             addObjectToWorkspace = addObjectToWorkspace,
             dispatchers = dispatchers,
             workspaceManager = workspaceManager,
+            spaceManager = spaceManager,
             getDefaultPageType = getDefaultPageType
         ) as T
     }

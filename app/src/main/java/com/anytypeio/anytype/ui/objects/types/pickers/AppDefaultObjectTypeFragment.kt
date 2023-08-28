@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.objects.types.pickers
 import androidx.core.os.bundleOf
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
@@ -21,7 +22,7 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
         )
     }
 
-    override fun onItemClicked(id: Id, name: String) {
+    override fun onItemClicked(id: Id, key: Key, name: String) {
         withParent<OnObjectTypeAction> {
             onProceedWithUpdateType(
                 id = id,

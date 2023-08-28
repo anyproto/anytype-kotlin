@@ -48,6 +48,7 @@ object ObjectTypeChangeModule {
         addObjectToWorkspace: AddObjectToWorkspace,
         dispatchers: AppCoroutineDispatchers,
         workspaceManager: WorkspaceManager,
+        spaceManager: SpaceManager,
         getDefaultPageType: GetDefaultPageType
     ): ObjectTypeChangeViewModelFactory {
         return ObjectTypeChangeViewModelFactory(
@@ -55,6 +56,7 @@ object ObjectTypeChangeModule {
             addObjectToWorkspace = addObjectToWorkspace,
             dispatchers = dispatchers,
             workspaceManager = workspaceManager,
+            spaceManager = spaceManager,
             getDefaultPageType = getDefaultPageType
         )
     }

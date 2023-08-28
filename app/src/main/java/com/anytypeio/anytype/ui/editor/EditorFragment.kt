@@ -2065,12 +2065,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedToCreateObjectAndAddToTextAsLink(name)
     }
 
-    override fun onProceedWithUpdateType(id: Id) {
-        vm.onObjectTypeChanged(type = id, applyTemplate = false)
+    override fun onProceedWithUpdateType(id: Id, key: Key) {
+        vm.onObjectTypeChanged(
+            type = id,
+            key = key,
+            applyTemplate = false
+        )
     }
 
-    override fun onProceedWithDraftUpdateType(id: Id) {
-        vm.onObjectTypeChanged(type = id, applyTemplate = true)
+    override fun onProceedWithDraftUpdateType(id: Id, key: Key) {
+        vm.onObjectTypeChanged(
+            type = id,
+            key = key,
+            applyTemplate = true
+        )
     }
 
     override fun onAddRelationToTarget(target: Id, relationKey: Key) {

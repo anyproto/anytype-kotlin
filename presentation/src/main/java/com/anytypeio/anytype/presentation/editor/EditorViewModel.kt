@@ -88,6 +88,7 @@ import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
@@ -286,6 +287,7 @@ class EditorViewModel(
     private val featureToggles: FeatureToggles,
     private val tableDelegate: EditorTableDelegate,
     private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager,
     private val getObjectTypes: GetObjectTypes,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val addRelationToObject: AddRelationToObject,
@@ -4265,12 +4267,24 @@ class EditorViewModel(
         )
     }
 
-    fun onObjectTypeChanged(type: Id, applyTemplate: Boolean) {
+    fun onObjectTypeChanged(
+        type: Id,
+        key: Key,
+        applyTemplate: Boolean
+    ) {
         Timber.d("onObjectTypeChanged, type:[$type], applyTemplate:[$applyTemplate]")
-        proceedWithObjectTypeChange(type = type, applyTemplate = applyTemplate)
+        proceedWithObjectTypeChange(
+            type = type,
+            key = key,
+            applyTemplate = applyTemplate
+        )
     }
 
-    private fun proceedWithObjectTypeChange(type: Id, applyTemplate: Boolean) {
+    private fun proceedWithObjectTypeChange(
+        type: Id,
+        key: Key,
+        applyTemplate: Boolean
+    ) {
         viewModelScope.launch {
             when (type) {
                 ObjectTypeIds.SET -> {
@@ -4280,7 +4294,7 @@ class EditorViewModel(
                     proceedWithConvertingToCollection()
                 }
                 else -> {
-                    proceedWithUpdateObjectType(type = type)
+                    proceedWithUpdateObjectType(type = type, key = key)
                     sendAnalyticsObjectTypeChangeEvent(
                         analytics = analytics,
                         objType = storeOfObjectTypes.get(type)
@@ -4317,7 +4331,7 @@ class EditorViewModel(
         )
     }
 
-    private suspend fun proceedWithUpdateObjectType(type: Id) {
+    private suspend fun proceedWithUpdateObjectType(type: Id, key: Key) {
         val focus = orchestrator.stores.focus.current()
         val effects = buildList<SideEffect> {
             if (focus.targetOrNull() != null) {
@@ -4328,6 +4342,7 @@ class EditorViewModel(
             Intent.Document.SetObjectType(
                 context = context,
                 typeId = type,
+                key = key,
                 effects = effects
             )
         )
@@ -4813,8 +4828,7 @@ class EditorViewModel(
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterObjectTypeLibrary(
-                            // TODO MULTISPACES fix object types
-                            space = workspaceManager.getCurrentWorkspace()
+                            space = spaceManager.get()
                         )
                     )
                     add(
@@ -5865,9 +5879,13 @@ class EditorViewModel(
         get() =
             controlPanelViewState.value?.objectTypesToolbar?.isVisible ?: false
 
-    fun onObjectTypesWidgetItemClicked(typeId: Id) {
+    fun onObjectTypesWidgetItemClicked(typeId: Id, key: Key) {
         Timber.d("onObjectTypesWidgetItemClicked, type:[$typeId]")
-        proceedWithObjectTypeChange(type = typeId, applyTemplate = true)
+        proceedWithObjectTypeChange(
+            type = typeId,
+            key = key,
+            applyTemplate = true
+        )
     }
 
     fun onObjectTypesWidgetSearchClicked() {
@@ -5897,9 +5915,8 @@ class EditorViewModel(
                 sorts = emptyList(),
                 filters = buildList {
                     addAll(
-                        // TODO MULTISPACES fix object types
                         ObjectSearchConstants.filterObjectTypeLibrary(
-                            space = workspaceManager.getCurrentWorkspace()
+                            space = spaceManager.get()
                         )
                     )
                     add(

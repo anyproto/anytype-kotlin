@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.objects
 
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.NOTE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.PAGE
@@ -16,6 +17,7 @@ sealed class ObjectTypeItemView {
 
 data class ObjectTypeView(
     val id: String,
+    val key: Key = "",
     val name: String,
     val description: String?,
     val emoji: String?,

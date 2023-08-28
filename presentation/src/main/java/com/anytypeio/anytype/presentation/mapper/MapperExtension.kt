@@ -19,7 +19,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.sets.buildGridRow
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
@@ -597,18 +596,10 @@ fun RelationFormat.toView() = when (this) {
     RelationFormat.UNDEFINED -> ColumnView.Format.UNDEFINED
 }
 
-fun ObjectWrapper.Basic.toObjectTypeView(selectedSources: List<Id> = emptyList()): ObjectTypeView =
-    ObjectTypeView(
-        id = id,
-        name = getProperName(),
-        emoji = iconEmoji,
-        description = description,
-        isSelected = selectedSources.contains(id)
-    )
-
 fun ObjectWrapper.Type.toObjectTypeView(selectedSources: List<Id> = emptyList()): ObjectTypeView =
     ObjectTypeView(
         id = id,
+        key = uniqueKey,
         name = name.orEmpty(),
         emoji = iconEmoji,
         description = description,

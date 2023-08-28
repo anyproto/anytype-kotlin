@@ -5,6 +5,7 @@ import android.os.Parcelable
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import kotlinx.parcelize.Parcelize
@@ -46,6 +47,7 @@ sealed class Intent {
         class SetObjectType(
             val context: Id,
             val typeId: Id,
+            val key: Key,
             val effects: List<SideEffect>
         ) : Document()
     }

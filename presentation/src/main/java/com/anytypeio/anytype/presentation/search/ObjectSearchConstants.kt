@@ -684,7 +684,7 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = MARKETPLACE_ID
         )
@@ -702,7 +702,8 @@ object ObjectSearchConstants {
         Relations.IS_DELETED,
         Relations.SMARTBLOCKTYPES,
         Relations.SOURCE_OBJECT,
-        Relations.RECOMMENDED_LAYOUT
+        Relations.RECOMMENDED_LAYOUT,
+        Relations.UNIQUE_KEY
     )
 
     //endregion

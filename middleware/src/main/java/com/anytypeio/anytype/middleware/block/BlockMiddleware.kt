@@ -706,8 +706,11 @@ class BlockMiddleware(
         space = space
     )
 
-    override suspend fun addObjectToWorkspace(objects: List<Id>): List<Id> {
-        return middleware.workspaceObjectListAdd(objects)
+    override suspend fun addObjectToWorkspace(objects: List<Id>, space: Id): List<Id> {
+        return middleware.workspaceObjectListAdd(
+            objects = objects,
+            space = space
+        )
     }
 
     override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {

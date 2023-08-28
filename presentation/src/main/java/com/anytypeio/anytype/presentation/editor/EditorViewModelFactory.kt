@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -77,6 +78,7 @@ open class  EditorViewModelFactory(
     private val featureToggles: FeatureToggles,
     private val tableDelegate: EditorTableDelegate,
     private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager,
     private val getObjectTypes: GetObjectTypes,
     private val objectToCollection: ConvertObjectToCollection,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
@@ -120,6 +122,7 @@ open class  EditorViewModelFactory(
             featureToggles = featureToggles,
             tableDelegate = tableDelegate,
             workspaceManager = workspaceManager,
+            spaceManager = spaceManager,
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,

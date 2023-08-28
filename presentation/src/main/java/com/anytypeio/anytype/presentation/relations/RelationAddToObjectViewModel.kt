@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
@@ -14,6 +13,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
@@ -32,13 +32,15 @@ class RelationAddToObjectViewModel(
     appCoroutineDispatchers: AppCoroutineDispatchers,
     getRelations: GetRelations,
     addObjectToWorkspace: AddObjectToWorkspace,
-    workspaceManager: WorkspaceManager
+    workspaceManager: WorkspaceManager,
+    spaceManager: SpaceManager
 ) : RelationAddViewModelBase(
     relationsProvider = relationsProvider,
     appCoroutineDispatchers = appCoroutineDispatchers,
     getRelations = getRelations,
     addObjectToWorkspace = addObjectToWorkspace,
-    workspaceManager = workspaceManager
+    workspaceManager = workspaceManager,
+    spaceManager = spaceManager
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -84,7 +86,8 @@ class RelationAddToObjectViewModel(
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val getRelations: GetRelations,
         private val addObjectToWorkspace: AddObjectToWorkspace,
-        private val workspaceManager: WorkspaceManager
+        private val workspaceManager: WorkspaceManager,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -97,7 +100,8 @@ class RelationAddToObjectViewModel(
                 appCoroutineDispatchers = appCoroutineDispatchers,
                 getRelations = getRelations,
                 addObjectToWorkspace = addObjectToWorkspace,
-                workspaceManager = workspaceManager
+                workspaceManager = workspaceManager,
+                spaceManager = spaceManager
             ) as T
         }
     }

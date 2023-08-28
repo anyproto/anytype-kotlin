@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -35,7 +37,8 @@ class ObjectTypeChangeViewModel(
     private val addObjectToWorkspace: AddObjectToWorkspace,
     private val dispatchers: AppCoroutineDispatchers,
     private val workspaceManager: WorkspaceManager,
-    private val getDefaultPageType: GetDefaultPageType
+    private val spaceManager: SpaceManager,
+    private val getDefaultPageType: GetDefaultPageType,
 ) : BaseViewModel() {
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
@@ -65,8 +68,11 @@ class ObjectTypeChangeViewModel(
             myTypes = filteredLibraryTypes,
             marketplaceTypes = marketplaceTypes,
             setup = setup
-        )
+        ).also {
+            Timber.d("Built views: ${it.size}")
+        }
     }.catch {
+        Timber.e(it, "Error in pipeline")
         sendToast("Error occurred: $it. Please try again later.")
     }
 
@@ -78,7 +84,10 @@ class ObjectTypeChangeViewModel(
     init {
         viewModelScope.launch {
             // Processing on the io thread, collecting on the main thread.
-            pipeline.flowOn(dispatchers.io).collect { views.value = it }
+            pipeline.flowOn(dispatchers.io).collect {
+                Timber.d("Got views: ${it.size}")
+                views.value = it
+            }
         }
     }
 
@@ -131,15 +140,24 @@ class ObjectTypeChangeViewModel(
         userInput.value = input
     }
 
-    fun onItemClicked(id: String, name: String) {
+    fun onItemClicked(id: Id, key: Key, name: String) {
         viewModelScope.launch {
             if (id.contains(MARKETPLACE_OBJECT_TYPE_PREFIX)) {
-                val params = AddObjectToWorkspace.Params(listOf(id))
+                val params = AddObjectToWorkspace.Params(
+                    objects = listOf(id),
+                    space = spaceManager.get()
+                )
                 addObjectToWorkspace(params = params).process(
                     success = { objects ->
                         if (objects.isNotEmpty()) {
                             commands.emit(Command.TypeAdded(type = name))
-                            proceedWithDispatchingType(objects.first(), name)
+                            proceedWithDispatchingType(
+                                id = objects.first(),
+                                key = key,
+                                name = name
+                            )
+                        } else {
+                            Timber.w("Empty result")
                         }
                     },
                     failure = {
@@ -147,15 +165,24 @@ class ObjectTypeChangeViewModel(
                     }
                 )
             } else {
-                proceedWithDispatchingType(id, name)
+                proceedWithDispatchingType(
+                    id = id,
+                    key = key,
+                    name = name
+                )
             }
         }
     }
 
-    private suspend fun proceedWithDispatchingType(id: String, name: String) {
+    private suspend fun proceedWithDispatchingType(
+        id: Id,
+        key: Key,
+        name: String
+    ) {
         commands.emit(
             Command.DispatchType(
                 id = id,
+                key = key,
                 name = name
             )
         )
@@ -166,6 +193,8 @@ class ObjectTypeChangeViewModel(
         setup: Setup,
         marketplaceTypes: List<ObjectWrapper.Type>
     ) = buildList {
+        Timber.d("My types: ${myTypes.size}")
+        Timber.d("Marketplace types: ${marketplaceTypes.size}")
         if (myTypes.isNotEmpty()) {
             val views = myTypes.getObjectTypeViewsForSBPage(
                 isWithCollection = setup.isWithCollection,
@@ -248,8 +277,7 @@ class ObjectTypeChangeViewModel(
             filters = buildList {
                 addAll(
                     ObjectSearchConstants.filterObjectTypeLibrary(
-                        // TODO MULTISPACES fix object types
-                        space = workspaceManager.getCurrentWorkspace()
+                        space = spaceManager.get()
                     )
                 )
                 add(
@@ -284,6 +312,7 @@ class ObjectTypeChangeViewModel(
     sealed class Command {
         data class DispatchType(
             val id: Id,
+            val key: Key,
             val name: String
         ) : Command()
 

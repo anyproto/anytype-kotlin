@@ -247,7 +247,7 @@ interface BlockRepository {
 
     suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload
 
-    suspend fun setObjectTypeToObject(ctx: Id, objectTypeKey: Id): Payload
+    suspend fun setObjectTypeToObject(ctx: Id, objectTypeKey: Key): Payload
 
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
@@ -376,7 +376,7 @@ interface BlockRepository {
 
     suspend fun createWorkspace(details: Struct): Id
     suspend fun getSpaceConfig(space: Id): Config
-    suspend fun addObjectToWorkspace(objects: List<Id>) : List<Id>
+    suspend fun addObjectToWorkspace(objects: List<Id>, space: Id) : List<Id>
     suspend fun removeObjectFromWorkspace(objects: List<Id>) : List<Id>
 
     suspend fun createWidget(

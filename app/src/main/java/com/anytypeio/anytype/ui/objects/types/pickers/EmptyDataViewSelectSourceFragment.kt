@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.objects.types.pickers
 
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
@@ -22,7 +23,7 @@ class EmptyDataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
         )
     }
 
-    override fun onItemClicked(id: Id, name: String) {
+    override fun onItemClicked(id: Id, key: Key, name: String) {
         withParent<OnDataViewSelectSourceAction> {
             onProceedWithSelectSource(id = id)
         }

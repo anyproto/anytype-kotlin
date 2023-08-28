@@ -596,7 +596,7 @@ class Orchestrator(
                     setObjectType(
                         params = SetObjectType.Params(
                             context = intent.context,
-                            objectTypeKey = intent.typeId
+                            objectTypeKey = intent.key
                         )
                     ).process(
                         failure = defaultOnError,

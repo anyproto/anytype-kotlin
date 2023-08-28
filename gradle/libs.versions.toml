@@ -170,7 +170,5 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "kotlinVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
 wire = { id = "com.squareup.wire", version = "4.4.3" }
 firebaseDistribution = { id = "com.google.firebase.appdistribution", version = "3.1.1" }
-navigation = { id = "androidx.navigation.safeargs", version.ref = "navigationVersion" }
-navigationKotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigationVersion" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinVersion" }
 gms = { id = "com.google.gms.google-services", version = "4.3.15" }

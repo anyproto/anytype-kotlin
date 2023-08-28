@@ -119,7 +119,7 @@ open class ObjectSearchViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                    workspaceId = workspaceManager.getCurrentWorkspace()
+                    space = spaceManager.get()
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )

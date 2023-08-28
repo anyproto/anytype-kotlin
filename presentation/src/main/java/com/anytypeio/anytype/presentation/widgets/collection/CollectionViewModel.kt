@@ -158,7 +158,7 @@ class CollectionViewModel(
         val params = GetObjectTypes.Params(
             sorts = emptyList(),
             filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                workspaceId = workspaceManager.getCurrentWorkspace()
+                space = workspaceManager.getCurrentWorkspace()
             ),
             keys = ObjectSearchConstants.defaultKeysObjectType
         )

@@ -128,7 +128,8 @@ class MoveToViewModel(
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterObjectTypeLibrary(
-                            workspaceId = workspaceManager.getCurrentWorkspace()
+                            // TODO MULTISPACES fix object types
+                            space = workspaceManager.getCurrentWorkspace()
                         )
                     )
                     add(

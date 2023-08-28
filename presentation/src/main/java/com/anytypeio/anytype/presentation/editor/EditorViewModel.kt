@@ -94,8 +94,8 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
-import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.ObjectTypesWidgetEvent
+import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Intent
@@ -4813,7 +4813,8 @@ class EditorViewModel(
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterObjectTypeLibrary(
-                            workspaceId = workspaceManager.getCurrentWorkspace()
+                            // TODO MULTISPACES fix object types
+                            space = workspaceManager.getCurrentWorkspace()
                         )
                     )
                     add(
@@ -5896,8 +5897,9 @@ class EditorViewModel(
                 sorts = emptyList(),
                 filters = buildList {
                     addAll(
+                        // TODO MULTISPACES fix object types
                         ObjectSearchConstants.filterObjectTypeLibrary(
-                            workspaceId = workspaceManager.getCurrentWorkspace()
+                            space = workspaceManager.getCurrentWorkspace()
                         )
                     )
                     add(

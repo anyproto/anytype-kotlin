@@ -33,9 +33,9 @@ class TextHighlightWidget @JvmOverloads constructor(
         }
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         if (text is Spanned && layout != null) {
-            canvas?.withTranslation(totalPaddingLeft.toFloat(), totalPaddingTop.toFloat()) {
+            canvas.withTranslation(totalPaddingLeft.toFloat(), totalPaddingTop.toFloat()) {
                 highlightDrawer?.draw(
                     canvas = canvas,
                     text = text as Spanned,

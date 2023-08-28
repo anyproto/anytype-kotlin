@@ -750,7 +750,7 @@ private fun TemplateItemRectangles() {
     }
 }
 
-private enum class DragStates {
+enum class DragStates {
     VISIBLE,
     DISMISSED
 }

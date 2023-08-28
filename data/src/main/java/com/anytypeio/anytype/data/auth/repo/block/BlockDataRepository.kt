@@ -752,9 +752,10 @@ class BlockDataRepository(
         space = space
     )
 
-    override suspend fun addObjectToWorkspace(objects: List<Id>): List<Id> {
+    override suspend fun addObjectToWorkspace(objects: List<Id>, space: Id): List<Id> {
         return remote.addObjectToWorkspace(
-            objects = objects
+            objects = objects,
+            space = space
         )
     }
 

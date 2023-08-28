@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
@@ -56,7 +57,8 @@ object RelationAddToObjectModule {
         getRelations: GetRelations,
         appCoroutineDispatchers: AppCoroutineDispatchers,
         addObjectToWorkspace: AddObjectToWorkspace,
-        workspaceManager: WorkspaceManager
+        workspaceManager: WorkspaceManager,
+        spaceManager: SpaceManager
     ): RelationAddToObjectViewModel.Factory = RelationAddToObjectViewModel.Factory(
         storeOfRelations = storeOfRelations,
         addRelationToObject = addRelationToObject,
@@ -66,7 +68,8 @@ object RelationAddToObjectModule {
         getRelations = getRelations,
         appCoroutineDispatchers = appCoroutineDispatchers,
         addObjectToWorkspace = addObjectToWorkspace,
-        workspaceManager = workspaceManager
+        workspaceManager = workspaceManager,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -116,7 +119,8 @@ object RelationAddToDataViewModule {
         appCoroutineDispatchers: AppCoroutineDispatchers,
         getRelations: GetRelations,
         addObjectToWorkspace: AddObjectToWorkspace,
-        workspaceManager: WorkspaceManager
+        workspaceManager: WorkspaceManager,
+        spaceManager: SpaceManager
     ): RelationAddToDataViewViewModel.Factory = RelationAddToDataViewViewModel.Factory(
         addRelationToDataView = addRelationToDataView,
         dispatcher = dispatcher,
@@ -128,7 +132,8 @@ object RelationAddToDataViewModule {
         appCoroutineDispatchers = appCoroutineDispatchers,
         getRelations = getRelations,
         addObjectToWorkspace = addObjectToWorkspace,
-        workspaceManager = workspaceManager
+        workspaceManager = workspaceManager,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

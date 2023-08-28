@@ -68,7 +68,9 @@ class ObjectTypeChangeViewModel(
             myTypes = filteredLibraryTypes,
             marketplaceTypes = marketplaceTypes,
             setup = setup
-        )
+        ).also {
+            Timber.d("Built views: ${it.size}")
+        }
     }.catch {
         sendToast("Error occurred: $it. Please try again later.")
     }
@@ -81,7 +83,10 @@ class ObjectTypeChangeViewModel(
     init {
         viewModelScope.launch {
             // Processing on the io thread, collecting on the main thread.
-            pipeline.flowOn(dispatchers.io).collect { views.value = it }
+            pipeline.flowOn(dispatchers.io).collect {
+                Timber.d("Got views: ${it.size}")
+                views.value = it
+            }
         }
     }
 
@@ -137,7 +142,10 @@ class ObjectTypeChangeViewModel(
     fun onItemClicked(id: Id, key: Key, name: String) {
         viewModelScope.launch {
             if (id.contains(MARKETPLACE_OBJECT_TYPE_PREFIX)) {
-                val params = AddObjectToWorkspace.Params(listOf(id))
+                val params = AddObjectToWorkspace.Params(
+                    objects = listOf(id),
+                    space = spaceManager.get()
+                )
                 addObjectToWorkspace(params = params).process(
                     success = { objects ->
                         if (objects.isNotEmpty()) {
@@ -182,6 +190,8 @@ class ObjectTypeChangeViewModel(
         setup: Setup,
         marketplaceTypes: List<ObjectWrapper.Type>
     ) = buildList {
+        Timber.d("My types: ${myTypes.size}")
+        Timber.d("Marketplace types: ${marketplaceTypes.size}")
         if (myTypes.isNotEmpty()) {
             val views = myTypes.getObjectTypeViewsForSBPage(
                 isWithCollection = setup.isWithCollection,

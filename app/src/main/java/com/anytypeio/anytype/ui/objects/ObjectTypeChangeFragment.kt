@@ -22,6 +22,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel.Command
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import javax.inject.Inject
+import timber.log.Timber
 
 abstract class BaseObjectTypeChangeFragment :
     BaseBottomSheetTextInputFragment<FragmentObjectTypeChangeBinding>() {
@@ -63,10 +64,14 @@ abstract class BaseObjectTypeChangeFragment :
         super.onStart()
         expand()
         with(lifecycleScope) {
-            jobs += subscribe(vm.views) { objectTypeAdapter.update(it) }
+            jobs += subscribe(vm.views) {
+                Timber.d("views: ${it.size}")
+                objectTypeAdapter.update(it)
+            }
             jobs += subscribe(binding.searchObjectTypeInput.textChanges()) {
                 vm.onQueryChanged(it.toString())
             }
+            jobs += subscribe(vm.toasts) { toast -> toast(toast) }
             jobs += subscribe(vm.commands) { command ->
                 when (command) {
                     is Command.DispatchType -> {

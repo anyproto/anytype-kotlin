@@ -148,7 +148,7 @@ sealed class ObjectWrapper {
     data class Type(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
-        val uniqueKey: Id by default
+        val uniqueKey: String? by default
         val name: String? by default
         val sourceObject: Id? by default
         val description: String? by default

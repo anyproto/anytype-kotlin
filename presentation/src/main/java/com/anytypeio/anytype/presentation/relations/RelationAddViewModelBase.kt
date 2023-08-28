@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.relations.model.RelationItemView
@@ -44,7 +45,8 @@ abstract class RelationAddViewModelBase(
     private val getRelations: GetRelations,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val addObjectToWorkspace: AddObjectToWorkspace,
-    private val workspaceManager: WorkspaceManager
+    private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
@@ -201,7 +203,8 @@ abstract class RelationAddViewModelBase(
             if (relation.workspace == MARKETPLACE_ID) {
                 addObjectToWorkspace(
                     AddObjectToWorkspace.Params(
-                        objects = listOf(relation.id)
+                        objects = listOf(relation.id),
+                        space = spaceManager.get()
                     )
                 ).proceed(
                     success = {

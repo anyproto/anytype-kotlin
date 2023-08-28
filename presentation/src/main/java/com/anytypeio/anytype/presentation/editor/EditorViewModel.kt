@@ -3140,13 +3140,14 @@ class EditorViewModel(
     }
 
 
-    fun onAddNewDocumentClicked() {
+    fun onAddNewDocumentClicked(template: Id? = null) {
 
         Timber.d("onAddNewDocumentClicked, ")
 
         val startTime = System.currentTimeMillis()
         jobs += viewModelScope.launch {
-            createObject.async(CreateObject.Param(type = null))
+            val params = CreateObject.Param(type = null, template = template)
+            createObject.async(params = params)
                 .fold(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(

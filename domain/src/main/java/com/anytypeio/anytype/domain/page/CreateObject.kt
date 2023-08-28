@@ -36,7 +36,7 @@ class CreateObject(
         }
 
         val command = Command.CreateObject(
-            template = null,
+            template = params.template,
             prefilled = prefilled,
             internalFlags = internalFlags
         )
@@ -52,7 +52,8 @@ class CreateObject(
     }
 
     data class Param(
-        val type: String?
+        val type: String?,
+        val template: Id? = null
     )
 
     data class Result(

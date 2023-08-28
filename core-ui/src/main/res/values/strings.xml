@@ -244,6 +244,7 @@
     <string name="relation">Relation</string>
     <string name="download">Download</string>
     <string name="view">View</string>
+    <string name="views">Views</string>
 
     <string name="choose_emoji">Choose emoji</string>
     <string name="logo_transition">logo_transition</string>
@@ -652,5 +653,6 @@
     <string name="templates_menu_edit">Edit template</string>
     <string name="templates_menu_duplicate">Duplicate</string>
     <string name="templates_menu_delete">Delete</string>
+    <string name="unsupported">Unsupported</string>
 
 </resources>

@@ -52,6 +52,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.ObjectTypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
+import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
 import com.anytypeio.anytype.core_utils.OnSwipeListener
@@ -73,6 +74,7 @@ import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -93,9 +95,6 @@ import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
-import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
-import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
-import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
@@ -340,6 +339,16 @@ open class ObjectSetFragment :
         }
 
         observeSelectingTemplate()
+
+        binding.viewersWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ViewersWidget(
+                    state = vm.viewersWidgetState.collectAsStateWithLifecycle().value,
+                    action = vm::onViewersWidgetAction
+                )
+            }
+        }
     }
 
     private fun setupWindowInsetAnimation() {
@@ -877,24 +886,6 @@ open class ObjectSetFragment :
                     )
                 )
             }
-            is ObjectSetCommand.Modal.CreateViewer -> {
-                val fr = CreateDataViewViewerFragment.new(
-                    ctx = command.ctx,
-                    target = command.target
-                )
-                fr.showChildFragment(EMPTY_TAG)
-            }
-            is ObjectSetCommand.Modal.EditDataViewViewer -> {
-                val fr = EditDataViewViewerFragment.new(
-                    ctx = command.ctx,
-                    viewer = command.viewer
-                )
-                fr.showChildFragment(EMPTY_TAG)
-            }
-            is ObjectSetCommand.Modal.ManageViewer -> {
-                val fr = ManageViewerFragment.new(ctx = command.ctx, dv = command.dataview)
-                fr.showChildFragment(EMPTY_TAG)
-            }
             is ObjectSetCommand.Modal.OpenSettings -> {
                 val fr = ObjectSetSettingsFragment.new(
                     ctx = command.ctx,
@@ -1108,6 +1099,9 @@ open class ObjectSetFragment :
                     }
                     vm.templatesWidgetState.value.showWidget -> {
                         vm.onDismissTemplatesWidget()
+                    }
+                    vm.viewersWidgetState.value.showWidget -> {
+                        vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)
                     }
                     else -> {
                         vm.onSystemBackPressed()

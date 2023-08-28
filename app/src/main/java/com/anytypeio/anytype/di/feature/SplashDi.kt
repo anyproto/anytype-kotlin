@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
@@ -112,12 +113,16 @@ object SplashModule {
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
         workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
-        userSettingsRepository,
-        blockRepository,
-        workspaceManager,
-        dispatchers
+        userSettingsRepository = userSettingsRepository,
+        blockRepository = blockRepository,
+        workspaceManager = workspaceManager,
+        spaceManager = spaceManager,
+        dispatchers = dispatchers,
+        configStorage = configStorage
     )
 
     @JvmStatic
@@ -133,12 +138,16 @@ object SplashModule {
         repo: BlockRepository,
         getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): CreateObject = CreateObject(
         repo = repo,
         getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic
@@ -177,4 +186,5 @@ interface SplashDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun crashReporter(): CrashReporter
     fun metricsProvider(): MetricsProvider
+    fun spaceManager(): SpaceManager
 }

@@ -632,9 +632,12 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.note -> ObjectType.Layout.NOTE
     MOTypeLayout.space -> ObjectType.Layout.SPACE
     MOTypeLayout.bookmark -> ObjectType.Layout.BOOKMARK
-    anytype.model.ObjectType.Layout.relationOptionsList -> TODO()
-    anytype.model.ObjectType.Layout.relationOption -> TODO()
+    MOTypeLayout.audio -> ObjectType.Layout.AUDIO
+    MOTypeLayout.video -> ObjectType.Layout.VIDEO
+    MOTypeLayout.date -> ObjectType.Layout.DATE
     MOTypeLayout.collection -> ObjectType.Layout.COLLECTION
+    MOTypeLayout.relationOptionsList -> TODO()
+    MOTypeLayout.relationOption -> TODO()
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {

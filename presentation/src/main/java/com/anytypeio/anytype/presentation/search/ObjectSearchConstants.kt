@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.FileSyncStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.AUDIO
 import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
@@ -31,7 +32,7 @@ import com.anytypeio.anytype.core_models.Relations
 object ObjectSearchConstants {
 
     //region SEARCH OBJECTS
-    fun filterSearchObjects(workspaceId: String) = listOf(
+    fun filterSearchObjects(spaceId: String) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -48,25 +49,22 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.NOT_IN,
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.IN,
             value = listOf(
-                OBJECT_TYPE,
-                RELATION,
-                TEMPLATE,
-                IMAGE,
-                FILE,
-                VIDEO,
-                AUDIO,
-                DASHBOARD,
-                DATE,
-                RELATION_OPTION
+                ObjectType.Layout.BASIC.code.toDouble(),
+                ObjectType.Layout.PROFILE.code.toDouble(),
+                ObjectType.Layout.SET.code.toDouble(),
+                ObjectType.Layout.COLLECTION.code.toDouble(),
+                ObjectType.Layout.TODO.code.toDouble(),
+                ObjectType.Layout.NOTE.code.toDouble(),
+                ObjectType.Layout.BOOKMARK.code.toDouble()
             )
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = spaceId
         )
     )
 

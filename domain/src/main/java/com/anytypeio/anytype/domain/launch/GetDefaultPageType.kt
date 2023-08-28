@@ -2,20 +2,24 @@ package com.anytypeio.anytype.domain.launch
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import javax.inject.Inject
 
-class GetDefaultPageType(
+class GetDefaultPageType @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
     private val blockRepository: BlockRepository,
     private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager,
+    private val configStorage: ConfigStorage,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Unit, GetDefaultPageType.Response>(dispatchers.io) {
 
@@ -26,19 +30,54 @@ class GetDefaultPageType(
             if (item != null) {
                 return Response(item.id, item.name)
             } else {
-                return searchNote(workspaceId)
+                return searchNote()
             }
         } ?: run {
-            return searchNote(workspaceId)
+            return searchNote()
         }
     }
 
-    private suspend fun searchNote(workspaceId: Id): Response {
-        val note = searchObjectByIdAndWorkspaceId(
-            ObjectTypeIds.NOTE,
-            workspaceId
+    private suspend fun searchNote(): Response {
+        val items = blockRepository.searchObjects(
+            limit = 1,
+            fulltext = "",
+            filters = buildList {
+                add(
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.EQUAL,
+                        value = ObjectTypeIds.NOTE
+                    )
+                )
+                val space = spaceManager.get().ifEmpty {
+                    // Fallback to default space.
+                    configStorage.getOrNull()?.space
+                }
+                if (!space.isNullOrEmpty()) {
+                    add(
+                        DVFilter(
+                            relation = Relations.SPACE_ID,
+                            condition = DVFilterCondition.EQUAL,
+                            value = space
+                        )
+                    )
+                }
+            },
+            offset = 0,
+            sorts = emptyList(),
+            keys = listOf(
+                Relations.ID,
+                Relations.NAME,
+                Relations.UNIQUE_KEY,
+                Relations.SPACE_ID
+            )
         )
-        return Response(note?.id, note?.name)
+        val note = if (items.isNotEmpty()) {
+            ObjectWrapper.Type(items.first())
+        } else {
+            null
+        }
+        return Response(note?.uniqueKey, note?.name)
     }
 
     private suspend fun searchObjectByIdAndWorkspaceId(
@@ -59,10 +98,12 @@ class GetDefaultPageType(
                 )
             },
             offset = 0,
-            sorts = listOf(),
+            sorts = emptyList(),
             keys = listOf(
                 Relations.ID,
                 Relations.NAME,
+                Relations.UNIQUE_KEY,
+                Relations.SPACE_ID
             )
         )
         return if (items.isNotEmpty()) {

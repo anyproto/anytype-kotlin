@@ -4,20 +4,24 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import javax.inject.Inject
 
 /**
  * Use case for creating a new object
  */
-class CreateObject(
+class CreateObject @Inject constructor(
     private val repo: BlockRepository,
     private val getDefaultPageType: GetDefaultPageType,
     private val getTemplates: GetTemplates,
+    private val spaceManager: SpaceManager,
+    private val configStorage: ConfigStorage,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateObject.Param, CreateObject.Result>(dispatchers.io) {
 
@@ -31,14 +35,14 @@ class CreateObject(
             add(InternalFlags.ShouldEmptyDelete)
         }
 
-        val prefilled = buildMap {
-            if (type != null) put(Relations.TYPE, type)
-        }
-
         val command = Command.CreateObject(
             template = null,
-            prefilled = prefilled,
-            internalFlags = internalFlags
+            prefilled = emptyMap(),
+            internalFlags = internalFlags,
+            space = spaceManager.get().ifEmpty {
+                configStorage.getOrNull()?.space.orEmpty()
+            },
+            type = type.orEmpty()
         )
 
         val result = repo.createObject(command)

@@ -27,6 +27,7 @@ interface WorkspaceManager {
 
 interface SpaceManager {
 
+    suspend fun get(): Id
     suspend fun set(space: Id)
     fun observe() : Flow<Config>
     fun clear()
@@ -40,6 +41,13 @@ interface SpaceManager {
         private val currentSpace = MutableStateFlow("")
         private val info = mutableMapOf<Id, Config>()
 
+        override suspend fun get(): Id {
+            val curr = currentSpace.value
+            return curr.ifEmpty {
+                configStorage.getOrNull()?.space.orEmpty()
+            }
+        }
+
         override suspend fun set(space: Id)  = withContext(dispatchers.io) {
             if (!info.containsKey(space)) {
                 val config = repo.getSpaceConfig(space)
@@ -50,7 +58,7 @@ interface SpaceManager {
 
         override fun observe(): Flow<Config> {
             return currentSpace.mapNotNull { space ->
-                if (space.isNullOrEmpty()) {
+                if (space.isEmpty()) {
                     configStorage.getOrNull()
                 } else {
                     val config = info[space]

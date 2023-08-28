@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -32,13 +33,15 @@ class SelectWidgetSourceViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val workspaceManager: WorkspaceManager,
-    private val dispatcher: Dispatcher<WidgetDispatchEvent>
+    private val dispatcher: Dispatcher<WidgetDispatchEvent>,
+    private val spaceManager: SpaceManager
 ) : ObjectSearchViewModel(
     urlBuilder = urlBuilder,
     searchObjects = searchObjects,
     getObjectTypes = getObjectTypes,
     analytics = analytics,
-    workspaceManager = workspaceManager
+    workspaceManager = workspaceManager,
+    spaceManager = spaceManager
 ) {
 
     val isDismissed = MutableStateFlow(false)
@@ -247,7 +250,8 @@ class SelectWidgetSourceViewModel(
         private val getObjectTypes: GetObjectTypes,
         private val analytics: Analytics,
         private val workspaceManager: WorkspaceManager,
-        private val dispatcher: Dispatcher<WidgetDispatchEvent>
+        private val dispatcher: Dispatcher<WidgetDispatchEvent>,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -258,7 +262,8 @@ class SelectWidgetSourceViewModel(
                 analytics = analytics,
                 workspaceManager = workspaceManager,
                 getObjectTypes = getObjectTypes,
-                dispatcher = dispatcher
+                dispatcher = dispatcher,
+                spaceManager = spaceManager
             ) as T
         }
     }

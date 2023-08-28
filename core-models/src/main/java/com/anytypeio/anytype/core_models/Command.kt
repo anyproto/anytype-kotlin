@@ -181,7 +181,9 @@ sealed class Command {
     data class CreateObject(
         val prefilled: Struct,
         val template: Id?,
-        val internalFlags: List<InternalFlags>
+        val internalFlags: List<InternalFlags>,
+        val space: Id,
+        val type: Key
     )
 
     class Move(

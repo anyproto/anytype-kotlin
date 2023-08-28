@@ -5,8 +5,9 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModelFactory
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
@@ -51,12 +52,14 @@ object ObjectSearchModule {
         getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
         analytics: Analytics,
-        workspaceManager: WorkspaceManager
+        workspaceManager: WorkspaceManager,
+        spaceManager: SpaceManager
     ): ObjectSearchViewModelFactory = ObjectSearchViewModelFactory(
         urlBuilder = urlBuilder,
         searchObjects = searchObjects,
         getObjectTypes = getObjectTypes,
         analytics = analytics,
-        workspaceManager = workspaceManager
+        workspaceManager = workspaceManager,
+        spaceManager = spaceManager
     )
 }

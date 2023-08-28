@@ -3,7 +3,6 @@ package com.anytypeio.anytype.app
 import android.content.Context
 import android.content.SharedPreferences
 import com.anytypeio.anytype.BuildConfig
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.device.BuildProvider
 import javax.inject.Inject
@@ -17,8 +16,7 @@ class DefaultFeatureToggles @Inject constructor(
     override val isLogFromGoProcess =
         BuildConfig.LOG_FROM_MW_LIBRARY && buildProvider.isDebug()
 
-    override val isLogMiddlewareInteraction =
-        BuildConfig.LOG_MW_INTERACTION && buildProvider.isDebug()
+    override val isLogMiddlewareInteraction = true
 
     override val excludeThreadStatusLogging: Boolean = true
 
@@ -32,7 +30,7 @@ class DefaultFeatureToggles @Inject constructor(
 
     override val isAutoUpdateEnabled: Boolean = false
 
-    override val isConciseLogging: Boolean = true
+    override val isConciseLogging: Boolean = false
 
     override val enableSpaces: Boolean = true
 }

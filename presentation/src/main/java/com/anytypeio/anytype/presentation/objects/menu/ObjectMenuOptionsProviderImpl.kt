@@ -78,6 +78,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasRelations = true,
                     hasDiagnosticsVisibility = true,
                 )
+                else -> TODO("Support new layouts")
             }
         } else {
             // unknown layout show all options

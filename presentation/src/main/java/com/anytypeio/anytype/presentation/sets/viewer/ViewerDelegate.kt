@@ -44,5 +44,105 @@ class DefaultViewerDelegate @Inject constructor(
     private val renameDataViewViewer: RenameDataViewViewer
 ) : ViewerDelegate {
 
-    override suspend fun onEvent(event: ViewerEvent) {}
+    override suspend fun onEvent(event: ViewerEvent) {
+        when (event) {
+            is ViewerEvent.Delete -> onDelete(
+                ctx = event.ctx,
+                dv = event.dv,
+                viewer = event.viewer
+            )
+
+            is ViewerEvent.AddNew -> onAddNew(
+                ctx = event.ctx,
+                dv = event.dv,
+                name = event.name,
+                type = event.type
+            )
+
+            is ViewerEvent.Duplicate -> onDuplicate(
+                ctx = event.ctx,
+                dv = event.dv,
+                viewer = event.viewer
+            )
+
+            is ViewerEvent.Rename -> onRename(
+                ctx = event.ctx,
+                dv = event.dv,
+                viewer = event.viewer
+            )
+
+            is ViewerEvent.UpdatePosition -> onUpdatePosition(
+                ctx = event.ctx,
+                dv = event.dv,
+                viewer = event.viewer,
+                position = event.position
+            )
+
+            is ViewerEvent.SetActive -> {
+                session.currentViewerId.value = event.viewer
+            }
+        }
+    }
+
+    private suspend fun onAddNew(ctx: Id, dv: Id, name: String, type: DVViewerType) {
+        val params = AddDataViewViewer.Params(
+            ctx = ctx,
+            target = dv,
+            name = name,
+            type = type
+        )
+        addDataViewViewer.async(params).fold(
+            onFailure = { Timber.e(it, "Error while adding new viewer") },
+            onSuccess = { dispatcher.send(it) }
+        )
+    }
+
+    private suspend fun onUpdatePosition(ctx: Id, dv: Id, viewer: Id, position: Int) {
+        val params = SetDataViewViewerPosition.Params(
+            ctx = ctx,
+            dv = dv,
+            viewer = viewer,
+            pos = position
+        )
+        setDataViewViewerPosition.async(params).fold(
+            onFailure = { Timber.e(it, "Error while updating position") },
+            onSuccess = { dispatcher.send(it) }
+        )
+    }
+
+    private suspend fun onRename(ctx: Id, dv: Id, viewer: DVViewer) {
+        val params = RenameDataViewViewer.Params(
+            context = ctx,
+            target = dv,
+            viewer = viewer
+        )
+        renameDataViewViewer.async(params).fold(
+            onFailure = { Timber.e(it, "Error while renaming view") },
+            onSuccess = { dispatcher.send(it) }
+        )
+    }
+
+    private suspend fun onDuplicate(ctx: Id, dv: Id, viewer: DVViewer) {
+        val params = DuplicateDataViewViewer.Params(
+            context = ctx,
+            target = dv,
+            viewer = viewer
+        )
+        duplicateDataViewViewer.async(params).fold(
+            onFailure = { Timber.e(it, "Error while duplicating view") },
+            onSuccess = { dispatcher.send(it) }
+        )
+    }
+
+    private suspend fun onDelete(ctx: Id, dv: Id, viewer: Id) {
+        val params = DeleteDataViewViewer.Params(
+            ctx = ctx,
+            dataview = dv,
+            viewer = viewer
+        )
+        deleteDataViewViewer.async(params).fold(
+            onFailure = { Timber.e(it, "Error while deleting view") },
+            onSuccess = { dispatcher.send(it) }
+        )
+    }
 }

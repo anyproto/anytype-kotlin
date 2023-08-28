@@ -593,11 +593,11 @@ object ObjectSearchConstants {
 
     //region OBJECT TYPES
 
-    fun filterObjectTypeLibrary(workspaceId: String) = listOf(
+    fun filterObjectTypeLibrary(space: Id) = listOf(
         DVFilter(
-            relation = Relations.TYPE,
+            relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
-            value = OBJECT_TYPE
+            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
         ),
         DVFilter(
             relation = Relations.IS_ARCHIVED,
@@ -615,9 +615,9 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 

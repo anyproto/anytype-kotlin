@@ -119,7 +119,9 @@ open class ObjectSearchViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                    workspaceId = workspaceManager.getCurrentWorkspace()
+                    space = spaceManager.get().also {
+                        Timber.d("Got space id: $it")
+                    }
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )

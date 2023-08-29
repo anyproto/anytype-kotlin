@@ -16,8 +16,6 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Left
-import androidx.compose.animation.AnimatedContentScope.SlideDirection.Companion.Right
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -413,7 +411,7 @@ class OnboardingFragment : Fragment() {
             vm.sideEffects.collect { effect ->
                 when (effect) {
                     is OnboardingMnemonicLoginViewModel.SideEffect.Exit -> {
-                        val lastDestination = navController.backQueue.lastOrNull()
+                        val lastDestination = navController.currentBackStackEntry//  backQueue.lastOrNull()
                         // TODO Temporary workaround to prevent inconsistent state in navigation
                         if (lastDestination?.destination?.route == OnboardingNavigation.recovery) {
                             navController.popBackStack()

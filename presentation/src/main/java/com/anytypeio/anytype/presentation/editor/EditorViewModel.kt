@@ -3140,13 +3140,22 @@ class EditorViewModel(
     }
 
 
-    fun onAddNewDocumentClicked(template: Id? = null) {
+    fun onAddNewDocumentClicked() {
 
         Timber.d("onAddNewDocumentClicked, ")
+        proceedWithCreatingNewObject(type = null, template = null)
+    }
 
+    fun onCreateObjectWithTemplateClicked(template: Id) {
+        Timber.d("onCreateObjectWithTemplateClicked, template:[$template]")
+        val objType = getObjectTypeFromDetails() ?: return
+        proceedWithCreatingNewObject(type = objType, template = template)
+    }
+
+    private fun proceedWithCreatingNewObject(type: Id?, template: Id?) {
         val startTime = System.currentTimeMillis()
-        jobs += viewModelScope.launch {
-            val params = CreateObject.Param(type = null, template = template)
+        viewModelScope.launch {
+            val params = CreateObject.Param(type = type, template = template)
             createObject.async(params = params)
                 .fold(
                     onSuccess = { result ->
@@ -3154,13 +3163,12 @@ class EditorViewModel(
                             analytics = analytics,
                             type = result.type,
                             storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.navigation,
-                            view = EventsDictionary.View.viewNavbar,
+                            route = EventsDictionary.Routes.objPowerTool,
                             startTime = startTime
                         )
                         proceedWithOpeningObject(result.objectId)
                     },
-                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+                    onFailure = { e -> Timber.e(e, "Error while creating a new object") }
                 )
         }
     }

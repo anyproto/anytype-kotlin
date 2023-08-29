@@ -73,6 +73,8 @@ class EditorTemplateFragment : EditorFragment() {
         }
     }
 
+    override fun observeSelectingTemplate() {}
+
     companion object {
         fun newInstance(id: String): EditorTemplateFragment =
             EditorTemplateFragment().apply {

@@ -4,17 +4,17 @@ kotlinVersion = '1.7.10'
 
 androidxCoreVersion = "1.10.1"
 
-androidxComposeVersion = '1.4.3'
+androidxComposeVersion = '1.5.0'
 composeKotlinCompilerVersion = '1.3.1'
 composeMaterial3Version = '1.1.1'
-composeMaterialVersion = '1.3.1'
+composeMaterialVersion = '1.5.0'
 composeConstraintLayoutVersion = '1.0.1'
 
 activityComposeVersion = '1.7.2'
 composeReorderableVersion = '0.9.6'
 accompanistVersion = "0.29.1-alpha"
 appcompatVersion = '1.6.1'
-fragmentVersion = "1.6.0"
+fragmentVersion = "1.6.1"
 exoplayerVersion = "2.19.0"
 wireVersion = "4.5.2"
 glideVersion = "4.14.2"
@@ -29,14 +29,14 @@ androidxCoreTestingVersion = '2.2.0'
 androidxSecurityCryptoVersion = '1.0.0'
 androidxPreferenceVersion = '1.2.1'
 constraintLayoutVersion = '2.1.4'
-recyclerviewVersion = '1.3.0'
+recyclerviewVersion = '1.3.1'
 cardviewVersion = '1.0.0'
 emojiCompatVersion = '1.1.0'
 viewPager2Version = '1.0.0'
-lifecycleVersion = '2.5.1'
-lifecycleRuntimeComposeVersion = '2.6.0-alpha02'
-navigationVersion = '2.5.3'
-navigationComposeVersion = '2.5.3'
+lifecycleVersion = '2.6.1'
+lifecycleRuntimeComposeVersion = '2.7.0-alpha01'
+navigationVersion = '2.7.1'
+navigationComposeVersion = '2.7.1'
 shimmerLayoutVersion = '0.5.0'
 photoViewVersion = '2.3.0'
 daggerVersion = '2.45'
@@ -48,7 +48,7 @@ picktVersion = '2.0.2'
 zxingVersion = '4.1.0'
 urlcleanerVersion = '0.4.0'
 katexVersion = '1.0.2'
-robolectricLatestVersion = '4.9.2'
+robolectricLatestVersion = '4.10.3'
 kluentVersion = '1.14'
 timberJunitVersion = '1.0.1'
 turbineVersion = '0.12.1'
@@ -60,7 +60,7 @@ leakCanaryVersion = '1.5'
 timberVersion = '5.0.1'
 protobufJavaVersion = '3.9.2'
 protocVersion = '3.9.0'
-roomVersion = '2.4.3'
+roomVersion = '2.5.2'
 amplitudeVersion = '2.36.1'
 coilComposeVersion = '2.2.2'
 sentryVersion = '6.0.0'
@@ -79,7 +79,6 @@ composeMaterial3 = { module = "androidx.compose.material3:material3", version.re
 composeAccompanistPager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistVersion" }
 composeAccompanistPagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistVersion" }
 composeAccompanistThemeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "accompanistVersion" }
-composeAccompanistNavAnimation = { module = "com.google.accompanist:accompanist-navigation-animation", version.ref = "accompanistVersion" }
 composeReorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "composeReorderableVersion" }
 composeConstraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "composeConstraintLayoutVersion" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.4.1" }
@@ -170,7 +169,5 @@ dokka = { id = "org.jetbrains.dokka", version.ref = "kotlinVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
 wire = { id = "com.squareup.wire", version = "4.4.3" }
 firebaseDistribution = { id = "com.google.firebase.appdistribution", version = "3.1.1" }
-navigation = { id = "androidx.navigation.safeargs", version.ref = "navigationVersion" }
-navigationKotlin = { id = "androidx.navigation.safeargs.kotlin", version.ref = "navigationVersion" }
 kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlinVersion" }
 gms = { id = "com.google.gms.google-services", version = "4.3.15" }

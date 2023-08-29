@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addFilter
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addSort
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.changeDefaultTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeFilterValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeSortValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
@@ -1745,6 +1746,27 @@ fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
             buildMap {
                 put(EventsPropertiesKey.route, "MenuObject")
                 put(EventsPropertiesKey.objectType, objectType)
+            }
+        ),
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
+    )
+}
+
+fun CoroutineScope.sendAnalyticsDefaultTemplateEvent(
+    analytics: Analytics,
+    objType: ObjectWrapper.Type,
+    startTime: Long,
+    route: String? = null
+) {
+    val objectType = objType.sourceObject ?: OBJ_TYPE_CUSTOM
+    sendEvent(
+        analytics = analytics,
+        eventName = changeDefaultTemplate,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.type, objectType)
+                put(EventsPropertiesKey.route, route)
             }
         ),
         startTime = startTime,

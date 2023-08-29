@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
@@ -25,6 +27,7 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplateEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -50,7 +53,8 @@ class ObjectMenuViewModel(
     private val analytics: Analytics,
     private val updateFields: UpdateFields,
     private val addObjectToCollection: AddObjectToCollection,
-    private val createTemplateFromObject: CreateTemplateFromObject
+    private val createTemplateFromObject: CreateTemplateFromObject,
+    private val setObjectDetails: SetObjectDetails
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -255,13 +259,41 @@ class ObjectMenuViewModel(
                 proceedWithCreatingTemplateFromObject(ctx)
             }
             ObjectAction.SET_AS_DEFAULT -> {
-
+                proceedWithSettingAsDefaultTemplate(ctx = ctx)
             }
             ObjectAction.MOVE_TO,
             ObjectAction.MOVE_TO_BIN,
             ObjectAction.DELETE_FILES -> {
                 throw IllegalStateException("$action is unsupported")
             }
+        }
+    }
+
+    private fun proceedWithSettingAsDefaultTemplate(ctx: Id) {
+        val startTime = System.currentTimeMillis()
+        val objTemplate = ObjectWrapper.Basic(
+            storage.details.current().details[ctx]?.map ?: emptyMap()
+        )
+        val targetObjectTypeId = objTemplate.targetObjectType ?: return
+        val objType = ObjectWrapper.Type(
+            storage.details.current().details[targetObjectTypeId]?.map ?: emptyMap()
+        )
+        viewModelScope.launch {
+            val params = SetObjectDetails.Params(
+                ctx = targetObjectTypeId,
+                details = mapOf(Relations.DEFAULT_TEMPLATE_ID to ctx)
+            )
+            setObjectDetails.async(params).fold(
+                onSuccess = {
+                    sendAnalyticsDefaultTemplateEvent(analytics, objType, startTime)
+                    _toasts.emit("Template is set as default")
+                    isDismissed.value = true
+                },
+                onFailure = {
+                    Timber.e(it, "Error while setting template as default")
+                    _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                }
+            )
         }
     }
 
@@ -365,7 +397,8 @@ class ObjectMenuViewModel(
         private val delegator: Delegator<Action>,
         private val menuOptionsProvider: ObjectMenuOptionsProvider,
         private val addObjectToCollection: AddObjectToCollection,
-        private val createTemplateFromObject: CreateTemplateFromObject
+        private val createTemplateFromObject: CreateTemplateFromObject,
+        private val setObjectDetails: SetObjectDetails
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -383,7 +416,8 @@ class ObjectMenuViewModel(
                 delegator = delegator,
                 menuOptionsProvider = menuOptionsProvider,
                 addObjectToCollection = addObjectToCollection,
-                createTemplateFromObject = createTemplateFromObject
+                createTemplateFromObject = createTemplateFromObject,
+                setObjectDetails = setObjectDetails
             ) as T
         }
     }

@@ -2099,8 +2099,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         val navBackStackEntry = navController.getBackStackEntry(R.id.pageScreen)
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME
-                && navBackStackEntry.savedStateHandle.contains(EditorTemplateFragment.ARG_TEMPLATE_ID)) {
-                val result = navBackStackEntry.savedStateHandle.get<String>(EditorTemplateFragment.ARG_TEMPLATE_ID);
+                && navBackStackEntry.savedStateHandle.contains(EditorTemplateFragment.ARG_TEMPLATE_ID)
+            ) {
+                val result =
+                    navBackStackEntry.savedStateHandle.get<String>(EditorTemplateFragment.ARG_TEMPLATE_ID);
                 if (!result.isNullOrBlank()) {
                     navBackStackEntry.savedStateHandle.remove<String>(EditorTemplateFragment.ARG_TEMPLATE_ID)
                     vm.onCreateObjectWithTemplateClicked(template = result)

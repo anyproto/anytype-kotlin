@@ -322,7 +322,8 @@ interface BlockRemote {
 
     suspend fun createWorkspace(details: Struct): Id
     suspend fun getSpaceConfig(space: Id): Config
-    suspend fun addObjectToWorkspace(objects: List<Id>, space: Id): List<Id>
+    suspend fun addObjectListToSpace(objects: List<Id>, space: Id): List<Id>
+    suspend fun addObjectToSpace(obj: Id, space: Id) : Id
     suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id>
 
     suspend fun createObject(command: Command.CreateObject): CreateObjectResult

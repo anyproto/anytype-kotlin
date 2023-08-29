@@ -408,7 +408,7 @@ class OnboardingFragment : Fragment() {
             vm.sideEffects.collect { effect ->
                 when (effect) {
                     is OnboardingMnemonicLoginViewModel.SideEffect.Exit -> {
-                        val lastDestination = navController.currentBackStackEntry//  backQueue.lastOrNull()
+                        val lastDestination = navController.currentBackStackEntry
                         // TODO Temporary workaround to prevent inconsistent state in navigation
                         if (lastDestination?.destination?.route == OnboardingNavigation.recovery) {
                             navController.popBackStack()

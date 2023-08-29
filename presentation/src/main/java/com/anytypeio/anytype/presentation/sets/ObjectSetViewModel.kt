@@ -1547,7 +1547,7 @@ class ObjectSetViewModel(
                                     objectTypeDefaultTemplate = objectType.defaultTemplateId,
                                     viewerDefaultTemplate = viewer.defaultTemplateId
                                 )
-                            }
+                            } + listOf(TemplateView.New(objectType.id))
                     }.collectLatest {
                         _templateViews.value = it
                     }
@@ -1601,6 +1601,39 @@ class ObjectSetViewModel(
                     proceedWithCreatingNewDataViewObject(templatesId = item.id)
                 }
             }
+
+            is TemplateView.New -> {
+                templatesWidgetState.value = templatesWidgetState.value.copy(
+                    showWidget = false,
+                    isEditing = false,
+                    isMoreMenuVisible = false,
+                    moreMenuTemplate = null
+                )
+                proceedWithCreatingTemplate(targetObjectType = item.targetObjectType)
+            }
+        }
+    }
+
+    private fun proceedWithCreatingTemplate(targetObjectType: Id) {
+        viewModelScope.launch {
+            val params = CreateTemplate.Params(
+                targetObject = targetObjectType
+            )
+            createTemplate.async(params).fold(
+                onSuccess = { id ->
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.CREATE_TEMPLATE,
+                        type = storeOfObjectTypes.get(targetObjectType)?.sourceObject
+                    )
+                    proceedWithOpeningTemplate(id)
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while creating new template")
+                    toast("Error while creating new template")
+                }
+            )
         }
     }
 

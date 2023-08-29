@@ -94,7 +94,7 @@ class TreeWidgetContainerTest {
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
-                workspace = workspace,
+                space = workspace,
                 isSessionActive = flowOf(true),
                 config = config,
                 objectWatcher = objectWatcher
@@ -164,7 +164,7 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            workspace = workspace,
+            space = workspace,
             isSessionActive = flowOf(true),
             config = config,
             objectWatcher = objectWatcher
@@ -249,7 +249,7 @@ class TreeWidgetContainerTest {
                 expandedBranches = expanded,
                 isWidgetCollapsed = flowOf(false),
                 urlBuilder = urlBuilder,
-                workspace = workspace,
+                space = workspace,
                 isSessionActive = flowOf(true),
                 config = config,
                 objectWatcher = objectWatcher
@@ -389,7 +389,7 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            workspace = workspace,
+            space = workspace,
             isSessionActive = flowOf(true),
             config = config,
             objectWatcher = objectWatcher
@@ -446,7 +446,7 @@ class TreeWidgetContainerTest {
             expandedBranches = expanded,
             isWidgetCollapsed = flowOf(false),
             urlBuilder = urlBuilder,
-            workspace = workspace,
+            space = workspace,
             isSessionActive = flowOf(true),
             config = config,
             objectWatcher = objectWatcher

@@ -256,7 +256,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB FAVORITES
-    fun filterTabFavorites(workspaceId: String) = listOf(
+    fun filterTabFavorites(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL ,
@@ -290,9 +290,9 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         ),
         DVFilter(
             relation = Relations.IS_FAVORITE,
@@ -306,7 +306,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB RECENT
-    fun filterTabRecent(workspaceId: String) = listOf(
+    fun filterTabRecent(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -345,9 +345,9 @@ object ObjectSearchConstants {
             value = null
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 
@@ -359,7 +359,7 @@ object ObjectSearchConstants {
         )
     )
 
-    fun filterTabRecentLocal(workspaceId: String) = listOf(
+    fun filterTabRecentLocal(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -398,9 +398,9 @@ object ObjectSearchConstants {
             value = null
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 
@@ -417,7 +417,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB SETS
-    fun filterTabSets(workspaceId: String) = listOf(
+    fun filterTabSets(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -434,14 +434,14 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.TYPE,
+            relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
-            value = ObjectTypeIds.SET
+            value = ObjectType.Layout.SET.code.toDouble()
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 
@@ -455,7 +455,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB ARCHIVE
-    fun filterTabArchive(workspaceId: String) = listOf(
+    fun filterTabArchive(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.EQUAL,
@@ -472,9 +472,9 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 
@@ -545,6 +545,7 @@ object ObjectSearchConstants {
 
     val defaultKeys = listOf(
         Relations.ID,
+        Relations.SPACE_ID,
         Relations.NAME,
         Relations.ICON_IMAGE,
         Relations.ICON_EMOJI,
@@ -639,7 +640,7 @@ object ObjectSearchConstants {
         )
     )
 
-    fun defaultDataViewFilters(workspaceId: String) = listOf(
+    fun defaultDataViewFilters(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_HIDDEN,
             condition = Condition.NOT_EQUAL,
@@ -656,9 +657,9 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 

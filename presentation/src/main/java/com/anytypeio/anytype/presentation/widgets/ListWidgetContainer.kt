@@ -25,7 +25,7 @@ import kotlinx.coroutines.flow.map
 
 class ListWidgetContainer(
     private val widget: Widget.List,
-    private val workspace: Id,
+    private val space: Id,
     private val config: Config,
     private val subscription: Id,
     private val storage: StorelessSubscriptionContainer,
@@ -66,7 +66,6 @@ class ListWidgetContainer(
                                 targets = order.keys.toList(),
                                 keys = keys
                             )
-
                         ).map { objects ->
                             buildWidgetViewWithElements(
                                 objects = objects.sortedBy { obj -> order[obj.id] }
@@ -103,7 +102,7 @@ class ListWidgetContainer(
         customFavoritesOrder: List<Id> = emptyList()
     ) = params(
         subscription = subscription,
-        workspace = workspace,
+        space = space,
         keys = keys,
         limit = resolveLimit(),
         customFavoritesOrder = customFavoritesOrder
@@ -127,7 +126,7 @@ class ListWidgetContainer(
 
         fun params(
             subscription: Id,
-            workspace: Id,
+            space: Id,
             keys: List<Id>,
             limit: Int,
             customFavoritesOrder: List<Id> = emptyList()
@@ -136,7 +135,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecent,
-                    filters = ObjectSearchConstants.filterTabRecent(workspace),
+                    filters = ObjectSearchConstants.filterTabRecent(space),
                     keys = keys,
                     limit = limit
                 )
@@ -146,7 +145,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecentLocal,
-                    filters = ObjectSearchConstants.filterTabRecentLocal(workspace),
+                    filters = ObjectSearchConstants.filterTabRecentLocal(space),
                     keys = keys,
                     limit = limit
                 )
@@ -156,7 +155,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabSets,
-                    filters = ObjectSearchConstants.filterTabSets(workspace),
+                    filters = ObjectSearchConstants.filterTabSets(space),
                     keys = keys,
                     limit = limit
                 )
@@ -175,7 +174,7 @@ class ListWidgetContainer(
                             )
                         }
                     },
-                    filters = ObjectSearchConstants.filterTabFavorites(workspace),
+                    filters = ObjectSearchConstants.filterTabFavorites(space),
                     keys = keys,
                     limit = limit
                 )
@@ -184,7 +183,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = collectionsSorts,
-                    filters = ObjectSearchConstants.collectionFilters(workspace),
+                    filters = ObjectSearchConstants.collectionFilters(space),
                     keys = keys,
                     limit = limit
                 )
@@ -193,7 +192,7 @@ class ListWidgetContainer(
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabArchive,
-                    filters = ObjectSearchConstants.filterTabArchive(workspace),
+                    filters = ObjectSearchConstants.filterTabArchive(space),
                     keys = keys,
                     limit = limit
                 )

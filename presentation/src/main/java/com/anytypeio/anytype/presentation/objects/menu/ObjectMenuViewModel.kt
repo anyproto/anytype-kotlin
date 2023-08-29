@@ -89,10 +89,16 @@ class ObjectMenuViewModel(
                 add(ObjectAction.DELETE)
             }
         }
-        add(ObjectAction.UNDO_REDO)
+
+        if (isTemplate) {
+            add(ObjectAction.SET_AS_DEFAULT)
+        }
+
         if (!isProfile && !objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
             add(ObjectAction.DUPLICATE)
         }
+
+        add(ObjectAction.UNDO_REDO)
 
         val objTypeId = storage.details.current().details[ctx]?.type?.firstOrNull()
         storage.details.current().details[objTypeId]?.let { objType ->
@@ -247,6 +253,9 @@ class ObjectMenuViewModel(
             }
             ObjectAction.USE_AS_TEMPLATE -> {
                 proceedWithCreatingTemplateFromObject(ctx)
+            }
+            ObjectAction.SET_AS_DEFAULT -> {
+
             }
             ObjectAction.MOVE_TO,
             ObjectAction.MOVE_TO_BIN,

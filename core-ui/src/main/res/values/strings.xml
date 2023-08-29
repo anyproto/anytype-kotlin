@@ -654,5 +654,6 @@
     <string name="templates_menu_duplicate">Duplicate</string>
     <string name="templates_menu_delete">Delete</string>
     <string name="unsupported">Unsupported</string>
+    <string name="set_as_default">Set as default</string>
 
 </resources>

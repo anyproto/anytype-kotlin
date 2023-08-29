@@ -508,7 +508,7 @@ class ObjectTypeChangeViewModelTest {
 
         blockRepository.stub {
             onBlocking {
-                addObjectToWorkspace(objects = listOf(marketplaceType3.id))
+                addObjectListToSpace(objects = listOf(marketplaceType3.id))
             } doReturn listOf(expectedInstalledTypeId)
         }
 
@@ -569,7 +569,7 @@ class ObjectTypeChangeViewModelTest {
                 actual = awaitItem()
             )
             verifyBlocking(blockRepository, times(1)) {
-                addObjectToWorkspace(objects = listOf(marketplaceType3.id))
+                addObjectListToSpace(objects = listOf(marketplaceType3.id))
             }
         }
     }
@@ -641,7 +641,7 @@ class ObjectTypeChangeViewModelTest {
         }
 
         verifyBlocking(blockRepository, times(0)) {
-            addObjectToWorkspace(objects = listOf(installedType1.id))
+            addObjectListToSpace(objects = listOf(installedType1.id))
         }
     }
 

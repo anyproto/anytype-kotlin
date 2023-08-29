@@ -9,14 +9,14 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
  * Use-case for adding one or more object to the current workspace.
  * Returns of list of ids of object added to workspace.
  */
-// TODO rename to "AddObjectToSpace"
+// TODO rename to "AddObjectListToSpace"
 class AddObjectToWorkspace(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ): BaseUseCase<List<Id>, AddObjectToWorkspace.Params>(dispatchers.io) {
 
     override suspend fun run(params: Params) = safe {
-        repo.addObjectToWorkspace(
+        repo.addObjectListToSpace(
             objects = params.objects,
             space = params.space
         )

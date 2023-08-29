@@ -1967,6 +1967,18 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun workspaceObjectAdd(obj: Id, space: Id): Id {
+        val request = Rpc.Workspace.Object.Add.Request(
+            objectId = obj,
+            spaceId = space
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.workspaceObjectAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.objectId
+    }
+
+    @Throws(Exception::class)
     fun workspaceObjectListRemove(objects: List<Id>): List<Id> {
         val request = Rpc.Workspace.Object.ListRemove.Request(
             objectIds = objects

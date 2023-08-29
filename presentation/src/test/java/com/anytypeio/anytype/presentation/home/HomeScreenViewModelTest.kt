@@ -800,7 +800,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = TreeWidgetContainer.keys,
                 limit = TreeWidgetContainer.NO_LIMIT
             ),
@@ -810,7 +810,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = TreeWidgetContainer.keys,
                 limit = TreeWidgetContainer.NO_LIMIT
             ),
@@ -820,7 +820,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = TreeWidgetContainer.keys,
                 limit = TreeWidgetContainer.NO_LIMIT
             ),
@@ -1361,7 +1361,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1371,7 +1371,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1381,7 +1381,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1497,7 +1497,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = TreeWidgetContainer.keys,
                 limit = TreeWidgetContainer.NO_LIMIT
             ),
@@ -1507,7 +1507,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = TreeWidgetContainer.keys,
                 limit = TreeWidgetContainer.NO_LIMIT
             ),
@@ -1517,7 +1517,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = TreeWidgetContainer.keys,
                 limit = TreeWidgetContainer.NO_LIMIT
             ),
@@ -1544,7 +1544,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = favoriteSource.id,
-                    workspace = config.workspace,
+                    space = config.workspace,
                     keys = TreeWidgetContainer.keys,
                     limit = TreeWidgetContainer.NO_LIMIT
                 )
@@ -1555,7 +1555,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    workspace = config.workspace,
+                    space = config.workspace,
                     keys = TreeWidgetContainer.keys,
                     limit = TreeWidgetContainer.NO_LIMIT
                 )
@@ -1566,7 +1566,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    workspace = config.workspace,
+                    space = config.workspace,
                     keys = TreeWidgetContainer.keys,
                     limit = TreeWidgetContainer.NO_LIMIT
                 )
@@ -1597,7 +1597,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = favoriteSource.id,
-                    workspace = config.workspace,
+                    space = config.workspace,
                     keys = TreeWidgetContainer.keys,
                     limit = TreeWidgetContainer.NO_LIMIT
                 )
@@ -1608,7 +1608,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    workspace = config.workspace,
+                    space = config.workspace,
                     keys = TreeWidgetContainer.keys,
                     limit = TreeWidgetContainer.NO_LIMIT
                 )
@@ -1619,7 +1619,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    workspace = config.workspace,
+                    space = config.workspace,
                     keys = TreeWidgetContainer.keys,
                     limit = TreeWidgetContainer.NO_LIMIT
                 )
@@ -1715,7 +1715,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1725,7 +1725,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1735,7 +1735,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                workspace = config.workspace,
+                space = config.workspace,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1772,7 +1772,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    workspace = config.workspace,
+                    space = config.workspace,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1783,7 +1783,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    workspace = config.workspace,
+                    space = config.workspace,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1824,7 +1824,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    workspace = config.workspace,
+                    space = config.workspace,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1835,7 +1835,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    workspace = config.workspace,
+                    space = config.workspace,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )

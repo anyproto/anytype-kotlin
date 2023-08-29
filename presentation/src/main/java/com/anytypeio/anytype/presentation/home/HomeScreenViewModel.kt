@@ -45,6 +45,7 @@ import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
@@ -130,7 +131,8 @@ class HomeScreenViewModel(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
-    private val setWidgetActiveView: SetWidgetActiveView
+    private val setWidgetActiveView: SetWidgetActiveView,
+    private val spaceManager: SpaceManager
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -162,7 +164,7 @@ class HomeScreenViewModel(
             proceedWithObservingSpaceIcon(config)
             proceedWithLaunchingUnsubscriber()
             proceedWithObjectViewStatePipeline(config)
-            proceedWithWidgetContainerPipeline(config)
+            proceedWithWidgetContainerPipeline()
             proceedWithRenderingPipeline()
             proceedWithObservingDispatches(config)
             proceedWithSettingUpShortcuts()
@@ -193,10 +195,13 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithWidgetContainerPipeline(config: Config) {
+    private fun proceedWithWidgetContainerPipeline() {
         viewModelScope.launch {
-            widgets.filterNotNull().map {
-                it.map { widget ->
+            combine(
+                spaceManager.observe(),
+                widgets.filterNotNull()
+            ) { config, widgets ->
+                widgets.map { widget ->
                     // TODO caching logic for containers could be implemented here.
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
@@ -209,7 +214,7 @@ class HomeScreenViewModel(
                             isWidgetCollapsed = isCollapsed(widget.id),
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
-                            workspace = config.workspace,
+                            space = config.space,
                             config = config,
                             objectWatcher = objectWatcher
                         )
@@ -217,7 +222,7 @@ class HomeScreenViewModel(
                             ListWidgetContainer(
                                 widget = widget,
                                 subscription = widget.source.id,
-                                workspace = config.workspace,
+                                space = config.space,
                                 storage = storelessSubscriptionContainer,
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 urlBuilder = urlBuilder,
@@ -228,7 +233,7 @@ class HomeScreenViewModel(
                         } else {
                             DataViewListWidgetContainer(
                                 widget = widget,
-                                workspace = config.workspace,
+                                space = config.space,
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
@@ -1180,7 +1185,8 @@ class HomeScreenViewModel(
         private val spaceGradientProvider: SpaceGradientProvider,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val objectWatcher: ObjectWatcher,
-        private val setWidgetActiveView: SetWidgetActiveView
+        private val setWidgetActiveView: SetWidgetActiveView,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1212,7 +1218,8 @@ class HomeScreenViewModel(
             spaceGradientProvider = spaceGradientProvider,
             storeOfObjectTypes = storeOfObjectTypes,
             objectWatcher = objectWatcher,
-            setWidgetActiveView = setWidgetActiveView
+            setWidgetActiveView = setWidgetActiveView,
+            spaceManager = spaceManager
         ) as T
     }
 

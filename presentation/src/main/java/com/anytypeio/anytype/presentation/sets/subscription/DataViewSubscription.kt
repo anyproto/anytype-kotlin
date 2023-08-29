@@ -2,11 +2,10 @@ package com.anytypeio.anytype.presentation.sets.subscription
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.DataViewState
+import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filterOutDeletedAndMissingObjects
 import com.anytypeio.anytype.presentation.sets.getSetOfValue
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -62,7 +61,7 @@ class DefaultDataViewSubscription(
         }
         val filters =
             activeViewer.filters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                workspaceId = workspaceId
+                space = workspaceId
             )
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
@@ -115,7 +114,7 @@ class DefaultDataViewSubscription(
 
         val filters =
             activeViewer.filters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                workspaceId = workspaceId
+                space = workspaceId
             )
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys

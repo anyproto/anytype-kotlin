@@ -21,7 +21,7 @@ import kotlinx.coroutines.flow.map
 
 class TreeWidgetContainer(
     private val widget: Widget.Tree,
-    private val workspace: Id,
+    private val space: Id,
     private val config: Config,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
@@ -138,7 +138,7 @@ class TreeWidgetContainer(
                 container.subscribe(
                     ListWidgetContainer.params(
                         subscription = widget.source.id,
-                        workspace = workspace,
+                        space = space,
                         keys = keys,
                         limit = resolveLimit()
                     )
@@ -150,7 +150,7 @@ class TreeWidgetContainer(
             container.subscribe(
                 ListWidgetContainer.params(
                     subscription = widget.source.id,
-                    workspace = workspace,
+                    space = space,
                     keys = keys,
                     limit = resolveLimit()
                 )

@@ -13,7 +13,8 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
+import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -34,7 +35,7 @@ import timber.log.Timber
 
 class ObjectTypeChangeViewModel(
     private val getObjectTypes: GetObjectTypes,
-    private val addObjectToWorkspace: AddObjectToWorkspace,
+    private val addObjectTypeToSpace: AddObjectTypeToSpace,
     private val dispatchers: AppCoroutineDispatchers,
     private val workspaceManager: WorkspaceManager,
     private val spaceManager: SpaceManager,
@@ -143,24 +144,20 @@ class ObjectTypeChangeViewModel(
     fun onItemClicked(id: Id, key: Key, name: String) {
         viewModelScope.launch {
             if (id.contains(MARKETPLACE_OBJECT_TYPE_PREFIX)) {
-                val params = AddObjectToWorkspace.Params(
-                    objects = listOf(id),
+                val params = AddObjectToSpace.Params(
+                    obj = id,
                     space = spaceManager.get()
                 )
-                addObjectToWorkspace(params = params).process(
-                    success = { objects ->
-                        if (objects.isNotEmpty()) {
-                            commands.emit(Command.TypeAdded(type = name))
-                            proceedWithDispatchingType(
-                                id = objects.first(),
-                                key = key,
-                                name = name
-                            )
-                        } else {
-                            Timber.w("Empty result")
-                        }
+                addObjectTypeToSpace.async(params = params).fold(
+                    onSuccess = { obj ->
+                        commands.emit(Command.TypeAdded(type = name))
+                        proceedWithDispatchingType(
+                            id = obj,
+                            key = key,
+                            name = name
+                        )
                     },
-                    failure = {
+                    onFailure = {
                         sendToast("Something went wrong. Please, try again later.")
                     }
                 )

@@ -24,3 +24,5 @@ class AddObjectToSpace(
         val space: Id
     )
 }
+
+typealias AddObjectTypeToSpace = AddObjectToSpace

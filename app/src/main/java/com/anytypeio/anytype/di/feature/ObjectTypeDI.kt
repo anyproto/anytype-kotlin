@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
@@ -45,7 +45,7 @@ object ObjectTypeChangeModule {
     @PerScreen
     fun provideObjectTypeViewModelFactory(
         getObjectTypes: GetObjectTypes,
-        addObjectToWorkspace: AddObjectToWorkspace,
+        addObjectTypeToSpace: AddObjectTypeToSpace,
         dispatchers: AppCoroutineDispatchers,
         workspaceManager: WorkspaceManager,
         spaceManager: SpaceManager,
@@ -53,7 +53,7 @@ object ObjectTypeChangeModule {
     ): ObjectTypeChangeViewModelFactory {
         return ObjectTypeChangeViewModelFactory(
             getObjectTypes = getObjectTypes,
-            addObjectToWorkspace = addObjectToWorkspace,
+            addObjectTypeToSpace = addObjectTypeToSpace,
             dispatchers = dispatchers,
             workspaceManager = workspaceManager,
             spaceManager = spaceManager,
@@ -72,10 +72,10 @@ object ObjectTypeChangeModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun addObjectToWorkspace(
+    fun provideAddObjectTypeToSpace(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ) : AddObjectToWorkspace = AddObjectToWorkspace(
+    ) : AddObjectTypeToSpace = AddObjectTypeToSpace(
         repo = repo,
         dispatchers = dispatchers
     )

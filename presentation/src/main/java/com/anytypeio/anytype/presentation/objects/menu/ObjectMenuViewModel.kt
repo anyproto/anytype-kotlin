@@ -305,7 +305,7 @@ class ObjectMenuViewModel(
                 onSuccess = { template ->
                     val objTypeId = storage.details.current().details[ctx]?.type?.firstOrNull()
                     sendAnalyticsCreateTemplateEvent(analytics, objTypeId, startTime)
-                    commands.emit(createOpenTemplateCommand(ctx, template))
+                    commands.emit(buildOpenTemplateCommand(ctx, template))
                     isDismissed.value = true
                 },
                 onFailure = {
@@ -316,7 +316,7 @@ class ObjectMenuViewModel(
         }
     }
 
-    private fun createOpenTemplateCommand(ctx: Id, template: Id): Command.OpenTemplate {
+    private fun buildOpenTemplateCommand(ctx: Id, template: Id): Command.OpenTemplate {
         val type = storage.details.current().details[ctx]?.type?.firstOrNull()
         val objType =
             ObjectWrapper.Basic(storage.details.current().details[type]?.map ?: emptyMap())

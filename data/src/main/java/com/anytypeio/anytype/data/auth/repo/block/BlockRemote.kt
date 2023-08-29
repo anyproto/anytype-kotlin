@@ -364,4 +364,5 @@ interface BlockRemote {
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
 
     suspend fun duplicateObjectsList(ids: List<Id>): List<Id>
+    suspend fun createTemplateFromObject(ctx: Id): Id
 }

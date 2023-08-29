@@ -265,6 +265,7 @@
     <string name="move_to">Move to</string>
     <string name="preview">Preview</string>
     <string name="link_to">Link to</string>
+    <string name="make_template">Make template</string>
     <string name="linked_to">Linked to</string>
     <string name="remove_link">Remove link</string>
     <string name="mention_suggester_new_page">Create new object</string>

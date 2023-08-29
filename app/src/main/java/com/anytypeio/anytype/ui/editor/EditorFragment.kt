@@ -32,6 +32,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -145,6 +148,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
@@ -505,6 +509,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         binding.recycler.addOnItemTouchListener(
             OutsideClickDetector(vm::onOutsideClicked)
         )
+
+        observeSelectingTemplate()
 
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -2086,6 +2092,30 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         } else {
             super.onActivityResult(requestCode, resultCode, data)
         }
+    }
+
+    open fun observeSelectingTemplate() {
+        val navController = findNavController()
+        val navBackStackEntry = navController.getBackStackEntry(R.id.pageScreen)
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME
+                && navBackStackEntry.savedStateHandle.contains(EditorTemplateFragment.ARG_TEMPLATE_ID)
+            ) {
+                val result =
+                    navBackStackEntry.savedStateHandle.get<String>(EditorTemplateFragment.ARG_TEMPLATE_ID);
+                if (!result.isNullOrBlank()) {
+                    navBackStackEntry.savedStateHandle.remove<String>(EditorTemplateFragment.ARG_TEMPLATE_ID)
+                    vm.onCreateObjectWithTemplateClicked(template = result)
+                }
+            }
+        }
+        navBackStackEntry.lifecycle.addObserver(observer)
+
+        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                navBackStackEntry.lifecycle.removeObserver(observer)
+            }
+        })
     }
 
     //------------ End of Anytype Custom Context Menu ------------

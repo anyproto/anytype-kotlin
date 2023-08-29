@@ -31,6 +31,8 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -99,7 +101,6 @@ import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
-import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.SELECTED_TEMPLATE_INITIAL_VALUE
 import com.bumptech.glide.Glide
 import javax.inject.Inject
 import kotlinx.coroutines.flow.launchIn
@@ -1166,13 +1167,25 @@ open class ObjectSetFragment :
     )
 
     private fun observeSelectingTemplate() {
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
-            ARG_TEMPLATE_ID,
-            SELECTED_TEMPLATE_INITIAL_VALUE
-        )?.observe(viewLifecycleOwner) { template: Id ->
-            Timber.d("Get result from EditorTemplateFragment: $template")
-            if (template.isNotEmpty()) vm.proceedWithCreatingNewDataViewObject(template)
+        val navController = findNavController()
+        val navBackStackEntry = navController.getBackStackEntry(R.id.objectSetScreen)
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME
+                && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)) {
+                val result = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID);
+                if (!result.isNullOrBlank()) {
+                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
+                    vm.proceedWithCreatingNewDataViewObject(result)
+                }
+            }
         }
+        navBackStackEntry.lifecycle.addObserver(observer)
+
+        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                navBackStackEntry.lifecycle.removeObserver(observer)
+            }
+        })
     }
 
     companion object {

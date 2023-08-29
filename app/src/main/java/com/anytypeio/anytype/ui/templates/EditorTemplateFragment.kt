@@ -73,6 +73,10 @@ class EditorTemplateFragment : EditorFragment() {
         }
     }
 
+    override fun observeSelectingTemplate() {
+        // Do nothing
+    }
+
     companion object {
         fun newInstance(id: String): EditorTemplateFragment =
             EditorTemplateFragment().apply {
@@ -80,6 +84,5 @@ class EditorTemplateFragment : EditorFragment() {
             }
 
         const val ARG_TEMPLATE_ID = "template_id"
-        const val SELECTED_TEMPLATE_INITIAL_VALUE = ""
     }
 }

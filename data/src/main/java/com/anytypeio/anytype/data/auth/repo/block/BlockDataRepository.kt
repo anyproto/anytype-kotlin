@@ -849,4 +849,8 @@ class BlockDataRepository(
     override suspend fun duplicateObjectsList(ids: List<Id>): List<Id> {
         return remote.duplicateObjectsList(ids)
     }
+
+    override suspend fun createTemplateFromObject(ctx: Id): Id {
+        return remote.createTemplateFromObject(ctx)
+    }
 }

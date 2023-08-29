@@ -76,8 +76,9 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_link_to)
                     tvActionTitle.setText(R.string.link_to)
                 }
-                ObjectAction.MOVE_TO -> {
-
+                ObjectAction.USE_AS_TEMPLATE -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_template)
+                    tvActionTitle.setText(R.string.make_template)
                 }
                 else -> {}
             }

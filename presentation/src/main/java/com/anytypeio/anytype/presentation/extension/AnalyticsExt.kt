@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.changeSortValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.clickNewOption
 import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.createTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectDuplicate
@@ -1729,5 +1730,24 @@ fun CoroutineScope.sendAnalyticsSelectTemplateEvent(
                 put(EventsPropertiesKey.route, "Navigation")
             }
         )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
+    analytics: Analytics,
+    objectType: String?,
+    startTime: Long
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = createTemplate,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.route, "MenuObject")
+                put(EventsPropertiesKey.objectType, objectType)
+            }
+        ),
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
     )
 }

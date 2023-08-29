@@ -149,6 +149,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun objectsListDuplicate(request: Rpc.Object.ListDuplicate.Request): Rpc.Object.ListDuplicate.Response
 
+    @Throws(Exception::class)
+    fun createTemplateFromObject(request: Rpc.Template.CreateFromObject.Request): Rpc.Template.CreateFromObject.Response
+
     //endregion
 
     //region OBJECT'S RELATIONS command

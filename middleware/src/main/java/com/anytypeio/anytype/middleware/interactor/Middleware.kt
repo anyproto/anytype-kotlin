@@ -2244,6 +2244,19 @@ class Middleware @Inject constructor(
         return response.ids
     }
 
+    @Throws(Exception::class)
+    fun createTemplateFromObject(
+        ctx: Id
+    ): Id {
+        val request = Rpc.Template.CreateFromObject.Request(
+            contextId = ctx
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.createTemplateFromObject(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.id
+    }
+
     private fun logRequest(any: Any) {
         logger.logRequest(any).also {
             if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {

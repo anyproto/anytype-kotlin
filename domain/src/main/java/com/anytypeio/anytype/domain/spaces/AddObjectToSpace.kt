@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for adding one object to a space.
- * Returns of list of ids of object added to workspace.
+ * Returns id of the object added to the given space.
  */
 class AddObjectToSpace(
     private val repo: BlockRepository,

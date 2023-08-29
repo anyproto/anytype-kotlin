@@ -10,7 +10,7 @@ import android.view.MotionEvent
 abstract class OnSwipeListener : SimpleOnGestureListener() {
 
     override fun onFling(
-        e1: MotionEvent,
+        e1: MotionEvent?,
         e2: MotionEvent,
         velocityX: Float,
         velocityY: Float
@@ -34,8 +34,8 @@ abstract class OnSwipeListener : SimpleOnGestureListener() {
         //  C => it's a DOWN swipe
         //  D => it's a LEFT swipe
         //
-        val x1 = e1.x
-        val y1 = e1.y
+        val x1 = e1?.x ?: 0f
+        val y1 = e1?.y ?: 0f
         val x2 = e2.x
         val y2 = e2.y
         val direction = getDirection(x1, y1, x2, y2)

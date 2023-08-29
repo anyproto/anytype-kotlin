@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
+import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
@@ -91,8 +92,16 @@ class ObjectMenuViewModel(
         if (!isProfile && !objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
             add(ObjectAction.DUPLICATE)
         }
+
+        val objTypeId = storage.details.current().details[ctx]?.type?.firstOrNull()
+        storage.details.current().details[objTypeId]?.let { objType ->
+            val objTypeWrapper = ObjectWrapper.Type(objType.map)
+            val isTemplateAllowed = objTypeWrapper.isTemplatesAllowed()
+            if (isTemplateAllowed && !isTemplate) {
+                add(ObjectAction.USE_AS_TEMPLATE)
+            }
+        }
         if (!isTemplate) {
-            add(ObjectAction.USE_AS_TEMPLATE)
             add(ObjectAction.LINK_TO)
         }
 

@@ -1773,3 +1773,22 @@ fun CoroutineScope.sendAnalyticsDefaultTemplateEvent(
         middleTime = System.currentTimeMillis()
     )
 }
+
+fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
+    analytics: Analytics,
+    objectType: String?,
+    startTime: Long
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = createTemplate,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.route, "MenuObject")
+                put(EventsPropertiesKey.objectType, objectType)
+            }
+        ),
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
+    )
+}

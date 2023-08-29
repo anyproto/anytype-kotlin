@@ -28,6 +28,7 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplateEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName

@@ -1235,6 +1235,22 @@ fun CoroutineScope.logEvent(
                 )
             )
         }
+        ObjectStateAnalyticsEvent.CREATE_TEMPLATE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = createTemplate,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route,
+                    objectType = type ?: OBJ_TYPE_CUSTOM
+                )
+            )
+        }
     }
 }
 
@@ -1278,7 +1294,8 @@ enum class ObjectStateAnalyticsEvent {
     REMOVE_SORT,
     OBJECT_CREATE,
     SELECT_TEMPLATE,
-    SHOW_TEMPLATES
+    SHOW_TEMPLATES,
+    CREATE_TEMPLATE
 }
 
 fun CoroutineScope.sendEditWidgetsEvent(

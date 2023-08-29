@@ -16,7 +16,8 @@ import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Left
+import androidx.compose.animation.AnimatedContentTransitionScope.SlideDirection.Companion.Right
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -53,10 +54,12 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
+import androidx.navigation.compose.composable
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
@@ -64,7 +67,6 @@ import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
-import com.anytypeio.anytype.di.common.ComponentManager
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
@@ -81,9 +83,6 @@ import com.anytypeio.anytype.ui.onboarding.screens.signup.CreateSoulAnimWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.CreateSoulWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.VoidScreenWrapper
-import com.google.accompanist.navigation.animation.AnimatedNavHost
-import com.google.accompanist.navigation.animation.composable
-import com.google.accompanist.navigation.animation.rememberAnimatedNavController
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
@@ -137,10 +136,9 @@ class OnboardingFragment : Fragment() {
     }
 
     @Composable
-    @OptIn(ExperimentalAnimationApi::class)
     private fun OnboardingScreen() {
         MaterialTheme {
-            val navController = rememberAnimatedNavController()
+            val navController = rememberNavController()
             val defaultBackCallback: BackButtonCallback = { navController.popBackStack() }
             val signUpBackButtonCallback = remember {
                 mutableStateOf(defaultBackCallback)
@@ -208,14 +206,13 @@ class OnboardingFragment : Fragment() {
         }
     }
 
-    @OptIn(ExperimentalAnimationApi::class)
     @Composable
     private fun Onboarding(
         currentPage: MutableState<OnboardingPage>,
         backButtonCallback: MutableState<BackButtonCallback>,
         navController: NavHostController
     ) {
-        AnimatedNavHost(navController, startDestination = OnboardingNavigation.auth) {
+        NavHost(navController, startDestination = OnboardingNavigation.auth) {
             composable(
                 route = OnboardingNavigation.auth,
                 enterTransition = { null },

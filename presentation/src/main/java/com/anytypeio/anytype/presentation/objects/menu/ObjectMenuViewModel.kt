@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
@@ -256,10 +257,13 @@ class ObjectMenuViewModel(
     }
 
     private fun proceedWithCreatingTemplateFromObject(ctx: Id) {
+        val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateTemplateFromObject.Params(obj = ctx)
             createTemplateFromObject.async(params).fold(
                 onSuccess = { template ->
+                    val objTypeId = storage.details.current().details[ctx]?.type?.firstOrNull()
+                    sendAnalyticsCreateTemplateEvent(analytics, objTypeId, startTime)
                     commands.emit(createOpenTemplateCommand(ctx, template))
                     isDismissed.value = true
                 },

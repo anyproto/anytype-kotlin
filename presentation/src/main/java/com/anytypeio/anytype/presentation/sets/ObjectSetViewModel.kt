@@ -1616,6 +1616,7 @@ class ObjectSetViewModel(
 
     private fun proceedWithCreatingTemplate(targetObjectType: Id) {
         viewModelScope.launch {
+            delay(200)
             val params = CreateTemplate.Params(
                 targetObject = targetObjectType
             )

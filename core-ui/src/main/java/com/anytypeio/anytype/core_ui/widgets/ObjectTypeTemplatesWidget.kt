@@ -35,6 +35,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
@@ -497,11 +498,26 @@ private fun TemplateItemContent(item: TemplateView) {
                             }
                         } else {
                             Spacer(modifier = Modifier.height(28.dp))
+                            TemplateItemTitle(text = item.name)
                         }
                     }
                 }
                 Spacer(modifier = Modifier.height(12.dp))
                 TemplateItemRectangles()
+            }
+
+            is TemplateView.New -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(32.dp),
+                        painter = painterResource(id = R.drawable.ic_default_plus),
+                        contentDescription = "New template",
+                        tint = colorResource(id = R.color.glyph_active)
+                    )
+                }
             }
         }
     }

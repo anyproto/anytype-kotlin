@@ -16,6 +16,10 @@ sealed class TemplateView {
         override val isDefault: Boolean = false
     ) : TemplateView()
 
+    data class New(val targetObjectType: Id) : TemplateView() {
+        override val isDefault: Boolean = false
+    }
+
     data class Template(
         val id: Id,
         val name: String,

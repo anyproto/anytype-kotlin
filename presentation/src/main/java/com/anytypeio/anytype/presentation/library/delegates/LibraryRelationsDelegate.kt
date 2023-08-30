@@ -56,7 +56,7 @@ class LibraryRelationsDelegate @Inject constructor(
                     DVFilter(
                         relation = Relations.WORKSPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = Marketplace.MARKETPLACE_ID
+                        value = Marketplace.MARKETPLACE_SPACE_ID
                     )
                 )
             }

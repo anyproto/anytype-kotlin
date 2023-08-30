@@ -8,7 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.LibraryView
@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.flow
 
 class MyRelationsDelegate @Inject constructor(
     private val container: StorelessSubscriptionContainer,
-    private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager,
     private val urlBuilder: UrlBuilder,
     private val dispatchers: AppCoroutineDispatchers
 ) : LibraryListDelegate, QueryListenerMyRelations {
@@ -52,13 +52,13 @@ class MyRelationsDelegate @Inject constructor(
 
     @FlowPreview
     override fun itemsFlow() = flow {
-        emit(workspaceManager.getCurrentWorkspace())
-    }.flatMapMerge {
-        val searchParams = buildSearchParams(it)
+        emit(spaceManager.get())
+    }.flatMapMerge { space: Id ->
+        val searchParams = buildSearchParams(space)
         container.subscribe(searchParams)
     }
 
-    private fun buildSearchParams(workspaceId: Id): StoreSearchParams {
+    private fun buildSearchParams(space: Id): StoreSearchParams {
         return StoreSearchParams(
             subscription = SUB_LIBRARY_MY_RELATIONS,
             keys = ObjectSearchConstants.defaultKeys + listOf(
@@ -70,9 +70,9 @@ class MyRelationsDelegate @Inject constructor(
                 addAll(ObjectSearchConstants.filterMyRelations())
                 add(
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = workspaceId
+                        value = space
                     )
                 )
                 add(

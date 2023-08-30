@@ -16,6 +16,8 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -26,8 +28,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 
 open class LinkToObjectOrWebViewModelTest {
@@ -295,6 +295,6 @@ open class LinkToObjectOrWebViewModelTest {
         urlBuilder = builder,
         urlValidator = urlValidator,
         storeOfObjectTypes = storeOfObjectTypes,
-        workspaceManager = workspaceManager
+        spaceManager = workspaceManager
     )
 }

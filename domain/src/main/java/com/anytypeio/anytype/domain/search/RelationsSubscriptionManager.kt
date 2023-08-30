@@ -2,7 +2,7 @@ package com.anytypeio.anytype.domain.search
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
@@ -28,9 +28,9 @@ class RelationsSubscriptionManager @Inject constructor(
                 subscription = RelationsSubscriptionContainer.SUBSCRIPTION_ID,
                 filters = listOf(
                     DVFilter(
-                        relation = Relations.TYPE,
+                        relation = Relations.LAYOUT,
                         condition = DVFilterCondition.EQUAL,
-                        value = ObjectTypeIds.RELATION
+                        value = ObjectType.Layout.RELATION.code.toDouble()
                     ),
                     DVFilter(
                         relation = Relations.IS_DELETED,
@@ -49,6 +49,7 @@ class RelationsSubscriptionManager @Inject constructor(
                 sources = emptyList(),
                 keys = listOf(
                     Relations.ID,
+                    Relations.SPACE_ID,
                     Relations.TYPE,
                     Relations.LAYOUT,
                     Relations.NAME,

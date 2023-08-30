@@ -8,7 +8,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.linking.LinkToObjectViewModelFactory
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
 import dagger.Module
@@ -40,14 +39,12 @@ object LinkToObjectModule {
         urlBuilder: UrlBuilder,
         getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
-        workspaceManager: WorkspaceManager,
         analytics: Analytics,
         spaceManager: SpaceManager
     ): LinkToObjectViewModelFactory = LinkToObjectViewModelFactory(
         urlBuilder = urlBuilder,
         getObjectTypes = getObjectTypes,
         searchObjects = searchObjects,
-        workspaceManager = workspaceManager,
         analytics = analytics,
         spaceManager = spaceManager
     )

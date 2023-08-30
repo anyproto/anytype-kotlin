@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.relations
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
+import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -116,7 +116,7 @@ class RelationAddViewModelBaseTest {
                             DVFilter(
                                 relation = Relations.WORKSPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
-                                value = MARKETPLACE_ID
+                                value = MARKETPLACE_SPACE_ID
                             )
                         )
                         add(
@@ -179,9 +179,9 @@ class RelationAddViewModelBaseTest {
             // SETUP
 
             val marketplace = listOf(
-                StubRelationObject(workspaceId = MARKETPLACE_ID),
-                StubRelationObject(workspaceId = MARKETPLACE_ID),
-                StubRelationObject(workspaceId = MARKETPLACE_ID)
+                StubRelationObject(workspaceId = MARKETPLACE_SPACE_ID),
+                StubRelationObject(workspaceId = MARKETPLACE_SPACE_ID),
+                StubRelationObject(workspaceId = MARKETPLACE_SPACE_ID)
             )
 
             val library = listOf(
@@ -241,7 +241,7 @@ class RelationAddViewModelBaseTest {
                                 DVFilter(
                                     relation = Relations.WORKSPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
-                                    value = MARKETPLACE_ID
+                                    value = MARKETPLACE_SPACE_ID
                                 )
                             )
                             add(
@@ -297,14 +297,14 @@ class RelationAddViewModelBaseTest {
                             id = marketplace[1].id,
                             name = marketplace[1].name.orEmpty(),
                             format = marketplace[1].format,
-                            workspace = MARKETPLACE_ID
+                            workspace = MARKETPLACE_SPACE_ID
                         ),
                         RelationView.Existing(
                             key = marketplace[2].key,
                             id = marketplace[2].id,
                             name = marketplace[2].name.orEmpty(),
                             format = marketplace[2].format,
-                            workspace = MARKETPLACE_ID
+                            workspace = MARKETPLACE_SPACE_ID
                         ),
                     )
                 )

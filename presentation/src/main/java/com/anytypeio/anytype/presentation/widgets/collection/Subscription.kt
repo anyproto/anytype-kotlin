@@ -20,7 +20,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
         ObjectSearchConstants.sortTabRecent,
         ObjectSearchConstants.limitTabRecent,
-        filters = { workspaceId -> ObjectSearchConstants.filterTabRecent(workspaceId) }
+        filters = { space: Id -> ObjectSearchConstants.filterTabRecent(space) }
     )
 
     object RecentLocal : Subscription(
@@ -28,7 +28,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS + Relations.LAST_OPENED_DATE,
         ObjectSearchConstants.sortTabRecentLocal,
         ObjectSearchConstants.limitTabRecent,
-        filters = { workspaceId -> ObjectSearchConstants.filterTabRecentLocal(workspaceId) }
+        filters = { space: Id -> ObjectSearchConstants.filterTabRecentLocal(space) }
     )
 
     object Bin : Subscription(
@@ -36,7 +36,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabArchive,
         0,
-        filters = { workspaceId -> ObjectSearchConstants.filterTabArchive(workspaceId) }
+        filters = { space : Id -> ObjectSearchConstants.filterTabArchive(space) }
     )
 
     object Sets : Subscription(
@@ -44,7 +44,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabSets,
         0,
-        filters = { workspaceId -> ObjectSearchConstants.filterTabSets(workspaceId) }
+        filters = { space: Id -> ObjectSearchConstants.filterTabSets(space) }
     )
 
     object Collections : Subscription(
@@ -52,9 +52,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabSets,
         0,
-        filters = { workspaceId ->
-            ObjectSearchConstants.collectionFilters(workspaceId)
-        }
+        filters = { space: Id -> ObjectSearchConstants.collectionFilters(space) }
     )
 
     object Favorites : Subscription(
@@ -62,7 +60,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         emptyList(),
         0,
-        filters = { workspaceId -> ObjectSearchConstants.filterTabFavorites(workspaceId) }
+        filters = { space: Id -> ObjectSearchConstants.filterTabFavorites(space = space) }
     )
 
     object Files : Subscription(
@@ -75,7 +73,7 @@ sealed class Subscription(
             )
         ),
         limit = 0,
-        filters = { workspaceId -> ObjectSearchConstants.filesFilters(workspaceId) }
+        filters = { space: Id -> ObjectSearchConstants.filesFilters(space) }
     )
 
     object None : Subscription("", emptyList(), emptyList(), 0, filters = { emptyList() })

@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
+import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -144,7 +144,7 @@ abstract class RelationAddViewModelBase(
                     DVFilter(
                         relation = Relations.WORKSPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = MARKETPLACE_ID
+                        value = MARKETPLACE_SPACE_ID
                     )
                 )
                 add(
@@ -200,7 +200,7 @@ abstract class RelationAddViewModelBase(
         relation: RelationView.Existing
     ) {
         viewModelScope.launch {
-            if (relation.workspace == MARKETPLACE_ID) {
+            if (relation.workspace == MARKETPLACE_SPACE_ID) {
                 addObjectToWorkspace(
                     AddObjectToWorkspace.Params(
                         objects = listOf(relation.id),

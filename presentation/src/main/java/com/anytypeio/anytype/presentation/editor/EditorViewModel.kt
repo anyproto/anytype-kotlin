@@ -89,7 +89,6 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -286,7 +285,6 @@ class EditorViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val featureToggles: FeatureToggles,
     private val tableDelegate: EditorTableDelegate,
-    private val workspaceManager: WorkspaceManager,
     private val spaceManager: SpaceManager,
     private val getObjectTypes: GetObjectTypes,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
@@ -3942,7 +3940,7 @@ class EditorViewModel(
                         type = clicked.typeId,
                         filters = ObjectSearchConstants.setsByObjectTypeFilters(
                             types = listOf(clicked.typeId),
-                            space = workspaceManager.getCurrentWorkspace()
+                            space = spaceManager.get()
                         )
                     )
                     findObjectSetForType(params).process(
@@ -5803,7 +5801,7 @@ class EditorViewModel(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
-                    space = workspaceManager.getCurrentWorkspace()
+                    space = spaceManager.get()
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,

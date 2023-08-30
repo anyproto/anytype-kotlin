@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.SPACE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.TEMPLATE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.VIDEO
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 /**
  * This class contains all filters and sorts for different use cases using Rpc.Object.Search command
@@ -78,7 +79,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region LINK TO
-    fun getFilterLinkTo(ignore: Id?, workspaceId: String) = listOf(
+    fun getFilterLinkTo(ignore: Id?, space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -94,6 +95,7 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
+        // TODO migrate to layout filter
         DVFilter(
             relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
@@ -116,9 +118,9 @@ object ObjectSearchConstants {
             value = ignore
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 
@@ -132,7 +134,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region MOVE TO
-    fun filterMoveTo(ctx: Id, types: List<String>, workspaceId: String) = listOf(
+    fun filterMoveTo(ctx: Id, types: List<String>, space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -164,9 +166,9 @@ object ObjectSearchConstants {
             value = listOf(ctx)
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 
@@ -180,7 +182,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region ADD OBJECT TO RELATION VALUE
-    fun filterAddObjectToRelation(workspaceId: String) = listOf(
+    fun filterAddObjectToRelation(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -197,9 +199,9 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 
@@ -212,7 +214,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region ADD OBJECT TO FILTER
-    fun filterAddObjectToFilter(workspaceId: String) = listOf(
+    fun filterAddObjectToFilter(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -228,6 +230,7 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
+        // TODO fix
         DVFilter(
             relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
@@ -241,9 +244,9 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 
@@ -272,6 +275,7 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
+        // TODO migrate to layout filter
         DVFilter(
             relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
@@ -323,21 +327,9 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.NOT_IN,
-            value = listOf(
-                OBJECT_TYPE,
-                RELATION,
-                TEMPLATE,
-                IMAGE,
-                FILE,
-                VIDEO,
-                AUDIO,
-                DASHBOARD,
-                RELATION_OPTION,
-                DASHBOARD,
-                DATE
-            )
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.IN,
+            value = SupportedLayouts.layouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.LAST_MODIFIED_DATE,
@@ -376,21 +368,9 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.NOT_IN,
-            value = listOf(
-                OBJECT_TYPE,
-                RELATION,
-                TEMPLATE,
-                IMAGE,
-                FILE,
-                VIDEO,
-                AUDIO,
-                DASHBOARD,
-                RELATION_OPTION,
-                DASHBOARD,
-                DATE
-            )
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.IN,
+            value = SupportedLayouts.layouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.LAST_OPENED_DATE,
@@ -487,7 +467,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region BACK LINK OR ADD TO OBJECT
-    fun filtersBackLinkOrAddToObject(ignore: Id?, workspaceId: String) = listOf(
+    fun filtersBackLinkOrAddToObject(ignore: Id?, space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -503,6 +483,7 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
+        // TODO migrate to layout filter
         DVFilter(
             relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
@@ -528,9 +509,9 @@ object ObjectSearchConstants {
             value = ignore
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 
@@ -780,7 +761,7 @@ object ObjectSearchConstants {
         )
     )
 
-    fun collectionFilters(workspaceId: String) = listOf(
+    fun collectionFilters(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL ,
@@ -796,6 +777,7 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
+        // TODO migrate to layout
         DVFilter(
             relation = Relations.TYPE,
             condition = DVFilterCondition.NOT_IN,
@@ -814,9 +796,9 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         ),
         DVFilter(
             relation = Relations.TYPE,
@@ -833,7 +815,7 @@ object ObjectSearchConstants {
         )
     )
 
-    fun filesFilters(workspaceId: String) = listOf(
+    fun filesFilters(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -850,9 +832,9 @@ object ObjectSearchConstants {
             )
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         ),
         DVFilter(
             relation = Relations.FILE_SYNC_STATUS,
@@ -861,7 +843,7 @@ object ObjectSearchConstants {
         )
     )
 
-    fun setsByObjectTypeFilters(types: List<Id>, workspaceId: String) = listOf(
+    fun setsByObjectTypeFilters(types: List<Id>, space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -883,9 +865,9 @@ object ObjectSearchConstants {
             value = SET
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         ),
         DVFilter(
             relation = Relations.SET_OF,

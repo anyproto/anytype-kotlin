@@ -162,7 +162,7 @@ class MoveToViewModel(
             filters = ObjectSearchConstants.filterMoveTo(
                 ctx = ctx,
                 types = filteredTypes,
-                workspaceId = workspaceManager.getCurrentWorkspace()
+                space = workspaceManager.getCurrentWorkspace()
             ),
             sorts = ObjectSearchConstants.sortMoveTo,
             fulltext = EMPTY_QUERY,

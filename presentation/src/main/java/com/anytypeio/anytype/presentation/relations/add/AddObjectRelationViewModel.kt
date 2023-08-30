@@ -162,7 +162,7 @@ class AddObjectRelationViewModel(
             val filters = mutableListOf<DVFilter>()
             filters.addAll(
                 ObjectSearchConstants.filterAddObjectToRelation(
-                    workspaceId = workspaceManager.getCurrentWorkspace()
+                    space = workspaceManager.getCurrentWorkspace()
                 )
             )
             if (targetTypes.isEmpty()) {

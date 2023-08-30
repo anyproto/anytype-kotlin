@@ -223,7 +223,7 @@ class LinkToObjectOrWebViewModel(
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
         filters = ObjectSearchConstants.getFilterLinkTo(
             ignore = ignore,
-            workspaceId = workspaceManager.getCurrentWorkspace()
+            space = workspaceManager.getCurrentWorkspace()
         ),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = ObjectSearchViewModel.EMPTY_QUERY,

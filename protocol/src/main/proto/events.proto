@@ -720,8 +720,9 @@ message Event {
                     bool coverFit = 6; // Image fits container
                     string groupRelationKey = 7; // Group view by this relationKey
                     bool groupBackgroundColors = 8; // Enable backgrounds in groups
-                    int32 pageLimit = 9;
+                    int32 pageLimit = 9; // Limit of objects shown in widget
                     string defaultTemplateId = 10; // Id of template object set default for the view
+                    string defaultObjectTypeId = 15; // Default object type that is chosen for new object created within the view
                 }
 
                 message Filter {

@@ -150,7 +150,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.default_object),
                 value = state.defaultObjectType?.name.orEmpty()
-            )
+            ) { action(ViewerEditWidgetUi.Action.DefaultObjectType) }
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
             val layoutValue = when (state.layout) {
@@ -163,7 +163,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.layout),
                 value = layoutValue
-            )
+            ) { action(ViewerEditWidgetUi.Action.Layout) }
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
             val relationsValue = when (state.relations.size) {
@@ -174,7 +174,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.relations),
                 value = relationsValue
-            )
+            ) { action(ViewerEditWidgetUi.Action.Relations) }
 
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
@@ -186,7 +186,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.filter),
                 value = filtersValue
-            )
+            ) { action(ViewerEditWidgetUi.Action.Filters) }
 
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
@@ -198,7 +198,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.sort),
                 value = sortsValue
-            )
+            ) { action(ViewerEditWidgetUi.Action.Sorts) }
         }
     }
 }
@@ -244,11 +244,12 @@ fun NameTextField(state: ViewerEditWidgetUi) {
 }
 
 @Composable
-private fun ColumnItem(title: String, value: String) {
+private fun ColumnItem(title: String, value: String, onClick: () -> Unit) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
+            .noRippleThrottledClickable(onClick = onClick)
     ) {
         val (titleRef, valueRef, iconRef) = createRefs()
         val rightGuideline = createGuidelineFromStart(0.5f)

@@ -39,11 +39,11 @@ data class ViewerEditWidgetUi(
     sealed class Action {
         object Dismiss : Action()
         data class UpdateName(val name: String) : Action()
-        data class UpdateDefaultObjectType(val type: ObjectWrapper.Type) : Action()
-        data class UpdateLayout(val layout: ObjectType.Layout) : Action()
-        data class UpdateRelations(val relations: List<String>) : Action()
-        data class UpdateFilters(val filters: List<String>) : Action()
-        data class UpdateSorts(val sorts: List<String>) : Action()
+        object DefaultObjectType : Action()
+        object Layout : Action()
+        object Relations : Action()
+        object Filters : Action()
+        object Sorts : Action()
     }
 }
 

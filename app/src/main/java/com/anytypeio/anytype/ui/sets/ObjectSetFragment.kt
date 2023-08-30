@@ -54,6 +54,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.ObjectTypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
+import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
@@ -347,6 +348,16 @@ open class ObjectSetFragment :
                 ViewersWidget(
                     state = vm.viewersWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewersWidgetAction
+                )
+            }
+        }
+
+        binding.viewerEditWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ViewerEditWidget(
+                    state = vm.viewerEditWidgetState.collectAsStateWithLifecycle().value,
+                    action = {}
                 )
             }
         }

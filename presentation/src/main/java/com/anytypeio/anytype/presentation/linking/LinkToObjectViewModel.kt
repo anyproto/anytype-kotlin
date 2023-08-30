@@ -40,7 +40,7 @@ class LinkToObjectViewModel(
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.getFilterLinkTo(
             ignore = ignore,
-            workspaceId = workspaceManager.getCurrentWorkspace()
+            space = workspaceManager.getCurrentWorkspace()
         ),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = EMPTY_QUERY,

@@ -3942,7 +3942,7 @@ class EditorViewModel(
                         type = clicked.typeId,
                         filters = ObjectSearchConstants.setsByObjectTypeFilters(
                             types = listOf(clicked.typeId),
-                            workspaceId = workspaceManager.getCurrentWorkspace()
+                            space = workspaceManager.getCurrentWorkspace()
                         )
                     )
                     findObjectSetForType(params).process(
@@ -5803,7 +5803,7 @@ class EditorViewModel(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
-                    workspaceId = workspaceManager.getCurrentWorkspace()
+                    space = workspaceManager.getCurrentWorkspace()
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,

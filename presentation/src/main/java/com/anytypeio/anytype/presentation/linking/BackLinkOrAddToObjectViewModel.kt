@@ -54,7 +54,7 @@ class BackLinkOrAddToObjectViewModel(
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.filtersBackLinkOrAddToObject(
             ignore = ignore,
-            workspaceId = workspaceManager.getCurrentWorkspace()
+            space = workspaceManager.getCurrentWorkspace()
         ),
         sorts = ObjectSearchConstants.sortBackLinkOrAddToObject,
         fulltext = EMPTY_QUERY,

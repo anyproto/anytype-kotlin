@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
@@ -93,7 +94,8 @@ class CollectionViewModel(
     private val move: Move,
     private val analytics: Analytics,
     private val dateProvider: DateProvider,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val spaceManager: SpaceManager
 ) : ViewModel(), Reducer<CoreObjectView, Payload> {
 
     val payloads: Flow<Payload>
@@ -158,7 +160,7 @@ class CollectionViewModel(
         val params = GetObjectTypes.Params(
             sorts = emptyList(),
             filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                space = workspaceManager.getCurrentWorkspace()
+                space = spaceManager.get()
             ),
             keys = ObjectSearchConstants.defaultKeysObjectType
         )
@@ -820,7 +822,8 @@ class CollectionViewModel(
         private val move: Move,
         private val analytics: Analytics,
         private val dateProvider: DateProvider,
-        private val storeOfObjectTypes: StoreOfObjectTypes
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -844,7 +847,8 @@ class CollectionViewModel(
                 move = move,
                 analytics = analytics,
                 dateProvider = dateProvider,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                spaceManager = spaceManager
             ) as T
         }
     }

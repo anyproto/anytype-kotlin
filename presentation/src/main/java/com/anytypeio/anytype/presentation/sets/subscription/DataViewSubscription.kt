@@ -19,7 +19,7 @@ interface DataViewSubscription {
 
     suspend fun startObjectSetSubscription(
         context: Id,
-        workspaceId: Id,
+        space: Id,
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
@@ -81,7 +81,7 @@ class DefaultDataViewSubscription(
 
     override suspend fun startObjectSetSubscription(
         context: Id,
-        workspaceId: Id,
+        space: Id,
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
@@ -114,7 +114,7 @@ class DefaultDataViewSubscription(
 
         val filters =
             activeViewer.filters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = workspaceId
+                space = space
             )
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys

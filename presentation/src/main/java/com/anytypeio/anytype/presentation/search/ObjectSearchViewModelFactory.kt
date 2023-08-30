@@ -7,14 +7,12 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
 class ObjectSearchViewModelFactory(
     private val urlBuilder: UrlBuilder,
     private val getObjectTypes: GetObjectTypes,
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
-    private val workspaceManager: WorkspaceManager,
     private val spaceManager: SpaceManager
 ) : ViewModelProvider.Factory {
 
@@ -25,7 +23,6 @@ class ObjectSearchViewModelFactory(
             getObjectTypes = getObjectTypes,
             searchObjects = searchObjects,
             analytics = analytics,
-            workspaceManager = workspaceManager,
             spaceManager = spaceManager
         ) as T
     }

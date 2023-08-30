@@ -7,14 +7,14 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toRelationObjectValueView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -35,7 +35,7 @@ class AddObjectRelationViewModel(
     private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val workspaceManager: WorkspaceManager
+    private val spaceManager: SpaceManager
 ) : ViewModel() {
 
     private val _views = MutableStateFlow<List<RelationValueView.Object>>(listOf())
@@ -162,28 +162,15 @@ class AddObjectRelationViewModel(
             val filters = mutableListOf<DVFilter>()
             filters.addAll(
                 ObjectSearchConstants.filterAddObjectToRelation(
-                    space = workspaceManager.getCurrentWorkspace()
+                    space = spaceManager.get()
                 )
             )
             if (targetTypes.isEmpty()) {
                 filters.add(
                     DVFilter(
-                        relation = Relations.TYPE,
-                        condition = DVFilterCondition.NOT_IN,
-                        value = listOf(
-                            ObjectTypeIds.OBJECT_TYPE,
-                            ObjectTypeIds.RELATION,
-                            ObjectTypeIds.TEMPLATE,
-                            ObjectTypeIds.AUDIO,
-                            ObjectTypeIds.VIDEO,
-                            ObjectTypeIds.IMAGE,
-                            ObjectTypeIds.FILE,
-                            ObjectTypeIds.DATE,
-                            ObjectTypeIds.PROFILE,
-                            ObjectTypeIds.WORKSPACE,
-                            ObjectTypeIds.RELATION_OPTION,
-                            ObjectTypeIds.DASHBOARD
-                        )
+                        relation = Relations.LAYOUT,
+                        condition = DVFilterCondition.IN,
+                        value = SupportedLayouts.layouts.map { it.code.toDouble() }
                     )
                 )
             } else {
@@ -223,7 +210,7 @@ class AddObjectRelationViewModel(
         private val searchObjects: SearchObjects,
         private val urlBuilder: UrlBuilder,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val workspaceManager: WorkspaceManager
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -233,7 +220,7 @@ class AddObjectRelationViewModel(
                 searchObjects = searchObjects,
                 urlBuilder = urlBuilder,
                 storeOfObjectTypes = storeOfObjectTypes,
-                workspaceManager = workspaceManager
+                spaceManager = spaceManager
             ) as T
         }
     }

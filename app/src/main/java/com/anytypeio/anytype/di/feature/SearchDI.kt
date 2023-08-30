@@ -8,7 +8,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModelFactory
 import com.anytypeio.anytype.ui.search.ObjectSearchFragment
 import dagger.Module
@@ -52,14 +51,12 @@ object ObjectSearchModule {
         getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
         analytics: Analytics,
-        workspaceManager: WorkspaceManager,
         spaceManager: SpaceManager
     ): ObjectSearchViewModelFactory = ObjectSearchViewModelFactory(
         urlBuilder = urlBuilder,
         searchObjects = searchObjects,
         getObjectTypes = getObjectTypes,
         analytics = analytics,
-        workspaceManager = workspaceManager,
         spaceManager = spaceManager
     )
 }

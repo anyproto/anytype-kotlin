@@ -22,7 +22,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.checkboxFilterValue
 import com.anytypeio.anytype.presentation.extension.hasValue
@@ -70,7 +70,7 @@ open class FilterViewModel(
     private val objectSetDatabase: ObjectSetDatabase,
     private val analytics: Analytics,
     private val getOptions: GetOptions,
-    private val workspaceManager: WorkspaceManager
+    private val spaceManager: SpaceManager
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Commands>()
@@ -362,7 +362,7 @@ open class FilterViewModel(
                 SearchObjects.Params(
                     sorts = ObjectSearchConstants.sortAddObjectToFilter,
                     filters = ObjectSearchConstants.filterAddObjectToFilter(
-                        space = workspaceManager.getCurrentWorkspace()
+                        space = spaceManager.get()
                     ),
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
@@ -860,7 +860,7 @@ open class FilterViewModel(
         private val objectSetDatabase: ObjectSetDatabase,
         private val getOptions: GetOptions,
         private val analytics: Analytics,
-        private val workspaceManager: WorkspaceManager
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -876,7 +876,7 @@ open class FilterViewModel(
                 objectSetDatabase = objectSetDatabase,
                 getOptions = getOptions,
                 analytics = analytics,
-                workspaceManager = workspaceManager
+                spaceManager = spaceManager
             ) as T
         }
     }

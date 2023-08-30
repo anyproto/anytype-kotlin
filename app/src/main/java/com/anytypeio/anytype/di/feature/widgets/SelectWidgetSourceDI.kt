@@ -8,7 +8,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.SelectWidgetSourceViewModel
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -41,7 +40,6 @@ object SelectWidgetSourceModule {
     fun factory(
         urlBuilder: UrlBuilder,
         analytics: Analytics,
-        workspaceManager: WorkspaceManager,
         searchObjects: SearchObjects,
         getObjectTypes: GetObjectTypes,
         dispatcher: Dispatcher<WidgetDispatchEvent>,
@@ -50,7 +48,6 @@ object SelectWidgetSourceModule {
         urlBuilder = urlBuilder,
         searchObjects = searchObjects,
         analytics = analytics,
-        workspaceManager = workspaceManager,
         getObjectTypes = getObjectTypes,
         dispatcher = dispatcher,
         spaceManager = spaceManager

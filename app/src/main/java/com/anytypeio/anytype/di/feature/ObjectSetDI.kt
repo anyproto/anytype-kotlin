@@ -221,7 +221,8 @@ object ObjectSetModule {
         duplicateObjects: DuplicateObjects,
         templatesContainer: ObjectTypeTemplatesContainer,
         setObjectListIsArchived: SetObjectListIsArchived,
-        viewerDelegate: ViewerDelegate
+        viewerDelegate: ViewerDelegate,
+        spaceManager: SpaceManager
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -257,7 +258,8 @@ object ObjectSetModule {
         duplicateObjects = duplicateObjects,
         templatesContainer = templatesContainer,
         setObjectListIsArchived = setObjectListIsArchived,
-        viewerDelegate = viewerDelegate
+        viewerDelegate = viewerDelegate,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

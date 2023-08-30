@@ -462,19 +462,6 @@ fun ObjectWrapper.Basic.toTemplateView(
     )
 }
 
-fun ObjectWrapper.Basic.toTemplateViewBlank(
-    typeId: Id,
-    objectTypeDefaultTemplate: Id?,
-    viewerDefaultTemplate: Id?
-): TemplateView.Blank {
-    val isDefault = viewerDefaultTemplate.isNullOrBlank() && objectTypeDefaultTemplate.isNullOrBlank()
-    return TemplateView.Blank(
-        typeId = typeId,
-        layout = layout?.code ?: ObjectType.Layout.BASIC.code,
-        isDefault = isDefault
-    )
-}
-
 fun ObjectWrapper.Type.toTemplateViewBlank(): TemplateView.Blank {
     return TemplateView.Blank(
         typeId = id,

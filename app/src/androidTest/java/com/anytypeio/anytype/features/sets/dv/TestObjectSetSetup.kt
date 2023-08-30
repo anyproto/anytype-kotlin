@@ -45,6 +45,7 @@ import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
@@ -142,6 +143,9 @@ abstract class TestObjectSetSetup {
 
     @Mock
     lateinit var viewerDelegate: ViewerDelegate
+
+    @Mock
+    lateinit var createTemplate: CreateTemplate
 
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultPageType: GetDefaultPageType
@@ -264,7 +268,8 @@ abstract class TestObjectSetSetup {
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,
-            viewerDelegate = viewerDelegate
+            viewerDelegate = viewerDelegate,
+            createTemplate = createTemplate
         )
     }
 

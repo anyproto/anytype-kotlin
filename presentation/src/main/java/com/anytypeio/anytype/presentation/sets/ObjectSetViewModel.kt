@@ -44,6 +44,7 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
@@ -136,7 +137,8 @@ class ObjectSetViewModel(
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val viewerDelegate: ViewerDelegate
+    private val viewerDelegate: ViewerDelegate,
+    private val createTemplate: CreateTemplate
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
     val status = MutableStateFlow(SyncStatus.UNKNOWN)
@@ -1565,7 +1567,7 @@ class ObjectSetViewModel(
                                     objectTypeDefaultTemplate = objectType.defaultTemplateId,
                                     viewerDefaultTemplate = viewer.defaultTemplateId
                                 )
-                            }
+                            } + listOf(TemplateView.New(objectType.id))
                     }.collectLatest {
                         _templateViews.value = it
                     }
@@ -1601,7 +1603,7 @@ class ObjectSetViewModel(
                     )
                 }
                 viewModelScope.launch {
-                    delay(200)
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     proceedWithCreatingNewDataViewObject()
                 }
             }
@@ -1615,10 +1617,44 @@ class ObjectSetViewModel(
                     )
                 }
                 viewModelScope.launch {
-                    delay(200)
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     proceedWithCreatingNewDataViewObject(templatesId = item.id)
                 }
             }
+
+            is TemplateView.New -> {
+                templatesWidgetState.value = templatesWidgetState.value.copy(
+                    showWidget = false,
+                    isEditing = false,
+                    isMoreMenuVisible = false,
+                    moreMenuTemplate = null
+                )
+                proceedWithCreatingTemplate(targetObjectType = item.targetObjectType)
+            }
+        }
+    }
+
+    private fun proceedWithCreatingTemplate(targetObjectType: Id) {
+        viewModelScope.launch {
+            delay(DELAY_BEFORE_CREATING_TEMPLATE)
+            val params = CreateTemplate.Params(
+                targetObjectTypeId = targetObjectType
+            )
+            createTemplate.async(params).fold(
+                onSuccess = { id ->
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.CREATE_TEMPLATE,
+                        type = storeOfObjectTypes.get(targetObjectType)?.sourceObject
+                    )
+                    proceedWithOpeningTemplate(id)
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while creating new template")
+                    toast("Error while creating new template")
+                }
+            )
         }
     }
 
@@ -1766,7 +1802,7 @@ class ObjectSetViewModel(
             moreMenuTemplate = null
         )
         viewModelScope.launch {
-            delay(200)
+            delay(DELAY_BEFORE_CREATING_TEMPLATE)
             proceedWithOpeningTemplate(template.id)
         }
     }
@@ -1853,5 +1889,6 @@ class ObjectSetViewModel(
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
+        const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
     }
 }

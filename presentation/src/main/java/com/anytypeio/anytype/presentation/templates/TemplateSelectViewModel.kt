@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -77,7 +76,7 @@ class TemplateSelectViewModel(
     ) {
         val templateViews = buildList {
             if (!withoutBlankTemplate) add(
-                TemplateView.Blank(
+                TemplateSelectView.Blank(
                     typeId = objType.id,
                     typeName = objType.name.orEmpty(),
                     layout = objType.recommendedLayout?.code ?: 0
@@ -88,16 +87,10 @@ class TemplateSelectViewModel(
                     BasicObjectCoverWrapper(it)
                         .getCover(urlBuilder, coverImageHashProvider)
                 } else null
-                TemplateView.Template(
+                TemplateSelectView.Template(
                     id = it.id,
-                    name = it.name.orEmpty(),
                     layout = it.layout ?: ObjectType.Layout.BASIC,
-                    emoji = it.iconEmoji.orEmpty(),
-                    image = it.iconImage.orEmpty(),
-                    typeId = objType.id,
-                    coverColor = coverContainer?.coverColor,
-                    coverImage = coverContainer?.coverImage,
-                    coverGradient = coverContainer?.coverGradient
+                    typeId = objType.id
                 )
             })
         }
@@ -113,10 +106,10 @@ class TemplateSelectViewModel(
         when (val state = _viewState.value) {
             is ViewState.Success -> {
                 when (val template = state.templates[currentItem]) {
-                    is TemplateView.Blank -> {
+                    is TemplateSelectView.Blank -> {
                         isDismissed.value = true
                     }
-                    is TemplateView.Template -> {
+                    is TemplateSelectView.Template -> {
                         proceedWithApplyingTemplate(ctx, template)
                     }
                 }
@@ -131,7 +124,7 @@ class TemplateSelectViewModel(
         }
     }
 
-    private fun proceedWithApplyingTemplate(ctx: Id, template: TemplateView.Template) {
+    private fun proceedWithApplyingTemplate(ctx: Id, template: TemplateSelectView.Template) {
         val params = ApplyTemplate.Params(ctx = ctx, template = template.id)
         viewModelScope.launch {
             applyTemplate.async(params).fold(
@@ -176,7 +169,7 @@ class TemplateSelectViewModel(
 
     sealed class ViewState {
         data class Success(
-            val objectTypeName: String, val templates: List<TemplateView>
+            val objectTypeName: String, val templates: List<TemplateSelectView>
         ) : ViewState()
 
         object Init : ViewState()

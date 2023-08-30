@@ -16,7 +16,7 @@ import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -40,7 +40,7 @@ class MoveToViewModel(
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
-    private val workspaceManager: WorkspaceManager
+    private val spaceManager: SpaceManager
 ) : ViewModel(), TextInputDialogBottomBehaviorApplier.OnDialogCancelListener {
 
     private val _viewState: MutableStateFlow<MoveToView> = MutableStateFlow(MoveToView.Init)
@@ -128,8 +128,7 @@ class MoveToViewModel(
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterObjectTypeLibrary(
-                            // TODO MULTISPACES fix object types
-                            space = workspaceManager.getCurrentWorkspace()
+                            space = spaceManager.get()
                         )
                     )
                     add(
@@ -162,7 +161,7 @@ class MoveToViewModel(
             filters = ObjectSearchConstants.filterMoveTo(
                 ctx = ctx,
                 types = filteredTypes,
-                space = workspaceManager.getCurrentWorkspace()
+                space = spaceManager.get()
             ),
             sorts = ObjectSearchConstants.sortMoveTo,
             fulltext = EMPTY_QUERY,

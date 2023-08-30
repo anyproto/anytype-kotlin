@@ -192,7 +192,7 @@ open class ObjectSearchViewModel(
     open suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.filterSearchObjects(
-            spaceId = spaceManager.get()
+            space = spaceManager.get()
         ),
         sorts = ObjectSearchConstants.sortsSearchObjects,
         fulltext = EMPTY_QUERY,

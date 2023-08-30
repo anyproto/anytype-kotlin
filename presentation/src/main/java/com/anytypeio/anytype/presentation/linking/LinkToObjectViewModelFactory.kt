@@ -42,7 +42,7 @@ class LinkToObjectOrWebViewModelFactory(
     private val analytics: Analytics,
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator,
-    private val workspaceManager: WorkspaceManager
+    private val spaceManager: SpaceManager
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -54,7 +54,7 @@ class LinkToObjectOrWebViewModelFactory(
             analytics = analytics,
             stores = stores,
             urlValidator = urlValidator,
-            workspaceManager = workspaceManager
+            spaceManager = spaceManager
         ) as T
     }
 }

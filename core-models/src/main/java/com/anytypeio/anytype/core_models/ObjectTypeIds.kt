@@ -67,5 +67,5 @@ object MarketplaceObjectTypeIds {
 }
 
 object Marketplace {
-    const val MARKETPLACE_ID = "_anytype_marketplace"
+    const val MARKETPLACE_SPACE_ID = "_anytype_marketplace"
 }

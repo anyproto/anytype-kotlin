@@ -7,22 +7,12 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.FileSyncStatus
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
+import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.AUDIO
-import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
-import com.anytypeio.anytype.core_models.ObjectTypeIds.DASHBOARD
-import com.anytypeio.anytype.core_models.ObjectTypeIds.DATE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.FILE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.IMAGE
-import com.anytypeio.anytype.core_models.ObjectTypeIds.OBJECT_TYPE
-import com.anytypeio.anytype.core_models.ObjectTypeIds.RELATION
-import com.anytypeio.anytype.core_models.ObjectTypeIds.RELATION_OPTION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
-import com.anytypeio.anytype.core_models.ObjectTypeIds.SPACE
-import com.anytypeio.anytype.core_models.ObjectTypeIds.TEMPLATE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.VIDEO
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -33,7 +23,7 @@ import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 object ObjectSearchConstants {
 
     //region SEARCH OBJECTS
-    fun filterSearchObjects(spaceId: String) = listOf(
+    fun filterSearchObjects(space: Id) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -65,7 +55,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = spaceId
+            value = space
         )
     )
 
@@ -95,22 +85,10 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
-        // TODO migrate to layout filter
         DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.NOT_IN,
-            value = listOf(
-                OBJECT_TYPE,
-                RELATION,
-                TEMPLATE,
-                IMAGE,
-                FILE,
-                VIDEO,
-                AUDIO,
-                DASHBOARD,
-                DATE,
-                RELATION_OPTION
-            )
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.IN,
+            value = SupportedLayouts.layouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.ID,
@@ -230,18 +208,10 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
-        // TODO fix
         DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.NOT_IN,
-            value = listOf(
-                OBJECT_TYPE,
-                RELATION,
-                TEMPLATE,
-                RELATION_OPTION,
-                DASHBOARD,
-                DATE
-            )
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.IN,
+            value = SupportedLayouts.layouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
@@ -275,23 +245,10 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
-        // TODO migrate to layout filter
         DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.NOT_IN,
-            value = listOf(
-                OBJECT_TYPE,
-                RELATION,
-                TEMPLATE,
-                IMAGE,
-                FILE,
-                VIDEO,
-                AUDIO,
-                DASHBOARD,
-                RELATION_OPTION,
-                DASHBOARD,
-                DATE
-            )
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.IN,
+            value = SupportedLayouts.layouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
@@ -483,25 +440,10 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
-        // TODO migrate to layout filter
         DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.NOT_IN,
-            value = listOf(
-                OBJECT_TYPE,
-                RELATION,
-                TEMPLATE,
-                IMAGE,
-                FILE,
-                VIDEO,
-                AUDIO,
-                DASHBOARD,
-                DATE,
-                RELATION_OPTION,
-                SPACE,
-                SET,
-                BOOKMARK
-            )
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.IN,
+            value = SupportedLayouts.editorLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.ID,
@@ -646,9 +588,9 @@ object ObjectSearchConstants {
 
     val filterObjectTypeMarketplace = listOf(
         DVFilter(
-            relation = Relations.TYPE,
+            relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
-            value = MarketplaceObjectTypeIds.OBJECT_TYPE
+            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
         ),
         DVFilter(
             relation = Relations.IS_ARCHIVED,
@@ -668,7 +610,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = MARKETPLACE_ID
+            value = MARKETPLACE_SPACE_ID
         )
     )
 
@@ -699,9 +641,9 @@ object ObjectSearchConstants {
 
     fun filterMyRelations() : List<DVFilter> = listOf(
         DVFilter(
-            relation = Relations.TYPE,
+            relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
-            value = RELATION
+            value = ObjectType.Layout.RELATION.code.toDouble()
         ),
         DVFilter(
             relation = Relations.IS_ARCHIVED,
@@ -722,9 +664,9 @@ object ObjectSearchConstants {
 
     fun filterMarketplaceRelations() : List<DVFilter> = listOf(
         DVFilter(
-            relation = Relations.TYPE,
+            relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
-            value = MarketplaceObjectTypeIds.RELATION
+            value = ObjectType.Layout.RELATION.code.toDouble()
         ),
         DVFilter(
             relation = Relations.IS_ARCHIVED,
@@ -740,6 +682,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.SPACE_ID,
+            condition = DVFilterCondition.EQUAL,
+            value = MARKETPLACE_SPACE_ID
         )
     )
 
@@ -758,6 +705,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.EQUAL,
+            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
         )
     )
 
@@ -777,33 +729,15 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
-        // TODO migrate to layout
-        DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.NOT_IN,
-            value = listOf(
-                OBJECT_TYPE,
-                RELATION,
-                TEMPLATE,
-                IMAGE,
-                FILE,
-                VIDEO,
-                AUDIO,
-                DASHBOARD,
-                RELATION_OPTION,
-                DASHBOARD,
-                DATE
-            )
-        ),
         DVFilter(
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = space
         ),
         DVFilter(
-            relation = Relations.TYPE,
+            relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
-            value = ObjectTypeIds.COLLECTION
+            value = ObjectType.Layout.COLLECTION.code.toDouble()
         )
     )
 

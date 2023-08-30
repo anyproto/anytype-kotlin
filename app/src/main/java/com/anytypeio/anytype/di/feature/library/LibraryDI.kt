@@ -65,11 +65,16 @@ object LibraryModule {
     @JvmStatic
     fun provideMyTypesDelegate(
         container: StorelessSubscriptionContainer,
-        workspaceManager: WorkspaceManager,
+        spaceManager: SpaceManager,
         urlBuilder: UrlBuilder,
         dispatchers: AppCoroutineDispatchers
     ): LibraryListDelegate {
-        return MyTypesDelegate(container, workspaceManager, urlBuilder, dispatchers)
+        return MyTypesDelegate(
+            container = container,
+            spaceManager = spaceManager,
+            urlBuilder = urlBuilder,
+            dispatchers = dispatchers
+        )
     }
 
     @PerScreen
@@ -88,11 +93,16 @@ object LibraryModule {
     @JvmStatic
     fun provideMyRelationsDelegate(
         container: StorelessSubscriptionContainer,
-        workspaceManager: WorkspaceManager,
+        spaceManager: SpaceManager,
         urlBuilder: UrlBuilder,
         dispatchers: AppCoroutineDispatchers
     ): LibraryListDelegate {
-        return MyRelationsDelegate(container, workspaceManager, urlBuilder, dispatchers)
+        return MyRelationsDelegate(
+            container = container,
+            spaceManager = spaceManager,
+            urlBuilder = urlBuilder,
+            dispatchers = dispatchers
+        )
     }
 
     @PerScreen

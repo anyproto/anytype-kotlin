@@ -1113,11 +1113,11 @@ open class ObjectSetFragment :
                     vm.templatesWidgetState.value.showWidget -> {
                         vm.onDismissTemplatesWidget()
                     }
-                    vm.viewerEditWidgetState.value.showWidget -> {
-                        vm.onViewerEditWidgetAction(ViewerEditWidgetUi.Action.Dismiss)
-                    }
-                    vm.viewersWidgetState.value.showWidget -> {
+                    vm.viewersWidgetState.value.showWidget && !vm.viewerEditWidgetState.value.showWidget -> {
                         vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)
+                    }
+                    vm.viewersWidgetState.value.showWidget && vm.viewerEditWidgetState.value.showWidget -> {
+                        vm.onViewerEditWidgetAction(ViewerEditWidgetUi.Action.Dismiss)
                     }
                     else -> {
                         vm.onSystemBackPressed()

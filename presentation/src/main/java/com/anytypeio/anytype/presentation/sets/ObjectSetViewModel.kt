@@ -1874,12 +1874,33 @@ class ObjectSetViewModel(
             ViewerEditWidgetUi.Action.Dismiss -> {
                 viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
             }
-            is ViewerEditWidgetUi.Action.UpdateDefaultObjectType -> TODO()
-            is ViewerEditWidgetUi.Action.UpdateFilters -> TODO()
-            is ViewerEditWidgetUi.Action.UpdateLayout -> TODO()
+            ViewerEditWidgetUi.Action.DefaultObjectType -> TODO()
+            ViewerEditWidgetUi.Action.Filters -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                viewModelScope.launch {
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
+                    onViewerFiltersClicked()
+                }
+            }
+            ViewerEditWidgetUi.Action.Layout -> TODO()
+            ViewerEditWidgetUi.Action.Relations -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                viewModelScope.launch {
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
+                    onViewerSettingsClicked()
+                }
+            }
+            ViewerEditWidgetUi.Action.Sorts -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                viewModelScope.launch {
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
+                    onViewerSortsClicked()
+                }
+            }
             is ViewerEditWidgetUi.Action.UpdateName -> TODO()
-            is ViewerEditWidgetUi.Action.UpdateRelations -> TODO()
-            is ViewerEditWidgetUi.Action.UpdateSorts -> TODO()
         }
     }
                               //endregion

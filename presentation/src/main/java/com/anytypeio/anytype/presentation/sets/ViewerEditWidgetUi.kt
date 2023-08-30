@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -10,7 +11,7 @@ data class ViewerEditWidgetUi(
     val name: String = "",
     val defaultObjectType: ObjectWrapper.Type?,
     val isDefaultObjectTypeEnabled: Boolean = false,
-    val layout: ObjectType.Layout?,
+    val layout: DVViewerType?,
     val relations: List<String> = emptyList(),
     val filters: List<String> = emptyList(),
     val sorts: List<String> = emptyList()

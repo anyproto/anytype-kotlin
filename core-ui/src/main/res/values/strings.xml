@@ -659,5 +659,9 @@
     <string name="default_object">Default object</string>
     <string name="layout">Layout</string>
     <string name="num_applied">%1$d applied</string>
+    <string name="view_list">List</string>
+    <string name="view_grid">Grid</string>
+    <string name="view_gallery">Gallery</string>
+    <string name="view_kanban">Kanban</string>
 
 </resources>

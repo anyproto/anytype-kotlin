@@ -56,6 +56,7 @@ import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
@@ -174,6 +175,7 @@ class ObjectSetViewModel(
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
     val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.init())
     val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
+    val viewerEditWidgetState = MutableStateFlow(ViewerEditWidgetUi.init())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -489,6 +491,7 @@ class ObjectSetViewModel(
         return when (dataViewState) {
             DataViewState.Init -> {
                 _dvViews.value = emptyList()
+                viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
                 if (dvViewer == null) {
                     DataViewViewState.Collection.NoView
                 } else {
@@ -497,6 +500,14 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.viewers.toView(session)
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(
+                    name = dvViewer?.name.orEmpty(),
+                    sorts = dvViewer?.sorts?.toView(storeOfRelations) { it.relationKey }.orEmpty(),
+                    filters = dvViewer?.filters?.toView(storeOfRelations) { it.relation }.orEmpty(),
+                    relations = dvViewer?.viewerRelations?.toView(storeOfRelations) { it.key }
+                        .orEmpty(),
+                    layout = dvViewer?.type,
+                )
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -543,6 +554,7 @@ class ObjectSetViewModel(
         return when (dataViewState) {
             DataViewState.Init -> {
                 _dvViews.value = emptyList()
+                viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
                 when {
                     setOfValue.isEmpty() || query.isEmpty() -> DataViewViewState.Set.NoQuery
                     viewer == null -> DataViewViewState.Set.NoView
@@ -551,6 +563,14 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.viewers.toView(session)
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(
+                    name = viewer?.name.orEmpty(),
+                    sorts = viewer?.sorts?.toView(storeOfRelations) { it.relationKey }.orEmpty(),
+                    filters = viewer?.filters?.toView(storeOfRelations) { it.relation }.orEmpty(),
+                    relations = viewer?.viewerRelations?.toView(storeOfRelations) { it.key }
+                        .orEmpty(),
+                    layout = viewer?.type,
+                )
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -1779,7 +1799,9 @@ class ObjectSetViewModel(
                     )
                 }
             }
-            is ViewersWidgetUi.Action.Edit -> TODO()
+            is ViewersWidgetUi.Action.Edit -> {
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = true)
+            }
             is ViewersWidgetUi.Action.OnMove -> {
                 Timber.d("onMove Viewer, from:[$action.from], to:[$action.to]")
                 if (action.from == action.to) return
@@ -1810,7 +1832,21 @@ class ObjectSetViewModel(
         }
 
     }
-    //endregion
+
+    fun onViewerEditWidgetAction(action: ViewerEditWidgetUi.Action) {
+        when (action) {
+            ViewerEditWidgetUi.Action.Dismiss -> {
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+            }
+            is ViewerEditWidgetUi.Action.UpdateDefaultObjectType -> TODO()
+            is ViewerEditWidgetUi.Action.UpdateFilters -> TODO()
+            is ViewerEditWidgetUi.Action.UpdateLayout -> TODO()
+            is ViewerEditWidgetUi.Action.UpdateName -> TODO()
+            is ViewerEditWidgetUi.Action.UpdateRelations -> TODO()
+            is ViewerEditWidgetUi.Action.UpdateSorts -> TODO()
+        }
+    }
+                              //endregion
 
     companion object {
         const val NOT_ALLOWED = "Not allowed for this set"

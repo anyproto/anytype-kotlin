@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,14 +16,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldColors
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.TextFieldDefaults.indicatorLine
 import androidx.compose.material.rememberModalBottomSheetState
-import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -46,9 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.constraintlayout.compose.Visibility
-import androidx.constraintlayout.widget.Barrier
-import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -58,12 +51,6 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
-import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
-import com.anytypeio.anytype.presentation.sets.model.ColumnView
-import com.anytypeio.anytype.presentation.sets.model.FilterValue
-import com.anytypeio.anytype.presentation.sets.model.FilterView
-import com.anytypeio.anytype.presentation.sets.model.Viewer
-import org.burnoutcrew.reorderable.detectReorder
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -165,9 +152,17 @@ fun ViewerEditWidgetContent(
                 value = state.defaultObjectType?.name.orEmpty()
             )
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+
+            val layoutValue = when (state.layout) {
+                DVViewerType.LIST -> stringResource(id = R.string.view_list)
+                DVViewerType.GRID -> stringResource(id = R.string.view_grid)
+                DVViewerType.GALLERY -> stringResource(id = R.string.view_gallery)
+                DVViewerType.BOARD -> stringResource(id = R.string.view_kanban)
+                else -> stringResource(id = R.string.none)
+            }
             ColumnItem(
                 title = stringResource(id = R.string.layout),
-                value = state.layout?.name.orEmpty()
+                value = layoutValue
             )
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
@@ -313,7 +308,7 @@ fun PreviewViewerEditWidget() {
         defaultObjectType = ObjectWrapper.Type(buildMap { put("name", "Name") }),
         filters = listOf(),
         sorts = emptyList(),
-        layout = ObjectType.Layout.BASIC,
+        layout = DVViewerType.LIST,
         relations = listOf()
     )
     ViewerEditWidget(state = state, action = {})

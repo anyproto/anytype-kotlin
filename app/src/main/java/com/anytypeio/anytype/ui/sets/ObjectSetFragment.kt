@@ -83,6 +83,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
+import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
@@ -357,7 +358,7 @@ open class ObjectSetFragment :
             setContent {
                 ViewerEditWidget(
                     state = vm.viewerEditWidgetState.collectAsStateWithLifecycle().value,
-                    action = {}
+                    action = vm::onViewerEditWidgetAction
                 )
             }
         }
@@ -1111,6 +1112,9 @@ open class ObjectSetFragment :
                     }
                     vm.templatesWidgetState.value.showWidget -> {
                         vm.onDismissTemplatesWidget()
+                    }
+                    vm.viewerEditWidgetState.value.showWidget -> {
+                        vm.onViewerEditWidgetAction(ViewerEditWidgetUi.Action.Dismiss)
                     }
                     vm.viewersWidgetState.value.showWidget -> {
                         vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)

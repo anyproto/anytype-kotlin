@@ -40,10 +40,6 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
-                        VERSION_IS_EMPTY = 3;
-
-                        NOT_FOUND = 101;
-                        TIMEOUT = 102;
                     }
                 }
             }
@@ -68,8 +64,6 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
-
-                        NODE_NOT_STARTED = 101;
                     }
                 }
 
@@ -90,8 +84,6 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
-
-                        NODE_NOT_STARTED = 101;
                     }
                 }
 
@@ -252,7 +244,7 @@ message Rpc {
                 option (no_auth) = true;
 
                 string name = 1; // Account name
-                oneof avatar {
+                oneof avatar { //TODO: Remove if not needed, GO-1926
                     string avatarLocalPath = 2; // Path to an image, that will be used as an avatar of this account
                 }
                 string storePath = 3; // Path to local storage
@@ -266,7 +258,7 @@ message Rpc {
             message Response {
                 Error error = 1; // Error while trying to create an account
                 anytype.model.Account account = 2; // A newly created account; In case of a failure, i.e. error is non-NULL, the account model should contain empty/default-value fields
-                Config config = 3; // deprecated, use account
+                Config config = 3; // deprecated, use account, GO-1926
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -278,16 +270,9 @@ message Rpc {
 
                         ACCOUNT_CREATED_BUT_FAILED_TO_START_NODE = 101;
                         ACCOUNT_CREATED_BUT_FAILED_TO_SET_NAME = 102;
-                        ACCOUNT_CREATED_BUT_FAILED_TO_SET_AVATAR = 103;
                         FAILED_TO_STOP_RUNNING_NODE = 104;
                         FAILED_TO_WRITE_CONFIG = 105;
                         FAILED_TO_CREATE_LOCAL_REPO = 106;
-
-                        BAD_INVITE_CODE = 900;
-
-                        NET_ERROR = 901; // means general network error
-                        NET_CONNECTION_REFUSED = 902; // means we wasn't able to connect to the cafe server
-                        NET_OFFLINE = 903; // client can additionally support this error code to notify user that device is offline
                     }
                 }
             }
@@ -315,14 +300,7 @@ message Rpc {
                         UNKNOWN_ERROR = 1; // Any other errors
                         BAD_INPUT = 2;
 
-                        NO_ACCOUNTS_FOUND = 101;
                         NEED_TO_RECOVER_WALLET_FIRST = 102;
-                        FAILED_TO_CREATE_LOCAL_REPO = 103;
-                        LOCAL_REPO_EXISTS_BUT_CORRUPTED = 104; // Unused
-                        FAILED_TO_RUN_NODE = 105;
-                        WALLET_RECOVER_NOT_PERFORMED = 106;
-                        FAILED_TO_STOP_RUNNING_NODE = 107;
-                        ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
                     }
                 }
             }
@@ -371,7 +349,7 @@ message Rpc {
             message Response {
                 Error error = 1; // Error while trying to launch/select an account
                 anytype.model.Account account = 2; // Selected account
-                Config config = 3; // deprecated, use account
+                Config config = 3; // deprecated, use account, GO-1926
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -387,9 +365,7 @@ message Rpc {
                         FAILED_TO_FIND_ACCOUNT_INFO = 104;
                         LOCAL_REPO_NOT_EXISTS_AND_MNEMONIC_NOT_SET = 105;
                         FAILED_TO_STOP_SEARCHER_NODE = 106;
-                        FAILED_TO_RECOVER_PREDEFINED_BLOCKS = 107;
                         ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
-                        ACCOUNT_IS_DELETED = 109;
                         FAILED_TO_FETCH_REMOTE_NODE_HAS_INCOMPATIBLE_PROTO_VERSION = 110;
 
                     }
@@ -478,7 +454,6 @@ message Rpc {
 
                         ACCOUNT_IS_NOT_RUNNING = 101;
                         FAILED_TO_WRITE_CONFIG = 102;
-                        FAILED_TO_GET_CONFIG = 103;
                     }
                 }
             }
@@ -515,7 +490,7 @@ message Rpc {
             }
         }
 
-        message GetConfig {
+        message GetConfig { //TODO: Remove this request if we do not need it, GO-1926
             message Get {
                 message Request {
                 }
@@ -838,7 +813,7 @@ message Rpc {
 
         message Close {
             message Request {
-                string contextId = 1; // deprecated
+                string contextId = 1; // deprecated, GO-1926
                 string objectId = 2;
             }
 
@@ -861,7 +836,7 @@ message Rpc {
 
         message Show {
             message Request {
-                string contextId = 1; // deprecated
+                string contextId = 1; // deprecated, GO-1926
                 string objectId = 2;
                 string traceId = 3;
 
@@ -1040,7 +1015,6 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
-                        UNKNOWN_OBJECT_TYPE_URL = 3;
                         // ...
                     }
                 }
@@ -1120,7 +1094,7 @@ message Rpc {
 
         message OpenBreadcrumbs {
             message Request {
-                string contextId = 1; // deprecated
+                string contextId = 1; // deprecated, GO-1926
                 string traceId = 2;
             }
 
@@ -1199,7 +1173,7 @@ message Rpc {
                 int32 offset = 4;
                 int32 limit = 5;
                 // additional filter by objectTypes
-                repeated string objectTypeFilter = 6; // DEPRECATED
+                repeated string objectTypeFilter = 6; // DEPRECATED, GO-1926
                 // needed keys in details for return, when empty - will return all
                 repeated string keys = 7;
             }
@@ -1228,7 +1202,7 @@ message Rpc {
                 repeated anytype.model.Block.Content.Dataview.Filter filters = 1;
                 int32 limit = 2;
                 // additional filter by objectTypes
-                repeated string objectTypeFilter = 3; // DEPRECATED
+                repeated string objectTypeFilter = 3; // DEPRECATED, GO-1926
                 repeated string keys = 4;
             }
 
@@ -1547,7 +1521,6 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
-                        UNKNOWN_OBJECT_TYPE_URL = 3;
                     }
                 }
             }
@@ -1571,7 +1544,6 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
-                        UNKNOWN_OBJECT_TYPE_URL = 3;
                     }
                 }
             }
@@ -1810,7 +1782,6 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
-                        UNKNOWN_OBJECT_TYPE_URL = 3;
                     }
                 }
             }
@@ -1977,13 +1948,12 @@ message Rpc {
                     
                     enum Code {
                         NULL = 0;
-                        INTERNAL_ERROR = 1;
-                        UNKNOWN_ERROR = 2;
-                        BAD_INPUT = 3;
-                        ACCOUNT_IS_NOT_RUNNING = 4;
-                        NO_OBJECTS_TO_IMPORT = 5;
-                        IMPORT_IS_CANCELED = 6;
-                        LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED = 7;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        INTERNAL_ERROR = 3;
+                        NO_OBJECTS_TO_IMPORT = 4;
+                        IMPORT_IS_CANCELED = 5;
+                        LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED = 6;
                     }
                 }
             }
@@ -2003,10 +1973,10 @@ message Rpc {
 
                             enum Code {
                                 NULL = 0;
-                                INTERNAL_ERROR = 1;
-                                UNAUTHORIZED = 2;
-                                UNKNOWN_ERROR = 3;
-                                BAD_INPUT = 4;
+                                UNKNOWN_ERROR = 1;
+                                BAD_INPUT = 2;
+                                INTERNAL_ERROR = 3;
+                                UNAUTHORIZED = 4;
                                 FORBIDDEN = 5;
                                 SERVICE_UNAVAILABLE = 6;
                                 ACCOUNT_IS_NOT_RUNNING = 7;
@@ -2030,9 +2000,9 @@ message Rpc {
                     
                     enum Code {
                         NULL = 0;
-                        INTERNAL_ERROR = 1;
-                        UNKNOWN_ERROR = 2;
-                        BAD_INPUT = 3;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        INTERNAL_ERROR = 3;
                     }
                 }
                 
@@ -2058,6 +2028,7 @@ message Rpc {
                     PERSONAL_PROJECTS = 1;
                     KNOWLEDGE_BASE = 2;
                     NOTES_DIARY = 3;
+                    STRATEGIC_WRITING = 4;
                 }
             }
 
@@ -2284,8 +2255,7 @@ message Rpc {
                             NULL = 0;
                             UNKNOWN_ERROR = 1;
                             BAD_INPUT = 2;
-                            UNKNOWN_OBJECT_TYPE_URL = 3;
-                            READONLY_OBJECT_TYPE = 4;
+                            READONLY_OBJECT_TYPE = 3;
                             // ...
                         }
                     }
@@ -2308,8 +2278,7 @@ message Rpc {
                             NULL = 0;
                             UNKNOWN_ERROR = 1;
                             BAD_INPUT = 2;
-                            UNKNOWN_OBJECT_TYPE_URL = 3;
-                            READONLY_OBJECT_TYPE = 4;
+                            READONLY_OBJECT_TYPE = 3;
                             // ...
                         }
                     }
@@ -2500,7 +2469,6 @@ message Rpc {
                         BAD_INPUT = 2;
                         // ...
                         NODE_NOT_STARTED = 103;
-                        FILE_NOT_YET_PINNED = 104;
 
                     }
                 }
@@ -2537,7 +2505,7 @@ message Rpc {
                 string url = 1;
                 string localPath = 2;
                 anytype.model.Block.Content.File.Type type = 3;
-                bool disableEncryption = 4; // deprecated, has no affect
+                bool disableEncryption = 4; // deprecated, has no affect, GO-1926
                 anytype.model.Block.Content.File.Style style = 5;
 
             }
@@ -2576,7 +2544,6 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
-                        NOT_FOUND = 3;
                     }
                 }
             }
@@ -4756,7 +4723,6 @@ message Rpc {
                             NULL = 0;
                             UNKNOWN_ERROR = 1;
                             BAD_INPUT = 2;
-                            NOT_A_DATAVIEW_BLOCK = 3;
                             // ...
                         }
                     }
@@ -5096,7 +5062,7 @@ message Rpc {
                 }
             }
 
-            message SSort {
+            message Sort {
                 message Request {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to update
@@ -5570,9 +5536,6 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
-
-                        NOT_FOUND = 101;
-                        TIMEOUT = 102;
                     }
                 }
             }

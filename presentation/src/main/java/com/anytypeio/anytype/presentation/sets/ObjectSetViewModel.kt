@@ -1583,7 +1583,7 @@ class ObjectSetViewModel(
                     )
                 }
                 viewModelScope.launch {
-                    delay(200)
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     proceedWithCreatingNewDataViewObject()
                 }
             }
@@ -1597,7 +1597,7 @@ class ObjectSetViewModel(
                     )
                 }
                 viewModelScope.launch {
-                    delay(200)
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     proceedWithCreatingNewDataViewObject(templatesId = item.id)
                 }
             }
@@ -1616,9 +1616,9 @@ class ObjectSetViewModel(
 
     private fun proceedWithCreatingTemplate(targetObjectType: Id) {
         viewModelScope.launch {
-            delay(200)
+            delay(DELAY_BEFORE_CREATING_TEMPLATE)
             val params = CreateTemplate.Params(
-                targetObject = targetObjectType
+                targetObjectTypeId = targetObjectType
             )
             createTemplate.async(params).fold(
                 onSuccess = { id ->
@@ -1782,7 +1782,7 @@ class ObjectSetViewModel(
             moreMenuTemplate = null
         )
         viewModelScope.launch {
-            delay(200)
+            delay(DELAY_BEFORE_CREATING_TEMPLATE)
             proceedWithOpeningTemplate(template.id)
         }
     }
@@ -1853,5 +1853,6 @@ class ObjectSetViewModel(
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
+        const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
     }
 }

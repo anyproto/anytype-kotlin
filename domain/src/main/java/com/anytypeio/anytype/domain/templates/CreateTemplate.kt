@@ -19,7 +19,7 @@ class CreateTemplate @Inject constructor(
             template = null,
             prefilled = mapOf(
                 Relations.TYPE to ObjectTypeIds.TEMPLATE,
-                Relations.TARGET_OBJECT_TYPE to params.targetObject
+                Relations.TARGET_OBJECT_TYPE to params.targetObjectTypeId
             ),
             internalFlags = emptyList()
         )
@@ -27,5 +27,5 @@ class CreateTemplate @Inject constructor(
         return result.id
     }
 
-    data class Params(val targetObject: Id)
+    data class Params(val targetObjectTypeId: Id)
 }

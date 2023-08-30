@@ -80,6 +80,10 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_template)
                     tvActionTitle.setText(R.string.make_template)
                 }
+                ObjectAction.SET_AS_DEFAULT -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_set_as_default_24)
+                    tvActionTitle.setText(R.string.set_as_default)
+                }
                 else -> {}
             }
         }

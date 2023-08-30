@@ -125,6 +125,8 @@ sealed class ObjectWrapper {
                 }
                 else -> emptyList()
             }
+
+        val targetObjectType: Id? by default
     }
 
     /**

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
+import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -14,6 +15,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -114,7 +116,8 @@ object ObjectMenuModule {
         featureToggles: FeatureToggles,
         delegator: Delegator<Action>,
         addObjectToCollection: AddObjectToCollection,
-        createTemplateFromObject: CreateTemplateFromObject
+        createTemplateFromObject: CreateTemplateFromObject,
+        setObjectDetails: SetObjectDetails
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -130,7 +133,19 @@ object ObjectMenuModule {
         delegator = delegator,
         menuOptionsProvider = createMenuOptionsProvider(storage, featureToggles),
         addObjectToCollection = addObjectToCollection,
-        createTemplateFromObject = createTemplateFromObject
+        createTemplateFromObject = createTemplateFromObject,
+        setObjectDetails = setObjectDetails
+    )
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideSetObjectDetails(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectDetails = SetObjectDetails(
+        repo,
+        dispatchers
     )
 
     @JvmStatic

@@ -859,6 +859,7 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
+        // TODO fix
         DVFilter(
             relation = Relations.TYPE,
             condition = DVFilterCondition.EQUAL,

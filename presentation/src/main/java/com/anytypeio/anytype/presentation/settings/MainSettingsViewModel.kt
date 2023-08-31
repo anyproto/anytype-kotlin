@@ -25,6 +25,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -80,7 +81,7 @@ class MainSettingsViewModel(
                         )
                     }
                 )
-            }
+            }.catch { Timber.e(it, "Error while observing space and account") }
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),

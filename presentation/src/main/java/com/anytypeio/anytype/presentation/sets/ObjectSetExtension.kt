@@ -399,6 +399,11 @@ suspend fun ObjectState.DataView.Set.isTemplatesAllowed(
     }
 }
 
+fun ObjectState.DataView.Set.isSetByRelation(setOfValue: List<Id>): Boolean {
+    val objectDetails = details[setOfValue.first()]?.map.orEmpty()
+    return objectDetails.type == ObjectTypeIds.RELATION
+}
+
 suspend fun StoreOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType: GetDefaultPageType): Boolean {
     try {
         val defaultObjectType = getDefaultPageType.run(Unit).type ?: return false
@@ -469,17 +474,55 @@ fun ObjectWrapper.Type.toTemplateViewBlank(): TemplateView.Blank {
     )
 }
 
-fun List<DVViewer>.toView(session: ObjectSetSession): List<ViewerView> {
-    return mapIndexed { index, viewer ->
-        ViewerView(
-            id = viewer.id,
-            name = viewer.name,
-            type = viewer.type,
-            isActive = if (session.currentViewerId.value != null)
-                viewer.id == session.currentViewerId.value
-            else
-                index == 0,
-            isUnsupported = viewer.type == DVViewerType.BOARD
-        )
+fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSession): List<ViewerView> {
+    val viewers = dataViewContent.viewers
+    when (this) {
+        is ObjectState.DataView.Collection -> {
+            return viewers.mapIndexed { index, viewer ->
+                ViewerView(
+                    id = viewer.id,
+                    name = viewer.name,
+                    type = viewer.type,
+                    isActive = if (session.currentViewerId.value != null)
+                        viewer.id == session.currentViewerId.value
+                    else
+                        index == 0,
+                    isUnsupported = viewer.type == DVViewerType.BOARD,
+                    defaultObjectType = viewer.defaultObjectType ?: ObjectState.COLLECTION_OR_SET_BY_RELATION_DEFAULT_OBJECT_TYPE
+                )
+            }
+        }
+        is ObjectState.DataView.Set -> {
+            val setOfValue = getSetOfValue(ctx)
+            if (isSetByRelation(setOfValue = setOfValue)) {
+                return viewers.mapIndexed { index, viewer ->
+                    ViewerView(
+                        id = viewer.id,
+                        name = viewer.name,
+                        type = viewer.type,
+                        isActive = if (session.currentViewerId.value != null)
+                            viewer.id == session.currentViewerId.value
+                        else
+                            index == 0,
+                        isUnsupported = viewer.type == DVViewerType.BOARD,
+                        defaultObjectType = viewer.defaultObjectType ?: ObjectState.COLLECTION_OR_SET_BY_RELATION_DEFAULT_OBJECT_TYPE
+                    )
+                }
+            } else {
+                return viewers.mapIndexed { index, viewer ->
+                    ViewerView(
+                        id = viewer.id,
+                        name = viewer.name,
+                        type = viewer.type,
+                        isActive = if (session.currentViewerId.value != null)
+                            viewer.id == session.currentViewerId.value
+                        else
+                            index == 0,
+                        isUnsupported = viewer.type == DVViewerType.BOARD,
+                        defaultObjectType = setOfValue.firstOrNull()
+                    )
+                }
+            }
+        }
     }
 }

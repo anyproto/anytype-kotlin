@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -65,5 +66,9 @@ sealed class ObjectState {
     object ErrorLayout : ObjectState() {
         override val isInitialized: Boolean
             get() = false
+    }
+
+    companion object {
+        val COLLECTION_OR_SET_BY_RELATION_DEFAULT_OBJECT_TYPE = ObjectTypeIds.PAGE
     }
 }

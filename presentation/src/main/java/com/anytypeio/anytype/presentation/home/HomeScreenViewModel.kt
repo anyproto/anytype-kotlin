@@ -161,7 +161,7 @@ class HomeScreenViewModel(
     init {
         val config = configStorage.getOrNull()
         if (config != null) {
-            proceedWithObservingSpaceIcon(config)
+            proceedWithObservingSpaceIcon()
             proceedWithLaunchingUnsubscriber()
             proceedWithObjectViewStatePipeline(config)
             proceedWithWidgetContainerPipeline()
@@ -289,25 +289,30 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithObservingSpaceIcon(config: Config) {
+    private fun proceedWithObservingSpaceIcon() {
         viewModelScope.launch {
-            storelessSubscriptionContainer.subscribe(
-                StoreSearchByIdsParams(
-                    subscription = HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
-                    targets = listOf(config.workspace),
-                    keys = listOf(
-                        Relations.ID,
-                        Relations.ICON_EMOJI,
-                        Relations.ICON_IMAGE,
-                        Relations.ICON_OPTION
-                    )
-                )
-            ).map { result ->
-                val obj = result.firstOrNull()
-                obj?.spaceIcon(urlBuilder, spaceGradientProvider) ?: SpaceIconView.Placeholder
-            }.flowOn(appCoroutineDispatchers.io).collect {
-                icon.value = it
-            }
+            spaceManager
+                .observe()
+                .flatMapLatest { config ->
+                    storelessSubscriptionContainer.subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                            targets = listOf(config.workspace),
+                            keys = listOf(
+                                Relations.ID,
+                                Relations.ICON_EMOJI,
+                                Relations.ICON_IMAGE,
+                                Relations.ICON_OPTION
+                            )
+                        )
+                    ).map { result ->
+                        val obj = result.firstOrNull()
+                        obj?.spaceIcon(urlBuilder, spaceGradientProvider)
+                            ?: SpaceIconView.Placeholder
+                    }
+                }
+                .flowOn(appCoroutineDispatchers.io)
+                .collect { icon.value = it }
         }
     }
 

@@ -28,6 +28,7 @@ interface WorkspaceManager {
 interface SpaceManager {
 
     suspend fun get(): Id
+    suspend fun getConfig(): Config?
     suspend fun set(space: Id)
     fun observe() : Flow<Config>
     fun clear()
@@ -45,6 +46,16 @@ interface SpaceManager {
             val curr = currentSpace.value
             return curr.ifEmpty {
                 configStorage.getOrNull()?.space.orEmpty()
+            }
+        }
+
+        override suspend fun getConfig(): Config? {
+            // TODO MULTISPACES refact Add fallback logic
+            val curr = currentSpace.value
+            return if (curr.isNotEmpty()) {
+                info[curr]
+            } else {
+                configStorage.getOrNull()
             }
         }
 

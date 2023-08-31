@@ -30,7 +30,7 @@ class SelectSpaceViewModel @Inject constructor(
             combine(
                 storelessSubscriptionContainer.subscribe(
                     StoreSearchParams(
-                        subscription = "test",
+                        subscription = SELECT_SPACE_SUBSCRIPTION,
                         keys = listOf(Relations.ID, Relations.SPACE_ID, Relations.NAME),
                         filters = listOf(
                             DVFilter(
@@ -88,6 +88,10 @@ class SelectSpaceViewModel @Inject constructor(
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             spaceManager = spaceManager
         ) as T
+    }
+
+    companion object {
+        const val SELECT_SPACE_SUBSCRIPTION = "select_space_subscription"
     }
 }
 

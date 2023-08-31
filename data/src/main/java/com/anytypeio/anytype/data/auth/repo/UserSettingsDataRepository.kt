@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
@@ -7,11 +8,11 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 
 class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSettingsRepository {
 
-    override suspend fun setWallpaper(wallpaper: Wallpaper) {
-        cache.setWallpaper(wallpaper)
+    override suspend fun setWallpaper(space: Id, wallpaper: Wallpaper) {
+        cache.setWallpaper(space, wallpaper)
     }
 
-    override suspend fun getWallpaper(): Wallpaper = cache.getWallpaper()
+    override suspend fun getWallpaper(space: Id): Wallpaper = cache.getWallpaper(space)
 
     override suspend fun setDefaultObjectType(type: String, name: String) {
         cache.setDefaultObjectType(type, name)

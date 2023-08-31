@@ -6,6 +6,7 @@ import com.anytypeio.anytype.device.DefaultGradientCollectionProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
 import com.anytypeio.anytype.domain.wallpaper.SetWallpaper
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperSelectViewModel
 import com.anytypeio.anytype.ui.dashboard.WallpaperSelectFragment
 import dagger.Module
@@ -35,11 +36,13 @@ object WallpaperSelectModule {
     @PerScreen
     fun provideViewModelFactory(
         setWallpaper: SetWallpaper,
-        analytics: Analytics
+        analytics: Analytics,
+        spaceManager: SpaceManager
     ): WallpaperSelectViewModel.Factory = WallpaperSelectViewModel.Factory(
         setWallpaper = setWallpaper,
         analytics = analytics,
-        getGradients = GetCoverGradientCollection(DefaultGradientCollectionProvider)
+        getGradients = GetCoverGradientCollection(DefaultGradientCollectionProvider),
+        spaceManager = spaceManager
     )
 
     @JvmStatic

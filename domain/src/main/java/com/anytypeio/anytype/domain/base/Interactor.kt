@@ -69,6 +69,14 @@ abstract class ResultatInteractor<in P, out R> {
     protected abstract suspend fun execute(params: P): R
 }
 
+abstract class FlowInteractor<in P, R>(
+    private val context: CoroutineContext
+) {
+    protected abstract fun build() : Flow<R>
+    fun flow() : Flow<R> = build().flowOn(context)
+}
+
+
 abstract class ResultInteractor<in P, R>(
     private val context: CoroutineContext
 ) {

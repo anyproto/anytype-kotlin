@@ -4,6 +4,8 @@ plugins {
     id "kotlin-kapt"
 }
 
+apply plugin: 'kotlinx-serialization'
+
 dependencies {
 
     implementation project(':data')

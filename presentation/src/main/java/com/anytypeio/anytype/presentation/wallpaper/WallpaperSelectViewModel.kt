@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
 import com.anytypeio.anytype.domain.wallpaper.SetWallpaper
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -18,6 +19,7 @@ class WallpaperSelectViewModel(
     private val setWallpaper: SetWallpaper,
     private val analytics: Analytics,
     private val getGradients: GetCoverGradientCollection,
+    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
@@ -56,8 +58,14 @@ class WallpaperSelectViewModel(
                 eventName = wallpaperSet
             )
             val params = when (wallpaper) {
-                is WallpaperView.Gradient -> SetWallpaper.Params.Gradient(wallpaper.code)
-                is WallpaperView.SolidColor -> SetWallpaper.Params.SolidColor(wallpaper.code)
+                is WallpaperView.Gradient -> SetWallpaper.Params.Gradient(
+                    space = spaceManager.get(),
+                    code = wallpaper.code
+                )
+                is WallpaperView.SolidColor -> SetWallpaper.Params.SolidColor(
+                    space = spaceManager.get(),
+                    code = wallpaper.code
+                )
             }
             setWallpaper(params).collect { status ->
                 when (status) {
@@ -79,6 +87,7 @@ class WallpaperSelectViewModel(
         private val setWallpaper: SetWallpaper,
         private val analytics: Analytics,
         private val getGradients: GetCoverGradientCollection,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -86,7 +95,8 @@ class WallpaperSelectViewModel(
             return WallpaperSelectViewModel(
                 setWallpaper = setWallpaper,
                 analytics = analytics,
-                getGradients = getGradients
+                getGradients = getGradients,
+                spaceManager = spaceManager
             ) as T
         }
     }

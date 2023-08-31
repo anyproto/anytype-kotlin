@@ -80,6 +80,7 @@ import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
@@ -311,6 +312,7 @@ class HomeScreenViewModel(
                             ?: SpaceIconView.Placeholder
                     }
                 }
+                .catch { Timber.e(it, "Error while observing space icon") }
                 .flowOn(appCoroutineDispatchers.io)
                 .collect { icon.value = it }
         }

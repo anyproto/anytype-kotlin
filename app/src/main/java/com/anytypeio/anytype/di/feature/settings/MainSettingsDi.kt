@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.device.share.debug.DebugSpaceDeviceFileContentSaver
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceContentSaver
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -65,7 +64,6 @@ object MainSettingsModule {
     fun provideViewModelFactory(
         analytics: Analytics,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
-        configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
         setObjectDetails: SetObjectDetails,
         spaceGradientProvider: SpaceGradientProvider,
@@ -74,7 +72,6 @@ object MainSettingsModule {
     ): MainSettingsViewModel.Factory = MainSettingsViewModel.Factory(
         analytics = analytics,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
-        configStorage = configStorage,
         urlBuilder = urlBuilder,
         setObjectDetails = setObjectDetails,
         spaceGradientProvider = spaceGradientProvider,

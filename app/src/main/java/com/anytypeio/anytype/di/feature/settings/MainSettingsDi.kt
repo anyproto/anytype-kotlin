@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -68,7 +69,8 @@ object MainSettingsModule {
         urlBuilder: UrlBuilder,
         setObjectDetails: SetObjectDetails,
         spaceGradientProvider: SpaceGradientProvider,
-        debugSpaceShareDownloader: DebugSpaceShareDownloader
+        debugSpaceShareDownloader: DebugSpaceShareDownloader,
+        spaceManager: SpaceManager
     ): MainSettingsViewModel.Factory = MainSettingsViewModel.Factory(
         analytics = analytics,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
@@ -76,7 +78,8 @@ object MainSettingsModule {
         urlBuilder = urlBuilder,
         setObjectDetails = setObjectDetails,
         spaceGradientProvider = spaceGradientProvider,
-        debugSpaceShareDownloader = debugSpaceShareDownloader
+        debugSpaceShareDownloader = debugSpaceShareDownloader,
+        spaceManager = spaceManager
     )
 
     @Module

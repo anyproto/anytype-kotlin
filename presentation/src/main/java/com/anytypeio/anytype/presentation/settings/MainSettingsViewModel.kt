@@ -15,18 +15,18 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer.Companion.SUBSCRIPTION_SETTINGS
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
-import javax.inject.Named
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -41,53 +41,54 @@ class MainSettingsViewModel(
     private val urlBuilder: UrlBuilder,
     private val setObjectDetails: SetObjectDetails,
     private val spaceGradientProvider: SpaceGradientProvider,
-    private val debugSpaceShareDownloader: DebugSpaceShareDownloader
+    private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
+    private val spaceManager: SpaceManager
 ) : ViewModel() {
 
     val events = MutableSharedFlow<Event>(replay = 0)
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    private val profileId = configStorage.getOrNull()?.profile
-    private val workspaceId = configStorage.getOrNull()?.workspace
-
-    val workspaceAndAccount = if (workspaceId != null && profileId != null) {
-        storelessSubscriptionContainer.subscribe(
-            StoreSearchByIdsParams(
-                subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
-                targets = listOf(workspaceId, profileId),
-                keys = listOf(
-                    Relations.ID,
-                    Relations.NAME,
-                    Relations.ICON_EMOJI,
-                    Relations.ICON_IMAGE,
-                    Relations.ICON_OPTION
+    val workspaceAndAccount = spaceManager
+        .observe()
+        .flatMapLatest { config ->
+            storelessSubscriptionContainer.subscribe(
+                StoreSearchByIdsParams(
+                    subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
+                    targets = listOf(config.workspace, config.profile),
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.SPACE_ID,
+                        Relations.NAME,
+                        Relations.ICON_EMOJI,
+                        Relations.ICON_IMAGE,
+                        Relations.ICON_OPTION
+                    )
                 )
-            )
-        ).map { result ->
-            val workspace = result.find { it.id == workspaceId }
-            val profile = result.find { it.id == profileId }
-            WorkspaceAndAccount.Account(
-                space = workspace?.let {
-                    WorkspaceAndAccount.SpaceData(
-                        name = workspace.name ?: "",
-                        icon = workspace.spaceIcon(urlBuilder, spaceGradientProvider)
-                    )
-                },
-                profile = profile?.let {
-                    WorkspaceAndAccount.ProfileData(
-                        name = profile.name ?: "",
-                        icon = profile.profileIcon(urlBuilder, spaceGradientProvider)
-                    )
-                }
-            )
+            ).map { result ->
+                val workspace = result.find { it.id == config.workspace }
+                if (workspace == null) Timber.w("Workspace not found")
+                val profile = result.find { it.id == config.profile }
+                if (profile == null) Timber.w("Profile not found")
+                WorkspaceAndAccount.Account(
+                    space = workspace?.let {
+                        WorkspaceAndAccount.SpaceData(
+                            name = workspace.name ?: "",
+                            icon = workspace.spaceIcon(urlBuilder, spaceGradientProvider)
+                        )
+                    },
+                    profile = profile?.let {
+                        WorkspaceAndAccount.ProfileData(
+                            name = profile.name ?: "",
+                            icon = profile.profileIcon(urlBuilder, spaceGradientProvider)
+                        )
+                    }
+                )
+            }.catch { Timber.e(it, "Error while observing space and account") }
         }.stateIn(
             viewModelScope,
             SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
             WorkspaceAndAccount.Idle
         )
-    } else {
-        MutableStateFlow(WorkspaceAndAccount.Idle)
-    }
 
     init {
         events
@@ -111,7 +112,7 @@ class MainSettingsViewModel(
                 proceedWithSpaceDebug()
             }
             Event.OnSpaceImageClicked -> {
-                val config = configStorage.getOrNull()
+                val config = spaceManager.getConfig()
                 if (config != null) {
                     commands.emit(
                         Command.OpenSpaceImageSet(
@@ -197,22 +198,28 @@ class MainSettingsViewModel(
     }
 
     fun onNameSet(name: String) {
+        Timber.d("onNameSet")
         viewModelScope.launch {
-            setObjectDetails.execute(
-                SetObjectDetails.Params(
-                    ctx = configStorage.get().workspace,
-                    details = mapOf(
-                        Relations.NAME to name
+            val config = spaceManager.getConfig()
+            if (config != null) {
+                setObjectDetails.execute(
+                    SetObjectDetails.Params(
+                        ctx = config.workspace,
+                        details = mapOf(
+                            Relations.NAME to name
+                        )
                     )
+                ).fold(
+                    onFailure = {
+                        Timber.e(it, "Error while updating object details")
+                    },
+                    onSuccess = {
+                        Timber.d("Name successfully set for current space: ${config.space}")
+                    }
                 )
-            ).fold(
-                onFailure = {
-                    Timber.e(it, "Error while updating object details")
-                },
-                onSuccess = {
-                    // do nothing
-                }
-            )
+            } else {
+                Timber.w("Something went wrong: config is empty")
+            }
         }
     }
 
@@ -223,7 +230,8 @@ class MainSettingsViewModel(
         private val urlBuilder: UrlBuilder,
         private val setObjectDetails: SetObjectDetails,
         private val spaceGradientProvider: SpaceGradientProvider,
-        private val debugSpaceShareDownloader: DebugSpaceShareDownloader
+        private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -235,7 +243,8 @@ class MainSettingsViewModel(
             urlBuilder = urlBuilder,
             setObjectDetails = setObjectDetails,
             spaceGradientProvider = spaceGradientProvider,
-            debugSpaceShareDownloader = debugSpaceShareDownloader
+            debugSpaceShareDownloader = debugSpaceShareDownloader,
+            spaceManager = spaceManager
         ) as T
     }
 

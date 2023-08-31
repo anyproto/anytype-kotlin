@@ -66,7 +66,9 @@ class MainSettingsViewModel(
                 )
             ).map { result ->
                 val workspace = result.find { it.id == config.workspace }
+                if (workspace == null) Timber.w("Workspace not found")
                 val profile = result.find { it.id == config.profile }
+                if (profile == null) Timber.w("Profile not found")
                 WorkspaceAndAccount.Account(
                     space = workspace?.let {
                         WorkspaceAndAccount.SpaceData(

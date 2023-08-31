@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets.state
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.RelationLink
@@ -69,6 +70,7 @@ sealed class ObjectState {
     }
 
     companion object {
-        val COLLECTION_OR_SET_BY_RELATION_DEFAULT_OBJECT_TYPE = ObjectTypeIds.PAGE
+        const val VIEW_DEFAULT_OBJECT_TYPE = ObjectTypeIds.PAGE
+        val VIEW_TYPE_UNSUPPORTED = DVViewerType.BOARD
     }
 }

@@ -287,7 +287,8 @@ data class Block(
                 val hideIcon: Boolean = false,
                 val coverFit: Boolean = false,
                 val coverRelationKey: String? = null,
-                val defaultTemplateId: Id? = null,
+                val defaultTemplate: Id? = null,
+                val defaultObjectType: Id? = null,
             ) {
 
                 enum class Type(val formattedName: String) {

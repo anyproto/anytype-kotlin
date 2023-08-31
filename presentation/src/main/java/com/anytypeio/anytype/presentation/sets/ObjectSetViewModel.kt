@@ -1545,7 +1545,7 @@ class ObjectSetViewModel(
                                     urlBuilder = urlBuilder,
                                     coverImageHashProvider = coverImageHashProvider,
                                     objectTypeDefaultTemplate = objectType.defaultTemplateId,
-                                    viewerDefaultTemplate = viewer.defaultTemplateId
+                                    viewerDefaultTemplate = viewer.defaultTemplate
                                 )
                             } + listOf(TemplateView.New(objectType.id))
                     }.collectLatest {
@@ -1713,7 +1713,7 @@ class ObjectSetViewModel(
         val params = UpdateDataViewViewer.Params.Template(
             context = context,
             target = state.dataViewBlock.id,
-            viewer = viewer.copy(defaultTemplateId = template.id)
+            viewer = viewer.copy(defaultTemplate = template.id)
         )
         viewModelScope.launch {
             updateDataViewViewer(params).proceed(

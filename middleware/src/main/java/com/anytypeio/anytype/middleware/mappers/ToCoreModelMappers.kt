@@ -503,7 +503,8 @@ fun MDVView.toCoreModels(): DVViewer = DVViewer(
     hideIcon = hideIcon,
     coverFit = coverFit,
     coverRelationKey = coverRelationKey.ifEmpty { null },
-    defaultTemplateId = defaultTemplateId.ifEmpty { null }
+    defaultTemplate = defaultTemplateId.ifEmpty { null },
+    defaultObjectType = defaultObjectTypeId.ifEmpty { null }
 )
 
 fun MDVRelation.toCoreModels(): DVViewerRelation = DVViewerRelation(

@@ -325,8 +325,9 @@ message Block {
                 bool coverFit = 10; // Image fits container
                 string groupRelationKey = 11; // Group view by this relationKey
 				        bool groupBackgroundColors = 12; // Enable backgrounds in groups
-                int32 pageLimit = 13;
-                string defaultTemplateId = 14;
+                int32 pageLimit = 13; // Limit of objects shown in widget
+                string defaultTemplateId = 14; // Default template that is chosen for new object created within the view
+                string defaultObjectTypeId = 15; // Default object type that is chosen for new object created within the view
 
                 enum Type {
                     Table = 0;

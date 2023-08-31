@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
-import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.COLLECTION_OR_SET_BY_RELATION_DEFAULT_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -29,7 +29,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
     private lateinit var mockSetByRelation: MockSet
     private lateinit var mockCollection: MockCollection
 
-    val defaultTypeId = COLLECTION_OR_SET_BY_RELATION_DEFAULT_OBJECT_TYPE
+    val defaultTypeId = VIEW_DEFAULT_OBJECT_TYPE
     val customType1Id = "customType1-${RandomString.make()}"
     val customType2Id = "customType2-${RandomString.make()}"
     val customType1Map = mapOf(

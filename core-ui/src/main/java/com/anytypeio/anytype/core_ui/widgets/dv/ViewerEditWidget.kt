@@ -30,6 +30,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
@@ -149,8 +150,13 @@ fun ViewerEditWidgetContent(
             Spacer(modifier = Modifier.height(12.dp))
             ColumnItem(
                 title = stringResource(id = R.string.default_object),
-                value = state.defaultObjectType?.name.orEmpty()
-            ) { action(ViewerEditWidgetUi.Action.DefaultObjectType) }
+                value = state.defaultObjectType?.name.orEmpty(),
+                isEnable = state.isDefaultObjectTypeEnabled
+            ) {
+                if (state.isDefaultObjectTypeEnabled) {
+                    action(ViewerEditWidgetUi.Action.DefaultObjectType)
+                }
+            }
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
             val layoutValue = when (state.layout) {
@@ -244,12 +250,13 @@ fun NameTextField(state: ViewerEditWidgetUi) {
 }
 
 @Composable
-private fun ColumnItem(title: String, value: String, onClick: () -> Unit) {
+private fun ColumnItem(title: String, isEnable: Boolean = true, value: String, onClick: () -> Unit) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
             .noRippleThrottledClickable(onClick = onClick)
+            .alpha(if (isEnable) 1f else 0.2f)
     ) {
         val (titleRef, valueRef, iconRef) = createRefs()
         val rightGuideline = createGuidelineFromStart(0.5f)
@@ -263,7 +270,7 @@ private fun ColumnItem(title: String, value: String, onClick: () -> Unit) {
                 },
             text = title,
             style = BodyRegular,
-            color = colorResource(id = R.color.text_primary)
+            color = colorResource(id = R.color.text_primary),
         )
         Image(
             modifier = Modifier

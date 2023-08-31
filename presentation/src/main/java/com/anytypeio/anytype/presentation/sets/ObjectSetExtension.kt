@@ -399,6 +399,13 @@ suspend fun ObjectState.DataView.Set.isTemplatesAllowed(
     }
 }
 
+fun ObjectState.DataView.Set.isSetByRelation(
+    setOfValue: List<Id>
+): Boolean {
+    val objectDetails = details[setOfValue.first()]?.map.orEmpty()
+    return objectDetails.type == ObjectTypeIds.RELATION
+}
+
 suspend fun StoreOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType: GetDefaultPageType): Boolean {
     try {
         val defaultObjectType = getDefaultPageType.run(Unit).type ?: return false
@@ -469,7 +476,10 @@ fun ObjectWrapper.Type.toTemplateViewBlank(): TemplateView.Blank {
     )
 }
 
-fun List<DVViewer>.toView(session: ObjectSetSession): List<ViewerView> {
+suspend fun List<DVViewer>.toView(
+    session: ObjectSetSession,
+    storeOfRelations: StoreOfRelations
+): List<ViewerView> {
     return mapIndexed { index, viewer ->
         ViewerView(
             id = viewer.id,
@@ -479,7 +489,10 @@ fun List<DVViewer>.toView(session: ObjectSetSession): List<ViewerView> {
                 viewer.id == session.currentViewerId.value
             else
                 index == 0,
-            isUnsupported = viewer.type == DVViewerType.BOARD
+            isUnsupported = viewer.type == DVViewerType.BOARD,
+            relations = viewer.viewerRelations.toView(storeOfRelations) { it.key },
+            sorts = viewer.sorts.toView(storeOfRelations) { it.relationKey },
+            filters = viewer.filters.toView(storeOfRelations) { it.relation }
         )
     }
 }

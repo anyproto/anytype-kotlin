@@ -57,7 +57,6 @@ import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
-import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
@@ -501,15 +500,17 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
-                _dvViews.value = objectState.viewers.toView(session)
-                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(
-                    name = dvViewer?.name.orEmpty(),
-                    sorts = dvViewer?.sorts?.toView(storeOfRelations) { it.relationKey }.orEmpty(),
-                    filters = dvViewer?.filters?.toView(storeOfRelations) { it.relation }.orEmpty(),
-                    relations = dvViewer?.viewerRelations?.toView(storeOfRelations) { it.key }
-                        .orEmpty(),
-                    layout = dvViewer?.type,
-                )
+                _dvViews.value = objectState.viewers.toView(session, storeOfRelations)
+                viewerEditWidgetState.value = if (dvViewer != null) {
+                    viewerEditWidgetState.value.updateState(
+                        dvViewer = dvViewer,
+                        isDefaultObjectTypeEnabled = true,
+                        storeOfRelations = storeOfRelations,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                } else {
+                    viewerEditWidgetState.value.empty()
+                }
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -564,15 +565,18 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
-                _dvViews.value = objectState.viewers.toView(session)
-                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(
-                    name = viewer?.name.orEmpty(),
-                    sorts = viewer?.sorts?.toView(storeOfRelations) { it.relationKey }.orEmpty(),
-                    filters = viewer?.filters?.toView(storeOfRelations) { it.relation }.orEmpty(),
-                    relations = viewer?.viewerRelations?.toView(storeOfRelations) { it.key }
-                        .orEmpty(),
-                    layout = viewer?.type,
-                )
+                _dvViews.value = objectState.viewers.toView(session, storeOfRelations)
+                viewerEditWidgetState.value = if (viewer != null) {
+                    viewerEditWidgetState.value.updateState(
+                        dvViewer = viewer,
+                        isDefaultObjectTypeEnabled = objectState.isSetByRelation(setOfValue),
+                        storeOfRelations = storeOfRelations,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                } else {
+                    viewerEditWidgetState.value.empty()
+                }
+
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -1565,7 +1569,7 @@ class ObjectSetViewModel(
                                     urlBuilder = urlBuilder,
                                     coverImageHashProvider = coverImageHashProvider,
                                     objectTypeDefaultTemplate = objectType.defaultTemplateId,
-                                    viewerDefaultTemplate = viewer.defaultTemplateId
+                                    viewerDefaultTemplate = viewer.defaultTemplate
                                 )
                             } + listOf(TemplateView.New(objectType.id))
                     }.collectLatest {
@@ -1733,7 +1737,7 @@ class ObjectSetViewModel(
         val params = UpdateDataViewViewer.Params.Template(
             context = context,
             target = state.dataViewBlock.id,
-            viewer = viewer.copy(defaultTemplateId = template.id)
+            viewer = viewer.copy(defaultTemplate = template.id)
         )
         viewModelScope.launch {
             updateDataViewViewer(params).proceed(

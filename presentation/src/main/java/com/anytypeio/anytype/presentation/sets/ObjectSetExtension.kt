@@ -381,25 +381,6 @@ fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): Lis
     return query.filter(::isValidObject)
 }
 
-suspend fun ObjectState.DataView.Set.isTemplatesAllowed(
-    setOfValue: List<Id>,
-    storeOfObjectTypes: StoreOfObjectTypes,
-    getDefaultPageType: GetDefaultPageType
-): Boolean {
-    val objectDetails = details[setOfValue.first()]?.map.orEmpty()
-    return when (objectDetails.type) {
-        ObjectTypeIds.OBJECT_TYPE -> {
-            val objectWrapper = ObjectWrapper.Type(objectDetails)
-            objectWrapper.isTemplatesAllowed()
-        }
-        ObjectTypeIds.RELATION -> {
-            //We have set of relations, need to check default object type
-            storeOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType)
-        }
-        else -> false
-    }
-}
-
 fun ObjectState.DataView.Set.isSetByRelation(setOfValue: List<Id>): Boolean {
     val objectDetails = details[setOfValue.first()]?.map.orEmpty()
     return objectDetails.type == ObjectTypeIds.RELATION
@@ -525,4 +506,11 @@ private fun isActiveViewer(index: Int, viewer: DVViewer, session: ObjectSetSessi
     } else {
         index == 0
     }
+}
+
+suspend fun List<ViewerView>.isActiveHasTemplates(storeOfObjectTypes: StoreOfObjectTypes): Boolean {
+    val activeViewer = firstOrNull { it.isActive }
+    val viewerDefaultObjectTypeId = activeViewer?.defaultObjectType ?: return false
+    val viewerDefaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId) ?: return false
+    return viewerDefaultObjectType.isTemplatesAllowed()
 }

@@ -199,7 +199,6 @@ class ObjectSetViewModel(
                         urlBuilder = urlBuilder,
                         coverImageHashProvider = coverImageHashProvider
                     )
-                    gettingTemplatesForDataViewState(state)
                 }
         }
 
@@ -356,7 +355,9 @@ class ObjectSetViewModel(
                                 context = context,
                                 workspaceId = workspaceManager.getCurrentWorkspace(),
                                 storeOfRelations = storeOfRelations
-                            )
+                            ).also {
+                                subscribeForViewerTypeTemplates(state, view)
+                            }
                         } else {
                             emptyFlow()
                         }
@@ -372,7 +373,9 @@ class ObjectSetViewModel(
                                 context = context,
                                 workspaceId = workspaceManager.getCurrentWorkspace(),
                                 storeOfRelations = storeOfRelations
-                            )
+                            ).also {
+                                subscribeForViewerTypeTemplates(state, view)
+                            }
                         } else {
                             emptyFlow()
                         }
@@ -444,10 +447,9 @@ class ObjectSetViewModel(
             combine(
                 database.index,
                 stateReducer.state,
-                session.currentViewerId,
-                _templateViews
-            ) { dataViewState, objectState, currentViewId, templates ->
-                processViewState(dataViewState, objectState, currentViewId, templates)
+                session.currentViewerId
+            ) { dataViewState, objectState, currentViewId ->
+                processViewState(dataViewState, objectState, currentViewId)
             }.distinctUntilChanged().collect { viewState ->
                 Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
                 _currentViewer.value = viewState
@@ -458,20 +460,18 @@ class ObjectSetViewModel(
     private suspend fun processViewState(
         dataViewState: DataViewState,
         objectState: ObjectState,
-        currentViewId: String?,
-        templates: List<TemplateView>
+        currentViewId: String?
     ): DataViewViewState {
         return when (objectState) {
             is ObjectState.DataView.Collection -> processCollectionState(
                 dataViewState = dataViewState,
                 objectState = objectState,
-                currentViewId = currentViewId,
-                templates = templates
+                currentViewId = currentViewId
             )
             is ObjectState.DataView.Set -> processSetState(
                 dataViewState = dataViewState,
                 objectState = objectState,
-                currentViewId = currentViewId,
+                currentViewId = currentViewId
             )
             ObjectState.Init -> DataViewViewState.Init
             ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
@@ -482,7 +482,6 @@ class ObjectSetViewModel(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Collection,
         currentViewId: String?,
-        templates: List<TemplateView>
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
@@ -507,23 +506,17 @@ class ObjectSetViewModel(
                 when {
                     viewer == null -> DataViewViewState.Collection.NoView
                     viewer.isEmpty() -> {
-                        val isTemplatesPresent = templates.isNotEmpty() &&
-                                storeOfObjectTypes.isTemplatesAllowedForDefaultType(
-                                    getDefaultPageType = getDefaultPageType
-                                )
+                        val hasTemplates = _dvViews.value.isActiveHasTemplates(storeOfObjectTypes)
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
-                            hasTemplates = isTemplatesPresent
+                            hasTemplates = hasTemplates
                         )
                     }
                     else -> {
-                        val isTemplatesPresent = templates.isNotEmpty() &&
-                                storeOfObjectTypes.isTemplatesAllowedForDefaultType(
-                                    getDefaultPageType = getDefaultPageType
-                                )
+                        val hasTemplates = _dvViews.value.isActiveHasTemplates(storeOfObjectTypes)
                         DataViewViewState.Collection.Default(
                             viewer = viewer,
-                            hasTemplates = isTemplatesPresent
+                            hasTemplates = hasTemplates
                         )
                     }
                 }
@@ -569,25 +562,15 @@ class ObjectSetViewModel(
                     query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
                     render == null -> DataViewViewState.Set.NoView
                     render.isEmpty() -> {
-                        val isTemplatesAllowed = objectState.isTemplatesAllowed(
-                            setOfValue,
-                            storeOfObjectTypes,
-                            getDefaultPageType
-                        )
                         DataViewViewState.Set.NoItems(
                             title = render.title,
-                            hasTemplates = isTemplatesAllowed
+                            hasTemplates = _dvViews.value.isActiveHasTemplates(storeOfObjectTypes)
                         )
                     }
                     else -> {
-                        val isTemplatesAllowed = objectState.isTemplatesAllowed(
-                            setOfValue,
-                            storeOfObjectTypes,
-                            getDefaultPageType
-                        )
                         DataViewViewState.Set.Default(
                             viewer = render,
-                            hasTemplates = isTemplatesAllowed
+                            hasTemplates = _dvViews.value.isActiveHasTemplates(storeOfObjectTypes)
                         )
                     }
                 }
@@ -1506,54 +1489,49 @@ class ObjectSetViewModel(
     }
 
     // region TEMPLATES
-    private suspend fun gettingTemplatesForDataViewState(state: ObjectState.DataView) {
-        when (state) {
-            is ObjectState.DataView.Collection -> {
-                subscribeForTypeTemplates(typeId = null)
-            }
-            is ObjectState.DataView.Set -> {
-                val sourceId = proceedWithGettingSetSourceId(state)
-                val sourceMap = state.details[sourceId] ?: return
-                when (sourceMap.type.firstOrNull()) {
-                    ObjectTypeIds.RELATION -> subscribeForTypeTemplates(typeId = null)
-                    ObjectTypeIds.OBJECT_TYPE -> subscribeForTypeTemplates(typeId = sourceId)
-                    else -> { Timber.d("Ignoring type of source") }
-                }
-            }
+    private suspend fun subscribeForViewerTypeTemplates(state: ObjectState.DataView, currentViewerId: Id?) {
+        val viewer = state.viewerById(currentViewerId)
+        if (viewer == null) {
+            Timber.e("subscribeForViewerTypeTemplates, Viewer is empty")
+            templatesContainer.unsubscribe()
+            _templateViews.value = emptyList()
+            return
         }
-    }
-
-    private suspend fun subscribeForTypeTemplates(typeId: Id?) {
-        val state = stateReducer.state.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
-        val objectType = resolveObjectType(typeId)
-        if (objectType?.isTemplatesAllowed() == true) {
+        val viewerDefaultObjectTypeId = viewer.defaultObjectType
+        if (viewerDefaultObjectTypeId == null) {
+            Timber.e("subscribeForViewerTypeTemplates, Viewer default object type is null")
+            templatesContainer.unsubscribe()
+            _templateViews.value = emptyList()
+            return
+        }
+        val viewerDefaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId)
+        if (viewerDefaultObjectType?.isTemplatesAllowed() == true) {
             viewModelScope.launch {
-                templatesContainer.subscribe(objectType.id)
+                templatesContainer.subscribe(viewerDefaultObjectType.id)
                     .catch { error ->
-                        Timber.e(error, "Error while getting templates for type ${objectType.id}")
-                        toast("Error while getting templates for type ${objectType.id}")
+                        Timber.e(error, "Error while getting templates for type ${viewerDefaultObjectType.id}")
+                        toast("Error while getting templates for type ${viewerDefaultObjectType.id}")
                         _templateViews.value = emptyList()
                     }
                     .map { results ->
-                        Timber.d("subscribeForTypeTemplates, new templates size:[${results.size}]")
-                        val blankTemplate = listOf(objectType.toTemplateViewBlank())
+                        Timber.d("subscribeForViewerTypeTemplates, new templates size:[${results.size}]")
+                        val blankTemplate = listOf(viewerDefaultObjectType.toTemplateViewBlank())
                         blankTemplate + results
                             .map { objTemplate ->
                                 objTemplate.toTemplateView(
-                                    typeId = objectType.id,
+                                    typeId = viewerDefaultObjectType.id,
                                     urlBuilder = urlBuilder,
                                     coverImageHashProvider = coverImageHashProvider,
-                                    objectTypeDefaultTemplate = objectType.defaultTemplateId,
+                                    objectTypeDefaultTemplate = viewerDefaultObjectType.defaultTemplateId,
                                     viewerDefaultTemplate = viewer.defaultTemplate
                                 )
-                            } + listOf(TemplateView.New(objectType.id))
+                            } + listOf(TemplateView.New(viewerDefaultObjectType.id))
                     }.collectLatest {
                         _templateViews.value = it
                     }
             }
         } else {
-            Timber.d("Templates are not allowed for type:[${objectType?.id}]")
+            Timber.d("Templates are not allowed for type:[${viewerDefaultObjectType?.id}]")
         }
     }
 
@@ -1636,21 +1614,6 @@ class ObjectSetViewModel(
                 }
             )
         }
-    }
-
-    private fun proceedWithGettingSetSourceId(currentState: ObjectState.DataView.Set): Id? {
-        if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT) || !currentState.isInitialized) {
-            toast(NOT_ALLOWED)
-            return null
-        }
-
-        val setObject = ObjectWrapper.Basic(currentState.details[context]?.map ?: emptyMap())
-        val sourceId = setObject.setOf.singleOrNull()
-        if (sourceId == null) {
-            Timber.e("Unable to define a source for a new object.")
-            toast("Unable to define a source for a new object.")
-        }
-        return sourceId
     }
 
     fun onEditTemplateButtonClicked() {

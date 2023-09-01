@@ -598,6 +598,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             details = mockObjectCollection.details
         )
         stubStoreOfObjectTypes(
+            defaultObjectType,
             mapOf(
                 Relations.ID to defaultObjectType,
                 Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.SET.code.toDouble(),
@@ -651,6 +652,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             details = mockObjectCollection.details
         )
         stubStoreOfObjectTypes(
+            defaultObjectType,
             mapOf(
                 Relations.ID to defaultObjectType,
                 Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),

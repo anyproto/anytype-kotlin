@@ -1,0 +1,397 @@
+<resources>
+
+    <string name="amplitude_api_key">1ba981d1a9afb8af8c81847ef3383a20</string>
+    <string name="amplitude_api_key_debug">b9791dd64a1e9f07a330a4ac9feb1f10</string>
+
+    <string name="example_1">
+        要在Android上布局文本，系统需要做很多工作。每个字形都经过解析——  取决于字体、区域设置、大小、字体特征 (如粗体或斜体)。 然后，系统将解析它们在形成单词时如何排列、组合或合并的规则。毕竟，单词最终可以包装到可用空间中。
+    </string>
+
+    <string name="example_2">
+        基于这些原因，文本排版的成本很高。安卓系统使用按字缓存来避免重新计算这些数据，但这只能起到有限的作用 —— 屏幕上显示的新字，甚至只是新的字体和文字大小，都限制了这种优化。
+    </string>
+
+    <string name="example_3">
+        RecyclerView 对布局性能特别敏感。当新项目出现在屏幕上时，它们必须作为显示它们的第一帧的一部分进行布局。因此，如果 RecyclerView 项目中的一段复杂文本需要 12毫秒的时间来测试，这几乎可以肯定会导致抖动和掉帧。
+    </string>
+
+    <string name="example_4">
+        在本文中，我们将讨论如何使用新的预计算文本 API（PrecomputedText API），在 UI 线程需要之前提前计算文本布局。我们还将介绍 Jetpack 中专为在 RecyclerView 中显示大量文本而设计的新文本预取 API，以及它们如何将 UI 线程的文本测试成本降低 95%！
+    </string>
+
+    <string name="example_5">
+        下面的图片显示的是一个简单的 RecyclerView，用于显示大块文本。在 Pixel2 上运行 Android P，CPU 主频为 1GHz，测试 80 个字约 520 个字符，需要花费 TextView 15.6 毫秒的时间。这是一个巨大的时间量！每帧的截止时间为 16.67 毫秒，因此如果用户界面线程必须测试哪怕一个如此复杂的 TextView，都会超过截止时间。
+
+您的文本视图中可能没有那么多文本，但如果您使用的是低功耗手机，显示的内容比罗马字符更复杂，或者使用了不同的字体和样式，那么这样的时间可能会很现实。
+
+使用 开发者选项 > 监控 > 配置文件 GPU 渲染，我们可以直观地看到这个问题。绿色横条显示的是 16.67 毫秒的理想时间，而帧则会根据耗时长短垂直叠加。使用左侧的普通文本视图，会出现大量漏帧——当新项目出现在屏幕上时，图表中会出现很大的峰值。
+    </string>
+
+    <string name="example_6">
+        右侧的截图显示的是同一个应用程序，但使用了预计算文本，以避免 UI 线程上昂贵的测试工作。剩余的测试工作仍然存在，会造成小的峰值，但不会再造成抖动。TextView.onMeasure 缩短至 0.9毫秒，速度提高了 16 倍多！
+    </string>
+
+    <string name="example_7">
+        预计算文本 PrecomputedText 在今年的 I/O 大会上发布，是 Android P 中的一个新 API，在 Jetpack 中有一个兼容版本，可以降低文本的 UI 线程成本。它能让你在后台线程上预先计算绝大部分测量/布局工作。
+
+从用户界面线程确定文本视图的布局参数:
+
+val params : PrecomputedTextCompat.Params =
+        TextViewCompat.getTextMetricsParams(myTextView)
+在后台线程上计算一段珍贵的文字:
+    </string>
+
+    <string name="example_8">
+        Тестирую текст 我正在测试文本
+    </string>
+    <string name="editor_toolbar">按钮</string>
+
+    <string name="confirm">确认</string>
+    <string name="code_empty">邀请码不能为空</string>
+    <string name="enter_invitation_hint">邀请码</string>
+    <string name="enter_invitation_text">如果您没有，请转到 anytype.io 并注册等候名单。我们正在邀请滚动录取的用户。</string>
+    <string name="start_login_text">使用 Anytype ，您可以编写笔记和文档，管理任务清单，共享文件以及保存Web上的重要内容。</string>
+    <string name="login">登录</string>
+    <string name="sign_up">注册</string>
+    <string name="type_your_recovery_phrase">或输入恢复短语</string>
+    <string name="login_with_recovery_phrase">使用恢复短语登录</string>
+    <string name="or_scan_qr_code">扫描二维码</string>
+    <string name="choose_pin_code">选择 Pin 密码</string>
+    <string name="congratulations">祝贺！</string>
+    <string name="time_to_update_title">是时候更新了</string>
+    <string name="time_to_update_text">您的某些数据是在较新版本的 Anytype 中进行管理的。\n请更新应用程序以使用您的所有文档和最新功能。</string>
+    <string name="update">更新</string>
+    <string name="later">以后再说</string>
+    <string name="let_us_start">让我们开始创作吧！</string>
+    <string name="you_ve_created_your_first_profile">您已经创建了您的第一个个人资料！</string>
+    <string name="it_s_stored_on_your_device_and_nobody_will_know_about_it_until_you_share_it">它存储在您的设备上，在您分享之前没有人会知道它！</string>
+    <string name="choose_profile">选择个人资料</string>
+    <string name="logout">退出登录</string>
+    <string name="add_profile">添加个人资料</string>
+    <string name="add_name_and_profile_picture">添加您的名字 \n和个人资料头像</string>
+    <string name="type_your_name">输入您的名字</string>
+    <string name="create_profile">创建</string>
+    <string name="t">T</string>
+    <string name="do_it_later">以后进行</string>
+    <string name="enter_pin_code">输入 Pin 密码</string>
+    <string name="confirm_pin_code">确认 Pin 密码</string>
+
+    <string name="switch_profile">切换用户</string>
+    <string name="description_profile_picture">个人资料头像</string>
+    <string name="description_arrow_icon">箭头图标</string>
+    <string name="recovery_phrase">恢复短语</string>
+    <string name="pin_code">Pin 密码</string>
+    <string name="user_settings">用户设置</string>
+    <string name="other_settings">其他设置</string>
+    <string name="your_page">您的公共页面</string>
+    <string name="updates">更新</string>
+    <string name="log_out">退出登录</string>
+    <string name="recovery_phrase_text">您需要恢复短语才能登录。将其保存在安全的地方。如果您丢失了它，您将无法再访问您的帐户。</string>
+    <string name="back_up_your_recovery_phrase">备份恢复短语</string>
+    <string name="i_ve_written_it_down">我已经写在纸上了</string>
+    <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
+    <string name="show_and_copy_mnemonic">显示和复制短语</string>
+
+    <string name="greet">您好, %1$s</string>
+    <string name="greet_user">您好, 用户</string>
+    <string name="enter_your_code">输入您的邀请码</string>
+    <string name="organize_everything">欢迎来到 Anytype</string>
+    <string name="setting_up_the_wallet">设置钱包…</string>
+    <string name="sign_clock">⏳</string>
+    <string name="back">返回</string>
+    <string name="create_a_new_profile">创建新的配置文件</string>
+    <string name="no_peers">没有同行</string>
+    <string name="content_description_back_button_icon">返回图标按钮</string>
+    <string name="hint_link">粘贴或输入网址</string>
+    <string name="button_unlink">取消链接</string>
+    <string name="button_link">链接</string>
+
+    <string name="permission_read_rationale">将文件加载到媒体块需要读取权限。</string>
+    <string name="permission_read_denied">用户权限被拒绝。请在设备上应用设置的 \"权限\" 中允许此权限。</string>
+    <string name="permission_read_never_ask_again">读取权限已被拒绝，不再询问。您必须在设备上的应用程序设置中的 \"权限\" 中允许此权限。</string>
+    <string name="permission_write_rationale">向设备添加文件需要写入权限。</string>
+    <string name="permission_write_denied">写入权限被拒绝。请考虑授予权限，以便向设备添加文件！</string>
+    <string name="permission_write_never_ask_again">写入权限被拒绝，不再询问。</string>
+    <string name="button_allow">允许</string>
+    <string name="button_deny">拒绝</string>
+    <string name="button_ok">好的</string>
+    <string name="error">错误</string>
+
+    <string name="page_icon">页面图标</string>
+    <string name="page_icon_picker_remove_text">删除</string>
+    <string name="create_bookmark">创建</string>
+    <string name="hint_paste_or_type_a_url">粘贴或输入网址</string>
+    <string name="content_description_menu_icon">菜单图标</string>
+    <string name="add_new">新建</string>
+    <string name="failed_to_launch_wallet">重试后未能启动钱包。</string>
+
+    <string name="pickit_drive">已选择存储盘文件</string>
+    <string name="pickit_file_selected">从未知提供程序中选择了文件</string>
+    <string name="pickit_local_file">已选择本地文件</string>
+    <string name="pickit_waiting">正在等待接收文件…</string>
+    <string name="profile_wallpaper">壁纸</string>
+    <string name="content_desc_wallpaper">壁纸图标</string>
+    <string name="content_desc_key">钥匙串图标</string>
+    <string name="content_desc_pin">Pin 图标</string>
+    <string name="nav_open_page">以页面形式打开</string>
+    <string name="btn_nav_open">打开</string>
+    <string name="search_no_results">没有名为 \"%1$s\" 的对象</string>
+    <string name="search_no_results_try">尝试创建一个新的或者搜索其他内容</string>
+    <string name="search_empty_pages">您没有页面可搜索。</string>
+    <string name="link_to_this_page">关联到此页面</string>
+    <string name="link">链接</string>
+    <string name="move_into_this_page">移至此页面</string>
+    <string name="move_into">迁入</string>
+
+    <string name="telegram_app">https://t.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
+    <string name="telegram_web">http://www.telegram.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
+    <string name="fetching_your_account">获取您的账户信息…</string>
+    <string name="search_on_page">在页面上搜索</string>
+    <string name="object_view_type">对象视图类型</string>
+    <string name="object_type_name">对象类型名称</string>
+    <string name="name">名称</string>
+    <string name="hint_type_name_for_new_relation">新关联的名称</string>
+    <string name="dv_create_new_object">新建</string>
+    <string name="content_description_plus_button">Plus 按钮</string>
+    <string name="content_description_image_icon">图像图标</string>
+    <string name="content_description_emoji_icon">Emoji 图标</string>
+    <string name="sort_by">排序方式</string>
+    <string name="hint_tap_to_type">点击输入</string>
+    <string name="viewer_gallery">相簿</string>
+    <string name="viewer_as">作为查看</string>
+    <string name="viewer_kanban">看板</string>
+    <string name="viewer_table">网格</string>
+    <string name="viewer_list">列表</string>
+    <string name="filter_text_enter_button">输入</string>
+    <string name="filter_text_cancel_button">取消</string>
+    <string name="filter_text_value_hint">输入文本</string>
+    <string name="filter_number_value_hint">输入数值</string>
+    <string name="view_name">视图名称</string>
+    <string name="delete">删除</string>
+    <string name="view_relations">查看关联</string>
+    <string name="clear">清除</string>
+    <string name="views">视图</string>
+    <string name="create">创建</string>
+    <string name="new_view">新视图</string>
+    <string name="coming_soon">不久之后</string>
+    <string name="edit_relations_title">关联</string>
+    <string name="edit_view">编辑视图</string>
+    <string name="relation_open_edit">打开以编辑</string>
+    <string name="content_description_delete_button">删除按钮</string>
+    <string name="content_description_duplicate_button">生成副本按钮</string>
+    <string name="content_description_edit_view_button">编辑视图按钮</string>
+    <string name="content_description_open_to_edit_view_button">打开以编辑关联按钮</string>
+    <string name="content_description_remove_from_set_button">从此集合中删除关联</string>
+    <string name="remove_from_set">从此集合中删除</string>
+    <string name="reset">重置</string>
+    <string name="search_a_relation">搜索关联</string>
+    <string name="content_description_check_icon">复选图标</string>
+    <string name="filter_condition_is">Is</string>
+    <string name="today">今天</string>
+    <string name="yesterday">昨天</string>
+    <string name="tomorrow">明天</string>
+    <string name="no_date">没有日期</string>
+    <string name="exact_day">确切的日期</string>
+    <string name="reorder">重新排序</string>
+    <string name="choose_an_image">选择图像</string>
+    <string name="optimal_dimensions_in_width_1080_pixels">宽度为 1080 像素的尺寸最佳</string>
+    <string name="cover_size">图像大小</string>
+    <string name="tab_upload_image">上传图像</string>
+    <string name="tab_gallery">相簿</string>
+    <string name="change_type">更改类型</string>
+    <string name="change_cover">更改封面</string>
+
+    <string name="remove">删除</string>
+    <string name="choose_options">选择选项</string>
+    <string name="search_tags">搜索标签</string>
+    <string name="choose_relation_to_filter">选择要筛选的关联</string>
+    <string name="choose_relation_to_sort">选择要排序的关联</string>
+    <string name="btn_apply_new_object">添加到列表</string>
+    <string name="btn_add">添加</string>
+    <string name="btn_upload_gallery">从相簿上传</string>
+    <string name="btn_upload_storage">从外部存储上传</string>
+    <string name="btn_upload">上传</string>
+
+    <string name="alert_qr_camera">前往设置 – 桌面端的恢复短语，以查看用于登录的二维码。</string>
+    <string name="alert_qr_camera_ok">好的</string>
+    <string name="choose_option">选择选项</string>
+    <string name="find_a_relation">查找关联</string>
+    <string name="inbox">收集箱</string>
+    <string name="unknown_type">未知类型</string>
+    <string name="set">集合</string>
+    <string name="collection">集锦</string>
+    <string name="layout">布局</string>
+    <string name="restore_from_archive">从存档还原</string>
+    <string name="icon">图标</string>
+    <string name="icon_description">对象的 Emoji 或图像</string>
+    <string name="cover">封面</string>
+    <string name="cover_description">背景图片</string>
+    <string name="layout_description">画布上对象的排列</string>
+    <string name="relations">关联</string>
+    <string name="relations_description">相关对象列表</string>
+    <string name="history_description">对象的所有版本</string>
+    <string name="history">历史</string>
+    <string name="object_debug">对象调试</string>
+    <string name="object_diagnostics">诊断</string>
+    <string name="provide_name">为新对象提供名称</string>
+    <string name="wait_a_bit_message">请给我们一点时间。我们快到了…</string>
+    <string name="soon">不久之后</string>
+
+    <string name="are_you_sure_delete_one_object">是否确实要删除 1 个对象？</string>
+    <string name="are_you_sure_delete_n_objects">是否确实要删除 %1$d 对象？</string>
+    <string name="delete_irrevocably">这些对象将被彻底删除。您无法撤消此操作。</string>
+    <string name="delete_irrevocably_one_object">此对象将被彻底删除。您无法撤消此操作。</string>
+    <string name="shared">已共享</string>
+    <string name="object_not_exist">此对象不存在</string>
+    <string name="back_to_dashboard">返回仪表盘</string>
+    <string name="go_back">回到</string>
+
+    <string name="snack_object_set_not_found">Set not found for this type.</string>
+    <string name="create_new_set">Create</string>
+
+    <string name="shortcut_create_new">Create a new %1$s</string>
+    <string name="close">关闭</string>
+    <string name="go_to_settings">转到设置</string>
+    <string name="do_not_forget_mnemonic_phrase">不要忘记获取并保存您的恢复短语</string>
+    <string name="you_can_always_find_mnemonic_in_settings">您始终可以在屏幕的设置中找到该恢复短语。</string>
+    <string name="if_you_lose_recovery_phrase_warning">如果您丢失了恢复短语并退出登录，您将无法再次访问您的数据。最好拿一张纸记录下来，藏在安全的地方。将此恢复短语保存在 Anytype 之外以便于以后进行数据恢复。</string>
+    <string name="card_size">卡片尺寸</string>
+    <string name="clear_cache">清除缓存</string>
+    <string name="clear_cache_title">是否确定？</string>
+    <string name="download_from_node">存储在 Anytype 中的所有媒体文件将从您当前的设备中删除。可以从备份节点或其他设备再次下载它们。</string>
+
+    <string name="new_profile">新个人资料</string>
+    <string name="back_up_your_phrase">备份短语</string>
+    <string name="anytype_analytics">Anytype 分析</string>
+    <string name="anytype_analytics_msg">了解人们如何使用 Anytype 有助于我们改进产品。此版本的 Anytype 包含可保护您的隐私的分析代码。\n它不会记录实际文档的内容，但仍允许我们了解您如何使用 Anytype。\n请继续订阅我们的邮件列表，因为我们即将宣布允许您选择退出到新版本</string>
+    <string name="retry">重试</string>
+    <string name="unsplash">Unsplash</string>
+    <string name="cancel_deletion">取消删除</string>
+    <string name="logout_and_clear_local_data">退出登录并清除本地数据</string>
+    <string name="planned_for_deletion_in_n_days">此帐户计划在 %1$d 天内删除</string>
+    <string name="planned_for_deletion_tomorrow">此帐户计划明天删除</string>
+    <string name="planned_for_deletion_today">此帐户计划今天删除</string>
+    <string name="planned_for_deletion_unknown">此帐户计划在 ? 天内删除</string>
+    <string name="are_you_sure_to_delete_account">您确定要删除帐户吗？</string>
+    <string name="deleted_account_warning_msg">您将在所有其他设备上退出登录。您将有 30 天的时间来恢复帐号。之后，它将被永久删除。</string>
+    <string name="use_template">使用模板</string>
+    <string name="type_has_templates">类型为 \"%1$s\" 有 %2$d 个模板</string>
+    <string name="swipe_to_choose">使用滑动选择</string>
+    <string name="without_template">没有模板</string>
+    <string name="unsplash_generic_error">在 Unsplash 上搜索图像时出错。请稍后重试</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">不要忘记从设置中获取并保存恢复短语</string>
+    <string name="unlock_your_object_to_add_new_relation">解锁对象以添加新关联</string>
+    <string name="unlock_your_object_to_edit_relations">解锁对象以编辑关联</string>
+
+    <string name="fragment_relation_create_from_scratch_title">选择关联类型</string>
+
+    <string name="fragment_dashboard_restore">恢复</string>
+    <string name="your_account_deleted">您的帐户将被删除。</string>
+    <plurals name="fragment_dashboard_selected_count">
+        <item quantity="one">%d 选定的对象</item>
+        <item quantity="other">%d 选定的对象</item>
+    </plurals>
+    <string name="debug_mode">调试模式</string>
+    <string name="trouble_mode">故障模式</string>
+    <string name="settings_screen">设置</string>
+
+    <string name="snack_link_to">链接到</string>
+    <string name="snack_move_to">移动至</string>
+    <string name="recovery_phrase_copied">已复制恢复短语</string>
+
+    <string name="library_title_types">类型</string>
+    <string name="library_title_relations">关联</string>
+    <string name="library_description_types">类型就像一个类别，可以帮助您将对象进行分组和管理。</string>
+    <string name="library_description_relations">所有对象都是相互关连的。使用关联在对象之间建立联系。</string>
+    <string name="library_button_create_type">创建一个类型</string>
+    <string name="library_button_create_relation">创建一个关联</string>
+    <string name="library_subtitle_types">我的类型</string>
+    <string name="library_subtitle_relations">我的关联</string>
+    <string name="library_subtitle_library">文库</string>
+    <string name="library_create_new_type">创建一个类型名为 \'%1$s\'</string>
+    <string name="library_create_new_relation">创建一个关联名为 \'%1$s\'</string>
+    <string name="library_objects_empty">没有 %1$s 名为 \'%2$s\'</string>
+    <string name="library_objects_empty_action">尝试创建新的或搜索其他内容</string>
+    <string name="library_relations_empty">There are no types named \'%1$s\'</string>
+
+    <string name="create_widget">创建小部件</string>
+    <string name="edit_widgets">编辑小部件</string>
+    <string name="widget_source">小部件来源</string>
+    <string name="widget_type">小部件类型</string>
+    <string name="widget_add_below">添加以下</string>
+    <string name="widget_type_tree">树状图</string>
+    <string name="widget_type_tree_description">对象的层次结构</string>
+    <string name="widget_type_link">链接</string>
+    <string name="widget_type_link_description">对象的简洁版本</string>
+    <string name="widget_type_list_description">具有集合对象列表视图的小部件</string>
+    <string name="widget_type_compact_list_description">具有集合对象列表视图的小部件</string>
+    <string name="widget_type_list">列表</string>
+    <string name="widget_type_compact_list">紧凑型列表</string>
+    <string name="widget_change_source">更改来源</string>
+    <string name="widget_change_type">更改类型</string>
+    <string name="widget_remove_widget">删除小部件</string>
+    <string name="widget_empty_bin">清空废纸篓</string>
+    <string name="widget_edit_widgets">编辑小部件</string>
+
+    <string name="type_creation_new_type">新的类型</string>
+    <string name="type_creation_done">完成</string>
+    <string name="type_creation_placeholder">类型名称</string>
+
+    <string name="type_editing_title">类型设置</string>
+    <string name="relation_editing_title">关联设置</string>
+
+    <string name="type_editing_uninstall">删除</string>
+    <string name="empty_tree_widget">此对象没有指向其他对象的链接。\n尝试创建一个新的。</string>
+    <string name="empty_list_widget">此视图没有对象。\n尝试创建一个新的。</string>
+    <string name="empty_list_widget_no_view">此数据视图没有对象。\n尝试创建一个新的。</string>
+    <string name="this_widget_has_no_object">此小部件没有对象。\n尝试创建一个新的。</string>
+    <string name="emoji">Emoji</string>
+    <string name="almost_there">Almost there!</string>
+    <string name="i_did_not_not_complete_migration">我没有完成迁移</string>
+    <string name="not_completed_migration_steps">我没有完成迁移</string>
+    <string name="almost_there_subtitle">要使用此版本的应用程序，请在下面选择正确的选项来迁移您的帐户。</string>
+    <string name="i_completed_migration">我已完成迁移</string>
+    <string name="here">这里</string>
+    <string name="update_steps_first">1. 下载桌面端应用程序 </string>
+    <string name="update_steps_last">\n2. 登录并将其更新到最新版本\n3. 按照迁移说明进行操作</string>
+    <string name="visit_forum">访问论坛</string>
+    <string name="migration_error_msg">可能出了什么问题。请访问我们的论坛，阅读迁移说明，并向我们的团队发出提问。</string>
+
+    <string name="onboarding_auth_title">the\neverything\napp</string>
+    <string name="onboarding_auth_description">For those who celebrate trust &amp; autonomy. Anytype 是您写作、计划、思考和组织所有有关事务的安全空间。</string>
+    <string name="onboarding_terms_and_policy_prefix">"继续即表示您同意 "</string>
+    <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
+    <string name="onboarding_terms_and_policy_infix">" 和 "</string>
+    <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
+    <string name="onboarding_join">加入</string>
+    <string name="onboarding_log_in">登录</string>
+    <string name="onboarding_invite_code_title">输入您的邀请码</string>
+    <string name="onboarding_invite_code_description">如果您没有账号，请前往 anytype.io \n并注册等候名单</string>
+    <string name="onboarding_void_title">这是您的 Void</string>
+    <string name="onboarding_void_description">它是您创建的所有内容的加密位置。所有内容都存储在你的设备上，并备份到分布式网络。</string>
+    <string name="onboarding_mnemonic_title">端到端加密</string>
+    <string name="onboarding_mnemonic_description">您的数据由上述的密钥加密 - 您的秘密恢复短语。把它存储在安全的地方。这是登录和访问您 Void 的唯一方法。</string>
+    <string name="onboarding_mnemonic_show_key">让我看看密钥</string>
+    <string name="onboarding_mnemonic_key_saved">我保存了我的密钥</string>
+    <string name="onboarding_mnemonic_check_later">稍后检查</string>
+    <string name="onboarding_mnemonic_copy">复制到剪贴板</string>
+    <string name="onboarding_soul_creation_title">Anytype 身份</string>
+    <string name="onboarding_soul_creation_description">很棒! 最后一步，让我们创建您的身份并输入您的名称。别担心 – 您以后可以随时更改名称。</string>
+    <string name="onboarding_soul_creation_placeholder">Anytype 身份</string>
+    <string name="onboarding_soul_creation">创建您的身份…</string>
+    <string name="onboarding_soul_space_creation">设置个人空间…</string>
+    <string name="onboarding_soul_creation_personal_space">个人空间</string>
+    <string name="onboarding_type_recovery_phrase">输入恢复短语</string>
+    <string name="onboarding_login_or">或</string>
+    <string name="onboarding_entering_void_title">输入 Void</string>
+    <string name="sync_status_incompatible">不兼容版本</string>
+    <string name="base_add_options_empty_title">未找到标签</string>
+    <string name="base_add_options_empty_subtitle">开始输入以创建一个新内容</string>
+
+    <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
+    <string name="your_recovery_phrase_can_t_be_empty">您的恢复短语不能为空</string>
+    <string name="go_to_the_app">进入应用程序</string>
+
+    <string name="exiting_please_wait">正在导出... 请稍候</string>
+    <string name="loading_please_wait">正在加载... 请稍候</string>
+</resources>

@@ -243,7 +243,7 @@ val params : PrecomputedTextCompat.Params =
     <string name="delete_irrevocably_one_object">此对象将被彻底删除。您无法撤消此操作。</string>
     <string name="shared">已共享</string>
     <string name="object_not_exist">此对象不存在</string>
-    <string name="back_to_dashboard">返回仪表盘</string>
+    <string name="back_to_dashboard">返回主页</string>
     <string name="go_back">回到</string>
 
     <string name="snack_object_set_not_found">Set not found for this type.</string>

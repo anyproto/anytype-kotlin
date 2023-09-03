@@ -944,7 +944,8 @@ class ObjectSetViewModel(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
                                     relations = setObject.setOf,
-                                    template = templateId
+                                    template = templateId,
+                                    type = viewer.defaultObjectType
                                 )
                             )
                         }
@@ -966,8 +967,11 @@ class ObjectSetViewModel(
     }
 
     private fun proceedWithAddingObjectToCollection(templateId: Id? = null) {
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val createObjectParams = CreateDataViewObject.Params.Collection(
-            templateId = templateId
+            templateId = templateId,
+            type = viewer.defaultObjectType
         )
         proceedWithCreatingDataViewObject(createObjectParams) { result ->
             val params = AddObjectToCollection.Params(

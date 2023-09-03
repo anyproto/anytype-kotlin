@@ -331,13 +331,9 @@ object ObjectSetModule {
     fun provideCreateDataViewRecordUseCase(
         repo: BlockRepository,
         storeOfRelations: StoreOfRelations,
-        getDefaultPageType: GetDefaultPageType,
-        getTemplates: GetTemplates,
         dispatchers: AppCoroutineDispatchers
     ): CreateDataViewObject = CreateDataViewObject(
         repo = repo,
-        getDefaultPageType = getDefaultPageType,
-        getTemplates = getTemplates,
         storeOfRelations = storeOfRelations,
         dispatchers = dispatchers
     )

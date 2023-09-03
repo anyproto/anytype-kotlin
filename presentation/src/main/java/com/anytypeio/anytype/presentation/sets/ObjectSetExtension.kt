@@ -460,7 +460,7 @@ fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSession): List
     val viewers = dataViewContent.viewers
     return when (this) {
         is ObjectState.DataView.Collection -> mapViewers(
-            defaultObjectType = { it.defaultObjectType ?: VIEW_DEFAULT_OBJECT_TYPE },
+            defaultObjectType = { it.defaultObjectType },
             viewers = viewers,
             session = session
         )
@@ -468,7 +468,7 @@ fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSession): List
             val setOfValue = getSetOfValue(ctx)
             if (isSetByRelation(setOfValue = setOfValue)) {
                 mapViewers(
-                    defaultObjectType = { it.defaultObjectType ?: VIEW_DEFAULT_OBJECT_TYPE },
+                    defaultObjectType = { it.defaultObjectType },
                     viewers = viewers,
                     session = session
                 )

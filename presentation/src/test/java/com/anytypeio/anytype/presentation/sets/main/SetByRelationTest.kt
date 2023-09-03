@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.test
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -115,7 +116,8 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             CreateDataViewObject.Params.SetByRelation(
                 relations = listOf(mockObjectSet.relationObject3.id),
                 filters = mockObjectSet.filters,
-                template = null
+                template = null,
+                type = ObjectTypeIds.PAGE
             )
         )
 
@@ -138,7 +140,8 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
                     CreateDataViewObject.Params.SetByRelation(
                         relations = listOf(mockObjectSet.relationObject3.id),
                         filters = mockObjectSet.filters,
-                        template = null
+                        template = null,
+                        type = ObjectTypeIds.PAGE
                     )
                 )
             }

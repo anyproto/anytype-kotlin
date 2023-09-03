@@ -84,7 +84,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
 
             val viewer1 = viewerGrid.copy(defaultObjectType = customType1Id)
             val viewer2 = viewerGallery.copy(defaultObjectType = customType2Id)
-            val viewer3 = viewerList.copy(defaultObjectType = null)
+            val viewer3 = viewerList.copy(defaultObjectType = ObjectTypeIds.PAGE)
 
             val dataViewWith3Views = StubDataView(
                 id = "dv-${RandomString.make()}",
@@ -158,7 +158,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
 
             val viewer1 = viewerGrid.copy(defaultObjectType = customType1Id)
             val viewer2 = viewerGallery.copy(defaultObjectType = customType2Id)
-            val viewer3 = viewerList.copy(defaultObjectType = null)
+            val viewer3 = viewerList.copy(defaultObjectType = ObjectTypeIds.PAGE)
 
             val dataViewWith3Views = StubDataView(
                 id = "dv-${RandomString.make()}",
@@ -234,7 +234,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
 
             val viewer1 = viewerGrid.copy(defaultObjectType = customType1Id)
             val viewer2 = viewerGallery.copy(defaultObjectType = customType2Id)
-            val viewer3 = viewerList.copy(defaultObjectType = null)
+            val viewer3 = viewerList.copy(defaultObjectType = ObjectTypeIds.PAGE)
 
             session.currentViewerId.value = viewer3.id
 

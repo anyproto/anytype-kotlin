@@ -540,7 +540,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             content = (mockObjectCollection.dataView.content as DV).copy(
                 viewers = listOf(
                     mockObjectCollection.viewerGrid.copy(defaultObjectType = ObjectTypeIds.PROFILE),
-                    mockObjectCollection.viewerList.copy(defaultObjectType = null)
+                    mockObjectCollection.viewerList.copy(defaultObjectType = ObjectTypeIds.PAGE)
                 )
             )
         )

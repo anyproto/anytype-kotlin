@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -35,7 +36,6 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
     val workspaceId = "workspace-${RandomString.make()}"
     val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(context)
     val setOf get() = setOfValue
-    val setOfNote = ObjectTypeIds.NOTE
 
     // RELATION OBJECTS
     val relationObject1 = StubRelationObject(
@@ -212,6 +212,25 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
                 mapOf(
                     Relations.ID to relationObject3.id,
                     Relations.RELATION_KEY to relationObject3.key,
+                    Relations.TYPE to ObjectTypeIds.RELATION
+                )
+            )
+        )
+    )
+
+    fun detailsSetByRelation(relationSetBy: ObjectWrapper.Relation) = Block.Details(
+        details = mapOf(
+            root to Block.Fields(
+                mapOf(
+                    Relations.ID to root,
+                    Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
+                    Relations.SET_OF to relationSetBy.key
+                )
+            ),
+            relationSetBy.key to Block.Fields(
+                mapOf(
+                    Relations.ID to relationSetBy.id,
+                    Relations.RELATION_KEY to relationSetBy.key,
                     Relations.TYPE to ObjectTypeIds.RELATION
                 )
             )

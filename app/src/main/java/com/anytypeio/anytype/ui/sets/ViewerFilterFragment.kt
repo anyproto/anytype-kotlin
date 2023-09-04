@@ -36,7 +36,7 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
 
     private val filterAdapter by lazy {
         FilterByAdapter(
-            click = { click -> vm.onFilterClicked(ctx, click) }
+            click = { click -> vm.onFilterClicked(ctx = ctx, viewerId = viewer, click = click) }
         )
     }
 
@@ -50,12 +50,22 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
         binding.recycler.adapter = filterAdapter
         with(lifecycleScope) {
             subscribe(vm.commands) { observeCommands(it) }
-            subscribe(binding.addButton.clicks()) { vm.onAddNewFilterClicked() }
+            subscribe(binding.addButton.clicks()) { vm.onAddNewFilterClicked(viewerId = viewer) }
             subscribe(binding.doneBtn.clicks()) { vm.onDoneButtonClicked() }
             subscribe(binding.editBtn.clicks()) { vm.onEditButtonClicked() }
             subscribe(vm.views) { filterAdapter.update(it) }
             subscribe(vm.screenState) { render(it) }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vm.onStart(viewerId = viewer)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
     }
 
     private fun render(state: ViewerFilterViewModel.ScreenState) {
@@ -111,14 +121,15 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
     private fun observeCommands(command: ViewerFilterCommand) {
         when (command) {
             is ViewerFilterCommand.Modal.ShowRelationList -> {
-                val fr = CreateFilterFlowRootFragment.new(ctx)
+                val fr = CreateFilterFlowRootFragment.new(ctx = ctx, viewer = viewer)
                 fr.show(parentFragmentManager, null)
             }
             is ViewerFilterCommand.Modal.UpdateInputValueFilter -> {
                 val fr = ModifyFilterFromInputFieldValueFragment.new(
                     ctx = ctx,
                     relation = command.relation,
-                    index = command.filterIndex
+                    index = command.filterIndex,
+                    viewer = viewer
                 )
                 fr.showChildFragment(fr.javaClass.canonicalName)
             }
@@ -126,7 +137,8 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
                 val fr = ModifyFilterFromSelectedValueFragment.new(
                     ctx = ctx,
                     relation = command.relation,
-                    index = command.filterIndex
+                    index = command.filterIndex,
+                    viewer = viewer
                 )
                 fr.showChildFragment(fr.javaClass.canonicalName)
             }

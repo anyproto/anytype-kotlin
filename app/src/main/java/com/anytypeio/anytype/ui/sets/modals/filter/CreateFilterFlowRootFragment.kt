@@ -19,6 +19,7 @@ class CreateFilterFlowRootFragment :
     BaseBottomSheetFragment<FragmentViewerBottomSheetRootBinding>(), CreateFilterFlow {
 
     private val ctx: String get() = arg(CTX_KEY)
+    private val viewer: String get() = arg(VIEWER_KEY)
 
     val vm by lazy { CreateFilterFlowViewModel() }
 
@@ -45,12 +46,14 @@ class CreateFilterFlowRootFragment :
             Step.CreateFilter.Type.INPUT_FIELD -> {
                 CreateFilterFromInputFieldValueFragment.new(
                     ctx = step.ctx,
+                    viewer = viewer,
                     relation = step.relation
                 )
             }
             else -> {
                 CreateFilterFromSelectedValueFragment.new(
                     ctx = step.ctx,
+                    viewer = viewer,
                     relation = step.relation
                 )
             }
@@ -64,7 +67,7 @@ class CreateFilterFlowRootFragment :
     }
 
     private fun transitToSelection() {
-        val fr = SelectFilterRelationFragment.new(ctx)
+        val fr = SelectFilterRelationFragment.new(ctx = ctx, viewerId = viewer)
         childFragmentManager
             .beginTransaction()
             .add(R.id.container, fr)

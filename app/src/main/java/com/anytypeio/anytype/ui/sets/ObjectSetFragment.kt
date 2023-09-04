@@ -955,7 +955,7 @@ open class ObjectSetFragment :
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ModifyViewerSorts -> {
-                val fr = ViewerSortFragment.new(ctx)
+                val fr = ViewerSortFragment.new(ctx = ctx, viewer = command.viewer)
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.OpenCoverActionMenu -> {

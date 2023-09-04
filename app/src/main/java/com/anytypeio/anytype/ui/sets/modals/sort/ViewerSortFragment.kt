@@ -48,7 +48,7 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
             },
             onRemoveViewerSortClicked = {
                 vm.onRemoveViewerSortClicked(
-                    ctx = ctx, view = it
+                    ctx = ctx, view = it, viewerId = viewer
                 )
             }
         )
@@ -58,12 +58,12 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
     private lateinit var dividerItemEdit: RecyclerView.ItemDecoration
 
     private fun navigateToSelectSort() {
-        val fr = SelectSortRelationFragment.new(ctx)
+        val fr = SelectSortRelationFragment.new(ctx = ctx, viewerId = viewer)
         fr.show(parentFragmentManager, null)
     }
 
     private fun navigateToChangeSort(sortId: Id, relation: Key) {
-        val fr = ModifyViewerSortFragment.new(ctx = ctx, sortId = sortId, relation = relation)
+        val fr = ModifyViewerSortFragment.new(ctx = ctx, viewer = viewer, sortId = sortId, relation = relation)
         fr.show(parentFragmentManager, null)
     }
 
@@ -99,7 +99,7 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
             jobs += subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
         }
         super.onStart()
-        vm.onStart()
+        vm.onStart(viewerId = viewer)
     }
 
     override fun onStop() {

@@ -46,7 +46,11 @@ class MainViewModel(
     val toasts = MutableSharedFlow<String>(replay = 0)
 
     init {
-        viewModelScope.launch { restoreWallpaper(BaseUseCase.None) }
+        viewModelScope.launch {
+            restoreWallpaper.flow().collect {
+                // Do nothing, just run pipeline.
+            }
+        }
         viewModelScope.launch {
             observeWallpaper.build(BaseUseCase.None).collect {
                 wallpaper.value = it
@@ -104,7 +108,7 @@ class MainViewModel(
          */
         runBlocking {
             resumeAccount.run(params = BaseUseCase.None).process(
-                success = { id ->
+                success = {
                     relationsSubscriptionManager.onStart()
                     objectTypesSubscriptionManager.onStart()
                     updateUserProperties(

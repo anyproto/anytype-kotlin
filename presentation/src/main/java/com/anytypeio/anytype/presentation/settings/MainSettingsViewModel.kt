@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -37,7 +36,6 @@ import timber.log.Timber
 class MainSettingsViewModel(
     private val analytics: Analytics,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
     private val setObjectDetails: SetObjectDetails,
     private val spaceGradientProvider: SpaceGradientProvider,
@@ -72,13 +70,13 @@ class MainSettingsViewModel(
                 WorkspaceAndAccount.Account(
                     space = workspace?.let {
                         WorkspaceAndAccount.SpaceData(
-                            name = workspace.name ?: "",
+                            name = workspace.name.orEmpty(),
                             icon = workspace.spaceIcon(urlBuilder, spaceGradientProvider)
                         )
                     },
                     profile = profile?.let {
                         WorkspaceAndAccount.ProfileData(
-                            name = profile.name ?: "",
+                            name = profile.name.orEmpty(),
                             icon = profile.profileIcon(urlBuilder, spaceGradientProvider)
                         )
                     }
@@ -202,7 +200,7 @@ class MainSettingsViewModel(
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null) {
-                setObjectDetails.execute(
+                setObjectDetails.async(
                     SetObjectDetails.Params(
                         ctx = config.workspace,
                         details = mapOf(
@@ -226,7 +224,6 @@ class MainSettingsViewModel(
     class Factory(
         private val analytics: Analytics,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-        private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,
         private val setObjectDetails: SetObjectDetails,
         private val spaceGradientProvider: SpaceGradientProvider,
@@ -239,7 +236,6 @@ class MainSettingsViewModel(
         ): T = MainSettingsViewModel(
             analytics = analytics,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            configStorage = configStorage,
             urlBuilder = urlBuilder,
             setObjectDetails = setObjectDetails,
             spaceGradientProvider = spaceGradientProvider,

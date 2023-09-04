@@ -19,6 +19,8 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.ui.main.MainActivity
@@ -99,8 +101,15 @@ object MainEntryModule {
     @PerScreen
     @Provides
     fun provideRestoreWallpaperUseCase(
-        repo: UserSettingsRepository
-    ): RestoreWallpaper = RestoreWallpaper(repo)
+        repo: UserSettingsRepository,
+        spaceManager: SpaceManager,
+        dispatchers: AppCoroutineDispatchers
+    ): RestoreWallpaper = RestoreWallpaper(
+        repo = repo,
+        spaceManager = spaceManager,
+        store = WallpaperStore.Default,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @PerScreen

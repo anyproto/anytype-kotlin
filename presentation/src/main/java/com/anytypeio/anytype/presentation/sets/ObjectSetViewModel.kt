@@ -951,9 +951,7 @@ class ObjectSetViewModel(
                             }
                             if (uniqueKey == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
-                                    ObjectSetCommand.Modal.CreateBookmark(
-                                        ctx = context
-                                    )
+                                    ObjectSetCommand.Modal.CreateBookmark(ctx = context)
                                 )
                             } else {
                                 proceedWithCreatingDataViewObject(

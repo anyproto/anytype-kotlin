@@ -238,7 +238,7 @@ val params : PrecomputedTextCompat.Params =
     <string name="soon">不久之后</string>
 
     <string name="are_you_sure_delete_one_object">是否确实要删除 1 个对象？</string>
-    <string name="are_you_sure_delete_n_objects">是否确实要删除 %1$d 对象？</string>
+    <string name="are_you_sure_delete_n_objects">是否确实要删除 %1$d 个对象？</string>
     <string name="delete_irrevocably">这些对象将被彻底删除。您无法撤消此操作。</string>
     <string name="delete_irrevocably_one_object">此对象将被彻底删除。您无法撤消此操作。</string>
     <string name="shared">已共享</string>
@@ -246,8 +246,8 @@ val params : PrecomputedTextCompat.Params =
     <string name="back_to_dashboard">返回主页</string>
     <string name="go_back">回到</string>
 
-    <string name="snack_object_set_not_found">Set not found for this type.</string>
-    <string name="create_new_set">Create</string>
+    <string name="snack_object_set_not_found">找不到此类型。</string>
+    <string name="create_new_set">创建</string>
 
     <string name="shortcut_create_new">Create a new %1$s</string>
     <string name="close">关闭</string>
@@ -288,15 +288,15 @@ val params : PrecomputedTextCompat.Params =
     <string name="fragment_dashboard_restore">恢复</string>
     <string name="your_account_deleted">您的帐户将被删除。</string>
     <plurals name="fragment_dashboard_selected_count">
-        <item quantity="one">%d 选定的对象</item>
-        <item quantity="other">%d 选定的对象</item>
+        <item quantity="one">%d 个选定的对象</item>
+        <item quantity="other">%d 个选定的对象</item>
     </plurals>
     <string name="debug_mode">调试模式</string>
     <string name="trouble_mode">故障模式</string>
     <string name="settings_screen">设置</string>
 
     <string name="snack_link_to">链接到</string>
-    <string name="snack_move_to">移动至</string>
+    <string name="snack_move_to">移至</string>
     <string name="recovery_phrase_copied">已复制恢复短语</string>
 
     <string name="library_title_types">类型</string>
@@ -312,7 +312,7 @@ val params : PrecomputedTextCompat.Params =
     <string name="library_create_new_relation">创建一个关联名为 \'%1$s\'</string>
     <string name="library_objects_empty">没有 %1$s 名为 \'%2$s\'</string>
     <string name="library_objects_empty_action">尝试创建新的或搜索其他内容</string>
-    <string name="library_relations_empty">There are no types named \'%1$s\'</string>
+    <string name="library_relations_empty">没有名为 \'%1$s\' 的类型</string>
 
     <string name="create_widget">创建小部件</string>
     <string name="edit_widgets">编辑小部件</string>
@@ -346,7 +346,7 @@ val params : PrecomputedTextCompat.Params =
     <string name="empty_list_widget_no_view">此数据视图没有对象。\n尝试创建一个新的。</string>
     <string name="this_widget_has_no_object">此小部件没有对象。\n尝试创建一个新的。</string>
     <string name="emoji">Emoji</string>
-    <string name="almost_there">Almost there!</string>
+    <string name="almost_there">就快好了！</string>
     <string name="i_did_not_not_complete_migration">我没有完成迁移</string>
     <string name="not_completed_migration_steps">我没有完成迁移</string>
     <string name="almost_there_subtitle">要使用此版本的应用程序，请在下面选择正确的选项来迁移您的帐户。</string>

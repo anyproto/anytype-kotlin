@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets
 
+import android.widget.Space
 import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -25,7 +26,9 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -63,6 +66,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -71,12 +75,15 @@ import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
+import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlin.math.roundToInt
@@ -161,7 +168,7 @@ fun ObjectTypeTemplatesWidget(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(312.dp)
+                    .height(464.dp)
                     .padding(start = 8.dp, end = 8.dp, bottom = 31.dp)
                     .background(
                         color = colorResource(id = R.color.background_secondary),
@@ -233,6 +240,17 @@ fun ObjectTypeTemplatesWidget(
 //                            )
 //                        }
                     }
+                    Spacer(modifier = Modifier.height(26.dp))
+                    Text(
+                        modifier = Modifier
+                            .padding(start = 20.dp, bottom = 8.dp)
+                            .wrapContentSize(),
+                        text = stringResource(id = R.string.object_type),
+                        style = BodyCalloutRegular,
+                        color = colorResource(id = R.color.glyph_active)
+                    )
+                    ObjectTypesList(state = currentState, menuClick = menuClick)
+
                     val itemsScroll = rememberLazyListState()
                     TemplatesList(
                         state = currentState,
@@ -295,7 +313,7 @@ private fun MoreMenu(
                 shape = RoundedCornerShape(size = 10.dp)
             )
     ) {
-        if(currentState.isDefaultStateEnabled) {
+        if (currentState.isDefaultStateEnabled) {
             MenuItem(
                 click = { menuClick(TemplateMenuClick.Default(templateView)) },
                 text = stringResource(id = R.string.templates_menu_default_for_view)
@@ -766,6 +784,117 @@ private fun TemplateItemRectangles() {
     }
 }
 
+@Composable
+fun ObjectTypesList(state: TemplatesWidgetUiState, menuClick: (TemplateMenuClick) -> Unit) {
+    val listState = rememberLazyListState()
+    LazyRow(
+        state = listState,
+        modifier = Modifier
+            .padding(top = 4.dp)
+            .fillMaxWidth()
+            .height(48.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        itemsIndexed(items = state.objectTypes,
+            itemContent = { index, item ->
+                when (item) {
+                    is TemplateObjectTypeView.Item -> {
+                        val borderWidth: Dp
+                        val borderColor: Color
+                        if (item.isDefault) {
+                            borderWidth = 2.dp
+                            borderColor = colorResource(id = R.color.palette_system_amber_50)
+                        } else {
+                            borderWidth = 1.dp
+                            borderColor = colorResource(id = R.color.shape_primary)
+                        }
+                        Box(modifier = Modifier
+                            .border(
+                                width = borderWidth,
+                                color = borderColor,
+                                shape = RoundedCornerShape(size = 10.dp)
+                            )
+                            .wrapContentSize()
+                            .noRippleThrottledClickable {
+                                menuClick(TemplateMenuClick.Type(item))
+                            }) {
+                            Row(
+                                modifier = Modifier.padding(
+                                    start = 14.dp,
+                                    end = 16.dp,
+                                    top = 13.dp,
+                                    bottom = 13.dp
+                                )
+                            ) {
+                                item.emoji?.let {
+                                    Box(
+                                        modifier = Modifier
+                                            .clip(RoundedCornerShape(8.dp))
+                                            .background(
+                                                color = colorResource(id = R.color.shape_tertiary)
+                                            )
+                                            .border(
+                                                width = 2.dp,
+                                                color = colorResource(id = R.color.background_primary),
+                                                shape = RoundedCornerShape(8.dp)
+                                            )
+                                    ) {
+                                        Image(
+                                            painter = rememberAsyncImagePainter(
+                                                model = Emojifier.safeUri(it),
+                                                error = painterResource(id = R.drawable.ic_home_widget_space)
+                                            ),
+                                            contentDescription = "Emoji template's icon",
+                                            modifier = Modifier
+                                                .size(20.dp)
+                                                .align(Alignment.Center),
+                                            contentScale = ContentScale.Crop
+                                        )
+                                    }
+                                }
+                                Text(
+                                    text = item.name,
+                                    style = BodyCalloutMedium.copy(
+                                        color = colorResource(id = R.color.text_primary)
+                                    ),
+                                    modifier = Modifier
+                                        .padding(start = 8.dp)
+                                        .widthIn(max = 100.dp),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
+                        }
+                    }
+
+                    TemplateObjectTypeView.Search -> {
+                        Box(
+                            modifier = Modifier
+                                .border(
+                                    width = 1.dp,
+                                    color = colorResource(id = R.color.shape_primary),
+                                    shape = RoundedCornerShape(size = 10.dp)
+                                )
+                                .size(48.dp)
+                                .noRippleThrottledClickable {
+                                    menuClick(TemplateMenuClick.Type(item))
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_search),
+                                contentDescription = "Search icon"
+                            )
+                        }
+                    }
+                }
+            }
+        )
+    }
+}
+
 enum class DragStates {
     VISIBLE,
     DISMISSED
@@ -798,7 +927,11 @@ fun ComposablePreview() {
         showWidget = true,
         isEditing = true,
         isMoreMenuVisible = true,
-        moreMenuTemplate = null
+        moreMenuTemplate = null,
+        objectTypes = listOf(
+            TemplateObjectTypeView.Search,
+            TemplateObjectTypeView.Item(id = "1", name = "Page", emoji = "📄")
+        ),
     )
     ObjectTypeTemplatesWidget(
         state = state,

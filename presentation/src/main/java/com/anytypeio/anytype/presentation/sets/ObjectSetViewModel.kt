@@ -1703,6 +1703,7 @@ class ObjectSetViewModel(
             is TemplateMenuClick.Delete -> proceedWithDeletionTemplate()
             is TemplateMenuClick.Duplicate -> proceedWithDuplicateTemplate()
             is TemplateMenuClick.Edit -> proceedWithEditingTemplate()
+            is TemplateMenuClick.Type -> TODO()
         }
     }
 

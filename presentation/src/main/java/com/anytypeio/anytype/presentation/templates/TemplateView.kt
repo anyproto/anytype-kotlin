@@ -48,4 +48,17 @@ sealed class TemplateMenuClick {
     data class Edit(val templateView: TemplateView.Template) : TemplateMenuClick()
     data class Duplicate(val templateView: TemplateView.Template) : TemplateMenuClick()
     data class Delete(val templateView: TemplateView.Template) : TemplateMenuClick()
+    data class Type(val type: TemplateObjectTypeView) : TemplateMenuClick()
+}
+
+sealed class TemplateObjectTypeView {
+
+    data class Item(
+        val id: Id,
+        val name: String,
+        val emoji: String?,
+        val isDefault: Boolean = false
+    ) : TemplateObjectTypeView()
+
+    object Search : TemplateObjectTypeView()
 }

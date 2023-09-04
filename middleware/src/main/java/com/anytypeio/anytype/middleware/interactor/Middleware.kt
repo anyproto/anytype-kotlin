@@ -18,7 +18,6 @@ import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -957,7 +956,6 @@ class Middleware @Inject constructor(
     ): ObjectWrapper.Type {
         val request = Rpc.Object.CreateObjectType.Request(
             details = buildMap {
-                put(Relations.TYPE, ObjectTypeIds.OBJECT_TYPE)
                 put(Relations.NAME, name)
                 emojiUnicode?.let {
                     put(Relations.ICON_EMOJI, it)

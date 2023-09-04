@@ -583,11 +583,13 @@ class BlockDataRepository(
     }
 
     override suspend fun createRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,
         prefilled: Struct
     ): ObjectWrapper.Relation = remote.createRelation(
+        space = space,
         name = name,
         format = format,
         formatObjectTypes = formatObjectTypes,

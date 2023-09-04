@@ -290,6 +290,7 @@ interface BlockRepository {
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
 
     suspend fun createRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,

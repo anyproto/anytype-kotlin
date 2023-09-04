@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.domain.relations.CreateRelation
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
 import javax.inject.Inject
@@ -14,6 +15,7 @@ import timber.log.Timber
 class RelationCreateFromLibraryViewModel(
     private val createFromScratchState: StateHolder<CreateFromScratchState>,
     private val createRelation: CreateRelation,
+    private val spaceManager: SpaceManager
 ): RelationCreateFromScratchBaseViewModel() {
 
     override val createFromScratchSession get() = createFromScratchState.state
@@ -30,6 +32,7 @@ class RelationCreateFromLibraryViewModel(
             val format = state.format
             createRelation(
                 CreateRelation.Params(
+                    space = spaceManager.get(),
                     format = format,
                     name = name.value,
                     limitObjectTypes = state.limitObjectTypes.map { it.id },
@@ -54,10 +57,12 @@ class RelationCreateFromLibraryViewModel(
     class Factory @Inject constructor(
         private val createFromScratchState: StateHolder<CreateFromScratchState>,
         private val createRelation: CreateRelation,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationCreateFromLibraryViewModel(
+                spaceManager = spaceManager,
                 createFromScratchState = createFromScratchState,
                 createRelation = createRelation,
             ) as T

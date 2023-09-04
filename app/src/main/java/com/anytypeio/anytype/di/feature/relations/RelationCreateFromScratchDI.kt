@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.CreateRelation
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectBlockViewModel
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectViewModel
@@ -40,7 +41,7 @@ interface RelationCreateFromScratchForObjectSubComponent {
     fun inject(fragment: RelationCreateFromScratchForObjectFragment)
 
     fun relationFormatPickerComponent(): RelationFormatPickerSubcomponent.Builder
-    fun limitObjectTypeComponent() : LimitObjectTypeSubComponent.Builder
+    fun limitObjectTypeComponent(): LimitObjectTypeSubComponent.Builder
 }
 
 @Module
@@ -54,13 +55,15 @@ object RelationCreateFromScratchForObjectModule {
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         createFromScratchState: StateHolder<CreateFromScratchState>,
-        createRelation: CreateRelation
+        createRelation: CreateRelation,
+        spaceManager: SpaceManager
     ) = RelationCreateFromScratchForObjectViewModel.Factory(
-            addRelationToObject = addRelationToObject,
-            createRelation = createRelation,
-            dispatcher = dispatcher,
-            analytics = analytics,
-            createFromScratchState = createFromScratchState
+        addRelationToObject = addRelationToObject,
+        createRelation = createRelation,
+        dispatcher = dispatcher,
+        analytics = analytics,
+        createFromScratchState = createFromScratchState,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -97,7 +100,7 @@ interface RelationCreateFromScratchForDataViewSubComponent {
     fun inject(fragment: RelationCreateFromScratchForDataViewFragment)
 
     fun relationFormatPickerComponent(): RelationFormatPickerSubcomponent.Builder
-    fun limitObjectTypeComponent() : LimitObjectTypeSubComponent.Builder
+    fun limitObjectTypeComponent(): LimitObjectTypeSubComponent.Builder
 }
 
 @Module
@@ -114,16 +117,18 @@ object RelationCreateFromScratchForDataViewModule {
         analytics: Analytics,
         createFromScratchState: StateHolder<CreateFromScratchState>,
         createRelation: CreateRelation,
-        addRelationToDataView: AddRelationToDataView
+        addRelationToDataView: AddRelationToDataView,
+        spaceManager: SpaceManager
     ) = RelationCreateFromScratchForDataViewViewModel.Factory(
-            addRelationToDataView = addRelationToDataView,
-            dispatcher = dispatcher,
-            objectState = state,
-            session = session,
-            updateDataViewViewer = updateDataViewViewer,
-            analytics = analytics,
-            createFromScratchState = createFromScratchState,
-            createRelation = createRelation
+        addRelationToDataView = addRelationToDataView,
+        dispatcher = dispatcher,
+        objectState = state,
+        session = session,
+        updateDataViewViewer = updateDataViewViewer,
+        analytics = analytics,
+        createFromScratchState = createFromScratchState,
+        createRelation = createRelation,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -165,7 +170,7 @@ interface RelationCreateFromScratchForObjectBlockSubComponent {
     fun inject(fragment: RelationCreateFromScratchForObjectBlockFragment)
 
     fun relationFormatPickerComponent(): RelationFormatPickerSubcomponent.Builder
-    fun limitObjectTypeComponent() : LimitObjectTypeSubComponent.Builder
+    fun limitObjectTypeComponent(): LimitObjectTypeSubComponent.Builder
 }
 
 @Module
@@ -179,13 +184,15 @@ object RelationCreateFromScratchForObjectBlockModule {
         createRelation: CreateRelation,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
-        createFromScratchState: StateHolder<CreateFromScratchState>
+        createFromScratchState: StateHolder<CreateFromScratchState>,
+        spaceManager: SpaceManager
     ) = RelationCreateFromScratchForObjectBlockViewModel.Factory(
-            addRelationToObject = addRelationToObject,
-            createRelation = createRelation,
-            dispatcher = dispatcher,
-            analytics = analytics,
-            createFromScratchState = createFromScratchState
+        addRelationToObject = addRelationToObject,
+        createRelation = createRelation,
+        dispatcher = dispatcher,
+        analytics = analytics,
+        createFromScratchState = createFromScratchState,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

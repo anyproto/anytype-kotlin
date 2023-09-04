@@ -921,6 +921,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,
@@ -937,7 +938,8 @@ class Middleware @Inject constructor(
                 if (prefilled.isNotEmpty()) {
                     putAll(prefilled)
                 }
-            }
+            },
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateRelation(request)

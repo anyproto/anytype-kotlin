@@ -1498,10 +1498,10 @@ class ObjectSetViewModel(
                 session.currentViewerId
             ) { state, currentViewId ->
 
-                val viewer = state.dataViewState()?.viewerById(currentViewId) ?: return@combine null
+                val viewer = state.dataViewState()?.viewerById(currentViewId)
                 val viewerDefObjType = fetchViewerDefaultObjectType(viewer)
 
-                if (viewerDefObjType?.isTemplatesAllowed() == true) {
+                if (viewer != null && viewerDefObjType?.isTemplatesAllowed() == true) {
                     fetchAndProcessTemplates(viewerDefObjType, viewer)
                 } else {
                     Timber.d("Templates are not allowed for type:[${viewerDefObjType?.id}]")
@@ -1557,7 +1557,8 @@ class ObjectSetViewModel(
     fun onTemplateItemClicked(item: TemplateView) {
         val state = templatesWidgetState.value
         if (state.isMoreMenuVisible) {
-            templatesWidgetState.value = state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
+            templatesWidgetState.value =
+                state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
             return
         }
         when(item) {

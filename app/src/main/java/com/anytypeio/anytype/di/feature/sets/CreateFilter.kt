@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -44,7 +43,6 @@ object CreateFilterModule {
     @PerModal
     fun provideViewModelFactory(
         state: MutableStateFlow<ObjectState>,
-        session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         updateDataViewViewer: UpdateDataViewViewer,
         searchObjects: SearchObjects,
@@ -57,7 +55,6 @@ object CreateFilterModule {
         workspaceManager: WorkspaceManager
     ): FilterViewModel.Factory = FilterViewModel.Factory(
         objectState = state,
-        session = session,
         dispatcher = dispatcher,
         updateDataViewViewer = updateDataViewViewer,
         searchObjects = searchObjects,

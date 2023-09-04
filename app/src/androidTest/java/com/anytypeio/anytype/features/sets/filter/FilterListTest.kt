@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -66,7 +65,6 @@ class FilterListTest {
     lateinit var urlBuilder: UrlBuilder
 
     private val root = MockDataFactory.randomUuid()
-    private val session = ObjectSetSession()
     private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val dispatcher = Dispatcher.Default<Payload>()
     private val storeOfObjects = DefaultObjectStore()
@@ -80,7 +78,6 @@ class FilterListTest {
         searchObjects = SearchObjects(repo)
         urlBuilder = UrlBuilder(gateway)
         TestViewerFilterFragment.testVmFactory = ViewerFilterViewModel.Factory(
-            session = session,
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,

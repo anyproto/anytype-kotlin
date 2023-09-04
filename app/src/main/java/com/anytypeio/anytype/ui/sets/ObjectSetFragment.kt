@@ -961,12 +961,13 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.ModifyViewerFilters -> {
                 val fr = ViewerFilterFragment.new(
-                    ctx = command.ctx
+                    ctx = command.ctx,
+                    viewer = command.viewer,
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ModifyViewerSorts -> {
-                val fr = ViewerSortFragment.new(ctx)
+                val fr = ViewerSortFragment.new(ctx = ctx, viewer = command.viewer)
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.OpenCoverActionMenu -> {

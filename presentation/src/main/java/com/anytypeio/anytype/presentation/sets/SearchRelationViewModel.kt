@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -9,6 +10,7 @@ import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,7 +23,6 @@ import kotlinx.coroutines.launch
  */
 abstract class SearchRelationViewModel(
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val storeOfRelations: StoreOfRelations
 ) : BaseListViewModel<SimpleRelationView>() {
 
@@ -33,26 +34,27 @@ abstract class SearchRelationViewModel(
         ColumnView.Format.EMOJI,
         ColumnView.Format.FILE
     )
+    private val jobs = mutableListOf<Job>()
 
-    init {
+    fun onStart(viewerId: Id) {
         // Initializing views before any query.
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             _views.value =
                 filterRelationsFromAlreadyInUse(
                     objectState = objectState.value,
-                    viewerId = session.currentViewerId.value,
+                    viewerId = viewerId,
                     storeOfRelations = storeOfRelations
                 )
                     .filterNot { notAllowedRelations(it) }
         }
         // Searching and mapping views based on query changes.
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
             query
                 .consumeAsFlow()
                 .withLatestFrom(objectState) { query, state ->
                     val relations = filterRelationsFromAlreadyInUse(
                         objectState = state,
-                        viewerId = session.currentViewerId.value,
+                        viewerId = viewerId,
                         storeOfRelations = storeOfRelations
                     )
                     if (query.isEmpty()) {
@@ -68,6 +70,11 @@ abstract class SearchRelationViewModel(
                 }
                 .collect { _views.value = it }
         }
+    }
+
+    fun onStop() {
+        jobs.forEach { it.cancel() }
+        jobs.clear()
     }
 
     protected open suspend fun filterRelationsFromAlreadyInUse(

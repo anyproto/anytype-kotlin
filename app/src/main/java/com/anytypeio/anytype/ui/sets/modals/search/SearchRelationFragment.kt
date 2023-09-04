@@ -26,6 +26,7 @@ abstract class SearchRelationFragment :
 
     abstract val ctx: String
     abstract val vm: SearchRelationViewModel
+    abstract val viewer: Id
 
     private val searchRelationAdapter by lazy {
         SearchRelationAdapter { relation -> onRelationClicked(ctx = ctx, relation = relation) }
@@ -69,6 +70,16 @@ abstract class SearchRelationFragment :
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vm.onStart(viewerId = viewer)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

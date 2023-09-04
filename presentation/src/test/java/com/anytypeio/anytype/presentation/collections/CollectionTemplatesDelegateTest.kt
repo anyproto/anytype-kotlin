@@ -52,7 +52,7 @@ class CollectionTemplatesDelegateTest: ObjectSetViewModelTestSetup() {
         stubWorkspaceManager(mockCollection.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubStoreOfObjectTypes(defaultTypeMap)
+        stubStoreOfObjectTypes(defaultType, defaultTypeMap)
         stubGetDefaultPageType(type = defaultType, name = defaultTypeName)
         stubTemplatesContainer(type = defaultType)
 
@@ -109,7 +109,7 @@ class CollectionTemplatesDelegateTest: ObjectSetViewModelTestSetup() {
         stubWorkspaceManager(mockCollection.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubStoreOfObjectTypes(defaultTypeMap)
+        stubStoreOfObjectTypes(defaultType, defaultTypeMap)
         stubGetDefaultPageType(type = defaultType, name = defaultTypeName)
 
         val details = Block.Details(

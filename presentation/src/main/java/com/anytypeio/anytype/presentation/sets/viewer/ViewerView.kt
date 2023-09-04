@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.sets.viewer
 
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
 
 data class ViewerView(
     val id: Id,
@@ -11,10 +10,10 @@ data class ViewerView(
     val isActive: Boolean,
     val showActionMenu: Boolean = false,
     val isUnsupported: Boolean = false,
+    val defaultObjectType: Id?,
     val relations: List<String>,
     val sorts: List<String>,
     val filters: List<String>,
-    val defaultObjectType: ObjectWrapper.Type?,
     val isDefaultObjectTypeEnabled: Boolean
 )
 

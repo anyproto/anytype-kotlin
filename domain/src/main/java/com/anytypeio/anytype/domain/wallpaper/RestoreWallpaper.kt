@@ -8,6 +8,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 
+/**
+ * Pipeline flow for restoring per-space wallpaper.
+ * Reacts to currently active space changes.
+ */
 class RestoreWallpaper(
     private val repo: UserSettingsRepository,
     private val spaceManager: SpaceManager,

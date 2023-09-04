@@ -40,7 +40,8 @@ class AddOptionsRelationViewModel(
     dispatcher = dispatcher,
     setObjectDetail = updateDetail,
     detailsProvider = detailProvider,
-    getOptions = getOptions
+    getOptions = getOptions,
+    spaceManager = spaceManager
 ) {
 
     fun onAddObjectStatusClicked(

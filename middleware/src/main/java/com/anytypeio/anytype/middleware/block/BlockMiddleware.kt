@@ -234,8 +234,10 @@ class BlockMiddleware(
     ): Payload = middleware.blockListSetFields(command)
 
     override suspend fun createSet(
+        space: Id,
         objectType: String?
     ): Response.Set.Create = middleware.objectCreateSet(
+        space = space,
         objectType = objectType
     )
 

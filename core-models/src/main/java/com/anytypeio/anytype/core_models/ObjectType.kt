@@ -43,6 +43,7 @@ data class ObjectType(
         SPACE(10),
         BOOKMARK(11),
         DATABASE(20),
+        RELATION_OPTION(13),
         COLLECTION(14),
         AUDIO(15),
         VIDEO(16),

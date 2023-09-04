@@ -5996,7 +5996,12 @@ class EditorViewModel(
 
     fun onCreateNewSetForType(type: Id) {
         viewModelScope.launch {
-            createObjectSet(CreateObjectSet.Params(type = type)).process(
+            createObjectSet(
+                CreateObjectSet.Params(
+                    type = type,
+                    space = spaceManager.get()
+                )
+            ).process(
                 failure = { Timber.e(it, "Error while creating a set of type: $type") },
                 success = { response -> proceedWithOpeningDataViewObject(response.target) }
             )

@@ -89,6 +89,7 @@ interface BlockRemote {
     suspend fun setFields(command: Command.SetFields): Payload
 
     suspend fun createSet(
+        space: Id,
         objectType: String?
     ): Response.Set.Create
 

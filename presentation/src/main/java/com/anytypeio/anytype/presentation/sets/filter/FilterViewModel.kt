@@ -307,7 +307,8 @@ open class FilterViewModel(
         viewModelScope.launch {
             getOptions(
                 GetOptions.Params(
-                    relation = relation.key
+                    relation = relation.key,
+                    space = spaceManager.get()
                 )
             ).process(
                 success = { options ->
@@ -334,7 +335,8 @@ open class FilterViewModel(
         viewModelScope.launch {
             getOptions(
                 GetOptions.Params(
-                    relation = relation.key
+                    relation = relation.key,
+                    space = spaceManager.get()
                 )
             ).process(
                 success = { options ->

@@ -40,7 +40,8 @@ class AddOptionsRelationDVViewModel(
     analytics = analytics,
     setObjectDetail = setObjectDetail,
     detailsProvider = detailsProvider,
-    getOptions = getOptions
+    getOptions = getOptions,
+    spaceManager = spaceManager
 ) {
 
     fun onCreateDataViewRelationOptionClicked(

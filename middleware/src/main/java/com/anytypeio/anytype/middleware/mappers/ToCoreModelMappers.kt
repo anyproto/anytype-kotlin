@@ -636,8 +636,8 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.video -> ObjectType.Layout.VIDEO
     MOTypeLayout.date -> ObjectType.Layout.DATE
     MOTypeLayout.collection -> ObjectType.Layout.COLLECTION
+    MOTypeLayout.relationOption -> ObjectType.Layout.RELATION_OPTION
     MOTypeLayout.relationOptionsList -> TODO()
-    MOTypeLayout.relationOption -> TODO()
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {

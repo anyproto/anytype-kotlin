@@ -284,9 +284,10 @@ class BlockDataRepository(
     )
 
     override suspend fun createSet(
+        space: Id,
         objectType: String?
     ): CreateObjectSet.Response {
-        val result = remote.createSet(objectType = objectType)
+        val result = remote.createSet(space = space, objectType = objectType)
         return CreateObjectSet.Response(
             target = result.targetId,
             payload = result.payload

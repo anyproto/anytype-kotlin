@@ -143,6 +143,7 @@ interface BlockRepository {
     suspend fun setFields(command: Command.SetFields): Payload
 
     suspend fun createSet(
+        space: Id,
         objectType: String? = null
     ): CreateObjectSet.Response
 

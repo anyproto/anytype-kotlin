@@ -996,6 +996,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateSet(
+        space: Id,
         objectType: String?
     ): Response.Set.Create {
         val source = if (objectType != null) {
@@ -1005,7 +1006,8 @@ class Middleware @Inject constructor(
         }
 
         val request = Rpc.Object.CreateSet.Request(
-            source = source
+            source = source,
+            spaceId = space
         )
 
         if (BuildConfig.DEBUG) logRequest(request)

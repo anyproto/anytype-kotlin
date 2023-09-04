@@ -195,7 +195,6 @@ class FilterViewModelInputFieldValueModifyTest {
         }
         viewModel = FilterViewModel(
             objectState = state,
-            session = session,
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,
             updateDataViewViewer = updateDataViewViewer,
@@ -324,19 +323,21 @@ class FilterViewModelInputFieldValueModifyTest {
     ) {
         stubUpdateDataView()
 
+        val viewer = state.value.dataViewState()!!.viewers[0]
+
         viewModel.onStart(
             relationKey = relation1.key,
-            filterIndex = filterIndex
+            filterIndex = filterIndex,
+            viewerId = viewer.id
         )
 
         viewModel.onConditionUpdate(condition)
 
         viewModel.onModifyApplyClicked(
             ctx = root,
-            input = textInput
+            input = textInput,
+            viewerId = viewer.id
         )
-
-        val viewer = state.value.dataViewState()!!.viewers[0]
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(
@@ -364,19 +365,21 @@ class FilterViewModelInputFieldValueModifyTest {
 
         stubUpdateDataView()
 
+        val viewer = state.value.dataViewState()!!.viewers[0]
+
         viewModel.onStart(
             relationKey = relation1.key,
-            filterIndex = filterIndex
+            filterIndex = filterIndex,
+            viewerId = viewer.id
         )
 
         viewModel.onConditionUpdate(condition)
 
         viewModel.onModifyApplyClicked(
             ctx = root,
-            input = textInput
+            input = textInput,
+            viewerId = viewer.id
         )
-
-        val viewer = state.value.dataViewState()!!.viewers[0]
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(

@@ -24,10 +24,11 @@ import javax.inject.Inject
 class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSelectSortOrFilterRelationBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
+    private val viewer: String get() = arg(VIEWER_ID_KEY)
 
     private val searchRelationAdapter by lazy {
         SearchRelationAdapter { relation ->
-            vm.onRelationClicked(ctx = ctx, relation = relation)
+            vm.onRelationClicked(ctx = ctx, viewerId = viewer, relation = relation)
         }
     }
 
@@ -100,10 +101,11 @@ class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSele
 
     companion object {
 
-        fun new(ctx: Id): SelectSortRelationFragment = SelectSortRelationFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        fun new(ctx: Id, viewerId: Id): SelectSortRelationFragment = SelectSortRelationFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, VIEWER_ID_KEY to viewerId)
         }
 
         const val CTX_KEY = "arg.select-sort-relation.ctx"
+        const val VIEWER_ID_KEY = "arg.select-sort-relation.viewer"
     }
 }

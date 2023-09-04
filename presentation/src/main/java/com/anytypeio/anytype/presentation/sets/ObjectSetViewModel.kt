@@ -1111,30 +1111,12 @@ class ObjectSetViewModel(
 
     fun onViewerFiltersClicked() {
         Timber.d("onViewerFiltersClicked, ")
-        val state = stateReducer.state.value.dataViewState() ?: return
-        if (state.viewers.isNotEmpty()) {
-            if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
-                toast(NOT_ALLOWED)
-            } else {
-                dispatch(ObjectSetCommand.Modal.ModifyViewerFilters(ctx = context))
-            }
-        } else {
-            toast(DATA_VIEW_HAS_NO_VIEW_MSG)
-        }
+        openViewerFilters()
     }
 
     fun onViewerSortsClicked() {
         Timber.d("onViewerSortsClicked, ")
-        val state = stateReducer.state.value.dataViewState() ?: return
-        if (state.viewers.isNotEmpty()) {
-            if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
-                toast(NOT_ALLOWED)
-            } else {
-                dispatch(ObjectSetCommand.Modal.ModifyViewerSorts(ctx = context))
-            }
-        } else {
-            toast(DATA_VIEW_HAS_NO_VIEW_MSG)
-        }
+        openViewerSorts()
     }
 
     private fun dispatch(command: ObjectSetCommand) {
@@ -1822,7 +1804,44 @@ class ObjectSetViewModel(
 
             }
         }
+    }
 
+    fun openViewerFilters(viewerId: Id? = null) {
+        val state = stateReducer.state.value.dataViewState() ?: return
+        if (state.viewers.isNotEmpty()) {
+            if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
+                toast(NOT_ALLOWED)
+            } else {
+                val viewer = viewerId ?: state.viewerById(session.currentViewerId.value)?.id ?: return
+                dispatch(
+                    ObjectSetCommand.Modal.ModifyViewerFilters(
+                        ctx = context,
+                        viewer = viewer
+                    )
+                )
+            }
+        } else {
+            toast(DATA_VIEW_HAS_NO_VIEW_MSG)
+        }
+    }
+
+    fun openViewerSorts(viewerId: Id? = null) {
+        val state = stateReducer.state.value.dataViewState() ?: return
+        if (state.viewers.isNotEmpty()) {
+            if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
+                toast(NOT_ALLOWED)
+            } else {
+                val viewer = viewerId ?: state.viewerById(session.currentViewerId.value)?.id ?: return
+                dispatch(
+                    ObjectSetCommand.Modal.ModifyViewerSorts(
+                        ctx = context,
+                        viewer = viewer
+                    )
+                )
+            }
+        } else {
+            toast(DATA_VIEW_HAS_NO_VIEW_MSG)
+        }
     }
     //endregion
 

@@ -45,7 +45,6 @@ class SearchRelationViewModelTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     private val dataViewId = MockDataFactory.randomString()
-    private val session = ObjectSetSession()
 
     @Mock
     lateinit var updateDataViewViewer: UpdateDataViewViewer
@@ -110,6 +109,8 @@ class SearchRelationViewModelTest {
         storeOfRelations.merge(relations)
 
         val vm = buildViewModel(state)
+
+        vm.onStart(viewerId = state.value.dataViewState()!!.viewers.first().id)
 
         // TESTING
 
@@ -231,6 +232,8 @@ class SearchRelationViewModelTest {
 
         val vm = buildViewModel(state)
 
+        vm.onStart(viewerId = state.value.dataViewState()!!.viewers.first().id)
+
         // TESTING
 
         val expected = listOf(
@@ -273,7 +276,6 @@ class SearchRelationViewModelTest {
     private fun buildViewModel(state: MutableStateFlow<ObjectState>): SelectSortRelationViewModel {
         return SelectSortRelationViewModel(
             objectState = state,
-            session = session,
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
             analytics = analytics,

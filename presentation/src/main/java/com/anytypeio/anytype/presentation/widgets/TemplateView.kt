@@ -27,7 +27,7 @@ data class TemplatesWidgetUiState(
             isEditing = false,
             isMoreMenuVisible = false,
             moreMenuTemplate = null,
-            isDefaultStateEnabled = false,
+            isDefaultStateEnabled = true,
             objectTypes = emptyList()
         )
     }

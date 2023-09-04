@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -86,7 +85,6 @@ class CollectionViewModel(
     private val resourceProvider: CollectionResourceProvider,
     private val openObject: OpenObject,
     private val createObject: CreateObject,
-    private val configstorage: ConfigStorage,
     interceptEvents: InterceptEvents,
     private val objectPayloadDispatcher: Dispatcher<Payload>,
     private val move: Move,
@@ -308,8 +306,11 @@ class CollectionViewModel(
             container.subscribe(buildSearchParams()),
             queryFlow(),
             objectTypes(),
-            openObject.asFlow(OpenObject.Params(configstorage.get().home, false))
-                .flatMapLatest { payloads.scan(it) { s, p -> reduce(s, p) } },
+            spaceManager.observe().flatMapLatest { config ->
+                openObject
+                    .asFlow(OpenObject.Params(config.home, false))
+                    .flatMapLatest { obj -> payloads.scan(obj) { s, p -> reduce(s, p) } }
+            }
         ) { objs, query, types, favorotiesObj ->
             val result = prepareFavorites(favorotiesObj, objs, query, types)
             if (result.isEmpty() && query.isNotEmpty())
@@ -433,6 +434,9 @@ class CollectionViewModel(
         if (from == to) return
         Timber.d("## from:[$from], to:[$to]")
         launch {
+
+            val config = spaceManager.getConfig() ?: return@launch
+
             val currentViews = currentViews.filterIsInstance<FavoritesView>()
             val direction = if (from < to) Position.BOTTOM else Position.TOP
             val subject = currentViews[to].blockId
@@ -444,8 +448,8 @@ class CollectionViewModel(
                 }
 
             val param = Move.Params(
-                context = configstorage.get().home,
-                targetContext = configstorage.get().home,
+                context = config.home,
+                targetContext = config.home,
                 position = direction,
                 blockIds = listOf(subject),
                 targetId = target
@@ -817,7 +821,6 @@ class CollectionViewModel(
         private val resourceProvider: CollectionResourceProvider,
         private val openObject: OpenObject,
         private val createObject: CreateObject,
-        private val configStorage: ConfigStorage,
         private val interceptEvents: InterceptEvents,
         private val objectPayloadDispatcher: Dispatcher<Payload>,
         private val move: Move,
@@ -841,7 +844,6 @@ class CollectionViewModel(
                 resourceProvider = resourceProvider,
                 openObject = openObject,
                 createObject = createObject,
-                configstorage = configStorage,
                 interceptEvents = interceptEvents,
                 objectPayloadDispatcher = objectPayloadDispatcher,
                 move = move,

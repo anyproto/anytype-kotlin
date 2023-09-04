@@ -36,7 +36,6 @@ import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
@@ -77,7 +76,6 @@ import com.anytypeio.anytype.core_models.ObjectView as CoreObjectView
 
 class CollectionViewModel(
     private val container: StorelessSubscriptionContainer,
-    private val workspaceManager: WorkspaceManager,
     private val urlBuilder: UrlBuilder,
     private val getObjectTypes: GetObjectTypes,
     private val dispatchers: AppCoroutineDispatchers,
@@ -101,12 +99,16 @@ class CollectionViewModel(
     val payloads: Flow<Payload>
 
     init {
-        val externalChannelEvents =
-            interceptEvents.build(InterceptEvents.Params(configstorage.get().home)).map {
-                Payload(
-                    context = configstorage.get().home,
-                    events = it
-                )
+        val externalChannelEvents: Flow<Payload> = spaceManager
+            .observe()
+            .flatMapLatest { config ->
+                val params = InterceptEvents.Params(config.home)
+                interceptEvents.build(params).map {
+                    Payload(
+                        context = configstorage.get().home,
+                        events = it
+                    )
+                }
             }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()
@@ -201,7 +203,7 @@ class CollectionViewModel(
         return StoreSearchParams(
             subscription = subscription.id,
             keys = subscription.keys,
-            filters = subscription.filters(workspaceManager.getCurrentWorkspace()),
+            filters = subscription.filters(spaceManager.get()),
             sorts = subscription.sorts,
             limit = subscription.limit
         )
@@ -805,7 +807,6 @@ class CollectionViewModel(
 
     class Factory @Inject constructor(
         private val container: StorelessSubscriptionContainer,
-        private val workspaceManager: WorkspaceManager,
         private val urlBuilder: UrlBuilder,
         private val getObjectTypes: GetObjectTypes,
         private val dispatchers: AppCoroutineDispatchers,
@@ -830,7 +831,6 @@ class CollectionViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return CollectionViewModel(
                 container = container,
-                workspaceManager = workspaceManager,
                 urlBuilder = urlBuilder,
                 getObjectTypes = getObjectTypes,
                 dispatchers = dispatchers,

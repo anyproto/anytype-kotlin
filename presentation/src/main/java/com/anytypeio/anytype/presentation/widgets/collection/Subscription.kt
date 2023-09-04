@@ -13,7 +13,7 @@ sealed class Subscription(
     val keys: List<String>,
     val sorts: List<DVSort>,
     val limit: Int,
-    val filters: (String) -> List<DVFilter>
+    val filters: (Id) -> List<DVFilter>
 ) {
     object Recent : Subscription(
         Subscriptions.SUBSCRIPTION_RECENT,

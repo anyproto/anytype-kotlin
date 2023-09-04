@@ -172,8 +172,11 @@ class BlockMiddleware(
     ): Payload = middleware.blockBookmarkCreateAndFetch(command)
 
     override suspend fun createBookmarkObject(
-        url: Url
-    ): Id = middleware.objectCreateBookmark(url = url)
+        space: Id, url: Url
+    ): Id = middleware.objectCreateBookmark(
+        space = space,
+        url = url
+    )
 
     override suspend fun fetchBookmarkObject(
         ctx: Id,

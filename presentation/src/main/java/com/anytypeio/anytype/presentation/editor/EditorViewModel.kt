@@ -4284,7 +4284,7 @@ class EditorViewModel(
         applyTemplate: Boolean
     ) {
         viewModelScope.launch {
-            when (type) {
+            when (key) {
                 ObjectTypeIds.SET -> {
                     proceedWithConvertingToSet()
                 }

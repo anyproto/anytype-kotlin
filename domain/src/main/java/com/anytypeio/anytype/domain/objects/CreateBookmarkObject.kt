@@ -10,8 +10,17 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
  */
 class CreateBookmarkObject(
     private val repo: BlockRepository
-) : BaseUseCase<Id, Url>() {
-    override suspend fun run(params: Url) = safe {
-        repo.createBookmarkObject(url = params)
+) : BaseUseCase<Id, CreateBookmarkObject.Params>() {
+
+    override suspend fun run(params: Params) = safe {
+        repo.createBookmarkObject(
+            space = params.space,
+            url = params.url
+        )
     }
+
+    data class Params(
+        val space: Id,
+        val url: Url
+    )
 }

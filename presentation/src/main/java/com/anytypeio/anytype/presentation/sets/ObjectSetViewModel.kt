@@ -945,6 +945,10 @@ class ObjectSetViewModel(
                     when (wrapper.layout) {
                         ObjectType.Layout.OBJECT_TYPE -> {
                             val uniqueKey = wrapper.getValue<Key>(Relations.UNIQUE_KEY)
+                            if (uniqueKey == null) {
+                                toast("Could not found key for given type")
+                                return
+                            }
                             if (uniqueKey == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
                                     ObjectSetCommand.Modal.CreateBookmark(
@@ -954,7 +958,7 @@ class ObjectSetViewModel(
                             } else {
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
-                                        type = uniqueKey!!,
+                                        type = uniqueKey,
                                         filters = viewer.filters,
                                         template = templateId
                                     )

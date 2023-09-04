@@ -12,7 +12,6 @@ import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.toView
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
@@ -24,7 +23,6 @@ import timber.log.Timber
 
 class ViewerSortViewModel(
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val analytics: Analytics,
@@ -35,10 +33,10 @@ class ViewerSortViewModel(
     val screenState = MutableStateFlow(ScreenState.READ)
     private val jobs = mutableListOf<Job>()
 
-    fun onStart() {
+    fun onStart(viewerId: Id) {
         jobs += viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
-                val viewer = state.viewerById(session.currentViewerId.value) ?: return@collect
+                val viewer = state.viewerById(viewerId) ?: return@collect
                 val sorts = viewer.sorts
                 if (sorts.isEmpty()) {
                     screenState.value = ScreenState.EMPTY
@@ -85,9 +83,9 @@ class ViewerSortViewModel(
         }
     }
 
-    fun onRemoveViewerSortClicked(ctx: Id, view: ViewerSortView) {
+    fun onRemoveViewerSortClicked(ctx: Id, viewerId: Id, view: ViewerSortView) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.Sort.Remove(
@@ -146,7 +144,6 @@ class ViewerSortViewModel(
 
     class Factory(
         private val state: StateFlow<ObjectState>,
-        private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val analytics: Analytics,
@@ -156,7 +153,6 @@ class ViewerSortViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ViewerSortViewModel(
                 objectState = state,
-                session = session,
                 updateDataViewViewer = updateDataViewViewer,
                 dispatcher = dispatcher,
                 analytics = analytics,

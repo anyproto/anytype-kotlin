@@ -20,11 +20,13 @@ sealed class ObjectSetCommand {
         ) : Modal()
 
         data class ModifyViewerFilters(
-            val ctx: Id
+            val ctx: Id,
+            val viewer: Id
         ) : Modal()
 
         data class ModifyViewerSorts(
-            val ctx: Id
+            val ctx: Id,
+            val viewer: Id
         ) : Modal()
 
         data class EditGridTextCell(

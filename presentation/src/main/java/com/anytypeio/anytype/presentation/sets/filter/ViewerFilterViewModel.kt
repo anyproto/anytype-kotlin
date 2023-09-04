@@ -14,20 +14,19 @@ import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.relations.filterExpression
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterCommand.Modal
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ViewerFilterViewModel(
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val urlBuilder: UrlBuilder,
@@ -38,12 +37,14 @@ class ViewerFilterViewModel(
 
     val screenState = MutableStateFlow(ScreenState.LIST)
 
+    private val jobs = mutableListOf<Job>()
+
     val commands = MutableSharedFlow<ViewerFilterCommand>()
 
-    init {
-        viewModelScope.launch {
+    fun onStart(viewerId: Id) {
+        jobs += viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { objectSet ->
-                val filterExpression = objectSet.filterExpression(session.currentViewerId.value)
+                val filterExpression = objectSet.filterExpression(viewerId = viewerId)
                 if (filterExpression.isEmpty()) {
                     screenState.value = ScreenState.EMPTY
                 } else {
@@ -64,10 +65,15 @@ class ViewerFilterViewModel(
         }
     }
 
-    fun onFilterClicked(ctx: Id, click: FilterClick) {
+    fun onStop() {
+        jobs.forEach { it.cancel() }
+        jobs.clear()
+    }
+
+    fun onFilterClicked(ctx: Id, viewerId: Id, click: FilterClick) {
         when (click) {
             is FilterClick.Remove -> {
-                onRemoveFilterClicked(ctx, click.index)
+                onRemoveFilterClicked(ctx, viewerId, click.index)
             }
             is FilterClick.Value -> {
                 onValueClicked(click.index)
@@ -111,8 +117,8 @@ class ViewerFilterViewModel(
                 filterView.copy(isInEditMode = screenState.value == ScreenState.EDIT)
         }
 
-    fun onAddNewFilterClicked() {
-        emitCommand(Modal.ShowRelationList)
+    fun onAddNewFilterClicked(viewerId: Id) {
+        emitCommand(Modal.ShowRelationList(viewerId))
     }
 
     private fun onValueClicked(filterIndex: Int) {
@@ -158,10 +164,10 @@ class ViewerFilterViewModel(
         }
     }
 
-    private fun onRemoveFilterClicked(ctx: Id, filterIndex: Int) {
+    private fun onRemoveFilterClicked(ctx: Id, viewerId: Id, filterIndex: Int) {
         val startTime = System.currentTimeMillis()
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         val filter = viewer.filters.getOrNull(filterIndex)
         if (filter == null) {
             Timber.e("Filter with index $filterIndex not found")
@@ -198,7 +204,6 @@ class ViewerFilterViewModel(
 
     class Factory(
         private val state: StateFlow<ObjectState>,
-        private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val urlBuilder: UrlBuilder,
@@ -210,7 +215,6 @@ class ViewerFilterViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ViewerFilterViewModel(
                 objectState = state,
-                session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,
                 urlBuilder = urlBuilder,

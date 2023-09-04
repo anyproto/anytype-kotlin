@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 
@@ -10,6 +11,7 @@ data class TemplatesWidgetUiState(
     val isMoreMenuVisible: Boolean,
     val moreMenuTemplate: TemplateView.Template?,
     val isDefaultStateEnabled: Boolean = false,
+    val defaultObjectType: ObjectWrapper.Type? = null,
     val objectTypes: List<TemplateObjectTypeView> = listOf(TemplateObjectTypeView.Search)
 ) {
     fun dismiss() = copy(
@@ -28,7 +30,8 @@ data class TemplatesWidgetUiState(
             isMoreMenuVisible = false,
             moreMenuTemplate = null,
             isDefaultStateEnabled = true,
-            objectTypes = emptyList()
+            objectTypes = emptyList(),
+            defaultObjectType = null
         )
     }
 }

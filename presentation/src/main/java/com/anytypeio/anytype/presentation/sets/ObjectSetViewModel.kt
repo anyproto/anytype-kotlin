@@ -1518,6 +1518,9 @@ class ObjectSetViewModel(
 
     private suspend fun fetchAndProcessTemplates(viewerDefObjType: ObjectWrapper.Type, viewer: DVViewer) {
         Timber.d("Fetching templates for type ${viewerDefObjType.id}")
+        templatesWidgetState.value = templatesWidgetState.value.copy(
+            defaultObjectType = viewerDefObjType
+        )
 
         templatesContainer.subscribe(viewerDefObjType.id)
             .catch {
@@ -1551,7 +1554,7 @@ class ObjectSetViewModel(
                 objectTypeDefaultTemplate = viewerDefObjType.defaultTemplateId,
                 viewerDefaultTemplate = viewer.defaultTemplate
             )
-        } + listOf(TemplateView.New(viewerDefObjType.id))
+        }.sortedByDescending { it.isDefault } + listOf(TemplateView.New(viewerDefObjType.id))
     }
 
     fun onTemplateItemClicked(item: TemplateView) {

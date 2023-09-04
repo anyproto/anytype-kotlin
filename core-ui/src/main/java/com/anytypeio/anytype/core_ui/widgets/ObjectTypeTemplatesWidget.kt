@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.widgets
 
-import android.widget.Space
 import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -74,10 +73,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -241,16 +242,38 @@ fun ObjectTypeTemplatesWidget(
 //                        }
                     }
                     Spacer(modifier = Modifier.height(26.dp))
+                    Row {
+                        Text(
+                            modifier = Modifier
+                                .padding(start = 20.dp, bottom = 8.dp)
+                                .weight(1.0f),
+                            text = stringResource(id = R.string.object_type),
+                            style = BodyCalloutRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Text(
+                            modifier = Modifier
+                                .padding(end = 20.dp, bottom = 8.dp)
+                                .weight(1.0f),
+                            text = currentState.defaultObjectType?.name.orEmpty(),
+                            style = BodyCalloutRegular,
+                            color = colorResource(id = R.color.text_secondary),
+                            textAlign = TextAlign.End
+                        )
+                    }
+
+                    Divider()
+                    //ObjectTypesList(state = currentState, menuClick = menuClick)
+
+                    Spacer(modifier = Modifier.height(26.dp))
                     Text(
                         modifier = Modifier
                             .padding(start = 20.dp, bottom = 8.dp)
                             .wrapContentSize(),
-                        text = stringResource(id = R.string.object_type),
-                        style = BodyCalloutRegular,
-                        color = colorResource(id = R.color.glyph_active)
+                        text = stringResource(id = R.string.templates),
+                        style = Caption1Medium,
+                        color = colorResource(id = R.color.text_secondary)
                     )
-                    ObjectTypesList(state = currentState, menuClick = menuClick)
-
                     val itemsScroll = rememberLazyListState()
                     TemplatesList(
                         state = currentState,
@@ -354,16 +377,6 @@ private fun MenuItem(click: () -> Unit, text: String, @ColorRes color: Int = R.c
 }
 
 @Composable
-private fun Divider() {
-    Spacer(
-        modifier = Modifier
-            .height(0.5.dp)
-            .fillMaxWidth()
-            .background(color = colorResource(id = R.color.shape_primary))
-    )
-}
-
-@Composable
 private fun TemplatesList(
     scrollState: LazyListState,
     state: TemplatesWidgetUiState,
@@ -373,7 +386,6 @@ private fun TemplatesList(
     LazyRow(
         state = scrollState,
         modifier = Modifier
-            .padding(top = 8.dp)
             .height(224.dp)
             .fillMaxWidth(),
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp),

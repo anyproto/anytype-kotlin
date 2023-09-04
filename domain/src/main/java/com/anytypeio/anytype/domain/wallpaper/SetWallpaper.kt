@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.wallpaper
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -12,13 +13,15 @@ class SetWallpaper(
         when (params) {
             is Params.Gradient -> {
                 repo.setWallpaper(
-                    Wallpaper.Gradient(params.code)
+                    space = params.space,
+                    wallpaper = Wallpaper.Gradient(params.code)
                 )
                 WallpaperStore.Default.set(Wallpaper.Gradient(params.code))
             }
             is Params.SolidColor -> {
                 repo.setWallpaper(
-                    Wallpaper.Color(params.code)
+                    space = params.space,
+                    wallpaper = Wallpaper.Color(params.code)
                 )
                 WallpaperStore.Default.set(Wallpaper.Color(params.code))
             }
@@ -26,7 +29,7 @@ class SetWallpaper(
     }
 
     sealed class Params {
-        data class SolidColor(val code: String) : Params()
-        data class Gradient(val code: String) : Params()
+        data class SolidColor(val space: Id, val code: String) : Params()
+        data class Gradient(val space: Id, val code: String) : Params()
     }
 }

@@ -595,9 +595,11 @@ class BlockDataRepository(
     )
 
     override suspend fun createType(
+        space: Id,
         name: String,
         emojiUnicode: String?,
     ): ObjectWrapper.Type = remote.createType(
+        space = space,
         name = name,
         emojiUnicode = emojiUnicode
     )

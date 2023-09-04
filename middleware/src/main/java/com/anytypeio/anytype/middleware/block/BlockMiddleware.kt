@@ -667,9 +667,11 @@ class BlockMiddleware(
     )
 
     override suspend fun createType(
+        space: Id,
         name: String,
         emojiUnicode: String?
     ): ObjectWrapper.Type = middleware.objectCreateObjectType(
+        space = space,
         name = name,
         emojiUnicode = emojiUnicode
     )

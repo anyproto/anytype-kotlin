@@ -949,6 +949,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateObjectType(
+        space: Id,
         name: String,
         emojiUnicode: String?
     ): ObjectWrapper.Type {
@@ -959,7 +960,8 @@ class Middleware @Inject constructor(
                 emojiUnicode?.let {
                     put(Relations.ICON_EMOJI, it)
                 }
-            }
+            },
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateObjectType(request)

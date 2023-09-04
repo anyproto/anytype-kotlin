@@ -504,14 +504,14 @@ class ObjectSetViewModel(
                 when {
                     viewer == null -> DataViewViewState.Collection.NoView
                     viewer.isEmpty() -> {
-                        val hasTemplates = _dvViews.value.isActiveHasTemplates(storeOfObjectTypes)
+                        val hasTemplates = _dvViews.value.isActiveWithTemplates(storeOfObjectTypes)
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
                             hasTemplates = hasTemplates
                         )
                     }
                     else -> {
-                        val hasTemplates = _dvViews.value.isActiveHasTemplates(storeOfObjectTypes)
+                        val hasTemplates = _dvViews.value.isActiveWithTemplates(storeOfObjectTypes)
                         DataViewViewState.Collection.Default(
                             viewer = viewer,
                             hasTemplates = hasTemplates
@@ -562,13 +562,13 @@ class ObjectSetViewModel(
                     render.isEmpty() -> {
                         DataViewViewState.Set.NoItems(
                             title = render.title,
-                            hasTemplates = _dvViews.value.isActiveHasTemplates(storeOfObjectTypes)
+                            hasTemplates = _dvViews.value.isActiveWithTemplates(storeOfObjectTypes)
                         )
                     }
                     else -> {
                         DataViewViewState.Set.Default(
                             viewer = render,
-                            hasTemplates = _dvViews.value.isActiveHasTemplates(storeOfObjectTypes)
+                            hasTemplates = _dvViews.value.isActiveWithTemplates(storeOfObjectTypes)
                         )
                     }
                 }

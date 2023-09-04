@@ -508,7 +508,7 @@ private fun isActiveViewer(index: Int, viewer: DVViewer, session: ObjectSetSessi
     }
 }
 
-suspend fun List<ViewerView>.isActiveHasTemplates(storeOfObjectTypes: StoreOfObjectTypes): Boolean {
+suspend fun List<ViewerView>.isActiveWithTemplates(storeOfObjectTypes: StoreOfObjectTypes): Boolean {
     val activeViewer = firstOrNull { it.isActive }
     val viewerDefaultObjectTypeId = activeViewer?.defaultObjectType ?: return false
     val viewerDefaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId) ?: return false

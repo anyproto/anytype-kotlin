@@ -3,7 +3,9 @@ package com.anytypeio.anytype.presentation.sets.state
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -65,5 +67,10 @@ sealed class ObjectState {
     object ErrorLayout : ObjectState() {
         override val isInitialized: Boolean
             get() = false
+    }
+
+    companion object {
+        const val VIEW_DEFAULT_OBJECT_TYPE = ObjectTypeIds.PAGE
+        val VIEW_TYPE_UNSUPPORTED = DVViewerType.BOARD
     }
 }

@@ -469,6 +469,7 @@ object ObjectSearchConstants {
     val defaultKeys = listOf(
         Relations.ID,
         Relations.SPACE_ID,
+        Relations.UNIQUE_KEY,
         Relations.NAME,
         Relations.ICON_IMAGE,
         Relations.ICON_EMOJI,

@@ -434,7 +434,11 @@ fun ObjectWrapper.Basic.toTemplateView(
         BasicObjectCoverWrapper(this)
             .getCover(urlBuilder, coverImageHashProvider)
     } else null
-    val isDefault = viewerDefaultTemplate == id || objectTypeDefaultTemplate == id
+    val isDefault = if (viewerDefaultTemplate != null) {
+        viewerDefaultTemplate == id
+    } else {
+        objectTypeDefaultTemplate == id
+    }
     return TemplateView.Template(
         id = id,
         name = name.orEmpty(),

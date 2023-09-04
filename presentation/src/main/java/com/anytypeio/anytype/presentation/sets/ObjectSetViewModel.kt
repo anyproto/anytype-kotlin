@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -940,9 +941,11 @@ class ObjectSetViewModel(
             } else {
                 val sourceDetails = currentState.details[sourceId]
                 if (sourceDetails != null && sourceDetails.map.isNotEmpty()) {
-                    when (sourceDetails.type.firstOrNull()) {
-                        ObjectTypeIds.OBJECT_TYPE -> {
-                            if (sourceId == ObjectTypeIds.BOOKMARK) {
+                    val wrapper = ObjectWrapper.Basic(sourceDetails.map)
+                    when (wrapper.layout) {
+                        ObjectType.Layout.OBJECT_TYPE -> {
+                            val uniqueKey = wrapper.getValue<Key>(Relations.UNIQUE_KEY)
+                            if (uniqueKey == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
                                     ObjectSetCommand.Modal.CreateBookmark(
                                         ctx = context
@@ -951,14 +954,14 @@ class ObjectSetViewModel(
                             } else {
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
-                                        type = sourceId,
+                                        type = uniqueKey!!,
                                         filters = viewer.filters,
                                         template = templateId
                                     )
                                 )
                             }
                         }
-                        ObjectTypeIds.RELATION -> {
+                        ObjectType.Layout.RELATION -> {
                             proceedWithCreatingDataViewObject(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
@@ -967,6 +970,7 @@ class ObjectSetViewModel(
                                 )
                             )
                         }
+                        else -> toast("Unable to define a source for a new object.")
                     }
                 } else {
                     toast("Unable to define a source for a new object.")

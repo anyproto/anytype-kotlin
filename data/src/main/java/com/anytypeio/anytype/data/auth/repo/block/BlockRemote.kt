@@ -70,7 +70,7 @@ interface BlockRemote {
     suspend fun uploadBlock(command: Command.UploadBlock): Payload
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
     suspend fun createAndFetchBookmarkBlock(command: Command.CreateBookmark): Payload
-    suspend fun createBookmarkObject(url: Url): Id
+    suspend fun createBookmarkObject(space: Id, url: Url): Id
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
     suspend fun undo(command: Command.Undo): Payload
     suspend fun importUseCaseSkip(space: Id)

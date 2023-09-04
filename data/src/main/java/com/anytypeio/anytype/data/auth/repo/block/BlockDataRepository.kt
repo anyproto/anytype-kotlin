@@ -205,7 +205,11 @@ class BlockDataRepository(
         command: Command.CreateBookmark
     ): Payload = remote.createAndFetchBookmarkBlock(command)
 
-    override suspend fun createBookmarkObject(url: Url): Id = remote.createBookmarkObject(
+    override suspend fun createBookmarkObject(
+        space: Id,
+        url: Url
+    ): Id = remote.createBookmarkObject(
+        space = space,
         url = url
     )
 

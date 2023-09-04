@@ -897,9 +897,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectCreateBookmark(url: Url): Id {
+    fun objectCreateBookmark(space: Id, url: Url): Id {
         val request = Rpc.Object.CreateBookmark.Request(
-            details = mapOf(Relations.SOURCE to url)
+            details = mapOf(Relations.SOURCE to url),
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateBookmark(request)

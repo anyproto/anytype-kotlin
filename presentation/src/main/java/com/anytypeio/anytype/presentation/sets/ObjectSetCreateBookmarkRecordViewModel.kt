@@ -6,12 +6,14 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ObjectSetCreateBookmarkRecordViewModel(
     private val createBookmarkObject: CreateBookmarkObject,
-    private val urlValidator: UrlValidator
+    private val urlValidator: UrlValidator,
+    private val spaceManager: SpaceManager
 ) : SetDataViewObjectNameViewModelBase() {
 
     override fun onActionDone(input: String) {
@@ -25,7 +27,11 @@ class ObjectSetCreateBookmarkRecordViewModel(
     private fun proceedWithCreatingBookmarkObject(input: String) {
         if (urlValidator.isValid(url = input)) {
             viewModelScope.launch {
-                createBookmarkObject(input).process(
+                val params = CreateBookmarkObject.Params(
+                    space = spaceManager.get(),
+                    url = input
+                )
+                createBookmarkObject(params).process(
                     failure = {
                         Timber.e(it, "Error while creating bookmark object")
                         sendToast("Error while creating bookmark object")
@@ -48,13 +54,15 @@ class ObjectSetCreateBookmarkRecordViewModel(
 
     class Factory(
         private val createBookmarkObject: CreateBookmarkObject,
-        private val urlValidator: UrlValidator
+        private val urlValidator: UrlValidator,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetCreateBookmarkRecordViewModel(
                 createBookmarkObject = createBookmarkObject,
-                urlValidator = urlValidator
+                urlValidator = urlValidator,
+                spaceManager = spaceManager
             ) as T
         }
     }

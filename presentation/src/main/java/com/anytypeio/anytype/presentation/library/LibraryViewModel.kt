@@ -79,7 +79,7 @@ class LibraryViewModel(
 
     }.stateIn(
         scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(100000),
+        started = SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
         initialValue = LibraryScreenState(
             types = LibraryScreenState.Tabs.Types(
                 myTypes = LibraryScreenState.Tabs.TabData(),

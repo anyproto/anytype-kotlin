@@ -30,6 +30,8 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
     }
 
     override suspend fun setWallpaper(space: Id, wallpaper: Wallpaper) {
+        if (space.isEmpty()) return
+
         val curr = prefs.getString(WALLPAPER_SETTINGS_KEY, "")
 
         val result: JsonString

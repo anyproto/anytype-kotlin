@@ -236,6 +236,7 @@ interface BlockRemote {
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
 
     suspend fun createRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,
@@ -243,6 +244,7 @@ interface BlockRemote {
     ): ObjectWrapper.Relation
 
     suspend fun createType(
+        space: Id,
         name: String,
         emojiUnicode: String?
     ): ObjectWrapper.Type

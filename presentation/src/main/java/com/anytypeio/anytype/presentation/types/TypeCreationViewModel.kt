@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.types.CreateType
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -30,7 +31,8 @@ class TypeCreationViewModel(
     private val createTypeInteractor: CreateType,
     private val urlBuilder: UrlBuilder,
     private val emojiProvider: EmojiProvider,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val spaceManager: SpaceManager
 ) : NavigationViewModel<TypeCreationViewModel.Navigation>() {
 
     private val unicodeIconFlow = MutableStateFlow("")
@@ -58,6 +60,7 @@ class TypeCreationViewModel(
         viewModelScope.launch {
             createTypeInteractor.execute(
                 CreateType.Params(
+                    space = spaceManager.get(),
                     name = name,
                     emojiUnicode = uiState.value.emojiUnicode.orNull()
                 )
@@ -102,7 +105,8 @@ class TypeCreationViewModel(
         private val createType: CreateType,
         private val urlBuilder: UrlBuilder,
         private val emojiProvider: EmojiProvider,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -110,7 +114,8 @@ class TypeCreationViewModel(
                 createTypeInteractor = createType,
                 urlBuilder = urlBuilder,
                 emojiProvider = emojiProvider,
-                analytics = analytics
+                analytics = analytics,
+                spaceManager = spaceManager
             ) as T
         }
     }

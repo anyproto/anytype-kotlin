@@ -655,11 +655,13 @@ class BlockMiddleware(
     }
 
     override suspend fun createRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,
         prefilled: Struct
     ): ObjectWrapper.Relation = middleware.objectCreateRelation(
+        space = space,
         name = name,
         format = format,
         formatObjectTypes = formatObjectTypes,
@@ -667,9 +669,11 @@ class BlockMiddleware(
     )
 
     override suspend fun createType(
+        space: Id,
         name: String,
         emojiUnicode: String?
     ): ObjectWrapper.Type = middleware.objectCreateObjectType(
+        space = space,
         name = name,
         emojiUnicode = emojiUnicode
     )

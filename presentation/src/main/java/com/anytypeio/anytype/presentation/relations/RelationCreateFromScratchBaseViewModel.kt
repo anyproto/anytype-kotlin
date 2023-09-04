@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.CreateRelation
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateRelationEvent
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
@@ -86,6 +87,7 @@ class RelationCreateFromScratchForObjectViewModel(
     private val addRelationToObject: AddRelationToObject,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
+    private val spaceManager: SpaceManager
 ) : RelationCreateFromScratchBaseViewModel() {
 
     override val createFromScratchSession get() = createFromScratchState.state
@@ -100,6 +102,7 @@ class RelationCreateFromScratchForObjectViewModel(
             val format = state.format
             createRelation(
                 CreateRelation.Params(
+                    space = spaceManager.get(),
                     format = format,
                     name = name.value,
                     limitObjectTypes = state.limitObjectTypes.map { it.id },
@@ -149,6 +152,7 @@ class RelationCreateFromScratchForObjectViewModel(
         private val addRelationToObject: AddRelationToObject,
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -157,7 +161,8 @@ class RelationCreateFromScratchForObjectViewModel(
                 analytics = analytics,
                 createFromScratchState = createFromScratchState,
                 createRelation = createRelation,
-                addRelationToObject = addRelationToObject
+                addRelationToObject = addRelationToObject,
+                spaceManager = spaceManager
             ) as T
         }
     }
@@ -168,7 +173,8 @@ class RelationCreateFromScratchForObjectBlockViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val createFromScratchState: StateHolder<CreateFromScratchState>,
-    private val createRelation: CreateRelation
+    private val createRelation: CreateRelation,
+    private val spaceManager: SpaceManager
 ) : RelationCreateFromScratchBaseViewModel() {
 
     override val createFromScratchSession get() = createFromScratchState.state
@@ -185,6 +191,7 @@ class RelationCreateFromScratchForObjectBlockViewModel(
             val format = state.format
             createRelation(
                 CreateRelation.Params(
+                    space = spaceManager.get(),
                     format = format,
                     name = name.value,
                     limitObjectTypes = state.limitObjectTypes.map { it.id },
@@ -234,7 +241,8 @@ class RelationCreateFromScratchForObjectBlockViewModel(
         private val dispatcher: Dispatcher<Payload>,
         private val analytics: Analytics,
         private val createFromScratchState: StateHolder<CreateFromScratchState>,
-        private val createRelation: CreateRelation
+        private val createRelation: CreateRelation,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -243,7 +251,8 @@ class RelationCreateFromScratchForObjectBlockViewModel(
                 addRelationToObject = addRelationToObject,
                 analytics = analytics,
                 createFromScratchState = createFromScratchState,
-                createRelation = createRelation
+                createRelation = createRelation,
+                spaceManager = spaceManager
             ) as T
         }
     }
@@ -261,7 +270,8 @@ class RelationCreateFromScratchForDataViewViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val createFromScratchState: StateHolder<CreateFromScratchState>,
-    private val createRelation: CreateRelation
+    private val createRelation: CreateRelation,
+    private val spaceManager: SpaceManager
 ) : RelationCreateFromScratchBaseViewModel() {
 
     override val createFromScratchSession: Flow<CreateFromScratchState> get() = createFromScratchState.state
@@ -276,6 +286,7 @@ class RelationCreateFromScratchForDataViewViewModel(
             val format = state.format
             createRelation(
                 CreateRelation.Params(
+                    space = spaceManager.get(),
                     format = format,
                     name = name.value,
                     limitObjectTypes = state.limitObjectTypes.map { it.id },
@@ -353,11 +364,13 @@ class RelationCreateFromScratchForDataViewViewModel(
         private val createFromScratchState: StateHolder<CreateFromScratchState>,
         private val createRelation: CreateRelation,
         private val dispatcher: Dispatcher<Payload>,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationCreateFromScratchForDataViewViewModel(
+                spaceManager = spaceManager,
                 dispatcher = dispatcher,
                 session = session,
                 updateDataViewViewer = updateDataViewViewer,

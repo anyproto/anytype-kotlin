@@ -39,9 +39,7 @@ class CreateObject @Inject constructor(
             template = null,
             prefilled = emptyMap(),
             internalFlags = internalFlags,
-            space = spaceManager.get().ifEmpty {
-                configStorage.getOrNull()?.space.orEmpty()
-            },
+            space = spaceManager.get(),
             type = type.orEmpty()
         )
 

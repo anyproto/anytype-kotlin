@@ -18,7 +18,6 @@ import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -921,6 +920,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,
@@ -937,7 +937,8 @@ class Middleware @Inject constructor(
                 if (prefilled.isNotEmpty()) {
                     putAll(prefilled)
                 }
-            }
+            },
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateRelation(request)
@@ -949,17 +950,18 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateObjectType(
+        space: Id,
         name: String,
         emojiUnicode: String?
     ): ObjectWrapper.Type {
         val request = Rpc.Object.CreateObjectType.Request(
             details = buildMap {
-                put(Relations.TYPE, ObjectTypeIds.OBJECT_TYPE)
                 put(Relations.NAME, name)
                 emojiUnicode?.let {
                     put(Relations.ICON_EMOJI, it)
                 }
-            }
+            },
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateObjectType(request)

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.service
 
 import anytype.Rpc
+import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
@@ -68,6 +69,9 @@ class MiddlewareServiceImplementation @Inject constructor(
             when(error.code) {
                 Rpc.Account.Select.Response.Error.Code.FAILED_TO_FIND_ACCOUNT_INFO -> {
                     throw MigrationNeededException()
+                }
+                Rpc.Account.Select.Response.Error.Code.ACCOUNT_IS_DELETED -> {
+                    throw AccountIsDeletedException()
                 }
                 Rpc.Account.Select.Response.Error.Code.FAILED_TO_FETCH_REMOTE_NODE_HAS_INCOMPATIBLE_PROTO_VERSION -> {
                     throw NeedToUpdateApplicationException()

@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.core_models.StubDataViewView
@@ -98,7 +99,8 @@ class ObjectSetReducerTest {
                     type = Block.Content.DataView.Sort.Type.DESC
                 )
             ),
-            filters = listOf()
+            filters = listOf(),
+            defaultObjectType = ObjectTypeIds.PAGE
         )
 
         val dataView = Block(
@@ -226,7 +228,8 @@ class ObjectSetReducerTest {
                     type = Block.Content.DataView.Sort.Type.ASC
                 )
             ),
-            filters = listOf()
+            filters = listOf(),
+            defaultObjectType = ObjectTypeIds.PAGE
         )
 
         val viewerList = Block.Content.DataView.Viewer(
@@ -273,7 +276,8 @@ class ObjectSetReducerTest {
                     )
                 ),
                 filters = listOf(),
-                viewerRelations = viewerGrid.viewerRelations
+                viewerRelations = viewerGrid.viewerRelations,
+                defaultObjectType = ObjectTypeIds.PAGE
             )
         )
 
@@ -295,7 +299,8 @@ class ObjectSetReducerTest {
                         type = viewerGrid.type,
                         viewerRelations = viewerGrid.viewerRelations,
                         sorts = viewerGrid.sorts,
-                        filters = viewerGrid.filters
+                        filters = viewerGrid.filters,
+                        defaultObjectType = ObjectTypeIds.PAGE
                     ),
                     Block.Content.DataView.Viewer(
                         id = viewerList.id,
@@ -308,7 +313,8 @@ class ObjectSetReducerTest {
                                 type = Block.Content.DataView.Sort.Type.DESC
                             )
                         ),
-                        filters = listOf()
+                        filters = listOf(),
+                        defaultObjectType = ObjectTypeIds.PAGE
                     )
                 )
             ),
@@ -433,7 +439,8 @@ class ObjectSetReducerTest {
                         type = viewer1.type,
                         viewerRelations = viewer1.viewerRelations,
                         sorts = expectedSorts,
-                        filters = viewer1.filters
+                        filters = viewer1.filters,
+                        defaultObjectType = ObjectTypeIds.PAGE
                     ),
                     Block.Content.DataView.Viewer(
                         id = viewer2.id,
@@ -441,7 +448,8 @@ class ObjectSetReducerTest {
                         type = Block.Content.DataView.Viewer.Type.GRID,
                         viewerRelations = viewer2.viewerRelations,
                         sorts = listOf(sort1),
-                        filters = listOf()
+                        filters = listOf(),
+                        defaultObjectType = ObjectTypeIds.PAGE
                     )
                 ),
                 targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
@@ -553,7 +561,8 @@ class ObjectSetReducerTest {
                         type = viewer1.type,
                         viewerRelations = viewer1.viewerRelations,
                         sorts = viewer1.sorts,
-                        filters = expectedFilters
+                        filters = expectedFilters,
+                        defaultObjectType = ObjectTypeIds.PAGE
                     )
                 ),
                 targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
@@ -660,7 +669,8 @@ class ObjectSetReducerTest {
                         type = viewer1.type,
                         viewerRelations = expectedRelations,
                         sorts = viewer1.sorts,
-                        filters = viewer1.filters
+                        filters = viewer1.filters,
+                        defaultObjectType = ObjectTypeIds.PAGE
                     )
                 ),
                 targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
@@ -759,7 +769,8 @@ class ObjectSetReducerTest {
                         name = newViewerName,
                         cardSize = newCardSize,
                         coverFit = newCoverFit,
-                        coverRelationKey = relationKey1
+                        coverRelationKey = relationKey1,
+                        defaultObjectType = ObjectTypeIds.PAGE
                     )
                 ),
                 targetObjectId = (dataView.content as Block.Content.DataView).targetObjectId
@@ -837,7 +848,8 @@ class ObjectSetReducerTest {
                         sorts = viewer.sorts,
                         filters = viewer.filters,
                         name = viewer.name,
-                        coverRelationKey = viewer.coverRelationKey
+                        coverRelationKey = viewer.coverRelationKey,
+                        defaultObjectType = ObjectTypeIds.PAGE
                     )
                 ),
                 relationLinks = listOf(relationLink1, relationLink3),

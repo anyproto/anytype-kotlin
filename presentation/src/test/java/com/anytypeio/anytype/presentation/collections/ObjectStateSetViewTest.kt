@@ -439,7 +439,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
             sources = listOf(ObjectTypeIds.PAGE),
             dvFilters = mockObjectSet.filters
         )
-        stubStoreOfObjectTypes(pageTypeMap)
+        stubStoreOfObjectTypes(ObjectTypeIds.PAGE, pageTypeMap)
         stubTemplatesContainer(
             type = ObjectTypeIds.PAGE,
             templates = listOf(StubObject(objectType = ObjectTypeIds.PAGE))

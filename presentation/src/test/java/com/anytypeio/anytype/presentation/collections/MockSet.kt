@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -35,7 +36,6 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
     val workspaceId = "workspace-${RandomString.make()}"
     val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(context)
     val setOf get() = setOfValue
-    val setOfNote = ObjectTypeIds.NOTE
 
     // RELATION OBJECTS
     val relationObject1 = StubRelationObject(
@@ -69,7 +69,7 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
         StubDataViewViewRelation(key = relationObject1.key, isVisible = true)
     private val dvViewerRelation2 =
         StubDataViewViewRelation(key = relationObject2.key, isVisible = true)
-    private val dvViewerRelation3 =
+    val dvViewerRelation3 =
         StubDataViewViewRelation(key = relationObject3.key, isVisible = true)
     private val dvViewerRelation4 =
         StubDataViewViewRelation(key = relationObject4.key, isVisible = true)
@@ -77,11 +77,11 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
         StubDataViewViewRelation(key = relationObject5.key, isVisible = true)
 
     // RELATION LINKS
-    private val relationLink1 = StubRelationLink(relationObject1.key)
-    private val relationLink2 = StubRelationLink(relationObject2.key)
-    private val relationLink3 = StubRelationLink(relationObject3.key)
-    private val relationLink4 = StubRelationLink(relationObject4.key)
-    private val relationLink5 = StubRelationLink(relationObject5.key)
+    val relationLink1 = StubRelationLink(relationObject1.key)
+    val relationLink2 = StubRelationLink(relationObject2.key)
+    val relationLink3 = StubRelationLink(relationObject3.key)
+    val relationLink4 = StubRelationLink(relationObject4.key)
+    val relationLink5 = StubRelationLink(relationObject5.key)
 
     // SEARCH OBJECTS COMMAND, RELATION KEYS
     val dvKeys = listOf(
@@ -111,7 +111,7 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
     )
 
     // VIEWS
-    private val viewerList =
+    val viewerList =
         StubDataViewView(
             id = "dvViewerList-${RandomString.make()}",
             viewerRelations = listOf(
@@ -136,7 +136,7 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
             type = DVViewerType.GRID,
             filters = filters
         )
-    private val viewerGallery =
+    val viewerGallery =
         StubDataViewView(
             id = "dvViewerGallery-${RandomString.make()}",
             viewerRelations = listOf(
@@ -212,6 +212,25 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
                 mapOf(
                     Relations.ID to relationObject3.id,
                     Relations.RELATION_KEY to relationObject3.key,
+                    Relations.TYPE to ObjectTypeIds.RELATION
+                )
+            )
+        )
+    )
+
+    fun detailsSetByRelation(relationSetBy: ObjectWrapper.Relation) = Block.Details(
+        details = mapOf(
+            root to Block.Fields(
+                mapOf(
+                    Relations.ID to root,
+                    Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
+                    Relations.SET_OF to relationSetBy.key
+                )
+            ),
+            relationSetBy.key to Block.Fields(
+                mapOf(
+                    Relations.ID to relationSetBy.id,
+                    Relations.RELATION_KEY to relationSetBy.key,
                     Relations.TYPE to ObjectTypeIds.RELATION
                 )
             )

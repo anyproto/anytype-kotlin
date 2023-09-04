@@ -12,7 +12,7 @@ import org.junit.Test
 class SerializationTest {
 
     @Test
-    fun test() {
+    fun `should serialize-deserialize map with wallpaper settings`() {
 
         val id = MockDataFactory.randomUuid()
         val type = MockDataFactory.randomInt()

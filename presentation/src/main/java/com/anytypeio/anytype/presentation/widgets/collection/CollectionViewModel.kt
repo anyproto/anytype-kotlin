@@ -105,7 +105,7 @@ class CollectionViewModel(
                 val params = InterceptEvents.Params(config.home)
                 interceptEvents.build(params).map {
                     Payload(
-                        context = configstorage.get().home,
+                        context = config.home,
                         events = it
                     )
                 }

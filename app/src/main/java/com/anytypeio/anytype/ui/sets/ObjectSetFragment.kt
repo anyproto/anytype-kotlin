@@ -949,7 +949,8 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.ModifyViewerFilters -> {
                 val fr = ViewerFilterFragment.new(
-                    ctx = command.ctx
+                    ctx = command.ctx,
+                    viewer = command.viewer,
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }

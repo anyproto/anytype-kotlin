@@ -83,11 +83,12 @@ class CreateFilterFlowRootFragment :
     )
 
     companion object {
-        fun new(ctx: Id): CreateFilterFlowRootFragment = CreateFilterFlowRootFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        fun new(ctx: Id, viewer: Id): CreateFilterFlowRootFragment = CreateFilterFlowRootFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, VIEWER_KEY to viewer)
         }
 
         const val TAG_ROOT = "tag.root"
         private const val CTX_KEY = "arg.create-filter-flow-root.ctx"
+        private const val VIEWER_KEY = "arg.create-filter-flow-root.viewer"
     }
 }

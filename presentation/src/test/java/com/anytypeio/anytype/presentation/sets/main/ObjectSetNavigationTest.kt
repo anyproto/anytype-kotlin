@@ -269,4 +269,9 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             verifyNoInteractions(closeBlock)
         }
     }
+
+    @Test
+    fun `should open Filters screen by first view`() {
+
+    }
 }

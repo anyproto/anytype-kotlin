@@ -32,6 +32,7 @@ import javax.inject.Inject
 open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>() {
 
     private val ctx get() = argString(CONTEXT_ID_KEY)
+    private val viewer get() = argString(VIEWER_ID_KEY)
 
     private val filterAdapter by lazy {
         FilterByAdapter(
@@ -149,9 +150,10 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
 
     companion object {
         const val CONTEXT_ID_KEY = "arg.viewer.filters.context"
+        const val VIEWER_ID_KEY = "arg.viewer.filters.viewer"
 
-        fun new(ctx: Id) = ViewerFilterFragment().apply {
-            arguments = bundleOf(CONTEXT_ID_KEY to ctx)
+        fun new(ctx: Id, viewer: Id) = ViewerFilterFragment().apply {
+            arguments = bundleOf(CONTEXT_ID_KEY to ctx, VIEWER_ID_KEY to viewer)
         }
     }
 }

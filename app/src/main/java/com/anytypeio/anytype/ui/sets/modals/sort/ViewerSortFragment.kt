@@ -31,6 +31,7 @@ import javax.inject.Inject
 open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
+    private val viewer: String get() = arg(VIEWER_ID_KEY)
 
     @Inject
     lateinit var factory: ViewerSortViewModel.Factory
@@ -156,10 +157,11 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
     )
 
     companion object {
-        fun new(ctx: Id): ViewerSortFragment = ViewerSortFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        fun new(ctx: Id, viewer: Id): ViewerSortFragment = ViewerSortFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, VIEWER_ID_KEY to viewer)
         }
 
         const val CTX_KEY = "arg.viewer-sort.ctx"
+        const val VIEWER_ID_KEY = "arg.viewer-sort.viewer"
     }
 }

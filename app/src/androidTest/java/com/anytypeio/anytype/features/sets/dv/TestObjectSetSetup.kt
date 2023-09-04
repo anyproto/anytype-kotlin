@@ -209,10 +209,8 @@ abstract class TestObjectSetSetup {
             dispatchers = dispatchers
         )
         createDataViewObject = CreateDataViewObject(
-            getTemplates = getTemplates,
             repo = repo,
             storeOfRelations = storeOfRelations,
-            getDefaultPageType = getDefaultPageType,
             dispatchers = dispatchers
         )
         setObjectDetails = UpdateDetail(repo)

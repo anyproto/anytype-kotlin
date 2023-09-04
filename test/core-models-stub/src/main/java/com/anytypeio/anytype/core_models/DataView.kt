@@ -32,7 +32,8 @@ fun StubDataViewView(
     cardSize: DVViewerCardSize = DVViewerCardSize.SMALL,
     hideIcon: Boolean = false,
     coverFit: Boolean = false,
-    coverRelationKey: String? = null
+    coverRelationKey: String? = null,
+    defaultObjectType: Id = ObjectTypeIds.PAGE
 ): DVViewer = DVViewer(
     id = id,
     filters = filters,
@@ -43,7 +44,8 @@ fun StubDataViewView(
     cardSize = cardSize,
     hideIcon = hideIcon,
     coverFit = coverFit,
-    coverRelationKey = coverRelationKey
+    coverRelationKey = coverRelationKey,
+    defaultObjectType = defaultObjectType
 )
 
 fun StubDataViewViewRelation(

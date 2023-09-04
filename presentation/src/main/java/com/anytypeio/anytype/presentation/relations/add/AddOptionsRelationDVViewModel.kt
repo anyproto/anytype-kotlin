@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.relations.CreateRelationOption
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -29,7 +30,8 @@ class AddOptionsRelationDVViewModel(
     private val createRelationOption: CreateRelationOption,
     private val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
-    private val setObjectDetail: UpdateDetail
+    private val setObjectDetail: UpdateDetail,
+    private val spaceManager: SpaceManager
 ) : BaseAddOptionsRelationViewModel(
     values = values,
     relations = relations,
@@ -50,6 +52,7 @@ class AddOptionsRelationDVViewModel(
         viewModelScope.launch {
             createRelationOption(
                 CreateRelationOption.Params(
+                    space = spaceManager.get(),
                     relation = relationKey,
                     name = name,
                     color = ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random().code
@@ -121,7 +124,8 @@ class AddOptionsRelationDVViewModel(
         private val setObjectDetail: UpdateDetail,
         private val analytics: Analytics,
         private val detailsProvider: ObjectDetailProvider,
-        private val getOptions: GetOptions
+        private val getOptions: GetOptions,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -134,7 +138,8 @@ class AddOptionsRelationDVViewModel(
                 setObjectDetail = setObjectDetail,
                 analytics = analytics,
                 detailsProvider = detailsProvider,
-                getOptions = getOptions
+                getOptions = getOptions,
+                spaceManager = spaceManager
             ) as T
         }
     }

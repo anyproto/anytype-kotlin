@@ -973,6 +973,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateRelationOption(
+        space: Id,
         relation: Key,
         name: String,
         color: String
@@ -982,7 +983,8 @@ class Middleware @Inject constructor(
                 put(Relations.RELATION_KEY, relation)
                 put(Relations.NAME, name)
                 put(Relations.RELATION_OPTION_COLOR, color)
-            }
+            },
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateRelationOption(request)

@@ -304,6 +304,7 @@ interface BlockRepository {
     ): ObjectWrapper.Type
 
     suspend fun createRelationOption(
+        space: Id,
         relation: Id,
         name: String,
         color: String

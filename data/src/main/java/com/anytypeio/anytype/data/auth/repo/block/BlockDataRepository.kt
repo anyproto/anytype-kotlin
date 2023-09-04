@@ -607,10 +607,12 @@ class BlockDataRepository(
     )
 
     override suspend fun createRelationOption(
+        space: Id,
         relation: Key,
         name: String,
         color: String
     ): ObjectWrapper.Option = remote.createRelationOption(
+        space = space,
         relation = relation,
         name = name,
         color = color

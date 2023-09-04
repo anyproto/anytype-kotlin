@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.relations.CreateRelationOption
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationViewModel
@@ -49,7 +50,8 @@ object AddObjectRelationValueModule {
         analytics: Analytics,
         setObjectDetail: UpdateDetail,
         detailsProvider: ObjectDetailProvider,
-        getOptions: GetOptions
+        getOptions: GetOptions,
+        spaceManager: SpaceManager
     ): AddOptionsRelationDVViewModel.Factory = AddOptionsRelationDVViewModel.Factory(
         relations = relations,
         values = values,
@@ -59,7 +61,8 @@ object AddObjectRelationValueModule {
         analytics = analytics,
         setObjectDetail = setObjectDetail,
         detailsProvider = detailsProvider,
-        getOptions = getOptions
+        getOptions = getOptions,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -73,7 +76,8 @@ object AddObjectRelationValueModule {
         updateDetail: UpdateDetail,
         analytics: Analytics,
         detailsProvider: ObjectDetailProvider,
-        getOptions: GetOptions
+        getOptions: GetOptions,
+        spaceManager: SpaceManager
     ): AddOptionsRelationViewModel.Factory = AddOptionsRelationViewModel.Factory(
         relations = relations,
         values = values,
@@ -83,7 +87,8 @@ object AddObjectRelationValueModule {
         analytics = analytics,
         optionsProvider = AddOptionsRelationProvider(),
         detailProvider = detailsProvider,
-        getOptions = getOptions
+        getOptions = getOptions,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

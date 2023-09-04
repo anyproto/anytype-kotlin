@@ -679,10 +679,12 @@ class BlockMiddleware(
     )
 
     override suspend fun createRelationOption(
+        space: Id,
         relation: Key,
         name: String,
         color: String
     ): ObjectWrapper.Option = middleware.objectCreateRelationOption(
+        space = space,
         relation = relation,
         name = name,
         color = color

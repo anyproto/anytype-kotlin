@@ -137,7 +137,7 @@ class LibraryViewModel(
 
     private fun proceedWithCreateDoc() {
         viewModelScope.launch {
-            createObject.execute(CreateObject.Param(type = null))
+            createObject.async(CreateObject.Param(type = null))
                 .fold(
                     onSuccess = { result ->
                         navigate(Navigation.CreateDoc(result.objectId))

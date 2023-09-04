@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
+import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
@@ -71,54 +71,59 @@ fun List<ObjectWrapper.Basic>.toViews(
 fun List<ObjectWrapper.Basic>.toLibraryViews(
     urlBuilder: UrlBuilder,
 ): List<LibraryView> = map { obj ->
-    when (obj.getProperType()) {
-        MarketplaceObjectTypeIds.OBJECT_TYPE -> {
-            LibraryView.LibraryTypeView(
-                id = obj.id,
-                name = obj.name ?: "",
-                icon = ObjectIcon.from(
-                    obj = obj,
-                    layout = obj.getProperLayout(),
-                    builder = urlBuilder
-                ),
-            )
+    val space = obj.getValue<Id?>(Relations.SPACE_ID)
+    when (obj.layout) {
+        ObjectType.Layout.OBJECT_TYPE -> {
+            if (space == Marketplace.MARKETPLACE_SPACE_ID) {
+                LibraryView.LibraryTypeView(
+                    id = obj.id,
+                    name = obj.name.orEmpty(),
+                    icon = ObjectIcon.from(
+                        obj = obj,
+                        layout = obj.getProperLayout(),
+                        builder = urlBuilder
+                    ),
+                )
+            } else {
+                LibraryView.MyTypeView(
+                    id = obj.id,
+                    name = obj.name.orEmpty(),
+                    icon = ObjectIcon.from(
+                        obj = obj,
+                        layout = obj.getProperLayout(),
+                        builder = urlBuilder
+                    ),
+                    sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+                    readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+                    editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
+                )
+            }
         }
-        ObjectTypeIds.OBJECT_TYPE -> {
-            LibraryView.MyTypeView(
-                id = obj.id,
-                name = obj.name ?: "",
-                icon = ObjectIcon.from(
-                    obj = obj,
-                    layout = obj.getProperLayout(),
-                    builder = urlBuilder
-                ),
-                sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-                readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
-                editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
-            )
-        }
-        ObjectTypeIds.RELATION -> {
+        ObjectType.Layout.RELATION -> {
             val relation = ObjectWrapper.Relation(obj.map)
-            LibraryView.MyRelationView(
-                id = obj.id,
-                name = obj.name ?: "",
-                format = relation.format,
-                sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-                readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
-                editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
-            )
-        }
-        MarketplaceObjectTypeIds.RELATION -> {
-            val relation = ObjectWrapper.Relation(obj.map)
-            LibraryView.LibraryRelationView(
-                id = obj.id,
-                name = obj.name ?: "",
-                format = relation.format
-            )
+            if (space == Marketplace.MARKETPLACE_SPACE_ID) {
+                LibraryView.LibraryRelationView(
+                    id = obj.id,
+                    name = obj.name.orEmpty(),
+                    format = relation.format
+                )
+            } else {
+                LibraryView.MyRelationView(
+                    id = obj.id,
+                    name = obj.name.orEmpty(),
+                    format = relation.format,
+                    sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+                    readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+                    editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
+                )
+            }
         }
         else -> {
             Timber.e("Unknown type: ${obj.getProperType()}")
-            LibraryView.UnknownView()
+            LibraryView.UnknownView(
+                id = obj.id,
+                name = obj.name.orEmpty()
+            )
         }
     }
 }

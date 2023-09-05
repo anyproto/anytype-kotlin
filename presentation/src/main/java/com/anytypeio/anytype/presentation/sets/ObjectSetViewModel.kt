@@ -497,7 +497,7 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
-                _dvViews.value = objectState.dataViewState()?.toViewersView(context, session) ?: emptyList()
+                _dvViews.value = objectState.dataViewState()?.toViewersView(context, session, storeOfRelations) ?: emptyList()
                 viewerEditWidgetState.value = if (dvViewer != null) {
                     viewerEditWidgetState.value.updateState(
                         dvViewer = dvViewer,
@@ -556,7 +556,7 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
-                _dvViews.value = objectState.dataViewState()?.toViewersView(context, session) ?: emptyList()
+                _dvViews.value = objectState.dataViewState()?.toViewersView(context, session, storeOfRelations) ?: emptyList()
                 viewerEditWidgetState.value = if (viewer != null) {
                     viewerEditWidgetState.value.updateState(
                         dvViewer = viewer,
@@ -1796,7 +1796,17 @@ class ObjectSetViewModel(
                 }
             }
             is ViewersWidgetUi.Action.Edit -> {
-                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = true)
+                val state = stateReducer.state.value.dataViewState() ?: return
+                val viewer = state.viewerById(action.id) ?: return
+                viewModelScope.launch {
+                    viewerEditWidgetState.value = viewerEditWidgetState.value.updateState(
+                        dvViewer = viewer,
+                        storeOfRelations = storeOfRelations,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        isDefaultObjectTypeEnabled = true
+                    )
+                        .copy(showWidget = true)
+                }
             }
             is ViewersWidgetUi.Action.OnMove -> {
                 Timber.d("onMove Viewer, from:[$action.from], to:[$action.to]")

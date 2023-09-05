@@ -30,7 +30,6 @@ import timber.log.Timber
 class RelationAddToDataViewViewModel(
     relationsProvider: ObjectRelationProvider,
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val addRelationToDataView: AddRelationToDataView,
     private val getRelations: GetRelations,
@@ -49,6 +48,7 @@ class RelationAddToDataViewViewModel(
 
     fun onRelationSelected(
         ctx: Id,
+        viewerId: Id,
         relation: Key,
         format: RelationFormat,
         dv: Id,
@@ -66,6 +66,7 @@ class RelationAddToDataViewViewModel(
                     dispatcher.send(it).also {
                         proceedWithAddingNewRelationToCurrentViewer(
                             ctx = ctx,
+                            viewerId = viewerId,
                             relation = relation
                         )
                     }
@@ -83,9 +84,9 @@ class RelationAddToDataViewViewModel(
         }
     }
     
-    private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, relation: Id) {
+    private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, viewerId: Id, relation: Id) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
 
         updateDataViewViewer(
             UpdateDataViewViewer.Params.ViewerRelation.Add(
@@ -105,7 +106,6 @@ class RelationAddToDataViewViewModel(
 
     class Factory(
         private val state: StateFlow<ObjectState>,
-        private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val addRelationToDataView: AddRelationToDataView,
         private val dispatcher: Dispatcher<Payload>,
@@ -121,7 +121,6 @@ class RelationAddToDataViewViewModel(
             return RelationAddToDataViewViewModel(
                 addRelationToDataView = addRelationToDataView,
                 dispatcher = dispatcher,
-                session = session,
                 updateDataViewViewer = updateDataViewViewer,
                 objectState = state,
                 analytics = analytics,

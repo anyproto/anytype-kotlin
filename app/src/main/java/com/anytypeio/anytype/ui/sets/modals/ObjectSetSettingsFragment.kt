@@ -47,10 +47,11 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
 
     private val listAdapter by lazy {
         ViewerRelationsAdapter(
-            onSwitchClick = { vm.onSwitchClicked(ctx, it) },
+            onSwitchClick = { vm.onSwitchClicked(ctx = ctx, viewerId = viewer, it) },
             onSettingToggleChanged = { setting, isChecked ->
                 vm.onSettingToggleChanged(
                     ctx = ctx,
+                    viewerId = viewer,
                     toggle = setting,
                     isChecked = isChecked
                 )
@@ -80,12 +81,14 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
             onDeleteClick = { view ->
                 vm.onDeleteClicked(
                     ctx = ctx,
+                    viewerId = viewer,
                     item = view
                 )
             },
             onSettingToggleChanged = { setting, isChecked ->
                 vm.onSettingToggleChanged(
                     ctx = ctx,
+                    viewerId = viewer,
                     toggle = setting,
                     isChecked = isChecked
                 )
@@ -97,7 +100,7 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
         object : DefaultDragAndDropBehavior(
             onItemMoved = { from, to -> editAdapter.onItemMove(from, to) },
             onItemDropped = {
-                vm.onOrderChanged(ctx, editAdapter.items)
+                vm.onOrderChanged(ctx = ctx, viewerId = viewer, editAdapter.items)
             }
         ) {
             override fun getMovementFlags(
@@ -152,6 +155,16 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
             }
             subscribe(vm.screenState) { render(it) }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vm.onStart(viewer)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
     }
 
     private fun render(state: ObjectSetSettingsViewModel.ScreenState) {

@@ -1106,30 +1106,20 @@ class ObjectSetViewModel(
         dispatch(ObjectSetCommand.Modal.OpenCoverActionMenu(ctx = context))
     }
 
-    fun onViewerSettingsClicked() {
-        Timber.d("onViewerSettingsClicked, ")
+    fun onViewerSettingsClicked(viewer: Id) {
+        Timber.d("onViewerSettingsClicked, viewer: [$viewer]")
         if (isRestrictionPresent(DataViewRestriction.RELATION)) {
             toast(NOT_ALLOWED)
         } else {
             val state = stateReducer.state.value.dataViewState() ?: return
             val dataViewBlock = state.dataViewBlock
-            val dataViewContent = state.dataViewContent
-            if (dataViewContent.viewers.isNotEmpty()) {
-                val viewer = state.viewerById(session.currentViewerId.value)
-                if (viewer == null) {
-                    Timber.e("onViewerSettingsClicked, Viewer is empty")
-                    return
-                }
-                dispatch(
-                    ObjectSetCommand.Modal.OpenSettings(
-                        ctx = context,
-                        dv = dataViewBlock.id,
-                        viewer = viewer.id
-                    )
+            dispatch(
+                ObjectSetCommand.Modal.OpenSettings(
+                    ctx = context,
+                    dv = dataViewBlock.id,
+                    viewer = viewer
                 )
-            } else {
-                toast(DATA_VIEW_HAS_NO_VIEW_MSG)
-            }
+            )
         }
     }
 
@@ -1877,37 +1867,53 @@ class ObjectSetViewModel(
     }
 
     fun onViewerEditWidgetAction(action: ViewerEditWidgetUi.Action) {
+        Timber.d("onViewerEditWidgetAction, action:[$action]")
         when (action) {
             ViewerEditWidgetUi.Action.Dismiss -> {
                 viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
             }
-            ViewerEditWidgetUi.Action.DefaultObjectType -> TODO()
-            ViewerEditWidgetUi.Action.Filters -> {
+            is ViewerEditWidgetUi.Action.DefaultObjectType -> TODO()
+            is ViewerEditWidgetUi.Action.Filters -> {
                 viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
                 viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
-                    onViewerFiltersClicked()
+                    openViewerFilters(viewerId = action.id)
                 }
             }
-            ViewerEditWidgetUi.Action.Layout -> TODO()
-            ViewerEditWidgetUi.Action.Relations -> {
+            is ViewerEditWidgetUi.Action.Layout -> TODO()
+            is ViewerEditWidgetUi.Action.Relations -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                if (action.id == null) return
+                viewModelScope.launch {
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
+                    onViewerSettingsClicked(action.id)
+                }
+            }
+            is ViewerEditWidgetUi.Action.Sorts -> {
                 viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
                 viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
-                    onViewerSettingsClicked()
+                    openViewerSorts(viewerId = action.id)
                 }
             }
-            ViewerEditWidgetUi.Action.Sorts -> {
+            is ViewerEditWidgetUi.Action.UpdateName -> {
                 viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
                 viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                val state = stateReducer.state.value.dataViewState() ?: return
+                val viewer = state.viewerById(action.id) ?: return
                 viewModelScope.launch {
-                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
-                    onViewerSortsClicked()
+                    viewerDelegate.onEvent(
+                        ViewerEvent.Rename(
+                            ctx = context,
+                            dv = state.dataViewBlock.id,
+                            viewer = viewer.copy(name = action.name)
+                        )
+                    )
                 }
             }
-            is ViewerEditWidgetUi.Action.UpdateName -> TODO()
         }
     }
                               //endregion

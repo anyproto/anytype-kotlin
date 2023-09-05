@@ -252,7 +252,6 @@ open class ObjectSetFragment :
             subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSettings).clicks()
                     .throttleFirst()
             ) {
-                vm.onViewerSettingsClicked()
             }
             subscribe(
                 binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSort).clicks()

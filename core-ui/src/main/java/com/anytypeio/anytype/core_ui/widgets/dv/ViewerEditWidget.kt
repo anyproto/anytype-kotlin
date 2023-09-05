@@ -13,12 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -36,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -146,7 +148,7 @@ fun ViewerEditWidgetContent(
                     )
                 }
             }
-            NameTextField(state = currentState)
+            NameTextField(state = currentState, action = action)
             Spacer(modifier = Modifier.height(12.dp))
             ColumnItem(
                 title = stringResource(id = R.string.default_object),
@@ -154,7 +156,7 @@ fun ViewerEditWidgetContent(
                 isEnable = state.isDefaultObjectTypeEnabled
             ) {
                 if (state.isDefaultObjectTypeEnabled) {
-                    action(ViewerEditWidgetUi.Action.DefaultObjectType)
+                    action(ViewerEditWidgetUi.Action.DefaultObjectType(id = state.id))
                 }
             }
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
@@ -169,7 +171,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.layout),
                 value = layoutValue
-            ) { action(ViewerEditWidgetUi.Action.Layout) }
+            ) { action(ViewerEditWidgetUi.Action.Layout(id = state.id)) }
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
             val relationsValue = when (state.relations.size) {
@@ -180,7 +182,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.relations),
                 value = relationsValue
-            ) { action(ViewerEditWidgetUi.Action.Relations) }
+            ) { action(ViewerEditWidgetUi.Action.Relations(id = state.id)) }
 
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
@@ -192,7 +194,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.filter),
                 value = filtersValue
-            ) { action(ViewerEditWidgetUi.Action.Filters) }
+            ) { action(ViewerEditWidgetUi.Action.Filters(id = state.id)) }
 
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
@@ -204,14 +206,17 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.sort),
                 value = sortsValue
-            ) { action(ViewerEditWidgetUi.Action.Sorts) }
+            ) { action(ViewerEditWidgetUi.Action.Sorts(id = state.id)) }
         }
     }
 }
 
 @Composable
-fun NameTextField(state: ViewerEditWidgetUi) {
-    var text by remember { mutableStateOf(state.name) }
+fun NameTextField(
+    state: ViewerEditWidgetUi,
+    action: (ViewerEditWidgetUi.Action) -> Unit) {
+    var innerValue by remember(state.name) { mutableStateOf(state.name) }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -228,23 +233,28 @@ fun NameTextField(state: ViewerEditWidgetUi) {
             style = Caption1Medium,
             color = colorResource(id = R.color.text_secondary)
         )
-        TextField(
-            value = text,
-            onValueChange = { text = it },
+        BasicTextField(
+            value = innerValue,
+            onValueChange = { innerValue = it },
             textStyle = Title1,
             singleLine = true,
             enabled = true,
-            colors = TextFieldDefaults.textFieldColors(
-                textColor = colorResource(id = R.color.text_primary),
-                backgroundColor = Color.Transparent,
-                unfocusedIndicatorColor = Color.Transparent,
-                focusedIndicatorColor = Color.Transparent,
-                disabledIndicatorColor = Color.Transparent,
-            ),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(24.dp)
-                .background(Color.Transparent),
+                .wrapContentHeight()
+                .padding(start = 0.dp, top = 2.dp)
+            ,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Done
+            ),
+            keyboardActions = KeyboardActions {
+                action.invoke(
+                    ViewerEditWidgetUi.Action.UpdateName(
+                        id = state.id,
+                        name = innerValue
+                    )
+                )
+            }
         )
     }
 }
@@ -304,7 +314,7 @@ private fun ColumnItem(title: String, isEnable: Boolean = true, value: String, o
 @Preview(showBackground = true)
 @Composable
 fun PreviewNameTextField() {
-    NameTextField(state = ViewerEditWidgetUi.init().copy(name = "Artist"))
+    NameTextField(state = ViewerEditWidgetUi.init().copy(name = "Artist"), action = {})
 }
 
 @Preview(showBackground = true)

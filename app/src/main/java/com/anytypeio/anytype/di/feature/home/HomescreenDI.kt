@@ -112,11 +112,11 @@ object HomeScreenModule {
     fun emptyBin(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
-        workspaceManager: WorkspaceManager
+        spaceManager: SpaceManager
     ) : EmptyBin = EmptyBin(
         repo = repo,
         dispatchers = dispatchers,
-        workspaceManager = workspaceManager
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -155,14 +155,12 @@ object HomeScreenModule {
     fun getDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
     ) : GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        workspaceManager = workspaceManager,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
         configStorage = configStorage

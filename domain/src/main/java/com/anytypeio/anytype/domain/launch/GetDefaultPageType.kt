@@ -2,6 +2,8 @@ package com.anytypeio.anytype.domain.launch
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -11,22 +13,20 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import javax.inject.Inject
 
 class GetDefaultPageType @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
     private val blockRepository: BlockRepository,
-    private val workspaceManager: WorkspaceManager,
     private val spaceManager: SpaceManager,
     private val configStorage: ConfigStorage,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Unit, GetDefaultPageType.Response>(dispatchers.io) {
 
     override suspend fun doWork(params: Unit): Response {
-        val workspaceId = workspaceManager.getCurrentWorkspace()
+        val space = spaceManager.get()
         userSettingsRepository.getDefaultObjectType().first?.let {
-            val item = searchObjectByIdAndWorkspaceId(it, workspaceId)
+            val item = searchObjectByIdAndWorkspaceId(it, space)
             if (item != null) {
                 return Response(item.id, item.name)
             } else {
@@ -115,11 +115,11 @@ class GetDefaultPageType @Inject constructor(
 
     class Response(val type: String?, val name: String?)
 
-    private fun filterObjectTypeLibrary(workspaceId: String) = listOf(
+    private fun filterObjectTypeLibrary(space: Id) = listOf(
         DVFilter(
-            relation = Relations.TYPE,
+            relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
-            value = ObjectTypeIds.OBJECT_TYPE
+            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
         ),
         DVFilter(
             relation = Relations.IS_ARCHIVED,
@@ -137,9 +137,9 @@ class GetDefaultPageType @Inject constructor(
             value = true
         ),
         DVFilter(
-            relation = Relations.WORKSPACE_ID,
+            relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = workspaceId
+            value = space
         )
     )
 

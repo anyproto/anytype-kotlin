@@ -64,7 +64,6 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -304,14 +303,12 @@ object ObjectSetModule {
     fun provideGetDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        workspaceManager = workspaceManager,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
         configStorage = configStorage

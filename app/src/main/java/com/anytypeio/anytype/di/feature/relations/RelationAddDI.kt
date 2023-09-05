@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -57,7 +56,6 @@ object RelationAddToObjectModule {
         getRelations: GetRelations,
         appCoroutineDispatchers: AppCoroutineDispatchers,
         addObjectToWorkspace: AddObjectToWorkspace,
-        workspaceManager: WorkspaceManager,
         spaceManager: SpaceManager
     ): RelationAddToObjectViewModel.Factory = RelationAddToObjectViewModel.Factory(
         storeOfRelations = storeOfRelations,
@@ -68,7 +66,6 @@ object RelationAddToObjectModule {
         getRelations = getRelations,
         appCoroutineDispatchers = appCoroutineDispatchers,
         addObjectToWorkspace = addObjectToWorkspace,
-        workspaceManager = workspaceManager,
         spaceManager = spaceManager
     )
 
@@ -119,7 +116,6 @@ object RelationAddToDataViewModule {
         appCoroutineDispatchers: AppCoroutineDispatchers,
         getRelations: GetRelations,
         addObjectToWorkspace: AddObjectToWorkspace,
-        workspaceManager: WorkspaceManager,
         spaceManager: SpaceManager
     ): RelationAddToDataViewViewModel.Factory = RelationAddToDataViewViewModel.Factory(
         addRelationToDataView = addRelationToDataView,
@@ -132,7 +128,6 @@ object RelationAddToDataViewModule {
         appCoroutineDispatchers = appCoroutineDispatchers,
         getRelations = getRelations,
         addObjectToWorkspace = addObjectToWorkspace,
-        workspaceManager = workspaceManager,
         spaceManager = spaceManager
     )
 

@@ -112,14 +112,12 @@ object SplashModule {
     fun provideGetDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        workspaceManager = workspaceManager,
         spaceManager = spaceManager,
         dispatchers = dispatchers,
         configStorage = configStorage

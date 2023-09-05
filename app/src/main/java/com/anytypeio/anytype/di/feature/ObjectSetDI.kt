@@ -148,6 +148,10 @@ interface ObjectSetSubComponent {
     fun objectRelationListComponent(): ObjectRelationListComponent.Builder
     fun relationAddToObjectComponent(): RelationAddToObjectSubComponent.Builder
     fun relationCreateFromScratchForObjectComponent(): RelationCreateFromScratchForObjectSubComponent.Builder
+
+    fun createDataViewViewerSubComponent(): CreateDataViewViewerSubComponent.Builder
+    fun editDataViewViewerComponent(): EditDataViewViewerSubComponent.Builder
+    fun manageViewerComponent(): ManageViewerSubComponent.Builder
 }
 
 @Module(

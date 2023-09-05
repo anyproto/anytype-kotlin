@@ -9,7 +9,6 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.CreateObjectViewModel
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import dagger.Module
@@ -57,14 +56,12 @@ object CreateObjectModule {
     fun provideGetDefaultPageType(
         blockRepository: BlockRepository,
         userSettingsRepository: UserSettingsRepository,
-        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        workspaceManager = workspaceManager,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
         configStorage = configStorage

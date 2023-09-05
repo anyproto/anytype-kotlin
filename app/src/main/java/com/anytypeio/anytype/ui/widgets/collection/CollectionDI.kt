@@ -171,14 +171,12 @@ object CollectionModule {
     fun provideGetDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        workspaceManager = workspaceManager,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
         configStorage = configStorage

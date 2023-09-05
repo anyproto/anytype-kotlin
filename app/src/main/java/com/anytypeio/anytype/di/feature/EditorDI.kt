@@ -99,7 +99,6 @@ import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -987,14 +986,12 @@ object EditorUseCaseModule {
     fun provideGetDefaultPageType(
         repo: UserSettingsRepository,
         blockRepository: BlockRepository,
-        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = repo,
         blockRepository = blockRepository,
-        workspaceManager = workspaceManager,
         spaceManager = spaceManager,
         dispatchers = dispatchers,
         configStorage = configStorage

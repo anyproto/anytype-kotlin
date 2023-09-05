@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -39,14 +38,12 @@ class RelationAddToDataViewViewModel(
     private val analytics: Analytics,
     private val addObjectToWorkspace: AddObjectToWorkspace,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
-    private val workspaceManager: WorkspaceManager,
     spaceManager: SpaceManager
 ) : RelationAddViewModelBase(
     relationsProvider = relationsProvider,
     appCoroutineDispatchers = appCoroutineDispatchers,
     getRelations = getRelations,
     addObjectToWorkspace = addObjectToWorkspace,
-    workspaceManager = workspaceManager,
     spaceManager = spaceManager
 ) {
 
@@ -117,7 +114,6 @@ class RelationAddToDataViewViewModel(
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
         private val getRelations: GetRelations,
         private val addObjectToWorkspace: AddObjectToWorkspace,
-        private val workspaceManager: WorkspaceManager,
         private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -133,7 +129,6 @@ class RelationAddToDataViewViewModel(
                 appCoroutineDispatchers = appCoroutineDispatchers,
                 getRelations = getRelations,
                 addObjectToWorkspace = addObjectToWorkspace,
-                workspaceManager = workspaceManager,
                 spaceManager = spaceManager
             ) as T
         }

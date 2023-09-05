@@ -150,7 +150,7 @@ class RelationAddViewModelBaseTest {
                         id = relation.id,
                         name = relation.name.orEmpty(),
                         format = relation.format,
-                        workspace = workspaceId
+                        space = workspaceId
                     )
                 )
             )
@@ -275,21 +275,21 @@ class RelationAddViewModelBaseTest {
                             id = library[0].id,
                             name = library[0].name.orEmpty(),
                             format = library[0].format,
-                            workspace = workspaceId
+                            space = workspaceId
                         ),
                         RelationView.Existing(
                             key = library[1].key,
                             id = library[1].id,
                             name = library[1].name.orEmpty(),
                             format = library[1].format,
-                            workspace = workspaceId
+                            space = workspaceId
                         ),
                         RelationView.Existing(
                             key = library[2].key,
                             id = library[2].id,
                             name = library[2].name.orEmpty(),
                             format = library[2].format,
-                            workspace = workspaceId
+                            space = workspaceId
                         ),
                         Section.Marketplace,
                         RelationView.Existing(
@@ -297,14 +297,14 @@ class RelationAddViewModelBaseTest {
                             id = marketplace[1].id,
                             name = marketplace[1].name.orEmpty(),
                             format = marketplace[1].format,
-                            workspace = MARKETPLACE_SPACE_ID
+                            space = MARKETPLACE_SPACE_ID
                         ),
                         RelationView.Existing(
                             key = marketplace[2].key,
                             id = marketplace[2].id,
                             name = marketplace[2].name.orEmpty(),
                             format = marketplace[2].format,
-                            workspace = MARKETPLACE_SPACE_ID
+                            space = MARKETPLACE_SPACE_ID
                         ),
                     )
                 )

@@ -13,7 +13,6 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.relations.model.RelationItemView
 import com.anytypeio.anytype.presentation.relations.model.RelationView
@@ -45,7 +44,6 @@ abstract class RelationAddViewModelBase(
     private val getRelations: GetRelations,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val addObjectToWorkspace: AddObjectToWorkspace,
-    private val workspaceManager: WorkspaceManager,
     private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
@@ -101,7 +99,7 @@ abstract class RelationAddViewModelBase(
                 key = wrapper.key,
                 name = wrapper.name.orEmpty(),
                 format = wrapper.format,
-                workspace = wrapper.workspaceId
+                space = wrapper.spaceId
             )
         }
         val marketplace = marketplaceRelations.filter { !objectRelationKeys.contains(it.key) }.map { wrapper ->
@@ -110,7 +108,7 @@ abstract class RelationAddViewModelBase(
                 key = wrapper.key,
                 name = wrapper.name.orEmpty(),
                 format = wrapper.format,
-                workspace = wrapper.workspaceId
+                space = wrapper.spaceId
             )
         }
         if (my.isNotEmpty()) {
@@ -142,7 +140,7 @@ abstract class RelationAddViewModelBase(
                 }
                 add(
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
                         value = MARKETPLACE_SPACE_ID
                     )
@@ -171,9 +169,9 @@ abstract class RelationAddViewModelBase(
                 addAll(filterMyRelations())
                 add(
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = workspaceManager.getCurrentWorkspace()
+                        value = spaceManager.get()
                     )
                 )
                 add(
@@ -200,7 +198,7 @@ abstract class RelationAddViewModelBase(
         relation: RelationView.Existing
     ) {
         viewModelScope.launch {
-            if (relation.workspace == MARKETPLACE_SPACE_ID) {
+            if (relation.space == MARKETPLACE_SPACE_ID) {
                 addObjectToWorkspace(
                     AddObjectToWorkspace.Params(
                         objects = listOf(relation.id),

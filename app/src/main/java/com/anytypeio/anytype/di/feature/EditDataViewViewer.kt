@@ -3,7 +3,6 @@ package com.anytypeio.anytype.di.feature;
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.presentation.sets.EditDataViewViewerViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetPaginator
@@ -15,7 +14,6 @@ import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 
 @Subcomponent(modules = [EditDataViewViewerModule::class])
 @PerModal
@@ -56,25 +54,4 @@ object EditDataViewViewerModule {
         paginator = paginator,
         analytics = analytics
     )
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideRenameDataViewViewerUseCase(
-        repo: BlockRepository
-    ): RenameDataViewViewer = RenameDataViewViewer(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideDuplicateDataViewViewerUseCase(
-        repo: BlockRepository
-    ): DuplicateDataViewViewer = DuplicateDataViewViewer(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerModal
-    fun provideDeleteDataViewViewerUseCase(
-        repo: BlockRepository
-    ): DeleteDataViewViewer = DeleteDataViewViewer(repo = repo)
 }

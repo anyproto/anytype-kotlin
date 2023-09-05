@@ -112,11 +112,11 @@ object HomeScreenModule {
     fun emptyBin(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
-        workspaceManager: WorkspaceManager
+        spaceManager: SpaceManager
     ) : EmptyBin = EmptyBin(
         repo = repo,
         dispatchers = dispatchers,
-        workspaceManager = workspaceManager
+        spaceManager = spaceManager
     )
 
     @JvmStatic

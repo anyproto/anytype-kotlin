@@ -10,9 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer.Companion.SUBSCRIPTION_TEMPLATES
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import javax.inject.Named
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
@@ -24,7 +22,7 @@ sealed interface ObjectTypeTemplatesContainer {
 
 class DefaultObjectTypeTemplatesContainer(
     private val storage: StorelessSubscriptionContainer,
-    private val workspaceManager: WorkspaceManager
+    private val spaceManager: SpaceManager
 ) : ObjectTypeTemplatesContainer {
 
     override suspend fun subscribe(type: Id?): Flow<List<ObjectWrapper.Basic>> {
@@ -61,9 +59,9 @@ class DefaultObjectTypeTemplatesContainer(
                         value = type
                     ),
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = workspaceManager.getCurrentWorkspace()
+                        value = spaceManager.get()
                     ),
                     DVFilter(
                         relation = Relations.ID,

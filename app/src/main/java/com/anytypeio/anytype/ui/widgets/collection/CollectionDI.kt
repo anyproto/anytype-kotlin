@@ -29,7 +29,6 @@ import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
@@ -213,7 +212,6 @@ interface CollectionDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun objectStore(): ObjectStore
     fun subscriptionEventChannel(): SubscriptionEventChannel
-    fun workspaceManager(): WorkspaceManager
     fun analytics(): Analytics
     fun eventChannel(): EventChannel
     fun userSettingsRepository(): UserSettingsRepository

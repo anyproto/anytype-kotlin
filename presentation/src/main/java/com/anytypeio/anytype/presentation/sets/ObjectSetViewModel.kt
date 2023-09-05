@@ -47,7 +47,6 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -127,7 +126,6 @@ class ObjectSetViewModel(
     private val storeOfRelations: StoreOfRelations,
     private val stateReducer: ObjectStateReducer,
     private val dataViewSubscription: DataViewSubscription,
-    private val workspaceManager: WorkspaceManager,
     private val objectStore: ObjectStore,
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
@@ -355,7 +353,7 @@ class ObjectSetViewModel(
                                 currentViewerId = view,
                                 offset = offset,
                                 context = context,
-                                workspaceId = workspaceManager.getCurrentWorkspace(),
+                                space = spaceManager.get(),
                                 storeOfRelations = storeOfRelations
                             )
                         } else {

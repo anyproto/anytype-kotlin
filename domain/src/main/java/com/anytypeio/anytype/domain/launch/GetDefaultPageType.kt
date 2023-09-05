@@ -3,10 +3,12 @@ package com.anytypeio.anytype.domain.launch
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -24,9 +26,12 @@ class GetDefaultPageType @Inject constructor(
 ) : ResultInteractor<Unit, GetDefaultPageType.Response>(dispatchers.io) {
 
     override suspend fun doWork(params: Unit): Response {
-        val space = spaceManager.get()
-        userSettingsRepository.getDefaultObjectType().first?.let {
-            val item = searchObjectByIdAndWorkspaceId(it, space)
+        val space = SpaceId(spaceManager.get())
+        userSettingsRepository.getDefaultObjectType(space)?.let { type ->
+            val item = searchObjectByIdAndSpaceId(
+                id = type.id,
+                space = space.id
+            )
             if (item != null) {
                 return Response(item.id, item.name)
             } else {
@@ -40,7 +45,7 @@ class GetDefaultPageType @Inject constructor(
     private suspend fun searchNote(): Response {
         val items = blockRepository.searchObjects(
             limit = 1,
-            fulltext = "",
+            fulltext = NO_VALUE,
             filters = buildList {
                 add(
                     DVFilter(
@@ -80,15 +85,15 @@ class GetDefaultPageType @Inject constructor(
         return Response(note?.uniqueKey, note?.name)
     }
 
-    private suspend fun searchObjectByIdAndWorkspaceId(
+    private suspend fun searchObjectByIdAndSpaceId(
         id: String,
-        workspaceId: String
+        space: Id
     ): ObjectWrapper.Type? {
         val items = blockRepository.searchObjects(
             limit = 1,
             fulltext = "",
             filters = buildList {
-                addAll(filterObjectTypeLibrary(workspaceId))
+                addAll(filterObjectTypeLibrary(space))
                 add(
                     DVFilter(
                         relation = Relations.ID,

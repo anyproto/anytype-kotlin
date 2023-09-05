@@ -18,7 +18,7 @@ import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.platform.MetricsProvider
@@ -126,8 +126,13 @@ object SplashModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideSetDefaultPageType(repo: UserSettingsRepository): SetDefaultEditorType =
-        SetDefaultEditorType(repo)
+    fun provideSetDefaultPageType(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDefaultObjectType = SetDefaultObjectType(
+        repo = repo,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @Provides

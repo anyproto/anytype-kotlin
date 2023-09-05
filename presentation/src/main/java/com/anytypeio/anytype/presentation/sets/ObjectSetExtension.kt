@@ -486,7 +486,7 @@ suspend fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSessio
     }
 }
 
-private fun mapViewers(
+private suspend fun mapViewers(
     defaultObjectType: (DVViewer) -> Id?,
     viewers: List<DVViewer>,
     session: ObjectSetSession,
@@ -502,7 +502,8 @@ private fun mapViewers(
             defaultObjectType = defaultObjectType.invoke(viewer),
             relations = viewer.viewerRelations.toView(storeOfRelations) { it.key },
             sorts = viewer.sorts.toView(storeOfRelations) { it.relationKey },
-            filters = viewer.filters.toView(storeOfRelations) { it.relation }
+            filters = viewer.filters.toView(storeOfRelations) { it.relation },
+            isDefaultObjectTypeEnabled = true
         )
     }
 }

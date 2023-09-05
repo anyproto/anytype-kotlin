@@ -30,10 +30,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -211,11 +214,14 @@ fun ViewerEditWidgetContent(
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NameTextField(
     state: ViewerEditWidgetUi,
     action: (ViewerEditWidgetUi.Action) -> Unit) {
     var innerValue by remember(state.name) { mutableStateOf(state.name) }
+    val keyboardController = LocalSoftwareKeyboardController.current
+    val focusManager = LocalFocusManager.current
 
     Column(
         modifier = Modifier
@@ -248,6 +254,8 @@ fun NameTextField(
                 imeAction = ImeAction.Done
             ),
             keyboardActions = KeyboardActions {
+                keyboardController?.hide()
+                focusManager.clearFocus()
                 action.invoke(
                     ViewerEditWidgetUi.Action.UpdateName(
                         id = state.id,

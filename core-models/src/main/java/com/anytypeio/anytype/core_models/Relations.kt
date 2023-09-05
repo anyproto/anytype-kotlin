@@ -65,6 +65,11 @@ object Relations {
 
     const val UNIQUE_KEY = "uniqueKey"
 
+    /**
+     * Transitive relation key.
+     */
+    const val TYPE_UNIQUE_KEY = "type.uniqueKey"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

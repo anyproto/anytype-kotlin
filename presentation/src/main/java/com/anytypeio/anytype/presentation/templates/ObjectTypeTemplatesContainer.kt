@@ -49,7 +49,7 @@ class DefaultObjectTypeTemplatesContainer(
                         value = true
                     ),
                     DVFilter(
-                        relation = Relations.TYPE,
+                        relation = Relations.TYPE_UNIQUE_KEY,
                         condition = DVFilterCondition.EQUAL,
                         value = ObjectTypeIds.TEMPLATE
                     ),
@@ -70,6 +70,8 @@ class DefaultObjectTypeTemplatesContainer(
                 ),
                 keys = listOf(
                     Relations.ID,
+                    Relations.SPACE_ID,
+                    Relations.TYPE_UNIQUE_KEY,
                     Relations.NAME,
                     Relations.LAYOUT,
                     Relations.ICON_EMOJI,

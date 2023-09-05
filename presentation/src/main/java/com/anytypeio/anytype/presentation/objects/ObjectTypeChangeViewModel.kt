@@ -127,7 +127,8 @@ class ObjectTypeChangeViewModel(
                         Setup(
                             isWithCollection = isWithCollection,
                             isWithBookmark = isWithBookmark,
-                            excludeTypes = listOf(it.type.orEmpty()),
+                            // TODO refactor
+                            excludeTypes = listOf(it.type?.key.orEmpty()),
                             selectedTypes = emptyList(),
                             isSetSource = isSetSource
                         )

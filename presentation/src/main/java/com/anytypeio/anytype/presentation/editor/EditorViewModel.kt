@@ -5689,7 +5689,7 @@ class EditorViewModel(
                     proceedWithCreateNewObject(objectType = null, mentionText = mentionText)
                 },
                 onSuccess = {
-                    proceedWithCreateNewObject(objectType = it.type, mentionText = mentionText)
+                    proceedWithCreateNewObject(objectType = it.type?.key, mentionText = mentionText)
                 }
             )
         }
@@ -5950,9 +5950,9 @@ class EditorViewModel(
                 Timber.e(it, "Error while getting default object type")
             },
             onSuccess = { response ->
-                val filtered = views.filter { it.id != response.type }
+                val filtered = views.filter { it.key != response.type?.key }
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.ObjectTypesWidgetEvent.Show(filtered)
+                    ObjectTypesWidgetEvent.Show(filtered)
                 )
             }
         )
@@ -6019,7 +6019,7 @@ class EditorViewModel(
                 onSuccess = { response ->
                     createObjectAddProceedToAddToTextAsLink(
                         name = name,
-                        type = response.type
+                        type = response.type?.key
                     )
                 }
             )

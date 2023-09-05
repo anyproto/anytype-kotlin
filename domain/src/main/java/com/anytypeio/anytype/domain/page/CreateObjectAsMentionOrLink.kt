@@ -25,7 +25,7 @@ class CreateObjectAsMentionOrLink(
 
     override suspend fun doWork(params: Params): Result {
 
-        val type = params.type ?: getDefaultPageType.run(Unit).type
+        val type = params.type ?: getDefaultPageType.run(Unit).type?.key
 
         val prefilled = buildMap {
             if (type != null) put(Relations.TYPE, type)

@@ -27,7 +27,7 @@ class CreateObject @Inject constructor(
 
     override suspend fun doWork(params: Param): Result {
 
-        val type = params.type ?: getDefaultPageType.run(Unit).type
+        val type = params.type ?: getDefaultPageType.run(Unit).type?.key
 
         val internalFlags = buildList {
             add(InternalFlags.ShouldSelectType)

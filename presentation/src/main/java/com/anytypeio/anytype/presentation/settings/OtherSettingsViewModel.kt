@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
@@ -36,7 +37,7 @@ class OtherSettingsViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val isClearFileCacheInProgress = MutableStateFlow(false)
     val defaultObjectTypeName = MutableStateFlow<String?>(null)
-    private val defaultObjectTypeId = MutableStateFlow<String?>(null)
+    private val defaultObjectTypeKey = MutableStateFlow<TypeKey?>(null)
 
     init {
         viewModelScope.launch {
@@ -45,7 +46,7 @@ class OtherSettingsViewModel(
                     Timber.e(e, "Error while getting user settings")
                 },
                 onSuccess = {
-                    defaultObjectTypeId.value = it.type
+                    defaultObjectTypeKey.value = it.type
                     defaultObjectTypeName.value = it.name
                 }
             )
@@ -56,7 +57,7 @@ class OtherSettingsViewModel(
         viewModelScope.launch {
             commands.emit(
                 Command.NavigateToObjectTypesScreen(
-                    excludeTypes = listOf(defaultObjectTypeId.value.orEmpty())
+                    excludeTypes = listOf(defaultObjectTypeKey.value?.key.orEmpty())
                 )
             )
         }

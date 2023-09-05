@@ -1563,7 +1563,7 @@ class ObjectSetViewModel(
 
     private suspend fun resolveObjectType(type: Id?): ObjectWrapper.Type? {
         return if (type == null) {
-            val defaultObjectType = getDefaultPageType.run(Unit).type ?: return null
+            val defaultObjectType = getDefaultPageType.run(Unit).type?.key ?: return null
             storeOfObjectTypes.get(defaultObjectType)
         } else {
             storeOfObjectTypes.get(type)

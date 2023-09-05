@@ -149,9 +149,10 @@ class CreateDataViewObject @Inject constructor(
         emptyMap()
     }
 
-    private suspend fun resolveDefaultObjectType(): Id {
+    private suspend fun resolveDefaultObjectType(): Key {
+        // Check execution thread + refactor.
         return try {
-            getDefaultPageType.run(Unit).type ?: ObjectTypeIds.NOTE
+            getDefaultPageType.run(Unit).type?.key ?: ObjectTypeIds.NOTE
         } catch (e: Exception) {
             ObjectTypeIds.NOTE
         }

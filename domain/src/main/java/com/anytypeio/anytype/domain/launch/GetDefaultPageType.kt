@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -33,7 +34,13 @@ class GetDefaultPageType @Inject constructor(
                 space = space.id
             )
             if (item != null) {
-                return Response(item.id, item.name)
+                val key = item.uniqueKey?.let {
+                    TypeKey(it)
+                }
+                return Response(
+                    type = key,
+                    name =item.name
+                )
             } else {
                 return searchNote()
             }
@@ -82,7 +89,13 @@ class GetDefaultPageType @Inject constructor(
         } else {
             null
         }
-        return Response(note?.uniqueKey, note?.name)
+        val key = note?.uniqueKey?.let {
+            TypeKey(it)
+        }
+        return Response(
+            type = key,
+            name = note?.name
+        )
     }
 
     private suspend fun searchObjectByIdAndSpaceId(
@@ -91,7 +104,7 @@ class GetDefaultPageType @Inject constructor(
     ): ObjectWrapper.Type? {
         val items = blockRepository.searchObjects(
             limit = 1,
-            fulltext = "",
+            fulltext = NO_VALUE,
             filters = buildList {
                 addAll(filterObjectTypeLibrary(space))
                 add(
@@ -118,7 +131,7 @@ class GetDefaultPageType @Inject constructor(
         }
     }
 
-    class Response(val type: String?, val name: String?)
+    class Response(val type: TypeKey?, val name: String?)
 
     private fun filterObjectTypeLibrary(space: Id) = listOf(
         DVFilter(
@@ -147,5 +160,4 @@ class GetDefaultPageType @Inject constructor(
             value = space
         )
     )
-
 }

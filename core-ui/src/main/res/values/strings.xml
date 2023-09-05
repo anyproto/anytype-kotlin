@@ -655,7 +655,7 @@
     <string name="templates_menu_delete">Delete</string>
     <string name="unsupported">Unsupported</string>
     <string name="set_as_default">Set as default</string>
-    <string name="edit_view">Edit view\n</string>
+    <string name="edit_view">Edit view</string>
     <string name="default_object">Default object</string>
     <string name="layout">Layout</string>
     <string name="num_applied">%1$d applied</string>

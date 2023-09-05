@@ -1916,7 +1916,7 @@ class ObjectSetViewModel(
             }
         }
     }
-                              //endregion
+    //endregion
 
     companion object {
         const val NOT_ALLOWED = "Not allowed for this set"

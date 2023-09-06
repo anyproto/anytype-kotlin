@@ -28,10 +28,10 @@ class GetDefaultPageType @Inject constructor(
 
     override suspend fun doWork(params: Unit): Response {
         val space = SpaceId(spaceManager.get())
-        val default = userSettingsRepository.getDefaultObjectType(space)
-        if (default != null) {
+        val defaultType = userSettingsRepository.getDefaultObjectType(space)
+        if (defaultType != null) {
             val item = searchObjectByIdAndSpaceId(
-                type = default,
+                type = defaultType,
                 space = space
             )
             return if (item != null) {

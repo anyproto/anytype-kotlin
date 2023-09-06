@@ -765,7 +765,7 @@ class CollectionViewModel(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = result.type,
+                            type = result.objectId,
                             storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.objCreateHome,
                             startTime = startTime

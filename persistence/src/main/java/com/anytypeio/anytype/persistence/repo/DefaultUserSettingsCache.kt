@@ -47,20 +47,6 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
             TypeId(result)
     }
 
-//    override suspend fun setDefaultObjectType(type: String, name: String) {
-//
-//        prefs.edit()
-//            .putString(DEFAULT_OBJECT_TYPE_ID_KEY, type)
-//            .putString(DEFAULT_OBJECT_TYPE_NAME_KEY, name)
-//            .apply()
-//    }
-//
-//    override suspend fun getDefaultObjectType(): Pair<String?, String?> {
-//        val type = prefs.getString(DEFAULT_OBJECT_TYPE_ID_KEY, null)
-//        val name = prefs.getString(DEFAULT_OBJECT_TYPE_NAME_KEY, null)
-//        return Pair(type, name)
-//    }
-
     override suspend fun setWallpaper(space: Id, wallpaper: Wallpaper) {
         if (space.isEmpty()) return
 

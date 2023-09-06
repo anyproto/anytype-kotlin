@@ -3,12 +3,10 @@ package com.anytypeio.anytype.presentation.objects
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.page.CreateObject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class CreateObjectViewModel(private val createObject: CreateObject) : ViewModel() {
 
@@ -20,17 +18,18 @@ class CreateObjectViewModel(private val createObject: CreateObject) : ViewModel(
     }
 
     private fun onCreatePage(type: String) {
-        val params = CreateObject.Param(type = type)
-        jobs += viewModelScope.launch {
-            createObject.execute(params).fold(
-                onFailure = { e ->
-                    Timber.e(e, "Error while creating a new object with type:$type")
-                },
-                onSuccess = { result ->
-                    createObjectStatus.emit(State.Success(result.objectId))
-                }
-            )
-        }
+        TODO()
+//        val params = CreateObject.Param(type = type)
+//        jobs += viewModelScope.launch {
+//            createObject.execute(params).fold(
+//                onFailure = { e ->
+//                    Timber.e(e, "Error while creating a new object with type:$type")
+//                },
+//                onSuccess = { result ->
+//                    createObjectStatus.emit(State.Success(result.objectId))
+//                }
+//            )
+//        }
     }
 
     fun onStop() {

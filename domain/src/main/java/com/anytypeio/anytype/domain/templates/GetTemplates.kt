@@ -4,11 +4,11 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -38,14 +38,14 @@ class GetTemplates(
                             value = true
                         ),
                         DVFilter(
-                            relation = Relations.TYPE,
+                            relation = Relations.TYPE_UNIQUE_KEY,
                             condition = DVFilterCondition.EQUAL,
-                            value = ObjectTypeIds.TEMPLATE
+                            value = ObjectTypeUniqueKeys.TEMPLATE
                         ),
                         DVFilter(
                             relation = Relations.TARGET_OBJECT_TYPE,
                             condition = DVFilterCondition.EQUAL,
-                            value = params.type
+                            value = params.type.id
                         )
                     ),
                     keys = listOf(
@@ -79,5 +79,5 @@ class GetTemplates(
     /**
      * @property [type] id of the object type, whose templates we are interested in.
      */
-    data class Params(val type: Id)
+    data class Params(val type: TypeId)
 }

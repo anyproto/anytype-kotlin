@@ -866,8 +866,8 @@ class Middleware @Inject constructor(
             details = command.prefilled,
             templateId = command.template.orEmpty(),
             internalFlags = command.internalFlags.toMiddlewareModel(),
-            spaceId = command.space,
-            objectTypeUniqueKey = command.type
+            spaceId = command.space.id,
+            objectTypeUniqueKey = command.type.key
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreate(request)
@@ -882,6 +882,7 @@ class Middleware @Inject constructor(
 
         val request = Rpc.BlockLink.CreateWithObject.Request(
             contextId = command.context,
+            objectTypeUniqueKey = command.type.key,
             details = command.prefilled,
             templateId = command.template.orEmpty(),
             internalFlags = command.internalFlags.toMiddlewareModel(),

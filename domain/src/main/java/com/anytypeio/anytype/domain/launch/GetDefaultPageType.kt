@@ -38,9 +38,11 @@ class GetDefaultPageType @Inject constructor(
                 val key = item.uniqueKey?.let {
                     TypeKey(it)
                 }
+                val id = TypeId(item.id)
                 Response(
                     type = key,
-                    name =item.name
+                    name = item.name,
+                    id = id
                 )
             } else {
                 fetchDefaultType()
@@ -93,9 +95,13 @@ class GetDefaultPageType @Inject constructor(
         val key = note?.uniqueKey?.let {
             TypeKey(it)
         }
+        val id = note?.id?.let {
+            TypeId(it)
+        }
         return Response(
             type = key,
-            name = note?.name
+            name = note?.name,
+            id = id
         )
     }
 
@@ -160,5 +166,9 @@ class GetDefaultPageType @Inject constructor(
         )
     )
 
-    class Response(val type: TypeKey?, val name: String?)
+    class Response(
+        val id: TypeId?,
+        val type: TypeKey?,
+        val name: String?
+    )
 }

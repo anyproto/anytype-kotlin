@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
@@ -24,8 +25,8 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
 
     private val vm by viewModels<OtherSettingsViewModel> { factory }
 
-    override fun onProceedWithUpdateType(id: Id, name: String) {
-        vm.proceedWithUpdateType(type = id, name = name)
+    override fun onProceedWithUpdateType(id: Id, key: Key, name: String) {
+        vm.proceedWithUpdateType(type = id, key = key, name = name)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

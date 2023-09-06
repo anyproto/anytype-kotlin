@@ -2,9 +2,12 @@ package com.anytypeio.anytype.persistence.repo
 
 import android.content.SharedPreferences
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
 import com.anytypeio.anytype.persistence.common.JsonString
 import com.anytypeio.anytype.persistence.common.deserializeWallpaperSettings
@@ -16,17 +19,32 @@ import com.anytypeio.anytype.persistence.model.asWallpaper
 
 class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSettingsCache {
 
-    override suspend fun setDefaultObjectType(type: String, name: String) {
-        prefs.edit()
-            .putString(DEFAULT_OBJECT_TYPE_ID_KEY, type)
-            .putString(DEFAULT_OBJECT_TYPE_NAME_KEY, name)
+    override suspend fun setDefaultObjectType(space: SpaceId, type: TypeId) {
+        val curr = prefs
+            .getString(DEFAULT_OBJECT_TYPES_KEY, NO_VALUE)
+            .orEmpty()
+            .toStringMap()
+        val updated = buildMap {
+            putAll(curr)
+            put(space.id, type.id)
+        }
+        prefs
+            .edit()
+            .putString(DEFAULT_OBJECT_TYPES_KEY, updated.toJsonString())
             .apply()
     }
 
-    override suspend fun getDefaultObjectType(): Pair<String?, String?> {
-        val type = prefs.getString(DEFAULT_OBJECT_TYPE_ID_KEY, null)
-        val name = prefs.getString(DEFAULT_OBJECT_TYPE_NAME_KEY, null)
-        return Pair(type, name)
+    override suspend fun getDefaultObjectType(space: SpaceId): TypeId? {
+        val curr = prefs
+            .getString(DEFAULT_OBJECT_TYPES_KEY, "")
+            .orEmpty()
+            .toStringMap()
+
+        val result = curr[space.id]
+        return if (result.isNullOrEmpty())
+            null
+        else
+            TypeId(result)
     }
 
     override suspend fun setWallpaper(space: Id, wallpaper: Wallpaper) {
@@ -148,6 +166,7 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"
         const val DEFAULT_OBJECT_TYPE_NAME_KEY = "prefs.user_settings.default_object_type.name"
 
+        const val DEFAULT_OBJECT_TYPES_KEY = "prefs.user_settings.default_object_types"
         const val WALLPAPER_SETTINGS_KEY = "prefs.user_settings.wallpaper_settings"
 
         const val THEME_KEY = "prefs.user_settings.theme_mode"

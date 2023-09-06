@@ -2,11 +2,14 @@ package com.anytypeio.anytype.domain.launch
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -24,29 +27,41 @@ class GetDefaultPageType @Inject constructor(
 ) : ResultInteractor<Unit, GetDefaultPageType.Response>(dispatchers.io) {
 
     override suspend fun doWork(params: Unit): Response {
-        val space = spaceManager.get()
-        userSettingsRepository.getDefaultObjectType().first?.let {
-            val item = searchObjectByIdAndWorkspaceId(it, space)
-            if (item != null) {
-                return Response(item.id, item.name)
+        val space = SpaceId(spaceManager.get())
+        val defaultType = userSettingsRepository.getDefaultObjectType(space)
+        if (defaultType != null) {
+            val item = searchObjectByIdAndSpaceId(
+                type = defaultType,
+                space = space
+            )
+            return if (item != null) {
+                val key = item.uniqueKey?.let {
+                    TypeKey(it)
+                }
+                val id = TypeId(item.id)
+                Response(
+                    type = key,
+                    name = item.name,
+                    id = id
+                )
             } else {
-                return searchNote()
+                fetchDefaultType()
             }
-        } ?: run {
-            return searchNote()
+        } else {
+            return fetchDefaultType()
         }
     }
 
-    private suspend fun searchNote(): Response {
+    private suspend fun fetchDefaultType(): Response {
         val items = blockRepository.searchObjects(
             limit = 1,
-            fulltext = "",
+            fulltext = NO_VALUE,
             filters = buildList {
                 add(
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
                         condition = DVFilterCondition.EQUAL,
-                        value = ObjectTypeIds.NOTE
+                        value = ObjectTypeUniqueKeys.NOTE
                     )
                 )
                 val space = spaceManager.get().ifEmpty {
@@ -77,23 +92,33 @@ class GetDefaultPageType @Inject constructor(
         } else {
             null
         }
-        return Response(note?.uniqueKey, note?.name)
+        val key = note?.uniqueKey?.let {
+            TypeKey(it)
+        }
+        val id = note?.id?.let {
+            TypeId(it)
+        }
+        return Response(
+            type = key,
+            name = note?.name,
+            id = id
+        )
     }
 
-    private suspend fun searchObjectByIdAndWorkspaceId(
-        id: String,
-        workspaceId: String
+    private suspend fun searchObjectByIdAndSpaceId(
+        type: TypeId,
+        space: SpaceId
     ): ObjectWrapper.Type? {
         val items = blockRepository.searchObjects(
             limit = 1,
-            fulltext = "",
+            fulltext = NO_VALUE,
             filters = buildList {
-                addAll(filterObjectTypeLibrary(workspaceId))
+                addAll(filterObjectTypeLibrary(space))
                 add(
                     DVFilter(
                         relation = Relations.ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = id
+                        value = type.id
                     )
                 )
             },
@@ -113,9 +138,7 @@ class GetDefaultPageType @Inject constructor(
         }
     }
 
-    class Response(val type: String?, val name: String?)
-
-    private fun filterObjectTypeLibrary(space: Id) = listOf(
+    private fun filterObjectTypeLibrary(space: SpaceId) = listOf(
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
@@ -139,8 +162,13 @@ class GetDefaultPageType @Inject constructor(
         DVFilter(
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
-            value = space
+            value = space.id
         )
     )
 
+    class Response(
+        val id: TypeId?,
+        val type: TypeKey?,
+        val name: String?
+    )
 }

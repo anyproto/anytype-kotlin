@@ -46,6 +46,8 @@ import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.core_models.ext.supportNesting
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.updateTextContent
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
@@ -3079,7 +3081,10 @@ class EditorViewModel(
         }
     }
 
-    private fun onAddNewObjectClicked(type: String) {
+    private fun onAddNewObjectClicked(
+        typeId: TypeId,
+        typeKey: TypeKey
+    ) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
         val position: Position
@@ -3112,7 +3117,8 @@ class EditorViewModel(
             context = context,
             position = position,
             target = target,
-            type = type
+            typeId = typeId,
+            typeKey = typeKey
         )
 
         val startTime = System.currentTimeMillis()
@@ -3128,7 +3134,7 @@ class EditorViewModel(
                     orchestrator.proxies.payloads.send(result.payload)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = type,
+                        type = typeId.id,
                         storeOfObjectTypes = storeOfObjectTypes,
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime
@@ -3151,7 +3157,7 @@ class EditorViewModel(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = result.type,
+                            type = result.objectId,
                             storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.navigation,
                             view = EventsDictionary.View.viewNavbar,
@@ -4651,21 +4657,18 @@ class EditorViewModel(
                 cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
                 onAddNewObjectClicked(
-                    type = item.objectTypeView.id
+                    typeId = TypeId(item.objectTypeView.id),
+                    typeKey = TypeKey(item.objectTypeView.key)
                 )
             }
             is SlashItem.Relation -> {
                 val isBlockEmpty = cutSlashFilter(targetId = targetId)
                 val relationKey = item.relation.view.key
-                if (relationKey != null) {
-                    onSlashRelationItemClicked(
-                        relationKey = relationKey,
-                        targetId = targetId,
-                        isBlockEmpty = isBlockEmpty
-                    )
-                } else {
-                    Timber.e("On create relation block error, relation key is null")
-                }
+                onSlashRelationItemClicked(
+                    relationKey = relationKey,
+                    targetId = targetId,
+                    isBlockEmpty = isBlockEmpty
+                )
 
             }
             is SlashItem.Other.Line -> {
@@ -5686,19 +5689,33 @@ class EditorViewModel(
             getDefaultPageType.async(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
-                    proceedWithCreateNewObject(objectType = null, mentionText = mentionText)
+                    proceedWithCreateNewObject(
+                        typeKey = null,
+                        typeId = null,
+                        mentionText = mentionText
+                    )
                 },
-                onSuccess = {
-                    proceedWithCreateNewObject(objectType = it.type, mentionText = mentionText)
+                onSuccess = { result ->
+                    proceedWithCreateNewObject(
+                        typeKey = result.type,
+                        typeId = result.id,
+                        mentionText = mentionText
+                    )
                 }
             )
         }
     }
 
-    private fun proceedWithCreateNewObject(objectType: String?, mentionText: String) {
+    private fun proceedWithCreateNewObject(
+        typeId: TypeId?,
+        typeKey: TypeKey?,
+        mentionText: String
+    ) {
+
         val params = CreateObjectAsMentionOrLink.Params(
             name = mentionText.removePrefix(MENTION_PREFIX),
-            type = objectType
+            typeKey = typeKey,
+            typeId = typeId
         )
 
         val startTime = System.currentTimeMillis()
@@ -5718,7 +5735,7 @@ class EditorViewModel(
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = objectType,
+                        type = typeId?.id,
                         storeOfObjectTypes = storeOfObjectTypes,
                         route = EventsDictionary.Routes.objCreateMention,
                         startTime = startTime
@@ -5950,9 +5967,9 @@ class EditorViewModel(
                 Timber.e(it, "Error while getting default object type")
             },
             onSuccess = { response ->
-                val filtered = views.filter { it.id != response.type }
+                val filtered = views.filter { it.key != response.type?.key }
                 controlPanelInteractor.onEvent(
-                    ControlPanelMachine.Event.ObjectTypesWidgetEvent.Show(filtered)
+                    ObjectTypesWidgetEvent.Show(filtered)
                 )
             }
         )
@@ -6019,7 +6036,8 @@ class EditorViewModel(
                 onSuccess = { response ->
                     createObjectAddProceedToAddToTextAsLink(
                         name = name,
-                        type = response.type
+                        typeKey = response.type,
+                        typeId = response.id
                     )
                 }
             )
@@ -6047,16 +6065,24 @@ class EditorViewModel(
         dispatch(Command.SaveTextToSystemClipboard(link))
     }
 
-    private suspend fun createObjectAddProceedToAddToTextAsLink(name: String, type: String?) {
+    private suspend fun createObjectAddProceedToAddToTextAsLink(
+        name: String,
+        typeKey: TypeKey?,
+        typeId: TypeId?
+    ) {
         val startTime = System.currentTimeMillis()
-        val params = CreateObjectAsMentionOrLink.Params(name, type)
+        val params = CreateObjectAsMentionOrLink.Params(
+            name = name,
+            typeKey = typeKey,
+            typeId = typeId
+        )
         createObjectAsMentionOrLink.async(params).fold(
             onFailure = { Timber.e(it, "Error while creating new page with params: $params") },
             onSuccess = { result ->
                 proceedToAddObjectToTextAsLink(id = result.id)
                 viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
-                    type = type,
+                    type = typeId?.id,
                     storeOfObjectTypes = storeOfObjectTypes,
                     route = EventsDictionary.Routes.objTurnInto,
                     startTime = startTime

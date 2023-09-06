@@ -26,6 +26,7 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
         withParent<OnObjectTypeAction> {
             onProceedWithUpdateType(
                 id = id,
+                key = key,
                 name = name
             )
         }
@@ -52,6 +53,6 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     interface OnObjectTypeAction {
-        fun onProceedWithUpdateType(id: Id, name: String)
+        fun onProceedWithUpdateType(id: Id, key: Key, name: String)
     }
 }

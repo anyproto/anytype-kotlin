@@ -4,12 +4,12 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
@@ -19,15 +19,15 @@ import javax.inject.Inject
 class CreateObject @Inject constructor(
     private val repo: BlockRepository,
     private val getDefaultPageType: GetDefaultPageType,
-    private val getTemplates: GetTemplates,
     private val spaceManager: SpaceManager,
-    private val configStorage: ConfigStorage,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateObject.Param, CreateObject.Result>(dispatchers.io) {
 
     override suspend fun doWork(params: Param): Result {
 
         val type = params.type ?: getDefaultPageType.run(Unit).type
+
+        requireNotNull(type) { "Type is undefined" }
 
         val internalFlags = buildList {
             add(InternalFlags.ShouldSelectType)
@@ -39,8 +39,8 @@ class CreateObject @Inject constructor(
             template = null,
             prefilled = emptyMap(),
             internalFlags = internalFlags,
-            space = spaceManager.get(),
-            type = type.orEmpty()
+            space = SpaceId(spaceManager.get()),
+            type = type
         )
 
         val result = repo.createObject(command)
@@ -53,14 +53,12 @@ class CreateObject @Inject constructor(
         )
     }
 
-    data class Param(
-        val type: String?
-    )
+    data class Param(val type: TypeKey? = null)
 
     data class Result(
         val objectId: Id,
         val event: Payload,
         val appliedTemplate: String? = null,
-        val type: String? = null
+        val type: TypeKey
     )
 }

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.template
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import kotlinx.coroutines.flow.Flow
@@ -25,7 +26,8 @@ class DefaultEditorTemplateDelegate(
         when (event) {
             is SelectTemplateEvent.OnStart -> {
                 try {
-                    val templates = getTemplates.run(GetTemplates.Params(event.type))
+                    val templates = getTemplates.run(
+                        GetTemplates.Params(TypeId(event.type)))
                     if (templates.isNotEmpty()) {
                         SelectTemplateState.Available(
                             templates = templates.map { it.id },

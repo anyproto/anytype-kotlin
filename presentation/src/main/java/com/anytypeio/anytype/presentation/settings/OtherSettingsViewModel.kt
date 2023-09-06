@@ -9,13 +9,18 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -23,16 +28,17 @@ import timber.log.Timber
 
 class OtherSettingsViewModel(
     private val getDefaultPageType: GetDefaultPageType,
-    private val setDefaultEditorType: SetDefaultEditorType,
+    private val setDefaultObjectType: SetDefaultObjectType,
     private val clearFileCache: ClearFileCache,
     private val appActionManager: AppActionManager,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val spaceManager: SpaceManager
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val isClearFileCacheInProgress = MutableStateFlow(false)
     val defaultObjectTypeName = MutableStateFlow<String?>(null)
-    private val defaultObjectTypeId = MutableStateFlow<String?>(null)
+    private val defaultObjectTypeKey = MutableStateFlow<TypeKey?>(null)
 
     init {
         viewModelScope.launch {
@@ -41,7 +47,7 @@ class OtherSettingsViewModel(
                     Timber.e(e, "Error while getting user settings")
                 },
                 onSuccess = {
-                    defaultObjectTypeId.value = it.type
+                    defaultObjectTypeKey.value = it.type
                     defaultObjectTypeName.value = it.name
                 }
             )
@@ -52,7 +58,7 @@ class OtherSettingsViewModel(
         viewModelScope.launch {
             commands.emit(
                 Command.NavigateToObjectTypesScreen(
-                    excludeTypes = listOf(defaultObjectTypeId.value.orEmpty())
+                    excludeTypes = listOf(defaultObjectTypeKey.value?.key.orEmpty())
                 )
             )
         }
@@ -79,26 +85,24 @@ class OtherSettingsViewModel(
         }
     }
 
-    fun proceedWithUpdateType(type: Id?, name: String?) {
-        if (type == null || name == null) {
-            viewModelScope.launch {
-                commands.emit(Command.Toast("Cannot change default object type"))
-            }
-            return
-        }
+    fun proceedWithUpdateType(type: Id, key: Key, name: String?) {
         viewModelScope.launch {
             appActionManager.setup(
                 AppActionManager.Action.CreateNew(
-                    type = type,
-                    name = name
+                    type = TypeKey(key),
+                    name = name.orEmpty()
                 )
             )
-            setDefaultEditorType.invoke(SetDefaultEditorType.Params(type, name)).process(
-                failure = {
+            val params = SetDefaultObjectType.Params(
+                space = SpaceId(spaceManager.get()),
+                type = TypeId(type)
+            )
+            setDefaultObjectType.async(params).fold(
+                onFailure = {
                     Timber.e(it, "Error while setting default object type")
                     commands.emit(Command.Toast(msg = "Error while setting default object type"))
                 },
-                success = {
+                onSuccess = {
                     defaultObjectTypeName.value = name
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
@@ -124,20 +128,22 @@ class OtherSettingsViewModel(
 
     class Factory(
         private val getDefaultPageType: GetDefaultPageType,
-        private val setDefaultEditorType: SetDefaultEditorType,
+        private val setDefaultObjectType: SetDefaultObjectType,
         private val clearFileCache: ClearFileCache,
         private val appActionManager: AppActionManager,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T = OtherSettingsViewModel(
             getDefaultPageType = getDefaultPageType,
-            setDefaultEditorType = setDefaultEditorType,
+            setDefaultObjectType = setDefaultObjectType,
             clearFileCache = clearFileCache,
             appActionManager = appActionManager,
-            analytics = analytics
+            analytics = analytics,
+            spaceManager = spaceManager
         ) as T
     }
 }

@@ -4,6 +4,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 
 class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSettingsRepository {
@@ -14,11 +16,18 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun getWallpaper(space: Id): Wallpaper = cache.getWallpaper(space)
 
-    override suspend fun setDefaultObjectType(type: String, name: String) {
-        cache.setDefaultObjectType(type, name)
-    }
+    override suspend fun setDefaultObjectType(
+        space: SpaceId,
+        type: TypeId
+    ): Unit = cache.setDefaultObjectType(
+        space = space,
+        type = type
+    )
 
-    override suspend fun getDefaultObjectType(): Pair<String?, String?> = cache.getDefaultObjectType()
+    override suspend fun getDefaultObjectType(
+        space: SpaceId
+    ): TypeId? = cache.getDefaultObjectType(space = space)
+
     override suspend fun setThemeMode(mode: ThemeMode) {
         cache.setThemeMode(mode)
     }

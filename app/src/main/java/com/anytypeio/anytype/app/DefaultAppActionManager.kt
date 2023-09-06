@@ -20,7 +20,10 @@ class DefaultAppActionManager(val context: Context) : AppActionManager {
         try {
             when (action) {
                 is AppActionManager.Action.CreateNew -> {
-                    val label = context.resources.getString(R.string.shortcut_create_new, action.name)
+                    val name = action.name.ifEmpty {
+                        context.resources.getString(R.string.unknown_type)
+                    }
+                    val label = context.resources.getString(R.string.shortcut_create_new, name)
                     val shortcut = ShortcutInfoCompat.Builder(context, ACTION_CREATE_NEW_ID)
                         .setShortLabel(label)
                         .setLongLabel(label)
@@ -28,7 +31,7 @@ class DefaultAppActionManager(val context: Context) : AppActionManager {
                         .setIntent(
                             Intent(Intent.ACTION_VIEW, null).apply {
                                 setClass(context, MainActivity::class.java)
-                                putExtra(ACTION_CREATE_NEW_TYPE_KEY, action.type)
+                                putExtra(ACTION_CREATE_NEW_TYPE_KEY, action.type.key)
                             }
                         )
                         .build()

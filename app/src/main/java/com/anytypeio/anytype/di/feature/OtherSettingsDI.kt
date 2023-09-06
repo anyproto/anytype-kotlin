@@ -8,7 +8,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.settings.OtherSettingsViewModel
@@ -53,8 +53,13 @@ object OtherSettingsModule {
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideSetDefaultPageType(repo: UserSettingsRepository): SetDefaultEditorType =
-        SetDefaultEditorType(repo)
+    fun provideSetDefaultPageType(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDefaultObjectType = SetDefaultObjectType(
+        repo = repo,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @PerScreen
@@ -66,15 +71,17 @@ object OtherSettingsModule {
     @PerScreen
     fun provideOtherSettingsFactory(
         getDefaultPageType: GetDefaultPageType,
-        setDefaultEditorType: SetDefaultEditorType,
+        setDefaultObjectType: SetDefaultObjectType,
         clearFileCache: ClearFileCache,
         appActionManager: AppActionManager,
-        analytics: Analytics
+        analytics: Analytics,
+        spaceManager: SpaceManager
     ): OtherSettingsViewModel.Factory = OtherSettingsViewModel.Factory(
         getDefaultPageType = getDefaultPageType,
-        setDefaultEditorType = setDefaultEditorType,
+        setDefaultObjectType = setDefaultObjectType,
         clearFileCache = clearFileCache,
         appActionManager = appActionManager,
-        analytics = analytics
+        analytics = analytics,
+        spaceManager = spaceManager
     )
 }

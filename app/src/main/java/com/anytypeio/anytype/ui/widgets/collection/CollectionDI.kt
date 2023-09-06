@@ -150,18 +150,14 @@ object CollectionModule {
     @PerScreen
     fun getCreateObject(
         repo: BlockRepository,
-        getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
+        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
-        getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers,
-        spaceManager = spaceManager,
-        configStorage = configStorage
+        spaceManager = spaceManager
     )
 
     @JvmStatic

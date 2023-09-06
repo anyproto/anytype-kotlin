@@ -957,9 +957,10 @@ class HomeScreenViewModel(
             createObject.stream(CreateObject.Param(null)).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
+                        // TODO Multispaces - Check analytics events
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = result.type,
+                            type = result.objectId,
                             storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.navigation,
                             startTime = startTime,

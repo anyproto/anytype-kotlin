@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.core_models
 
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
+
 sealed class Command {
 
     class UploadFile(
@@ -165,6 +168,7 @@ sealed class Command {
      */
     data class CreateBlockLinkWithObject(
         val context: Id,
+        val type: TypeKey,
         val target: Id,
         val position: Position,
         val template: Id?,
@@ -182,8 +186,8 @@ sealed class Command {
         val prefilled: Struct,
         val template: Id?,
         val internalFlags: List<InternalFlags>,
-        val space: Id,
-        val type: Key
+        val space: SpaceId,
+        val type: TypeKey
     )
 
     class Move(

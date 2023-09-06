@@ -10,12 +10,14 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -954,7 +956,7 @@ class ObjectSetViewModel(
                             } else {
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
-                                        type = uniqueKey,
+                                        type = TypeKey(uniqueKey),
                                         filters = viewer.filters,
                                         template = templateId
                                     )
@@ -1020,7 +1022,7 @@ class ObjectSetViewModel(
                     action?.invoke(result)
                     sendAnalyticsObjectCreateEvent(
                         startTime = startTime,
-                        objectType = result.objectType,
+                        objectType = result.objectType.key,
                     )
                 }
             )
@@ -1036,7 +1038,7 @@ class ObjectSetViewModel(
                 proceedWithOpeningObject(newObject)
             }
             is CreateDataViewObject.Params.SetByType -> {
-                if (params.type == ObjectTypeIds.NOTE) {
+                if (params.type.key == ObjectTypeUniqueKeys.NOTE) {
                     proceedWithOpeningObject(newObject)
                 } else {
                     dispatch(
@@ -1318,7 +1320,7 @@ class ObjectSetViewModel(
                         analytics = analytics,
                         startTime = startTime,
                         storeOfObjectTypes = storeOfObjectTypes,
-                        type = result.type,
+                        type = result.type.key,
                         route = EventsDictionary.Routes.navigation,
                         view = EventsDictionary.View.viewNavbar
                     )
@@ -1563,7 +1565,7 @@ class ObjectSetViewModel(
 
     private suspend fun resolveObjectType(type: Id?): ObjectWrapper.Type? {
         return if (type == null) {
-            val defaultObjectType = getDefaultPageType.run(Unit).type ?: return null
+            val defaultObjectType = getDefaultPageType.run(Unit).type?.key ?: return null
             storeOfObjectTypes.get(defaultObjectType)
         } else {
             storeOfObjectTypes.get(type)

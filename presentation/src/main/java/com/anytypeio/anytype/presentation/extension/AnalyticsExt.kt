@@ -30,8 +30,8 @@ import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.features.WidgetAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_LAYOUT_NONE
-import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
+import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -688,6 +688,7 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     startTime: Long? = null,
     view: String? = null
 ) {
+    // TODO Multispaces check this analytics event
     this.launch {
         val objType = type?.let { storeOfObjectTypes.get(it) }
         analytics.sendEvent(

@@ -1541,7 +1541,11 @@ class ObjectSetViewModel(
         viewerDefObjType: ObjectWrapper.Type,
         viewer: DVViewer
     ): List<TemplateView> {
-        val blankTemplate = listOf(viewerDefObjType.toTemplateViewBlank())
+        val blankTemplate = listOf(
+            viewerDefObjType.toTemplateViewBlank(
+                viewerDefaultTemplate = viewer.defaultTemplate
+            )
+        )
         return blankTemplate + results.map { objTemplate ->
             objTemplate.toTemplateView(
                 typeId = viewerDefObjType.id,

@@ -47,6 +47,7 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_TYPE_UNSUPPORTED
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
+import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 
 fun ObjectState.DataView.featuredRelations(
     ctx: Id,
@@ -449,10 +450,13 @@ fun ObjectWrapper.Basic.toTemplateView(
     )
 }
 
-fun ObjectWrapper.Type.toTemplateViewBlank(): TemplateView.Blank {
+fun ObjectWrapper.Type.toTemplateViewBlank(
+    viewerDefaultTemplate: Id? = null
+): TemplateView.Blank {
     return TemplateView.Blank(
         typeId = id,
-        layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code
+        layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
+        isDefault = viewerDefaultTemplate == DEFAULT_TEMPLATE_ID_BLANK
     )
 }
 

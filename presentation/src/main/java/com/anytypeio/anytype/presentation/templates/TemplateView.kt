@@ -41,6 +41,10 @@ sealed class TemplateView {
             return image != null || emoji != null
         }
     }
+
+    companion object {
+        const val DEFAULT_TEMPLATE_ID_BLANK = "blank"
+    }
 }
 
 sealed class TemplateMenuClick {

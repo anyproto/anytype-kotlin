@@ -47,6 +47,7 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -82,6 +83,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -1044,13 +1046,21 @@ class ObjectSetViewModel(
 
     fun onExpandViewerMenuClicked() {
         Timber.d("onExpandViewerMenuClicked, ")
+        val state = stateReducer.state.value.dataViewState() ?: return
         if (isRestrictionPresent(DataViewRestriction.VIEWS)
         ) {
             toast(NOT_ALLOWED)
         } else {
-            viewersWidgetState.value = viewersWidgetState.value.copy(
-                showWidget = true
-            )
+            if (BuildConfig.ENABLE_VIEWS_MENU) {
+                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = true)
+            } else {
+                dispatch(
+                    ObjectSetCommand.Modal.ManageViewer(
+                        ctx = context,
+                        dataview = state.dataViewBlock.id
+                    )
+                )
+            }
         }
     }
 
@@ -1058,6 +1068,14 @@ class ObjectSetViewModel(
         Timber.d("onViewerEditClicked, ")
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        if (!BuildConfig.ENABLE_VIEWS_MENU) {
+            dispatch(
+                ObjectSetCommand.Modal.EditDataViewViewer(
+                    ctx = context,
+                    viewer = viewer.id
+                )
+            )
+        }
     }
 
     fun onMenuClicked() {
@@ -1473,23 +1491,26 @@ class ObjectSetViewModel(
     }
 
     // region TEMPLATES
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun subscribeToViewerTypeTemplates() {
         viewModelScope.launch {
             combine(
-                stateReducer.state.filterIsInstance<ObjectState.DataView>(),
-                session.currentViewerId
+                stateReducer.state.filterIsInstance<ObjectState.DataView>(), session.currentViewerId
             ) { state, currentViewId ->
-
-                val viewer = state.dataViewState()?.viewerById(currentViewId)
-                val viewerDefObjType = fetchViewerDefaultObjectType(viewer)
-
-                if (viewer != null && viewerDefObjType?.isTemplatesAllowed() == true) {
-                    fetchAndProcessTemplates(viewerDefObjType, viewer)
-                } else {
-                    Timber.d("Templates are not allowed for type:[${viewerDefObjType?.id}]")
-                    _dvViews.value = emptyList()
-                }
-            }.collect()
+                Pair(
+                    state,
+                    currentViewId
+                )
+            }.flatMapLatest { (state, currentViewId) ->
+                    val viewer = state.dataViewState()?.viewerById(currentViewId)
+                    val viewerDefObjType = fetchViewerDefaultObjectType(viewer)
+                    if (viewer != null && viewerDefObjType?.isTemplatesAllowed() == true) {
+                        fetchAndProcessTemplates(viewerDefObjType, viewer)
+                    } else {
+                        Timber.d("Templates are not allowed for type:[${viewerDefObjType?.id}]")
+                        emptyFlow()
+                    }
+                }.onEach { _templateViews.value = it }.collect()
         }
     }
 
@@ -1498,25 +1519,21 @@ class ObjectSetViewModel(
         return storeOfObjectTypes.get(viewerDefaultObjectTypeId)
     }
 
-    private suspend fun fetchAndProcessTemplates(viewerDefObjType: ObjectWrapper.Type, viewer: DVViewer) {
+    private suspend fun fetchAndProcessTemplates(
+        viewerDefObjType: ObjectWrapper.Type,
+        viewer: DVViewer
+    ): Flow<List<TemplateView>> {
         Timber.d("Fetching templates for type ${viewerDefObjType.id}")
 
-        templatesContainer.subscribe(viewerDefObjType.id)
+        return templatesContainer.subscribe(viewerDefObjType.id)
             .catch {
-                handleTemplateFetchingError(it, viewerDefObjType.id)
+                Timber.e(it, "Error while getting templates for type ${viewerDefObjType.id}")
+                toast("Error while getting templates for type ${viewerDefObjType.name}")
+                emptyFlow<List<TemplateView>>()
             }
             .map { results ->
                 processTemplates(results, viewerDefObjType, viewer)
             }
-            .collectLatest { templates ->
-                _templateViews.value = templates
-            }
-    }
-
-    private fun handleTemplateFetchingError(exception: Throwable, typeId: String) {
-        Timber.e(exception, "Error while getting templates for type $typeId")
-        toast("Error while getting templates for type $typeId")
-        _dvViews.value = emptyList()
     }
 
     private fun processTemplates(
@@ -1524,7 +1541,11 @@ class ObjectSetViewModel(
         viewerDefObjType: ObjectWrapper.Type,
         viewer: DVViewer
     ): List<TemplateView> {
-        val blankTemplate = listOf(viewerDefObjType.toTemplateViewBlank())
+        val blankTemplate = listOf(
+            viewerDefObjType.toTemplateViewBlank(
+                viewerDefaultTemplate = viewer.defaultTemplate
+            )
+        )
         return blankTemplate + results.map { objTemplate ->
             objTemplate.toTemplateView(
                 typeId = viewerDefObjType.id,
@@ -1533,7 +1554,7 @@ class ObjectSetViewModel(
                 objectTypeDefaultTemplate = viewerDefObjType.defaultTemplateId,
                 viewerDefaultTemplate = viewer.defaultTemplate
             )
-        } + listOf(TemplateView.New(viewerDefObjType.id))
+        }.sortedByDescending { it.isDefault } + listOf(TemplateView.New(viewerDefObjType.id))
     }
 
     fun onTemplateItemClicked(item: TemplateView) {

@@ -1554,7 +1554,7 @@ class ObjectSetViewModel(
                 objectTypeDefaultTemplate = viewerDefObjType.defaultTemplateId,
                 viewerDefaultTemplate = viewer.defaultTemplate
             )
-        } + listOf(TemplateView.New(viewerDefObjType.id))
+        }.sortedByDescending { it.isDefault } + listOf(TemplateView.New(viewerDefObjType.id))
     }
 
     fun onTemplateItemClicked(item: TemplateView) {

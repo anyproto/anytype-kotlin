@@ -88,20 +88,8 @@ class OnboardingVoidViewModel @Inject constructor(
         ) { result ->
             result.either(
                 fnL = { error ->
-                    Timber.d("Error while creating account: ${error.message ?: "Unknown error"}").also {
-                        when(error) {
-                            CreateAccountException.NetworkError -> {
-                                sendToast(
-                                    "Failed to create your account due to a network error: ${error.message ?: "Unknown error"}"
-                                )
-                            }
-                            CreateAccountException.OfflineDevice -> {
-                                sendToast("Your device seems to be offline. Please, check your connection and try again.")
-                            }
-                            else -> {
-                                sendToast("Error while creating an account: ${error.message ?: "Unknown error"}")
-                            }
-                        }
+                    Timber.e(error, "Error while creating account").also {
+                        sendToast("Error while creating an account: ${error.message ?: "Unknown error"}")
                     }
                 },
                 fnR = {

@@ -460,6 +460,7 @@ fun ObjectWrapper.Type.toTemplateViewBlank(
     viewerDefaultTemplate: Id? = null
 ): TemplateView.Blank {
     return TemplateView.Blank(
+        id = DEFAULT_TEMPLATE_ID_BLANK,
         typeId = id,
         layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
         isDefault = viewerDefaultTemplate == DEFAULT_TEMPLATE_ID_BLANK
@@ -542,5 +543,25 @@ fun ObjectState.DataView.getDefaultObjectType(ctx: Id, viewer: DVViewer?): Id? {
     return when (this) {
         is ObjectState.DataView.Collection -> getDefaultObjectTypeForCollection(viewer)
         is ObjectState.DataView.Set -> getDefaultObjectTypeForSet(ctx, viewer)
+    }
+}
+
+suspend fun DVViewer.getProperTemplateId(
+    templateId: Id?,
+    storeOfObjectTypes: StoreOfObjectTypes
+): Id? {
+    return if (templateId != null) {
+        if (templateId == DEFAULT_TEMPLATE_ID_BLANK) {
+            null
+        } else {
+            templateId
+        }
+    } else {
+        val defaultObjectTypeId = defaultObjectType
+        if (defaultObjectTypeId != null) {
+            storeOfObjectTypes.get(defaultObjectTypeId)?.defaultTemplateId
+        } else {
+            null
+        }
     }
 }

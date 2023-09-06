@@ -68,7 +68,6 @@ import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
@@ -77,7 +76,6 @@ import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
-import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -897,7 +895,7 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set, templateId: Id?) {
+    private suspend fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set, templateId: Id?) {
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
@@ -920,6 +918,12 @@ class ObjectSetViewModel(
                 if (sourceDetails != null && sourceDetails.map.isNotEmpty()) {
                     when (sourceDetails.type.firstOrNull()) {
                         ObjectTypeIds.OBJECT_TYPE -> {
+                            val createObjectTemplateId =
+                                if (templateId == TemplateView.DEFAULT_TEMPLATE_ID_BLANK) {
+                                    null
+                                } else {
+                                    templateId
+                                }
                             if (sourceId == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
                                     ObjectSetCommand.Modal.CreateBookmark(
@@ -931,17 +935,18 @@ class ObjectSetViewModel(
                                     CreateDataViewObject.Params.SetByType(
                                         type = defaultObjectType,
                                         filters = viewer.filters,
-                                        template = templateId
+                                        template = createObjectTemplateId
                                     )
                                 )
                             }
                         }
                         ObjectTypeIds.RELATION -> {
+                            val createObjectTemplateId = viewer.getProperTemplateId(templateId, storeOfObjectTypes)
                             proceedWithCreatingDataViewObject(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
                                     relations = setObject.setOf,
-                                    template = templateId,
+                                    template = createObjectTemplateId,
                                     type = defaultObjectType
                                 )
                             )
@@ -962,16 +967,7 @@ class ObjectSetViewModel(
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
 
-        val createObjectTemplateId = if (templateId != null) {
-            templateId
-        } else {
-            val defaultObjectTypeId = viewer.defaultObjectType
-            if (defaultObjectTypeId != null) {
-                storeOfObjectTypes.get(defaultObjectTypeId)?.defaultTemplateId
-            } else {
-                null
-            }
-        }
+        val createObjectTemplateId = viewer.getProperTemplateId(templateId, storeOfObjectTypes)
         val createObjectParams = CreateDataViewObject.Params.Collection(
             templateId = createObjectTemplateId,
             type = viewer.defaultObjectType
@@ -1577,7 +1573,7 @@ class ObjectSetViewModel(
                 }
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
-                    proceedWithDataViewObjectCreate()
+                    proceedWithDataViewObjectCreate(item.id)
                 }
             }
             is TemplateView.Template -> {

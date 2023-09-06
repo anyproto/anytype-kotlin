@@ -1503,7 +1503,7 @@ class ObjectSetViewModel(
                 )
             }.flatMapLatest { (state, currentViewId) ->
                     val viewer = state.dataViewState()?.viewerById(currentViewId)
-                    val viewerDefObjType = fetchViewerDefaultObjectType(viewer)
+                    val viewerDefObjType = fetchViewerDefaultObjectType(state, viewer)
                     if (viewer != null && viewerDefObjType?.isTemplatesAllowed() == true) {
                         fetchAndProcessTemplates(viewerDefObjType, viewer)
                     } else {
@@ -1514,8 +1514,8 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun fetchViewerDefaultObjectType(viewer: DVViewer?): ObjectWrapper.Type? {
-        val viewerDefaultObjectTypeId = viewer?.defaultObjectType ?: VIEW_DEFAULT_OBJECT_TYPE
+    private suspend fun fetchViewerDefaultObjectType(state: ObjectState.DataView, viewer: DVViewer?): ObjectWrapper.Type? {
+        val viewerDefaultObjectTypeId = state.getDefaultObjectType(ctx = context, viewer = viewer) ?: return null
         return storeOfObjectTypes.get(viewerDefaultObjectTypeId)
     }
 

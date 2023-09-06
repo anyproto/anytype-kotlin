@@ -524,3 +524,20 @@ suspend fun List<ViewerView>.isActiveWithTemplates(storeOfObjectTypes: StoreOfOb
     val viewerDefaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId) ?: return false
     return viewerDefaultObjectType.isTemplatesAllowed()
 }
+
+fun ObjectState.DataView.getDefaultObjectType(ctx: Id, viewer: DVViewer?): Id? {
+    return when (this) {
+        is ObjectState.DataView.Collection -> {
+            viewer?.defaultObjectType ?: VIEW_DEFAULT_OBJECT_TYPE
+        }
+
+        is ObjectState.DataView.Set -> {
+            val setOfValue = getSetOfValue(ctx)
+            if (isSetByRelation(setOfValue = setOfValue)) {
+                viewer?.defaultObjectType ?: VIEW_DEFAULT_OBJECT_TYPE
+            } else {
+                setOfValue.firstOrNull()
+            }
+        }
+    }
+}

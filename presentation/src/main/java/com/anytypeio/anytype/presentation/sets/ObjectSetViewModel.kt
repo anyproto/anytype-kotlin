@@ -83,6 +83,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -1490,23 +1491,26 @@ class ObjectSetViewModel(
     }
 
     // region TEMPLATES
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun subscribeToViewerTypeTemplates() {
         viewModelScope.launch {
             combine(
-                stateReducer.state.filterIsInstance<ObjectState.DataView>(),
-                session.currentViewerId
+                stateReducer.state.filterIsInstance<ObjectState.DataView>(), session.currentViewerId
             ) { state, currentViewId ->
-
-                val viewer = state.dataViewState()?.viewerById(currentViewId)
-                val viewerDefObjType = fetchViewerDefaultObjectType(viewer)
-
-                if (viewer != null && viewerDefObjType?.isTemplatesAllowed() == true) {
-                    fetchAndProcessTemplates(viewerDefObjType, viewer)
-                } else {
-                    Timber.d("Templates are not allowed for type:[${viewerDefObjType?.id}]")
-                    _dvViews.value = emptyList()
-                }
-            }.collect()
+                Pair(
+                    state,
+                    currentViewId
+                )
+            }.flatMapLatest { (state, currentViewId) ->
+                    val viewer = state.dataViewState()?.viewerById(currentViewId)
+                    val viewerDefObjType = fetchViewerDefaultObjectType(viewer)
+                    if (viewer != null && viewerDefObjType?.isTemplatesAllowed() == true) {
+                        fetchAndProcessTemplates(viewerDefObjType, viewer)
+                    } else {
+                        Timber.d("Templates are not allowed for type:[${viewerDefObjType?.id}]")
+                        emptyFlow()
+                    }
+                }.onEach { _templateViews.value = it }.collect()
         }
     }
 
@@ -1515,25 +1519,21 @@ class ObjectSetViewModel(
         return storeOfObjectTypes.get(viewerDefaultObjectTypeId)
     }
 
-    private suspend fun fetchAndProcessTemplates(viewerDefObjType: ObjectWrapper.Type, viewer: DVViewer) {
+    private suspend fun fetchAndProcessTemplates(
+        viewerDefObjType: ObjectWrapper.Type,
+        viewer: DVViewer
+    ): Flow<List<TemplateView>> {
         Timber.d("Fetching templates for type ${viewerDefObjType.id}")
 
-        templatesContainer.subscribe(viewerDefObjType.id)
+        return templatesContainer.subscribe(viewerDefObjType.id)
             .catch {
-                handleTemplateFetchingError(it, viewerDefObjType.id)
+                Timber.e(it, "Error while getting templates for type ${viewerDefObjType.id}")
+                toast("Error while getting templates for type ${viewerDefObjType.name}")
+                emptyFlow<List<TemplateView>>()
             }
             .map { results ->
                 processTemplates(results, viewerDefObjType, viewer)
             }
-            .collectLatest { templates ->
-                _templateViews.value = templates
-            }
-    }
-
-    private fun handleTemplateFetchingError(exception: Throwable, typeId: String) {
-        Timber.e(exception, "Error while getting templates for type $typeId")
-        toast("Error while getting templates for type $typeId")
-        _dvViews.value = emptyList()
     }
 
     private fun processTemplates(

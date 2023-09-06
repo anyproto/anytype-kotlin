@@ -775,6 +775,7 @@ enum class DragStates {
 fun ComposablePreview() {
     val items = listOf(
         TemplateView.Blank(
+            id = TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
             typeId = "page",
             typeName = "Page",
             layout = ObjectType.Layout.BASIC.code

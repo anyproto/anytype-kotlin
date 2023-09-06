@@ -460,6 +460,7 @@ fun ObjectWrapper.Type.toTemplateViewBlank(
     viewerDefaultTemplate: Id? = null
 ): TemplateView.Blank {
     return TemplateView.Blank(
+        id = DEFAULT_TEMPLATE_ID_BLANK,
         typeId = id,
         layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
         isDefault = viewerDefaultTemplate == DEFAULT_TEMPLATE_ID_BLANK
@@ -523,4 +524,45 @@ suspend fun List<ViewerView>.isActiveWithTemplates(storeOfObjectTypes: StoreOfOb
     val viewerDefaultObjectTypeId = activeViewer?.defaultObjectType ?: return false
     val viewerDefaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId) ?: return false
     return viewerDefaultObjectType.isTemplatesAllowed()
+}
+
+fun ObjectState.DataView.Collection.getDefaultObjectTypeForCollection(viewer: DVViewer?): Id {
+    return viewer?.defaultObjectType ?: VIEW_DEFAULT_OBJECT_TYPE
+}
+
+fun ObjectState.DataView.Set.getDefaultObjectTypeForSet(ctx: Id, viewer: DVViewer?): Id? {
+    val setOfValue = getSetOfValue(ctx)
+    return if (isSetByRelation(setOfValue = setOfValue)) {
+        viewer?.defaultObjectType ?: VIEW_DEFAULT_OBJECT_TYPE
+    } else {
+        setOfValue.firstOrNull()
+    }
+}
+
+fun ObjectState.DataView.getDefaultObjectType(ctx: Id, viewer: DVViewer?): Id? {
+    return when (this) {
+        is ObjectState.DataView.Collection -> getDefaultObjectTypeForCollection(viewer)
+        is ObjectState.DataView.Set -> getDefaultObjectTypeForSet(ctx, viewer)
+    }
+}
+
+//TODO Refact
+suspend fun DVViewer.getProperTemplateId(
+    templateId: Id?,
+    storeOfObjectTypes: StoreOfObjectTypes
+): Id? {
+    return if (templateId != null) {
+        if (templateId == DEFAULT_TEMPLATE_ID_BLANK) {
+            null
+        } else {
+            templateId
+        }
+    } else {
+        val defaultObjectTypeId = defaultObjectType
+        if (defaultObjectTypeId != null) {
+            storeOfObjectTypes.get(defaultObjectTypeId)?.defaultTemplateId
+        } else {
+            null
+        }
+    }
 }

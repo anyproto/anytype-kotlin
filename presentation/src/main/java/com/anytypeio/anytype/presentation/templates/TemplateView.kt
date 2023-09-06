@@ -10,6 +10,7 @@ sealed class TemplateView {
     abstract val isDefault: Boolean
 
     data class Blank(
+        val id: Id,
         val typeId: Id,
         val typeName: String = "",
         val layout: Int,

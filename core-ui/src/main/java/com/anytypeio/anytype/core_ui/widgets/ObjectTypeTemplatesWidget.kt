@@ -295,13 +295,11 @@ private fun MoreMenu(
                 shape = RoundedCornerShape(size = 10.dp)
             )
     ) {
-        if(currentState.isDefaultStateEnabled) {
-            MenuItem(
-                click = { menuClick(TemplateMenuClick.Default(templateView)) },
-                text = stringResource(id = R.string.templates_menu_default_for_view)
-            )
-            Divider()
-        }
+        MenuItem(
+            click = { menuClick(TemplateMenuClick.Default(templateView)) },
+            text = stringResource(id = R.string.templates_menu_default_for_view)
+        )
+        Divider()
         MenuItem(
             click = { menuClick(TemplateMenuClick.Edit(templateView)) },
             text = stringResource(id = R.string.templates_menu_edit)
@@ -373,7 +371,7 @@ private fun TemplatesList(
                 ) {
                     val borderWidth: Dp
                     val borderColor: Color
-                    if (state.isDefaultStateEnabled && item.isDefault) {
+                    if (item.isDefault) {
                         borderWidth = 2.dp
                         borderColor = colorResource(id = R.color.palette_system_amber_50)
                     } else {

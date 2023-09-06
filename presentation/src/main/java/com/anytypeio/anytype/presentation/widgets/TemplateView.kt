@@ -7,15 +7,13 @@ data class TemplatesWidgetUiState(
     val showWidget: Boolean,
     val isEditing: Boolean,
     val isMoreMenuVisible: Boolean,
-    val moreMenuTemplate: TemplateView.Template?,
-    val isDefaultStateEnabled: Boolean = false
+    val moreMenuTemplate: TemplateView.Template?
 ) {
     fun dismiss() = copy(
         showWidget = false,
         isEditing = false,
         isMoreMenuVisible = false,
-        moreMenuTemplate = null,
-        isDefaultStateEnabled = false
+        moreMenuTemplate = null
     )
 
     companion object {
@@ -24,8 +22,7 @@ data class TemplatesWidgetUiState(
             showWidget = false,
             isEditing = false,
             isMoreMenuVisible = false,
-            moreMenuTemplate = null,
-            isDefaultStateEnabled = false
+            moreMenuTemplate = null
         )
     }
 }

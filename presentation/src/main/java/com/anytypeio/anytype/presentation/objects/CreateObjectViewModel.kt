@@ -3,33 +3,36 @@ package com.anytypeio.anytype.presentation.objects
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.page.CreateObject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class CreateObjectViewModel(private val createObject: CreateObject) : ViewModel() {
 
     val createObjectStatus = MutableSharedFlow<State>(replay = 0)
     private val jobs = mutableListOf<Job>()
 
-    fun onStart(type: String) {
+    fun onStart(type: Key) {
         onCreatePage(type)
     }
 
-    private fun onCreatePage(type: String) {
-        TODO()
-//        val params = CreateObject.Param(type = type)
-//        jobs += viewModelScope.launch {
-//            createObject.execute(params).fold(
-//                onFailure = { e ->
-//                    Timber.e(e, "Error while creating a new object with type:$type")
-//                },
-//                onSuccess = { result ->
-//                    createObjectStatus.emit(State.Success(result.objectId))
-//                }
-//            )
-//        }
+    private fun onCreatePage(type: Key) {
+        val params = CreateObject.Param(type = TypeKey(type))
+        jobs += viewModelScope.launch {
+            createObject.execute(params).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while creating a new object with type:$type")
+                },
+                onSuccess = { result ->
+                    createObjectStatus.emit(State.Success(result.objectId))
+                }
+            )
+        }
     }
 
     fun onStop() {

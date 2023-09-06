@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_models
 
 /**
  * Keys for predefined, bundled object types.
+ * // TODO rename to ObjectTypeUniqueKeys when finished multi-spaces refactoring
  */
 object ObjectTypeIds {
     const val PAGE = "ot-page"
@@ -69,3 +70,8 @@ object MarketplaceObjectTypeIds {
 object Marketplace {
     const val MARKETPLACE_SPACE_ID = "_anytype_marketplace"
 }
+
+/**
+ * TODO Temporary typealias - remove and rename [ObjectTypeIds] when finished multi-spaces refactoring
+ */
+typealias ObjectTypeUniqueKeys = ObjectTypeIds

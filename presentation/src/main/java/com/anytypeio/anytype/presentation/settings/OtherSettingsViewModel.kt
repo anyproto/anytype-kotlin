@@ -9,6 +9,7 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -84,18 +85,12 @@ class OtherSettingsViewModel(
         }
     }
 
-    fun proceedWithUpdateType(type: Id?, name: String?) {
-        if (type == null || name == null) {
-            viewModelScope.launch {
-                commands.emit(Command.Toast("Cannot change default object type"))
-            }
-            return
-        }
+    fun proceedWithUpdateType(type: Id, key: Key, name: String?) {
         viewModelScope.launch {
             appActionManager.setup(
                 AppActionManager.Action.CreateNew(
-                    type = type,
-                    name = name
+                    type = TypeKey(key),
+                    name = name.orEmpty()
                 )
             )
             val params = SetDefaultObjectType.Params(

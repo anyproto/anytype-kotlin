@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -150,12 +150,9 @@ class CreateDataViewObject @Inject constructor(
     }
 
     private suspend fun resolveDefaultObjectType(): Key {
-        // Check execution thread + refactor.
-        return try {
-            getDefaultPageType.run(Unit).type?.key ?: ObjectTypeIds.NOTE
-        } catch (e: Exception) {
-            ObjectTypeIds.NOTE
-        }
+        return getDefaultPageType
+            .async(Unit)
+            .getOrNull()?.type?.key ?: ObjectTypeUniqueKeys.NOTE
     }
 
     private fun resolveDefaultValueByFormat(format: RelationFormat): Any? {

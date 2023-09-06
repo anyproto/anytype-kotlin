@@ -1013,7 +1013,7 @@ class HomeScreenViewModel(
                     Pair(it.name, it.type).letNotNull { name, type ->
                         appActionManager.setup(
                             AppActionManager.Action.CreateNew(
-                                type = type.key,
+                                type = type,
                                 name = name
                             )
                         )

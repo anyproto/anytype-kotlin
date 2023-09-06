@@ -77,6 +77,7 @@ import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
+import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -878,15 +879,6 @@ class ObjectSetViewModel(
         }
     }
 
-    fun proceedWithCreatingNewDataViewObject(templatesId: Id? = null) {
-        Timber.d("proceedWithCreatingNewDataViewObject, templatesId:[$templatesId]")
-        val state = stateReducer.state.value.dataViewState() ?: return
-        when (state) {
-            is ObjectState.DataView.Collection -> proceedWithAddingObjectToCollection(templatesId)
-            is ObjectState.DataView.Set -> proceedWithCreatingSetObject(state, templatesId)
-        }
-    }
-
     fun onNewButtonIconClicked() {
         Timber.d("onNewButtonIconClicked, ")
         templatesWidgetState.value = templatesWidgetState.value.copy(
@@ -917,8 +909,11 @@ class ObjectSetViewModel(
                 Timber.e("onCreateNewDataViewObject, Viewer is empty")
                 return
             }
+
+            val defaultObjectType = currentState.getDefaultObjectTypeForSet(ctx = context, viewer = viewer)
+
             val sourceId = setObject.setOf.singleOrNull()
-            if (sourceId == null) {
+            if (defaultObjectType == null) {
                 toast("Unable to define a source for a new object.")
             } else {
                 val sourceDetails = currentState.details[sourceId]
@@ -934,7 +929,7 @@ class ObjectSetViewModel(
                             } else {
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
-                                        type = sourceId,
+                                        type = defaultObjectType,
                                         filters = viewer.filters,
                                         template = templateId
                                     )
@@ -947,7 +942,7 @@ class ObjectSetViewModel(
                                     filters = viewer.filters,
                                     relations = setObject.setOf,
                                     template = templateId,
-                                    type = viewer.defaultObjectType
+                                    type = defaultObjectType
                                 )
                             )
                         }
@@ -963,16 +958,22 @@ class ObjectSetViewModel(
         dispatch(ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen)
     }
 
-    fun onCreateObjectInCollectionClicked() {
-        Timber.d("onCreateObjectInCollectionClicked, ")
-        proceedWithAddingObjectToCollection()
-    }
-
-    private fun proceedWithAddingObjectToCollection(templateId: Id? = null) {
+    private suspend fun proceedWithAddingObjectToCollection(templateId: Id? = null) {
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
+
+        val createObjectTemplateId = if (templateId != null) {
+            templateId
+        } else {
+            val defaultObjectTypeId = viewer.defaultObjectType
+            if (defaultObjectTypeId != null) {
+                storeOfObjectTypes.get(defaultObjectTypeId)?.defaultTemplateId
+            } else {
+                null
+            }
+        }
         val createObjectParams = CreateDataViewObject.Params.Collection(
-            templateId = templateId,
+            templateId = createObjectTemplateId,
             type = viewer.defaultObjectType
         )
         proceedWithCreatingDataViewObject(createObjectParams) { result ->
@@ -1576,7 +1577,7 @@ class ObjectSetViewModel(
                 }
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
-                    proceedWithCreatingNewDataViewObject()
+                    proceedWithDataViewObjectCreate()
                 }
             }
             is TemplateView.Template -> {
@@ -1590,7 +1591,7 @@ class ObjectSetViewModel(
                 }
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
-                    proceedWithCreatingNewDataViewObject(templatesId = item.id)
+                    proceedWithDataViewObjectCreate(templateId = item.id)
                 }
             }
 
@@ -1858,6 +1859,43 @@ class ObjectSetViewModel(
             }
         } else {
             toast(DATA_VIEW_HAS_NO_VIEW_MSG)
+        }
+    }
+    //endregion
+
+    // region CREATE OBJECT
+    fun proceedWithDataViewObjectCreate(templateId: Id? = null) {
+        Timber.d("proceedWithDataViewObjectCreate, templateId:[$templateId]")
+
+        if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
+            toast(NOT_ALLOWED)
+            return
+        }
+
+        val state = stateReducer.state.value.dataViewState() ?: return
+
+        viewModelScope.launch {
+            when (state) {
+                is ObjectState.DataView.Collection -> {
+                    proceedWithAddingObjectToCollection(getCreateObjectTemplateId(templateId))
+                }
+                is ObjectState.DataView.Set -> {
+                    proceedWithCreatingSetObject(state, getCreateObjectTemplateId(templateId))
+                }
+            }
+        }
+    }
+
+    private fun getCreateObjectTemplateId(templateId: Id?): Id? {
+        return if (templateId != null) {
+            templateId
+        } else {
+            val defaultTemplate = _templateViews.value.firstOrNull { it.isDefault }
+
+            when (defaultTemplate) {
+                is TemplateView.Template -> defaultTemplate.id
+                else -> null
+            }
         }
     }
     //endregion

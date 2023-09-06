@@ -225,14 +225,14 @@ open class ObjectSetFragment :
         binding.root.setTransitionListener(transitionListener)
 
         with(lifecycleScope) {
-            subscribe(addNewButton.clicks().throttleFirst()) { vm.proceedWithCreatingNewDataViewObject() }
-            subscribe(addNewIconButton.buttonClicks()) { vm.proceedWithCreatingNewDataViewObject() }
+            subscribe(addNewButton.clicks().throttleFirst()) { vm.proceedWithDataViewObjectCreate() }
+            subscribe(addNewIconButton.buttonClicks()) { vm.proceedWithDataViewObjectCreate() }
             subscribe(addNewIconButton.iconClicks()) { vm.onNewButtonIconClicked() }
             subscribe(dataViewInfo.clicks().throttleFirst()) { type ->
                 when (type) {
-                    DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.onCreateObjectInCollectionClicked()
+                    DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.proceedWithDataViewObjectCreate()
                     DataViewInfo.TYPE.SET_NO_QUERY -> vm.onSelectQueryButtonClicked()
-                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.proceedWithCreatingNewDataViewObject()
+                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.proceedWithDataViewObjectCreate()
                     DataViewInfo.TYPE.INIT -> {}
                 }
             }
@@ -1197,7 +1197,7 @@ open class ObjectSetFragment :
                 val result = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID);
                 if (!result.isNullOrBlank()) {
                     navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
-                    vm.proceedWithCreatingNewDataViewObject(result)
+                    vm.proceedWithDataViewObjectCreate(result)
                 }
             }
         }

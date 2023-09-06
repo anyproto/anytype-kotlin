@@ -137,16 +137,12 @@ object HomeScreenModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
         getDefaultEditorType: GetDefaultPageType,
-        getTemplates: GetTemplates,
-        spaceManager: SpaceManager,
-        configStorage: ConfigStorage
+        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
         dispatchers = dispatchers,
-        getTemplates = getTemplates,
         getDefaultPageType = getDefaultEditorType,
-        spaceManager = spaceManager,
-        configStorage = configStorage
+        spaceManager = spaceManager
     )
 
     @JvmStatic

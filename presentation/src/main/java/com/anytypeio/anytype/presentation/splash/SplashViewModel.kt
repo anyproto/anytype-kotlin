@@ -10,9 +10,11 @@ import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
@@ -133,10 +135,10 @@ class SplashViewModel(
         objectTypesSubscriptionManager.onStart()
     }
 
-    fun onIntentCreateNewObject(type: Id) {
+    fun onIntentCreateNewObject(type: Key) {
         viewModelScope.launch {
             createObject.execute(
-                CreateObject.Param(type = type)
+                CreateObject.Param(type = TypeKey(type))
             ).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while creating a new object with type:$type")

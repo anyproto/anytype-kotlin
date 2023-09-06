@@ -546,6 +546,7 @@ fun ObjectState.DataView.getDefaultObjectType(ctx: Id, viewer: DVViewer?): Id? {
     }
 }
 
+//TODO Refact
 suspend fun DVViewer.getProperTemplateId(
     templateId: Id?,
     storeOfObjectTypes: StoreOfObjectTypes

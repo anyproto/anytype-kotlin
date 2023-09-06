@@ -140,18 +140,14 @@ object LibraryModule {
     @PerScreen
     fun getCreateObject(
         repo: BlockRepository,
-        getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
-        configStorage: ConfigStorage
     ): CreateObject = CreateObject(
         repo = repo,
-        getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
         dispatchers = dispatchers,
-        spaceManager = spaceManager,
-        configStorage = configStorage
+        spaceManager = spaceManager
     )
 
     @JvmStatic

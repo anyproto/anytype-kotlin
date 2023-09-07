@@ -138,7 +138,7 @@ suspend fun DVViewer.render(
                 Viewer.Unsupported(
                     id = id,
                     title = name,
-                    error = "${type.name} view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data."
+                    error = "This view type (${type.name.lowercase()}) is not supported on Android yet. See it as grid view?"
                 )
             }
         }

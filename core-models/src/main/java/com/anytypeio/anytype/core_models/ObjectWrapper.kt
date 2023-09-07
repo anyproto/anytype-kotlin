@@ -127,6 +127,8 @@ sealed class ObjectWrapper {
             }
 
         val targetObjectType: Id? by default
+
+        val isValid get() = map.containsKey(Relations.ID)
     }
 
     /**

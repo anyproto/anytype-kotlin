@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.FileSyncStatus
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -214,40 +215,63 @@ object ObjectSearchConstants {
     //endregion
 
     //region ADD OBJECT TO FILTER
-    fun filterAddObjectToFilter(workspaceId: String) = listOf(
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.NOT_IN,
-            value = listOf(
-                OBJECT_TYPE,
-                RELATION,
-                TEMPLATE,
-                RELATION_OPTION,
-                DASHBOARD,
-                DATE
+    fun filterAddObjectToFilter(
+        workspaceId: String,
+        limitObjectTypes: List<Key>
+    ) = buildList {
+        add(
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
             )
-        ),
-        DVFilter(
-            relation = Relations.WORKSPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = workspaceId
         )
-    )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        if (filterTypes().isNotEmpty()) {
+            add(
+                DVFilter(
+                    relation = Relations.TYPE,
+                    condition = DVFilterCondition.IN,
+                    value = limitObjectTypes
+                )
+            )
+        } else {
+            add(
+                DVFilter(
+                    relation = Relations.TYPE,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(
+                        OBJECT_TYPE,
+                        RELATION,
+                        TEMPLATE,
+                        RELATION_OPTION,
+                        DASHBOARD,
+                        DATE
+                    )
+                )
+            )
+        }
+        add(
+            DVFilter(
+                relation = Relations.WORKSPACE_ID,
+                condition = DVFilterCondition.EQUAL,
+                value = workspaceId
+            )
+        )
+    }
 
     val sortAddObjectToFilter = listOf(
         DVSort(

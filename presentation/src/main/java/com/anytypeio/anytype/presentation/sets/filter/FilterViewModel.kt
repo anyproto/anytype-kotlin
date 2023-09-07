@@ -286,11 +286,8 @@ open class FilterViewModel(
         Relation.Format.OBJECT -> {
             val ids = filter?.value as? List<*>
             val limitObjectTypes = buildList {
-                val key = filter?.relation
-                if (key != null) {
-                    if (relation.relationFormatObjectTypes.isNotEmpty()) {
-                        addAll(relation.relationFormatObjectTypes)
-                    }
+                if (relation.relationFormatObjectTypes.isNotEmpty()) {
+                    addAll(relation.relationFormatObjectTypes)
                 }
             }
             proceedWithSearchObjects(

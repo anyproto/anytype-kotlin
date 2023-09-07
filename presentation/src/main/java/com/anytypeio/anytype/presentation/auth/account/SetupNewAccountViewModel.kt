@@ -74,36 +74,11 @@ class SetupNewAccountViewModel(
         ) { result ->
             result.either(
                 fnL = { error ->
-                    when (error) {
-                        CreateAccountException.BadInviteCode -> {
-                            _state.postValue(SetupNewAccountViewState.InvalidCodeError("Invalid invitation code!"))
-                            viewModelScope.launch {
-                                delay(300)
-                                navigation.postValue(EventWrapper(AppNavigation.Command.ExitToInvitationCodeScreen))
-                            }
-                        }
-                        CreateAccountException.NetworkError -> {
-                            _state.postValue(
-                                SetupNewAccountViewState.ErrorNetwork(
-                                    "Failed to create your account due to a network error: ${error.message}"
-                                )
-                            )
-                        }
-                        CreateAccountException.OfflineDevice -> {
-                            _state.postValue(
-                                SetupNewAccountViewState.ErrorNetwork(
-                                    "Your device seems to be offline. Please, check your connection and try again."
-                                )
-                            )
-                        }
-                        else -> {
-                            _state.postValue(
-                                SetupNewAccountViewState.Error(
-                                    "Error while creating an account: ${error.message ?: "Unknown error"}"
-                                )
-                            )
-                        }
-                    }
+                    _state.postValue(
+                        SetupNewAccountViewState.Error(
+                            "Error while creating an account: ${error.message ?: "Unknown error"}"
+                        )
+                    )
                     Timber.e(error, "Error while creating account")
                 },
                 fnR = {

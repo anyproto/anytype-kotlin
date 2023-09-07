@@ -125,8 +125,8 @@ interface StorelessSubscriptionContainer {
                     }
                 }
                 result
-            }.map {
-                it.mapNotNull { item ->
+            }.map { result ->
+                result.mapNotNull { item ->
                     if (item.objectWrapper?.isValid == true) {
                         item.objectWrapper
                     } else {

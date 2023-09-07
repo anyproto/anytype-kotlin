@@ -240,7 +240,7 @@ object ObjectSearchConstants {
                 value = true
             )
         )
-        if (filterTypes().isNotEmpty()) {
+        if (limitObjectTypes.isNotEmpty()) {
             add(
                 DVFilter(
                     relation = Relations.TYPE,

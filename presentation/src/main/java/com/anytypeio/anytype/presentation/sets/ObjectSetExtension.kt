@@ -383,6 +383,7 @@ fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): Lis
 }
 
 fun ObjectState.DataView.Set.isSetByRelation(setOfValue: List<Id>): Boolean {
+    if (setOfValue.isEmpty()) return false
     val objectDetails = details[setOfValue.first()]?.map.orEmpty()
     return objectDetails.type == ObjectTypeIds.RELATION
 }

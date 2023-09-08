@@ -77,6 +77,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
@@ -486,9 +487,7 @@ private fun TemplateItemContent(item: TemplateView) {
                                         .padding(top = 28.dp)
                                         .align(Alignment.CenterHorizontally)
                                 ) {
-                                    val modifier = Modifier
-                                        .size(40.dp)
-                                        .clip(CircleShape)
+                                    val modifier = Modifier.clip(CircleShape)
                                     TemplateItemIconOrImage(item = item, modifier = modifier)
                                 }
                                 Spacer(modifier = Modifier.height(6.dp))
@@ -498,9 +497,7 @@ private fun TemplateItemContent(item: TemplateView) {
                                 )
                             } else {
                                 val modifier = Modifier
-                                    .width(56.dp)
-                                    .height(68.dp)
-                                    .padding(start = 16.dp, top = 28.dp)
+                                    .padding(start = 14.dp, top = 26.dp)
                                 TemplateItemIconOrImage(item = item, modifier = modifier)
                                 Spacer(modifier = Modifier.height(8.dp))
                                 TemplateItemTitle(text = item.name)
@@ -615,7 +612,6 @@ private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
                         .align(Alignment.TopCenter)
                 ) {
                     val modifier = Modifier
-                        .size(40.dp)
                         .clip(CircleShape)
                         .align(Alignment.Center)
                     TemplateItemIconOrImage(item = item, modifier = modifier)
@@ -720,7 +716,7 @@ private fun TemplateItemTitle(text: String, textAlign: TextAlign = TextAlign.Sta
             end = 16.dp
         ),
         text = text.ifBlank { stringResource(id = R.string.untitled) },
-        style = Caption2Semibold.copy(
+        style = TitleInter15.copy(
             color = colorResource(id = R.color.text_primary)
         ),
         maxLines = 2,

@@ -6,7 +6,6 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filterOutDeletedAndMissingObjects
 import com.anytypeio.anytype.presentation.sets.getSetOfValue
 import com.anytypeio.anytype.presentation.sets.state.ObjectState

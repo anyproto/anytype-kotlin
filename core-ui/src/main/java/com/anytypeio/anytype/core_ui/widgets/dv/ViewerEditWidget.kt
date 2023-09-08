@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
@@ -337,7 +338,8 @@ fun PreviewViewerEditWidget() {
         filters = listOf(),
         sorts = emptyList(),
         layout = DVViewerType.LIST,
-        relations = listOf()
+        relations = listOf(),
+        viewerId = "12"
     )
     ViewerEditWidget(state = state, action = {})
 }

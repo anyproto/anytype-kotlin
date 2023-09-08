@@ -1478,15 +1478,25 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
-        dispatch(
-            command = Command.OpenDocumentMenu(
-                isArchived = details[context]?.isArchived ?: false,
-                isFavorite = details[context]?.isFavorite ?: false,
-                isLocked = mode == EditorMode.Locked,
-                fromName = wrapper.getProperObjectName().orEmpty(),
-                isTemplate = isObjectTemplate()
+        val isProfile = wrapper.type.firstOrNull() == ObjectTypeIds.PROFILE
+        if (isProfile) {
+            dispatch(
+                command = Command.OpenProfileMenu(
+                    isFavorite = details[context]?.isFavorite ?: false,
+                    isLocked = mode == EditorMode.Locked
+                )
             )
-        )
+        } else {
+            dispatch(
+                command = Command.OpenDocumentMenu(
+                    isArchived = details[context]?.isArchived ?: false,
+                    isFavorite = details[context]?.isFavorite ?: false,
+                    isLocked = mode == EditorMode.Locked,
+                    fromName = wrapper.getProperObjectName().orEmpty(),
+                    isTemplate = isObjectTemplate()
+                )
+            )
+        }
     }
 
     fun onEmptyBlockBackspaceClicked(id: String) {

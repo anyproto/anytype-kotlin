@@ -109,7 +109,7 @@ class ObjectMenuViewModel(
         storage.details.current().details[objTypeId]?.let { objType ->
             val objTypeWrapper = ObjectWrapper.Type(objType.map)
             val isTemplateAllowed = objTypeWrapper.isTemplatesAllowed()
-            if (isTemplateAllowed && !isTemplate) {
+            if (isTemplateAllowed && !isTemplate && !isProfile) {
                 add(ObjectAction.USE_AS_TEMPLATE)
             }
         }

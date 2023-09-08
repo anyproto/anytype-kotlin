@@ -285,9 +285,15 @@ open class FilterViewModel(
         }
         Relation.Format.OBJECT -> {
             val ids = filter?.value as? List<*>
+            val limitObjectTypes = buildList {
+                if (relation.relationFormatObjectTypes.isNotEmpty()) {
+                    addAll(relation.relationFormatObjectTypes)
+                }
+            }
             proceedWithSearchObjects(
                 ids = ids,
-                objectTypes = storeOfObjectTypes.getAll()
+                objectTypes = storeOfObjectTypes.getAll(),
+                limitObjectTypes = limitObjectTypes
             )
         }
         Relation.Format.CHECKBOX -> {
@@ -356,14 +362,16 @@ open class FilterViewModel(
 
     private fun proceedWithSearchObjects(
         ids: List<*>? = null,
-        objectTypes: List<ObjectWrapper.Type>
+        objectTypes: List<ObjectWrapper.Type>,
+        limitObjectTypes: List<Key> = emptyList()
     ) {
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
                     sorts = ObjectSearchConstants.sortAddObjectToFilter,
                     filters = ObjectSearchConstants.filterAddObjectToFilter(
-                        workspaceId = workspaceManager.getCurrentWorkspace()
+                        workspaceId = workspaceManager.getCurrentWorkspace(),
+                        limitObjectTypes = limitObjectTypes
                     ),
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,

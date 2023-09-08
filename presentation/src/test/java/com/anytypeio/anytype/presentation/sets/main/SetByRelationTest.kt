@@ -77,7 +77,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             val second = awaitItem()
             assertIs<DataViewViewState.Set.Default>(second)
 
-            viewModel.proceedWithCreatingNewDataViewObject()
+            viewModel.proceedWithDataViewObjectCreate()
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {
@@ -132,7 +132,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             val second = awaitItem()
             assertIs<DataViewViewState.Set.Default>(second)
 
-            viewModel.proceedWithCreatingNewDataViewObject()
+            viewModel.proceedWithDataViewObjectCreate()
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {

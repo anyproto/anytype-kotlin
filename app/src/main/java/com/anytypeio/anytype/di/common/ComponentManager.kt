@@ -9,11 +9,13 @@ import com.anytypeio.anytype.di.feature.AddObjectRelationValueModule
 import com.anytypeio.anytype.di.feature.AuthModule
 import com.anytypeio.anytype.di.feature.CreateAccountModule
 import com.anytypeio.anytype.di.feature.CreateBookmarkModule
+import com.anytypeio.anytype.di.feature.CreateDataViewViewerModule
 import com.anytypeio.anytype.di.feature.CreateObjectModule
 import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerSplashComponent
 import com.anytypeio.anytype.di.feature.DataViewRelationValueModule
 import com.anytypeio.anytype.di.feature.DebugSettingsModule
+import com.anytypeio.anytype.di.feature.EditDataViewViewerModule
 import com.anytypeio.anytype.di.feature.EditorSessionModule
 import com.anytypeio.anytype.di.feature.EditorUseCaseModule
 import com.anytypeio.anytype.di.feature.KeychainLoginModule
@@ -21,6 +23,7 @@ import com.anytypeio.anytype.di.feature.KeychainPhraseModule
 import com.anytypeio.anytype.di.feature.LinkToObjectModule
 import com.anytypeio.anytype.di.feature.LinkToObjectOrWebModule
 import com.anytypeio.anytype.di.feature.MainEntryModule
+import com.anytypeio.anytype.di.feature.ManageViewerModule
 import com.anytypeio.anytype.di.feature.ModifyViewerSortModule
 import com.anytypeio.anytype.di.feature.MoveToModule
 import com.anytypeio.anytype.di.feature.ObjectAppearanceIconModule
@@ -448,6 +451,22 @@ class ComponentManager(
             .build()
     }
 
+    val createDataViewViewerComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .createDataViewViewerSubComponent()
+            .module(CreateDataViewViewerModule)
+            .build()
+    }
+
+    val editDataViewViewerComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .editDataViewViewerComponent()
+            .module(EditDataViewViewerModule)
+            .build()
+    }
+
     val dataViewRelationValueComponent = DependentComponentMap { ctx ->
         objectSetComponent
             .get(ctx)
@@ -517,6 +536,14 @@ class ComponentManager(
             .get(ctx)
             .addRelationFileValueAddComponent()
             .module(AddFileRelationModule)
+            .build()
+    }
+
+    val manageViewerComponent = DependentComponentMap { ctx ->
+        objectSetComponent
+            .get(ctx)
+            .manageViewerComponent()
+            .module(ManageViewerModule)
             .build()
     }
 

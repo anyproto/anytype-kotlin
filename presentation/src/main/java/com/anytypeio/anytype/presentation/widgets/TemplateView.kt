@@ -10,7 +10,6 @@ data class TemplatesWidgetUiState(
     val isEditing: Boolean,
     val isMoreMenuVisible: Boolean,
     val moreMenuTemplate: TemplateView.Template?,
-    val isDefaultStateEnabled: Boolean = false,
     val defaultObjectType: ObjectWrapper.Type? = null,
     val objectTypes: List<TemplateObjectTypeView> = listOf(TemplateObjectTypeView.Search)
 ) {
@@ -18,8 +17,7 @@ data class TemplatesWidgetUiState(
         showWidget = false,
         isEditing = false,
         isMoreMenuVisible = false,
-        moreMenuTemplate = null,
-        isDefaultStateEnabled = false
+        moreMenuTemplate = null
     )
 
     companion object {
@@ -29,7 +27,6 @@ data class TemplatesWidgetUiState(
             isEditing = false,
             isMoreMenuVisible = false,
             moreMenuTemplate = null,
-            isDefaultStateEnabled = true,
             objectTypes = emptyList(),
             defaultObjectType = null
         )

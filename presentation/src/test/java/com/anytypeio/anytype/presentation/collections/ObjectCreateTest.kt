@@ -83,7 +83,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        viewModel.proceedWithCreatingNewDataViewObject()
+        viewModel.proceedWithDataViewObjectCreate()
 
         advanceUntilIdle()
 
@@ -142,7 +142,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        viewModel.proceedWithCreatingNewDataViewObject()
+        viewModel.proceedWithDataViewObjectCreate()
 
         assertIs<ObjectSetCommand.Modal.SetNameForCreatedObject>(commandFlow.awaitItem())
 
@@ -212,7 +212,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        viewModel.proceedWithCreatingNewDataViewObject()
+        viewModel.proceedWithDataViewObjectCreate()
 
         advanceUntilIdle()
 
@@ -276,7 +276,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        viewModel.proceedWithCreatingNewDataViewObject()
+        viewModel.proceedWithDataViewObjectCreate()
 
         advanceUntilIdle()
 

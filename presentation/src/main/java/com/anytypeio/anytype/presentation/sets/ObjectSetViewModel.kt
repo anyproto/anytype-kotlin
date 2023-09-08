@@ -1255,7 +1255,9 @@ class ObjectSetViewModel(
 
     //endregion NAVIGATION
 
-    fun onUnsupportedViewErrorClicked() {}
+    fun onUnsupportedViewErrorClicked() {
+        // Do nothing
+    }
 
     override fun onCleared() {
         Timber.d("onCleared, ")

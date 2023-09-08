@@ -152,15 +152,12 @@ fun ObjectTypeTemplatesWidget(
             enter = slideInVertically { it },
             exit = slideOutVertically(tween(200)) { it },
             modifier = Modifier
-                .swipeable(
-                    state = swipeableState,
+                .swipeable(state = swipeableState,
                     orientation = Orientation.Vertical,
                     anchors = mapOf(
-                        0f to DragStates.VISIBLE,
-                        sizePx to DragStates.DISMISSED
+                        0f to DragStates.VISIBLE, sizePx to DragStates.DISMISSED
                     ),
-                    thresholds = { _, _ -> FractionalThreshold(0.3f) }
-                )
+                    thresholds = { _, _ -> FractionalThreshold(0.3f) })
                 .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
         ) {
             Box(
@@ -192,10 +189,7 @@ fun ObjectTypeTemplatesWidget(
                                 Text(
                                     modifier = Modifier
                                         .padding(
-                                            start = 15.dp,
-                                            top = 12.dp,
-                                            bottom = 12.dp,
-                                            end = 16.dp
+                                            start = 15.dp, top = 12.dp, bottom = 12.dp, end = 16.dp
                                         )
                                         .noRippleClickable { doneClick() },
                                     text = stringResource(id = R.string.done),
@@ -464,14 +458,10 @@ private fun TemplateItemContent(item: TemplateView) {
                         } else {
                             Spacer(modifier = Modifier.height(6.dp))
                         }
-                        if (item.layout == ObjectType.Layout.PROFILE) {
-                            TemplateItemTitle(
-                                text = item.name,
-                                textAlign = TextAlign.Center,
-                            )
-                        } else {
-                            TemplateItemTitle(text = item.name)
-                        }
+                        TemplateItemTitle(
+                            text = item.name,
+                            textAlign = getProperTextAlign(item.layout)
+                        )
                     }
                 } else {
                     if (item.layout == ObjectType.Layout.TODO) {
@@ -493,18 +483,23 @@ private fun TemplateItemContent(item: TemplateView) {
                                 Spacer(modifier = Modifier.height(6.dp))
                                 TemplateItemTitle(
                                     text = item.name,
-                                    textAlign = TextAlign.Center
+                                    textAlign = getProperTextAlign(item.layout)
                                 )
                             } else {
                                 val modifier = Modifier
                                     .padding(start = 14.dp, top = 26.dp)
                                 TemplateItemIconOrImage(item = item, modifier = modifier)
                                 Spacer(modifier = Modifier.height(8.dp))
-                                TemplateItemTitle(text = item.name)
+                                TemplateItemTitle(
+                                    text = item.name, textAlign = getProperTextAlign(item.layout)
+                                )
                             }
                         } else {
                             Spacer(modifier = Modifier.height(28.dp))
-                            TemplateItemTitle(text = item.name)
+                            TemplateItemTitle(
+                                text = item.name,
+                                textAlign = getProperTextAlign(item.layout)
+                            )
                         }
                     }
                 }
@@ -711,10 +706,12 @@ private fun TemplateItemCoverGradient(item: TemplateView.Template) {
 @Composable
 private fun TemplateItemTitle(text: String, textAlign: TextAlign = TextAlign.Start) {
     Text(
-        modifier = Modifier.padding(
-            start = 16.dp,
-            end = 16.dp
-        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                end = 16.dp
+            ),
         text = text.ifBlank { stringResource(id = R.string.untitled) },
         style = TitleInter15.copy(
             color = colorResource(id = R.color.text_primary)
@@ -795,6 +792,13 @@ private fun TemplateItemRectangles() {
                     shape = RoundedCornerShape(size = 1.dp)
                 )
         )
+    }
+}
+
+private fun getProperTextAlign(layout: ObjectType.Layout): TextAlign {
+    return when (layout) {
+        ObjectType.Layout.PROFILE -> TextAlign.Center
+        else -> TextAlign.Start
     }
 }
 

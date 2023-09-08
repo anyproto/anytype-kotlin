@@ -1256,7 +1256,7 @@ class ObjectSetViewModel(
     //endregion NAVIGATION
 
     fun onUnsupportedViewErrorClicked() {
-        toast("This view is not supported on Android yet.")
+        // Do nothing
     }
 
     override fun onCleared() {

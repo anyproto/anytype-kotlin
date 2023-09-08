@@ -12,13 +12,14 @@ data class ViewerEditWidgetUi(
     val showWidget: Boolean,
     val id: Id? = null,
     val name: String = "",
+    val viewerId: Id,
+    val defaultObjectType: ObjectWrapper.Type?,
+    val isDefaultObjectTypeEnabled: Boolean = false,
     val layout: DVViewerType?,
     val relations: List<String> = emptyList(),
     val filters: List<String> = emptyList(),
     val sorts: List<String> = emptyList(),
     val defaultTemplate: Id? = null,
-    val defaultObjectType: ObjectWrapper.Type?,
-    val isDefaultObjectTypeEnabled: Boolean = false,
 ) {
 
     fun empty() = this.copy(
@@ -45,6 +46,7 @@ data class ViewerEditWidgetUi(
             defaultTemplate = null,
             defaultObjectType = null,
             isDefaultObjectTypeEnabled = false,
+            viewerId = "",
         )
     }
 

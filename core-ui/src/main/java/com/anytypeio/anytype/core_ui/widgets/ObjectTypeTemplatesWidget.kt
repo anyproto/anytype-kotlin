@@ -161,8 +161,8 @@ fun ObjectTypeTemplatesWidget(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(312.dp)
-                    .padding(start = 8.dp, end = 8.dp, bottom = 31.dp)
+                    .wrapContentHeight()
+                    .padding(start = 8.dp, end = 8.dp, bottom = 15.dp)
                     .background(
                         color = colorResource(id = R.color.background_secondary),
                         shape = RoundedCornerShape(size = 16.dp)
@@ -172,7 +172,7 @@ fun ObjectTypeTemplatesWidget(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(bottom = 24.dp)
+                        .padding(bottom = 20.dp, top = 8.dp)
                 ) {
                     Box(
                         modifier = Modifier
@@ -234,6 +234,14 @@ fun ObjectTypeTemplatesWidget(
 //                        }
                     }
                     val itemsScroll = rememberLazyListState()
+                    Spacer(modifier = Modifier.height(26.dp))
+                    Text(
+                        modifier = Modifier.padding(start = 20.dp),
+                        text = stringResource(id = R.string.templates),
+                        style = Caption1Medium,
+                        color = colorResource(id = R.color.text_secondary)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                     TemplatesList(
                         state = currentState,
                         moreClick = { template, intOffset ->
@@ -353,11 +361,10 @@ private fun TemplatesList(
     LazyRow(
         state = scrollState,
         modifier = Modifier
-            .padding(top = 8.dp)
-            .height(224.dp)
+            .wrapContentHeight()
             .fillMaxWidth(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
     )
     {
         itemsIndexed(
@@ -366,8 +373,9 @@ private fun TemplatesList(
                 Box(
                     modifier =
                     Modifier
-                        .height(231.dp)
-                        .width(127.dp)
+                        .height(232.dp)
+                        .width(127.dp),
+                    contentAlignment = Alignment.BottomStart
                 ) {
                     val borderWidth: Dp
                     val borderColor: Color
@@ -380,7 +388,6 @@ private fun TemplatesList(
                     }
                     Box(
                         modifier = Modifier
-                            .padding(top = 7.dp, end = 7.dp)
                             .border(
                                 width = borderWidth,
                                 color = borderColor,
@@ -729,6 +736,17 @@ private fun TemplateItemTodoTitle(text: String) {
 @Composable
 private fun TemplateItemRectangles() {
     Column {
+        Box(
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .width(24.dp)
+                .height(4.dp)
+                .background(
+                    color = colorResource(id = R.color.shape_secondary),
+                    shape = RoundedCornerShape(size = 1.dp)
+                )
+        )
+        Spacer(modifier = Modifier.height(12.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()

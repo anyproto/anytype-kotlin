@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
@@ -22,17 +21,16 @@ import timber.log.Timber
 
 class ViewerCardSizeSelectViewModel(
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer
 ) : BaseViewModel() {
 
     val viewState = MutableStateFlow(STATE_IDLE)
 
-    init {
+    fun onStart(viewerId: Id) {
         viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect {
-                val viewer = it.viewerById(session.currentViewerId.value) ?: return@collect
+                val viewer = it.viewerById(viewerId) ?: return@collect
                 viewState.value = when (viewer.cardSize) {
                     Block.Content.DataView.Viewer.Size.SMALL -> STATE_SMALL_CARD_SELECTED
                     Block.Content.DataView.Viewer.Size.MEDIUM -> STATE_SMALL_CARD_SELECTED
@@ -42,31 +40,33 @@ class ViewerCardSizeSelectViewModel(
         }
     }
 
-    fun onSmallCardClicked(ctx: Id) {
+    fun onSmallCardClicked(ctx: Id, viewerId: Id) {
         if (viewState.value == STATE_SMALL_CARD_SELECTED) {
             viewState.value = STATE_DISMISSED
         } else {
             proceedWithUpdatingCardSize(
                 ctx = ctx,
-                size = DVViewerCardSize.SMALL
+                size = DVViewerCardSize.SMALL,
+                viewerId = viewerId
             )
         }
     }
 
-    fun onLargeCardClicked(ctx: Id) {
+    fun onLargeCardClicked(ctx: Id, viewerId: Id) {
         if (viewState.value == STATE_LARGE_CARD_SELECTED) {
             viewState.value = STATE_DISMISSED
         } else {
             proceedWithUpdatingCardSize(
                 ctx = ctx,
+                viewerId = viewerId,
                 size = DVViewerCardSize.LARGE
             )
         }
     }
 
-    private fun proceedWithUpdatingCardSize(ctx: Id, size: DVViewerCardSize) {
+    private fun proceedWithUpdatingCardSize(ctx: Id, viewerId: Id, size: DVViewerCardSize) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
             updateDataViewViewer(
                 UpdateDataViewViewer.Params.Fields(
@@ -88,7 +88,6 @@ class ViewerCardSizeSelectViewModel(
 
     class Factory(
         private val objectState: StateFlow<ObjectState>,
-        private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer
     ) : ViewModelProvider.Factory {
@@ -96,7 +95,6 @@ class ViewerCardSizeSelectViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ViewerCardSizeSelectViewModel(
                 objectState = objectState,
-                session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer
             ) as T

@@ -58,6 +58,7 @@ data class ViewerEditWidgetUi(
         data class Relations(val id: Id?) : Action()
         data class Filters(val id: Id?) : Action()
         data class Sorts(val id: Id?) : Action()
+        object More: Action()
     }
 }
 

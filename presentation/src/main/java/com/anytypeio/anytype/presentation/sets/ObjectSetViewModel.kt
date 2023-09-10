@@ -1932,6 +1932,10 @@ class ObjectSetViewModel(
                     )
                 }
             }
+
+            ViewerEditWidgetUi.Action.More -> {
+
+            }
         }
     }
     //endregion

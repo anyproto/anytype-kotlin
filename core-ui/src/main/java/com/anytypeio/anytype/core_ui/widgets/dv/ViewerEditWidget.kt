@@ -143,7 +143,13 @@ fun ViewerEditWidgetContent(
                         color = colorResource(R.color.text_primary)
                     )
                 }
-                Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .noRippleThrottledClickable {
+                            action.invoke(ViewerEditWidgetUi.Action.More)
+                        },
+                    ) {
                     Image(
                         modifier = Modifier.padding(
                             top = 12.dp,
@@ -221,7 +227,8 @@ fun ViewerEditWidgetContent(
 @Composable
 fun NameTextField(
     state: ViewerEditWidgetUi,
-    action: (ViewerEditWidgetUi.Action) -> Unit) {
+    action: (ViewerEditWidgetUi.Action) -> Unit
+) {
     var innerValue by remember(state.name) { mutableStateOf(state.name) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
@@ -251,8 +258,7 @@ fun NameTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(start = 0.dp, top = 2.dp)
-            ,
+                .padding(start = 0.dp, top = 2.dp),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
             ),
@@ -271,7 +277,12 @@ fun NameTextField(
 }
 
 @Composable
-private fun ColumnItem(title: String, isEnable: Boolean = true, value: String, onClick: () -> Unit) {
+private fun ColumnItem(
+    title: String,
+    isEnable: Boolean = true,
+    value: String,
+    onClick: () -> Unit
+) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxWidth()

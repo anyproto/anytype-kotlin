@@ -69,7 +69,6 @@ class FilterViewModelInputFieldValueCreateTest {
     private lateinit var urlBuilder: UrlBuilder
     private val root = MockDataFactory.randomUuid()
     private val dataViewId = MockDataFactory.randomString()
-    private val session = ObjectSetSession()
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
     lateinit var workspaceManager: WorkspaceManager
@@ -187,7 +186,6 @@ class FilterViewModelInputFieldValueCreateTest {
         }
         viewModel = FilterViewModel(
             objectState = state,
-            session = session,
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,
             updateDataViewViewer = updateDataViewViewer,
@@ -922,9 +920,12 @@ class FilterViewModelInputFieldValueCreateTest {
     ) {
         stubUpdateDataView()
 
+        val viewer = state.value.dataViewState()!!.viewers[0]
+
         viewModel.onStart(
             relationKey = relation1.key,
-            filterIndex = filterIndex
+            filterIndex = filterIndex,
+            viewerId = viewer.id
         )
 
         viewModel.onConditionUpdate(condition)
@@ -932,10 +933,9 @@ class FilterViewModelInputFieldValueCreateTest {
         viewModel.onCreateInputValueFilterClicked(
             ctx = root,
             relation = relationKey,
-            input = textInput
+            input = textInput,
+            viewerId = viewer.id
         )
-
-        val viewer = state.value.dataViewState()!!.viewers[0]
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(
@@ -960,9 +960,12 @@ class FilterViewModelInputFieldValueCreateTest {
     ) {
         stubUpdateDataView()
 
+        val viewer = state.value.dataViewState()!!.viewers[0]
+
         viewModel.onStart(
             relationKey = relation1.key,
-            filterIndex = filterIndex
+            filterIndex = filterIndex,
+            viewerId = viewer.id
         )
 
         viewModel.onConditionUpdate(condition)
@@ -970,10 +973,9 @@ class FilterViewModelInputFieldValueCreateTest {
         viewModel.onCreateInputValueFilterClicked(
             ctx = root,
             relation = relationKey,
-            input = textInput
+            input = textInput,
+            viewerId = viewer.id
         )
-
-        val viewer = state.value.dataViewState()!!.viewers[0]
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(
@@ -999,9 +1001,12 @@ class FilterViewModelInputFieldValueCreateTest {
     ) {
         stubUpdateDataView()
 
+        val viewer = state.value.dataViewState()!!.viewers[0]
+
         viewModel.onStart(
             relationKey = relationKey,
-            filterIndex = filterIndex
+            filterIndex = filterIndex,
+            viewerId = viewer.id
         )
 
         viewModel.onConditionUpdate(condition)
@@ -1009,10 +1014,9 @@ class FilterViewModelInputFieldValueCreateTest {
         viewModel.onCreateInputValueFilterClicked(
             ctx = root,
             relation = relationKey,
-            input = textInput
+            input = textInput,
+            viewerId = viewer.id
         )
-
-        val viewer = state.value.dataViewState()!!.viewers[0]
 
         verifyBlocking(updateDataViewViewer, times(1)) {
             invoke(

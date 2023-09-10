@@ -13,6 +13,18 @@ sealed class ObjectSetCommand {
             val isFavorite: Boolean
         ) : Modal()
 
+        data class CreateViewer(
+            val ctx: String,
+            val target: Id
+        ) : Modal()
+
+        data class EditDataViewViewer(
+            val ctx: Id,
+            val viewer: Id
+        ) : Modal()
+
+        data class ManageViewer(val ctx: Id, val dataview: Id) : Modal()
+
         data class OpenSettings(
             val ctx: Id,
             val dv: Id,
@@ -20,11 +32,13 @@ sealed class ObjectSetCommand {
         ) : Modal()
 
         data class ModifyViewerFilters(
-            val ctx: Id
+            val ctx: Id,
+            val viewer: Id
         ) : Modal()
 
         data class ModifyViewerSorts(
-            val ctx: Id
+            val ctx: Id,
+            val viewer: Id
         ) : Modal()
 
         data class EditGridTextCell(

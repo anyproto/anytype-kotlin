@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -150,7 +151,6 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var addObjectToCollection: AddObjectToCollection
 
-    @Mock
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     @Mock
@@ -211,6 +211,7 @@ open class ObjectSetViewModelTestSetup {
             dispatchers = dispatchers
         )
         dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer)
+        storeOfObjectTypes = DefaultStoreOfObjectTypes()
         return ObjectSetViewModel(
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
@@ -371,10 +372,8 @@ open class ObjectSetViewModelTestSetup {
         )
     }
 
-    fun stubStoreOfObjectTypes(map: Map<String, Any?> = emptyMap()) {
-        storeOfObjectTypes.stub {
-            onBlocking { get(any()) } doReturn ObjectWrapper.Type(map = map)
-        }
+    suspend fun stubStoreOfObjectTypes(id: String = "", map: Map<String, Any?> = emptyMap()) {
+        storeOfObjectTypes.set(id, map)
     }
 
     fun stubGetDefaultPageType(type: String = defaultObjectPageType, name: String = defaultObjectPageTypeName) {

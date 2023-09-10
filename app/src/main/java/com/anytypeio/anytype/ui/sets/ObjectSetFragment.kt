@@ -97,6 +97,9 @@ import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
+import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
+import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
+import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
@@ -222,14 +225,14 @@ open class ObjectSetFragment :
         binding.root.setTransitionListener(transitionListener)
 
         with(lifecycleScope) {
-            subscribe(addNewButton.clicks().throttleFirst()) { vm.proceedWithCreatingNewDataViewObject() }
-            subscribe(addNewIconButton.buttonClicks()) { vm.proceedWithCreatingNewDataViewObject() }
+            subscribe(addNewButton.clicks().throttleFirst()) { vm.proceedWithDataViewObjectCreate() }
+            subscribe(addNewIconButton.buttonClicks()) { vm.proceedWithDataViewObjectCreate() }
             subscribe(addNewIconButton.iconClicks()) { vm.onNewButtonIconClicked() }
             subscribe(dataViewInfo.clicks().throttleFirst()) { type ->
                 when (type) {
-                    DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.onCreateObjectInCollectionClicked()
+                    DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.proceedWithDataViewObjectCreate()
                     DataViewInfo.TYPE.SET_NO_QUERY -> vm.onSelectQueryButtonClicked()
-                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.proceedWithCreatingNewDataViewObject()
+                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.proceedWithDataViewObjectCreate()
                     DataViewInfo.TYPE.INIT -> {}
                 }
             }
@@ -949,12 +952,13 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.ModifyViewerFilters -> {
                 val fr = ViewerFilterFragment.new(
-                    ctx = command.ctx
+                    ctx = command.ctx,
+                    viewer = command.viewer,
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ModifyViewerSorts -> {
-                val fr = ViewerSortFragment.new(ctx)
+                val fr = ViewerSortFragment.new(ctx = ctx, viewer = command.viewer)
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.OpenCoverActionMenu -> {
@@ -979,6 +983,24 @@ open class ObjectSetFragment :
             is ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen -> {
                 val fr = EmptyDataViewSelectSourceFragment()
                 fr.showChildFragment()
+            }
+            is ObjectSetCommand.Modal.CreateViewer -> {
+                val fr = CreateDataViewViewerFragment.new(
+                    ctx = command.ctx,
+                    target = command.target
+                )
+                fr.showChildFragment(EMPTY_TAG)
+            }
+            is ObjectSetCommand.Modal.EditDataViewViewer -> {
+                val fr = EditDataViewViewerFragment.new(
+                    ctx = command.ctx,
+                    viewer = command.viewer
+                )
+                fr.showChildFragment(EMPTY_TAG)
+            }
+            is ObjectSetCommand.Modal.ManageViewer -> {
+                val fr = ManageViewerFragment.new(ctx = command.ctx, dv = command.dataview)
+                fr.showChildFragment(EMPTY_TAG)
             }
         }
     }
@@ -1175,7 +1197,7 @@ open class ObjectSetFragment :
                 val result = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID);
                 if (!result.isNullOrBlank()) {
                     navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
-                    vm.proceedWithCreatingNewDataViewObject(result)
+                    vm.proceedWithDataViewObjectCreate(result)
                 }
             }
         }

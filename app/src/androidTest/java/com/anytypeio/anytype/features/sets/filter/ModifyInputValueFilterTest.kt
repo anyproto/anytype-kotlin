@@ -35,7 +35,6 @@ import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -79,7 +78,6 @@ class ModifyInputValueFilterTest {
     lateinit var urlBuilder: UrlBuilder
 
     private val root = MockDataFactory.randomUuid()
-    private val session = ObjectSetSession()
     private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val dispatcher = Dispatcher.Default<Payload>()
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
@@ -102,7 +100,6 @@ class ModifyInputValueFilterTest {
         }
         TestModifyFilterFromInputFieldValueFragment.testVmFactory = FilterViewModel.Factory(
             objectState = state,
-            session = session,
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
             searchObjects = searchObjects,

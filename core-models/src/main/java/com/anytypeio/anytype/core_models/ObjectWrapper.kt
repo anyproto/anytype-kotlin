@@ -127,6 +127,8 @@ sealed class ObjectWrapper {
             }
 
         val targetObjectType: Id? by default
+
+        val isValid get() = map.containsKey(Relations.ID)
     }
 
     /**
@@ -210,7 +212,7 @@ sealed class ObjectWrapper {
                 else -> emptyList()
             }
 
-        val relationFormatObjectTypes get() = getValues<Id>(RELATION_FORMAT_OBJECT_TYPES)
+        val relationFormatObjectTypes get() = getValues<Key>(RELATION_FORMAT_OBJECT_TYPES)
 
         val type: List<Id> get() = getValues(Relations.TYPE)
 

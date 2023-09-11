@@ -918,12 +918,6 @@ class ObjectSetViewModel(
                 if (sourceDetails != null && sourceDetails.map.isNotEmpty()) {
                     when (sourceDetails.type.firstOrNull()) {
                         ObjectTypeIds.OBJECT_TYPE -> {
-                            val createObjectTemplateId =
-                                if (templateId == TemplateView.DEFAULT_TEMPLATE_ID_BLANK) {
-                                    null
-                                } else {
-                                    templateId
-                                }
                             if (sourceId == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
                                     ObjectSetCommand.Modal.CreateBookmark(
@@ -935,7 +929,7 @@ class ObjectSetViewModel(
                                     CreateDataViewObject.Params.SetByType(
                                         type = defaultObjectType,
                                         filters = viewer.filters,
-                                        template = createObjectTemplateId
+                                        template = templateId
                                     )
                                 )
                             }

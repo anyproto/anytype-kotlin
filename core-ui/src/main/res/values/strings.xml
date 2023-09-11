@@ -648,6 +648,7 @@
     <string name="menu_type_create_set">Create set of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
     <string name="type_templates_widget_title">Create object</string>
+    <string name="view_layout_widget_title">Layout</string>
     <string name="blank">Blank</string>
     
     <string name="templates_menu_default_for_view">Default for this view</string>

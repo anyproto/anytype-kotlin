@@ -65,6 +65,7 @@ import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -133,7 +134,8 @@ class HomeScreenViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
     private val setWidgetActiveView: SetWidgetActiveView,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val spaceWidgetContainer: SpaceWidgetContainer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -156,6 +158,8 @@ class HomeScreenViewModel(
 
     // Bundled widget containing archived objects
     private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
+
+    private val spaceWidgetView = spaceWidgetContainer.view
 
     val icon = MutableStateFlow<SpaceIconView>(SpaceIconView.Loading)
 
@@ -183,7 +187,10 @@ class HomeScreenViewModel(
             containers.filterNotNull().flatMapLatest { list ->
                 if (list.isNotEmpty()) {
                     combine(
-                        list.map { m -> m.view }
+                        buildList {
+                            add(spaceWidgetView)
+                            addAll(list.map { m -> m.view })
+                        }.toList()
                     ) { array ->
                         array.toList()
                     }
@@ -1194,7 +1201,8 @@ class HomeScreenViewModel(
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val objectWatcher: ObjectWatcher,
         private val setWidgetActiveView: SetWidgetActiveView,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val spaceWidgetContainer: SpaceWidgetContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1227,7 +1235,8 @@ class HomeScreenViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             objectWatcher = objectWatcher,
             setWidgetActiveView = setWidgetActiveView,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            spaceWidgetContainer = spaceWidgetContainer
         ) as T
     }
 

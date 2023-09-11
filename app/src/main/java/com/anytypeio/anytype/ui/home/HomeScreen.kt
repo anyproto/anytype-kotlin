@@ -67,6 +67,7 @@ import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LibraryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.SpaceWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
@@ -94,6 +95,7 @@ fun HomeScreen(
     onOpenSpacesClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onSpaceClicked: () -> Unit,
+    onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
 ) {
 
@@ -111,6 +113,7 @@ fun HomeScreen(
             onEditWidgets = onEditWidgets,
             onLibraryClicked = onLibraryClicked,
             onOpenSpacesClicked = onOpenSpacesClicked,
+            onSpaceWidgetClicked = onSpaceWidgetClicked,
             onMove = onMove
         )
         AnimatedVisibility(
@@ -175,6 +178,7 @@ private fun WidgetList(
     onEditWidgets: () -> Unit,
     onLibraryClicked: () -> Unit,
     onOpenSpacesClicked: () -> Unit,
+    onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
 ) {
     val views = remember { mutableStateOf(widgets) }
@@ -207,6 +211,13 @@ private fun WidgetList(
             key = { _, item -> item.id }
         ) { index, item ->
             when (item) {
+                is WidgetView.SpaceWidget.View -> {
+                    SpaceWidgetCard(
+                        onClick = onSpaceWidgetClicked,
+                        name = item.space.name.orEmpty(),
+                        icon = item.icon
+                    )
+                }
                 is WidgetView.Tree -> {
                     ReorderableItem(lazyListState, key = item.id) { isDragged ->
                         val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)

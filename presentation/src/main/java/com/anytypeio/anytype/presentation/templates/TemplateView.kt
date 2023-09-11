@@ -10,7 +10,6 @@ sealed class TemplateView {
     abstract val isDefault: Boolean
 
     data class Blank(
-        val id: Id,
         val typeId: Id,
         val typeName: String = "",
         val layout: Int,
@@ -41,10 +40,6 @@ sealed class TemplateView {
         fun isImageOrEmojiPresent(): Boolean {
             return image != null || emoji != null
         }
-    }
-
-    companion object {
-        const val DEFAULT_TEMPLATE_ID_BLANK = "blank"
     }
 }
 

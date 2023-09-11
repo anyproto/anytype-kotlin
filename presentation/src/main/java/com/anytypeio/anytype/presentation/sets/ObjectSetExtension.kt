@@ -47,7 +47,6 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_TYPE_UNSUPPORTED
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
-import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 
 fun ObjectState.DataView.featuredRelations(
     ctx: Id,
@@ -461,10 +460,9 @@ fun ObjectWrapper.Type.toTemplateViewBlank(
     viewerDefaultTemplate: Id? = null
 ): TemplateView.Blank {
     return TemplateView.Blank(
-        id = DEFAULT_TEMPLATE_ID_BLANK,
         typeId = id,
         layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
-        isDefault = viewerDefaultTemplate == DEFAULT_TEMPLATE_ID_BLANK
+        isDefault = viewerDefaultTemplate.isNullOrEmpty()
     )
 }
 
@@ -547,23 +545,17 @@ fun ObjectState.DataView.getDefaultObjectType(ctx: Id, viewer: DVViewer?): Id? {
     }
 }
 
-//TODO Refact
 suspend fun DVViewer.getProperTemplateId(
-    templateId: Id?,
     storeOfObjectTypes: StoreOfObjectTypes
 ): Id? {
-    return if (templateId != null) {
-        if (templateId == DEFAULT_TEMPLATE_ID_BLANK) {
-            null
+    val defaultObjectTypeId = defaultObjectType
+    return if (defaultObjectTypeId != null) {
+        if (defaultTemplate != null) {
+            defaultTemplate
         } else {
-            templateId
+            storeOfObjectTypes.get(defaultObjectTypeId)?.defaultTemplateId
         }
     } else {
-        val defaultObjectTypeId = defaultObjectType
-        if (defaultObjectTypeId != null) {
-            storeOfObjectTypes.get(defaultObjectTypeId)?.defaultTemplateId
-        } else {
-            null
-        }
+        null
     }
 }

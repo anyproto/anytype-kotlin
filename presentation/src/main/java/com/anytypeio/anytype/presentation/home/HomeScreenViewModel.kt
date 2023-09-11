@@ -65,6 +65,7 @@ import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -78,6 +79,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
@@ -133,7 +135,8 @@ class HomeScreenViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
     private val setWidgetActiveView: SetWidgetActiveView,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val spaceWidgetContainer: SpaceWidgetContainer
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -156,6 +159,8 @@ class HomeScreenViewModel(
 
     // Bundled widget containing archived objects
     private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
+
+    private val spaceWidgetView = spaceWidgetContainer.view
 
     val icon = MutableStateFlow<SpaceIconView>(SpaceIconView.Loading)
 
@@ -183,7 +188,10 @@ class HomeScreenViewModel(
             containers.filterNotNull().flatMapLatest { list ->
                 if (list.isNotEmpty()) {
                     combine(
-                        list.map { m -> m.view }
+                        flows = buildList<Flow<WidgetView>> {
+                            add(spaceWidgetView)
+                            addAll(list.map { m -> m.view })
+                        }
                     ) { array ->
                         array.toList()
                     }
@@ -355,11 +363,16 @@ class HomeScreenViewModel(
                     )
                 )
             )
-            val subscriptions = widgets.value.orEmpty().map { widget ->
-                if (widget.source is Widget.Source.Bundled)
-                    widget.source.id
-                else
-                    widget.id
+            val subscriptions = buildList {
+                addAll(
+                    widgets.value.orEmpty().map { widget ->
+                        if (widget.source is Widget.Source.Bundled)
+                            widget.source.id
+                        else
+                            widget.id
+                    }
+                )
+                add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
             }
             if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
             closeObject.stream(widgetObject).collect { status ->
@@ -1194,7 +1207,8 @@ class HomeScreenViewModel(
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val objectWatcher: ObjectWatcher,
         private val setWidgetActiveView: SetWidgetActiveView,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val spaceWidgetContainer: SpaceWidgetContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1227,7 +1241,8 @@ class HomeScreenViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             objectWatcher = objectWatcher,
             setWidgetActiveView = setWidgetActiveView,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            spaceWidgetContainer = spaceWidgetContainer
         ) as T
     }
 

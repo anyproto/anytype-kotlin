@@ -394,4 +394,5 @@ Do the computation of an expensive paragraph of text on a background thread:
 
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
+    <string name="personal">Personal</string>
 </resources>

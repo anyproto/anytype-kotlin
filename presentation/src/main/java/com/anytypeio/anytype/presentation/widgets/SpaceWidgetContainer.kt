@@ -19,10 +19,9 @@ class SpaceWidgetContainer @Inject constructor(
     private val urlBuilder: UrlBuilder
 ) : WidgetContainer {
 
-    override val view: Flow<WidgetView>
-        get() = build()
+    override val view: Flow<WidgetView> = buildFlow()
 
-    fun build() = spaceManager
+    private fun buildFlow() = spaceManager
         .observe()
         .flatMapLatest { config ->
             storelessSubscriptionContainer.subscribe(

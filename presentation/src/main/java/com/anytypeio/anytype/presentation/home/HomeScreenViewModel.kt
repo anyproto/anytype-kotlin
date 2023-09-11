@@ -363,11 +363,16 @@ class HomeScreenViewModel(
                     )
                 )
             )
-            val subscriptions = widgets.value.orEmpty().map { widget ->
-                if (widget.source is Widget.Source.Bundled)
-                    widget.source.id
-                else
-                    widget.id
+            val subscriptions = buildList {
+                addAll(
+                    widgets.value.orEmpty().map { widget ->
+                        if (widget.source is Widget.Source.Bundled)
+                            widget.source.id
+                        else
+                            widget.id
+                    }
+                )
+                add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
             }
             if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
             closeObject.stream(widgetObject).collect { status ->

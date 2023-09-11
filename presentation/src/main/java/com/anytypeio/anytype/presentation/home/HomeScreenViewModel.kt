@@ -79,6 +79,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
@@ -187,10 +188,10 @@ class HomeScreenViewModel(
             containers.filterNotNull().flatMapLatest { list ->
                 if (list.isNotEmpty()) {
                     combine(
-                        buildList {
+                        flows = buildList<Flow<WidgetView>> {
                             add(spaceWidgetView)
                             addAll(list.map { m -> m.view })
-                        }.toList()
+                        }
                     ) { array ->
                         array.toList()
                     }

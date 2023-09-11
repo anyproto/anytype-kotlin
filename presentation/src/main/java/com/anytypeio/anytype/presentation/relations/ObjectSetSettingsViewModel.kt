@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.mapper.toSimpleRelationView
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
@@ -40,10 +39,9 @@ class ObjectSetSettingsViewModel(
 ) : BaseListViewModel<ViewerRelationListView>() {
 
     val screenState = MutableStateFlow(ScreenState.LIST)
-    private val jobs = mutableListOf<Job>()
 
     fun onStart(viewerId: Id) {
-        jobs += viewModelScope.launch {
+        viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
                 Timber.d("New update, viewerId: $viewerId, state: $state")
                 val result = mutableListOf<ViewerRelationListView>()
@@ -114,10 +112,6 @@ class ObjectSetSettingsViewModel(
                 _views.value = result
             }
         }
-    }
-
-    fun onStop() {
-        jobs.cancel()
     }
 
     fun onEditButtonClicked() {

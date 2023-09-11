@@ -60,14 +60,20 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
                 findNavController()
                     .navigate(
                         R.id.viewerCardSizeSelectFragment,
-                        bundleOf(ViewerCardSizeSelectFragment.CTX_KEY to ctx)
+                        bundleOf(
+                            ViewerCardSizeSelectFragment.CTX_KEY to ctx,
+                            ViewerCardSizeSelectFragment.VIEWER_KEY to viewer
+                        )
                     )
             },
             onViewerImagePreviewSettingClicked = {
                 findNavController()
                     .navigate(
                         R.id.viewerImagePreviewSelectFragment,
-                        bundleOf(ViewerImagePreviewSelectFragment.CTX_KEY to ctx)
+                        bundleOf(
+                            ViewerImagePreviewSelectFragment.CTX_KEY to ctx,
+                            ViewerImagePreviewSelectFragment.VIEWER_KEY to viewer
+                        )
                     )
             }
         )

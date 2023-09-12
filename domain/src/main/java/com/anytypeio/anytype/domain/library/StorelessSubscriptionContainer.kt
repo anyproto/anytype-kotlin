@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -124,8 +125,14 @@ interface StorelessSubscriptionContainer {
                     }
                 }
                 result
-            }.map {
-                it.mapNotNull { item -> item.objectWrapper }
+            }.map { result ->
+                result.mapNotNull { item ->
+                    if (item.objectWrapper?.isValid == true) {
+                        item.objectWrapper
+                    } else {
+                        null
+                    }
+                }
             }
             return objectsFlow
         }

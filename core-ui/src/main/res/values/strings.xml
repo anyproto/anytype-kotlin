@@ -244,6 +244,7 @@
     <string name="relation">Relation</string>
     <string name="download">Download</string>
     <string name="view">View</string>
+    <string name="views">Views</string>
 
     <string name="choose_emoji">Choose emoji</string>
     <string name="logo_transition">logo_transition</string>
@@ -264,6 +265,7 @@
     <string name="move_to">Move to</string>
     <string name="preview">Preview</string>
     <string name="link_to">Link to</string>
+    <string name="make_template">Make template</string>
     <string name="linked_to">Linked to</string>
     <string name="remove_link">Remove link</string>
     <string name="mention_suggester_new_page">Create new object</string>
@@ -447,6 +449,7 @@
     <string name="name_is_required">Name is required</string>
     <string name="favourite">Favorite</string>
     <string name="template">Template</string>
+    <string name="templates">Templates</string>
     <string name="lock">Lock</string>
     <string name="unlock">Unlock</string>
     <string name="restore">Restore</string>
@@ -644,12 +647,14 @@
     <string name="menu_type_open_set">Open set of %1$s</string>
     <string name="menu_type_create_set">Create set of %1$s</string>
     <string name="toast_active_view_delete">Current view cannot be deleted</string>
-    <string name="type_templates_widget_title">Select template</string>
+    <string name="type_templates_widget_title">Create object</string>
     <string name="blank">Blank</string>
     
     <string name="templates_menu_default_for_view">Default for this view</string>
     <string name="templates_menu_edit">Edit template</string>
     <string name="templates_menu_duplicate">Duplicate</string>
     <string name="templates_menu_delete">Delete</string>
+    <string name="unsupported">Unsupported</string>
+    <string name="set_as_default">Set as default</string>
 
 </resources>

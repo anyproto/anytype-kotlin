@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -42,6 +43,7 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -60,6 +62,7 @@ import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -148,7 +151,6 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var addObjectToCollection: AddObjectToCollection
 
-    @Mock
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     @Mock
@@ -165,6 +167,12 @@ open class ObjectSetViewModelTestSetup {
 
     @Mock
     lateinit var updateDataViewViewer: UpdateDataViewViewer
+
+    @Mock
+    lateinit var viewerDelegate: ViewerDelegate
+
+    @Mock
+    lateinit var createTemplate: CreateTemplate
 
     var stateReducer = DefaultObjectStateReducer()
 
@@ -203,6 +211,7 @@ open class ObjectSetViewModelTestSetup {
             dispatchers = dispatchers
         )
         dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer)
+        storeOfObjectTypes = DefaultStoreOfObjectTypes()
         return ObjectSetViewModel(
             openObjectSet = openObjectSet,
             closeBlock = closeBlock,
@@ -237,7 +246,9 @@ open class ObjectSetViewModelTestSetup {
             updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
-            duplicateObjects = duplicateObjects
+            duplicateObjects = duplicateObjects,
+            viewerDelegate = viewerDelegate,
+            createTemplate = createTemplate
         )
     }
 
@@ -361,10 +372,8 @@ open class ObjectSetViewModelTestSetup {
         )
     }
 
-    fun stubStoreOfObjectTypes(map: Map<String, Any?> = emptyMap()) {
-        storeOfObjectTypes.stub {
-            onBlocking { get(any()) } doReturn ObjectWrapper.Type(map = map)
-        }
+    suspend fun stubStoreOfObjectTypes(id: String = "", map: Map<String, Any?> = emptyMap()) {
+        storeOfObjectTypes.set(id, map)
     }
 
     fun stubGetDefaultPageType(type: String = defaultObjectPageType, name: String = defaultObjectPageTypeName) {

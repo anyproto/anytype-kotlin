@@ -109,15 +109,15 @@ class ManageViewerViewModel(
         view: ViewerView
     ) {
         viewModelScope.launch {
-            deleteDataViewViewer(
+            deleteDataViewViewer.async(
                 DeleteDataViewViewer.Params(
                     ctx = ctx,
                     dataview = dv,
                     viewer = view.id
                 )
-            ).process(
-                failure = { Timber.e(it, "Error while deleting view") },
-                success = { dispatcher.send(it) }
+            ).fold(
+                onFailure = { Timber.e(it, "Error while deleting view") },
+                onSuccess = { dispatcher.send(it) }
             )
         }
     }

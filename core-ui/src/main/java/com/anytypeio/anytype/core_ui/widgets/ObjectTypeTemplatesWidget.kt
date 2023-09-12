@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.widgets
 
+import android.widget.Space
 import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -26,6 +27,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -35,6 +37,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
@@ -71,9 +74,12 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
@@ -146,22 +152,19 @@ fun ObjectTypeTemplatesWidget(
             enter = slideInVertically { it },
             exit = slideOutVertically(tween(200)) { it },
             modifier = Modifier
-                .swipeable(
-                    state = swipeableState,
+                .swipeable(state = swipeableState,
                     orientation = Orientation.Vertical,
                     anchors = mapOf(
-                        0f to DragStates.VISIBLE,
-                        sizePx to DragStates.DISMISSED
+                        0f to DragStates.VISIBLE, sizePx to DragStates.DISMISSED
                     ),
-                    thresholds = { _, _ -> FractionalThreshold(0.3f) }
-                )
+                    thresholds = { _, _ -> FractionalThreshold(0.3f) })
                 .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(312.dp)
-                    .padding(start = 8.dp, end = 8.dp, bottom = 31.dp)
+                    .wrapContentHeight()
+                    .padding(start = 8.dp, end = 8.dp, bottom = 15.dp)
                     .background(
                         color = colorResource(id = R.color.background_secondary),
                         shape = RoundedCornerShape(size = 16.dp)
@@ -171,7 +174,7 @@ fun ObjectTypeTemplatesWidget(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(bottom = 24.dp)
+                        .padding(bottom = 20.dp, top = 8.dp)
                 ) {
                     Box(
                         modifier = Modifier
@@ -186,12 +189,9 @@ fun ObjectTypeTemplatesWidget(
                                 Text(
                                     modifier = Modifier
                                         .padding(
-                                            start = 15.dp,
-                                            top = 12.dp,
-                                            bottom = 12.dp,
-                                            end = 16.dp
+                                            start = 15.dp, top = 12.dp, bottom = 12.dp, end = 16.dp
                                         )
-                                        .clickable { doneClick() },
+                                        .noRippleClickable { doneClick() },
                                     text = stringResource(id = R.string.done),
                                     style = BodyCalloutRegular,
                                     color = colorResource(id = R.color.glyph_active)
@@ -205,7 +205,7 @@ fun ObjectTypeTemplatesWidget(
                                             bottom = 12.dp,
                                             end = 16.dp
                                         )
-                                        .clickable { editClick() },
+                                        .noRippleClickable { editClick() },
                                     text = stringResource(id = R.string.edit),
                                     style = BodyCalloutRegular,
                                     color = colorResource(id = R.color.glyph_active)
@@ -233,6 +233,14 @@ fun ObjectTypeTemplatesWidget(
 //                        }
                     }
                     val itemsScroll = rememberLazyListState()
+                    Spacer(modifier = Modifier.height(26.dp))
+                    Text(
+                        modifier = Modifier.padding(start = 20.dp),
+                        text = stringResource(id = R.string.templates),
+                        style = Caption1Medium,
+                        color = colorResource(id = R.color.text_secondary)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
                     TemplatesList(
                         state = currentState,
                         moreClick = { template, intOffset ->
@@ -294,13 +302,11 @@ private fun MoreMenu(
                 shape = RoundedCornerShape(size = 10.dp)
             )
     ) {
-        if(currentState.isDefaultStateEnabled) {
-            MenuItem(
-                click = { menuClick(TemplateMenuClick.Default(templateView)) },
-                text = stringResource(id = R.string.templates_menu_default_for_view)
-            )
-            Divider()
-        }
+        MenuItem(
+            click = { menuClick(TemplateMenuClick.Default(templateView)) },
+            text = stringResource(id = R.string.templates_menu_default_for_view)
+        )
+        Divider()
         MenuItem(
             click = { menuClick(TemplateMenuClick.Edit(templateView)) },
             text = stringResource(id = R.string.templates_menu_edit)
@@ -326,7 +332,7 @@ private fun MenuItem(click: () -> Unit, text: String, @ColorRes color: Int = R.c
             .fillMaxWidth()
             .wrapContentHeight()
             .padding(top = 11.dp, bottom = 11.dp)
-            .clickable { click() },
+            .noRippleClickable { click() },
         text = text,
         style = BodyCalloutRegular,
         color = colorResource(id = color),
@@ -354,11 +360,10 @@ private fun TemplatesList(
     LazyRow(
         state = scrollState,
         modifier = Modifier
-            .padding(top = 8.dp)
-            .height(224.dp)
+            .wrapContentHeight()
             .fillMaxWidth(),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
     )
     {
         itemsIndexed(
@@ -367,12 +372,13 @@ private fun TemplatesList(
                 Box(
                     modifier =
                     Modifier
-                        .height(231.dp)
-                        .width(127.dp)
+                        .height(232.dp)
+                        .width(127.dp),
+                    contentAlignment = Alignment.BottomStart
                 ) {
                     val borderWidth: Dp
                     val borderColor: Color
-                    if (state.isDefaultStateEnabled && item.isDefault) {
+                    if (item.isDefault) {
                         borderWidth = 2.dp
                         borderColor = colorResource(id = R.color.palette_system_amber_50)
                     } else {
@@ -381,7 +387,6 @@ private fun TemplatesList(
                     }
                     Box(
                         modifier = Modifier
-                            .padding(top = 7.dp, end = 7.dp)
                             .border(
                                 width = borderWidth,
                                 color = borderColor,
@@ -453,14 +458,10 @@ private fun TemplateItemContent(item: TemplateView) {
                         } else {
                             Spacer(modifier = Modifier.height(6.dp))
                         }
-                        if (item.layout == ObjectType.Layout.PROFILE) {
-                            TemplateItemTitle(
-                                text = item.name,
-                                textAlign = TextAlign.Center,
-                            )
-                        } else {
-                            TemplateItemTitle(text = item.name)
-                        }
+                        TemplateItemTitle(
+                            text = item.name,
+                            textAlign = getProperTextAlign(item.layout)
+                        )
                     }
                 } else {
                     if (item.layout == ObjectType.Layout.TODO) {
@@ -472,36 +473,52 @@ private fun TemplateItemContent(item: TemplateView) {
                                 Box(
                                     modifier = Modifier
                                         .wrapContentWidth()
-                                        .height(60.dp)
+                                        .height(68.dp)
                                         .padding(top = 28.dp)
                                         .align(Alignment.CenterHorizontally)
                                 ) {
-                                    val modifier = Modifier
-                                        .size(32.dp)
-                                        .clip(CircleShape)
+                                    val modifier = Modifier.clip(CircleShape)
                                     TemplateItemIconOrImage(item = item, modifier = modifier)
                                 }
                                 Spacer(modifier = Modifier.height(6.dp))
                                 TemplateItemTitle(
                                     text = item.name,
-                                    textAlign = TextAlign.Center
+                                    textAlign = getProperTextAlign(item.layout)
                                 )
                             } else {
                                 val modifier = Modifier
-                                    .width(48.dp)
-                                    .height(60.dp)
-                                    .padding(start = 16.dp, top = 28.dp)
-                                    .clip(RoundedCornerShape(3.dp))
+                                    .padding(start = 14.dp, top = 26.dp)
                                 TemplateItemIconOrImage(item = item, modifier = modifier)
-                                TemplateItemTitle(text = item.name)
+                                Spacer(modifier = Modifier.height(8.dp))
+                                TemplateItemTitle(
+                                    text = item.name, textAlign = getProperTextAlign(item.layout)
+                                )
                             }
                         } else {
                             Spacer(modifier = Modifier.height(28.dp))
+                            TemplateItemTitle(
+                                text = item.name,
+                                textAlign = getProperTextAlign(item.layout)
+                            )
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(12.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 TemplateItemRectangles()
+            }
+
+            is TemplateView.New -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        modifier = Modifier.size(32.dp),
+                        painter = painterResource(id = R.drawable.ic_default_plus),
+                        contentDescription = "New template",
+                        tint = colorResource(id = R.color.glyph_active)
+                    )
+                }
             }
         }
     }
@@ -513,28 +530,46 @@ private fun TemplateItemIconOrImage(
     modifier: Modifier = Modifier
 ) {
     item.image?.let {
-        Image(
-            painter = rememberAsyncImagePainter(
-                model = it,
-                error = painterResource(id = R.drawable.ic_home_widget_space)
-            ),
-            contentDescription = "Custom image template's icon",
-            modifier = modifier,
-            contentScale = ContentScale.Crop
-        )
+        Box(
+            modifier = modifier
+                .wrapContentSize()
+                .border(
+                    width = 2.dp,
+                    color = colorResource(id = R.color.background_primary),
+                    shape = RoundedCornerShape(2.dp)
+                )
+                .clip(RoundedCornerShape(2.dp))
+                .background(
+                    color = colorResource(id = R.color.shape_tertiary)
+                )
+        ) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = it,
+                    error = painterResource(id = R.drawable.ic_home_widget_space)
+                ),
+                contentDescription = "Custom image template's icon",
+                modifier = Modifier
+                    .size(40.dp)
+                    .align(Alignment.Center),
+                contentScale = ContentScale.Crop
+            )
+        }
     }
     item.emoji?.let {
         Box(
             modifier = modifier
-                .clip(RoundedCornerShape(8.dp))
-                .background(
-                    color = colorResource(id = R.color.shape_tertiary)
-                )
+                .wrapContentSize()
                 .border(
                     width = 2.dp,
                     color = colorResource(id = R.color.background_primary),
                     shape = RoundedCornerShape(8.dp)
                 )
+                .clip(RoundedCornerShape(8.dp))
+                .background(
+                    color = colorResource(id = R.color.shape_tertiary)
+                )
+                .padding(8.dp)
         ) {
             Image(
                 painter = rememberAsyncImagePainter(
@@ -543,7 +578,7 @@ private fun TemplateItemIconOrImage(
                 ),
                 contentDescription = "Emoji template's icon",
                 modifier = Modifier
-                    .size(20.dp)
+                    .size(24.dp)
                     .align(Alignment.Center),
                 contentScale = ContentScale.Crop
             )
@@ -572,7 +607,6 @@ private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
                         .align(Alignment.TopCenter)
                 ) {
                     val modifier = Modifier
-                        .size(32.dp)
                         .clip(CircleShape)
                         .align(Alignment.Center)
                     TemplateItemIconOrImage(item = item, modifier = modifier)
@@ -581,9 +615,7 @@ private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
 
             else -> {
                 val modifier = Modifier
-                    .width(48.dp)
-                    .height(82.dp)
-                    .padding(start = 16.dp, top = 50.dp)
+                    .padding(start = 14.dp, top = 44.dp)
                 TemplateItemIconOrImage(item = item, modifier = modifier)
             }
         }
@@ -674,12 +706,14 @@ private fun TemplateItemCoverGradient(item: TemplateView.Template) {
 @Composable
 private fun TemplateItemTitle(text: String, textAlign: TextAlign = TextAlign.Start) {
     Text(
-        modifier = Modifier.padding(
-            start = 16.dp,
-            end = 16.dp
-        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                start = 16.dp,
+                end = 16.dp
+            ),
         text = text.ifBlank { stringResource(id = R.string.untitled) },
-        style = Caption2Semibold.copy(
+        style = TitleInter15.copy(
             color = colorResource(id = R.color.text_primary)
         ),
         maxLines = 2,
@@ -717,6 +751,17 @@ private fun TemplateItemRectangles() {
     Column {
         Box(
             modifier = Modifier
+                .padding(start = 16.dp)
+                .width(24.dp)
+                .height(4.dp)
+                .background(
+                    color = colorResource(id = R.color.shape_secondary),
+                    shape = RoundedCornerShape(size = 1.dp)
+                )
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Box(
+            modifier = Modifier
                 .fillMaxWidth()
                 .height(6.dp)
                 .padding(start = 16.dp, end = 16.dp)
@@ -750,7 +795,14 @@ private fun TemplateItemRectangles() {
     }
 }
 
-private enum class DragStates {
+private fun getProperTextAlign(layout: ObjectType.Layout): TextAlign {
+    return when (layout) {
+        ObjectType.Layout.PROFILE -> TextAlign.Center
+        else -> TextAlign.Start
+    }
+}
+
+enum class DragStates {
     VISIBLE,
     DISMISSED
 }
@@ -761,6 +813,7 @@ private enum class DragStates {
 fun ComposablePreview() {
     val items = listOf(
         TemplateView.Blank(
+            id = TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
             typeId = "page",
             typeName = "Page",
             layout = ObjectType.Layout.BASIC.code

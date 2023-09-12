@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
@@ -20,7 +19,6 @@ import timber.log.Timber
 
 class ViewerImagePreviewSelectViewModel(
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val storeOfRelations: StoreOfRelations
@@ -29,10 +27,10 @@ class ViewerImagePreviewSelectViewModel(
     val views = MutableStateFlow<List<ViewerImagePreviewSelectView>>(emptyList())
     val isDismissed = MutableStateFlow(false)
 
-    init {
+    fun onStart(viewerId: Id) {
         viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
-                val viewer = state.viewerById(session.currentViewerId.value) ?: return@collect
+                val viewer = state.viewerById(viewerId) ?: return@collect
                 val dv = state.dataViewContent
                 val result = mutableListOf<ViewerImagePreviewSelectView>().apply {
                     add(ViewerImagePreviewSelectView.Item.None(isSelected = viewer.coverRelationKey == null))
@@ -59,10 +57,10 @@ class ViewerImagePreviewSelectViewModel(
         }
     }
 
-    fun onViewerCoverItemClicked(ctx: Id, item: ViewerImagePreviewSelectView.Item) {
+    fun onViewerCoverItemClicked(ctx: Id, viewerId: Id, item: ViewerImagePreviewSelectView.Item) {
         if (item.isSelected) return
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
             updateDataViewViewer(
                 UpdateDataViewViewer.Params.Fields(
@@ -96,7 +94,6 @@ class ViewerImagePreviewSelectViewModel(
 
     class Factory(
         private val objectState: StateFlow<ObjectState>,
-        private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val storeOfRelations: StoreOfRelations
@@ -105,7 +102,6 @@ class ViewerImagePreviewSelectViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ViewerImagePreviewSelectViewModel(
                 objectState = objectState,
-                session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,
                 storeOfRelations = storeOfRelations

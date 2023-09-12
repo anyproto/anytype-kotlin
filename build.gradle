@@ -1,8 +1,8 @@
 import com.android.build.gradle.LibraryPlugin
 
 buildscript {
-    ext.compile_sdk = 33
-    ext.target_sdk = 33
+    ext.compile_sdk = 34
+    ext.target_sdk = 34
     ext.min_sdk = 26
 
     ext.application_id = 'io.anytype.app'
@@ -43,7 +43,6 @@ plugins {
     alias(libs.plugins.wire) apply false
     alias(libs.plugins.dokka) apply false
     alias(libs.plugins.firebaseDistribution) apply false
-    alias(libs.plugins.navigation) apply false
     alias(libs.plugins.gms) apply false
 }
 

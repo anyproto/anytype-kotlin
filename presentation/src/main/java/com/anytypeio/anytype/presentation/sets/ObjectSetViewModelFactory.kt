@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Action
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
@@ -70,7 +72,9 @@ class ObjectSetViewModelFactory(
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val viewerDelegate: ViewerDelegate,
+    private val createTemplate: CreateTemplate
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -108,7 +112,9 @@ class ObjectSetViewModelFactory(
             updateDataViewViewer = updateDataViewViewer,
             duplicateObjects = duplicateObjects,
             templatesContainer = templatesContainer,
-            setObjectListIsArchived = setObjectListIsArchived
+            setObjectListIsArchived = setObjectListIsArchived,
+            viewerDelegate = viewerDelegate,
+            createTemplate = createTemplate
         ) as T
     }
 }

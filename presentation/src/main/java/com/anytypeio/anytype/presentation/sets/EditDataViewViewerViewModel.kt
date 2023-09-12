@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.*
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
@@ -61,18 +62,18 @@ class EditDataViewViewerViewModel(
         val startTime = System.currentTimeMillis()
         val state = objectState.value.dataViewState() ?: return
         viewModelScope.launch {
-            duplicateDataViewViewer(
+            duplicateDataViewViewer.async(
                 DuplicateDataViewViewer.Params(
                     context = ctx,
                     target = state.dataViewBlock.id,
                     viewer = state.viewers.first { it.id == viewer }
                 )
-            ).process(
-                failure = { e ->
+            ).fold(
+                onFailure = { e ->
                     Timber.e(e, "Error while duplicating viewer: $viewer")
                     _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
                 },
-                success = {
+                onSuccess = {
                     dispatcher.send(it).also {
                         logEvent(
                             state = objectState.value,
@@ -125,18 +126,18 @@ class EditDataViewViewerViewModel(
     ) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            deleteDataViewViewer(
+            deleteDataViewViewer.async(
                 DeleteDataViewViewer.Params(
                     ctx = ctx,
                     viewer = viewer,
                     dataview = dv
                 )
-            ).process(
-                failure = { e ->
+            ).fold(
+                onFailure = { e ->
                     Timber.e(e, "Error while deleting viewer: $viewer")
                     _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
                 },
-                success = { firstPayload ->
+                onSuccess = { firstPayload ->
                     dispatcher.send(firstPayload)
                     logEvent(
                         state = objectState.value,

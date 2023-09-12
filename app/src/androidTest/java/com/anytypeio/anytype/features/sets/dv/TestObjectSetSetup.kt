@@ -45,6 +45,7 @@ import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
@@ -59,6 +60,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -139,6 +141,12 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var templatesContainer: ObjectTypeTemplatesContainer
 
+    @Mock
+    lateinit var viewerDelegate: ViewerDelegate
+
+    @Mock
+    lateinit var createTemplate: CreateTemplate
+
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultPageType: GetDefaultPageType
 
@@ -201,10 +209,8 @@ abstract class TestObjectSetSetup {
             dispatchers = dispatchers
         )
         createDataViewObject = CreateDataViewObject(
-            getTemplates = getTemplates,
             repo = repo,
             storeOfRelations = storeOfRelations,
-            getDefaultPageType = getDefaultPageType,
             dispatchers = dispatchers
         )
         setObjectDetails = UpdateDetail(repo)
@@ -259,7 +265,9 @@ abstract class TestObjectSetSetup {
             updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
-            duplicateObjects = duplicateObjects
+            duplicateObjects = duplicateObjects,
+            viewerDelegate = viewerDelegate,
+            createTemplate = createTemplate
         )
     }
 

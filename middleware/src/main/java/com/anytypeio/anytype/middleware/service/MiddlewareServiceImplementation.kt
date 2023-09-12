@@ -1599,6 +1599,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun createTemplateFromObject(request: Rpc.Template.CreateFromObject.Request): Rpc.Template.CreateFromObject.Response {
+        val encoded = Service.templateCreateFromObject(
+            Rpc.Template.CreateFromObject.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Template.CreateFromObject.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Template.CreateFromObject.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun spaceUsage(request: Rpc.File.SpaceUsage.Request): Rpc.File.SpaceUsage.Response {
         val encoded = Service.fileSpaceUsage(
             Rpc.File.SpaceUsage.Request.ADAPTER.encode(request)

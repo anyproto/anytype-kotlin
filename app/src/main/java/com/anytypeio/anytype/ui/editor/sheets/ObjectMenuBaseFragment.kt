@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.click
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
+import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
@@ -43,6 +45,7 @@ abstract class ObjectMenuBaseFragment :
     private val isArchived get() = arg<Boolean>(IS_ARCHIVED_KEY)
     private val isFavorite get() = arg<Boolean>(IS_FAVORITE_KEY)
     private val isLocked get() = arg<Boolean>(IS_LOCKED_KEY)
+    private val isTemplate get() = argOrNull<Boolean>(IS_TEMPLATE_KEY)
     private val fromName get() = arg<String?>(FROM_NAME)
 
     abstract val vm: ObjectMenuViewModelBase
@@ -87,7 +90,8 @@ abstract class ObjectMenuBaseFragment :
             isArchived = isArchived,
             isFavorite = isFavorite,
             isProfile = isProfile,
-            isLocked = isLocked
+            isLocked = isLocked,
+            isTemplate = isTemplate ?: false
         )
     }
 
@@ -127,7 +131,16 @@ abstract class ObjectMenuBaseFragment :
             ObjectMenuViewModelBase.Command.OpenLinkToChooser -> openLinkChooser()
             is ObjectMenuViewModelBase.Command.OpenSnackbar -> openSnackbar(command)
             is ObjectMenuViewModelBase.Command.ShareDebugTree -> shareFile(command.uri)
+            is ObjectMenuViewModelBase.Command.OpenTemplate -> openTemplate(command)
         }
+    }
+
+    private fun openTemplate(command: ObjectMenuViewModelBase.Command.OpenTemplate) {
+        toast(getString(R.string.snackbar_template_add) + command.typeName)
+        findNavController().navigate(
+            R.id.nav_editor_modal,
+            bundleOf(EditorModalFragment.ARG_ID to command.template)
+        )
     }
 
     private fun openObjectCover() {
@@ -259,6 +272,7 @@ abstract class ObjectMenuBaseFragment :
         const val IS_LOCKED_KEY = "arg.doc-menu-bottom-sheet.is-locked"
         const val FROM_NAME = "arg.doc-menu-bottom-sheet.from-name"
         const val COMING_SOON_MSG = "Coming soon..."
+        const val IS_TEMPLATE_KEY = "arg.doc-menu-bottom-sheet.is-template"
     }
 
     interface DocumentMenuActionReceiver {

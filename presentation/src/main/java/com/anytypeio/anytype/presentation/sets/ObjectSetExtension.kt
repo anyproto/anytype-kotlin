@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import android.util.Log
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
@@ -44,7 +43,11 @@ import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_TYPE_UNSUPPORTED
+import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
+import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 
 fun ObjectState.DataView.featuredRelations(
     ctx: Id,
@@ -379,23 +382,10 @@ fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): Lis
     return query.filter(::isValidObject)
 }
 
-suspend fun ObjectState.DataView.Set.isTemplatesAllowed(
-    setOfValue: List<Id>,
-    storeOfObjectTypes: StoreOfObjectTypes,
-    getDefaultPageType: GetDefaultPageType
-): Boolean {
+fun ObjectState.DataView.Set.isSetByRelation(setOfValue: List<Id>): Boolean {
+    if (setOfValue.isEmpty()) return false
     val objectDetails = details[setOfValue.first()]?.map.orEmpty()
-    return when (objectDetails.type) {
-        ObjectTypeIds.OBJECT_TYPE -> {
-            val objectWrapper = ObjectWrapper.Type(objectDetails)
-            objectWrapper.isTemplatesAllowed()
-        }
-        ObjectTypeIds.RELATION -> {
-            //We have set of relations, need to check default object type
-            storeOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType)
-        }
-        else -> false
-    }
+    return objectDetails.type == ObjectTypeIds.RELATION
 }
 
 suspend fun StoreOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType: GetDefaultPageType): Boolean {
@@ -423,7 +413,7 @@ fun DVViewer.updateFields(fields: DVViewerFields?): DVViewer {
         hideIcon = fields.hideIcon,
         cardSize = fields.cardSize,
         coverFit = fields.coverFit,
-        defaultTemplateId = fields.defaultTemplateId
+        defaultTemplate = fields.defaultTemplateId
     )
 }
 
@@ -445,8 +435,14 @@ fun ObjectWrapper.Basic.toTemplateView(
     val coverContainer = if (coverType != CoverType.NONE) {
         BasicObjectCoverWrapper(this)
             .getCover(urlBuilder, coverImageHashProvider)
-    } else null
-    val isDefault = viewerDefaultTemplate == id || objectTypeDefaultTemplate == id
+    } else {
+        null
+    }
+    val isDefault = if (viewerDefaultTemplate != null) {
+        viewerDefaultTemplate == id
+    } else {
+        false
+    }
     return TemplateView.Template(
         id = id,
         name = name.orEmpty(),
@@ -461,22 +457,113 @@ fun ObjectWrapper.Basic.toTemplateView(
     )
 }
 
-fun ObjectWrapper.Basic.toTemplateViewBlank(
-    typeId: Id,
-    objectTypeDefaultTemplate: Id?,
-    viewerDefaultTemplate: Id?
+fun ObjectWrapper.Type.toTemplateViewBlank(
+    viewerDefaultTemplate: Id? = null
 ): TemplateView.Blank {
-    val isDefault = viewerDefaultTemplate.isNullOrBlank() && objectTypeDefaultTemplate.isNullOrBlank()
     return TemplateView.Blank(
-        typeId = typeId,
-        layout = layout?.code ?: ObjectType.Layout.BASIC.code,
-        isDefault = isDefault
+        id = DEFAULT_TEMPLATE_ID_BLANK,
+        typeId = id,
+        layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
+        isDefault = viewerDefaultTemplate == DEFAULT_TEMPLATE_ID_BLANK
     )
 }
 
-fun ObjectWrapper.Type.toTemplateViewBlank(): TemplateView.Blank {
-    return TemplateView.Blank(
-        typeId = id,
-        layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code
-    )
+fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSession): List<ViewerView> {
+    val viewers = dataViewContent.viewers
+    return when (this) {
+        is ObjectState.DataView.Collection -> mapViewers(
+            defaultObjectType = { it.defaultObjectType },
+            viewers = viewers,
+            session = session
+        )
+        is ObjectState.DataView.Set -> {
+            val setOfValue = getSetOfValue(ctx)
+            if (isSetByRelation(setOfValue = setOfValue)) {
+                mapViewers(
+                    defaultObjectType = { it.defaultObjectType },
+                    viewers = viewers,
+                    session = session
+                )
+            } else {
+                mapViewers(
+                    defaultObjectType = { setOfValue.firstOrNull() },
+                    viewers = viewers,
+                    session = session
+                )
+            }
+        }
+    }
+}
+
+private fun mapViewers(
+    defaultObjectType: (DVViewer) -> Id?,
+    viewers: List<DVViewer>,
+    session: ObjectSetSession
+): List<ViewerView> {
+    return viewers.mapIndexed { index, viewer ->
+        ViewerView(
+            id = viewer.id,
+            name = viewer.name,
+            type = viewer.type,
+            isActive = isActiveViewer(index, viewer, session),
+            isUnsupported = viewer.type == VIEW_TYPE_UNSUPPORTED,
+            defaultObjectType = defaultObjectType.invoke(viewer)
+        )
+    }
+}
+
+private fun isActiveViewer(index: Int, viewer: DVViewer, session: ObjectSetSession): Boolean {
+    return if (session.currentViewerId.value != null) {
+        viewer.id == session.currentViewerId.value
+    } else {
+        index == 0
+    }
+}
+
+suspend fun List<ViewerView>.isActiveWithTemplates(storeOfObjectTypes: StoreOfObjectTypes): Boolean {
+    val activeViewer = firstOrNull { it.isActive }
+    val viewerDefaultObjectTypeId = activeViewer?.defaultObjectType ?: return false
+    val viewerDefaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId) ?: return false
+    return viewerDefaultObjectType.isTemplatesAllowed()
+}
+
+fun ObjectState.DataView.Collection.getDefaultObjectTypeForCollection(viewer: DVViewer?): Id {
+    return viewer?.defaultObjectType ?: VIEW_DEFAULT_OBJECT_TYPE
+}
+
+fun ObjectState.DataView.Set.getDefaultObjectTypeForSet(ctx: Id, viewer: DVViewer?): Id? {
+    val setOfValue = getSetOfValue(ctx)
+    return if (isSetByRelation(setOfValue = setOfValue)) {
+        viewer?.defaultObjectType ?: VIEW_DEFAULT_OBJECT_TYPE
+    } else {
+        setOfValue.firstOrNull()
+    }
+}
+
+fun ObjectState.DataView.getDefaultObjectType(ctx: Id, viewer: DVViewer?): Id? {
+    return when (this) {
+        is ObjectState.DataView.Collection -> getDefaultObjectTypeForCollection(viewer)
+        is ObjectState.DataView.Set -> getDefaultObjectTypeForSet(ctx, viewer)
+    }
+}
+
+//TODO Refact
+suspend fun DVViewer.getProperTemplateId(
+    templateId: Id?,
+    storeOfObjectTypes: StoreOfObjectTypes
+): Id? {
+    return if (templateId != null) {
+        if (templateId == DEFAULT_TEMPLATE_ID_BLANK) {
+            null
+        } else {
+            templateId
+        }
+    } else {
+        val defaultObjectTypeId = defaultObjectType
+        if (defaultObjectTypeId != null) {
+            storeOfObjectTypes.get(defaultObjectTypeId)?.defaultTemplateId
+        } else {
+            null
+        }
+    }
 }

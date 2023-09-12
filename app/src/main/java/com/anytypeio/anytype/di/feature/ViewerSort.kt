@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -34,14 +33,12 @@ object ViewerSortModule {
     @PerModal
     fun provideViewModelFactory(
         state: MutableStateFlow<ObjectState>,
-        session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         storeOfRelations: StoreOfRelations
     ): ViewerSortViewModel.Factory = ViewerSortViewModel.Factory(
         state = state,
-        session = session,
         updateDataViewViewer = updateDataViewViewer,
         dispatcher = dispatcher,
         analytics = analytics,

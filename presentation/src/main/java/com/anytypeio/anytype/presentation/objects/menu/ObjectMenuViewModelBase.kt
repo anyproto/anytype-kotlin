@@ -41,7 +41,7 @@ abstract class ObjectMenuViewModelBase(
     private val removeFromFavorite: RemoveFromFavorite,
     private val addBackLinkToObject: AddBackLinkToObject,
     protected val delegator: Delegator<Action>,
-    private val urlBuilder: UrlBuilder,
+    protected val urlBuilder: UrlBuilder,
     protected val dispatcher: Dispatcher<Payload>,
     private val analytics: Analytics,
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
@@ -85,14 +85,16 @@ abstract class ObjectMenuViewModelBase(
         isFavorite: Boolean,
         isArchived: Boolean,
         isProfile: Boolean,
-        isLocked: Boolean
+        isLocked: Boolean,
+        isTemplate: Boolean
     ) {
         Timber.d("onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isProfile:[$isProfile], isLocked:[$isLocked]")
         actions.value = buildActions(
             ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,
-            isProfile = isProfile
+            isProfile = isProfile,
+            isTemplate = isTemplate
         )
         jobs += viewModelScope.launch {
             menuOptionsProvider.provide(ctx, isLocked).collect(_options)
@@ -105,7 +107,8 @@ abstract class ObjectMenuViewModelBase(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isProfile: Boolean
+        isProfile: Boolean,
+        isTemplate: Boolean = false
     ): List<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {
@@ -336,6 +339,11 @@ abstract class ObjectMenuViewModelBase(
             val targetObjectName: String?,
             val icon: ObjectIcon,
             val isCollection: Boolean = false
+        ) : Command()
+        data class OpenTemplate(
+            val template: Id,
+            val typeName: String,
+            val icon: ObjectIcon
         ) : Command()
     }
 

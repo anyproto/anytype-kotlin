@@ -1478,14 +1478,25 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
-        dispatch(
-            command = Command.OpenDocumentMenu(
-                isArchived = details[context]?.isArchived ?: false,
-                isFavorite = details[context]?.isFavorite ?: false,
-                isLocked = mode == EditorMode.Locked,
-                fromName = wrapper.getProperObjectName().orEmpty()
+        val isProfile = wrapper.type.firstOrNull() == ObjectTypeIds.PROFILE
+        if (isProfile) {
+            dispatch(
+                command = Command.OpenProfileMenu(
+                    isFavorite = details[context]?.isFavorite ?: false,
+                    isLocked = mode == EditorMode.Locked
+                )
             )
-        )
+        } else {
+            dispatch(
+                command = Command.OpenDocumentMenu(
+                    isArchived = details[context]?.isArchived ?: false,
+                    isFavorite = details[context]?.isFavorite ?: false,
+                    isLocked = mode == EditorMode.Locked,
+                    fromName = wrapper.getProperObjectName().orEmpty(),
+                    isTemplate = isObjectTemplate()
+                )
+            )
+        }
     }
 
     fun onEmptyBlockBackspaceClicked(id: String) {
@@ -3001,6 +3012,7 @@ class EditorViewModel(
     }
 
     private fun onPageClicked(blockLinkId: Id) {
+        if (isObjectTemplate()) return
         val block = blocks.firstOrNull { it.id == blockLinkId }
         when (val content = block?.content) {
             is Content.Link -> {
@@ -3141,23 +3153,32 @@ class EditorViewModel(
     fun onAddNewDocumentClicked() {
 
         Timber.d("onAddNewDocumentClicked, ")
+        proceedWithCreatingNewObject(type = null, template = null)
+    }
 
+    fun onCreateObjectWithTemplateClicked(template: Id) {
+        Timber.d("onCreateObjectWithTemplateClicked, template:[$template]")
+        val objType = getObjectTypeFromDetails() ?: return
+        proceedWithCreatingNewObject(type = objType, template = template)
+    }
+
+    private fun proceedWithCreatingNewObject(type: Id?, template: Id?) {
         val startTime = System.currentTimeMillis()
-        jobs += viewModelScope.launch {
-            createObject.async(CreateObject.Param(type = null))
+        viewModelScope.launch {
+            val params = CreateObject.Param(type = type, template = template)
+            createObject.async(params = params)
                 .fold(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
                             type = result.type,
                             storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.navigation,
-                            view = EventsDictionary.View.viewNavbar,
+                            route = EventsDictionary.Routes.objPowerTool,
                             startTime = startTime
                         )
                         proceedWithOpeningObject(result.objectId)
                     },
-                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+                    onFailure = { e -> Timber.e(e, "Error while creating a new object") }
                 )
         }
     }
@@ -3932,6 +3953,7 @@ class EditorViewModel(
                 }
             }
             is ListenerType.Relation.ObjectType -> {
+                if (isObjectTemplate()) return
                 viewModelScope.launch {
                     val params = FindObjectSetForType.Params(
                         type = clicked.typeId,
@@ -5770,6 +5792,7 @@ class EditorViewModel(
     }
 
     fun onMentionClicked(target: String) {
+        if (isObjectTemplate()) return
         proceedWithOpeningObjectByLayout(target)
     }
 
@@ -6185,6 +6208,11 @@ class EditorViewModel(
         val details = orchestrator.stores.details.current()
         val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
         return wrapper.getProperType()
+    }
+
+    fun isObjectTemplate(): Boolean {
+        val details = orchestrator.stores.details.current().details[context]
+        return details?.type?.firstOrNull() == ObjectTypeIds.TEMPLATE
     }
     //endregion
 

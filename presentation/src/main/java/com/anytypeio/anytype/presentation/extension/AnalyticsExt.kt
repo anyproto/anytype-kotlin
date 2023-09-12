@@ -5,11 +5,13 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addFilter
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addSort
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.changeDefaultTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeFilterValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeSortValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.clickNewOption
 import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.createTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectDuplicate
@@ -1234,6 +1236,22 @@ fun CoroutineScope.logEvent(
                 )
             )
         }
+        ObjectStateAnalyticsEvent.CREATE_TEMPLATE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = createTemplate,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route,
+                    objectType = type ?: OBJ_TYPE_CUSTOM
+                )
+            )
+        }
     }
 }
 
@@ -1277,7 +1295,8 @@ enum class ObjectStateAnalyticsEvent {
     REMOVE_SORT,
     OBJECT_CREATE,
     SELECT_TEMPLATE,
-    SHOW_TEMPLATES
+    SHOW_TEMPLATES,
+    CREATE_TEMPLATE
 }
 
 fun CoroutineScope.sendEditWidgetsEvent(
@@ -1729,5 +1748,45 @@ fun CoroutineScope.sendAnalyticsSelectTemplateEvent(
                 put(EventsPropertiesKey.route, "Navigation")
             }
         )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
+    analytics: Analytics,
+    objectType: String?,
+    startTime: Long
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = createTemplate,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.route, "MenuObject")
+                put(EventsPropertiesKey.objectType, objectType)
+            }
+        ),
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
+    )
+}
+
+fun CoroutineScope.sendAnalyticsDefaultTemplateEvent(
+    analytics: Analytics,
+    objType: ObjectWrapper.Type,
+    startTime: Long,
+    route: String? = null
+) {
+    val objectType = objType.sourceObject ?: OBJ_TYPE_CUSTOM
+    sendEvent(
+        analytics = analytics,
+        eventName = changeDefaultTemplate,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.type, objectType)
+                put(EventsPropertiesKey.route, route)
+            }
+        ),
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
     )
 }

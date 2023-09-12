@@ -32,6 +32,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -84,6 +87,7 @@ import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.focusAndShowKeyboard
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.hide
+import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.lastDecorator
@@ -144,6 +148,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
@@ -174,7 +179,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private val keyboardDelayJobs = mutableListOf<Job>()
 
-    private val ctx get() = arg<Id>(ID_KEY)
+    protected val ctx get() = arg<Id>(ID_KEY)
 
     private val screen: Point by lazy { screen() }
 
@@ -262,7 +267,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     private val styleToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
     private val actionToolbarFooter by lazy { StyleToolbarItemDecorator(screen) }
 
-    private val vm by viewModels<EditorViewModel> { factory }
+    protected val vm by viewModels<EditorViewModel> { factory }
 
     private val blockAdapter by lazy {
         BlockAdapter(
@@ -375,7 +380,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private val titleVisibilityDetector by lazy {
+    val titleVisibilityDetector by lazy {
         EditorHeaderOverlayDetector(
             threshold = dimen(R.dimen.default_toolbar_height),
             thresholdPadding = dimen(R.dimen.dp_8)
@@ -504,6 +509,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         binding.recycler.addOnItemTouchListener(
             OutsideClickDetector(vm::onOutsideClicked)
         )
+
+        observeSelectingTemplate()
 
         binding.recycler.apply {
             layoutManager = LinearLayoutManager(requireContext())
@@ -705,7 +712,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     }
 
-    private fun setupWindowInsetAnimation() {
+    open fun setupWindowInsetAnimation() {
         if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             binding.objectTypesToolbar.syncTranslationWithImeVisibility(
                 dispatchMode = DISPATCH_MODE_STOP
@@ -902,7 +909,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         isFavorite = command.isFavorite,
                         isLocked = command.isLocked,
                         isProfile = false,
-                        fromName = getFrom()
+                        fromName = getFrom(),
+                        isTemplate = command.isTemplate
                     )
                     fr.showChildFragment()
                 }
@@ -918,6 +926,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isLocked,
                             ObjectMenuBaseFragment.IS_PROFILE_KEY to true,
                             ObjectMenuBaseFragment.FROM_NAME to getFrom(),
+                            ObjectMenuBaseFragment.IS_TEMPLATE_KEY to false
                         )
                     )
                 }
@@ -1219,7 +1228,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun resetDocumentTitle(state: ViewState.Success) {
+    open fun resetDocumentTitle(state: ViewState.Success) {
         val title = state.blocks.firstOrNull { view ->
             view is BlockView.Title.Basic || view is BlockView.Title.Profile || view is BlockView.Title.Todo
         }
@@ -1302,7 +1311,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun render(state: ControlPanelState) {
+    open fun render(state: ControlPanelState) {
 
         keyboardDelayJobs.cancel()
 
@@ -1310,7 +1319,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         if (state.navigationToolbar.isVisible) {
             binding.placeholder.requestFocus()
-            hideKeyboard()
+            binding.placeholder.hideKeyboard()
             binding.bottomToolbar.visible()
         } else {
             binding.bottomToolbar.gone()
@@ -2085,6 +2094,30 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
+    open fun observeSelectingTemplate() {
+        val navController = findNavController()
+        val navBackStackEntry = navController.getBackStackEntry(R.id.pageScreen)
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME
+                && navBackStackEntry.savedStateHandle.contains(EditorTemplateFragment.ARG_TEMPLATE_ID)
+            ) {
+                val result =
+                    navBackStackEntry.savedStateHandle.get<String>(EditorTemplateFragment.ARG_TEMPLATE_ID);
+                if (!result.isNullOrBlank()) {
+                    navBackStackEntry.savedStateHandle.remove<String>(EditorTemplateFragment.ARG_TEMPLATE_ID)
+                    vm.onCreateObjectWithTemplateClicked(template = result)
+                }
+            }
+        }
+        navBackStackEntry.lifecycle.addObserver(observer)
+
+        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                navBackStackEntry.lifecycle.removeObserver(observer)
+            }
+        })
+    }
+
     //------------ End of Anytype Custom Context Menu ------------
 
     override fun inflateBinding(
@@ -2095,6 +2128,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     )
 
     companion object {
+
+        fun newInstance(id: String): EditorFragment = EditorFragment().apply {
+            arguments = bundleOf(ID_KEY to id)
+        }
+
         const val ID_KEY = "id"
 
         const val DEFAULT_ANIM_DURATION = 150L

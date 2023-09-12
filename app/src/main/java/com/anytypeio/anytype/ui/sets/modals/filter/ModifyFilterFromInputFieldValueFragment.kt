@@ -33,6 +33,7 @@ open class ModifyFilterFromInputFieldValueFragment :
     private val ctx: String get() = arg(CTX_KEY)
     private val relation: String get() = arg(RELATION_KEY)
     private val index: Int get() = arg(IDX_KEY)
+    private val viewer: String get() = arg(VIEWER_KEY)
 
     @Inject
     lateinit var factory: FilterViewModel.Factory
@@ -46,6 +47,7 @@ open class ModifyFilterFromInputFieldValueFragment :
             subscribe(binding.btnBottomAction.clicks()) {
                 vm.onModifyApplyClicked(
                     ctx = ctx,
+                    viewerId = viewer,
                     input = binding.enterTextValueInputField.text.toString()
                 )
             }
@@ -96,7 +98,11 @@ open class ModifyFilterFromInputFieldValueFragment :
     override fun onStart() {
         setupJobs()
         super.onStart()
-        vm.onStart(relation, index)
+        vm.onStart(
+            viewerId = viewer,
+            relationKey = relation,
+            filterIndex = index
+        )
     }
 
     override fun onStop() {
@@ -124,13 +130,19 @@ open class ModifyFilterFromInputFieldValueFragment :
     )
 
     companion object {
-        fun new(ctx: Id, relation: Id, index: Int) =
+        fun new(ctx: Id, relation: Id, index: Int, viewer: Id) =
             ModifyFilterFromInputFieldValueFragment().apply {
-                arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation, IDX_KEY to index)
+                arguments = bundleOf(
+                    CTX_KEY to ctx,
+                    RELATION_KEY to relation,
+                    IDX_KEY to index,
+                    VIEWER_KEY to viewer
+                )
             }
 
         const val CTX_KEY = "arg.modify-filter-relation.ctx"
         const val RELATION_KEY = "arg.modify-filter-relation.relation"
         const val IDX_KEY = "arg.modify-filter-relation.index"
+        private const val VIEWER_KEY = "arg.modify-filter-relation.viewer"
     }
 }

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
@@ -33,20 +34,20 @@ class CreateDataViewViewerViewModel(
     ) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            addDataViewViewer(
+            addDataViewViewer.async(
                 AddDataViewViewer.Params(
                     ctx = ctx,
                     target = target,
                     name = name,
                     type = dvType
                 )
-            ).process(
-                failure = { error ->
+            ).fold(
+                onFailure = { error ->
                     Timber.e(error, ERROR_ADD_NEW_VIEW).also {
                         state.value = ViewState.Error(ERROR_ADD_NEW_VIEW)
                     }
                 },
-                success = {
+                onSuccess = {
                     dispatcher.send(it).also {
                         logEvent(
                             state = objectState.value,

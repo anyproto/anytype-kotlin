@@ -2,7 +2,8 @@ package com.anytypeio.anytype.domain.dataview.interactor
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer.Params
 
@@ -12,11 +13,12 @@ import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer.Par
  * @see [Params] for details.
  */
 class DeleteDataViewViewer(
-    private val repo: BlockRepository
-) : BaseUseCase<Payload, Params>() {
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<Params, Payload>(dispatchers.io) {
 
-    override suspend fun run(params: Params) = safe {
-        repo.removeDataViewViewer(
+    override suspend fun doWork(params: Params): Payload {
+        return repo.removeDataViewViewer(
             ctx = params.ctx,
             dataview = params.dataview,
             viewer = params.viewer

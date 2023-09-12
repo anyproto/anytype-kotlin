@@ -253,7 +253,7 @@ suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOf
         if (r != null && r.relationFormat == RelationFormat.DATE) {
             f.copy(relationFormat = r.relationFormat)
         } else if (r != null && r.relationFormat == RelationFormat.OBJECT) {
-            // Temporary workaround for normalizing filter condition for object type filter
+            // Temporary workaround for normalizing filter condition for object filters
             f.copy(
                 relationFormat = r.relationFormat,
                 condition = if (f.condition == DVFilterCondition.EQUAL) {

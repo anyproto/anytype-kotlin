@@ -168,11 +168,6 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
         vm.onStart(viewer)
     }
 
-    override fun onStop() {
-        super.onStop()
-        vm.onStop()
-    }
-
     private fun render(state: ObjectSetSettingsViewModel.ScreenState) {
         when (state) {
             ObjectSetSettingsViewModel.ScreenState.LIST -> {

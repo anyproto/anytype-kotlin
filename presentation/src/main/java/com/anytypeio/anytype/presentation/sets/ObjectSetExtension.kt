@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
+import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -251,6 +253,16 @@ suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOf
         val r = storeOfRelations.getByKey(f.relation)
         if (r != null && r.relationFormat == RelationFormat.DATE) {
             f.copy(relationFormat = r.relationFormat)
+        } else if (r != null && r.relationFormat == RelationFormat.OBJECT) {
+            // Temporary workaround for normalizing filter value.
+            var value: Any? = f.value
+            if (f.condition == DVFilterCondition.EQUAL && value is List<*>) {
+                value = value.typeOf<Any>().firstOrNull()
+            }
+            f.copy(
+                relationFormat = r.relationFormat,
+                value = value
+            )
         } else {
             f
         }

@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_utils.ext.TODAY
 import com.anytypeio.anytype.core_utils.ext.TOMORROW
 import com.anytypeio.anytype.core_utils.ext.YESTERDAY
 import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -465,18 +466,17 @@ fun ObjectWrapper.Relation.toObjects(
     value: Any?,
     details: Map<Id, Block.Fields>,
     urlBuilder: UrlBuilder
-) = if (value is List<*>?) {
-    val ids = value?.filterIsInstance<String>() ?: emptyList()
-    val list = arrayListOf<ObjectView>()
-    ids.forEach { id ->
-        val wrapper = ObjectWrapper.Basic(details[id]?.map ?: emptyMap())
-        if (!wrapper.isEmpty()) {
-            list.add(wrapper.toObjectView(urlBuilder))
+) : List<ObjectView> {
+    val ids = value.values<Id>()
+    return buildList {
+        ids.forEach { id ->
+            val raw = details[id]?.map
+            if (!raw.isNullOrEmpty()) {
+                val wrapper = ObjectWrapper.Basic(raw)
+                add(wrapper.toObjectView(urlBuilder))
+            }
         }
     }
-    list
-} else {
-    throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
 }
 
 suspend fun DVFilter.toView(
@@ -671,4 +671,10 @@ suspend fun ObjectWrapper.Relation.toFilterValue(
     Relation.Format.OBJECT -> FilterValue.Object(toObjects(value, details, urlBuilder))
     Relation.Format.CHECKBOX -> FilterValue.Check(toCheckbox(value))
     else -> throw UnsupportedOperationException("Unsupported relation format:${format}")
+}
+
+inline fun <reified T> Any?.values(): List<T> = when (this) {
+    is List<*> -> this.typeOf()
+    is T -> listOf(this)
+    else -> emptyList()
 }

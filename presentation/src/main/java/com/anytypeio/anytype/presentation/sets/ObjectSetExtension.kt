@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -251,6 +252,16 @@ suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOf
         val r = storeOfRelations.getByKey(f.relation)
         if (r != null && r.relationFormat == RelationFormat.DATE) {
             f.copy(relationFormat = r.relationFormat)
+        } else if (r != null && r.relationFormat == RelationFormat.OBJECT) {
+            // Temporary workaround for normalizing filter condition for object filters
+            f.copy(
+                relationFormat = r.relationFormat,
+                condition = if (f.condition == DVFilterCondition.EQUAL) {
+                    DVFilterCondition.IN
+                } else {
+                    f.condition
+                }
+            )
         } else {
             f
         }

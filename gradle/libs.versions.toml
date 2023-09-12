@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.28.2"
+middlewareVersion = "v0.28.3"
 kotlinVersion = '1.7.10'
 
 androidxCoreVersion = "1.10.1"

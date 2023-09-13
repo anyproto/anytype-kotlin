@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
-import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import kotlin.test.assertEquals
@@ -85,8 +84,8 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val relationLink1 = StubRelationLink(relationObject1.key)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
-            defaultObjectType = "",
-            defaultTemplateId = ""
+            defaultObjectType = null,
+            defaultTemplateId = null
         )
         val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
         val dvKeys = listOf(relationObject1.key)
@@ -178,8 +177,8 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val relationLink1 = StubRelationLink(relationObject1.key)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
-            defaultObjectType = "",
-            defaultTemplateId = ""
+            defaultObjectType = null,
+            defaultTemplateId = null
         )
         val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
         val dvKeys = listOf(relationObject1.key)
@@ -271,8 +270,8 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val relationLink1 = StubRelationLink(relationObject1.key)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
-            defaultObjectType = "",
-            defaultTemplateId = ""
+            defaultObjectType = null,
+            defaultTemplateId = null
         )
         val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
         val dvKeys = listOf(relationObject1.key)
@@ -469,7 +468,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val relationLink1 = StubRelationLink(relationObject1.key)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
-            defaultObjectType = "",
+            defaultObjectType = null,
             defaultTemplateId = template1.id
         )
         val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))
@@ -562,7 +561,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val relationLink1 = StubRelationLink(relationObject1.key)
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
-            defaultObjectType = "",
+            defaultObjectType = null,
             defaultTemplateId = DEFAULT_TEMPLATE_ID_BLANK
         )
         val dv = StubDataView(views = listOf(viewer), relationLinks = listOf(relationLink1))

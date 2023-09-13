@@ -55,7 +55,7 @@ sealed interface LibraryView {
     ) : LibraryView
 
     class UnknownView(
-        override val id: Id = "",
+        override val id: Id,
         override val name: String = "",
         override val dependentData: DependentData = DependentData.None
     ) : LibraryView

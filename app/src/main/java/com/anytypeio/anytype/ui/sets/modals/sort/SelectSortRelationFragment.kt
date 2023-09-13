@@ -14,7 +14,11 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.sets.SearchRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.drawable
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentSelectSortOrFilterRelationBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -73,6 +77,16 @@ class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSele
                 }
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vm.onStart(viewer)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

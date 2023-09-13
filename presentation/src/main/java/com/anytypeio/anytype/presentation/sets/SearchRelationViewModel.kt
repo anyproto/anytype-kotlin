@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
@@ -44,8 +45,7 @@ abstract class SearchRelationViewModel(
                     objectState = objectState.value,
                     viewerId = viewerId,
                     storeOfRelations = storeOfRelations
-                )
-                    .filterNot { notAllowedRelations(it) }
+                ).filterNot { notAllowedRelations(it) }
         }
         // Searching and mapping views based on query changes.
         jobs += viewModelScope.launch {
@@ -73,8 +73,7 @@ abstract class SearchRelationViewModel(
     }
 
     fun onStop() {
-        jobs.forEach { it.cancel() }
-        jobs.clear()
+        jobs.cancel()
     }
 
     protected open suspend fun filterRelationsFromAlreadyInUse(

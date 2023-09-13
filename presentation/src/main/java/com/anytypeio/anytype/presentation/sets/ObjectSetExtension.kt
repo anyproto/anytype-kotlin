@@ -540,11 +540,26 @@ suspend fun DVViewer.getProperTemplateId(
 
 suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
     ctx: Id,
-    activeView: DVViewer,
+    activeView: DVViewer?,
     storeOfObjectTypes: StoreOfObjectTypes
 ): Pair<ObjectWrapper.Type?, Id?> {
+    if (activeView == null) return Pair(null, null)
     when (this) {
-        is ObjectState.DataView.Collection -> TODO()
+        is ObjectState.DataView.Collection -> {
+            val activeViewDefaultObjectType = activeView.defaultObjectType
+            val defaultSetObjectTypId = if (!activeViewDefaultObjectType.isNullOrBlank()) {
+                activeViewDefaultObjectType
+            } else {
+                VIEW_DEFAULT_OBJECT_TYPE
+            }
+            val defaultSetObjectType = storeOfObjectTypes.get(defaultSetObjectTypId)
+            return if (activeView.defaultTemplate.isNullOrEmpty()) {
+                val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
+                Pair(defaultSetObjectType, defaultTemplateId)
+            } else {
+                Pair(defaultSetObjectType, activeView.defaultTemplate)
+            }
+        }
         is ObjectState.DataView.Set -> {
             val setOfValue = getSetOfValue(ctx)
             return if (isSetByRelation(setOfValue = setOfValue)) {

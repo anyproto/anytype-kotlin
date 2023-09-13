@@ -505,14 +505,20 @@ class ObjectSetViewModel(
                 when {
                     viewer == null -> DataViewViewState.Collection.NoView
                     viewer.isEmpty() -> {
-                        val hasTemplates = _dvViews.value.isActiveWithTemplates(storeOfObjectTypes)
+                        val (defType, _) = objectState.getActiveViewTypeAndTemplate(
+                            context, dvViewer, storeOfObjectTypes
+                        )
+                        val hasTemplates = defType?.isTemplatesAllowed() ?: false
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
                             hasTemplates = hasTemplates
                         )
                     }
                     else -> {
-                        val hasTemplates = _dvViews.value.isActiveWithTemplates(storeOfObjectTypes)
+                        val (defType, _) = objectState.getActiveViewTypeAndTemplate(
+                            context, dvViewer, storeOfObjectTypes
+                        )
+                        val hasTemplates = defType?.isTemplatesAllowed() ?: false
                         DataViewViewState.Collection.Default(
                             viewer = viewer,
                             hasTemplates = hasTemplates
@@ -561,7 +567,7 @@ class ObjectSetViewModel(
                     query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
                     render == null -> DataViewViewState.Set.NoView
                     render.isEmpty() -> {
-                        val (defType, defTemplate) = objectState.getActiveViewTypeAndTemplate(
+                        val (defType, _) = objectState.getActiveViewTypeAndTemplate(
                             context, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.Set.NoItems(
@@ -570,7 +576,7 @@ class ObjectSetViewModel(
                         )
                     }
                     else -> {
-                        val (defType, defTemplate) = objectState.getActiveViewTypeAndTemplate(
+                        val (defType, _) = objectState.getActiveViewTypeAndTemplate(
                             context, viewer, storeOfObjectTypes
                         )
                         DataViewViewState.Set.Default(
@@ -979,14 +985,20 @@ class ObjectSetViewModel(
         dispatch(ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen)
     }
 
-    private suspend fun proceedWithAddingObjectToCollection(templateId: Id? = null) {
+    private suspend fun proceedWithAddingObjectToCollection(templateChosenBy: Id? = null) {
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
 
-        val createObjectTemplateId = templateId ?: viewer.getProperTemplateId(storeOfObjectTypes)
+        val (defaultObjectType, defaultTemplate)
+                = state.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
+
+        val validTemplateId = getValidTemplateId(
+            templateChosenBy = templateChosenBy,
+            viewDefaultTemplate = defaultTemplate
+        )
         val createObjectParams = CreateDataViewObject.Params.Collection(
-            templateId = createObjectTemplateId,
-            type = viewer.defaultObjectType
+            templateId = validTemplateId,
+            type = defaultObjectType?.id
         )
         proceedWithCreatingDataViewObject(createObjectParams) { result ->
             val params = AddObjectToCollection.Params(
@@ -1884,7 +1896,7 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             when (state) {
                 is ObjectState.DataView.Collection -> {
-                    proceedWithAddingObjectToCollection(templateId = templateId)
+                    proceedWithAddingObjectToCollection(templateChosenBy = templateId)
                 }
                 is ObjectState.DataView.Set -> {
                     proceedWithCreatingSetObject(currentState = state, templateChosenBy = templateId)

@@ -561,15 +561,21 @@ class ObjectSetViewModel(
                     query.isEmpty() || setOfValue.isEmpty() -> DataViewViewState.Set.NoQuery
                     render == null -> DataViewViewState.Set.NoView
                     render.isEmpty() -> {
+                        val (defType, defTemplate) = objectState.getActiveViewTypeAndTemplate(
+                            context, viewer, storeOfObjectTypes
+                        )
                         DataViewViewState.Set.NoItems(
                             title = render.title,
-                            hasTemplates = _dvViews.value.isActiveWithTemplates(storeOfObjectTypes)
+                            hasTemplates = defType?.isTemplatesAllowed() ?: false
                         )
                     }
                     else -> {
+                        val (defType, defTemplate) = objectState.getActiveViewTypeAndTemplate(
+                            context, viewer, storeOfObjectTypes
+                        )
                         DataViewViewState.Set.Default(
                             viewer = render,
-                            hasTemplates = _dvViews.value.isActiveWithTemplates(storeOfObjectTypes)
+                            hasTemplates = defType?.isTemplatesAllowed() ?: false
                         )
                     }
                 }
@@ -895,7 +901,7 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set, templateChoosedBy: Id?) {
+    private suspend fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set, templateChosenBy: Id?) {
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
         } else {
@@ -908,7 +914,8 @@ class ObjectSetViewModel(
                 return
             }
 
-            val (defaultObjectType, defaultTemplate) = currentState.getActiveViewTypeAndTemplate(context, viewer)
+            val (defaultObjectType, defaultTemplate)
+                    = currentState.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
 
             val sourceId = setObject.setOf.singleOrNull()
             if (defaultObjectType == null) {
@@ -925,27 +932,29 @@ class ObjectSetViewModel(
                                     )
                                 )
                             } else {
-                                val createObjectTemplateId = when (templateChoosedBy) {
-                                    null -> if (defaultTemplate != TemplateView.DEFAULT_TEMPLATE_ID_BLANK) defaultTemplate else null
-                                    TemplateView.DEFAULT_TEMPLATE_ID_BLANK -> null
-                                    else -> templateChoosedBy
-                                }
+                                val validTemplateId = getValidTemplateId(
+                                    templateChosenBy = templateChosenBy,
+                                    viewDefaultTemplate = defaultTemplate
+                                )
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = defaultObjectType.id,
                                         filters = viewer.filters,
-                                        template = createObjectTemplateId
+                                        template = validTemplateId
                                     )
                                 )
                             }
                         }
                         ObjectTypeIds.RELATION -> {
-                            val createObjectTemplateId = templateChoosedBy?: viewer.getProperTemplateId(storeOfObjectTypes)
+                            val validTemplateId = getValidTemplateId(
+                                templateChosenBy = templateChosenBy,
+                                viewDefaultTemplate = defaultTemplate
+                            )
                             proceedWithCreatingDataViewObject(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
                                     relations = setObject.setOf,
-                                    template = createObjectTemplateId,
+                                    template = validTemplateId,
                                     type = defaultObjectType.id
                                 )
                             )
@@ -955,6 +964,14 @@ class ObjectSetViewModel(
                     toast("Unable to define a source for a new object.")
                 }
             }
+        }
+    }
+
+    private fun getValidTemplateId(templateChosenBy: Id?, viewDefaultTemplate: Id?): Id? {
+        return when (templateChosenBy) {
+            null -> if (viewDefaultTemplate != TemplateView.DEFAULT_TEMPLATE_ID_BLANK) viewDefaultTemplate else null
+            TemplateView.DEFAULT_TEMPLATE_ID_BLANK -> null
+            else -> templateChosenBy
         }
     }
 
@@ -1499,7 +1516,7 @@ class ObjectSetViewModel(
                 )
             }.flatMapLatest { (state, currentViewId) ->
                     val viewer = state.dataViewState()?.viewerById(currentViewId) ?: return@flatMapLatest emptyFlow()
-                    val (type, template) = state.getActiveViewTypeAndTemplate(context, viewer)
+                    val (type, template) = state.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
                     if (type == null) return@flatMapLatest emptyFlow()
                     if (type.isTemplatesAllowed()) {
                         fetchAndProcessTemplates(type, template)
@@ -1870,7 +1887,7 @@ class ObjectSetViewModel(
                     proceedWithAddingObjectToCollection(templateId = templateId)
                 }
                 is ObjectState.DataView.Set -> {
-                    proceedWithCreatingSetObject(currentState = state, templateChoosedBy = templateId)
+                    proceedWithCreatingSetObject(currentState = state, templateChosenBy = templateId)
                 }
             }
         }

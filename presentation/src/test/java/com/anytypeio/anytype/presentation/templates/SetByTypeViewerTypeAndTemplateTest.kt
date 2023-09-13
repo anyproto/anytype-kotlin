@@ -36,24 +36,21 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     private lateinit var viewModel: ObjectSetViewModel
     private lateinit var closable: AutoCloseable
 
-    //Object Type Page
-    val defaultTypeId = ObjectState.VIEW_DEFAULT_OBJECT_TYPE
+    private val customType1Id = "customType1-${RandomString.make()}"
 
-    val customType1Id = "customType1-${RandomString.make()}"
-
-    val template1 = StubObject(
+    private val template1 = StubObject(
         id = "template1-${RandomString.make()}",
         objectType = ObjectTypeIds.TEMPLATE,
         targetObjectType = customType1Id
     )
 
-    val template2 = StubObject(
+    private val template2 = StubObject(
         id = "template2-${RandomString.make()}",
         objectType = ObjectTypeIds.TEMPLATE,
         targetObjectType = customType1Id
     )
 
-    val setObjDetails = mapOf(
+    private val setObjDetails = mapOf(
         Relations.ID to root,
         Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
         Relations.SET_OF to listOf(customType1Id)

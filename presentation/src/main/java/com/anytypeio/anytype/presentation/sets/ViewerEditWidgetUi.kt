@@ -16,9 +16,9 @@ data class ViewerEditWidgetUi(
     val defaultObjectType: ObjectWrapper.Type?,
     val isDefaultObjectTypeEnabled: Boolean = false,
     val layout: DVViewerType?,
-    val relations: List<String> = emptyList(),
-    val filters: List<String> = emptyList(),
-    val sorts: List<String> = emptyList(),
+    val relations: List<Id> = emptyList(),
+    val filters: List<Id> = emptyList(),
+    val sorts: List<Id> = emptyList(),
     val defaultTemplate: Id? = null,
 ) {
 

@@ -11,9 +11,9 @@ data class ViewerView(
     val showActionMenu: Boolean = false,
     val isUnsupported: Boolean = false,
     val defaultObjectType: Id?,
-    val relations: List<String>,
-    val sorts: List<String>,
-    val filters: List<String>,
+    val relations: List<Id>,
+    val sorts: List<Id>,
+    val filters: List<Id>,
     val isDefaultObjectTypeEnabled: Boolean
 )
 

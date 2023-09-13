@@ -67,7 +67,7 @@ class DataViewListWidgetContainer(
                             val objects = resolveObjectOrder(
                                 results = results,
                                 obj = obj,
-                                view = view
+                                activeView = view
                             )
                             WidgetView.SetOfObjects(
                                 id = widget.id,
@@ -96,19 +96,14 @@ class DataViewListWidgetContainer(
     private fun resolveObjectOrder(
         results: List<ObjectWrapper.Basic>,
         obj: ObjectView,
-        view: Id?
+        activeView: Id?
     ): List<ObjectWrapper.Basic> {
         var objects = results
         val dv = obj.blocks.find { b -> b.content is DV }
         val content = dv?.content as? DV
         if (content?.isCollection == true) {
-            val order = if (!view.isNullOrEmpty()) {
-                content.objectOrders.find { order ->
-                    order.view == view
-                }
-            } else {
-                content.objectOrders.firstOrNull()
-            }
+            val targetView = activeView ?: content.viewers.firstOrNull()?.id
+            val order = content.objectOrders.find { order -> order.view == targetView }
             if (order != null && order.ids.isNotEmpty()) {
                 objects = objects.sortedBy { order.ids.indexOf(it.id) }
             }

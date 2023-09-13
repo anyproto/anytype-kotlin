@@ -23,7 +23,6 @@ import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -546,12 +545,12 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
     if (activeView == null) return Pair(null, null)
     when (this) {
         is ObjectState.DataView.Collection -> {
-            return determineTypeAndTemplateFromActiveView(activeView, storeOfObjectTypes)
+            return resolveTypeAndActiveViewTemplate(activeView, storeOfObjectTypes)
         }
         is ObjectState.DataView.Set -> {
             val setOfValue = getSetOfValue(ctx)
             return if (isSetByRelation(setOfValue = setOfValue)) {
-                determineTypeAndTemplateFromActiveView(activeView, storeOfObjectTypes)
+                resolveTypeAndActiveViewTemplate(activeView, storeOfObjectTypes)
             } else {
                 val setOf = setOfValue.firstOrNull()
                 if (setOf.isNullOrBlank()) {
@@ -571,7 +570,7 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
     }
 }
 
-private suspend fun determineTypeAndTemplateFromActiveView(
+private suspend fun resolveTypeAndActiveViewTemplate(
     activeView: DVViewer,
     storeOfObjectTypes: StoreOfObjectTypes
 ): Pair<ObjectWrapper.Type?, Id?> {

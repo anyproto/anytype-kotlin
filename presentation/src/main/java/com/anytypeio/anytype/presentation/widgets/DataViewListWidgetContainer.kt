@@ -65,7 +65,7 @@ class DataViewListWidgetContainer(
                     if (params != null) {
                         storage.subscribe(params).map { results ->
                             val objects = resolveObjectOrder(
-                                results = results,
+                                searchResults = results,
                                 obj = obj,
                                 activeView = view
                             )
@@ -94,11 +94,11 @@ class DataViewListWidgetContainer(
     }
 
     private fun resolveObjectOrder(
-        results: List<ObjectWrapper.Basic>,
+        searchResults: List<ObjectWrapper.Basic>,
         obj: ObjectView,
         activeView: Id?
     ): List<ObjectWrapper.Basic> {
-        var objects = results
+        var objects = searchResults
         val dv = obj.blocks.find { b -> b.content is DV }
         val content = dv?.content as? DV
         if (content?.isCollection == true) {

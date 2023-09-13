@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchFor
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromScratchForObjectViewModel
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForDataViewFragment
@@ -108,7 +107,6 @@ object RelationCreateFromScratchForDataViewModule {
     @CreateFromScratch
     fun provideViewModelFactory(
         state: MutableStateFlow<ObjectState>,
-        session: ObjectSetSession,
         updateDataViewViewer: UpdateDataViewViewer,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
@@ -119,7 +117,6 @@ object RelationCreateFromScratchForDataViewModule {
             addRelationToDataView = addRelationToDataView,
             dispatcher = dispatcher,
             objectState = state,
-            session = session,
             updateDataViewViewer = updateDataViewViewer,
             analytics = analytics,
             createFromScratchState = createFromScratchState,

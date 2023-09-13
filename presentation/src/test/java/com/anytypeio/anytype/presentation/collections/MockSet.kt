@@ -162,6 +162,11 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
         views = listOf(),
         relationLinks = listOf()
     )
+    val dataViewWith3Views = StubDataView(
+        id = "dv-${RandomString.make()}",
+        views = listOf(viewerGrid, viewerGallery, viewerList),
+        relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5)
+    )
 
     // RECORDS
     val obj1 = StubObject(id = "object-${RandomString.make()}")

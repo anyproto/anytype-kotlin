@@ -203,6 +203,7 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
 
     private val dv get() = arg<Id>(DV_KEY)
     override val ctx get() = arg<Id>(CTX_KEY)
+    private val viewer get() = arg<Id>(VIEWER_KEY)
 
     @Inject
     lateinit var factory: RelationAddToDataViewViewModel.Factory
@@ -211,6 +212,7 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     override fun onRelationSelected(ctx: Id, relation: Key, format: RelationFormat) {
         vm.onRelationSelected(
             ctx = ctx,
+            viewerId = viewer,
             relation = relation,
             format = format,
             dv = dv,
@@ -221,6 +223,7 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
     override fun onCreateFromScratchClicked() {
         val fr = RelationCreateFromScratchForDataViewFragment.new(
             ctx = ctx,
+            viewer = viewer,
             dv = dv,
             query = createFromScratchAdapter.query
         )

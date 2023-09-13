@@ -261,7 +261,7 @@ private fun ViewersWidgetContent(
                             Image(
                                 modifier = Modifier
                                     .noRippleThrottledClickable {
-                                        action.invoke(Edit(view.id))
+                                        action.invoke(Edit(id = view.id))
                                     }
                                     .constrainAs(edit) {
                                         end.linkTo(dnd.start, margin = 16.dp)

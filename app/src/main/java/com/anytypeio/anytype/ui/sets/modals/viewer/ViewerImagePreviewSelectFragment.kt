@@ -23,10 +23,13 @@ class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment<FragmentViewerI
     private val vm: ViewerImagePreviewSelectViewModel by viewModels { factory }
 
     private val ctx get() = arg<String>(CTX_KEY)
+    private val viewer get() = arg<String>(VIEWER_KEY)
 
     private val viewerCoverAdapter by lazy {
         ViewerCoverAdapter { item ->
-            vm.onViewerCoverItemClicked(ctx, item)
+            vm.onViewerCoverItemClicked(
+                ctx = ctx, viewerId = viewer, item = item
+            )
         }
     }
 
@@ -43,6 +46,11 @@ class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment<FragmentViewerI
                 if (isDismissed) dismiss()
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vm.onStart(viewerId = viewer)
     }
 
     override fun injectDependencies() {
@@ -62,5 +70,6 @@ class ViewerImagePreviewSelectFragment : BaseBottomSheetFragment<FragmentViewerI
 
     companion object {
         const val CTX_KEY = "arg.viewer-cover-select.ctx"
+        const val VIEWER_KEY = "arg.viewer-cover-select.viewer"
     }
 }

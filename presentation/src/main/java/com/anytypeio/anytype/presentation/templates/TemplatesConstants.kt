@@ -5,4 +5,6 @@ object TemplateConstants {
     const val BLANK_ROOT_ID = "blank_template_root_id"
     const val HEADER_ID = "header"
     const val TITLE_ID = "blockTitle"
+
+    const val TYPE_DEFAULT_BLANK_TEMPLATE_ID = "blank"
 }

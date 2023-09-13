@@ -110,9 +110,7 @@ class DataViewListWidgetContainer(
                 content.objectOrders.firstOrNull()
             }
             if (order != null && order.ids.isNotEmpty()) {
-                objects = objects.sortedBy { obj ->
-                    order.ids.indexOf(obj.id)
-                }
+                objects = objects.sortedBy { order.ids.indexOf(it.id) }
             }
         }
         return objects

@@ -420,46 +420,45 @@ fun ObjectWrapper.Relation.toCheckbox(value: Any?): Boolean? =
 suspend fun ObjectWrapper.Relation.toTags(
     value: Any?,
     store: ObjectStore
-): List<TagView> = if (value is List<*>?) {
-    val views = arrayListOf<TagView>()
-    value?.filterIsInstance<Id>()?.forEach { id ->
-        val option = store.get(id)?.let { ObjectWrapper.Option(it.map) }
-        if (option != null) {
-            views.add(
-                TagView(
-                    id = option.id,
-                    tag = option.name.orEmpty(),
-                    color = option.color
+): List<TagView> {
+    val ids = value.values<Id>()
+    return buildList {
+        ids.forEach { id ->
+            val option = store.get(id)?.let { ObjectWrapper.Option(it.map) }
+            if (option != null) {
+                add(
+                    TagView(
+                        id = option.id,
+                        tag = option.name.orEmpty(),
+                        color = option.color
+                    )
                 )
-            )
-        } else {
-            Timber.e("Failed to find corresponding tag option")
+            } else {
+                Timber.e("Failed to find corresponding tag option")
+            }
         }
     }
-    views.toList()
-} else {
-    throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
 }
 
 suspend fun ObjectWrapper.Relation.toStatus(
     value: Any?,
     store: ObjectStore
-): StatusView? = if (value is List<*>?) {
-    var status: StatusView? = null
-    val filter = value?.filterIsInstance<String>()?.firstOrNull()
-    if (filter != null) {
+): StatusView? {
+    val filter : Id? = value.values<Id>().firstOrNull()
+    return if (filter != null) {
         val option = store.get(filter)?.let { ObjectWrapper.Option(it.map) }
         if (option != null) {
-            status = StatusView(
+            StatusView(
                 id = option.id,
                 status = option.name.orEmpty(),
                 color = option.color
             )
+        } else {
+            null
         }
+    } else {
+        null
     }
-    status
-} else {
-    throw IllegalArgumentException("Relation format $format value should be List<String>, actual:$value")
 }
 
 fun ObjectWrapper.Relation.toObjects(

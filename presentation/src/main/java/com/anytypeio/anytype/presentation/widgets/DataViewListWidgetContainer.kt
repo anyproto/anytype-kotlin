@@ -63,7 +63,12 @@ class DataViewListWidgetContainer(
                     val obj = getObject.run(widget.source.id)
                     val params = obj.parse(viewer = view, source = source.obj)
                     if (params != null) {
-                        storage.subscribe(params).map { objects ->
+                        storage.subscribe(params).map { results ->
+                            val objects = resolveObjectOrder(
+                                searchResults = results,
+                                obj = obj,
+                                activeView = view
+                            )
                             WidgetView.SetOfObjects(
                                 id = widget.id,
                                 source = widget.source,
@@ -86,6 +91,24 @@ class DataViewListWidgetContainer(
         }
     }.catch {
         emit(defaultEmptyState())
+    }
+
+    private fun resolveObjectOrder(
+        searchResults: List<ObjectWrapper.Basic>,
+        obj: ObjectView,
+        activeView: Id?
+    ): List<ObjectWrapper.Basic> {
+        var objects = searchResults
+        val dv = obj.blocks.find { b -> b.content is DV }
+        val content = dv?.content as? DV
+        if (content?.isCollection == true) {
+            val targetView = activeView ?: content.viewers.firstOrNull()?.id
+            val order = content.objectOrders.find { order -> order.view == targetView }
+            if (order != null && order.ids.isNotEmpty()) {
+                objects = objects.sortedBy { order.ids.indexOf(it.id) }
+            }
+        }
+        return objects
     }
 
     private fun defaultEmptyState() = WidgetView.SetOfObjects(

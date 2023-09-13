@@ -136,13 +136,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
-            doc = listOf(dv),
-            details = details
+            doc = listOf(dv), details = details
         )
 
         stubTemplatesContainer(
-            type = pageTypeId,
-            templates = listOf(pageTemplate1, pageTemplate2)
+            type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
         stubSubscriptionResults(
@@ -233,13 +231,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
-            doc = listOf(dv),
-            details = details
+            doc = listOf(dv), details = details
         )
 
         stubTemplatesContainer(
-            type = pageTypeId,
-            templates = listOf(pageTemplate1, pageTemplate2)
+            type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
         stubSubscriptionResults(
@@ -330,13 +326,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
-            doc = listOf(dv),
-            details = details
+            doc = listOf(dv), details = details
         )
 
         stubTemplatesContainer(
-            type = pageTypeId,
-            templates = listOf(pageTemplate1, pageTemplate2)
+            type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
         stubSubscriptionResults(
@@ -437,13 +431,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
-                doc = listOf(dv),
-                details = details
+                doc = listOf(dv), details = details
             )
 
             stubTemplatesContainer(
-                type = customType1Id,
-                templates = listOf(template2, template1)
+                type = customType1Id, templates = listOf(template2, template1)
             )
 
             stubSubscriptionResults(
@@ -544,13 +536,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
-                doc = listOf(dv),
-                details = details
+                doc = listOf(dv), details = details
             )
 
             stubTemplatesContainer(
-                type = customType1Id,
-                templates = listOf(template2, template1)
+                type = customType1Id, templates = listOf(template2, template1)
             )
 
             stubSubscriptionResults(
@@ -651,13 +641,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
-                doc = listOf(dv),
-                details = details
+                doc = listOf(dv), details = details
             )
 
             stubTemplatesContainer(
-                type = customType1Id,
-                templates = listOf(template2, template1)
+                type = customType1Id, templates = listOf(template2, template1)
             )
 
             stubSubscriptionResults(
@@ -758,13 +746,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
-                doc = listOf(dv),
-                details = details
+                doc = listOf(dv), details = details
             )
 
             stubTemplatesContainer(
-                type = customType1Id,
-                templates = listOf(template2, template1)
+                type = customType1Id, templates = listOf(template2, template1)
             )
 
             stubSubscriptionResults(
@@ -865,13 +851,11 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
-                doc = listOf(dv),
-                details = details
+                doc = listOf(dv), details = details
             )
 
             stubTemplatesContainer(
-                type = customType1Id,
-                templates = listOf(template2, template1)
+                type = customType1Id, templates = listOf(template2, template1)
             )
 
             stubSubscriptionResults(

@@ -285,7 +285,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      * SetOf: Relation1
      * View default type : PAGE
      * View default template : empty
-     * PAGE type default template : Blank
+     * PAGE type default template : Custom
      */
     @Test
     fun `set by relation, view type and template are empty, page template custom`() = runTest {

@@ -33,7 +33,7 @@ fun StubDataViewView(
     hideIcon: Boolean = false,
     coverFit: Boolean = false,
     coverRelationKey: String? = null,
-    defaultObjectType: Id = ObjectTypeIds.PAGE,
+    defaultObjectType: Id? = null,
     defaultTemplateId: Id? = null
 ): DVViewer = DVViewer(
     id = id,

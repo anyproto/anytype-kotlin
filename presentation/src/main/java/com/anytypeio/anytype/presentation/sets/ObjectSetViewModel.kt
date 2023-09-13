@@ -178,6 +178,7 @@ class ObjectSetViewModel(
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
     val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.init())
     val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
+    val viewerEditWidgetState = MutableStateFlow(ViewerEditWidgetUi.init())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -489,6 +490,7 @@ class ObjectSetViewModel(
         return when (dataViewState) {
             DataViewState.Init -> {
                 _dvViews.value = emptyList()
+                viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
                 if (dvViewer == null) {
                     DataViewViewState.Collection.NoView
                 } else {
@@ -496,7 +498,17 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
-                _dvViews.value = objectState.dataViewState()?.toViewersView(context, session) ?: emptyList()
+                _dvViews.value = objectState.dataViewState()?.toViewersView(context, session, storeOfRelations) ?: emptyList()
+                viewerEditWidgetState.value = if (dvViewer != null) {
+                    viewerEditWidgetState.value.updateState(
+                        dvViewer = dvViewer,
+                        isDefaultObjectTypeEnabled = true,
+                        storeOfRelations = storeOfRelations,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                } else {
+                    viewerEditWidgetState.value.empty()
+                }
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -537,6 +549,7 @@ class ObjectSetViewModel(
         return when (dataViewState) {
             DataViewState.Init -> {
                 _dvViews.value = emptyList()
+                viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
                 when {
                     setOfValue.isEmpty() || query.isEmpty() -> DataViewViewState.Set.NoQuery
                     viewer == null -> DataViewViewState.Set.NoView
@@ -544,7 +557,18 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
-                _dvViews.value = objectState.dataViewState()?.toViewersView(context, session) ?: emptyList()
+                _dvViews.value = objectState.dataViewState()?.toViewersView(context, session, storeOfRelations) ?: emptyList()
+                viewerEditWidgetState.value = if (viewer != null) {
+                    viewerEditWidgetState.value.updateState(
+                        dvViewer = viewer,
+                        isDefaultObjectTypeEnabled = objectState.isSetByRelation(setOfValue),
+                        storeOfRelations = storeOfRelations,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
+                } else {
+                    viewerEditWidgetState.value.empty()
+                }
+
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -1097,30 +1121,20 @@ class ObjectSetViewModel(
         dispatch(ObjectSetCommand.Modal.OpenCoverActionMenu(ctx = context))
     }
 
-    fun onViewerSettingsClicked() {
-        Timber.d("onViewerSettingsClicked, ")
+    fun onViewerSettingsClicked(viewer: Id) {
+        Timber.d("onViewerSettingsClicked, viewer: [$viewer]")
         if (isRestrictionPresent(DataViewRestriction.RELATION)) {
             toast(NOT_ALLOWED)
         } else {
             val state = stateReducer.state.value.dataViewState() ?: return
             val dataViewBlock = state.dataViewBlock
-            val dataViewContent = state.dataViewContent
-            if (dataViewContent.viewers.isNotEmpty()) {
-                val viewer = state.viewerById(session.currentViewerId.value)
-                if (viewer == null) {
-                    Timber.e("onViewerSettingsClicked, Viewer is empty")
-                    return
-                }
-                dispatch(
-                    ObjectSetCommand.Modal.OpenSettings(
-                        ctx = context,
-                        dv = dataViewBlock.id,
-                        viewer = viewer.id
-                    )
+            dispatch(
+                ObjectSetCommand.Modal.OpenSettings(
+                    ctx = context,
+                    dv = dataViewBlock.id,
+                    viewer = viewer
                 )
-            } else {
-                toast(DATA_VIEW_HAS_NO_VIEW_MSG)
-            }
+            )
         }
     }
 
@@ -1789,7 +1803,19 @@ class ObjectSetViewModel(
                     )
                 }
             }
-            is ViewersWidgetUi.Action.Edit -> TODO()
+            is ViewersWidgetUi.Action.Edit -> {
+                val state = stateReducer.state.value.dataViewState() ?: return
+                val viewer = state.viewerById(action.id) ?: return
+                viewModelScope.launch {
+                    viewerEditWidgetState.value = viewerEditWidgetState.value.updateState(
+                        dvViewer = viewer,
+                        storeOfRelations = storeOfRelations,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        isDefaultObjectTypeEnabled = true
+                    )
+                        .copy(showWidget = true)
+                }
+            }
             is ViewersWidgetUi.Action.OnMove -> {
                 Timber.d("onMove Viewer, from:[$action.from], to:[$action.to]")
                 if (action.from == action.to) return
@@ -1855,6 +1881,61 @@ class ObjectSetViewModel(
             }
         } else {
             toast(DATA_VIEW_HAS_NO_VIEW_MSG)
+        }
+    }
+
+    fun onViewerEditWidgetAction(action: ViewerEditWidgetUi.Action) {
+        Timber.d("onViewerEditWidgetAction, action:[$action]")
+        when (action) {
+            ViewerEditWidgetUi.Action.Dismiss -> {
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+            }
+            is ViewerEditWidgetUi.Action.DefaultObjectType -> TODO()
+            is ViewerEditWidgetUi.Action.Filters -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                viewModelScope.launch {
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
+                    openViewerFilters(viewerId = action.id)
+                }
+            }
+            is ViewerEditWidgetUi.Action.Layout -> TODO()
+            is ViewerEditWidgetUi.Action.Relations -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                if (action.id == null) return
+                viewModelScope.launch {
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
+                    onViewerSettingsClicked(action.id)
+                }
+            }
+            is ViewerEditWidgetUi.Action.Sorts -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                viewModelScope.launch {
+                    delay(DELAY_BEFORE_CREATING_TEMPLATE)
+                    openViewerSorts(viewerId = action.id)
+                }
+            }
+            is ViewerEditWidgetUi.Action.UpdateName -> {
+                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                val state = stateReducer.state.value.dataViewState() ?: return
+                val viewer = state.viewerById(action.id) ?: return
+                viewModelScope.launch {
+                    viewerDelegate.onEvent(
+                        ViewerEvent.Rename(
+                            ctx = context,
+                            dv = state.dataViewBlock.id,
+                            viewer = viewer.copy(name = action.name)
+                        )
+                    )
+                }
+            }
+
+            ViewerEditWidgetUi.Action.More -> {
+
+            }
         }
     }
     //endregion

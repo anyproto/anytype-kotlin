@@ -468,13 +468,14 @@ fun ObjectWrapper.Type.toTemplateViewBlank(
     )
 }
 
-fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSession): List<ViewerView> {
+suspend fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSession, storeOfRelations: StoreOfRelations): List<ViewerView> {
     val viewers = dataViewContent.viewers
     return when (this) {
         is ObjectState.DataView.Collection -> mapViewers(
             defaultObjectType = { it.defaultObjectType },
             viewers = viewers,
-            session = session
+            session = session,
+            storeOfRelations = storeOfRelations
         )
         is ObjectState.DataView.Set -> {
             val setOfValue = getSetOfValue(ctx)
@@ -482,32 +483,39 @@ fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSession): List
                 mapViewers(
                     defaultObjectType = { it.defaultObjectType },
                     viewers = viewers,
-                    session = session
+                    session = session,
+                    storeOfRelations = storeOfRelations
                 )
             } else {
                 mapViewers(
                     defaultObjectType = { setOfValue.firstOrNull() },
                     viewers = viewers,
-                    session = session
+                    session = session,
+                    storeOfRelations = storeOfRelations
                 )
             }
         }
     }
 }
 
-private fun mapViewers(
+private suspend fun mapViewers(
     defaultObjectType: (DVViewer) -> Id?,
     viewers: List<DVViewer>,
-    session: ObjectSetSession
+    session: ObjectSetSession,
+    storeOfRelations: StoreOfRelations
 ): List<ViewerView> {
     return viewers.mapIndexed { index, viewer ->
         ViewerView(
             id = viewer.id,
             name = viewer.name,
             type = viewer.type,
-            isActive = isActiveViewer(index, viewer, session),
             isUnsupported = viewer.type == VIEW_TYPE_UNSUPPORTED,
-            defaultObjectType = defaultObjectType.invoke(viewer)
+            isActive = isActiveViewer(index, viewer, session),
+            defaultObjectType = defaultObjectType.invoke(viewer),
+            relations = viewer.viewerRelations.toView(storeOfRelations) { it.key },
+            sorts = viewer.sorts.toView(storeOfRelations) { it.relationKey },
+            filters = viewer.filters.toView(storeOfRelations) { it.relation },
+            isDefaultObjectTypeEnabled = true
         )
     }
 }

@@ -54,6 +54,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.ObjectTypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
+import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
@@ -82,6 +83,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
+import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
@@ -253,7 +255,6 @@ open class ObjectSetFragment :
             subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSettings).clicks()
                     .throttleFirst()
             ) {
-                vm.onViewerSettingsClicked()
             }
             subscribe(
                 binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSort).clicks()
@@ -350,6 +351,16 @@ open class ObjectSetFragment :
                 ViewersWidget(
                     state = vm.viewersWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewersWidgetAction
+                )
+            }
+        }
+
+        binding.viewerEditWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ViewerEditWidget(
+                    state = vm.viewerEditWidgetState.collectAsStateWithLifecycle().value,
+                    action = vm::onViewerEditWidgetAction
                 )
             }
         }
@@ -1123,8 +1134,11 @@ open class ObjectSetFragment :
                     vm.templatesWidgetState.value.showWidget -> {
                         vm.onDismissTemplatesWidget()
                     }
-                    vm.viewersWidgetState.value.showWidget -> {
+                    vm.viewersWidgetState.value.showWidget && !vm.viewerEditWidgetState.value.showWidget -> {
                         vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)
+                    }
+                    vm.viewersWidgetState.value.showWidget && vm.viewerEditWidgetState.value.showWidget -> {
+                        vm.onViewerEditWidgetAction(ViewerEditWidgetUi.Action.Dismiss)
                     }
                     else -> {
                         vm.onSystemBackPressed()

@@ -83,6 +83,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
+import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
@@ -813,6 +814,7 @@ enum class DragStates {
 fun ComposablePreview() {
     val items = listOf(
         TemplateView.Blank(
+            id = DEFAULT_TEMPLATE_ID_BLANK,
             typeId = "page",
             typeName = "Page",
             layout = ObjectType.Layout.BASIC.code

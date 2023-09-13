@@ -546,36 +546,12 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
     if (activeView == null) return Pair(null, null)
     when (this) {
         is ObjectState.DataView.Collection -> {
-            val activeViewDefaultObjectType = activeView.defaultObjectType
-            val defaultSetObjectTypId = if (!activeViewDefaultObjectType.isNullOrBlank()) {
-                activeViewDefaultObjectType
-            } else {
-                VIEW_DEFAULT_OBJECT_TYPE
-            }
-            val defaultSetObjectType = storeOfObjectTypes.get(defaultSetObjectTypId)
-            return if (activeView.defaultTemplate.isNullOrEmpty()) {
-                val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
-                Pair(defaultSetObjectType, defaultTemplateId)
-            } else {
-                Pair(defaultSetObjectType, activeView.defaultTemplate)
-            }
+            return determineTypeAndTemplateFromActiveView(activeView, storeOfObjectTypes)
         }
         is ObjectState.DataView.Set -> {
             val setOfValue = getSetOfValue(ctx)
             return if (isSetByRelation(setOfValue = setOfValue)) {
-                val activeViewDefaultObjectType = activeView.defaultObjectType
-                val defaultSetObjectTypId = if (!activeViewDefaultObjectType.isNullOrBlank()) {
-                    activeViewDefaultObjectType
-                } else {
-                    VIEW_DEFAULT_OBJECT_TYPE
-                }
-                val defaultSetObjectType = storeOfObjectTypes.get(defaultSetObjectTypId)
-                if (activeView.defaultTemplate.isNullOrEmpty()) {
-                    val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
-                    Pair(defaultSetObjectType, defaultTemplateId)
-                } else {
-                    Pair(defaultSetObjectType, activeView.defaultTemplate)
-                }
+                determineTypeAndTemplateFromActiveView(activeView, storeOfObjectTypes)
             } else {
                 val setOf = setOfValue.firstOrNull()
                 if (setOf.isNullOrBlank()) {
@@ -592,6 +568,25 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
                 }
             }
         }
+    }
+}
+
+private suspend fun determineTypeAndTemplateFromActiveView(
+    activeView: DVViewer,
+    storeOfObjectTypes: StoreOfObjectTypes
+): Pair<ObjectWrapper.Type?, Id?> {
+    val activeViewDefaultObjectType = activeView.defaultObjectType
+    val defaultSetObjectTypId = if (!activeViewDefaultObjectType.isNullOrBlank()) {
+        activeViewDefaultObjectType
+    } else {
+        VIEW_DEFAULT_OBJECT_TYPE
+    }
+    val defaultSetObjectType = storeOfObjectTypes.get(defaultSetObjectTypId)
+    return if (activeView.defaultTemplate.isNullOrEmpty()) {
+        val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
+        Pair(defaultSetObjectType, defaultTemplateId)
+    } else {
+        Pair(defaultSetObjectType, activeView.defaultTemplate)
     }
 }
 

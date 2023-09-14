@@ -1938,7 +1938,8 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun workspaceCreate(details: Struct): Id {
         val request = Rpc.Workspace.Create.Request(
-            details = details
+            details = details,
+            useCase = Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.workspaceCreate(request)

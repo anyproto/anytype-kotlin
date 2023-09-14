@@ -37,6 +37,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -277,14 +278,16 @@ fun NameTextField(
 }
 
 @Composable
-private fun ColumnItem(
+fun ColumnItem(
+    modifier: Modifier = Modifier,
     title: String,
     isEnable: Boolean = true,
     value: String,
+    arrow : Painter = painterResource(id = R.drawable.ic_arrow_forward),
     onClick: () -> Unit
 ) {
     ConstraintLayout(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
             .noRippleThrottledClickable(onClick = onClick)
@@ -311,7 +314,7 @@ private fun ColumnItem(
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 },
-            painter = painterResource(id = R.drawable.ic_arrow_forward),
+            painter = arrow,
             contentDescription = "Arrow icon"
         )
         Text(

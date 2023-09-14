@@ -44,5 +44,7 @@ data class ViewerLayoutWidgetUi(
 
     sealed class Action {
         object Dismiss : Action()
+        data class Icon(val toggled: Boolean) : Action()
+        data class FitImage(val toggled: Boolean) : Action()
     }
 }

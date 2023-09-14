@@ -24,12 +24,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceView
 import com.anytypeio.anytype.presentation.spaces.WorkspaceView
 
@@ -62,6 +65,7 @@ fun SelectSpaceScreen(
                             }
                         ) {
                             SelectSpaceProfileHeader(
+                                profile = item.view,
                                 onSpaceSettingsClicked = onSpaceSettingsClicked,
                                 onProfileClicked = onProfileClicked
                             )
@@ -156,6 +160,7 @@ private fun SelectSpaceSpaceItem(
 
 @Composable
 private fun SelectSpaceProfileHeader(
+    profile: ObjectWrapper.Basic,
     onSpaceSettingsClicked: () -> Unit,
     onProfileClicked: () -> Unit
 ) {
@@ -175,7 +180,7 @@ private fun SelectSpaceProfileHeader(
                 .clickable { onProfileClicked() }
         )
         Text(
-            text = "Patrick Atkinson",
+            text = profile.name.orNull() ?: stringResource(id = R.string.untitled),
             style = HeadlineHeading,
             color = Color.White,
             modifier = Modifier

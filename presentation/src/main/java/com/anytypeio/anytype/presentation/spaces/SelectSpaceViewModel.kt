@@ -9,13 +9,17 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -25,6 +29,34 @@ class SelectSpaceViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
+
+    val profile = spaceManager
+        .observe()
+        .flatMapLatest { config ->
+            storelessSubscriptionContainer.subscribe(
+                StoreSearchByIdsParams(
+                    subscription = PROFILE_SUBSCRIPTION_ID,
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.NAME,
+                        Relations.ICON_IMAGE,
+                        Relations.ICON_EMOJI,
+                        Relations.ICON_OPTION
+                    ),
+                    targets = listOf(config.profile)
+                )
+            ).map { results ->
+                if (results.isNotEmpty())
+                    results.first()
+                else {
+                    ObjectWrapper.Basic(
+                        mapOf(
+                            Relations.ID to config.profile
+                        )
+                    )
+                }
+            }
+        }
 
     init {
         viewModelScope.launch {
@@ -42,10 +74,11 @@ class SelectSpaceViewModel @Inject constructor(
                         )
                     )
                 ),
+                profile,
                 spaceManager.observe()
-            ) { spaces, config ->
+            ) { spaces, profile, config ->
                 buildList {
-                    add(SelectSpaceView.Profile(ObjectWrapper.Basic(emptyMap())))
+                    add(SelectSpaceView.Profile(profile))
                     addAll(
                         spaces.mapNotNull { wrapper ->
                             val space = wrapper.getValue<String>(Relations.SPACE_ID)

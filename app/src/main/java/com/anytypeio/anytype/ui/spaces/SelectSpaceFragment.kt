@@ -4,25 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
 import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
@@ -36,6 +24,14 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<SelectSpaceViewModel> { factory }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(
+            STYLE_NORMAL,
+            R.style.SelectSpaceDialogTheme
+        )
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -46,56 +42,32 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(
                 typography = typography
             ) {
-                val spaces = vm.views.collectAsState().value
-                Box(modifier = Modifier.padding(20.dp)) {
-                    if (spaces.isNotEmpty()) {
-                        LazyColumn {
-                            itemsIndexed(
-                                items = spaces,
-                                itemContent = { index, item ->
-                                    Column {
-                                        Text(
-                                            text = item.name ?: "Untitled",
-                                            modifier = Modifier
-                                                .padding(
-                                                    vertical = 8.dp
-                                                )
-                                                .noRippleClickable {
-                                                    vm.onSpaceClicked(item)
-                                                },
-                                            color = if (item.isSelected)
-                                                colorResource(id = R.color.palette_dark_blue)
-                                            else
-                                                colorResource(id = R.color.text_primary)
-                                        )
-                                        Divider(
-                                            modifier = Modifier.padding(vertical = 8.dp),
-                                            thickness = 0.5.dp
-                                        )
-                                        if (index == spaces.lastIndex) {
-                                            Text(
-                                                text = "Create new space",
-                                                color = Color.Red,
-                                                modifier = Modifier
-                                                    .padding(top = 10.dp)
-                                                    .fillParentMaxWidth()
-                                                    .noRippleClickable {
-                                                        findNavController().navigate(
-                                                            R.id.createSpaceScreen
-                                                        )
-                                                    }
-                                            )
-                                        }
-                                    }
-                                }
-                            )
-                        }
-                    } else {
-                        Text(text = "Empty!")
+                SelectSpaceScreen(
+                    spaces = vm.views.collectAsState().value,
+                    onSpaceClicked = vm::onSpaceClicked,
+                    onAddClicked = {
+                        findNavController().navigate(
+                            R.id.createSpaceScreen
+                        )
+                    },
+                    onSpaceSettingsClicked = {
+                        findNavController().navigate(
+                            R.id.settingsScreen
+                        )
+                    },
+                    onProfileClicked = {
+                        findNavController().navigate(
+                            R.id.profileScreen
+                        )
                     }
-                }
+                )
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
     }
 
     override fun injectDependencies() {

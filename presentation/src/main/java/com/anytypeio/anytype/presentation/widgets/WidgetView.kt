@@ -87,6 +87,7 @@ sealed class WidgetView {
 
     data class Bin(override val id: Id) : WidgetView()
 
+    @Deprecated("To be deleted")
     data class Space(override val id: Id) : WidgetView()
 
     sealed class SpaceWidget: WidgetView() {

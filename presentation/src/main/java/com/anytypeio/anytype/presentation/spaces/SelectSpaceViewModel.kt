@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -25,7 +26,9 @@ import timber.log.Timber
 
 class SelectSpaceViewModel @Inject constructor(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val spaceGradientProvider: SpaceGradientProvider,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
@@ -121,14 +124,18 @@ class SelectSpaceViewModel @Inject constructor(
 
     class Factory @Inject constructor(
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val spaceGradientProvider: SpaceGradientProvider,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ) = SelectSpaceViewModel(
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            spaceGradientProvider = spaceGradientProvider,
+            urlBuilder = urlBuilder
         ) as T
     }
 

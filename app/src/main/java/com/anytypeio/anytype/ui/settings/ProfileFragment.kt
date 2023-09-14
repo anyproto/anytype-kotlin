@@ -138,7 +138,6 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
                 Timber.d(e, "Error while parsing path for cover image")
             }
         } else {
-            toast("Error while upload cover image, URI is null")
             Timber.e("Error while upload cover image, URI is null")
         }
     }

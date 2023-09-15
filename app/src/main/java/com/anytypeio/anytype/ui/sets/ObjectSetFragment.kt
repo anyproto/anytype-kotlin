@@ -85,6 +85,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
 import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
+import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
@@ -1146,11 +1147,19 @@ open class ObjectSetFragment :
                     vm.templatesWidgetState.value.showWidget -> {
                         vm.onDismissTemplatesWidget()
                     }
-                    vm.viewersWidgetState.value.showWidget && !vm.viewerEditWidgetState.value.showWidget -> {
+                    vm.viewersWidgetState.value.showWidget
+                            && !vm.viewerEditWidgetState.value.showWidget -> {
                         vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)
                     }
-                    vm.viewersWidgetState.value.showWidget && vm.viewerEditWidgetState.value.showWidget -> {
+                    vm.viewersWidgetState.value.showWidget
+                            && vm.viewerEditWidgetState.value.showWidget
+                            && !vm.viewerLayoutWidgetState.value.showWidget -> {
                         vm.onViewerEditWidgetAction(ViewerEditWidgetUi.Action.Dismiss)
+                    }
+                    vm.viewersWidgetState.value.showWidget
+                            && vm.viewerEditWidgetState.value.showWidget
+                            && vm.viewerLayoutWidgetState.value.showWidget -> {
+                        vm.onViewerLayoutWidgetAction(ViewerLayoutWidgetUi.Action.Dismiss)
                     }
                     else -> {
                         vm.onSystemBackPressed()

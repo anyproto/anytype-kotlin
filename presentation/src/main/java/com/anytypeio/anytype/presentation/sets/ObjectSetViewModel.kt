@@ -500,16 +500,10 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.dataViewState()?.toViewersView(context, session, storeOfRelations) ?: emptyList()
-                viewerEditWidgetState.value = if (dvViewer != null) {
-                    viewerEditWidgetState.value.updateState(
-                        dvViewer = dvViewer,
-                        isDefaultObjectTypeEnabled = true,
-                        storeOfRelations = storeOfRelations,
-                        storeOfObjectTypes = storeOfObjectTypes
-                    )
-                } else {
-                    viewerEditWidgetState.value.empty()
-                }
+                updateViewsWidgets(
+                    dvViewer = dvViewer,
+                    isDefaultObjectTypeEnabled = { true }
+                )
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -559,6 +553,10 @@ class ObjectSetViewModel(
             }
             is DataViewState.Loaded -> {
                 _dvViews.value = objectState.dataViewState()?.toViewersView(context, session, storeOfRelations) ?: emptyList()
+                updateViewsWidgets(
+                    dvViewer = viewer,
+                    isDefaultObjectTypeEnabled = { objectState.isSetByRelation(setOfValue) }
+                )
                 viewerEditWidgetState.value = if (viewer != null) {
                     viewerEditWidgetState.value.updateState(
                         dvViewer = viewer,
@@ -599,6 +597,25 @@ class ObjectSetViewModel(
                     }
                 }
             }
+        }
+    }
+
+    private suspend fun updateViewsWidgets(
+        dvViewer: DVViewer?,
+        isDefaultObjectTypeEnabled: () -> Boolean
+    ) {
+        if (dvViewer != null) {
+            viewerEditWidgetState.value = viewerEditWidgetState.value.updateState(
+                dvViewer = dvViewer,
+                isDefaultObjectTypeEnabled = isDefaultObjectTypeEnabled(),
+                storeOfRelations = storeOfRelations,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+            viewerLayoutWidgetState.value =
+                viewerLayoutWidgetState.value.updateState(dvViewer, storeOfRelations)
+        } else {
+            viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
+            viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.empty()
         }
     }
 

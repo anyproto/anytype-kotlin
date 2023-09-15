@@ -1,6 +1,10 @@
 package com.anytypeio.anytype.presentation.sets
 
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 
 data class ViewerLayoutWidgetUi(
     val showWidget: Boolean,
@@ -12,6 +16,14 @@ data class ViewerLayoutWidgetUi(
 ) {
 
     fun dismiss() = copy(showWidget = false)
+
+    fun empty() = this.copy(
+        layoutType = DVViewerType.GRID,
+        withIcon = State.Toggle.HideIcon(toggled = false),
+        fitImage = State.Toggle.FitImage(toggled = false),
+        cardSize = State.CardSize.Small,
+        cover = State.ImagePreview.None
+    )
 
     companion object {
         fun init() = ViewerLayoutWidgetUi(
@@ -49,4 +61,35 @@ data class ViewerLayoutWidgetUi(
         data class Icon(val toggled: Boolean) : Action()
         data class FitImage(val toggled: Boolean) : Action()
     }
+}
+
+suspend fun ViewerLayoutWidgetUi.updateState(
+    dvViewer: DVViewer,
+    storeOfRelations: StoreOfRelations
+): ViewerLayoutWidgetUi {
+    val cardSize = when (dvViewer.cardSize) {
+        Block.Content.DataView.Viewer.Size.SMALL -> ViewerLayoutWidgetUi.State.CardSize.Small
+        Block.Content.DataView.Viewer.Size.MEDIUM -> ViewerLayoutWidgetUi.State.CardSize.Small
+        Block.Content.DataView.Viewer.Size.LARGE -> ViewerLayoutWidgetUi.State.CardSize.Large
+    }
+    val coverRelationKey = dvViewer.coverRelationKey
+    val cover = when {
+        coverRelationKey.isNullOrBlank() -> ViewerLayoutWidgetUi.State.ImagePreview.None
+        coverRelationKey == Relations.PAGE_COVER -> ViewerLayoutWidgetUi.State.ImagePreview.Cover
+        else -> {
+            val preview = storeOfRelations.getByKey(coverRelationKey)
+            if (preview != null) {
+                ViewerLayoutWidgetUi.State.ImagePreview.Custom(preview.name.orEmpty())
+            } else {
+                ViewerLayoutWidgetUi.State.ImagePreview.None
+            }
+        }
+    }
+    return this.copy(
+        layoutType = dvViewer.type,
+        withIcon = ViewerLayoutWidgetUi.State.Toggle.HideIcon(dvViewer.hideIcon),
+        fitImage = ViewerLayoutWidgetUi.State.Toggle.FitImage(dvViewer.coverFit),
+        cardSize = cardSize,
+        cover = cover
+    )
 }

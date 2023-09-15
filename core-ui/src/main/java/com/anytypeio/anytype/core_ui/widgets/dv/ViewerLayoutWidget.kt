@@ -13,6 +13,8 @@ import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,6 +55,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCallout
+import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
@@ -158,7 +161,7 @@ fun ViewerLayoutWidget(
                         }
                     }
                     LayoutIcons(uiState = currentState)
-
+                    Spacer(modifier = Modifier.height(8.dp))
                     LayoutSwitcherItem(
                         text = stringResource(id = R.string.icon),
                         checked = currentState.withIcon.toggled,
@@ -200,6 +203,56 @@ fun ViewerLayoutWidget(
 }
 
 @Composable
+fun LayoutIcon(
+    modifier: Modifier = Modifier,
+    uiState: ViewerLayoutWidgetUi,
+    layoutType: DVViewerType,
+    imageResource: Int,
+    imageResourceSelected: Int,
+    contentDescription: String
+) {
+    val (borderColor, textcolor) = if (uiState.layoutType == layoutType) {
+        Pair(
+            colorResource(id = R.color.palette_system_amber_50),
+            colorResource(id = R.color.amber_100)
+        )
+    } else {
+        Pair(colorResource(id = R.color.shape_primary), colorResource(id = R.color.text_secondary))
+    }
+    Column(
+        modifier = modifier
+            .wrapContentSize()
+            .shadow(
+                elevation = 4.dp,
+                spotColor = Color(0x0D000000),
+                ambientColor = Color(0x0D000000)
+            )
+            .border(
+                width = 2.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(size = 12.dp)
+            )
+            .padding(top = 14.dp, start = 26.25.dp, end = 26.25.dp, bottom = 14.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = if (uiState.layoutType == layoutType) {
+                painterResource(id = imageResourceSelected)
+            } else {
+                painterResource(id = imageResource)
+            },
+            contentDescription = contentDescription
+        )
+        Text(
+            text = contentDescription,
+            style = Caption2Medium,
+            color = textcolor
+        )
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
 fun LayoutIcons(uiState: ViewerLayoutWidgetUi) {
     Column(
         modifier = Modifier
@@ -207,114 +260,41 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi) {
             .wrapContentHeight()
             .padding(start = 20.dp, end = 20.dp)
     ) {
-        Row(
+        FlowRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            horizontalArrangement = Arrangement.Start
+            maxItemsInEachRow = 3,
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Box(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .shadow(
-                        elevation = 4.dp,
-                        spotColor = Color(0x0D000000),
-                        ambientColor = Color(0x0D000000)
-                    )
-                    .border(
-                        width = 2.dp,
-                        color = Color(0xFFFFD15B),
-                        shape = RoundedCornerShape(size = 12.dp)
-                    )
-                    .weight(1f)
-                    .padding(top = 14.dp, start = 26.25.dp, end = 26.25.dp, bottom = 28.dp)
-            ) {
-                val painterResource = if (uiState.layoutType == DVViewerType.GRID) {
-                    painterResource(id = R.drawable.ic_layout_grid_selected)
-                } else {
-                    painterResource(id = R.drawable.ic_layout_grid)
-                }
-                Image(
-                    painter = painterResource,
-                    contentDescription = "Grid"
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .shadow(
-                        elevation = 4.dp,
-                        spotColor = Color(0x0D000000),
-                        ambientColor = Color(0x0D000000)
-                    )
-                    .border(
-                        width = 2.dp,
-                        color = Color(0xFFFFD15B),
-                        shape = RoundedCornerShape(size = 12.dp)
-                    )
-                    .weight(1f)
-                    .padding(top = 14.dp, start = 26.25.dp, end = 26.25.dp, bottom = 28.dp)
-            ) {
-                val painterResource = if (uiState.layoutType == DVViewerType.GALLERY) {
-                    painterResource(id = R.drawable.ic_layout_gallery_selected)
-                } else {
-                    painterResource(id = R.drawable.ic_layout_gallery)
-                }
-                Image(
-                    painter = painterResource,
-                    contentDescription = "Gallery"
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .shadow(
-                        elevation = 4.dp,
-                        spotColor = Color(0x0D000000),
-                        ambientColor = Color(0x0D000000)
-                    )
-                    .border(
-                        width = 2.dp,
-                        color = Color(0xFFFFD15B),
-                        shape = RoundedCornerShape(size = 12.dp)
-                    )
-                    .weight(1f)
-                    .padding(top = 14.dp, start = 26.25.dp, end = 26.25.dp, bottom = 28.dp)
-            ) {
-                val painterResource = if (uiState.layoutType == DVViewerType.LIST) {
-                    painterResource(id = R.drawable.ic_layout_list_selected)
-                } else {
-                    painterResource(id = R.drawable.ic_layout_list)
-                }
-                Image(
-                    painter = painterResource,
-                    contentDescription = "List"
-                )
-            }
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Box(
-            modifier = Modifier
-                .wrapContentSize()
-                .shadow(
-                    elevation = 4.dp,
-                    spotColor = Color(0x0D000000),
-                    ambientColor = Color(0x0D000000)
-                )
-                .border(
-                    width = 2.dp,
-                    color = Color(0xFFFFD15B),
-                    shape = RoundedCornerShape(size = 12.dp)
-                )
-                .padding(top = 14.dp, start = 26.25.dp, end = 26.25.dp, bottom = 28.dp)
-        ) {
-            val painterResource = if (uiState.layoutType == DVViewerType.BOARD) {
-                painterResource(id = R.drawable.ic_layout_kanban_selected)
-            } else {
-                painterResource(id = R.drawable.ic_layout_kanban)
-            }
-            Image(
-                painter = painterResource,
+            LayoutIcon(
+                uiState = uiState,
+                layoutType = DVViewerType.GRID,
+                imageResource = R.drawable.ic_layout_grid,
+                imageResourceSelected = R.drawable.ic_layout_grid_selected,
+                contentDescription = "Grid"
+            )
+            LayoutIcon(
+                uiState = uiState,
+                layoutType = DVViewerType.GALLERY,
+                imageResourceSelected = R.drawable.ic_layout_gallery_selected,
+                imageResource = R.drawable.ic_layout_gallery,
+                contentDescription = "Gallery"
+            )
+            LayoutIcon(
+                uiState = uiState,
+                layoutType = DVViewerType.LIST,
+                imageResourceSelected = R.drawable.ic_layout_list_selected,
+                imageResource = R.drawable.ic_layout_list,
+                contentDescription = "List"
+            )
+            LayoutIcon(
+                modifier = Modifier.padding(top = 8.dp),
+                uiState = uiState,
+                layoutType = DVViewerType.BOARD,
+                imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+                imageResource = R.drawable.ic_layout_kanban,
                 contentDescription = "Kanban"
             )
         }

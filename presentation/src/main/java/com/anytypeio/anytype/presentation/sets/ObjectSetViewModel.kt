@@ -1917,7 +1917,9 @@ class ObjectSetViewModel(
                     openViewerFilters(viewerId = action.id)
                 }
             }
-            is ViewerEditWidgetUi.Action.Layout -> TODO()
+            is ViewerEditWidgetUi.Action.Layout -> {
+                viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.copy(showWidget = true)
+            }
             is ViewerEditWidgetUi.Action.Relations -> {
                 viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
                 viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
@@ -1996,7 +1998,9 @@ class ObjectSetViewModel(
 
     fun onViewerLayoutWidgetAction(action: ViewerLayoutWidgetUi.Action) {
         when (action) {
-            ViewerLayoutWidgetUi.Action.Dismiss -> TODO()
+            ViewerLayoutWidgetUi.Action.Dismiss -> {
+                viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.copy(showWidget = false)
+            }
             is ViewerLayoutWidgetUi.Action.FitImage -> TODO()
             is ViewerLayoutWidgetUi.Action.Icon -> TODO()
         }

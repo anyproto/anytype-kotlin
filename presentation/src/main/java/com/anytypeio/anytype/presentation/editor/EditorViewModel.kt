@@ -314,7 +314,7 @@ class EditorViewModel(
         when (state) {
             is SelectTemplateState.Available -> {
                 SelectTemplateViewState.Active(
-                    count = state.templates.size,
+                    count = state.templates.size + 1,
                     typeName = state.typeName
                 )
             }

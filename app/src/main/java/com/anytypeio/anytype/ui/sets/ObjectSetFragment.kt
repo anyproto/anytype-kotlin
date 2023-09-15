@@ -55,6 +55,7 @@ import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.ObjectTypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
+import com.anytypeio.anytype.core_ui.widgets.dv.ViewerLayoutWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
@@ -361,6 +362,17 @@ open class ObjectSetFragment :
                 ViewerEditWidget(
                     state = vm.viewerEditWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewerEditWidgetAction
+                )
+            }
+        }
+
+        binding.viewerLayoutWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ViewerLayoutWidget(
+                    uiState = vm.viewerLayoutWidgetState.collectAsStateWithLifecycle().value,
+                    action = vm::onViewerLayoutWidgetAction,
+                    scope = lifecycleScope
                 )
             }
         }

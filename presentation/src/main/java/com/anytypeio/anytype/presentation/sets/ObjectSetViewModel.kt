@@ -179,6 +179,7 @@ class ObjectSetViewModel(
     val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.init())
     val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
     val viewerEditWidgetState = MutableStateFlow(ViewerEditWidgetUi.init())
+    val viewerLayoutWidgetState = MutableStateFlow(ViewerLayoutWidgetUi.init())
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -1973,6 +1974,14 @@ class ObjectSetViewModel(
                 is TemplateView.Template -> defaultTemplate.id
                 else -> null
             }
+        }
+    }
+
+    fun onViewerLayoutWidgetAction(action: ViewerLayoutWidgetUi.Action) {
+        when (action) {
+            ViewerLayoutWidgetUi.Action.Dismiss -> TODO()
+            is ViewerLayoutWidgetUi.Action.FitImage -> TODO()
+            is ViewerLayoutWidgetUi.Action.Icon -> TODO()
         }
     }
     //endregion

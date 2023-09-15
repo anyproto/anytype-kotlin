@@ -13,14 +13,16 @@ data class ViewerLayoutWidgetUi(
 
     fun dismiss() = copy(showWidget = false)
 
-    fun init() = ViewerLayoutWidgetUi(
-        showWidget = false,
-        layoutType = DVViewerType.GRID,
-        withIcon = State.Toggle.HideIcon(toggled = false),
-        fitImage = State.Toggle.FitImage(toggled = false),
-        cardSize = State.CardSize.Small,
-        cover = State.ImagePreview.None
-    )
+    companion object {
+        fun init() = ViewerLayoutWidgetUi(
+            showWidget = false,
+            layoutType = DVViewerType.GRID,
+            withIcon = State.Toggle.HideIcon(toggled = false),
+            fitImage = State.Toggle.FitImage(toggled = false),
+            cardSize = State.CardSize.Small,
+            cover = State.ImagePreview.None
+        )
+    }
 
     sealed class State {
         sealed class CardSize : State() {

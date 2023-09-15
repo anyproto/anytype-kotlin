@@ -22,12 +22,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Switch
-import androidx.compose.material.SwitchColors
 import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.Text
 import androidx.compose.material.rememberSwipeableState
@@ -55,8 +53,6 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCallout
-import com.anytypeio.anytype.core_ui.views.Caption1Medium
-import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
@@ -188,7 +184,8 @@ fun ViewerLayoutWidget(
                             is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> cover.name
                             ViewerLayoutWidgetUi.State.ImagePreview.None -> stringResource(id = R.string.none)
                         },
-                        onClick = {}
+                        onClick = {},
+                        arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
                     )
                     Divider()
                     LayoutSwitcherItem(

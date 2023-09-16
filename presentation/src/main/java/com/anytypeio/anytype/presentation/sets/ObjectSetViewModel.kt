@@ -615,7 +615,7 @@ class ObjectSetViewModel(
                 viewerLayoutWidgetState.value.updateState(dvViewer, storeOfRelations)
         } else {
             viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
-            viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.empty()
+            viewerLayoutWidgetState.value = ViewerLayoutWidgetUi.init()
         }
     }
 
@@ -2001,8 +2001,15 @@ class ObjectSetViewModel(
             ViewerLayoutWidgetUi.Action.Dismiss -> {
                 viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.copy(showWidget = false)
             }
+            ViewerLayoutWidgetUi.Action.CardSizeMenu -> {
+                val isCardSizeMenuVisible = viewerLayoutWidgetState.value.showCardSize
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(showCardSize = !isCardSizeMenuVisible)
+            }
             is ViewerLayoutWidgetUi.Action.FitImage -> TODO()
             is ViewerLayoutWidgetUi.Action.Icon -> TODO()
+            is ViewerLayoutWidgetUi.Action.CardSize -> TODO()
+            is ViewerLayoutWidgetUi.Action.Cover -> TODO()
         }
     }
     //endregion

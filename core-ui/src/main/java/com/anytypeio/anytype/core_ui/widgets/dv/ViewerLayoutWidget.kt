@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,6 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -114,8 +115,8 @@ fun ViewerLayoutWidget(
 
         val sizePx = with(LocalDensity.current) { 312.dp.toPx() }
 
-        var currentClickedMoreButtonCoordinates: IntOffset by remember {
-            mutableStateOf(IntOffset(0, 0))
+        var currentCoordinates: androidx.compose.ui.geometry.Rect by remember {
+            mutableStateOf(androidx.compose.ui.geometry.Rect.Zero)
         }
 
         AnimatedVisibility(
@@ -135,10 +136,9 @@ fun ViewerLayoutWidget(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(start = 8.dp, end = 8.dp, bottom = 15.dp)
                     .background(
                         color = colorResource(id = R.color.background_secondary),
-                        shape = RoundedCornerShape(size = 16.dp)
+                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
                     ),
             ) {
                 Column(
@@ -169,14 +169,27 @@ fun ViewerLayoutWidget(
                     )
                     Divider()
                     ColumnItem(
-                        modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                        modifier = Modifier
+                            .padding(start = 20.dp, end = 20.dp),
                         title = stringResource(id = R.string.card_size),
                         value = when (currentState.cardSize) {
                             ViewerLayoutWidgetUi.State.CardSize.Large -> stringResource(id = R.string.large)
                             ViewerLayoutWidgetUi.State.CardSize.Small -> stringResource(id = R.string.small)
                         },
-                        onClick = {},
-                        arrow = painterResource(id = R.drawable.ic_list_arrow_18)
+                        onClick = {
+                            action(ViewerLayoutWidgetUi.Action.CardSizeMenu)
+                        },
+                        arrow = painterResource(id = R.drawable.ic_list_arrow_18),
+                        imageModifier = Modifier
+                        .onGloballyPositioned { coordinates ->
+                            if (coordinates.isAttached) {
+                                with(coordinates.boundsInRoot()) {
+                                    currentCoordinates = this
+                                }
+                            } else {
+                                currentCoordinates = androidx.compose.ui.geometry.Rect.Zero
+                            }
+                        }
                     )
                     Divider()
                     ColumnItem(
@@ -199,6 +212,11 @@ fun ViewerLayoutWidget(
                 }
             }
         }
+        ViewerLayoutListMenu(
+            show = currentState.showCardSize,
+            action = action,
+            coordinates = currentCoordinates
+        )
     }
 }
 
@@ -328,7 +346,6 @@ fun LayoutSwitcherItem(
             )
         )
     }
-
 }
 
 @Preview
@@ -345,7 +362,8 @@ fun PreviewLayoutScreen() {
                 toggled = false
             ),
             cardSize = ViewerLayoutWidgetUi.State.CardSize.Small,
-            cover = ViewerLayoutWidgetUi.State.ImagePreview.Cover
+            cover = ViewerLayoutWidgetUi.State.ImagePreview.Cover,
+            showCardSize = true
         ),
         action = {},
         scope = CoroutineScope(

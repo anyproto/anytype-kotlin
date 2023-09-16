@@ -12,18 +12,11 @@ data class ViewerLayoutWidgetUi(
     val withIcon: State.Toggle.HideIcon,
     val fitImage: State.Toggle.FitImage,
     val cardSize: State.CardSize,
-    val cover: State.ImagePreview
+    val cover: State.ImagePreview,
+    val showCardSize: Boolean
 ) {
 
     fun dismiss() = copy(showWidget = false)
-
-    fun empty() = this.copy(
-        layoutType = DVViewerType.GRID,
-        withIcon = State.Toggle.HideIcon(toggled = false),
-        fitImage = State.Toggle.FitImage(toggled = false),
-        cardSize = State.CardSize.Small,
-        cover = State.ImagePreview.None
-    )
 
     companion object {
         fun init() = ViewerLayoutWidgetUi(
@@ -32,7 +25,8 @@ data class ViewerLayoutWidgetUi(
             withIcon = State.Toggle.HideIcon(toggled = false),
             fitImage = State.Toggle.FitImage(toggled = false),
             cardSize = State.CardSize.Small,
-            cover = State.ImagePreview.None
+            cover = State.ImagePreview.None,
+            showCardSize = false
         )
     }
 
@@ -58,8 +52,11 @@ data class ViewerLayoutWidgetUi(
 
     sealed class Action {
         object Dismiss : Action()
+        object CardSizeMenu : Action()
         data class Icon(val toggled: Boolean) : Action()
         data class FitImage(val toggled: Boolean) : Action()
+        data class CardSize(val cardSize: State.CardSize) : Action()
+        data class Cover(val cover: State.ImagePreview) : Action()
     }
 }
 
@@ -90,6 +87,7 @@ suspend fun ViewerLayoutWidgetUi.updateState(
         withIcon = ViewerLayoutWidgetUi.State.Toggle.HideIcon(dvViewer.hideIcon),
         fitImage = ViewerLayoutWidgetUi.State.Toggle.FitImage(dvViewer.coverFit),
         cardSize = cardSize,
-        cover = cover
+        cover = cover,
+        showCardSize = showCardSize
     )
 }

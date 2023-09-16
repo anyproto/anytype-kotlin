@@ -38,6 +38,8 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -48,6 +50,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -280,6 +283,7 @@ fun NameTextField(
 @Composable
 fun ColumnItem(
     modifier: Modifier = Modifier,
+    imageModifier: Modifier = Modifier,
     title: String,
     isEnable: Boolean = true,
     value: String,
@@ -308,14 +312,14 @@ fun ColumnItem(
             color = colorResource(id = R.color.text_primary),
         )
         Image(
-            modifier = Modifier
+            modifier = imageModifier
                 .constrainAs(iconRef) {
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 },
             painter = arrow,
-            contentDescription = "Arrow icon"
+            contentDescription = "Arrow icon",
         )
         Text(
             modifier = Modifier

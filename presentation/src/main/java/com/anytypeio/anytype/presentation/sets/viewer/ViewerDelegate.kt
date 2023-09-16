@@ -9,8 +9,8 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
-import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPosition
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
@@ -41,7 +41,7 @@ class DefaultViewerDelegate @Inject constructor(
     private val setDataViewViewerPosition: SetDataViewViewerPosition,
     private val duplicateDataViewViewer: DuplicateDataViewViewer,
     private val addDataViewViewer: AddDataViewViewer,
-    private val renameDataViewViewer: RenameDataViewViewer
+    private val updateDataViewViewer: UpdateDataViewViewer
 ) : ViewerDelegate {
 
     override suspend fun onEvent(event: ViewerEvent) {
@@ -111,12 +111,12 @@ class DefaultViewerDelegate @Inject constructor(
     }
 
     private suspend fun onRename(ctx: Id, dv: Id, viewer: DVViewer) {
-        val params = RenameDataViewViewer.Params(
+        val params = UpdateDataViewViewer.Params.UpdateView(
             context = ctx,
             target = dv,
             viewer = viewer
         )
-        renameDataViewViewer.async(params).fold(
+        updateDataViewViewer.async(params).fold(
             onFailure = { Timber.e(it, "Error while renaming view") },
             onSuccess = { dispatcher.send(it) }
         )

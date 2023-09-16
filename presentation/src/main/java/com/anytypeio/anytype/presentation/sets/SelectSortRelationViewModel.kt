@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
@@ -45,8 +46,8 @@ class SelectSortRelationViewModel(
                     type = DVSortType.ASC
                 )
             )
-            updateDataViewViewer(params).process(
-                success = {
+            updateDataViewViewer.async(params).fold(
+                onSuccess = {
                     dispatcher.send(it).also {
                         logEvent(
                             state = objectState.value,
@@ -58,7 +59,7 @@ class SelectSortRelationViewModel(
                         isDismissed.emit(true)
                     }
                 },
-                failure = {
+                onFailure = {
                     Timber.e(it, "Error while adding a sort").also {
                         _toasts.emit(USE_CASE_ERROR)
                     }

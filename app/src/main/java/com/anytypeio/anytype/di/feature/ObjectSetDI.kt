@@ -27,7 +27,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
-import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPosition
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -321,13 +320,6 @@ object ObjectSetModule {
         repo: BlockRepository,
         auth: AuthRepository
     ): OpenObjectSet = OpenObjectSet(repo = repo, auth = auth)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideUpdateDataViewViewerUseCase(
-        repo: BlockRepository
-    ): UpdateDataViewViewer = UpdateDataViewViewer(repo = repo)
 
     @JvmStatic
     @Provides
@@ -654,7 +646,7 @@ object ObjectSetModule {
     fun provideRenameDataViewViewerUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): RenameDataViewViewer = RenameDataViewViewer(repo = repo, dispatchers = dispatchers)
+    ): UpdateDataViewViewer = UpdateDataViewViewer(repo = repo, dispatchers = dispatchers)
 
     @JvmStatic
     @Provides
@@ -686,16 +678,16 @@ object ObjectSetModule {
     fun provideViewerDelegate(
         session: ObjectSetSession,
         addDataViewViewer: AddDataViewViewer,
-        renameDataViewViewer: RenameDataViewViewer,
         duplicateDataViewViewer: DuplicateDataViewViewer,
         deleteDataViewViewer: DeleteDataViewViewer,
         setDataViewViewerPosition: SetDataViewViewerPosition,
         analytics: Analytics,
-        dispatcher: Dispatcher<Payload>
+        dispatcher: Dispatcher<Payload>,
+        updateDataViewViewer: UpdateDataViewViewer
     ): ViewerDelegate = DefaultViewerDelegate(
         session = session,
         addDataViewViewer = addDataViewViewer,
-        renameDataViewViewer = renameDataViewViewer,
+        updateDataViewViewer = updateDataViewViewer,
         duplicateDataViewViewer = duplicateDataViewViewer,
         deleteDataViewViewer = deleteDataViewViewer,
         setDataViewViewerPosition = setDataViewViewerPosition,

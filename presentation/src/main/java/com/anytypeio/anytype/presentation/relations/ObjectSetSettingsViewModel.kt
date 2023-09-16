@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
@@ -141,15 +142,15 @@ class ObjectSetSettingsViewModel(
                     viewer.copy(hideIcon = isChecked)
                 }
             }
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params.Fields(
+            updateDataViewViewer.async(
+                UpdateDataViewViewer.Params.UpdateView(
                     context = ctx,
                     target = state.dataViewBlock.id,
                     viewer = updated
                 )
-            ).process(
-                success = { dispatcher.send(it) },
-                failure = { Timber.w("Error while updating") }
+            ).fold(
+                onSuccess = { dispatcher.send(it) },
+                onFailure = { Timber.w("Error while updating") }
             )
         }
     }
@@ -168,9 +169,9 @@ class ObjectSetSettingsViewModel(
                 view = viewer.id,
                 keys = listOf(relation)
             )
-            updateDataViewViewer(params).process(
-                failure = { e -> Timber.e(e, "Error while deleting relation from dv") },
-                success = { payload ->
+            updateDataViewViewer.async(params).fold(
+                onFailure = { e -> Timber.e(e, "Error while deleting relation from dv") },
+                onSuccess = { payload ->
                     dispatcher.send(payload)
                     proceedWithUpdatingCurrentViewAfterRelationDeletion(
                         ctx = ctx,
@@ -208,14 +209,14 @@ class ObjectSetSettingsViewModel(
                 filters = viewer.filters.filter { it.relation != relation },
                 sorts = viewer.sorts.filter { it.relationKey != relation }
             )
-            val params = UpdateDataViewViewer.Params.Fields(
+            val params = UpdateDataViewViewer.Params.UpdateView(
                 context = ctx,
                 target = state.dataViewBlock.id,
                 viewer = updated
             )
-            updateDataViewViewer(params).process(
-                success = { dispatcher.send(it) },
-                failure = { Timber.e("Error while updating") }
+            updateDataViewViewer.async(params).fold(
+                onSuccess = { dispatcher.send(it) },
+                onFailure = { Timber.e("Error while updating") }
             )
         }
     }
@@ -241,9 +242,9 @@ class ObjectSetSettingsViewModel(
                 view = viewer.id,
                 keys = order
             )
-            updateDataViewViewer(params).process(
-                success = { dispatcher.send(it) },
-                failure = {
+            updateDataViewViewer.async(params).fold(
+                onSuccess = { dispatcher.send(it) },
+                onFailure = {
                     Timber.e(it, DND_ERROR_MSG)
                     _toasts.emit("$DND_ERROR_MSG : ${it.localizedMessage ?: UNKNOWN_ERROR}")
                 }
@@ -266,9 +267,9 @@ class ObjectSetSettingsViewModel(
             relation = viewerRelation
         )
         viewModelScope.launch {
-            updateDataViewViewer(params).process(
-                success = { dispatcher.send(it) },
-                failure = { Timber.e("Error while updating") }
+            updateDataViewViewer.async(params).fold(
+                onSuccess = { dispatcher.send(it) },
+                onFailure = { Timber.e("Error while updating") }
             )
         }
     }

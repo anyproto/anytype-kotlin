@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
@@ -329,7 +330,7 @@ class RelationCreateFromScratchForDataViewViewModel(
     private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, viewerId: Id, relationKey: Key) {
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(viewerId) ?: return
-        updateDataViewViewer(
+        updateDataViewViewer.async(
             UpdateDataViewViewer.Params.ViewerRelation.Add(
                 ctx = ctx,
                 dv = state.dataViewBlock.id,
@@ -339,9 +340,9 @@ class RelationCreateFromScratchForDataViewViewModel(
                     isVisible = true
                 )
             )
-        ).process(
-            success = { dispatcher.send(it).also { isDismissed.value = true } },
-            failure = { Timber.e(it, "Error while updating data view's viewer") }
+        ).fold(
+            onSuccess = { dispatcher.send(it).also { isDismissed.value = true } },
+            onFailure = { Timber.e(it, "Error while updating data view's viewer") }
         )
     }
 

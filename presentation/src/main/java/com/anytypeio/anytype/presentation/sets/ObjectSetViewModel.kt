@@ -1698,15 +1698,15 @@ class ObjectSetViewModel(
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerById(session.currentViewerId.value) ?: return
         val template = templatesWidgetState.value.moreMenuTemplate ?: return
-        val params = UpdateDataViewViewer.Params.Template(
+        val params = UpdateDataViewViewer.Params.UpdateView(
             context = context,
             target = state.dataViewBlock.id,
             viewer = viewer.copy(defaultTemplate = template.id)
         )
         viewModelScope.launch {
-            updateDataViewViewer(params).proceed(
-                success = { payload -> dispatcher.send(payload) },
-                failure = { e ->
+            updateDataViewViewer.async(params).fold(
+                onSuccess = { payload -> dispatcher.send(payload) },
+                onFailure = { e ->
                     Timber.e(e, "Error while setting default template")
                     toast("Error while setting default template")
                 }

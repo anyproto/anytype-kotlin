@@ -212,11 +212,6 @@ fun ViewerLayoutWidget(
                 }
             }
         }
-        ViewerLayoutListMenu(
-            show = currentState.showCardSize,
-            action = action,
-            coordinates = currentCoordinates
-        )
     }
 }
 

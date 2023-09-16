@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
-import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
@@ -13,16 +12,19 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
 
 /**
  * Use-case for updating data view's viewer.
  */
 class UpdateDataViewViewer(
-    private val repo: BlockRepository
-) : BaseUseCase<Payload, UpdateDataViewViewer.Params>() {
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<UpdateDataViewViewer.Params, Payload>(dispatchers.io) {
 
-    override suspend fun run(params: Params) = safe {
-        when (params) {
+    override suspend fun doWork(params: Params) : Payload {
+        return when (params) {
             is Params.Filter.Add -> {
                 val command = Command.AddFilter(
                     ctx = params.ctx,
@@ -126,14 +128,7 @@ class UpdateDataViewViewer(
                 )
                 repo.sortDataViewViewRelation(command)
             }
-            is Params.Fields -> {
-                repo.updateDataViewViewer(
-                    context = params.context,
-                    target = params.target,
-                    viewer = params.viewer
-                )
-            }
-            is Params.Template -> {
+            is Params.UpdateView -> {
                 repo.updateDataViewViewer(
                     context = params.context,
                     target = params.target,
@@ -193,13 +188,7 @@ class UpdateDataViewViewer(
                 ViewerRelation()
         }
 
-        data class Fields(
-            val context: Id,
-            val target: Id,
-            val viewer: DVViewer
-        ) : Params()
-
-        data class Template(
+        data class UpdateView(
             val context: Id,
             val target: Id,
             val viewer: DVViewer

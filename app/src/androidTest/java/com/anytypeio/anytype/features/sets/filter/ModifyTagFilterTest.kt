@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -62,6 +63,9 @@ class ModifyTagFilterTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     @Mock
+    lateinit var dispatchers: AppCoroutineDispatchers
+
+    @Mock
     lateinit var repo: BlockRepository
 
     @Mock
@@ -89,7 +93,7 @@ class ModifyTagFilterTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        updateDataViewViewer = UpdateDataViewViewer(repo)
+        updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
         searchObjects = SearchObjects(repo)
         getOptions = GetOptions(repo)
         urlBuilder = UrlBuilder(gateway)

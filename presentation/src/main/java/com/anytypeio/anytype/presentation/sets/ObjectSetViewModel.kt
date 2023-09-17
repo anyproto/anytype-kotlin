@@ -497,7 +497,11 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
-                _dvViews.value = objectState.dataViewState()?.toViewersView(context, session) ?: emptyList()
+                _dvViews.value = objectState.dataViewState()?.toViewersView(
+                    ctx = context,
+                    session = session,
+                    storeOfRelations = storeOfRelations
+                ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }
@@ -551,7 +555,11 @@ class ObjectSetViewModel(
                 }
             }
             is DataViewState.Loaded -> {
-                _dvViews.value = objectState.dataViewState()?.toViewersView(context, session) ?: emptyList()
+                _dvViews.value = objectState.dataViewState()?.toViewersView(
+                    ctx = context,
+                    session = session,
+                    storeOfRelations = storeOfRelations
+                ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
                 }

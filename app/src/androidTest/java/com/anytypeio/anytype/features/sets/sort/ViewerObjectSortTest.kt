@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -53,6 +54,9 @@ class ViewerObjectSortTest {
     @Mock
     lateinit var storeOfRelations: StoreOfRelations
 
+    @Mock
+    lateinit var dispatchers: AppCoroutineDispatchers
+
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
 
     private val root = MockDataFactory.randomUuid()
@@ -62,7 +66,7 @@ class ViewerObjectSortTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        updateDataViewViewer = UpdateDataViewViewer(repo)
+        updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
         TestViewerSortFragment.testVmFactory = ViewerSortViewModel.Factory(
             state = state,
             updateDataViewViewer = updateDataViewViewer,

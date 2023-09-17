@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -388,6 +389,22 @@ open class ObjectSetViewModelTestSetup {
     ) {
         templatesContainer.stub {
             onBlocking { subscribe(type) }.thenReturn(flowOf(templates))
+        }
+    }
+
+    fun stubCreateDataViewObject(
+        objectId: Id = MockDataFactory.randomString(),
+        objectType: Id = MockDataFactory.randomString()
+    ) {
+        createDataViewObject.stub {
+            onBlocking { async(any()) }.thenReturn(
+                Resultat.success(
+                    CreateDataViewObject.Result(
+                        objectId = objectId,
+                        objectType = objectType
+                    )
+                )
+            )
         }
     }
 }

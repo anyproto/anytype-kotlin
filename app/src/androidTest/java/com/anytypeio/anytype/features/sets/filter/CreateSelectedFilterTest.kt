@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -67,6 +68,9 @@ class CreateSelectedFilterTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var dispatchers: AppCoroutineDispatchers
+
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
     private lateinit var searchObjects: SearchObjects
     private lateinit var getOptions: GetOptions
@@ -86,7 +90,7 @@ class CreateSelectedFilterTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        updateDataViewViewer = UpdateDataViewViewer(repo)
+        updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
         searchObjects = SearchObjects(repo)
         getOptions = GetOptions(repo)
         urlBuilder = UrlBuilder(gateway)

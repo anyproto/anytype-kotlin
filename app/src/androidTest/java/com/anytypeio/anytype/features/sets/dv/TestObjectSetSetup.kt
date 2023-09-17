@@ -214,7 +214,7 @@ abstract class TestObjectSetSetup {
             dispatchers = dispatchers
         )
         setObjectDetails = UpdateDetail(repo)
-        updateDataViewViewer = UpdateDataViewViewer(repo)
+        updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         closeBlock = CloseBlock(repo, dispatchers)
         urlBuilder = UrlBuilder(gateway)

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -180,8 +181,8 @@ class ViewerFilterViewModel(
                 view = viewer.id,
                 ids = listOf(filter.id),
             )
-            updateDataViewViewer(params).process(
-                success = {
+            updateDataViewViewer.async(params).fold(
+                onSuccess = {
                     dispatcher.send(it).also {
                         logEvent(
                             state = objectState.value,
@@ -191,7 +192,7 @@ class ViewerFilterViewModel(
                         )
                     }
                           },
-                failure = { Timber.e("Error while reset all filters") }
+                onFailure = { Timber.e("Error while reset all filters") }
             )
         }
     }

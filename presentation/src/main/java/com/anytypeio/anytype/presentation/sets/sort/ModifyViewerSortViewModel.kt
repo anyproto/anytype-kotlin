@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -102,8 +103,8 @@ class ModifyViewerSortViewModel(
                 view = viewer.id,
                 sort = sort.copy(type = type)
             )
-            updateDataViewViewer(params).process(
-                success = {
+            updateDataViewViewer.async(params).fold(
+                onSuccess = {
                     dispatcher.send(it).also {
                         logEvent(
                             state = objectState.value,
@@ -115,7 +116,7 @@ class ModifyViewerSortViewModel(
                         isDismissed.emit(true)
                     }
                 },
-                failure = { Timber.e(it, "Error while updating sort type") }
+                onFailure = { Timber.e(it, "Error while updating sort type") }
             )
         }
     }

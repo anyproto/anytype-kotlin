@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
@@ -94,9 +95,9 @@ class ViewerSortViewModel(
                 view = viewer.id,
                 ids = listOf(view.sortId)
             )
-            updateDataViewViewer(params).process(
-                failure = { Timber.e(it, "Error while removing a sort") },
-                success = {
+            updateDataViewViewer.async(params).fold(
+                onFailure = { Timber.e(it, "Error while removing a sort") },
+                onSuccess = {
                     dispatcher.send(it).also {
                         logEvent(
                             state = objectState.value,

@@ -71,11 +71,11 @@ fun List<ObjectWrapper.Basic>.toViews(
 fun List<ObjectWrapper.Basic>.toLibraryViews(
     urlBuilder: UrlBuilder,
 ): List<LibraryView> = map { obj ->
-    when (obj.getProperType()) {
+    when (val type = obj.getProperType()) {
         MarketplaceObjectTypeIds.OBJECT_TYPE -> {
             LibraryView.LibraryTypeView(
                 id = obj.id,
-                name = obj.name ?: "",
+                name = obj.name.orEmpty(),
                 icon = ObjectIcon.from(
                     obj = obj,
                     layout = obj.getProperLayout(),
@@ -86,7 +86,7 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
         ObjectTypeIds.OBJECT_TYPE -> {
             LibraryView.MyTypeView(
                 id = obj.id,
-                name = obj.name ?: "",
+                name = obj.name.orEmpty(),
                 icon = ObjectIcon.from(
                     obj = obj,
                     layout = obj.getProperLayout(),
@@ -101,7 +101,7 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
             val relation = ObjectWrapper.Relation(obj.map)
             LibraryView.MyRelationView(
                 id = obj.id,
-                name = obj.name ?: "",
+                name = obj.name.orEmpty(),
                 format = relation.format,
                 sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
                 readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
@@ -112,13 +112,14 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
             val relation = ObjectWrapper.Relation(obj.map)
             LibraryView.LibraryRelationView(
                 id = obj.id,
-                name = obj.name ?: "",
+                name = obj.name.orEmpty(),
                 format = relation.format
             )
         }
         else -> {
-            Timber.e("Unknown type: ${obj.getProperType()}")
-            LibraryView.UnknownView()
+            LibraryView.UnknownView(id = obj.id).also {
+                Timber.e("Unknown type: $type")
+            }
         }
     }
 }

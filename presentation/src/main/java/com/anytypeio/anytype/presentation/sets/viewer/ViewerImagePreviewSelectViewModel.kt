@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -62,8 +63,8 @@ class ViewerImagePreviewSelectViewModel(
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params.Fields(
+            updateDataViewViewer.async(
+                UpdateDataViewViewer.Params.UpdateView(
                     context = ctx,
                     target = state.dataViewBlock.id,
                     viewer = viewer.copy(
@@ -80,12 +81,12 @@ class ViewerImagePreviewSelectViewModel(
                         }
                     )
                 )
-            ).process(
-                success = {
+            ).fold(
+                onSuccess = {
                     dispatcher.send(it)
                     isDismissed.value = true
                 },
-                failure = {
+                onFailure = {
                     Timber.e(it, "Error while updating card size for a view")
                 }
             )

@@ -1,14 +1,18 @@
 package com.anytypeio.anytype.presentation.collections
 
 import app.cash.turbine.testIn
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
+import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertIs
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -18,6 +22,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
@@ -171,6 +176,17 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             isReadOnlyValue = false,
             format = Relation.Format.LONG_TEXT
         )
+        val pageTypeId = ObjectState.VIEW_DEFAULT_OBJECT_TYPE
+        val pageTypeMap = mapOf(
+            Relations.ID to pageTypeId,
+            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+            Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+            Relations.NAME to MockDataFactory.randomString(),
+            Relations.DEFAULT_TEMPLATE_ID to null
+        )
+        with(storeOfObjectTypes) {
+            set(pageTypeId, pageTypeMap)
+        }
 
         // SETUP
         stubWorkspaceManager(mockObjectSet.workspaceId)
@@ -257,6 +273,18 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             ),
             details = objectCollection.details
         )
+
+        val pageTypeId = ObjectState.VIEW_DEFAULT_OBJECT_TYPE
+        val pageTypeMap = mapOf(
+            Relations.ID to pageTypeId,
+            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+            Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+            Relations.NAME to MockDataFactory.randomString(),
+            Relations.DEFAULT_TEMPLATE_ID to null
+        )
+        with(storeOfObjectTypes) {
+            set(pageTypeId, pageTypeMap)
+        }
 
         val newObjectId = "objNew-${RandomString.make()}"
         val result = CreateDataViewObject.Result(

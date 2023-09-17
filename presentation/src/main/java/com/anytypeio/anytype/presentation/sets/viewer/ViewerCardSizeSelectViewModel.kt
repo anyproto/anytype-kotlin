@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.sets.dataViewState
@@ -68,18 +69,18 @@ class ViewerCardSizeSelectViewModel(
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
-            updateDataViewViewer(
-                UpdateDataViewViewer.Params.Fields(
+            updateDataViewViewer.async(
+                UpdateDataViewViewer.Params.UpdateView(
                     context = ctx,
                     target = state.dataViewBlock.id,
                     viewer = viewer.copy(cardSize = size)
                 )
-            ).process(
-                success = {
+            ).fold(
+                onSuccess = {
                     dispatcher.send(it)
                     viewState.value = STATE_DISMISSED
                 },
-                failure = {
+                onFailure = {
                     Timber.e(it, "Error while updating card size for a view")
                 }
             )

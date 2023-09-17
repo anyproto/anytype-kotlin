@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.GetRelations
@@ -87,7 +88,7 @@ class RelationAddToDataViewViewModel(
         val state = objectState.value.dataViewState() ?: return
         val viewer = state.viewerById(viewerId) ?: return
 
-        updateDataViewViewer(
+        updateDataViewViewer.async(
             UpdateDataViewViewer.Params.ViewerRelation.Add(
                 ctx = ctx,
                 dv = state.dataViewBlock.id,
@@ -97,9 +98,9 @@ class RelationAddToDataViewViewModel(
                     isVisible = true
                 )
             )
-        ).process(
-            success = { dispatcher.send(it).also { isDismissed.value = true } },
-            failure = { Timber.e(it, "Error while updating data view's viewer") }
+        ).fold(
+            onSuccess = { dispatcher.send(it).also { isDismissed.value = true } },
+            onFailure = { Timber.e(it, "Error while updating data view's viewer") }
         )
     }
 

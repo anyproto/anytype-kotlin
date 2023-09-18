@@ -55,6 +55,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.TitleInter15
@@ -160,7 +161,7 @@ fun ViewerLayoutWidget(
                             )
                         }
                     }
-                    LayoutIcons(uiState = currentState)
+                    LayoutIcons(uiState = currentState, action = action)
                     Spacer(modifier = Modifier.height(8.dp))
                     LayoutSwitcherItem(
                         text = stringResource(id = R.string.icon),
@@ -222,7 +223,8 @@ fun LayoutIcon(
     layoutType: DVViewerType,
     imageResource: Int,
     imageResourceSelected: Int,
-    contentDescription: String
+    contentDescription: String,
+    click: () -> Unit
 ) {
     val (borderColor, textcolor) = if (uiState.layoutType == layoutType) {
         Pair(
@@ -245,7 +247,8 @@ fun LayoutIcon(
                 color = borderColor,
                 shape = RoundedCornerShape(size = 12.dp)
             )
-            .padding(top = 14.dp, start = 26.25.dp, end = 26.25.dp, bottom = 14.dp),
+            .padding(top = 14.dp, start = 26.25.dp, end = 26.25.dp, bottom = 14.dp)
+            .noRippleThrottledClickable { click() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
@@ -266,7 +269,7 @@ fun LayoutIcon(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun LayoutIcons(uiState: ViewerLayoutWidgetUi) {
+fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Action) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -286,21 +289,24 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi) {
                 layoutType = DVViewerType.GRID,
                 imageResource = R.drawable.ic_layout_grid,
                 imageResourceSelected = R.drawable.ic_layout_grid_selected,
-                contentDescription = "Grid"
+                contentDescription = "Grid",
+                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GRID)) }
             )
             LayoutIcon(
                 uiState = uiState,
                 layoutType = DVViewerType.GALLERY,
                 imageResourceSelected = R.drawable.ic_layout_gallery_selected,
                 imageResource = R.drawable.ic_layout_gallery,
-                contentDescription = "Gallery"
+                contentDescription = "Gallery",
+                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GALLERY)) }
             )
             LayoutIcon(
                 uiState = uiState,
                 layoutType = DVViewerType.LIST,
                 imageResourceSelected = R.drawable.ic_layout_list_selected,
                 imageResource = R.drawable.ic_layout_list,
-                contentDescription = "List"
+                contentDescription = "List",
+                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.LIST)) }
             )
             LayoutIcon(
                 modifier = Modifier.padding(top = 8.dp),
@@ -308,7 +314,8 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi) {
                 layoutType = DVViewerType.BOARD,
                 imageResourceSelected = R.drawable.ic_layout_kanban_selected,
                 imageResource = R.drawable.ic_layout_kanban,
-                contentDescription = "Kanban"
+                contentDescription = "Kanban",
+                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
             )
         }
     }
@@ -320,6 +327,8 @@ fun LayoutSwitcherItem(
     checked: Boolean,
     onCheckedChanged: (Boolean) -> Unit
 ) {
+    var switchCheckedState by remember(checked) { mutableStateOf(checked) }
+
     Box(modifier = Modifier
         .fillMaxWidth()
         .padding(start = 20.dp, end = 20.dp)
@@ -331,8 +340,11 @@ fun LayoutSwitcherItem(
         )
         Switch(
             modifier = Modifier.align(Alignment.CenterEnd),
-            checked = checked,
-            onCheckedChange = onCheckedChanged,
+            checked = switchCheckedState,
+            onCheckedChange = {
+                switchCheckedState = it
+                onCheckedChanged(switchCheckedState)
+            },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = colorResource(id = R.color.white),
                 checkedTrackColor = colorResource(id = R.color.palette_system_amber_50),
@@ -350,7 +362,7 @@ fun PreviewLayoutScreen() {
         uiState = ViewerLayoutWidgetUi(
             showWidget = true,
             layoutType = DVViewerType.GRID,
-            withIcon = ViewerLayoutWidgetUi.State.Toggle.HideIcon(
+            withIcon = ViewerLayoutWidgetUi.State.Toggle.WithIcon(
                 toggled = false
             ),
             fitImage = ViewerLayoutWidgetUi.State.Toggle.FitImage(
@@ -358,7 +370,8 @@ fun PreviewLayoutScreen() {
             ),
             cardSize = ViewerLayoutWidgetUi.State.CardSize.Small,
             cover = ViewerLayoutWidgetUi.State.ImagePreview.Cover,
-            showCardSize = true
+            showCardSize = true,
+            viewer = ""
         ),
         action = {},
         scope = CoroutineScope(

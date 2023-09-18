@@ -1,11 +1,8 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -35,14 +32,7 @@ fun ViewerLayoutListMenu(
     coordinates: Rect
 ) {
     val offsetX = with(LocalDensity.current) { coordinates.bottomRight.x.toDp() }
-    AnimatedVisibility(
-        visible = show,
-        enter = fadeIn(),
-        exit = fadeOut(
-            tween(100)
-        )
-    )
-    {
+    if (show) {
         Column(
             modifier = Modifier
                 .offset(x = offsetX - 220.dp, y = (-52).dp)
@@ -50,8 +40,9 @@ fun ViewerLayoutListMenu(
                 .wrapContentHeight()
                 .shadow(
                     elevation = 40.dp,
-                    spotColor = Color(0x40000000),
-                    ambientColor = Color(0x40000000)
+                    spotColor = Color(0xCC000000),
+                    ambientColor = Color(0xE6000000),
+                    shape = RoundedCornerShape(size = 10.dp)
                 )
                 .background(
                     color = colorResource(id = R.color.background_primary),
@@ -62,25 +53,27 @@ fun ViewerLayoutListMenu(
                 text = stringResource(R.string.small),
                 style = BodyCallout,
                 modifier = Modifier
+                    .fillMaxWidth()
                     .height(44.dp)
                     .padding(start = 16.dp, top = 11.dp)
                     .noRippleThrottledClickable {
-                        action.invoke(
+                        action(
                             ViewerLayoutWidgetUi.Action.CardSize(
                                 ViewerLayoutWidgetUi.State.CardSize.Small
                             )
                         )
                     }
             )
-            Divider()
+            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
             Text(
                 text = stringResource(R.string.large),
                 style = BodyCallout,
                 modifier = Modifier
                     .height(44.dp)
+                    .fillMaxWidth()
                     .padding(start = 16.dp, top = 11.dp)
                     .noRippleThrottledClickable {
-                        action.invoke(
+                        action(
                             ViewerLayoutWidgetUi.Action.CardSize(
                                 ViewerLayoutWidgetUi.State.CardSize.Large
                             )

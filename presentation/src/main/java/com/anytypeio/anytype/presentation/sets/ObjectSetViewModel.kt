@@ -180,7 +180,7 @@ class ObjectSetViewModel(
     val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
     val viewerEditWidgetState = MutableStateFlow(ViewerEditWidgetUi.init())
     val viewerLayoutWidgetState = MutableStateFlow(ViewerLayoutWidgetUi.init())
-    private val viewerWidgetId = MutableStateFlow<String?>(null)
+    private val viewerWidgetsId = MutableStateFlow<String?>(null)
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -288,7 +288,7 @@ class ObjectSetViewModel(
 
         viewModelScope.launch {
             combine(
-                viewerWidgetId,
+                viewerWidgetsId,
                 stateReducer.state,
             ) { viewId, state ->
                 if (viewId != null) {
@@ -519,7 +519,6 @@ class ObjectSetViewModel(
         return when (dataViewState) {
             DataViewState.Init -> {
                 _dvViews.value = emptyList()
-                viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
                 if (dvViewer == null) {
                     DataViewViewState.Collection.NoView
                 } else {
@@ -578,7 +577,6 @@ class ObjectSetViewModel(
         return when (dataViewState) {
             DataViewState.Init -> {
                 _dvViews.value = emptyList()
-                viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
                 when {
                     setOfValue.isEmpty() || query.isEmpty() -> DataViewViewState.Set.NoQuery
                     viewer == null -> DataViewViewState.Set.NoView
@@ -1843,7 +1841,7 @@ class ObjectSetViewModel(
                 }
             }
             is ViewersWidgetUi.Action.Edit -> {
-                viewerWidgetId.value = action.id
+                viewerWidgetsId.value = action.id
                 viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = true)
             }
             is ViewersWidgetUi.Action.OnMove -> {

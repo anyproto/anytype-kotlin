@@ -13,7 +13,7 @@ import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
+import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -37,7 +37,7 @@ class ModifyViewerSortViewModel(
         Timber.d("onStart, sortId: [$sortId], relationKey:[$relationKey]")
         jobs += viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
-                val viewer = state.viewerByIdOrFirst(viewerId) ?: return@collect
+                val viewer = state.viewerById(viewerId) ?: return@collect
                 val sort = viewer.sorts.find { it.id == sortId }
                 if (sort != null) {
                     val relation = storeOfRelations.getByKey(relationKey)
@@ -89,7 +89,7 @@ class ModifyViewerSortViewModel(
         type: Block.Content.DataView.Sort.Type
     ) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         val sort = viewer.sorts.find { it.id == sortId }
         if (sort == null) {
             Timber.e("Couldn't find sort in view:[$viewer] by sortId:[$sortId]")

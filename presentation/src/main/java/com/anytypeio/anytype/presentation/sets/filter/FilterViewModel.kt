@@ -48,7 +48,7 @@ import com.anytypeio.anytype.presentation.sets.model.FilterValue
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
+import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -115,7 +115,7 @@ open class FilterViewModel(
         jobs += viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
                 try {
-                    val viewer = state.viewerByIdOrFirst(viewerId) ?: return@collect
+                    val viewer = state.viewerById(viewerId) ?: return@collect
                     val key = relationKey
                     if (key != null) {
                         val relation = storeOfRelations.getByKey(key)
@@ -231,7 +231,7 @@ open class FilterViewModel(
         }
 
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         val key = relationKey
         if (key != null) {
             val relation = storeOfRelations.getByKey(key) ?: return
@@ -608,7 +608,7 @@ open class FilterViewModel(
             format = format
         )
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
             val filterId = viewer.filters.getOrNull(idx)?.id
             if (filterId == null) {
@@ -638,7 +638,7 @@ open class FilterViewModel(
         val idx = filterIndex
         checkNotNull(idx)
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
             val filterId = viewer.filters.getOrNull(idx)?.id
             if (filterId == null) {
@@ -787,7 +787,7 @@ open class FilterViewModel(
     ) {
         val startTime = System.currentTimeMillis()
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         val params = UpdateDataViewViewer.Params.Filter.Add(
             ctx = ctx,
             dv = state.dataViewBlock.id,

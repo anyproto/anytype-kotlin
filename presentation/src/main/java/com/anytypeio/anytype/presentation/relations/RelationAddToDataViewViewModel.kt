@@ -21,7 +21,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEven
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
+import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -86,7 +86,7 @@ class RelationAddToDataViewViewModel(
     
     private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, viewerId: Id, relation: Id) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
 
         updateDataViewViewer.async(
             UpdateDataViewViewer.Params.ViewerRelation.Add(

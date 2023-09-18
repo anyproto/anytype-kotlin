@@ -12,7 +12,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
+import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +31,7 @@ class ViewerCardSizeSelectViewModel(
     fun onStart(viewerId: Id) {
         viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect {
-                val viewer = it.viewerByIdOrFirst(viewerId) ?: return@collect
+                val viewer = it.viewerById(viewerId) ?: return@collect
                 viewState.value = when (viewer.cardSize) {
                     Block.Content.DataView.Viewer.Size.SMALL -> STATE_SMALL_CARD_SELECTED
                     Block.Content.DataView.Viewer.Size.MEDIUM -> STATE_SMALL_CARD_SELECTED
@@ -67,7 +67,7 @@ class ViewerCardSizeSelectViewModel(
 
     private fun proceedWithUpdatingCardSize(ctx: Id, viewerId: Id, size: DVViewerCardSize) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
             updateDataViewViewer.async(
                 UpdateDataViewViewer.Params.UpdateView(

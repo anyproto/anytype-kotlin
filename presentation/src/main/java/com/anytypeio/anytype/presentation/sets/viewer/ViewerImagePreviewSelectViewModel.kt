@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
+import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -31,7 +31,7 @@ class ViewerImagePreviewSelectViewModel(
     fun onStart(viewerId: Id) {
         viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
-                val viewer = state.viewerByIdOrFirst(viewerId) ?: return@collect
+                val viewer = state.viewerById(viewerId) ?: return@collect
                 val dv = state.dataViewContent
                 val result = mutableListOf<ViewerImagePreviewSelectView>().apply {
                     add(ViewerImagePreviewSelectView.Item.None(isSelected = viewer.coverRelationKey == null))
@@ -61,7 +61,7 @@ class ViewerImagePreviewSelectViewModel(
     fun onViewerCoverItemClicked(ctx: Id, viewerId: Id, item: ViewerImagePreviewSelectView.Item) {
         if (item.isSelected) return
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
             updateDataViewViewer.async(
                 UpdateDataViewViewer.Params.UpdateView(

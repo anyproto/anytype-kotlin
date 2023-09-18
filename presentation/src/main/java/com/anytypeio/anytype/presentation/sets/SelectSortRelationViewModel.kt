@@ -34,7 +34,7 @@ class SelectSortRelationViewModel(
 
     fun onRelationClicked(ctx: Id, viewerId: Id, relation: SimpleRelationView) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.Sort.Add(

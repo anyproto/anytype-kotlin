@@ -238,10 +238,15 @@ fun List<DVRecord>.update(new: List<DVRecord>): List<DVRecord> {
     return result
 }
 
-fun ObjectState.DataView.viewerById(currentViewerId: String?): DVViewer? {
+fun ObjectState.DataView.viewerByIdOrFirst(currentViewerId: String?): DVViewer? {
     if (!isInitialized) return null
     return dataViewContent.viewers.find { it.id == currentViewerId }
         ?: dataViewContent.viewers.firstOrNull()
+}
+
+fun ObjectState.DataView.viewerById(currentViewerId: String?): DVViewer? {
+    if (!isInitialized) return null
+    return dataViewContent.viewers.find { it.id == currentViewerId }
 }
 
 fun ObjectState.DataView.Collection.getObjectOrderIds(currentViewerId: String): List<Id> {
@@ -594,6 +599,16 @@ private suspend fun resolveTypeAndActiveViewTemplate(
         Pair(defaultSetObjectType, defaultTemplateId)
     } else {
         Pair(defaultSetObjectType, activeView.defaultTemplate)
+    }
+}
+
+fun ObjectState.DataView.isChangingDefaultTypeAvailable(ctx: Id): Boolean {
+    return when (this) {
+        is ObjectState.DataView.Collection -> true
+        is ObjectState.DataView.Set -> {
+            val setOfValue = getSetOfValue(ctx)
+            isSetByRelation(setOfValue = setOfValue)
+        }
     }
 }
 

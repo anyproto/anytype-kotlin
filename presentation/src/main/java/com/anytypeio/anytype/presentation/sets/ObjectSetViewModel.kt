@@ -180,7 +180,7 @@ class ObjectSetViewModel(
     val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
     val viewerEditWidgetState = MutableStateFlow(ViewerEditWidgetUi.init())
     val viewerLayoutWidgetState = MutableStateFlow(ViewerLayoutWidgetUi.init())
-    val viewerWidgetId = MutableStateFlow<String?>(null)
+    private val viewerWidgetId = MutableStateFlow<String?>(null)
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)

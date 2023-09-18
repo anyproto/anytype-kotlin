@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -340,7 +340,7 @@ class FilterViewModelInputFieldValueModifyTest {
         )
 
         verifyBlocking(updateDataViewViewer, times(1)) {
-            invoke(
+            async(
                 UpdateDataViewViewer.Params.Filter.Replace(
                     ctx = root,
                     dv = dataViewId,
@@ -382,7 +382,7 @@ class FilterViewModelInputFieldValueModifyTest {
         )
 
         verifyBlocking(updateDataViewViewer, times(1)) {
-            invoke(
+            async(
                 UpdateDataViewViewer.Params.Filter.Replace(
                     ctx = root,
                     dv = dataViewId,
@@ -400,7 +400,7 @@ class FilterViewModelInputFieldValueModifyTest {
 
     private fun stubUpdateDataView() {
         updateDataViewViewer.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Payload(
                     context = "",
                     events = emptyList()

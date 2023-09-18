@@ -9,8 +9,8 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
-import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPosition
+import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
@@ -23,7 +23,6 @@ interface ViewerDelegate {
 sealed class ViewerEvent {
     data class Delete(val ctx: Id, val dv: Id, val viewer: Id) : ViewerEvent()
     data class Duplicate(val ctx: Id, val dv: Id, val viewer: DVViewer) : ViewerEvent()
-    data class Rename(val ctx: Id, val dv: Id, val viewer: DVViewer) : ViewerEvent()
     data class AddNew(val ctx: Id, val dv: Id, val name: String, val type: DVViewerType) :
         ViewerEvent()
 
@@ -31,6 +30,8 @@ sealed class ViewerEvent {
         ViewerEvent()
 
     data class SetActive(val viewer: Id) : ViewerEvent()
+
+    data class UpdateView(val ctx: Id, val dv: Id, val viewer: DVViewer) : ViewerEvent()
 }
 
 class DefaultViewerDelegate @Inject constructor(
@@ -41,7 +42,7 @@ class DefaultViewerDelegate @Inject constructor(
     private val setDataViewViewerPosition: SetDataViewViewerPosition,
     private val duplicateDataViewViewer: DuplicateDataViewViewer,
     private val addDataViewViewer: AddDataViewViewer,
-    private val renameDataViewViewer: RenameDataViewViewer
+    private val updateDataViewViewer: UpdateDataViewViewer
 ) : ViewerDelegate {
 
     override suspend fun onEvent(event: ViewerEvent) {
@@ -65,12 +66,6 @@ class DefaultViewerDelegate @Inject constructor(
                 viewer = event.viewer
             )
 
-            is ViewerEvent.Rename -> onRename(
-                ctx = event.ctx,
-                dv = event.dv,
-                viewer = event.viewer
-            )
-
             is ViewerEvent.UpdatePosition -> onUpdatePosition(
                 ctx = event.ctx,
                 dv = event.dv,
@@ -80,6 +75,14 @@ class DefaultViewerDelegate @Inject constructor(
 
             is ViewerEvent.SetActive -> {
                 session.currentViewerId.value = event.viewer
+            }
+
+            is ViewerEvent.UpdateView -> {
+                onUpdateViewer(
+                    ctx = event.ctx,
+                    dv = event.dv,
+                    viewer = event.viewer
+                )
             }
         }
     }
@@ -110,18 +113,6 @@ class DefaultViewerDelegate @Inject constructor(
         )
     }
 
-    private suspend fun onRename(ctx: Id, dv: Id, viewer: DVViewer) {
-        val params = RenameDataViewViewer.Params(
-            context = ctx,
-            target = dv,
-            viewer = viewer
-        )
-        renameDataViewViewer.async(params).fold(
-            onFailure = { Timber.e(it, "Error while renaming view") },
-            onSuccess = { dispatcher.send(it) }
-        )
-    }
-
     private suspend fun onDuplicate(ctx: Id, dv: Id, viewer: DVViewer) {
         val params = DuplicateDataViewViewer.Params(
             context = ctx,
@@ -142,6 +133,18 @@ class DefaultViewerDelegate @Inject constructor(
         )
         deleteDataViewViewer.async(params).fold(
             onFailure = { Timber.e(it, "Error while deleting view") },
+            onSuccess = { dispatcher.send(it) }
+        )
+    }
+
+    private suspend fun onUpdateViewer(ctx: Id, dv: Id, viewer: DVViewer) {
+        val params = UpdateDataViewViewer.Params.UpdateView(
+            context = ctx,
+            target = dv,
+            viewer = viewer
+        )
+        updateDataViewViewer.async(params).fold(
+            onFailure = { Timber.e(it, "Error while updating view") },
             onSuccess = { dispatcher.send(it) }
         )
     }

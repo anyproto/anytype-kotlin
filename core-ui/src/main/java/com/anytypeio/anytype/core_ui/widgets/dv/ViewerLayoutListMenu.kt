@@ -45,13 +45,14 @@ fun ViewerLayoutListMenu(
                     shape = RoundedCornerShape(size = 10.dp)
                 )
                 .background(
-                    color = colorResource(id = R.color.background_primary),
+                    color = colorResource(id = R.color.background_secondary),
                     shape = RoundedCornerShape(size = 10.dp)
                 )
         ) {
             Text(
                 text = stringResource(R.string.small),
                 style = BodyCallout,
+                color = colorResource(id = R.color.text_primary),
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(44.dp)
@@ -68,6 +69,7 @@ fun ViewerLayoutListMenu(
             Text(
                 text = stringResource(R.string.large),
                 style = BodyCallout,
+                color = colorResource(id = R.color.text_primary),
                 modifier = Modifier
                     .height(44.dp)
                     .fillMaxWidth()

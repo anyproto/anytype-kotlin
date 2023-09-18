@@ -345,7 +345,8 @@ fun LayoutSwitcherItem(
         Text(
             modifier = Modifier.align(Alignment.CenterStart),
             text = text,
-            style = BodyCallout
+            style = BodyCallout,
+            color = colorResource(id = R.color.text_primary)
         )
         Switch(
             modifier = Modifier.align(Alignment.CenterEnd),

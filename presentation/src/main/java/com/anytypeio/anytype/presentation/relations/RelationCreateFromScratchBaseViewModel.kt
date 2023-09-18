@@ -19,7 +19,7 @@ import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.viewerById
+import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -329,7 +329,7 @@ class RelationCreateFromScratchForDataViewViewModel(
 
     private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, viewerId: Id, relationKey: Key) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(viewerId) ?: return
+        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
         updateDataViewViewer.async(
             UpdateDataViewViewer.Params.ViewerRelation.Add(
                 ctx = ctx,

@@ -20,7 +20,7 @@ import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.viewerById
+import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -44,7 +44,7 @@ class ObjectSetSettingsViewModel(
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
                 Timber.d("New update, viewerId: $viewerId, state: $state")
                 val result = mutableListOf<ViewerRelationListView>()
-                val viewer = state.viewerById(viewerId) ?: return@collect
+                val viewer = state.viewerByIdOrFirst(viewerId) ?: return@collect
                 when (viewer.type) {
                     Block.Content.DataView.Viewer.Type.GALLERY -> {
                         result.add(ViewerRelationListView.Section.Settings)
@@ -132,7 +132,7 @@ class ObjectSetSettingsViewModel(
         isChecked: Boolean
     ) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(viewerId) ?: return
+        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
         viewModelScope.launch {
             val updated = when (toggle) {
                 is ViewerRelationListView.Setting.Toggle.FitImage -> {
@@ -161,7 +161,7 @@ class ObjectSetSettingsViewModel(
 
     private fun proceedWithDeletingRelationFromViewer(ctx: Id, viewerId: Id, relation: Id) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(viewerId) ?: return
+        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.ViewerRelation.Remove(
                 ctx = ctx,
@@ -202,7 +202,7 @@ class ObjectSetSettingsViewModel(
 
     private fun proceedWithUpdatingCurrentViewAfterRelationDeletion(ctx: Id, viewerId: Id, relation: Id) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(viewerId) ?: return
+        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
         viewModelScope.launch {
             val updated = viewer.copy(
                 viewerRelations = viewer.viewerRelations.filter { it.key != relation },
@@ -234,7 +234,7 @@ class ObjectSetSettingsViewModel(
 
     private fun proceedWithChangeOrderUpdate(ctx: Id, viewerId: Id, order: List<String>) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(viewerId) ?: return
+        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.ViewerRelation.Sort(
                 ctx = ctx,
@@ -254,7 +254,7 @@ class ObjectSetSettingsViewModel(
 
     private fun proceedWithVisibilityUpdate(ctx: Id, viewerId: Id, item: SimpleRelationView) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(viewerId) ?: return
+        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
         val viewerRelation = viewer.viewerRelations
             .find { it.key == item.key }
             ?.copy(isVisible = item.isVisible)

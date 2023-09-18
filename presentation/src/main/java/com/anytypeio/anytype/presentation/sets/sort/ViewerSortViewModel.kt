@@ -15,7 +15,7 @@ import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.toView
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.viewerById
+import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -37,7 +37,7 @@ class ViewerSortViewModel(
     fun onStart(viewerId: Id) {
         jobs += viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
-                val viewer = state.viewerById(viewerId) ?: return@collect
+                val viewer = state.viewerByIdOrFirst(viewerId) ?: return@collect
                 val sorts = viewer.sorts
                 if (sorts.isEmpty()) {
                     screenState.value = ScreenState.EMPTY
@@ -86,7 +86,7 @@ class ViewerSortViewModel(
 
     fun onRemoveViewerSortClicked(ctx: Id, viewerId: Id, view: ViewerSortView) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(viewerId) ?: return
+        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.Sort.Remove(

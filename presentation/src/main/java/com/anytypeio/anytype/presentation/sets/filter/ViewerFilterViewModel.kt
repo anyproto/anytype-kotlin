@@ -19,7 +19,7 @@ import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterCommand.Modal
 import com.anytypeio.anytype.presentation.sets.model.FilterView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
-import com.anytypeio.anytype.presentation.sets.viewerById
+import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.*
@@ -168,7 +168,7 @@ class ViewerFilterViewModel(
     private fun onRemoveFilterClicked(ctx: Id, viewerId: Id, filterIndex: Int) {
         val startTime = System.currentTimeMillis()
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(viewerId) ?: return
+        val viewer = state.viewerByIdOrFirst(viewerId) ?: return
         val filter = viewer.filters.getOrNull(filterIndex)
         if (filter == null) {
             Timber.e("Filter with index $filterIndex not found")

@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,15 +34,14 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -277,14 +275,17 @@ fun NameTextField(
 }
 
 @Composable
-private fun ColumnItem(
+fun ColumnItem(
+    modifier: Modifier = Modifier,
+    imageModifier: Modifier = Modifier,
     title: String,
     isEnable: Boolean = true,
     value: String,
+    arrow : Painter = painterResource(id = R.drawable.ic_arrow_forward),
     onClick: () -> Unit
 ) {
     ConstraintLayout(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
             .noRippleThrottledClickable(onClick = onClick)
@@ -305,14 +306,14 @@ private fun ColumnItem(
             color = colorResource(id = R.color.text_primary),
         )
         Image(
-            modifier = Modifier
+            modifier = imageModifier
                 .constrainAs(iconRef) {
                     end.linkTo(parent.end)
                     top.linkTo(parent.top)
                     bottom.linkTo(parent.bottom)
                 },
-            painter = painterResource(id = R.drawable.ic_arrow_forward),
-            contentDescription = "Arrow icon"
+            painter = arrow,
+            contentDescription = "Arrow icon",
         )
         Text(
             modifier = Modifier

@@ -180,6 +180,7 @@ class ObjectSetViewModel(
     val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
     val viewerEditWidgetState = MutableStateFlow(ViewerEditWidgetUi.init())
     val viewerLayoutWidgetState = MutableStateFlow(ViewerLayoutWidgetUi.init())
+    val viewerWidgetId = MutableStateFlow<String?>(null)
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -283,6 +284,33 @@ class ObjectSetViewModel(
             _dvViews.collectLatest {
                 viewersWidgetState.value = viewersWidgetState.value.copy(items = it)
             }
+        }
+
+        viewModelScope.launch {
+            combine(
+                viewerWidgetId,
+                stateReducer.state,
+            ) { viewId, state ->
+                if (viewId != null) {
+                    val dataView = state.dataViewState()
+                    val viewer = dataView?.viewerById(viewId)
+                    if (dataView != null && viewer != null) {
+                        viewerEditWidgetState.value = viewerEditWidgetState.value.updateState(
+                            dvViewer = viewer,
+                            storeOfRelations = storeOfRelations,
+                            storeOfObjectTypes = storeOfObjectTypes,
+                            isDefaultObjectTypeEnabled = dataView.isChangingDefaultTypeAvailable()
+                        )
+                        viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.updateState(
+                            viewer = viewer,
+                            storeOfRelations = storeOfRelations
+                        )
+                    } else {
+                        viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
+                        viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.empty()
+                    }
+                }
+            }.collect()
         }
     }
 
@@ -486,11 +514,12 @@ class ObjectSetViewModel(
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
-        val dvViewer = objectState.viewerById(currentViewId)
+        val dvViewer = objectState.viewerByIdOrFirst(currentViewId)
 
         return when (dataViewState) {
             DataViewState.Init -> {
                 _dvViews.value = emptyList()
+                viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
                 if (dvViewer == null) {
                     DataViewViewState.Collection.NoView
                 } else {
@@ -544,11 +573,12 @@ class ObjectSetViewModel(
 
         val setOfValue = objectState.getSetOfValue(ctx = context)
         val query = objectState.filterOutDeletedAndMissingObjects(query = setOfValue)
-        val viewer = objectState.viewerById(currentViewId)
+        val viewer = objectState.viewerByIdOrFirst(currentViewId)
 
         return when (dataViewState) {
             DataViewState.Init -> {
                 _dvViews.value = emptyList()
+                viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
                 when {
                     setOfValue.isEmpty() || query.isEmpty() -> DataViewViewState.Set.NoQuery
                     viewer == null -> DataViewViewState.Set.NoView
@@ -596,25 +626,6 @@ class ObjectSetViewModel(
                     }
                 }
             }
-        }
-    }
-
-    private suspend fun updateViewsWidgets(
-        dvViewer: DVViewer?,
-        isDefaultObjectTypeEnabled: () -> Boolean
-    ) {
-        if (dvViewer != null) {
-            viewerEditWidgetState.value = viewerEditWidgetState.value.updateState(
-                dvViewer = dvViewer,
-                isDefaultObjectTypeEnabled = isDefaultObjectTypeEnabled(),
-                storeOfRelations = storeOfRelations,
-                storeOfObjectTypes = storeOfObjectTypes
-            )
-            viewerLayoutWidgetState.value =
-                viewerLayoutWidgetState.value.updateState(dvViewer, storeOfRelations)
-        } else {
-            viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
-            viewerLayoutWidgetState.value = ViewerLayoutWidgetUi.init()
         }
     }
 
@@ -732,7 +743,7 @@ class ObjectSetViewModel(
         val state = stateReducer.state.value.dataViewState() ?: return
         viewModelScope.launch {
             val dataViewBlock = state.dataViewBlock
-            val viewer = state.viewerById(session.currentViewerId.value)
+            val viewer = state.viewerByIdOrFirst(session.currentViewerId.value)
             val relation = storeOfRelations.getByKey(cell.relationKey)
 
             if (relation == null) {
@@ -943,7 +954,7 @@ class ObjectSetViewModel(
             val setObject = ObjectWrapper.Basic(
                 currentState.details[context]?.map ?: emptyMap()
             )
-            val viewer = currentState.viewerById(session.currentViewerId.value)
+            val viewer = currentState.viewerByIdOrFirst(session.currentViewerId.value)
             if (viewer == null) {
                 Timber.e("onCreateNewDataViewObject, Viewer is empty")
                 return
@@ -1016,7 +1027,7 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithAddingObjectToCollection(templateChosenBy: Id? = null) {
         val state = stateReducer.state.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
 
         val (defaultObjectType, defaultTemplate)
                 = state.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
@@ -1121,7 +1132,7 @@ class ObjectSetViewModel(
     fun onViewerEditClicked() {
         Timber.d("onViewerEditClicked, ")
         val state = stateReducer.state.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
         if (!BuildConfig.ENABLE_VIEWS_MENU) {
             dispatch(
                 ObjectSetCommand.Modal.EditDataViewViewer(
@@ -1546,7 +1557,7 @@ class ObjectSetViewModel(
                     currentViewId
                 )
             }.flatMapLatest { (state, currentViewId) ->
-                    val viewer = state.dataViewState()?.viewerById(currentViewId) ?: return@flatMapLatest emptyFlow()
+                    val viewer = state.dataViewState()?.viewerByIdOrFirst(currentViewId) ?: return@flatMapLatest emptyFlow()
                     val (type, template) = state.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
                     if (type == null) return@flatMapLatest emptyFlow()
                     if (type.isTemplatesAllowed()) {
@@ -1724,7 +1735,7 @@ class ObjectSetViewModel(
 
     private fun proceedWithUpdatingViewDefaultTemplate() {
         val state = stateReducer.state.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
         val template = templatesWidgetState.value.moreMenuTemplate ?: return
         val params = UpdateDataViewViewer.Params.UpdateView(
             context = context,
@@ -1832,17 +1843,8 @@ class ObjectSetViewModel(
                 }
             }
             is ViewersWidgetUi.Action.Edit -> {
-                val state = stateReducer.state.value.dataViewState() ?: return
-                val viewer = state.viewerById(action.id) ?: return
-                viewModelScope.launch {
-                    viewerEditWidgetState.value = viewerEditWidgetState.value.updateState(
-                        dvViewer = viewer,
-                        storeOfRelations = storeOfRelations,
-                        storeOfObjectTypes = storeOfObjectTypes,
-                        isDefaultObjectTypeEnabled = true
-                    )
-                        .copy(showWidget = true)
-                }
+                viewerWidgetId.value = action.id
+                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = true)
             }
             is ViewersWidgetUi.Action.OnMove -> {
                 Timber.d("onMove Viewer, from:[$action.from], to:[$action.to]")
@@ -1880,7 +1882,7 @@ class ObjectSetViewModel(
             if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
                 toast(NOT_ALLOWED)
             } else {
-                val viewer = viewerId ?: state.viewerById(session.currentViewerId.value)?.id ?: return
+                val viewer = viewerId ?: state.viewerByIdOrFirst(session.currentViewerId.value)?.id ?: return
                 dispatch(
                     ObjectSetCommand.Modal.ModifyViewerFilters(
                         ctx = context,
@@ -1899,7 +1901,7 @@ class ObjectSetViewModel(
             if (isRestrictionPresent(DataViewRestriction.VIEWS)) {
                 toast(NOT_ALLOWED)
             } else {
-                val viewer = viewerId ?: state.viewerById(session.currentViewerId.value)?.id ?: return
+                val viewer = viewerId ?: state.viewerByIdOrFirst(session.currentViewerId.value)?.id ?: return
                 dispatch(
                     ObjectSetCommand.Modal.ModifyViewerSorts(
                         ctx = context,
@@ -1954,7 +1956,7 @@ class ObjectSetViewModel(
                 val viewer = state.viewerById(action.id) ?: return
                 viewModelScope.launch {
                     viewerDelegate.onEvent(
-                        ViewerEvent.Rename(
+                        ViewerEvent.UpdateView(
                             ctx = context,
                             dv = state.dataViewBlock.id,
                             viewer = viewer.copy(name = action.name)
@@ -1993,19 +1995,7 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun getCreateObjectTemplateId(templateId: Id?): Id? {
-        return if (templateId != null) {
-            templateId
-        } else {
-            val defaultTemplate = _templateViews.value.firstOrNull { it.isDefault }
-
-            when (defaultTemplate) {
-                is TemplateView.Template -> defaultTemplate.id
-                else -> null
-            }
-        }
-    }
-
+    //region Viewer Layout Widget
     fun onViewerLayoutWidgetAction(action: ViewerLayoutWidgetUi.Action) {
         when (action) {
             ViewerLayoutWidgetUi.Action.Dismiss -> {
@@ -2016,10 +2006,35 @@ class ObjectSetViewModel(
                 viewerLayoutWidgetState.value =
                     viewerLayoutWidgetState.value.copy(showCardSize = !isCardSizeMenuVisible)
             }
-            is ViewerLayoutWidgetUi.Action.FitImage -> TODO()
-            is ViewerLayoutWidgetUi.Action.Icon -> TODO()
-            is ViewerLayoutWidgetUi.Action.CardSize -> TODO()
-            is ViewerLayoutWidgetUi.Action.Cover -> TODO()
+            is ViewerLayoutWidgetUi.Action.FitImage -> {
+                proceedWithUpdateViewer { it.copy(coverFit = action.toggled) }
+            }
+            is ViewerLayoutWidgetUi.Action.Icon -> {
+                proceedWithUpdateViewer { it.copy(hideIcon = !action.toggled) }
+            }
+            is ViewerLayoutWidgetUi.Action.CardSize -> {}
+            is ViewerLayoutWidgetUi.Action.Cover -> {}
+            is ViewerLayoutWidgetUi.Action.Type -> {
+                proceedWithUpdateViewer { it.copy(type = action.type) }
+            }
+        }
+    }
+
+    private fun proceedWithUpdateViewer(update: (DVViewer) -> DVViewer) {
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val viewer = state.viewerById(viewerLayoutWidgetState.value.viewer)
+        if (viewer == null) {
+            Timber.e("Couldn't find viewer by id: ${viewerLayoutWidgetState.value.viewer}")
+            return
+        }
+        viewModelScope.launch {
+            viewerDelegate.onEvent(
+                ViewerEvent.UpdateView(
+                    ctx = context,
+                    dv = state.dataViewBlock.id,
+                    viewer = update.invoke(viewer)
+                )
+            )
         }
     }
     //endregion

@@ -1137,36 +1137,27 @@ open class ObjectSetFragment :
 
     private fun setupOnBackPressedDispatcher() {
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (childFragmentManager.backStackEntryCount > 0) {
-                childFragmentManager.popBackStack()
-            } else {
-                when {
-                    vm.isCustomizeViewPanelVisible.value -> {
-                        vm.onHideViewerCustomizeSwiped()
-                    }
-                    vm.templatesWidgetState.value.showWidget -> {
-                        vm.onDismissTemplatesWidget()
-                    }
-                    vm.viewersWidgetState.value.showWidget
-                            && !vm.viewerEditWidgetState.value.showWidget -> {
-                        vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)
-                    }
-                    vm.viewersWidgetState.value.showWidget
-                            && vm.viewerEditWidgetState.value.showWidget
-                            && !vm.viewerLayoutWidgetState.value.showWidget -> {
-                        vm.onViewerEditWidgetAction(ViewerEditWidgetUi.Action.Dismiss)
-                    }
-                    vm.viewersWidgetState.value.showWidget
-                            && vm.viewerEditWidgetState.value.showWidget
-                            && vm.viewerLayoutWidgetState.value.showWidget -> {
-                        vm.onViewerLayoutWidgetAction(ViewerLayoutWidgetUi.Action.Dismiss)
-                    }
-                    else -> {
-                        vm.onSystemBackPressed()
-                    }
-                }
+            when {
+                childFragmentManager.backStackEntryCount > 0 -> childFragmentManager.popBackStack()
+                vm.isCustomizeViewPanelVisible.value -> vm.onHideViewerCustomizeSwiped()
+                vm.templatesWidgetState.value.showWidget -> vm.onDismissTemplatesWidget()
+                vm.viewersWidgetState.value.showWidget -> handleViewersWidgetState()
+                vm.viewerEditWidgetState.value.showWidget -> handleViewerEditWidgetState()
+                else -> vm.onSystemBackPressed()
             }
         }
+    }
+
+    private fun handleViewersWidgetState() = when {
+        vm.viewerEditWidgetState.value.showWidget -> handleViewerEditWidgetState()
+        else -> vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)
+    }
+
+    private fun handleViewerEditWidgetState() = when {
+        vm.viewerLayoutWidgetState.value.showWidget -> vm.onViewerLayoutWidgetAction(
+            ViewerLayoutWidgetUi.Action.Dismiss
+        )
+        else -> vm.onViewerEditWidgetAction(ViewerEditWidgetUi.Action.Dismiss)
     }
 
     override fun onTextValueChanged(

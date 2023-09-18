@@ -20,6 +20,16 @@ data class ViewerLayoutWidgetUi(
 
     fun dismiss() = copy(showWidget = false)
 
+    fun empty() = this.copy(
+        viewer = null,
+        layoutType = DVViewerType.GRID,
+        withIcon = State.Toggle.WithIcon(toggled = false),
+        fitImage = State.Toggle.FitImage(toggled = false),
+        cardSize = State.CardSize.Small,
+        cover = State.ImagePreview.None,
+        showCardSize = false
+    )
+
     companion object {
         fun init() = ViewerLayoutWidgetUi(
             viewer = null,

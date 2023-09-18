@@ -602,11 +602,11 @@ private suspend fun resolveTypeAndActiveViewTemplate(
     }
 }
 
-fun ObjectState.DataView.isChangingDefaultTypeAvailable(ctx: Id): Boolean {
+fun ObjectState.DataView.isChangingDefaultTypeAvailable(): Boolean {
     return when (this) {
         is ObjectState.DataView.Collection -> true
         is ObjectState.DataView.Set -> {
-            val setOfValue = getSetOfValue(ctx)
+            val setOfValue = getSetOfValue(root)
             isSetByRelation(setOfValue = setOfValue)
         }
     }

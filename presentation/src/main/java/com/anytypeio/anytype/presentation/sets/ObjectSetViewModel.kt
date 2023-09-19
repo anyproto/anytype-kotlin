@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -1995,9 +1996,14 @@ class ObjectSetViewModel(
 
     //region Viewer Layout Widget
     fun onViewerLayoutWidgetAction(action: ViewerLayoutWidgetUi.Action) {
+        Timber.d("onViewerLayoutWidgetAction, action:[$action]")
         when (action) {
             ViewerLayoutWidgetUi.Action.Dismiss -> {
-                viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.copy(showWidget = false)
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(
+                        showWidget = false,
+                        showCardSize = false
+                    )
             }
             ViewerLayoutWidgetUi.Action.CardSizeMenu -> {
                 val isCardSizeMenuVisible = viewerLayoutWidgetState.value.showCardSize
@@ -2010,7 +2016,18 @@ class ObjectSetViewModel(
             is ViewerLayoutWidgetUi.Action.Icon -> {
                 proceedWithUpdateViewer { it.copy(hideIcon = !action.toggled) }
             }
-            is ViewerLayoutWidgetUi.Action.CardSize -> {}
+            is ViewerLayoutWidgetUi.Action.CardSize -> {
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(showCardSize = false)
+                when (action.cardSize) {
+                    ViewerLayoutWidgetUi.State.CardSize.Small -> {
+                        proceedWithUpdateViewer { it.copy(cardSize = DVViewerCardSize.SMALL) }
+                    }
+                    ViewerLayoutWidgetUi.State.CardSize.Large -> {
+                        proceedWithUpdateViewer { it.copy(cardSize = DVViewerCardSize.LARGE) }
+                    }
+                }
+            }
             is ViewerLayoutWidgetUi.Action.Cover -> {}
             is ViewerLayoutWidgetUi.Action.Type -> {
                 proceedWithUpdateViewer { it.copy(type = action.type) }

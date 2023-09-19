@@ -168,51 +168,58 @@ fun ViewerLayoutWidget(
                         checked = currentState.withIcon.toggled,
                         onCheckedChanged = { action(Icon(it)) }
                     )
-                    Divider()
-                    ColumnItem(
-                        modifier = Modifier
-                            .padding(start = 20.dp, end = 20.dp),
-                        title = stringResource(id = R.string.card_size),
-                        value = when (currentState.cardSize) {
-                            ViewerLayoutWidgetUi.State.CardSize.Large -> stringResource(id = R.string.large)
-                            ViewerLayoutWidgetUi.State.CardSize.Small -> stringResource(id = R.string.small)
-                        },
-                        onClick = {
-                            action(ViewerLayoutWidgetUi.Action.CardSizeMenu)
-                        },
-                        arrow = painterResource(id = R.drawable.ic_list_arrow_18),
-                        imageModifier = Modifier
-                        .onGloballyPositioned { coordinates ->
-                            if (coordinates.isAttached) {
-                                with(coordinates.boundsInRoot()) {
-                                    currentCoordinates = this
+                    if (currentState.layoutType == DVViewerType.GALLERY) {
+                        Divider()
+                        ColumnItem(
+                            modifier = Modifier
+                                .padding(start = 20.dp, end = 20.dp),
+                            title = stringResource(id = R.string.card_size),
+                            value = when (currentState.cardSize) {
+                                ViewerLayoutWidgetUi.State.CardSize.Large -> stringResource(id = R.string.large)
+                                ViewerLayoutWidgetUi.State.CardSize.Small -> stringResource(id = R.string.small)
+                            },
+                            onClick = {
+                                action(ViewerLayoutWidgetUi.Action.CardSizeMenu)
+                            },
+                            arrow = painterResource(id = R.drawable.ic_list_arrow_18),
+                            imageModifier = Modifier
+                                .onGloballyPositioned { coordinates ->
+                                    if (coordinates.isAttached) {
+                                        with(coordinates.boundsInRoot()) {
+                                            currentCoordinates = this
+                                        }
+                                    } else {
+                                        currentCoordinates = androidx.compose.ui.geometry.Rect.Zero
+                                    }
                                 }
-                            } else {
-                                currentCoordinates = androidx.compose.ui.geometry.Rect.Zero
-                            }
-                        }
-                    )
-                    Divider()
-                    ColumnItem(
-                        modifier = Modifier.padding(start = 20.dp, end = 20.dp),
-                        title = stringResource(id = R.string.cover),
-                        value = when (val cover = currentState.cover) {
-                            ViewerLayoutWidgetUi.State.ImagePreview.Cover -> stringResource(id = R.string.cover)
-                            is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> cover.name
-                            ViewerLayoutWidgetUi.State.ImagePreview.None -> stringResource(id = R.string.none)
-                        },
-                        onClick = {},
-                        arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
-                    )
-                    Divider()
-                    LayoutSwitcherItem(
-                        text = stringResource(id = R.string.fit_image),
-                        checked = currentState.fitImage.toggled,
-                        onCheckedChanged = { action(FitImage(it)) }
-                    )
+                        )
+                        Divider()
+                        ColumnItem(
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                            title = stringResource(id = R.string.cover),
+                            value = when (val cover = currentState.cover) {
+                                ViewerLayoutWidgetUi.State.ImagePreview.Cover -> stringResource(id = R.string.cover)
+                                is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> cover.name
+                                ViewerLayoutWidgetUi.State.ImagePreview.None -> stringResource(id = R.string.none)
+                            },
+                            onClick = {},
+                            arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
+                        )
+                        Divider()
+                        LayoutSwitcherItem(
+                            text = stringResource(id = R.string.fit_image),
+                            checked = currentState.fitImage.toggled,
+                            onCheckedChanged = { action(FitImage(it)) }
+                        )
+                    }
                 }
             }
         }
+        ViewerLayoutListMenu(
+            show = currentState.showCardSize,
+            action = action,
+            coordinates = currentCoordinates
+        )
     }
 }
 
@@ -329,14 +336,17 @@ fun LayoutSwitcherItem(
 ) {
     var switchCheckedState by remember(checked) { mutableStateOf(checked) }
 
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .padding(start = 20.dp, end = 20.dp)
-        .height(58.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp)
+            .height(58.dp)
+    ) {
         Text(
             modifier = Modifier.align(Alignment.CenterStart),
             text = text,
-            style = BodyCallout
+            style = BodyCallout,
+            color = colorResource(id = R.color.text_primary)
         )
         Switch(
             modifier = Modifier.align(Alignment.CenterEnd),

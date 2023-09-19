@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -45,50 +43,6 @@ class ObjectSetSettingsViewModel(
                 Timber.d("New update, viewerId: $viewerId, state: $state")
                 val result = mutableListOf<ViewerRelationListView>()
                 val viewer = state.viewerById(viewerId) ?: return@collect
-                when (viewer.type) {
-                    Block.Content.DataView.Viewer.Type.GALLERY -> {
-                        result.add(ViewerRelationListView.Section.Settings)
-                        when (viewer.cardSize) {
-                            Block.Content.DataView.Viewer.Size.SMALL -> {
-                                result.add(ViewerRelationListView.Setting.CardSize.Small)
-                            }
-                            Block.Content.DataView.Viewer.Size.MEDIUM -> {
-                                result.add(ViewerRelationListView.Setting.CardSize.Small)
-                            }
-                            Block.Content.DataView.Viewer.Size.LARGE -> {
-                                result.add(ViewerRelationListView.Setting.CardSize.Large)
-                            }
-                        }
-
-                        val coverRelationKey = viewer.coverRelationKey
-                        result.add(
-                            when {
-                                coverRelationKey.isNullOrBlank() -> ViewerRelationListView.Setting.ImagePreview.None
-                                coverRelationKey == Relations.PAGE_COVER -> ViewerRelationListView.Setting.ImagePreview.Cover
-                                else -> {
-                                    val preview = storeOfRelations.getByKey(coverRelationKey)
-                                    if (preview != null) {
-                                        ViewerRelationListView.Setting.ImagePreview.Custom(preview.name.orEmpty())
-                                    } else {
-                                        ViewerRelationListView.Setting.ImagePreview.None
-                                    }
-                                }
-                            }
-                        )
-
-                        result.add(ViewerRelationListView.Setting.Toggle.HideIcon(toggled = viewer.hideIcon))
-                        result.add(ViewerRelationListView.Setting.Toggle.FitImage(toggled = viewer.coverFit))
-                    }
-                    Block.Content.DataView.Viewer.Type.GRID -> {
-                        result.add(ViewerRelationListView.Section.Settings)
-                        result.add(ViewerRelationListView.Setting.Toggle.HideIcon(toggled = viewer.hideIcon))
-                    }
-                    Block.Content.DataView.Viewer.Type.LIST -> {
-                        result.add(ViewerRelationListView.Section.Settings)
-                        result.add(ViewerRelationListView.Setting.Toggle.HideIcon(toggled = viewer.hideIcon))
-                    }
-                    else -> {}
-                }
 
                 Timber.d("Relation index: ${state.dataViewContent.relationLinks}")
 
@@ -96,14 +50,12 @@ class ObjectSetSettingsViewModel(
                     storeOfRelations.getByKey(it.key)
                 }
 
-
                 Timber.d("Found in store: ${inStore.size}, available in index: ${state.dataViewContent.relationLinks.size}")
 
                 val relations = viewer.viewerRelations.toSimpleRelationView(inStore)
                     .filterHiddenRelations()
                     .map { view -> ViewerRelationListView.Relation(view) }
 
-                result.add(ViewerRelationListView.Section.Relations)
                 result.addAll(relations)
 
                 Timber.d("New views: $result")
@@ -123,36 +75,6 @@ class ObjectSetSettingsViewModel(
 
     fun onSwitchClicked(ctx: Id, viewerId: Id, item: SimpleRelationView) {
         proceedWithVisibilityUpdate(ctx = ctx, viewerId = viewerId, item)
-    }
-
-    fun onSettingToggleChanged(
-        ctx: Id,
-        viewerId: Id,
-        toggle: ViewerRelationListView.Setting.Toggle,
-        isChecked: Boolean
-    ) {
-        val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(viewerId) ?: return
-        viewModelScope.launch {
-            val updated = when (toggle) {
-                is ViewerRelationListView.Setting.Toggle.FitImage -> {
-                    viewer.copy(coverFit = isChecked)
-                }
-                is ViewerRelationListView.Setting.Toggle.HideIcon -> {
-                    viewer.copy(hideIcon = isChecked)
-                }
-            }
-            updateDataViewViewer.async(
-                UpdateDataViewViewer.Params.UpdateView(
-                    context = ctx,
-                    target = state.dataViewBlock.id,
-                    viewer = updated
-                )
-            ).fold(
-                onSuccess = { dispatcher.send(it) },
-                onFailure = { Timber.w("Error while updating") }
-            )
-        }
     }
 
     fun onDeleteClicked(ctx: Id, viewerId: Id, item: SimpleRelationView) {

@@ -7,23 +7,59 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SelectSpaceViewModel @Inject constructor(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val spaceGradientProvider: SpaceGradientProvider,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
-    val views = MutableStateFlow<List<WorkspaceView>>(emptyList())
+    val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
+
+    val profile = spaceManager
+        .observe()
+        .flatMapLatest { config ->
+            storelessSubscriptionContainer.subscribe(
+                StoreSearchByIdsParams(
+                    subscription = PROFILE_SUBSCRIPTION_ID,
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.NAME,
+                        Relations.ICON_IMAGE,
+                        Relations.ICON_EMOJI,
+                        Relations.ICON_OPTION
+                    ),
+                    targets = listOf(config.profile)
+                )
+            ).map { results ->
+                if (results.isNotEmpty())
+                    results.first()
+                else {
+                    ObjectWrapper.Basic(
+                        mapOf(
+                            Relations.ID to config.profile
+                        )
+                    )
+                }
+            }
+        }
 
     init {
         viewModelScope.launch {
@@ -41,20 +77,29 @@ class SelectSpaceViewModel @Inject constructor(
                         )
                     )
                 ),
+                profile,
                 spaceManager.observe()
-            ) { spaces, config ->
-                spaces.mapNotNull { wrapper ->
-                    val space = wrapper.getValue<String>(Relations.SPACE_ID)
-                    if (space != null) {
-                        WorkspaceView(
-                            id = wrapper.id,
-                            name = wrapper.name,
-                            space = space,
-                            isSelected = space == config.space
-                        )
-                    } else {
-                        null
-                    }
+            ) { spaces, profile, config ->
+                buildList {
+                    add(SelectSpaceView.Profile(profile))
+                    addAll(
+                        spaces.mapNotNull { wrapper ->
+                            val space = wrapper.getValue<String>(Relations.SPACE_ID)
+                            if (space != null) {
+                                SelectSpaceView.Space(
+                                    WorkspaceView(
+                                        id = wrapper.id,
+                                        name = wrapper.name,
+                                        space = space,
+                                        isSelected = space == config.space
+                                    )
+                                )
+                            } else {
+                                null
+                            }
+                        }
+                    )
+                    add(SelectSpaceView.Create)
                 }
             }.collect { results ->
                 views.value = results
@@ -64,7 +109,7 @@ class SelectSpaceViewModel @Inject constructor(
 
     fun onSpaceClicked(view: WorkspaceView) {
         viewModelScope.launch {
-            Timber.d("Setting space: ${view}")
+            Timber.d("Setting space: $view")
             spaceManager.set(view.space)
         }
     }
@@ -79,14 +124,18 @@ class SelectSpaceViewModel @Inject constructor(
 
     class Factory @Inject constructor(
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val spaceGradientProvider: SpaceGradientProvider,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ) = SelectSpaceViewModel(
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            spaceGradientProvider = spaceGradientProvider,
+            urlBuilder = urlBuilder
         ) as T
     }
 
@@ -101,3 +150,13 @@ data class WorkspaceView(
     val name: String?,
     val isSelected: Boolean = false
 )
+
+sealed class SelectSpaceView {
+    data class Space(
+        val view: WorkspaceView
+    ) : SelectSpaceView()
+    data class Profile(
+        val view: ObjectWrapper.Basic
+    ) : SelectSpaceView()
+    object Create : SelectSpaceView()
+}

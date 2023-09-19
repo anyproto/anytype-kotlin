@@ -199,7 +199,7 @@ class HomeScreenViewModel(
                     flowOf(emptyList())
                 }
             }.flowOn(appCoroutineDispatchers.io).collect {
-                views.value = it + listOf(WidgetView.Library, bin, WidgetView.Space("spaces")) + actions
+                views.value = it + listOf(WidgetView.Library, bin) + actions
             }
         }
     }

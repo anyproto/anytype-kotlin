@@ -33,10 +33,18 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(
                 typography = typography
             ) {
-                CreateSpaceScreen()
+                CreateSpaceScreen(
+                    vm::onCreateSpace
+                )
                 LaunchedEffect(Unit) { vm.toasts.collect() { toast(it) } }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        expand()
     }
 
     override fun injectDependencies() {

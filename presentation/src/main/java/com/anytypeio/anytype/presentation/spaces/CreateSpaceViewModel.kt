@@ -29,6 +29,7 @@ class CreateSpaceViewModel @Inject constructor(
                 )
             ).fold(
                 onSuccess = { space: Id ->
+                    sendToast("Space created")
                     Timber.d("Successfully created space: $space").also {
                         isDismissed.value = true
                     }

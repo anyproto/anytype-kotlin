@@ -75,6 +75,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
+import com.anytypeio.anytype.core_ui.views.ModalTitle
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -214,7 +215,7 @@ fun ObjectTypeTemplatesWidget(
                         Box(modifier = Modifier.align(Alignment.Center)) {
                             Text(
                                 text = stringResource(R.string.type_templates_widget_title),
-                                style = Title1,
+                                style = ModalTitle,
                                 color = colorResource(R.color.text_primary)
                             )
                         }
@@ -330,12 +331,12 @@ private fun MenuItem(click: () -> Unit, text: String, @ColorRes color: Int = R.c
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(top = 11.dp, bottom = 11.dp)
+            .padding(top = 11.dp, bottom = 11.dp, start = 17.dp)
             .noRippleClickable { click() },
         text = text,
         style = BodyCalloutRegular,
         color = colorResource(id = color),
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Start
     )
 }
 

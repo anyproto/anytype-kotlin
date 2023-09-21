@@ -84,8 +84,10 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
+import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
+import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
@@ -1142,14 +1144,14 @@ open class ObjectSetFragment :
                 vm.isCustomizeViewPanelVisible.value -> vm.onHideViewerCustomizeSwiped()
                 vm.templatesWidgetState.value.showWidget -> vm.onDismissTemplatesWidget()
                 vm.viewersWidgetState.value.showWidget -> handleViewersWidgetState()
-                vm.viewerEditWidgetState.value.showWidget -> handleViewerEditWidgetState()
+                vm.viewerEditWidgetState.value.isVisible() -> handleViewerEditWidgetState()
                 else -> vm.onSystemBackPressed()
             }
         }
     }
 
     private fun handleViewersWidgetState() = when {
-        vm.viewerEditWidgetState.value.showWidget -> handleViewerEditWidgetState()
+        vm.viewerEditWidgetState.value.isVisible() -> handleViewerEditWidgetState()
         else -> vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)
     }
 
@@ -1157,7 +1159,7 @@ open class ObjectSetFragment :
         vm.viewerLayoutWidgetState.value.showWidget -> vm.onViewerLayoutWidgetAction(
             ViewerLayoutWidgetUi.Action.Dismiss
         )
-        else -> vm.onViewerEditWidgetAction(ViewerEditWidgetUi.Action.Dismiss)
+        else -> vm.onViewerEditWidgetAction(ViewEditAction.Dismiss)
     }
 
     override fun onTextValueChanged(

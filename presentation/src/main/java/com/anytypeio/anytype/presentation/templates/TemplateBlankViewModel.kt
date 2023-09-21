@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.templates
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -43,14 +44,25 @@ class TemplateBlankViewModel(
             children = emptyList(),
             fields = Block.Fields.empty(),
         )
-        val headerBlock = Block(
-            id = HEADER_ID,
-            content = Block.Content.Layout(
-                type = Block.Content.Layout.Type.HEADER
-            ),
-            children = listOf(blockTitle.id, featuredRelationsBlock.id),
-            fields = Block.Fields.empty(),
-        )
+        val headerBlock = if (layout != ObjectType.Layout.NOTE.code) {
+            Block(
+                id = HEADER_ID,
+                content = Block.Content.Layout(
+                    type = Block.Content.Layout.Type.HEADER
+                ),
+                children = listOf(blockTitle.id, featuredRelationsBlock.id),
+                fields = Block.Fields.empty(),
+            )
+        } else {
+            Block(
+                id = HEADER_ID,
+                content = Block.Content.Layout(
+                    type = Block.Content.Layout.Type.HEADER
+                ),
+                children = listOf(featuredRelationsBlock.id),
+                fields = Block.Fields.empty(),
+            )
+        }
         val rootBlock = Block(
             id = BLANK_ROOT_ID,
             content = Block.Content.Smart,

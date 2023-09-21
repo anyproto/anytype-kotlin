@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -54,11 +55,13 @@ object FilesStorageModule {
     fun provideStoreLessSubscriptionContainer(
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        logger: Logger
     ): StorelessSubscriptionContainer = StorelessSubscriptionContainer.Impl(
         repo = repo,
         channel = channel,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        logger = logger
     )
 
     @JvmStatic
@@ -114,4 +117,5 @@ interface FilesStorageDependencies : ComponentDependencies {
     fun fileEventsChannel(): FileLimitsEventChannel
     fun buildProvider(): BuildProvider
     fun authRepo(): AuthRepository
+    fun logger(): Logger
 }

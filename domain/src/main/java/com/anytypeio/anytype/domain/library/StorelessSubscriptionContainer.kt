@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.processors.EventAddProcessor
 import com.anytypeio.anytype.domain.library.processors.EventAmendProcessor
 import com.anytypeio.anytype.domain.library.processors.EventPositionProcessor
@@ -37,14 +38,15 @@ interface StorelessSubscriptionContainer {
     class Impl @Inject constructor(
         private val repo: BlockRepository,
         private val channel: SubscriptionEventChannel,
-        private val dispatchers: AppCoroutineDispatchers
+        private val dispatchers: AppCoroutineDispatchers,
+        private val logger: Logger
     ) : StorelessSubscriptionContainer {
 
         private val addEventProcessor by lazy { EventAddProcessor() }
         private val unsetEventProcessor by lazy { EventUnsetProcessor() }
         private val removeEventProcessor by lazy { EventRemoveProcessor() }
         private val setEventProcessor by lazy { EventSetProcessor() }
-        private val amendEventProcessor by lazy { EventAmendProcessor() }
+        private val amendEventProcessor by lazy { EventAmendProcessor(logger = logger) }
         private val positionEventProcessor by lazy { EventPositionProcessor() }
 
         private fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions)

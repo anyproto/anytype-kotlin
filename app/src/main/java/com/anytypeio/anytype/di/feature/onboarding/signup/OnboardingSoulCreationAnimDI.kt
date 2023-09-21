@@ -5,6 +5,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -79,6 +80,7 @@ interface OnboardingSoulCreationAnimDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun repo(): BlockRepository
     fun channel(): SubscriptionEventChannel
+    fun logger(): Logger
 }
 
 @Scope

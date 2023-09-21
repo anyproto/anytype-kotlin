@@ -20,6 +20,10 @@ class CreateSpaceViewModel @Inject constructor(
     val isDismissed = MutableStateFlow(false)
 
     fun onCreateSpace(name: String) {
+        if (name.isEmpty()) {
+            sendToast("Name should not be empty")
+            return
+        }
         viewModelScope.launch {
             createSpace.async(
                 CreateSpace.Params(

@@ -28,12 +28,12 @@ sealed class ViewerEditWidgetUi {
 
 sealed class ViewEditAction {
     object Dismiss : ViewEditAction()
-    data class UpdateName(val id: Id?, val name: String) : ViewEditAction()
-    data class DefaultObjectType(val id: Id?) : ViewEditAction()
-    data class Layout(val id: Id?) : ViewEditAction()
-    data class Relations(val id: Id?) : ViewEditAction()
-    data class Filters(val id: Id?) : ViewEditAction()
-    data class Sorts(val id: Id?) : ViewEditAction()
+    data class UpdateName(val id: Id, val name: String) : ViewEditAction()
+    data class DefaultObjectType(val id: Id) : ViewEditAction()
+    data class Layout(val id: Id) : ViewEditAction()
+    data class Relations(val id: Id) : ViewEditAction()
+    data class Filters(val id: Id) : ViewEditAction()
+    data class Sorts(val id: Id) : ViewEditAction()
     object More: ViewEditAction()
     data class Duplicate(val id: Id) : ViewEditAction()
     data class Delete(val id: Id) : ViewEditAction()

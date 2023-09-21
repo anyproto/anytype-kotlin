@@ -1094,8 +1094,7 @@ class EditorViewModel(
         if (editorHasChildrenScreens) {
             dispatch(Command.PopBackStack)
         } else {
-            val state = controlPanelViewState.value
-            checkNotNull(state) { "Control panel state is null" }
+            val state = controlPanelViewState.value ?: return
             when {
                 state.styleTextToolbar.isVisible -> {
                     onCloseBlockStyleToolbarClicked()

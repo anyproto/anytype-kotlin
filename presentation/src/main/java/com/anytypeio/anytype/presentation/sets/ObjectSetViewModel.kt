@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -1869,6 +1870,22 @@ class ObjectSetViewModel(
             }
 
             ViewersWidgetUi.Action.Plus -> {
+                val state = stateReducer.state.value.dataViewState() ?: return
+                val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+                val newView = activeView.copy(id = "", name = "", type = DVViewerType.GRID)
+                viewModelScope.launch {
+                    viewerDelegate.onEvent(
+                        ViewerEvent.AddNew(
+                            ctx = context,
+                            dv = state.dataViewBlock.id,
+                            viewer = newView,
+                            action = { newViewId ->
+                                widgetViewerId.value = newViewId
+                                showViewerEditWidgetForNew()
+                            }
+                        )
+                    )
+                }
 
             }
         }
@@ -1996,6 +2013,12 @@ class ObjectSetViewModel(
     private fun showViewerEditWidget() {
         val show = (viewerEditWidgetState.value as? ViewerEditWidgetUi.Data)?.copy(showWidget = true)
                 ?: ViewerEditWidgetUi.Init
+        viewerEditWidgetState.value = show
+    }
+
+    private fun showViewerEditWidgetForNew() {
+        val show = (viewerEditWidgetState.value as? ViewerEditWidgetUi.Data)?.copy(showWidget = true, isNewMode = true)
+            ?: ViewerEditWidgetUi.Init
         viewerEditWidgetState.value = show
     }
 

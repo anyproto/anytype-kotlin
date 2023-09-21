@@ -69,25 +69,36 @@ fun CreateSpaceScreen(
         UseCase()
         Divider()
         Box(modifier = Modifier.weight(1.0f)) {
-            Box(modifier = Modifier
-                .height(78.dp)
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 10.dp)
-            ) {
-                ButtonPrimary(
-                    onClick = {
-                        onCreate(input.value)
-                    },
-                    text = stringResource(id = R.string.create),
-                    size = ButtonSize.Large,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                        .align(Alignment.BottomCenter)
-                )
-            }
+            CreateSpaceButton(
+                onCreate = onCreate,
+                input = input,
+                modifier = Modifier.align(Alignment.BottomCenter)
+            )
         }
+    }
+}
+
+@Composable
+private fun CreateSpaceButton(
+    modifier: Modifier,
+    onCreate: (Name) -> Unit,
+    input: MutableState<String>
+) {
+    Box(
+        modifier = modifier
+            .height(78.dp)
+            .fillMaxWidth()
+            .padding(bottom = 10.dp)
+    ) {
+        ButtonPrimary(
+            onClick = { onCreate(input.value) },
+            text = stringResource(id = R.string.create),
+            size = ButtonSize.Large,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .align(Alignment.BottomCenter)
+        )
     }
 }
 

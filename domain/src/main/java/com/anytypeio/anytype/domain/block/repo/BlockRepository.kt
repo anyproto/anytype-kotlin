@@ -167,7 +167,7 @@ interface BlockRepository {
         context: Id,
         target: Id,
         viewer: DVViewer
-    ): Payload
+    ): Pair<String, Payload>
 
     suspend fun addDataViewViewer(
         ctx: String,

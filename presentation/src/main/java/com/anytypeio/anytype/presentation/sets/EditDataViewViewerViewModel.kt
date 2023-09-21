@@ -73,7 +73,7 @@ class EditDataViewViewerViewModel(
                     _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
                 },
                 onSuccess = {
-                    dispatcher.send(it).also {
+                    dispatcher.send(it.second).also {
                         logEvent(
                             state = objectState.value,
                             analytics = analytics,

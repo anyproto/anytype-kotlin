@@ -125,7 +125,7 @@ interface BlockRemote {
         context: String,
         target: String,
         viewer: DVViewer
-    ): Payload
+    ): Pair<String, Payload>
 
     suspend fun addDataViewViewer(
         ctx: String,

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
@@ -245,4 +246,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun appActionManager(): AppActionManager
     fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun logger(): Logger
 }

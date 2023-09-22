@@ -1872,7 +1872,11 @@ class ObjectSetViewModel(
             ViewersWidgetUi.Action.Plus -> {
                 val state = stateReducer.state.value.dataViewState() ?: return
                 val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
-                val newView = activeView.copy(id = "", name = "", type = DVViewerType.GRID)
+                val newView = activeView.copy(
+                    id = "",
+                    name = DVViewerType.GRID.formattedName,
+                    type = DVViewerType.GRID
+                )
                 viewModelScope.launch {
                     viewerDelegate.onEvent(
                         ViewerEvent.AddNew(

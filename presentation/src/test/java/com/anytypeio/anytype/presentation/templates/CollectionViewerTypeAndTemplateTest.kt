@@ -150,7 +150,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
         // ASSERT BLANK IS DEFAULT
         assertEquals(1, result.size)
@@ -245,7 +245,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
         // ASSERT BLANK IS DEFAULT
         assertEquals(1, result.size)
@@ -340,7 +340,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
         // ASSERT BLANK IS DEFAULT
         assertEquals(1, result.size)
@@ -435,7 +435,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
         // ASSERT BLANK IS DEFAULT
         assertEquals(1, result.size)
@@ -530,7 +530,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
         // ASSERT BLANK IS DEFAULT
         assertEquals(1, result.size)
@@ -625,7 +625,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
         // ASSERT BLANK IS DEFAULT
         assertEquals(1, result.size)

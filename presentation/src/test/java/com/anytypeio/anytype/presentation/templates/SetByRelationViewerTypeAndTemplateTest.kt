@@ -158,7 +158,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
         // ASSERT BLANK IS DEFAULT
         assertEquals(1, result.size)
@@ -253,7 +253,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
         // ASSERT BLANK IS DEFAULT
         assertEquals(1, result.size)
@@ -348,7 +348,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
         // ASSERT TEMPLATE IS DEFAULT
         assertEquals(1, result.size)
@@ -453,7 +453,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             advanceUntilIdle()
 
-            val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
             // ASSERT TEMPLATE IS DEFAULT
             assertEquals(1, result.size)
@@ -558,7 +558,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             advanceUntilIdle()
 
-            val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
             // ASSERT BLANK IS DEFAULT
             assertEquals(1, result.size)
@@ -663,7 +663,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             advanceUntilIdle()
 
-            val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
             // ASSERT BLANK IS DEFAULT
             assertEquals(1, result.size)
@@ -768,7 +768,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             advanceUntilIdle()
 
-            val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
             // ASSERT BLANK IS DEFAULT
             assertEquals(1, result.size)
@@ -873,7 +873,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             advanceUntilIdle()
 
-            val result = viewModel.templatesWidgetState.value.items.filter { it.isDefault }
+            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
 
             // ASSERT TEMPLATE IS DEFAULT
             assertEquals(1, result.size)

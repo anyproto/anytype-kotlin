@@ -38,11 +38,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,11 +87,12 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
-import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
+import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -97,8 +101,8 @@ import timber.log.Timber
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ObjectTypeTemplatesWidget(
-    state: TemplatesWidgetUiState,
+fun TypeTemplatesWidget(
+    state: TypeTemplatesWidgetUI,
     onDismiss: () -> Unit,
     itemClick: (TemplateView) -> Unit,
     moreClick: (TemplateView.Template) -> Unit,
@@ -116,7 +120,7 @@ fun ObjectTypeTemplatesWidget(
         val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
 
         AnimatedVisibility(
-            visible = currentState.showWidget,
+            visible = state.showWidget,
             enter = fadeIn(),
             exit = fadeOut(
                 tween(200)
@@ -138,7 +142,7 @@ fun ObjectTypeTemplatesWidget(
             }
         }
 
-        if (!currentState.showWidget) {
+        if (!visible) {
             DisposableEffect(Unit) {
                 onDispose {
                     scope.launch { swipeableState.snapTo(DragStates.VISIBLE) }
@@ -153,7 +157,7 @@ fun ObjectTypeTemplatesWidget(
         }
 
         AnimatedVisibility(
-            visible = currentState.showWidget,
+            visible = visible,
             enter = slideInVertically { it },
             exit = slideOutVertically(tween(200)) { it },
             modifier = Modifier
@@ -277,7 +281,7 @@ fun ObjectTypeTemplatesWidget(
 @Composable
 private fun MoreMenu(
     templateView: TemplateView.Template,
-    currentState: TemplatesWidgetUiState,
+    currentState: TypeTemplatesWidgetUI,
     currentCoordinates: IntOffset,
     menuClick: (TemplateMenuClick) -> Unit
 ) {
@@ -348,7 +352,7 @@ private fun MenuItem(click: () -> Unit, text: String, @ColorRes color: Int = R.c
 @Composable
 private fun TemplatesList(
     scrollState: LazyListState,
-    state: TemplatesWidgetUiState,
+    state: TypeTemplatesWidgetUI,
     itemClick: (TemplateView) -> Unit,
     moreClick: (TemplateView.Template, IntOffset) -> Unit
 ) {
@@ -798,7 +802,7 @@ private fun getProperTextAlign(layout: ObjectType.Layout): TextAlign {
 }
 
 @Composable
-fun ObjectTypesList(state: TemplatesWidgetUiState, menuClick: (TemplateMenuClick) -> Unit) {
+fun ObjectTypesList(state: TypeTemplatesWidgetUI, menuClick: (TemplateMenuClick) -> Unit) {
     val listState = rememberLazyListState()
     LazyRow(
         state = listState,
@@ -936,7 +940,7 @@ fun ComposablePreview() {
             coverImage = null,
         ),
     )
-    val state = TemplatesWidgetUiState(
+    val state = TypeTemplatesWidgetUI(
         items = items,
         showWidget = true,
         isEditing = true,
@@ -947,7 +951,7 @@ fun ComposablePreview() {
             TemplateObjectTypeView.Item(id = "1", name = "Page", emoji = "📄")
         ),
     )
-    ObjectTypeTemplatesWidget(
+    TypeTemplatesWidget(
         state = state,
         onDismiss = {},
         itemClick = {},

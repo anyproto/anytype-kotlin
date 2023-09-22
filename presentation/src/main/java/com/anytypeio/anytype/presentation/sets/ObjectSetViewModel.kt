@@ -78,7 +78,7 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
+import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -177,7 +177,7 @@ class ObjectSetViewModel(
     val header: StateFlow<SetOrCollectionHeaderState> = _header
 
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
-    val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.init())
+    val typeTemplatesWidgetState = MutableStateFlow(TypeTemplatesWidgetUI.init())
     val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
     val viewerEditWidgetState = MutableStateFlow<ViewerEditWidgetUi>(ViewerEditWidgetUi.Init)
     val viewerLayoutWidgetState = MutableStateFlow(ViewerLayoutWidgetUi.init())
@@ -277,7 +277,7 @@ class ObjectSetViewModel(
 
         viewModelScope.launch {
             _templateViews.collectLatest {
-                templatesWidgetState.value = templatesWidgetState.value.copy(items = it)
+                typeTemplatesWidgetState.value = typeTemplatesWidgetState.value.copy(items = it)
             }
         }
 
@@ -929,7 +929,7 @@ class ObjectSetViewModel(
 
     fun onNewButtonIconClicked() {
         Timber.d("onNewButtonIconClicked, ")
-        templatesWidgetState.value = templatesWidgetState.value.copy(
+        typeTemplatesWidgetState.value = typeTemplatesWidgetState.value.copy(
             showWidget = true,
             isEditing = false,
             isMoreMenuVisible = false,
@@ -1573,7 +1573,7 @@ class ObjectSetViewModel(
         viewerDefTemplateId: Id?,
     ): Flow<List<TemplateView>> {
         Timber.d("Fetching templates for type ${viewerDefObjType.id}")
-        templatesWidgetState.value = templatesWidgetState.value.copy(
+        typeTemplatesWidgetState.value = typeTemplatesWidgetState.value.copy(
             defaultObjectType = viewerDefObjType
         )
 
@@ -1609,15 +1609,15 @@ class ObjectSetViewModel(
     }
 
     fun onTemplateItemClicked(item: TemplateView) {
-        val state = templatesWidgetState.value
+        val state = typeTemplatesWidgetState.value
         if (state.isMoreMenuVisible) {
-            templatesWidgetState.value =
+            typeTemplatesWidgetState.value =
                 state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
             return
         }
         when(item) {
             is TemplateView.Blank -> {
-                templatesWidgetState.value = templatesWidgetState.value.dismiss()
+                typeTemplatesWidgetState.value = typeTemplatesWidgetState.value.dismiss()
                 viewModelScope.launch {
                     logEvent(
                         state = stateReducer.state.value,
@@ -1631,7 +1631,7 @@ class ObjectSetViewModel(
                 }
             }
             is TemplateView.Template -> {
-                templatesWidgetState.value = templatesWidgetState.value.dismiss()
+                typeTemplatesWidgetState.value = typeTemplatesWidgetState.value.dismiss()
                 viewModelScope.launch {
                     logEvent(
                         state = stateReducer.state.value,
@@ -1646,7 +1646,7 @@ class ObjectSetViewModel(
             }
 
             is TemplateView.New -> {
-                templatesWidgetState.value = templatesWidgetState.value.copy(
+                typeTemplatesWidgetState.value = typeTemplatesWidgetState.value.copy(
                     showWidget = false,
                     isEditing = false,
                     isMoreMenuVisible = false,
@@ -1682,32 +1682,32 @@ class ObjectSetViewModel(
     }
 
     fun onEditTemplateButtonClicked() {
-        templatesWidgetState.value = templatesWidgetState.value.copy(isEditing = true)
+        typeTemplatesWidgetState.value = typeTemplatesWidgetState.value.copy(isEditing = true)
     }
 
     fun onDoneTemplateButtonClicked() {
         Timber.d("onDoneTemplateButtonClicked, ")
-        templatesWidgetState.value = if (templatesWidgetState.value.isMoreMenuVisible) {
-            templatesWidgetState.value.copy(
+        typeTemplatesWidgetState.value = if (typeTemplatesWidgetState.value.isMoreMenuVisible) {
+            typeTemplatesWidgetState.value.copy(
                 isMoreMenuVisible = false,
                 moreMenuTemplate = null
             )
         } else {
-            templatesWidgetState.value.copy(
+            typeTemplatesWidgetState.value.copy(
                 isEditing = false
             )
         }
     }
 
     fun onMoreTemplateButtonClicked(template: TemplateView.Template) {
-        Timber.d("onMoreTemplateButtonClicked, template:[$template], isMoreMenuVisible:[${templatesWidgetState.value.isMoreMenuVisible}]")
-        templatesWidgetState.value = if (templatesWidgetState.value.isMoreMenuVisible) {
-            templatesWidgetState.value.copy(
+        Timber.d("onMoreTemplateButtonClicked, template:[$template], isMoreMenuVisible:[${typeTemplatesWidgetState.value.isMoreMenuVisible}]")
+        typeTemplatesWidgetState.value = if (typeTemplatesWidgetState.value.isMoreMenuVisible) {
+            typeTemplatesWidgetState.value.copy(
                 isMoreMenuVisible = false,
                 moreMenuTemplate = null
             )
         } else {
-            templatesWidgetState.value.copy(
+            typeTemplatesWidgetState.value.copy(
                 isMoreMenuVisible = true,
                 moreMenuTemplate = template
             )
@@ -1716,10 +1716,10 @@ class ObjectSetViewModel(
 
     fun onDismissTemplatesWidget() {
         Timber.d("onDismissTemplatesWidget, ")
-        val state = templatesWidgetState.value
-        templatesWidgetState.value = when {
+        val state = typeTemplatesWidgetState.value
+        typeTemplatesWidgetState.value = when {
             state.isMoreMenuVisible -> state.copy(isMoreMenuVisible = false, moreMenuTemplate = null)
-            state.showWidget -> templatesWidgetState.value.dismiss()
+            state.showWidget -> typeTemplatesWidgetState.value.dismiss()
             else -> state
         }
     }
@@ -1738,7 +1738,7 @@ class ObjectSetViewModel(
     private fun proceedWithUpdatingViewDefaultTemplate() {
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
-        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        val template = typeTemplatesWidgetState.value.moreMenuTemplate ?: return
         val params = UpdateDataViewViewer.Params.UpdateView(
             context = context,
             target = state.dataViewBlock.id,
@@ -1756,11 +1756,11 @@ class ObjectSetViewModel(
     }
 
     private fun proceedWithDuplicateTemplate() {
-        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        val template = typeTemplatesWidgetState.value.moreMenuTemplate ?: return
         val params = DuplicateObjects.Params(
             ids = listOf(template.id)
         )
-        templatesWidgetState.value = templatesWidgetState.value.copy(
+        typeTemplatesWidgetState.value = typeTemplatesWidgetState.value.copy(
             isEditing = false,
             isMoreMenuVisible = false,
             moreMenuTemplate = null
@@ -1779,12 +1779,12 @@ class ObjectSetViewModel(
     }
 
     private fun proceedWithDeletionTemplate() {
-        val template = templatesWidgetState.value.moreMenuTemplate ?: return
+        val template = typeTemplatesWidgetState.value.moreMenuTemplate ?: return
         val params = SetObjectListIsArchived.Params(
             targets = listOf(template.id),
             isArchived = true
         )
-        templatesWidgetState.value = templatesWidgetState.value.copy(
+        typeTemplatesWidgetState.value = typeTemplatesWidgetState.value.copy(
             isEditing = false,
             isMoreMenuVisible = false,
             moreMenuTemplate = null
@@ -1803,8 +1803,8 @@ class ObjectSetViewModel(
     }
 
     private fun proceedWithEditingTemplate() {
-        val template = templatesWidgetState.value.moreMenuTemplate ?: return
-        templatesWidgetState.value = templatesWidgetState.value.copy(
+        val template = typeTemplatesWidgetState.value.moreMenuTemplate ?: return
+        typeTemplatesWidgetState.value = typeTemplatesWidgetState.value.copy(
             showWidget = false,
             isEditing = false,
             isMoreMenuVisible = false,

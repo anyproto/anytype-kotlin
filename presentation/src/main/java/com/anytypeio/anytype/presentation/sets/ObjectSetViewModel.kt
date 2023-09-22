@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.DVViewer
+import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -178,7 +179,7 @@ class ObjectSetViewModel(
     val isCustomizeViewPanelVisible = MutableStateFlow(false)
     val templatesWidgetState = MutableStateFlow(TemplatesWidgetUiState.init())
     val viewersWidgetState = MutableStateFlow(ViewersWidgetUi.init())
-    val viewerEditWidgetState = MutableStateFlow(ViewerEditWidgetUi.init())
+    val viewerEditWidgetState = MutableStateFlow<ViewerEditWidgetUi>(ViewerEditWidgetUi.Init)
     val viewerLayoutWidgetState = MutableStateFlow(ViewerLayoutWidgetUi.init())
     private val widgetViewerId = MutableStateFlow<String?>(null)
 
@@ -295,8 +296,7 @@ class ObjectSetViewModel(
                     val dataView = state.dataViewState()
                     val viewer = dataView?.viewerById(viewId)
                     if (dataView != null && viewer != null) {
-                        viewerEditWidgetState.value = viewerEditWidgetState.value.updateState(
-                            dvViewer = viewer,
+                        viewerEditWidgetState.value = viewer.toViewerEditWidgetState(
                             storeOfRelations = storeOfRelations,
                             storeOfObjectTypes = storeOfObjectTypes,
                             isDefaultObjectTypeEnabled = dataView.isChangingDefaultTypeAvailable()
@@ -306,7 +306,7 @@ class ObjectSetViewModel(
                             storeOfRelations = storeOfRelations
                         )
                     } else {
-                        viewerEditWidgetState.value = viewerEditWidgetState.value.empty()
+                        viewerEditWidgetState.value = ViewerEditWidgetUi.Init
                         viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.empty()
                     }
                 }
@@ -1846,7 +1846,7 @@ class ObjectSetViewModel(
             }
             is ViewersWidgetUi.Action.Edit -> {
                 widgetViewerId.value = action.id
-                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = true)
+                showViewerEditWidget()
             }
             is ViewersWidgetUi.Action.OnMove -> {
                 Timber.d("onMove Viewer, from:[$action.from], to:[$action.to]")
@@ -1916,44 +1916,42 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onViewerEditWidgetAction(action: ViewerEditWidgetUi.Action) {
+    fun onViewerEditWidgetAction(action: ViewEditAction) {
         Timber.d("onViewerEditWidgetAction, action:[$action]")
         when (action) {
-            ViewerEditWidgetUi.Action.Dismiss -> {
-                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
-            }
-            is ViewerEditWidgetUi.Action.DefaultObjectType -> TODO()
-            is ViewerEditWidgetUi.Action.Filters -> {
+            ViewEditAction.Dismiss -> { hideViewerEditWidget() }
+            is ViewEditAction.DefaultObjectType -> TODO()
+            is ViewEditAction.Filters -> {
                 viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                hideViewerEditWidget()
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     openViewerFilters(viewerId = action.id)
                 }
             }
-            is ViewerEditWidgetUi.Action.Layout -> {
+            is ViewEditAction.Layout -> {
                 viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.copy(showWidget = true)
             }
-            is ViewerEditWidgetUi.Action.Relations -> {
+            is ViewEditAction.Relations -> {
                 viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                hideViewerEditWidget()
                 if (action.id == null) return
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     onViewerSettingsClicked(action.id)
                 }
             }
-            is ViewerEditWidgetUi.Action.Sorts -> {
+            is ViewEditAction.Sorts -> {
                 viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                hideViewerEditWidget()
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     openViewerSorts(viewerId = action.id)
                 }
             }
-            is ViewerEditWidgetUi.Action.UpdateName -> {
+            is ViewEditAction.UpdateName -> {
                 viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                viewerEditWidgetState.value = viewerEditWidgetState.value.copy(showWidget = false)
+                hideViewerEditWidget()
                 val state = stateReducer.state.value.dataViewState() ?: return
                 val viewer = state.viewerById(action.id) ?: return
                 viewModelScope.launch {
@@ -1967,9 +1965,55 @@ class ObjectSetViewModel(
                 }
             }
 
-            ViewerEditWidgetUi.Action.More -> {
-
+            ViewEditAction.More -> {
+                updateViewerEditMoreMenu()
             }
+            is ViewEditAction.Delete -> {
+                val state = stateReducer.state.value.dataViewState() ?: return
+                hideViewerEditWidget()
+                viewModelScope.launch {
+                    viewerDelegate.onEvent(
+                        ViewerEvent.Delete(
+                            ctx = context,
+                            dv = state.dataViewBlock.id,
+                            viewer = action.id
+                        )
+                    )
+                }
+            }
+            is ViewEditAction.Duplicate -> {
+                val state = stateReducer.state.value.dataViewState() ?: return
+                val viewer = state.viewerById(action.id) ?: return
+                viewModelScope.launch {
+                    viewerDelegate.onEvent(
+                        ViewerEvent.Duplicate(
+                            ctx = context,
+                            dv = state.dataViewBlock.id,
+                            viewer = viewer
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun showViewerEditWidget() {
+        val show = (viewerEditWidgetState.value as? ViewerEditWidgetUi.Data)?.copy(showWidget = true)
+                ?: ViewerEditWidgetUi.Init
+        viewerEditWidgetState.value = show
+    }
+
+    private fun hideViewerEditWidget() {
+        viewerEditWidgetState.value = ViewerEditWidgetUi.Init
+    }
+
+    private fun updateViewerEditMoreMenu() {
+        when (val value = viewerEditWidgetState.value) {
+            is ViewerEditWidgetUi.Data -> {
+                val isMoreMenuVisible = value.showMore
+                viewerEditWidgetState.value = value.copy(showMore = !isMoreMenuVisible)
+            }
+            ViewerEditWidgetUi.Init -> {}
         }
     }
     //endregion
@@ -1999,9 +2043,14 @@ class ObjectSetViewModel(
 
     //region Viewer Layout Widget
     fun onViewerLayoutWidgetAction(action: ViewerLayoutWidgetUi.Action) {
+        Timber.d("onViewerLayoutWidgetAction, action:[$action]")
         when (action) {
             ViewerLayoutWidgetUi.Action.Dismiss -> {
-                viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.copy(showWidget = false)
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(
+                        showWidget = false,
+                        showCardSize = false
+                    )
             }
             ViewerLayoutWidgetUi.Action.CardSizeMenu -> {
                 val isCardSizeMenuVisible = viewerLayoutWidgetState.value.showCardSize
@@ -2014,7 +2063,18 @@ class ObjectSetViewModel(
             is ViewerLayoutWidgetUi.Action.Icon -> {
                 proceedWithUpdateViewer { it.copy(hideIcon = !action.toggled) }
             }
-            is ViewerLayoutWidgetUi.Action.CardSize -> {}
+            is ViewerLayoutWidgetUi.Action.CardSize -> {
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(showCardSize = false)
+                when (action.cardSize) {
+                    ViewerLayoutWidgetUi.State.CardSize.Small -> {
+                        proceedWithUpdateViewer { it.copy(cardSize = DVViewerCardSize.SMALL) }
+                    }
+                    ViewerLayoutWidgetUi.State.CardSize.Large -> {
+                        proceedWithUpdateViewer { it.copy(cardSize = DVViewerCardSize.LARGE) }
+                    }
+                }
+            }
             is ViewerLayoutWidgetUi.Action.Cover -> {}
             is ViewerLayoutWidgetUi.Action.Type -> {
                 proceedWithUpdateViewer { it.copy(type = action.type) }

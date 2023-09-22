@@ -8,58 +8,35 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 
-data class ViewerEditWidgetUi(
-    val showWidget: Boolean,
-    val id: Id? = null,
-    val name: String = "",
-    val viewerId: Id,
-    val defaultObjectType: ObjectWrapper.Type?,
-    val isDefaultObjectTypeEnabled: Boolean = false,
-    val layout: DVViewerType?,
-    val relations: List<Id> = emptyList(),
-    val filters: List<Id> = emptyList(),
-    val sorts: List<Id> = emptyList(),
-    val defaultTemplate: Id? = null,
-) {
 
-    fun empty() = this.copy(
-        id = null,
-        name = "",
-        layout = null,
-        relations = emptyList(),
-        filters = emptyList(),
-        sorts = emptyList(),
-        defaultTemplate = null,
-        defaultObjectType = null,
-        isDefaultObjectTypeEnabled = false,
-    )
+sealed class ViewerEditWidgetUi {
+    object Init: ViewerEditWidgetUi()
+    data class Data(
+        val showWidget: Boolean = false,
+        val showMore: Boolean = false,
+        val id: Id,
+        val name: String,
+        val defaultObjectType: ObjectWrapper.Type?,
+        val isDefaultObjectTypeEnabled: Boolean,
+        val layout: DVViewerType?,
+        val relations: List<Id> = emptyList(),
+        val filters: List<Id> = emptyList(),
+        val sorts: List<Id> = emptyList(),
+        val defaultTemplate: Id?
+    ) : ViewerEditWidgetUi()
+}
 
-    companion object {
-        fun init() = ViewerEditWidgetUi(
-            showWidget = false,
-            id = null,
-            name = "",
-            layout = null,
-            relations = emptyList(),
-            filters = emptyList(),
-            sorts = emptyList(),
-            defaultTemplate = null,
-            defaultObjectType = null,
-            isDefaultObjectTypeEnabled = false,
-            viewerId = "",
-        )
-    }
-
-    sealed class Action {
-        object Dismiss : Action()
-        data class UpdateName(val id: Id?, val name: String) : Action()
-        data class DefaultObjectType(val id: Id?) : Action()
-        data class Layout(val id: Id?) : Action()
-        data class Relations(val id: Id?) : Action()
-        data class Filters(val id: Id?) : Action()
-        data class Sorts(val id: Id?) : Action()
-        object More: Action()
-    }
+sealed class ViewEditAction {
+    object Dismiss : ViewEditAction()
+    data class UpdateName(val id: Id, val name: String) : ViewEditAction()
+    data class DefaultObjectType(val id: Id) : ViewEditAction()
+    data class Layout(val id: Id) : ViewEditAction()
+    data class Relations(val id: Id) : ViewEditAction()
+    data class Filters(val id: Id) : ViewEditAction()
+    data class Sorts(val id: Id) : ViewEditAction()
+    object More: ViewEditAction()
+    data class Duplicate(val id: Id) : ViewEditAction()
+    data class Delete(val id: Id) : ViewEditAction()
 }
 
 suspend fun <T> List<T>.toView(
@@ -71,17 +48,16 @@ suspend fun <T> List<T>.toView(
         relation?.name.orEmpty().takeIf { _ -> relation != null }
     }
 
-suspend fun ViewerEditWidgetUi.updateState(
-    dvViewer: DVViewer,
+suspend fun DVViewer.toViewerEditWidgetState(
     storeOfRelations: StoreOfRelations,
     storeOfObjectTypes: StoreOfObjectTypes,
     isDefaultObjectTypeEnabled: Boolean
 ): ViewerEditWidgetUi {
-
+    val dvViewer = this
     val viewerDefaultObjectTypeId = dvViewer.defaultObjectType ?: ObjectTypeIds.PAGE
     val viewerDefaultTemplateId = dvViewer.defaultTemplate
     val defaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId)
-    return this.copy(
+    return ViewerEditWidgetUi.Data(
         id = dvViewer.id,
         name = dvViewer.name,
         sorts = dvViewer.sorts.toView(storeOfRelations) { it.relationKey },
@@ -93,3 +69,6 @@ suspend fun ViewerEditWidgetUi.updateState(
         defaultTemplate = viewerDefaultTemplateId
     )
 }
+
+fun ViewerEditWidgetUi.isVisible(): Boolean =
+    this is ViewerEditWidgetUi.Data && showWidget

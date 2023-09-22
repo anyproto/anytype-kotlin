@@ -34,8 +34,11 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -57,19 +60,20 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ViewerEditWidget(
     state: ViewerEditWidgetUi,
-    action: (ViewerEditWidgetUi.Action) -> Unit
+    action: (ViewEditAction) -> Unit
 ) {
 
     val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
 
     LaunchedEffect(key1 = state, block = {
-        if (state.showWidget) sheetState.show() else sheetState.hide()
+        if (state is ViewerEditWidgetUi.Data && state.showWidget) sheetState.show() else sheetState.hide()
     })
 
     DisposableEffect(
@@ -78,7 +82,7 @@ fun ViewerEditWidget(
     ) {
         onDispose {
             if (sheetState.currentValue == ModalBottomSheetValue.Hidden) {
-                action(ViewerEditWidgetUi.Action.Dismiss)
+                action(ViewEditAction.Dismiss)
             }
         }
     }
@@ -88,13 +92,15 @@ fun ViewerEditWidget(
         sheetBackgroundColor = Color.Transparent,
         sheetShape = RoundedCornerShape(16.dp),
         sheetContent = {
-            ViewerEditWidgetContent(state, action)
+            if (state is ViewerEditWidgetUi.Data) {
+                ViewerEditWidgetContent(state, action)
+            }
         },
         content = {
             Modifier
                 .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.4f))
-                .noRippleThrottledClickable { action.invoke(ViewerEditWidgetUi.Action.Dismiss) }
+                .noRippleThrottledClickable { action.invoke(ViewEditAction.Dismiss) }
         }
     )
 
@@ -102,11 +108,13 @@ fun ViewerEditWidget(
 
 @Composable
 fun ViewerEditWidgetContent(
-    state: ViewerEditWidgetUi,
-    action: (ViewerEditWidgetUi.Action) -> Unit
+    state: ViewerEditWidgetUi.Data,
+    action: (ViewEditAction) -> Unit
 ) {
 
     val currentState by rememberUpdatedState(state)
+
+    var currentCoordinates: Rect by remember { mutableStateOf(Rect.Zero) }
 
     Box(
         modifier = Modifier
@@ -144,8 +152,17 @@ fun ViewerEditWidgetContent(
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
+                        .onGloballyPositioned { coordinates ->
+                            if (coordinates.isAttached) {
+                                with(coordinates.boundsInRoot()) {
+                                    currentCoordinates = this
+                                }
+                            } else {
+                                currentCoordinates = Rect.Zero
+                            }
+                        }
                         .noRippleThrottledClickable {
-                            action.invoke(ViewerEditWidgetUi.Action.More)
+                            action.invoke(ViewEditAction.More)
                         },
                     ) {
                     Image(
@@ -166,7 +183,7 @@ fun ViewerEditWidgetContent(
                 isEnable = state.isDefaultObjectTypeEnabled
             ) {
                 if (state.isDefaultObjectTypeEnabled) {
-                    action(ViewerEditWidgetUi.Action.DefaultObjectType(id = state.id))
+                    action(ViewEditAction.DefaultObjectType(id = state.id))
                 }
             }
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
@@ -181,7 +198,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.layout),
                 value = layoutValue
-            ) { action(ViewerEditWidgetUi.Action.Layout(id = state.id)) }
+            ) { action(ViewEditAction.Layout(id = state.id)) }
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
             val relationsValue = when (state.relations.size) {
@@ -192,7 +209,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.relations),
                 value = relationsValue
-            ) { action(ViewerEditWidgetUi.Action.Relations(id = state.id)) }
+            ) { action(ViewEditAction.Relations(id = state.id)) }
 
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
@@ -204,7 +221,7 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.filter),
                 value = filtersValue
-            ) { action(ViewerEditWidgetUi.Action.Filters(id = state.id)) }
+            ) { action(ViewEditAction.Filters(id = state.id)) }
 
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
@@ -216,16 +233,22 @@ fun ViewerEditWidgetContent(
             ColumnItem(
                 title = stringResource(id = R.string.sort),
                 value = sortsValue
-            ) { action(ViewerEditWidgetUi.Action.Sorts(id = state.id)) }
+            ) { action(ViewEditAction.Sorts(id = state.id)) }
         }
+        ViewerEditMoreMenu(
+            show = currentState.showMore,
+            currentState = currentState,
+            action = action,
+            coordinates = currentCoordinates
+        )
     }
 }
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NameTextField(
-    state: ViewerEditWidgetUi,
-    action: (ViewerEditWidgetUi.Action) -> Unit
+    state: ViewerEditWidgetUi.Data,
+    action: (ViewEditAction) -> Unit
 ) {
     var innerValue by remember(state.name) { mutableStateOf(state.name) }
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -264,7 +287,7 @@ fun NameTextField(
                 keyboardController?.hide()
                 focusManager.clearFocus()
                 action.invoke(
-                    ViewerEditWidgetUi.Action.UpdateName(
+                    ViewEditAction.UpdateName(
                         id = state.id,
                         name = innerValue
                     )
@@ -336,22 +359,19 @@ fun ColumnItem(
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewNameTextField() {
-    NameTextField(state = ViewerEditWidgetUi.init().copy(name = "Artist"), action = {})
-}
-
-@Preview(showBackground = true)
-@Composable
 fun PreviewViewerEditWidget() {
-    val state = ViewerEditWidgetUi(
+    val state = ViewerEditWidgetUi.Data(
         showWidget = true,
+        showMore = false,
         name = "Artist",
         defaultObjectType = ObjectWrapper.Type(buildMap { put("name", "Name") }),
         filters = listOf(),
         sorts = emptyList(),
         layout = DVViewerType.LIST,
         relations = listOf(),
-        viewerId = "12"
+        id = "1",
+        defaultTemplate = null,
+        isDefaultObjectTypeEnabled = true
     )
     ViewerEditWidget(state = state, action = {})
 }

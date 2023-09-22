@@ -297,7 +297,7 @@ class Middleware @Inject constructor(
         context: String,
         target: String,
         viewer: DVViewer
-    ): Pair<String, Payload> {
+    ): Pair<Id, Payload> {
         val request = Rpc.BlockDataview.View.Create.Request(
             contextId = context,
             blockId = target,

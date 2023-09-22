@@ -294,7 +294,7 @@ class BlockMiddleware(
         context: String,
         target: String,
         viewer: DVViewer
-    ): Pair<String, Payload> = middleware.blockDataViewViewCreate(
+    ): Pair<Id, Payload> = middleware.blockDataViewViewCreate(
         context = context,
         target = target,
         viewer = viewer

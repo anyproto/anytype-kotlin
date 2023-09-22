@@ -20,6 +20,10 @@ class CreateSpaceViewModel @Inject constructor(
     val isDismissed = MutableStateFlow(false)
 
     fun onCreateSpace(name: String) {
+        if (name.isEmpty()) {
+            sendToast("Name should not be empty")
+            return
+        }
         viewModelScope.launch {
             createSpace.async(
                 CreateSpace.Params(
@@ -29,6 +33,7 @@ class CreateSpaceViewModel @Inject constructor(
                 )
             ).fold(
                 onSuccess = { space: Id ->
+                    sendToast("Space created")
                     Timber.d("Successfully created space: $space").also {
                         isDismissed.value = true
                     }

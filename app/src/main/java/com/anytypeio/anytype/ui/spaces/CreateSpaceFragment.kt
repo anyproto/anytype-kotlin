@@ -4,24 +4,10 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -47,34 +33,18 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(
                 typography = typography
             ) {
-                var input by remember { mutableStateOf("") }
-                Column {
-                    TextField(
-                        value = input,
-                        onValueChange = { input = it },
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                vm.onCreateSpace(name = input)
-                            }
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp),
-                        maxLines = 1,
-                        singleLine = true,
-                        placeholder = {
-                            Text(text = "Enter space name")
-                        },
-                        colors = TextFieldDefaults.textFieldColors(
-                            backgroundColor = Color.Transparent,
-                        ),
-                    )
-                }
-                LaunchedEffect(Unit) {
-                    vm.toasts.collect() { toast(it) }
-                }
+                CreateSpaceScreen(
+                    vm::onCreateSpace
+                )
+                LaunchedEffect(Unit) { vm.toasts.collect() { toast(it) } }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        expand()
     }
 
     override fun injectDependencies() {

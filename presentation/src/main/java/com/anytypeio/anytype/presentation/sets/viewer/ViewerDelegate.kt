@@ -23,7 +23,7 @@ interface ViewerDelegate {
 sealed class ViewerEvent {
     data class Delete(val ctx: Id, val dv: Id, val viewer: Id) : ViewerEvent()
     data class Duplicate(val ctx: Id, val dv: Id, val viewer: DVViewer) : ViewerEvent()
-    data class AddNew(val ctx: Id, val dv: Id, val name: String, val type: DVViewerType) :
+    data class AddNew(val ctx: Id, val dv: Id, val viewer: DVViewer, val action: (String) -> Unit) :
         ViewerEvent()
 
     data class UpdatePosition(val ctx: Id, val dv: Id, val viewer: Id, val position: Int) :
@@ -56,8 +56,8 @@ class DefaultViewerDelegate @Inject constructor(
             is ViewerEvent.AddNew -> onAddNew(
                 ctx = event.ctx,
                 dv = event.dv,
-                name = event.name,
-                type = event.type
+                viewer = event.viewer,
+                action = event.action
             )
 
             is ViewerEvent.Duplicate -> onDuplicate(
@@ -87,16 +87,18 @@ class DefaultViewerDelegate @Inject constructor(
         }
     }
 
-    private suspend fun onAddNew(ctx: Id, dv: Id, name: String, type: DVViewerType) {
-        val params = AddDataViewViewer.Params(
-            ctx = ctx,
+    private suspend fun onAddNew(ctx: Id, dv: Id, viewer: DVViewer, action: (String) -> Unit) {
+        val params = DuplicateDataViewViewer.Params(
+            context = ctx,
             target = dv,
-            name = name,
-            type = type
+            viewer = viewer
         )
-        addDataViewViewer.async(params).fold(
+        duplicateDataViewViewer.async(params).fold(
             onFailure = { Timber.e(it, "Error while adding new viewer") },
-            onSuccess = { dispatcher.send(it) }
+            onSuccess = { (id, payload) ->
+                dispatcher.send(payload)
+                action(id)
+            }
         )
     }
 
@@ -121,7 +123,7 @@ class DefaultViewerDelegate @Inject constructor(
         )
         duplicateDataViewViewer.async(params).fold(
             onFailure = { Timber.e(it, "Error while duplicating view") },
-            onSuccess = { dispatcher.send(it) }
+            onSuccess = { (_, payload) -> dispatcher.send(payload) }
         )
     }
 

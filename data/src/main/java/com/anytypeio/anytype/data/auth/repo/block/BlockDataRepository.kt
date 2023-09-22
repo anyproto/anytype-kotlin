@@ -340,7 +340,7 @@ class BlockDataRepository(
         context: Id,
         target: Id,
         viewer: DVViewer
-    ): Payload = remote.duplicateDataViewViewer(
+    ): Pair<Id, Payload> = remote.duplicateDataViewViewer(
         context = context,
         target = target,
         viewer = viewer

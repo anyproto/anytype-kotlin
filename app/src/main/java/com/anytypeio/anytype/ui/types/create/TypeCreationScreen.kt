@@ -12,7 +12,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
 import com.anytypeio.anytype.ui.types.create.TypeScreenDefaults.PaddingBottom
 import com.anytypeio.anytype.ui.types.create.TypeScreenDefaults.PaddingTop
@@ -38,7 +37,8 @@ fun TypeCreationScreen(vm: TypeCreationViewModel, preparedName: String) {
             nameValid = nameValid,
             objectIcon = state.objectIcon,
             onLeadingIconClick = vm::openEmojiPicker,
-            shouldMoveCursor = preparedName.trim().isNotEmpty()
+            shouldMoveCursor = preparedName.trim().isNotEmpty(),
+            onImeDoneClick = vm::createType
         )
     }
 

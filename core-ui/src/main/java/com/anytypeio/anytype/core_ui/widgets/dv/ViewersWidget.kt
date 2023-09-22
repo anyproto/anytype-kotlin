@@ -164,7 +164,13 @@ private fun ViewersWidgetContent(
                         color = colorResource(R.color.text_primary)
                     )
                 }
-                Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .noRippleThrottledClickable {
+                            action.invoke(ViewersWidgetUi.Action.Plus)
+                        }
+                ) {
                     Image(
                         modifier = Modifier.padding(
                             start = 16.dp,

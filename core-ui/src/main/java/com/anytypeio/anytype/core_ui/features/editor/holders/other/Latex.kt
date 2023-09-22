@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.judemanutd.katexview.KatexView
+import timber.log.Timber
 
 class Latex(
     val binding: ItemBlockLatexBinding
@@ -38,7 +39,11 @@ class Latex(
 
     private fun setLatex(latex: String) {
         val encode = "$$ $latex $$"
-        binding.latexView.setText(encode)
+        try {
+            binding.latexView.setText(encode)
+        } catch (e: Exception) {
+            Timber.e(e, "Error while setting latex text")
+        }
     }
 
     private fun setBackground(backgroundColor: ThemeColor) {

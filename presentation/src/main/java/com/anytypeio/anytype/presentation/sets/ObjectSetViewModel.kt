@@ -1885,7 +1885,7 @@ class ObjectSetViewModel(
                             viewer = newView,
                             action = { newViewId ->
                                 widgetViewerId.value = newViewId
-                                showViewerEditWidgetForNew()
+                                showViewerEditWidgetForNewView()
                             }
                         )
                     )
@@ -2020,7 +2020,7 @@ class ObjectSetViewModel(
         viewerEditWidgetState.value = show
     }
 
-    private fun showViewerEditWidgetForNew() {
+    private fun showViewerEditWidgetForNewView() {
         val show = (viewerEditWidgetState.value as? ViewerEditWidgetUi.Data)?.copy(showWidget = true, isNewMode = true)
             ?: ViewerEditWidgetUi.Init
         viewerEditWidgetState.value = show

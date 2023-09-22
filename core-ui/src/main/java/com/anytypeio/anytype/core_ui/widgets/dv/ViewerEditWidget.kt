@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -58,8 +59,11 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 
@@ -143,8 +147,13 @@ fun ViewerEditWidgetContent(
                     .height(48.dp)
             ) {
                 Box(modifier = Modifier.align(Alignment.Center)) {
+                    val text = if (currentState.isNewMode) {
+                        stringResource(R.string.new_view)
+                    } else {
+                        stringResource(R.string.edit_view)
+                    }
                     Text(
-                        text = stringResource(R.string.edit_view),
+                        text = text,
                         style = Title1,
                         color = colorResource(R.color.text_primary)
                     )
@@ -363,6 +372,7 @@ fun PreviewViewerEditWidget() {
     val state = ViewerEditWidgetUi.Data(
         showWidget = true,
         showMore = false,
+        isNewMode = true,
         name = "Artist",
         defaultObjectType = ObjectWrapper.Type(buildMap { put("name", "Name") }),
         filters = listOf(),

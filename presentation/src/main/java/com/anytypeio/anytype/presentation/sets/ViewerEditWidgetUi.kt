@@ -14,6 +14,7 @@ sealed class ViewerEditWidgetUi {
     data class Data(
         val showWidget: Boolean = false,
         val showMore: Boolean = false,
+        val isNewMode: Boolean = false,
         val id: Id,
         val name: String,
         val defaultObjectType: ObjectWrapper.Type?,

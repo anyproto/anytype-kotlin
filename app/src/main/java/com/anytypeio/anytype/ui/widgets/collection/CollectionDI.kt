@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
@@ -214,4 +215,5 @@ interface CollectionDependencies : ComponentDependencies {
     fun userSettingsRepository(): UserSettingsRepository
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun dispatchers(): AppCoroutineDispatchers
+    fun logger(): Logger
 }

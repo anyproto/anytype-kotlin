@@ -72,8 +72,8 @@ class EditDataViewViewerViewModel(
                     Timber.e(e, "Error while duplicating viewer: $viewer")
                     _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
                 },
-                onSuccess = {
-                    dispatcher.send(it).also {
+                onSuccess = { (_, payload) ->
+                    dispatcher.send(payload).also {
                         logEvent(
                             state = objectState.value,
                             analytics = analytics,

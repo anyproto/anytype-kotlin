@@ -95,9 +95,9 @@ class DefaultViewerDelegate @Inject constructor(
         )
         duplicateDataViewViewer.async(params).fold(
             onFailure = { Timber.e(it, "Error while adding new viewer") },
-            onSuccess = { payload ->
-                dispatcher.send(payload.second)
-                action(payload.first)
+            onSuccess = { (id, payload) ->
+                dispatcher.send(payload)
+                action(id)
             }
         )
     }
@@ -123,7 +123,7 @@ class DefaultViewerDelegate @Inject constructor(
         )
         duplicateDataViewViewer.async(params).fold(
             onFailure = { Timber.e(it, "Error while duplicating view") },
-            onSuccess = { dispatcher.send(it.second) }
+            onSuccess = { (_, payload) -> dispatcher.send(payload) }
         )
     }
 

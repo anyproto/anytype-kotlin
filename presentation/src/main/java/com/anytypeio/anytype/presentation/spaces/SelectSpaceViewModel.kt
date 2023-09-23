@@ -13,9 +13,10 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -38,7 +39,7 @@ class SelectSpaceViewModel @Inject constructor(
         .flatMapLatest { config ->
             storelessSubscriptionContainer.subscribe(
                 StoreSearchByIdsParams(
-                    subscription = PROFILE_SUBSCRIPTION_ID,
+                    subscription = SELECT_SPACE_PROFILE_SUBSCRIPTION,
                     keys = listOf(
                         Relations.ID,
                         Relations.NAME,
@@ -88,7 +89,15 @@ class SelectSpaceViewModel @Inject constructor(
                 spaceManager.observe()
             ) { spaces, profile, config ->
                 buildList {
-                    add(SelectSpaceView.Profile(profile))
+                    add(
+                        SelectSpaceView.Profile(
+                            name = profile.name.orEmpty(),
+                            icon = profile.profileIcon(
+                                builder = urlBuilder,
+                                gradientProvider = spaceGradientProvider
+                            )
+                        )
+                    )
                     addAll(
                         spaces.mapNotNull { wrapper ->
                             val space = wrapper.getValue<String>(Relations.SPACE_ID)
@@ -151,7 +160,8 @@ class SelectSpaceViewModel @Inject constructor(
     }
 
     companion object {
-        const val SELECT_SPACE_SUBSCRIPTION = "select_space_subscription"
+        const val SELECT_SPACE_SUBSCRIPTION = "select_space_subscription.spaces"
+        const val SELECT_SPACE_PROFILE_SUBSCRIPTION = "select_space_subscription.profile"
     }
 }
 
@@ -168,7 +178,8 @@ sealed class SelectSpaceView {
         val view: WorkspaceView
     ) : SelectSpaceView()
     data class Profile(
-        val view: ObjectWrapper.Basic
+        val name: String,
+        val icon: ProfileIconView,
     ) : SelectSpaceView()
     object Create : SelectSpaceView()
 }

@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.spaces
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,8 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.ExperimentalMaterialApi
@@ -24,7 +22,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -42,10 +39,14 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 
 @Composable
 fun CreateSpaceScreen(
-    onCreate: (Name) -> Unit
+    spaceIconView: SpaceIconView,
+    onCreate: (Name) -> Unit,
+    onSpaceIconClicked: () -> Unit
 ) {
     val input = remember {
         mutableStateOf("")
@@ -58,7 +59,11 @@ fun CreateSpaceScreen(
         )
         Header()
         Spacer(modifier = Modifier.height(16.dp))
-        SpaceIcon()
+        SpaceIcon(
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            spaceIconView = spaceIconView,
+            onSpaceIconClicked = onSpaceIconClicked
+        )
         Spacer(modifier = Modifier.height(10.dp))
         SpaceNameInput(input = input)
         Divider()
@@ -119,19 +124,16 @@ fun Header() {
 }
 
 @Composable
-fun SpaceIcon() {
-    Box(modifier = Modifier
-        .height(96.dp)
-        .fillMaxWidth()) {
-        Box(
-            modifier = Modifier
-                .size(96.dp)
-                .clip(CircleShape)
-                .background(Color.Red)
-                .align(Alignment.Center)
-        ) {
-            // TODO
-        }
+fun SpaceIcon(
+    modifier: Modifier,
+    spaceIconView: SpaceIconView,
+    onSpaceIconClicked: () -> Unit
+) {
+    Box(modifier = modifier.wrapContentSize()) {
+        SpaceImageBlock(
+            icon = spaceIconView,
+            onSpaceIconClick = onSpaceIconClicked
+        )
     }
 }
 

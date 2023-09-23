@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -34,7 +35,9 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 CreateSpaceScreen(
-                    vm::onCreateSpace
+                    spaceIconView = vm.spaceGradient.collectAsState().value,
+                    onCreate = vm::onCreateSpace,
+                    onSpaceIconClicked = vm::onSpaceIconClicked
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect() { toast(it) } }
             }

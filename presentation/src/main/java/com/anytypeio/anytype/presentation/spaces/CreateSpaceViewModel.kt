@@ -14,8 +14,22 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class CreateSpaceViewModel @Inject constructor(
-    private val createSpace: CreateSpace
+    private val createSpace: CreateSpace,
+    private val spaceGradientProvider: SpaceGradientProvider
 ) : BaseViewModel() {
+
+    private var spaceGradientId = spaceGradientProvider.randomId()
+
+    val spaceGradient : MutableStateFlow<SpaceIconView.Gradient>
+
+    init {
+        val gradient = spaceGradientProvider.get(spaceGradientId.toDouble())
+        val view = SpaceIconView.Gradient(
+            from = gradient.from,
+            to = gradient.to
+        )
+        spaceGradient = MutableStateFlow(view)
+    }
 
     val isDismissed = MutableStateFlow(false)
 
@@ -28,7 +42,8 @@ class CreateSpaceViewModel @Inject constructor(
             createSpace.async(
                 CreateSpace.Params(
                     details = mapOf(
-                        Relations.NAME to name
+                        Relations.NAME to name,
+                        Relations.ICON_OPTION to spaceGradientId.toDouble()
                     )
                 )
             ).fold(
@@ -47,14 +62,30 @@ class CreateSpaceViewModel @Inject constructor(
         }
     }
 
+    fun onSpaceIconClicked() {
+        proceedWithResettingRandomSpaceGradient()
+    }
+
+    private fun proceedWithResettingRandomSpaceGradient() {
+        spaceGradientId = spaceGradientProvider.randomId()
+        val gradient = spaceGradientProvider.get(spaceGradientId.toDouble())
+        val view = SpaceIconView.Gradient(
+            from = gradient.from,
+            to = gradient.to
+        )
+        spaceGradient.value = view
+    }
+
     class Factory @Inject constructor(
-        private val createSpace: CreateSpace
+        private val createSpace: CreateSpace,
+        private val spaceGradientProvider: SpaceGradientProvider,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ) = CreateSpaceViewModel(
-            createSpace = createSpace
+            createSpace = createSpace,
+            spaceGradientProvider = spaceGradientProvider
         ) as T
     }
 }

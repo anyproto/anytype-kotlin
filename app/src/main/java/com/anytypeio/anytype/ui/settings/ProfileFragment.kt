@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.settings
 
-import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -19,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
+import com.anytypeio.anytype.core_utils.const.FileConstants.getPermissionToRequestForImages
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
@@ -103,7 +103,7 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
 
     private fun proceedWithIconClick() {
         if (!hasExternalStoragePermission()) {
-            permissionReadStorage.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+            permissionReadStorage.launch(arrayOf(getPermissionToRequestForImages()))
         } else {
             openGallery()
         }
@@ -111,12 +111,12 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
 
     private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
         requireActivity(),
-        Manifest.permission.READ_EXTERNAL_STORAGE
+        getPermissionToRequestForImages()
     ).let { result -> result == PackageManager.PERMISSION_GRANTED }
 
     private val permissionReadStorage =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            val readResult = grantResults[Manifest.permission.READ_EXTERNAL_STORAGE]
+            val readResult = grantResults[getPermissionToRequestForImages()]
             if (readResult == true) {
                 openGallery()
             } else {

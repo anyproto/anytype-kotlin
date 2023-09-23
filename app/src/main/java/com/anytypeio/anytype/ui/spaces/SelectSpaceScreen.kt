@@ -229,7 +229,7 @@ fun SelectSpaceProfileIcon(
             Image(
                 painter = rememberAsyncImagePainter(
                     model = icon.url,
-                    error = painterResource(id = com.anytypeio.anytype.ui_settings.R.drawable.ic_home_widget_space)
+                    error = painterResource(id = R.drawable.ic_home_widget_space)
                 ),
                 contentDescription = "Custom image profile",
                 contentScale = ContentScale.Crop,
@@ -258,7 +258,7 @@ fun SelectSpaceProfileIcon(
         }
         else -> {
             val nameFirstChar = if (name.isEmpty()) {
-                stringResource(id = com.anytypeio.anytype.ui_settings.R.string.account_default_name)
+                stringResource(id = R.string.account_default_name)
             } else {
                 name.first().uppercaseChar().toString()
             }
@@ -266,7 +266,7 @@ fun SelectSpaceProfileIcon(
                 modifier = modifier
                     .size(32.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(colorResource(id = com.anytypeio.anytype.ui_settings.R.color.shape_primary))
+                    .background(colorResource(id = R.color.shape_primary))
                     .noRippleClickable {
                         onProfileIconClick.invoke()
                     }
@@ -274,13 +274,12 @@ fun SelectSpaceProfileIcon(
                 Text(
                     text = nameFirstChar,
                     style = MaterialTheme.typography.h3.copy(
-                        color = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_white),
+                        color = colorResource(id = R.color.text_white),
                         fontSize = 12.sp
                     ),
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-
         }
     }
 }

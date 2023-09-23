@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.editor.modals
 
+import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -14,7 +15,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_utils.const.FileConstants.getPermissionToRequestForImages
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -134,7 +134,7 @@ abstract class IconPickerFragmentBase<T> :
 
     private fun proceedWithImagePick() {
         if (!hasExternalStoragePermission()) {
-            permissionReadStorage.launch(arrayOf(getPermissionToRequestForImages()))
+            permissionReadStorage.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
         } else {
             openGallery()
         }
@@ -142,12 +142,12 @@ abstract class IconPickerFragmentBase<T> :
 
     private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
         requireActivity(),
-        getPermissionToRequestForImages()
+        Manifest.permission.READ_EXTERNAL_STORAGE
     ).let { result -> result == PackageManager.PERMISSION_GRANTED }
 
     private val permissionReadStorage =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            val readResult = grantResults[getPermissionToRequestForImages()]
+            val readResult = grantResults[Manifest.permission.READ_EXTERNAL_STORAGE]
             if (readResult == true) {
                 openGallery()
             } else {

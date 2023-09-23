@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.auth.account
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,7 +19,6 @@ import androidx.lifecycle.Observer
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.toast
-import com.anytypeio.anytype.core_utils.const.FileConstants.getPermissionToRequestForImages
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.databinding.FragmentCreateAccountBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -125,19 +125,19 @@ class CreateAccountFragment : NavigationFragment<FragmentCreateAccountBinding>(R
 
     private fun proceedWithImagePick() {
         if (!hasExternalStoragePermission())
-            permissionReadStorage.launch(arrayOf(getPermissionToRequestForImages()))
+            permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
         else
             openGallery()
     }
 
     private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
         requireActivity(),
-        getPermissionToRequestForImages()
+        READ_EXTERNAL_STORAGE
     ).let { result -> result == PackageManager.PERMISSION_GRANTED }
 
     private val permissionReadStorage =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            val readResult = grantResults[getPermissionToRequestForImages()]
+            val readResult = grantResults[READ_EXTERNAL_STORAGE]
             if (readResult == true) {
                 openGallery()
             } else {

@@ -15,24 +15,31 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
+import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceView
 import com.anytypeio.anytype.presentation.spaces.WorkspaceView
 import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
@@ -66,7 +73,7 @@ fun SelectSpaceScreen(
                             }
                         ) {
                             SelectSpaceProfileHeader(
-                                profile = item.view,
+                                profile = item,
                                 onSpaceSettingsClicked = onSpaceSettingsClicked,
                                 onProfileClicked = onProfileClicked
                             )
@@ -162,7 +169,7 @@ private fun SelectSpaceSpaceItem(
 
 @Composable
 private fun SelectSpaceProfileHeader(
-    profile: ObjectWrapper.Basic,
+    profile: SelectSpaceView.Profile,
     onSpaceSettingsClicked: () -> Unit,
     onProfileClicked: () -> Unit
 ) {
@@ -172,14 +179,13 @@ private fun SelectSpaceProfileHeader(
             .height(68.dp)
             .padding(bottom = 6.dp)
     ) {
-        Box(
+        SelectSpaceProfileIcon(
             modifier = Modifier
                 .padding(start = 30.dp)
-                .align(Alignment.CenterStart)
-                .clip(CircleShape)
-                .background(Color.Red)
-                .size(32.dp)
-                .clickable { onProfileClicked() }
+                .align(Alignment.CenterStart),
+            name = profile.name,
+            icon = profile.icon,
+            onProfileIconClick = onProfileClicked
         )
         Text(
             text = profile.name.orNull() ?: stringResource(id = R.string.untitled),
@@ -207,6 +213,74 @@ private fun SelectSpaceProfileHeader(
                 contentDescription = "Space settings icon",
                 modifier = Modifier.align(Alignment.Center)
             )
+        }
+    }
+}
+
+@Composable
+fun SelectSpaceProfileIcon(
+    modifier: Modifier,
+    name: String,
+    icon: ProfileIconView,
+    onProfileIconClick: () -> Unit
+) {
+    when (icon) {
+        is ProfileIconView.Image -> {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = icon.url,
+                    error = painterResource(id = com.anytypeio.anytype.ui_settings.R.drawable.ic_home_widget_space)
+                ),
+                contentDescription = "Custom image profile",
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .noRippleClickable {
+                        onProfileIconClick.invoke()
+                    }
+            )
+        }
+        is ProfileIconView.Gradient -> {
+            val gradient = Brush.radialGradient(
+                colors = listOf(
+                    Color(icon.from.toColorInt()),
+                    Color(icon.to.toColorInt())
+                )
+            )
+            Box(modifier = modifier
+                .size(32.dp)
+                .clip(RoundedCornerShape(16.dp))
+                .background(gradient)
+                .noRippleClickable {
+                    onProfileIconClick.invoke()
+                })
+        }
+        else -> {
+            val nameFirstChar = if (name.isEmpty()) {
+                stringResource(id = com.anytypeio.anytype.ui_settings.R.string.account_default_name)
+            } else {
+                name.first().uppercaseChar().toString()
+            }
+            Box(
+                modifier = modifier
+                    .size(32.dp)
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(colorResource(id = com.anytypeio.anytype.ui_settings.R.color.shape_primary))
+                    .noRippleClickable {
+                        onProfileIconClick.invoke()
+                    }
+            ) {
+                Text(
+                    text = nameFirstChar,
+                    style = MaterialTheme.typography.h3.copy(
+                        color = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_white),
+                        fontSize = 12.sp
+                    ),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
+
         }
     }
 }

@@ -35,6 +35,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceView
 import com.anytypeio.anytype.presentation.spaces.WorkspaceView
+import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 
 @Composable
 fun SelectSpaceScreen(
@@ -71,7 +72,6 @@ fun SelectSpaceScreen(
                             )
                         }
                     }
-
                     is SelectSpaceView.Space -> {
                         item(
                             span = {
@@ -81,7 +81,6 @@ fun SelectSpaceScreen(
                             SelectSpaceSpaceItem(item, onSpaceClicked)
                         }
                     }
-
                     is SelectSpaceView.Create -> {
                         item(
                             span = {
@@ -142,9 +141,12 @@ private fun SelectSpaceSpaceItem(
                     else
                         Modifier
                 )
-                .background(Color.Blue)
-                .clickable { onSpaceClicked(item.view) }
-        )
+        ) {
+            SpaceImageBlock(
+                icon = item.view.icon,
+                onSpaceIconClick = { onSpaceClicked(item.view) }
+            )
+        }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             modifier = Modifier.fillMaxSize(),

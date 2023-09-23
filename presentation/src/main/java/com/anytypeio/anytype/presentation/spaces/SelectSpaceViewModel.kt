@@ -67,7 +67,14 @@ class SelectSpaceViewModel @Inject constructor(
                 storelessSubscriptionContainer.subscribe(
                     StoreSearchParams(
                         subscription = SELECT_SPACE_SUBSCRIPTION,
-                        keys = listOf(Relations.ID, Relations.SPACE_ID, Relations.NAME),
+                        keys = listOf(
+                            Relations.ID,
+                            Relations.SPACE_ID,
+                            Relations.NAME,
+                            Relations.ICON_IMAGE,
+                            Relations.ICON_EMOJI,
+                            Relations.ICON_OPTION
+                        ),
                         filters = listOf(
                             DVFilter(
                                 relation = Relations.LAYOUT,
@@ -91,7 +98,11 @@ class SelectSpaceViewModel @Inject constructor(
                                         id = wrapper.id,
                                         name = wrapper.name,
                                         space = space,
-                                        isSelected = space == config.space
+                                        isSelected = space == config.space,
+                                        icon = wrapper.spaceIcon(
+                                            builder = urlBuilder,
+                                            spaceGradientProvider = spaceGradientProvider
+                                        )
                                     )
                                 )
                             } else {
@@ -148,7 +159,8 @@ data class WorkspaceView(
     val id: Id,
     val space: Id,
     val name: String?,
-    val isSelected: Boolean = false
+    val isSelected: Boolean = false,
+    val icon: SpaceIconView
 )
 
 sealed class SelectSpaceView {

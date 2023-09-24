@@ -19,6 +19,20 @@ import com.anytypeio.anytype.persistence.model.asWallpaper
 
 class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSettingsCache {
 
+    override suspend fun setCurrentSpace(space: SpaceId) {
+        prefs.edit()
+            .putString(CURRENT_SPACE_KEY, space.id)
+            .apply()
+    }
+
+    override suspend fun getCurrentSpace(): SpaceId? {
+        val value = prefs.getString(CURRENT_SPACE_KEY, "")
+        return if (value.isNullOrEmpty())
+            null
+        else
+            SpaceId(value)
+    }
+
     override suspend fun setDefaultObjectType(space: SpaceId, type: TypeId) {
         val curr = prefs
             .getString(DEFAULT_OBJECT_TYPES_KEY, NO_VALUE)
@@ -163,6 +177,7 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
     }
 
     companion object {
+        const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"
         const val DEFAULT_OBJECT_TYPE_NAME_KEY = "prefs.user_settings.default_object_type.name"
 

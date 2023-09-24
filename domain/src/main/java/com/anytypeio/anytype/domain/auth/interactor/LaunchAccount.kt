@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.Dispatchers
 
@@ -20,7 +20,7 @@ class LaunchAccount(
     private val context: CoroutineContext = Dispatchers.IO,
     private val configStorage: ConfigStorage,
     private val featuresConfigProvider: FeaturesConfigProvider,
-    private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager,
     private val metricsProvider: MetricsProvider
 ) : BaseUseCase<String, BaseUseCase.None>(context) {
 
@@ -41,7 +41,7 @@ class LaunchAccount(
                 enableSpaces = setup.features.enableSpaces ?: false
             )
             configStorage.set(config = setup.config)
-            workspaceManager.setCurrentWorkspace(setup.config.workspace)
+            spaceManager.set(setup.config.space)
             Either.Right(setup.config.analytics)
         }
     } catch (e: Throwable) {

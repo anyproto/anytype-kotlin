@@ -8,6 +8,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 
 interface UserSettingsCache {
+    suspend fun setCurrentSpace(space: SpaceId)
+    suspend fun getCurrentSpace(): SpaceId?
     suspend fun setDefaultObjectType(space: SpaceId, type: TypeId)
     suspend fun getDefaultObjectType(space: SpaceId): TypeId?
     suspend fun setWallpaper(space: Id, wallpaper: Wallpaper)

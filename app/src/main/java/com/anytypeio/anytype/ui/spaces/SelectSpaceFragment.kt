@@ -67,7 +67,8 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        skipCollapsed()
+        expand()
     }
 
     override fun injectDependencies() {

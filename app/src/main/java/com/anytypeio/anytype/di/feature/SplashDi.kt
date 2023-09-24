@@ -73,14 +73,16 @@ object SplashModule {
         featuresConfigProvider: FeaturesConfigProvider,
         configStorage: ConfigStorage,
         spaceManager: SpaceManager,
-        metricsProvider: MetricsProvider
+        metricsProvider: MetricsProvider,
+        userSettings: UserSettingsRepository
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         featuresConfigProvider = featuresConfigProvider,
         configStorage = configStorage,
         spaceManager = spaceManager,
-        metricsProvider = metricsProvider
+        metricsProvider = metricsProvider,
+        settings = userSettings
     )
 
     @JvmStatic

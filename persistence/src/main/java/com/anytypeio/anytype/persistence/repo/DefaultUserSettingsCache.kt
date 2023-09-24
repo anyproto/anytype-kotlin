@@ -173,6 +173,8 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
             .remove(DEFAULT_OBJECT_TYPE_ID_KEY)
             .remove(DEFAULT_OBJECT_TYPE_NAME_KEY)
             .remove(COLLAPSED_WIDGETS_KEY)
+            .remove(ACTIVE_WIDGETS_VIEWS_KEY)
+            .remove(CURRENT_SPACE_KEY)
             .apply()
     }
 

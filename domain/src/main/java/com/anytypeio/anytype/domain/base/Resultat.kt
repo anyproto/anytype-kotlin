@@ -179,7 +179,7 @@ inline fun <R, T : R> Resultat<T>.getOrDefault(defaultValue: R): R {
  * Note, that this function rethrows any [Throwable] exception thrown by [onSuccess] or by [onFailure] function.
  */
 inline fun <T> Resultat<T>.fold(
-    onSuccess: (value: T) -> Unit,
+    onSuccess: (value: T) -> Unit = {},
     onFailure: (exception: Throwable) -> Unit = {},
     onLoading: () -> Unit = {},
 ) {

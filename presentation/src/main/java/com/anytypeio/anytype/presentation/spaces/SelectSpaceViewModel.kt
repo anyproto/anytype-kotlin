@@ -9,10 +9,13 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
@@ -25,11 +28,12 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class SelectSpaceViewModel @Inject constructor(
+class SelectSpaceViewModel(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val spaceManager: SpaceManager,
     private val spaceGradientProvider: SpaceGradientProvider,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val saveCurrentSpace: SaveCurrentSpace
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
@@ -131,6 +135,11 @@ class SelectSpaceViewModel @Inject constructor(
         viewModelScope.launch {
             Timber.d("Setting space: $view")
             spaceManager.set(view.space)
+            saveCurrentSpace.async(SaveCurrentSpace.Params(SpaceId(view.space))).fold(
+                onFailure = {
+                    Timber.e(it, "Error while saving current space in user settings")
+                }
+            )
         }
     }
 
@@ -146,7 +155,8 @@ class SelectSpaceViewModel @Inject constructor(
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val spaceManager: SpaceManager,
         private val spaceGradientProvider: SpaceGradientProvider,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val saveCurrentSpace: SaveCurrentSpace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -155,7 +165,8 @@ class SelectSpaceViewModel @Inject constructor(
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             spaceManager = spaceManager,
             spaceGradientProvider = spaceGradientProvider,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            saveCurrentSpace = saveCurrentSpace
         ) as T
     }
 

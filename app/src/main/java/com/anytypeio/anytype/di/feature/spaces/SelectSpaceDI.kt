@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -57,4 +58,5 @@ interface SelectSpaceDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun spaceManager(): SpaceManager
     fun urlBuilder(): UrlBuilder
+    fun userSettings(): UserSettingsRepository
 }

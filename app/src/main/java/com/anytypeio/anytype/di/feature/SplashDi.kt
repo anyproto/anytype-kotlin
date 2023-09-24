@@ -72,14 +72,14 @@ object SplashModule {
         pathProvider: PathProvider,
         featuresConfigProvider: FeaturesConfigProvider,
         configStorage: ConfigStorage,
-        workspaceManager: WorkspaceManager,
+        spaceManager: SpaceManager,
         metricsProvider: MetricsProvider
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         featuresConfigProvider = featuresConfigProvider,
         configStorage = configStorage,
-        workspaceManager = workspaceManager,
+        spaceManager = spaceManager,
         metricsProvider = metricsProvider
     )
 

@@ -23,7 +23,6 @@ import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyTypesDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -303,7 +302,7 @@ class LibraryViewModel(
                 } else {
                     libType
                 }
-            }
+            }.distinctBy { view -> view.id }
         )
     }
 
@@ -328,7 +327,7 @@ class LibraryViewModel(
                 } else {
                     libRelation
                 }
-            }
+            }.distinctBy { view -> view.id }
         )
     }
 

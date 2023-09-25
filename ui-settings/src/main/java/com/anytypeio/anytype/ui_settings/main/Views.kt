@@ -117,7 +117,8 @@ fun SpaceImageBlock(
     onSpaceIconClick: () -> Unit,
     mainSize: Dp = 96.dp,
     emojiSize: Dp = 48.dp,
-    gradientSize: Dp = 64.dp
+    gradientSize: Dp = 64.dp,
+    gradientBackground: Color = colorResource(id = R.color.glyph_selected)
 ) {
     when (icon) {
         is SpaceIconView.Emoji -> {
@@ -125,9 +126,7 @@ fun SpaceImageBlock(
                 modifier = Modifier
                     .size(mainSize)
                     .clip(RoundedCornerShape(16.dp))
-                    .noRippleClickable {
-                        onSpaceIconClick.invoke()
-                    }
+                    .noRippleClickable { onSpaceIconClick.invoke() }
                     .background(color = colorResource(id = R.color.glyph_selected))
             ) {
                 Image(
@@ -171,10 +170,8 @@ fun SpaceImageBlock(
                 modifier = Modifier
                     .size(mainSize)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(color = colorResource(id = R.color.glyph_selected))
-                    .noRippleClickable {
-                        onSpaceIconClick.invoke()
-                    }
+                    .background(color = gradientBackground)
+                    .noRippleClickable { onSpaceIconClick.invoke() }
             ) {
                 Box(
                     modifier = Modifier
@@ -194,9 +191,7 @@ fun SpaceImageBlock(
                 modifier = Modifier
                     .size(mainSize)
                     .clip(RoundedCornerShape(8.dp))
-                    .noRippleClickable {
-                        onSpaceIconClick.invoke()
-                    }
+                    .noRippleClickable { onSpaceIconClick.invoke() }
             )
         }
     }

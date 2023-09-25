@@ -115,7 +115,7 @@ private fun SelectSpaceCreateButton(onAddClicked: () -> Unit) {
                 .clickable { onAddClicked() }
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_plus_32),
+                painter = painterResource(id = R.drawable.ic_plus_32_white),
                 contentDescription = "Plus icon",
                 modifier = Modifier
                     .align(Alignment.Center)
@@ -151,7 +151,8 @@ private fun SelectSpaceSpaceItem(
         ) {
             SpaceImageBlock(
                 icon = item.view.icon,
-                onSpaceIconClick = { onSpaceClicked(item.view) }
+                onSpaceIconClick = { onSpaceClicked(item.view) },
+                gradientBackground = colorResource(id = R.color.default_gradient_background)
             )
         }
         Spacer(modifier = Modifier.height(10.dp))

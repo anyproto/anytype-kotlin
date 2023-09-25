@@ -97,4 +97,6 @@
     <color name="widget_divider">#24DAD7CA</color>
     <color name="ds_button_icon_divider">#1A000000</color>
 
+    <color name="select_space_bottom_sheet_background_color">#1F1E1D</color>
+
 </resources>

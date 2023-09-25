@@ -4,11 +4,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.widgets.ColorCircleWidget
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 
 class MarkupColorAdapter(
@@ -31,7 +31,10 @@ class MarkupColorAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onColorClicked(items[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onColorClicked(items[pos])
+                        }
                     }
                 }
             }
@@ -44,7 +47,10 @@ class MarkupColorAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onColorClicked(items[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onColorClicked(items[bindingAdapterPosition])
+                        }
                     }
                 }
             }
@@ -57,7 +63,10 @@ class MarkupColorAdapter(
                     )
                 ).apply {
                     itemView.setOnClickListener {
-                        onColorClicked(items[bindingAdapterPosition])
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            onColorClicked(items[pos])
+                        }
                     }
                 }
             }

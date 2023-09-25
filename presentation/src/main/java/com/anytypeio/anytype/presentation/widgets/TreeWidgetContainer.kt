@@ -17,6 +17,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 
 class TreeWidgetContainer(
@@ -30,6 +32,8 @@ class TreeWidgetContainer(
     private val objectWatcher: ObjectWatcher,
     isSessionActive: Flow<Boolean>
 ) : WidgetContainer {
+
+    private val mutex = Mutex()
 
     private val rootLevelLimit = WidgetConfig.resolveTreeWidgetLimit(widget.limit)
 
@@ -72,9 +76,11 @@ class TreeWidgetContainer(
                 }.map { (rootLevelLinks, objectWrappers) ->
                     val valid = objectWrappers.filter { obj -> isValidObject(obj) }
                     val data = valid.associateBy { r -> r.id }
-                    with(nodes) {
-                        clear()
-                        putAll(valid.associate { obj -> obj.id to obj.links })
+                    mutex.withLock {
+                        with(nodes) {
+                            clear()
+                            putAll(valid.associate { obj -> obj.id to obj.links })
+                        }
                     }
                     WidgetView.Tree(
                         id = widget.id,
@@ -107,9 +113,11 @@ class TreeWidgetContainer(
                 ).map { results ->
                     val valid = results.filter { obj -> isValidObject(obj) }
                     val data = valid.associateBy { r -> r.id }
-                    with(nodes) {
-                        clear()
-                        putAll(valid.associate { obj -> obj.id to obj.links })
+                    mutex.withLock {
+                        with(nodes) {
+                            clear()
+                            putAll(valid.associate { obj -> obj.id to obj.links })
+                        }
                     }
                     WidgetView.Tree(
                         id = widget.id,
@@ -158,25 +166,29 @@ class TreeWidgetContainer(
         }
     }
 
-    private fun getDefaultSubscriptionTargets(
+    private suspend fun getDefaultSubscriptionTargets(
         paths: List<TreePath>,
         source: Widget.Source.Default
     ) = buildList {
         if (source.obj.isArchived != true && source.obj.isDeleted != true) {
             addAll(source.obj.links)
-            nodes.forEach { (id, links) ->
-                if (paths.any { path -> path.contains(id) }) addAll(links)
+            mutex.withLock {
+                nodes.forEach { (id, links) ->
+                    if (paths.any { path -> path.contains(id) }) addAll(links)
+                }
             }
         }
     }.distinct()
 
-    private fun getBundledSubscriptionTargets(
+    private suspend fun getBundledSubscriptionTargets(
         paths: List<TreePath>,
         links: List<Id>,
     ) = buildList {
         addAll(links)
-        nodes.forEach { (id, links) ->
-            if (paths.any { path -> path.contains(id) }) addAll(links)
+        mutex.withLock {
+            nodes.forEach { (id, links) ->
+                if (paths.any { path -> path.contains(id) }) addAll(links)
+            }
         }
     }.distinct()
 

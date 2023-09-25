@@ -212,4 +212,6 @@
     <color name="widget_divider">#E3E3E3</color>
     <color name="ds_button_icon_divider">#1AFFFFFF</color>
 
+    <color name="select_space_bottom_sheet_background_color">#7C7C7C</color>
+
 </resources>

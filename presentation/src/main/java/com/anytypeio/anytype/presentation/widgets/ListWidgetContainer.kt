@@ -69,7 +69,11 @@ class ListWidgetContainer(
 
                         ).map { objects ->
                             buildWidgetViewWithElements(
-                                objects = objects.sortedBy { obj -> order[obj.id] }
+                                objects = objects
+                                    .filter { obj ->
+                                        obj.isArchived != true && obj.isDeleted != true
+                                    }
+                                    .sortedBy { obj -> order[obj.id] }
                             )
                         }
                     }

@@ -150,7 +150,9 @@ class TreeWidgetContainer(
                         keys = keys,
                         limit = resolveLimit()
                     )
-                )
+                ).map { favorites ->
+                    favorites.filter { obj -> obj.isArchived != true && obj.isDeleted != true }
+                }
             ) { order, rootLevelObjects ->
                 rootLevelObjects.sortedBy { obj -> order[obj.id] }
             }

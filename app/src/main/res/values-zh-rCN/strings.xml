@@ -28,7 +28,7 @@
     </string>
 
     <string name="example_6">
-        右侧的截图显示的是同一个应用程序，但使用了预计算文本，以避免 UI 线程上昂贵的测试工作。剩余的测试工作仍然存在，会造成小的峰值，但不会再造成抖动。TextView.onMeasure 缩短至 0.9毫秒，速度提高了 16 倍多！
+        右侧的截图显示的是同一个应用程序，但使用了预计算文本，以避免 UI 线程上昂贵的测试工作。剩余的测试工作仍然存在，会造成小的峰值，但不会再造成抖动。TextView.onMeasure 缩短至 0.9 毫秒，速度提高了 16 倍多！
     </string>
 
     <string name="example_7">
@@ -366,7 +366,7 @@ val params : PrecomputedTextCompat.Params =
     <string name="onboarding_join">加入</string>
     <string name="onboarding_log_in">登录</string>
     <string name="onboarding_invite_code_title">输入您的邀请码</string>
-    <string name="onboarding_invite_code_description">如果您没有账号，请前往 anytype.io \n并注册等候名单</string>
+    <string name="onboarding_invite_code_description">如果您没有账号，请前往 anytype.io \n并注册候选名单</string>
     <string name="onboarding_void_title">这是您的 Void</string>
     <string name="onboarding_void_description">它是您创建的所有内容的加密位置。所有内容都存储在你的设备上，并备份到分布式网络。</string>
     <string name="onboarding_mnemonic_title">端到端加密</string>

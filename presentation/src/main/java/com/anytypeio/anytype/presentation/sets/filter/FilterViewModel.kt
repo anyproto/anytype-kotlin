@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -757,9 +758,9 @@ open class FilterViewModel(
             view = viewer.id,
             filter = updatedFilter
         )
-        updateDataViewViewer(params).process(
-            failure = { Timber.e(it, "Error while creating filter") },
-            success = {
+        updateDataViewViewer.async(params).fold(
+            onFailure = { Timber.e(it, "Error while creating filter") },
+            onSuccess = {
                 dispatcher.send(it).also {
                     viewModelScope.logEvent(
                         state = objectState.value,
@@ -798,9 +799,9 @@ open class FilterViewModel(
             quickOption = quickOption,
             value = value
         )
-        updateDataViewViewer(params).process(
-            failure = { Timber.e(it, "Error while creating filter") },
-            success = {
+        updateDataViewViewer.async(params).fold(
+            onFailure = { Timber.e(it, "Error while creating filter") },
+            onSuccess = {
                 dispatcher.send(it).also {
                     viewModelScope.logEvent(
                         state = objectState.value,

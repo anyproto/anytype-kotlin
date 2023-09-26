@@ -34,7 +34,6 @@ object EditDataViewViewerModule {
     @Provides
     @PerModal
     fun provideEditDataViewViewerViewModelFactory(
-        renameDataViewViewer: RenameDataViewViewer,
         deleteDataViewViewer: DeleteDataViewViewer,
         duplicateDataViewViewer: DuplicateDataViewViewer,
         updateDataViewViewer: UpdateDataViewViewer,
@@ -44,7 +43,6 @@ object EditDataViewViewerModule {
         paginator: ObjectSetPaginator,
         analytics: Analytics
     ): EditDataViewViewerViewModel.Factory = EditDataViewViewerViewModel.Factory(
-        renameDataViewViewer = renameDataViewViewer,
         deleteDataViewViewer = deleteDataViewViewer,
         duplicateDataViewViewer = duplicateDataViewViewer,
         updateDataViewViewer = updateDataViewViewer,

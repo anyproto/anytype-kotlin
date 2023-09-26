@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.GetRelations
@@ -18,7 +19,6 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.extension.getPropName
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAddRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
@@ -30,7 +30,6 @@ import timber.log.Timber
 class RelationAddToDataViewViewModel(
     relationsProvider: ObjectRelationProvider,
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val addRelationToDataView: AddRelationToDataView,
     private val getRelations: GetRelations,
@@ -49,6 +48,7 @@ class RelationAddToDataViewViewModel(
 
     fun onRelationSelected(
         ctx: Id,
+        viewerId: Id,
         relation: Key,
         format: RelationFormat,
         dv: Id,
@@ -66,6 +66,7 @@ class RelationAddToDataViewViewModel(
                     dispatcher.send(it).also {
                         proceedWithAddingNewRelationToCurrentViewer(
                             ctx = ctx,
+                            viewerId = viewerId,
                             relation = relation
                         )
                     }
@@ -83,11 +84,11 @@ class RelationAddToDataViewViewModel(
         }
     }
     
-    private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, relation: Id) {
+    private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, viewerId: Id, relation: Id) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
 
-        updateDataViewViewer(
+        updateDataViewViewer.async(
             UpdateDataViewViewer.Params.ViewerRelation.Add(
                 ctx = ctx,
                 dv = state.dataViewBlock.id,
@@ -97,15 +98,14 @@ class RelationAddToDataViewViewModel(
                     isVisible = true
                 )
             )
-        ).process(
-            success = { dispatcher.send(it).also { isDismissed.value = true } },
-            failure = { Timber.e(it, "Error while updating data view's viewer") }
+        ).fold(
+            onSuccess = { dispatcher.send(it).also { isDismissed.value = true } },
+            onFailure = { Timber.e(it, "Error while updating data view's viewer") }
         )
     }
 
     class Factory(
         private val state: StateFlow<ObjectState>,
-        private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val addRelationToDataView: AddRelationToDataView,
         private val dispatcher: Dispatcher<Payload>,
@@ -121,7 +121,6 @@ class RelationAddToDataViewViewModel(
             return RelationAddToDataViewViewModel(
                 addRelationToDataView = addRelationToDataView,
                 dispatcher = dispatcher,
-                session = session,
                 updateDataViewViewer = updateDataViewViewer,
                 objectState = state,
                 analytics = analytics,

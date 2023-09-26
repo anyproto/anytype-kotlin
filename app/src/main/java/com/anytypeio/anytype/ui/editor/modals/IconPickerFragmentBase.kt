@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.editor.modals
 
-import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -15,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.const.FileConstants.getPermissionToRequestForImages
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.invisible
@@ -134,7 +134,7 @@ abstract class IconPickerFragmentBase<T> :
 
     private fun proceedWithImagePick() {
         if (!hasExternalStoragePermission()) {
-            permissionReadStorage.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
+            permissionReadStorage.launch(arrayOf(getPermissionToRequestForImages()))
         } else {
             openGallery()
         }
@@ -142,12 +142,12 @@ abstract class IconPickerFragmentBase<T> :
 
     private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
         requireActivity(),
-        Manifest.permission.READ_EXTERNAL_STORAGE
+        getPermissionToRequestForImages()
     ).let { result -> result == PackageManager.PERMISSION_GRANTED }
 
     private val permissionReadStorage =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            val readResult = grantResults[Manifest.permission.READ_EXTERNAL_STORAGE]
+            val readResult = grantResults[getPermissionToRequestForImages()]
             if (readResult == true) {
                 openGallery()
             } else {
@@ -168,7 +168,6 @@ abstract class IconPickerFragmentBase<T> :
                 Timber.d(e, "Error while parsing path for cover image")
             }
         } else {
-            toast("Error while upload cover image, URI is null")
             Timber.e("Error while upload cover image, URI is null")
         }
     }

@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -60,6 +61,9 @@ class FilterListTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var dispatchers: AppCoroutineDispatchers
+
     lateinit var updateDataViewViewer: UpdateDataViewViewer
     lateinit var searchObjects: SearchObjects
     lateinit var urlBuilder: UrlBuilder
@@ -74,7 +78,7 @@ class FilterListTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        updateDataViewViewer = UpdateDataViewViewer(repo)
+        updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers = dispatchers)
         searchObjects = SearchObjects(repo)
         urlBuilder = UrlBuilder(gateway)
         TestViewerFilterFragment.testVmFactory = ViewerFilterViewModel.Factory(

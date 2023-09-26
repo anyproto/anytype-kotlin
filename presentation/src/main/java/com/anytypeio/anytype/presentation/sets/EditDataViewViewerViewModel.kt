@@ -19,7 +19,6 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class EditDataViewViewerViewModel(
-    private val renameDataViewViewer: RenameDataViewViewer,
     private val deleteDataViewViewer: DeleteDataViewViewer,
     private val duplicateDataViewViewer: DuplicateDataViewViewer,
     private val updateDataViewViewer: UpdateDataViewViewer,
@@ -73,8 +72,8 @@ class EditDataViewViewerViewModel(
                     Timber.e(e, "Error while duplicating viewer: $viewer")
                     _toasts.emit("Error while deleting viewer: ${e.localizedMessage}")
                 },
-                onSuccess = {
-                    dispatcher.send(it).also {
+                onSuccess = { (_, payload) ->
+                    dispatcher.send(payload).also {
                         logEvent(
                             state = objectState.value,
                             analytics = analytics,
@@ -196,14 +195,14 @@ class EditDataViewViewerViewModel(
         if (viewer != null) {
             viewModelScope.launch {
                 isLoading.value = true
-                updateDataViewViewer(
-                    UpdateDataViewViewer.Params.Fields(
+                updateDataViewViewer.async(
+                    UpdateDataViewViewer.Params.UpdateView(
                         context = ctx,
                         target = state.dataViewBlock.id,
                         viewer = viewer.copy(type = type, name = name)
                     )
-                ).process(
-                    success = { payload ->
+                ).fold(
+                    onSuccess = { payload ->
                         dispatcher.send(payload).also {
                             logEvent(
                                 state = objectState.value,
@@ -216,7 +215,7 @@ class EditDataViewViewerViewModel(
                             isDismissed.emit(true)
                         }
                     },
-                    failure = {
+                    onFailure = {
                         isLoading.value = false
                         Timber.e(it, "Error while updating Viewer type")
                         isDismissed.emit(true)
@@ -239,7 +238,6 @@ class EditDataViewViewerViewModel(
     }
 
     class Factory(
-        private val renameDataViewViewer: RenameDataViewViewer,
         private val deleteDataViewViewer: DeleteDataViewViewer,
         private val duplicateDataViewViewer: DuplicateDataViewViewer,
         private val updateDataViewViewer: UpdateDataViewViewer,
@@ -252,7 +250,6 @@ class EditDataViewViewerViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return EditDataViewViewerViewModel(
-                renameDataViewViewer = renameDataViewViewer,
                 deleteDataViewViewer = deleteDataViewViewer,
                 duplicateDataViewViewer = duplicateDataViewViewer,
                 updateDataViewViewer = updateDataViewViewer,

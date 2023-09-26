@@ -164,7 +164,13 @@ private fun ViewersWidgetContent(
                         color = colorResource(R.color.text_primary)
                     )
                 }
-                Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .noRippleThrottledClickable {
+                            action.invoke(ViewersWidgetUi.Action.Plus)
+                        }
+                ) {
                     Image(
                         modifier = Modifier.padding(
                             start = 16.dp,
@@ -261,7 +267,7 @@ private fun ViewersWidgetContent(
                             Image(
                                 modifier = Modifier
                                     .noRippleThrottledClickable {
-                                        action.invoke(Edit(view.id))
+                                        action.invoke(Edit(id = view.id))
                                     }
                                     .constrainAs(edit) {
                                         end.linkTo(dnd.start, margin = 16.dp)

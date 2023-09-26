@@ -297,7 +297,7 @@ class Middleware @Inject constructor(
         context: String,
         target: String,
         viewer: DVViewer
-    ): Payload {
+    ): Pair<Id, Payload> {
         val request = Rpc.BlockDataview.View.Create.Request(
             contextId = context,
             blockId = target,
@@ -306,7 +306,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.blockDataViewViewCreate(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
+        return Pair(response.viewId, response.event.toPayload())
     }
 
     @Throws(Exception::class)

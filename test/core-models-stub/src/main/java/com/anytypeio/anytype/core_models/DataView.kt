@@ -33,7 +33,8 @@ fun StubDataViewView(
     hideIcon: Boolean = false,
     coverFit: Boolean = false,
     coverRelationKey: String? = null,
-    defaultObjectType: Id = ObjectTypeIds.PAGE
+    defaultObjectType: Id? = null,
+    defaultTemplateId: Id? = null
 ): DVViewer = DVViewer(
     id = id,
     filters = filters,
@@ -45,7 +46,8 @@ fun StubDataViewView(
     hideIcon = hideIcon,
     coverFit = coverFit,
     coverRelationKey = coverRelationKey,
-    defaultObjectType = defaultObjectType
+    defaultObjectType = defaultObjectType,
+    defaultTemplate = defaultTemplateId
 )
 
 fun StubDataViewViewRelation(

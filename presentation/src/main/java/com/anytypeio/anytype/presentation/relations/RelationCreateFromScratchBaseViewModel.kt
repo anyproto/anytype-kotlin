@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.AddRelationToDataView
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
@@ -16,7 +17,6 @@ import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.LimitObjectTypeValueView
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
@@ -255,7 +255,6 @@ class RelationCreateFromScratchForObjectBlockViewModel(
 
 class RelationCreateFromScratchForDataViewViewModel(
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val addRelationToDataView: AddRelationToDataView,
     private val dispatcher: Dispatcher<Payload>,
@@ -266,11 +265,11 @@ class RelationCreateFromScratchForDataViewViewModel(
 
     override val createFromScratchSession: Flow<CreateFromScratchState> get() = createFromScratchState.state
 
-    fun onCreateRelationClicked(ctx: Id, dv: Id) {
-        proceedWithCreatingRelation(ctx = ctx, dv = dv)
+    fun onCreateRelationClicked(ctx: Id, viewerId: Id, dv: Id) {
+        proceedWithCreatingRelation(ctx = ctx, viewerId = viewerId, dv = dv)
     }
 
-    private fun proceedWithCreatingRelation(ctx: Id, dv: Id) {
+    private fun proceedWithCreatingRelation(ctx: Id, viewerId: Id, dv: Id) {
         viewModelScope.launch {
             val state = createFromScratchState.state.value
             val format = state.format
@@ -285,6 +284,7 @@ class RelationCreateFromScratchForDataViewViewModel(
                 success = { relation ->
                     proceedWithAddingRelationToDataView(
                         ctx = ctx,
+                        viewerId = viewerId,
                         relationKey = relation.key,
                         dv = dv
                     ).also {
@@ -302,7 +302,7 @@ class RelationCreateFromScratchForDataViewViewModel(
         }
     }
 
-    private fun proceedWithAddingRelationToDataView(ctx: Id, dv: Id, relationKey: Key) {
+    private fun proceedWithAddingRelationToDataView(ctx: Id, viewerId: Id, dv: Id, relationKey: Key) {
         viewModelScope.launch {
             addRelationToDataView(
                 AddRelationToDataView.Params(
@@ -315,6 +315,7 @@ class RelationCreateFromScratchForDataViewViewModel(
                     dispatcher.send(payload).also {
                         proceedWithAddingNewRelationToCurrentViewer(
                             ctx = ctx,
+                            viewerId = viewerId,
                             relationKey = relationKey
                         )
                     }
@@ -326,10 +327,10 @@ class RelationCreateFromScratchForDataViewViewModel(
         }
     }
 
-    private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, relationKey: Key) {
+    private suspend fun proceedWithAddingNewRelationToCurrentViewer(ctx: Id, viewerId: Id, relationKey: Key) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
-        updateDataViewViewer(
+        val viewer = state.viewerById(viewerId) ?: return
+        updateDataViewViewer.async(
             UpdateDataViewViewer.Params.ViewerRelation.Add(
                 ctx = ctx,
                 dv = state.dataViewBlock.id,
@@ -339,15 +340,14 @@ class RelationCreateFromScratchForDataViewViewModel(
                     isVisible = true
                 )
             )
-        ).process(
-            success = { dispatcher.send(it).also { isDismissed.value = true } },
-            failure = { Timber.e(it, "Error while updating data view's viewer") }
+        ).fold(
+            onSuccess = { dispatcher.send(it).also { isDismissed.value = true } },
+            onFailure = { Timber.e(it, "Error while updating data view's viewer") }
         )
     }
 
     class Factory(
         private val objectState: StateFlow<ObjectState>,
-        private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val addRelationToDataView: AddRelationToDataView,
         private val createFromScratchState: StateHolder<CreateFromScratchState>,
@@ -359,7 +359,6 @@ class RelationCreateFromScratchForDataViewViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationCreateFromScratchForDataViewViewModel(
                 dispatcher = dispatcher,
-                session = session,
                 updateDataViewViewer = updateDataViewViewer,
                 objectState = objectState,
                 analytics = analytics,

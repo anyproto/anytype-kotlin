@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -22,7 +22,6 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.sets.MockObjectSetFactory
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -938,7 +937,7 @@ class FilterViewModelInputFieldValueCreateTest {
         )
 
         verifyBlocking(updateDataViewViewer, times(1)) {
-            invoke(
+            async(
                 UpdateDataViewViewer.Params.Filter.Add(
                     ctx = root,
                     dv = dataViewId,
@@ -978,7 +977,7 @@ class FilterViewModelInputFieldValueCreateTest {
         )
 
         verifyBlocking(updateDataViewViewer, times(1)) {
-            invoke(
+            async(
                 UpdateDataViewViewer.Params.Filter.Add(
                     ctx = root,
                     dv = dataViewId,
@@ -1019,7 +1018,7 @@ class FilterViewModelInputFieldValueCreateTest {
         )
 
         verifyBlocking(updateDataViewViewer, times(1)) {
-            invoke(
+            async(
                 UpdateDataViewViewer.Params.Filter.Add(
                     ctx = root,
                     dv = dataViewId,
@@ -1035,7 +1034,7 @@ class FilterViewModelInputFieldValueCreateTest {
 
     private fun stubUpdateDataView() {
         updateDataViewViewer.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Payload(
                     context = "",
                     events = emptyList()

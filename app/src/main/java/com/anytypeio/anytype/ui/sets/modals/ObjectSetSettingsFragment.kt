@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,8 +29,6 @@ import com.anytypeio.anytype.databinding.FragmentViewerRelationsListBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.ObjectSetSettingsViewModel
 import com.anytypeio.anytype.ui.relations.RelationAddToDataViewFragment
-import com.anytypeio.anytype.ui.sets.modals.viewer.ViewerCardSizeSelectFragment
-import com.anytypeio.anytype.ui.sets.modals.viewer.ViewerImagePreviewSelectFragment
 import javax.inject.Inject
 
 class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelationsListBinding>(),
@@ -47,28 +44,7 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
 
     private val listAdapter by lazy {
         ViewerRelationsAdapter(
-            onSwitchClick = { vm.onSwitchClicked(ctx, it) },
-            onSettingToggleChanged = { setting, isChecked ->
-                vm.onSettingToggleChanged(
-                    ctx = ctx,
-                    toggle = setting,
-                    isChecked = isChecked
-                )
-            },
-            onViewerCardSettingClicked = {
-                findNavController()
-                    .navigate(
-                        R.id.viewerCardSizeSelectFragment,
-                        bundleOf(ViewerCardSizeSelectFragment.CTX_KEY to ctx)
-                    )
-            },
-            onViewerImagePreviewSettingClicked = {
-                findNavController()
-                    .navigate(
-                        R.id.viewerImagePreviewSelectFragment,
-                        bundleOf(ViewerImagePreviewSelectFragment.CTX_KEY to ctx)
-                    )
-            }
+            onSwitchClick = { vm.onSwitchClicked(ctx = ctx, viewerId = viewer, it) },
         )
     }
     private val editAdapter by lazy {
@@ -80,16 +56,10 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
             onDeleteClick = { view ->
                 vm.onDeleteClicked(
                     ctx = ctx,
+                    viewerId = viewer,
                     item = view
                 )
             },
-            onSettingToggleChanged = { setting, isChecked ->
-                vm.onSettingToggleChanged(
-                    ctx = ctx,
-                    toggle = setting,
-                    isChecked = isChecked
-                )
-            }
         )
     }
     private val dndItemTouchHelper: ItemTouchHelper by lazy { ItemTouchHelper(dndBehavior) }
@@ -97,7 +67,7 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
         object : DefaultDragAndDropBehavior(
             onItemMoved = { from, to -> editAdapter.onItemMove(from, to) },
             onItemDropped = {
-                vm.onOrderChanged(ctx, editAdapter.items)
+                vm.onOrderChanged(ctx = ctx, viewerId = viewer, editAdapter.items)
             }
         ) {
             override fun getMovementFlags(
@@ -152,6 +122,11 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
             }
             subscribe(vm.screenState) { render(it) }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vm.onStart(viewer)
     }
 
     private fun render(state: ObjectSetSettingsViewModel.ScreenState) {

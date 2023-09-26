@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.widgets
 
-import android.widget.Space
 import androidx.annotation.ColorRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -76,13 +75,14 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
+import com.anytypeio.anytype.core_ui.views.ModalTitle
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.emojifier.Emojifier
-import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateView
+import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.presentation.widgets.TemplatesWidgetUiState
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
@@ -215,7 +215,7 @@ fun ObjectTypeTemplatesWidget(
                         Box(modifier = Modifier.align(Alignment.Center)) {
                             Text(
                                 text = stringResource(R.string.type_templates_widget_title),
-                                style = Title1,
+                                style = ModalTitle,
                                 color = colorResource(R.color.text_primary)
                             )
                         }
@@ -331,12 +331,12 @@ private fun MenuItem(click: () -> Unit, text: String, @ColorRes color: Int = R.c
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(top = 11.dp, bottom = 11.dp)
+            .padding(top = 11.dp, bottom = 11.dp, start = 17.dp)
             .noRippleClickable { click() },
         text = text,
         style = BodyCalloutRegular,
         color = colorResource(id = color),
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Start
     )
 }
 
@@ -813,7 +813,7 @@ enum class DragStates {
 fun ComposablePreview() {
     val items = listOf(
         TemplateView.Blank(
-            id = TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
+            id = DEFAULT_TEMPLATE_ID_BLANK,
             typeId = "page",
             typeName = "Page",
             layout = ObjectType.Layout.BASIC.code

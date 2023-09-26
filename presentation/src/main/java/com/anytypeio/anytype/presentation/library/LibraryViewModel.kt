@@ -11,12 +11,14 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_utils.ext.allUniqueBy
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
@@ -285,6 +287,10 @@ class LibraryViewModel(
         libTypes: LibraryScreenState.Tabs.TabData,
         myTypes: LibraryScreenState.Tabs.TabData
     ): LibraryScreenState.Tabs.TabData {
+        if (BuildConfig.DEBUG) {
+            assert(libTypes.items.allUniqueBy { it.id })
+            assert(myTypes.items.allUniqueBy { it.id })
+        }
         return libTypes.copy(
             items = libTypes.items.map { libType ->
                 if (libType is LibraryView.LibraryTypeView) {
@@ -310,6 +316,10 @@ class LibraryViewModel(
         libRelations: LibraryScreenState.Tabs.TabData,
         myRelations: LibraryScreenState.Tabs.TabData
     ): LibraryScreenState.Tabs.TabData {
+        if (BuildConfig.DEBUG) {
+            assert(libRelations.items.allUniqueBy { it.id })
+            assert(myRelations.items.allUniqueBy { it.id })
+        }
         return libRelations.copy(
             items = libRelations.items.map { libRelation ->
                 if (libRelation is LibraryView.LibraryRelationView) {

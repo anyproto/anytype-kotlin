@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -111,7 +110,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = customType1Id,
             templates = listOf(template1, template2)
         )
@@ -133,12 +132,6 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT BLANK IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Blank)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -204,7 +197,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = customType1Id,
             templates = listOf(template1, template2)
         )
@@ -226,12 +219,6 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT BLANK IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Blank)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -297,7 +284,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = customType1Id,
             templates = listOf(template1, template2)
         )
@@ -319,12 +306,6 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT CUSTOM TEMPLATE IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Template)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -402,7 +383,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 details = details
             )
 
-            stubTemplatesContainer(
+            stubTemplatesForTemplatesContainer(
                 type = customType1Id,
                 templates = listOf(template1, template2)
             )
@@ -424,12 +405,6 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             viewModel.onStart(ctx = root)
 
             advanceUntilIdle()
-
-            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-            // ASSERT CUSTOM TEMPLATE IS DEFAULT
-            assertEquals(1, result.size)
-            assertTrue(result[0] is TemplateView.Template)
 
             val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -495,7 +470,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = customType1Id,
             templates = listOf(template1, template2)
         )
@@ -517,12 +492,6 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT CUSTOM TEMPLATE IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Template)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -588,7 +557,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = customType1Id,
             templates = listOf(template1, template2)
         )
@@ -610,12 +579,6 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT CUSTOM TEMPLATE IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Blank)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 

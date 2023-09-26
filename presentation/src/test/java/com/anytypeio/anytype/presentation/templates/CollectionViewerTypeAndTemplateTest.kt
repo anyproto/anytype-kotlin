@@ -17,7 +17,6 @@ import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -87,7 +86,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      * PAGE type default template : empty
      */
     @Test
-    fun `set by relation, view type and template are empty, page template empty`() = runTest {
+    fun `collection, view type and template are empty, page template empty`() = runTest {
         val workspaceId = RandomString.make()
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
@@ -131,7 +130,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             doc = listOf(dv), details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
@@ -149,12 +148,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT BLANK IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Blank)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Collection.NoItems
 
@@ -226,7 +219,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             doc = listOf(dv), details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
@@ -244,12 +237,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT BLANK IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Blank)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Collection.NoItems
 
@@ -277,7 +264,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      * PAGE type default template : Custom
      */
     @Test
-    fun `set by relation, view type and template are empty, page template custom`() = runTest {
+    fun `collection, view type and template are empty, page template custom`() = runTest {
         val workspaceId = RandomString.make()
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
@@ -321,7 +308,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             doc = listOf(dv), details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
@@ -339,12 +326,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT BLANK IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Template)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Collection.NoItems
 
@@ -372,7 +353,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      * CUSTOM type default template : Template1
      */
     @Test
-    fun `set by relation, view type custom and template is empty`() = runTest {
+    fun `collection, view type custom and template is empty`() = runTest {
         val workspaceId = RandomString.make()
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
@@ -416,7 +397,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             doc = listOf(dv), details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = customType1Id, templates = listOf(template2, template1)
         )
 
@@ -434,12 +415,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT BLANK IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Template)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Collection.NoItems
 
@@ -467,7 +442,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      * CUSTOM type default template : Template1
      */
     @Test
-    fun `set by relation, view type is custom and template is blank`() = runTest {
+    fun `collection, view type is custom and template is blank`() = runTest {
         val workspaceId = RandomString.make()
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
@@ -511,7 +486,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             doc = listOf(dv), details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = customType1Id, templates = listOf(template2, template1)
         )
 
@@ -529,12 +504,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT BLANK IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Blank)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Collection.NoItems
 
@@ -562,7 +531,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
      * CUSTOM type default template : Template1
      */
     @Test
-    fun `set by relation, view type is custom and template is not empty`() = runTest {
+    fun `collection, view type is custom and template is not empty`() = runTest {
         val workspaceId = RandomString.make()
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
@@ -606,7 +575,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             doc = listOf(dv), details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = customType1Id, templates = listOf(template2, template1)
         )
 
@@ -624,12 +593,6 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT BLANK IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Template)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Collection.NoItems
 

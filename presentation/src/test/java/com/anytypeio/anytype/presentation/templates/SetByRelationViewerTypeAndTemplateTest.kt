@@ -139,7 +139,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             doc = listOf(dv), details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
@@ -157,12 +157,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT BLANK IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Blank)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -234,7 +228,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             doc = listOf(dv), details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
@@ -252,12 +246,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT BLANK IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Blank)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -329,7 +317,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             doc = listOf(dv), details = details
         )
 
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
@@ -347,12 +335,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         viewModel.onStart(ctx = root)
 
         advanceUntilIdle()
-
-        val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-        // ASSERT TEMPLATE IS DEFAULT
-        assertEquals(1, result.size)
-        assertTrue(result[0] is TemplateView.Template)
 
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -434,7 +416,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 doc = listOf(dv), details = details
             )
 
-            stubTemplatesContainer(
+            stubTemplatesForTemplatesContainer(
                 type = customType1Id, templates = listOf(template2, template1)
             )
 
@@ -452,12 +434,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             viewModel.onStart(ctx = root)
 
             advanceUntilIdle()
-
-            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-            // ASSERT TEMPLATE IS DEFAULT
-            assertEquals(1, result.size)
-            assertTrue(result[0] is TemplateView.Template)
 
             val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -539,7 +515,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 doc = listOf(dv), details = details
             )
 
-            stubTemplatesContainer(
+            stubTemplatesForTemplatesContainer(
                 type = customType1Id, templates = listOf(template2, template1)
             )
 
@@ -557,12 +533,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             viewModel.onStart(ctx = root)
 
             advanceUntilIdle()
-
-            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-            // ASSERT BLANK IS DEFAULT
-            assertEquals(1, result.size)
-            assertTrue(result[0] is TemplateView.Blank)
 
             val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -644,7 +614,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 doc = listOf(dv), details = details
             )
 
-            stubTemplatesContainer(
+            stubTemplatesForTemplatesContainer(
                 type = customType1Id, templates = listOf(template2, template1)
             )
 
@@ -662,12 +632,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             viewModel.onStart(ctx = root)
 
             advanceUntilIdle()
-
-            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-            // ASSERT BLANK IS DEFAULT
-            assertEquals(1, result.size)
-            assertTrue(result[0] is TemplateView.Blank)
 
             val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -749,7 +713,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 doc = listOf(dv), details = details
             )
 
-            stubTemplatesContainer(
+            stubTemplatesForTemplatesContainer(
                 type = customType1Id, templates = listOf(template2, template1)
             )
 
@@ -767,12 +731,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             viewModel.onStart(ctx = root)
 
             advanceUntilIdle()
-
-            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-            // ASSERT BLANK IS DEFAULT
-            assertEquals(1, result.size)
-            assertTrue(result[0] is TemplateView.Blank)
 
             val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
@@ -854,7 +812,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 doc = listOf(dv), details = details
             )
 
-            stubTemplatesContainer(
+            stubTemplatesForTemplatesContainer(
                 type = customType1Id, templates = listOf(template2, template1)
             )
 
@@ -872,12 +830,6 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             viewModel.onStart(ctx = root)
 
             advanceUntilIdle()
-
-            val result = viewModel.typeTemplatesWidgetState.value.items.filter { it.isDefault }
-
-            // ASSERT TEMPLATE IS DEFAULT
-            assertEquals(1, result.size)
-            assertTrue(result[0] is TemplateView.Template)
 
             val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 

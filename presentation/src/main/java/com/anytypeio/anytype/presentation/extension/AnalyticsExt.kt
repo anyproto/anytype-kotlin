@@ -32,8 +32,8 @@ import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.features.WidgetAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_LAYOUT_NONE
-import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
+import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -1657,6 +1657,19 @@ suspend fun Analytics.proceedWithAccountEvent(
         middleTime = System.currentTimeMillis(),
         eventName = eventName,
         props = Props(map = mapOf("accountId" to analyticsId))
+    )
+}
+
+suspend fun Analytics.sendOpenAccountEvent(
+    analytics: Id
+) {
+    val userProperty = UserProperty.AccountId(analytics)
+    updateUserProperty(userProperty)
+    sendEvent(
+        startTime = null,
+        middleTime = System.currentTimeMillis(),
+        eventName = EventsDictionary.openAccount,
+        props = Props(map = mapOf("accountId" to analytics))
     )
 }
 

@@ -18,17 +18,13 @@ sealed class TypeTemplatesWidgetUI {
 
         abstract val moreMenuItemId: TemplateView?
         abstract val templates: List<TemplateView>
-        abstract val defaultObjectType: ObjectWrapper.Type?
-        abstract val defaultTemplateId: Id?
         abstract val viewerId: Id
 
         data class DefaultTemplate(
             override val showWidget: Boolean,
             override val isEditing: Boolean,
-            override val moreMenuItemId: TemplateView?,
-            override val templates: List<TemplateView>,
-            override val defaultObjectType: ObjectWrapper.Type?,
-            override val defaultTemplateId: Id?,
+            override val moreMenuItemId: TemplateView? = null,
+            override val templates: List<TemplateView> = emptyList(),
             override val viewerId: Id
         ) : Data()
 
@@ -39,22 +35,18 @@ sealed class TypeTemplatesWidgetUI {
             data class DefaultObject(
                 override val showWidget: Boolean,
                 override val isEditing: Boolean,
-                override val moreMenuItemId: TemplateView?,
-                override val templates: List<TemplateView>,
-                override val objectTypes: List<TemplateObjectTypeView>,
-                override val defaultObjectType: ObjectWrapper.Type?,
-                override val defaultTemplateId: Id?,
+                override val moreMenuItemId: TemplateView? = null,
+                override val templates: List<TemplateView> = emptyList(),
+                override val objectTypes: List<TemplateObjectTypeView> = emptyList(),
                 override val viewerId: Id,
             ) : Types()
 
             data class CreateObject(
                 override val showWidget: Boolean,
                 override val isEditing: Boolean,
-                override val moreMenuItemId: TemplateView?,
-                override val templates: List<TemplateView>,
-                override val objectTypes: List<TemplateObjectTypeView>,
-                override val defaultObjectType: ObjectWrapper.Type?,
-                override val defaultTemplateId: Id?,
+                override val moreMenuItemId: TemplateView? = null,
+                override val templates: List<TemplateView> = emptyList(),
+                override val objectTypes: List<TemplateObjectTypeView> = emptyList(),
                 override val viewerId: Id,
             ) : Types()
         }

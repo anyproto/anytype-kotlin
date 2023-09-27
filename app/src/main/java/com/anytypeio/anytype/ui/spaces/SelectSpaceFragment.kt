@@ -5,14 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.spaces.Command
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -45,11 +48,7 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                 SelectSpaceScreen(
                     spaces = vm.views.collectAsState().value,
                     onSpaceClicked = vm::onSpaceClicked,
-                    onAddClicked = {
-                        findNavController().navigate(
-                            R.id.createSpaceScreen
-                        )
-                    },
+                    onAddClicked = vm::onCreateSpaceClicked,
                     onSpaceSettingsClicked = {
                         findNavController().navigate(
                             R.id.settingsScreen
@@ -60,6 +59,22 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                             R.id.profileScreen
                         )
                     }
+                )
+            }
+            LaunchedEffect(Unit) {
+                vm.commands.collect { command -> proceedWithCommand(command) }
+            }
+            LaunchedEffect(Unit) {
+                vm.toasts.collect { toast(it) }
+            }
+        }
+    }
+
+    private fun proceedWithCommand(command: Command) {
+        when (command) {
+            is Command.CreateSpace -> {
+                findNavController().navigate(
+                    R.id.createSpaceScreen
                 )
             }
         }

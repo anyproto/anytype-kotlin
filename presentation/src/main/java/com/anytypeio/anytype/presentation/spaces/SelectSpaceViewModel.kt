@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
@@ -37,6 +38,7 @@ class SelectSpaceViewModel(
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
+    val commands = MutableSharedFlow<Command>()
 
     val profile = spaceManager
         .observe()
@@ -144,11 +146,26 @@ class SelectSpaceViewModel(
     }
 
     fun onCreateSpaceClicked() {
-        // TODO
+        val count = views.value.count { view -> view is SelectSpaceView.Space }
+        if (count >= MAX_SPACE_COUNT) {
+            sendToast(SPACE_COUNT_EXCEEDED_ERROR)
+        } else {
+            viewModelScope.launch {
+                commands.emit(Command.CreateSpace)
+            }
+        }
     }
 
-    fun onStop() {
-        // TODO unsubscribe
+    override fun onCleared() {
+        viewModelScope.launch {
+            storelessSubscriptionContainer.unsubscribe(
+                subscriptions = listOf(
+                    SELECT_SPACE_PROFILE_SUBSCRIPTION,
+                    SELECT_SPACE_PROFILE_SUBSCRIPTION
+                )
+            )
+        }
+        super.onCleared()
     }
 
     class Factory @Inject constructor(
@@ -173,6 +190,8 @@ class SelectSpaceViewModel(
     companion object {
         const val SELECT_SPACE_SUBSCRIPTION = "select_space_subscription.spaces"
         const val SELECT_SPACE_PROFILE_SUBSCRIPTION = "select_space_subscription.profile"
+        const val MAX_SPACE_COUNT = 10
+        const val SPACE_COUNT_EXCEEDED_ERROR = "Space max count exceeded. You cannot create more."
     }
 }
 
@@ -193,4 +212,8 @@ sealed class SelectSpaceView {
         val icon: ProfileIconView,
     ) : SelectSpaceView()
     object Create : SelectSpaceView()
+}
+
+sealed class Command {
+    object CreateSpace : Command()
 }

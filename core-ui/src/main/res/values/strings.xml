@@ -661,6 +661,7 @@
     <string name="new_view">New view</string>
     <string name="create">create</string>
     <string name="default_object">Default object</string>
+    <string name="default_template">Default template</string>
     <string name="layout">Layout</string>
     <string name="num_applied">%1$d applied</string>
     <string name="view_list">List</string>

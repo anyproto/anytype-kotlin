@@ -38,14 +38,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
-import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
-import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -74,7 +71,11 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -87,12 +88,14 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
-import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
+import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
+import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.TypeClick
+import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.TemplateClick
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -104,12 +107,12 @@ import timber.log.Timber
 fun TypeTemplatesWidget(
     state: TypeTemplatesWidgetUI,
     onDismiss: () -> Unit,
-    itemClick: (TemplateView) -> Unit,
     moreClick: (TemplateView.Template) -> Unit,
     editClick: () -> Unit,
     doneClick: () -> Unit,
     scope: CoroutineScope,
-    menuClick: (TemplateMenuClick) -> Unit
+    menuClick: (TemplateMenuClick) -> Unit,
+    action: (TypeTemplatesWidgetUIAction) -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -142,7 +145,7 @@ fun TypeTemplatesWidget(
             }
         }
 
-        if (!visible) {
+        if (!currentState.showWidget) {
             DisposableEffect(Unit) {
                 onDispose {
                     scope.launch { swipeableState.snapTo(DragStates.VISIBLE) }
@@ -157,7 +160,7 @@ fun TypeTemplatesWidget(
         }
 
         AnimatedVisibility(
-            visible = visible,
+            visible = currentState.showWidget,
             enter = slideInVertically { it },
             exit = slideOutVertically(tween(200)) { it },
             modifier = Modifier
@@ -221,9 +224,15 @@ fun TypeTemplatesWidget(
                                 )
                             }
                         }
+                        val title = when (currentState) {
+                            is TypeTemplatesWidgetUI.Data.DefaultTemplate -> stringResource(R.string.default_template)
+                            is TypeTemplatesWidgetUI.Data.Types.CreateObject -> stringResource(R.string.type_templates_widget_title)
+                            is TypeTemplatesWidgetUI.Data.Types.DefaultObject -> stringResource(R.string.default_object)
+                            is TypeTemplatesWidgetUI.Init -> ""
+                        }
                         Box(modifier = Modifier.align(Alignment.Center)) {
                             Text(
-                                text = stringResource(R.string.type_templates_widget_title),
+                                text = title,
                                 style = Title1,
                                 color = colorResource(R.color.text_primary)
                             )
@@ -242,6 +251,20 @@ fun TypeTemplatesWidget(
 //                        }
                     }
                     val itemsScroll = rememberLazyListState()
+                    if (currentState is TypeTemplatesWidgetUI.Data.Types) {
+                        Spacer(modifier = Modifier.height(26.dp))
+                        Text(
+                            modifier = Modifier.padding(start = 20.dp),
+                            text = stringResource(id = R.string.object_type),
+                            style = Caption1Medium,
+                            color = colorResource(id = R.color.text_secondary)
+                        )
+                        Spacer(modifier = Modifier.height(8.dp))
+                        ObjectTypesList(
+                            state = currentState as TypeTemplatesWidgetUI.Data.Types,
+                            action = action
+                        )
+                    }
                     Spacer(modifier = Modifier.height(26.dp))
                     Text(
                         modifier = Modifier.padding(start = 20.dp),
@@ -250,52 +273,57 @@ fun TypeTemplatesWidget(
                         color = colorResource(id = R.color.text_secondary)
                     )
                     Spacer(modifier = Modifier.height(8.dp))
-                    TemplatesList(
-                        state = currentState,
-                        moreClick = { template, intOffset ->
-                            currentClickedMoreButtonCoordinates = intOffset
-                            moreClick(template)
-                        },
-                        itemClick = {
-                            itemClick(it)
-                        },
-                        scrollState = itemsScroll
-                    )
-                    if (currentState.isMoreMenuVisible && itemsScroll.isScrollInProgress) {
-                        onDismiss()
+                    if (currentState is TypeTemplatesWidgetUI.Data) {
+                        TemplatesList(
+                            state = currentState as TypeTemplatesWidgetUI.Data,
+                            moreClick = { template, intOffset ->
+                                currentClickedMoreButtonCoordinates = intOffset
+                                moreClick(template)
+                            },
+                            action = action,
+                            scrollState = itemsScroll
+                        )
+                        if ((currentState as TypeTemplatesWidgetUI.Data).moreMenuItemId != null
+                            && itemsScroll.isScrollInProgress
+                        ) {
+                            onDismiss()
+                        }
                     }
                 }
             }
         }
-        if (currentState.isMoreMenuVisible && currentState.moreMenuTemplate != null) {
-            MoreMenu(
-                templateView = currentState.moreMenuTemplate!!,
-                currentState = currentState,
-                currentCoordinates = currentClickedMoreButtonCoordinates,
-                menuClick = menuClick
-            )
+
+        (currentState as? TypeTemplatesWidgetUI.Data)?.moreMenuItemId?.let { templateView ->
+            when (templateView) {
+                is TemplateView.Blank -> MoreMenuBlank(
+                    itemId = templateView.id,
+                    currentCoordinates = currentClickedMoreButtonCoordinates,
+                    menuClick = menuClick
+                )
+                is TemplateView.Template -> MoreMenu(
+                    itemId = templateView.id,
+                    currentCoordinates = currentClickedMoreButtonCoordinates,
+                    menuClick = menuClick
+                )
+                is TemplateView.New -> Unit
+            }
         }
     }
 }
 
 @Composable
 private fun MoreMenu(
-    templateView: TemplateView.Template,
-    currentState: TypeTemplatesWidgetUI,
+    itemId: Id,
     currentCoordinates: IntOffset,
     menuClick: (TemplateMenuClick) -> Unit
 ) {
-    val offsetX = if (currentState.isMoreMenuVisible) {
-        val moreButtonXCoordinatesDp =
-            with(LocalDensity.current) { currentCoordinates.x.toDp() }
-        if (moreButtonXCoordinatesDp > 244.dp) {
-            moreButtonXCoordinatesDp - 244.dp
-        } else {
-            0.dp
-        }
+    val moreButtonXCoordinatesDp = with(LocalDensity.current) { currentCoordinates.x.toDp() }
+    val offsetX = if (moreButtonXCoordinatesDp > 244.dp) {
+        moreButtonXCoordinatesDp - 244.dp
     } else {
         0.dp
     }
+
     Column(
         modifier = Modifier
             .width(244.dp)
@@ -312,24 +340,59 @@ private fun MoreMenu(
             )
     ) {
         MenuItem(
-            click = { menuClick(TemplateMenuClick.Default(templateView)) },
+            click = { menuClick(TemplateMenuClick.Default(itemId)) },
             text = stringResource(id = R.string.templates_menu_default_for_view)
         )
         Divider()
         MenuItem(
-            click = { menuClick(TemplateMenuClick.Edit(templateView)) },
+            click = { menuClick(TemplateMenuClick.Edit(itemId)) },
             text = stringResource(id = R.string.templates_menu_edit)
         )
         Divider()
         MenuItem(
-            click = { menuClick(TemplateMenuClick.Duplicate(templateView)) },
+            click = { menuClick(TemplateMenuClick.Duplicate(itemId)) },
             text = stringResource(id = R.string.templates_menu_duplicate)
         )
         Divider()
         MenuItem(
-            click = { menuClick(TemplateMenuClick.Delete(templateView)) },
+            click = { menuClick(TemplateMenuClick.Delete(itemId)) },
             text = stringResource(id = R.string.templates_menu_delete),
             color = R.color.palette_system_red
+        )
+    }
+}
+
+@Composable
+private fun MoreMenuBlank(
+    itemId: Id,
+    currentCoordinates: IntOffset,
+    menuClick: (TemplateMenuClick) -> Unit
+) {
+    val moreButtonXCoordinatesDp = with(LocalDensity.current) { currentCoordinates.x.toDp() }
+    val offsetX = if (moreButtonXCoordinatesDp > 244.dp) {
+        moreButtonXCoordinatesDp - 244.dp
+    } else {
+        0.dp
+    }
+
+    Column(
+        modifier = Modifier
+            .width(244.dp)
+            .wrapContentHeight()
+            .offset(x = offsetX, y = -260.dp)
+            .shadow(
+                elevation = 40.dp,
+                spotColor = Color(0x40000000),
+                ambientColor = Color(0x40000000)
+            )
+            .background(
+                color = colorResource(id = R.color.background_secondary),
+                shape = RoundedCornerShape(size = 10.dp)
+            )
+    ) {
+        MenuItem(
+            click = { menuClick(TemplateMenuClick.Default(itemId)) },
+            text = stringResource(id = R.string.templates_menu_default_for_view)
         )
     }
 }
@@ -352,8 +415,8 @@ private fun MenuItem(click: () -> Unit, text: String, @ColorRes color: Int = R.c
 @Composable
 private fun TemplatesList(
     scrollState: LazyListState,
-    state: TypeTemplatesWidgetUI,
-    itemClick: (TemplateView) -> Unit,
+    state: TypeTemplatesWidgetUI.Data,
+    action: (TypeTemplatesWidgetUIAction) -> Unit,
     moreClick: (TemplateView.Template, IntOffset) -> Unit
 ) {
     LazyRow(
@@ -366,7 +429,7 @@ private fun TemplatesList(
     )
     {
         itemsIndexed(
-            items = state.items,
+            items = state.templates,
             itemContent = { index, item ->
                 Box(
                     modifier =
@@ -394,7 +457,7 @@ private fun TemplatesList(
                             .height(224.dp)
                             .width(120.dp)
                             .clickable {
-                                itemClick(item)
+                                action(TemplateClick(item))
                             }
                     ) {
                         TemplateItemContent(item)
@@ -802,7 +865,10 @@ private fun getProperTextAlign(layout: ObjectType.Layout): TextAlign {
 }
 
 @Composable
-fun ObjectTypesList(state: TypeTemplatesWidgetUI, menuClick: (TemplateMenuClick) -> Unit) {
+fun ObjectTypesList(
+    state: TypeTemplatesWidgetUI.Data.Types,
+    action: (TypeTemplatesWidgetUIAction) -> Unit
+) {
     val listState = rememberLazyListState()
     LazyRow(
         state = listState,
@@ -810,12 +876,12 @@ fun ObjectTypesList(state: TypeTemplatesWidgetUI, menuClick: (TemplateMenuClick)
             .padding(top = 4.dp)
             .fillMaxWidth()
             .height(48.dp),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         itemsIndexed(items = state.objectTypes,
-            itemContent = { index, item ->
+            itemContent = { _, item ->
                 when (item) {
                     is TemplateObjectTypeView.Item -> {
                         val borderWidth: Dp
@@ -835,7 +901,7 @@ fun ObjectTypesList(state: TypeTemplatesWidgetUI, menuClick: (TemplateMenuClick)
                             )
                             .wrapContentSize()
                             .noRippleThrottledClickable {
-                                menuClick(TemplateMenuClick.Type(item))
+                                action(TypeClick.Item(item.type))
                             }) {
                             Row(
                                 modifier = Modifier.padding(
@@ -845,7 +911,7 @@ fun ObjectTypesList(state: TypeTemplatesWidgetUI, menuClick: (TemplateMenuClick)
                                     bottom = 13.dp
                                 )
                             ) {
-                                item.emoji?.let {
+                                item.type.iconEmoji?.let {
                                     Box(
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(8.dp))
@@ -872,7 +938,7 @@ fun ObjectTypesList(state: TypeTemplatesWidgetUI, menuClick: (TemplateMenuClick)
                                     }
                                 }
                                 Text(
-                                    text = item.name,
+                                    text = item.type.name.orEmpty(),
                                     style = BodyCalloutMedium.copy(
                                         color = colorResource(id = R.color.text_primary)
                                     ),
@@ -896,7 +962,7 @@ fun ObjectTypesList(state: TypeTemplatesWidgetUI, menuClick: (TemplateMenuClick)
                                 )
                                 .size(48.dp)
                                 .noRippleThrottledClickable {
-                                    menuClick(TemplateMenuClick.Type(item))
+                                    action(TypeClick.Search)
                                 },
                             contentAlignment = Alignment.Center
                         ) {
@@ -940,27 +1006,31 @@ fun ComposablePreview() {
             coverImage = null,
         ),
     )
-    val state = TypeTemplatesWidgetUI(
-        items = items,
+    val state = TypeTemplatesWidgetUI.Data.Types.CreateObject(
+        templates = items,
         showWidget = true,
         isEditing = true,
-        isMoreMenuVisible = true,
-        moreMenuTemplate = null,
+        moreMenuItemId = null,
         objectTypes = listOf(
             TemplateObjectTypeView.Search,
-            TemplateObjectTypeView.Item(id = "1", name = "Page", emoji = "📄")
+            TemplateObjectTypeView.Item(
+                type = ObjectWrapper.Type(
+                    map = mapOf(Relations.ID to "123", Relations.NAME to "Page"),
+                )
+            )
         ),
+        viewerId = ""
     )
     TypeTemplatesWidget(
         state = state,
         onDismiss = {},
-        itemClick = {},
         editClick = {},
         doneClick = {},
         moreClick = {},
         scope = CoroutineScope(
             Dispatchers.Main
         ),
-        menuClick = {}
+        menuClick = {},
+        action = {}
     )
 }

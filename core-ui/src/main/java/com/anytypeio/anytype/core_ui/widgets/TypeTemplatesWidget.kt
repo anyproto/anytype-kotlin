@@ -226,8 +226,8 @@ fun TypeTemplatesWidget(
                         }
                         val title = when (currentState) {
                             is TypeTemplatesWidgetUI.Data.DefaultTemplate -> stringResource(R.string.default_template)
-                            is TypeTemplatesWidgetUI.Data.Types.CreateObject -> stringResource(R.string.type_templates_widget_title)
-                            is TypeTemplatesWidgetUI.Data.Types.DefaultObject -> stringResource(R.string.default_object)
+                            is TypeTemplatesWidgetUI.Data.CreateObject -> stringResource(R.string.type_templates_widget_title)
+                            is TypeTemplatesWidgetUI.Data.DefaultObject -> stringResource(R.string.default_object)
                             is TypeTemplatesWidgetUI.Init -> ""
                         }
                         Box(modifier = Modifier.align(Alignment.Center)) {
@@ -251,7 +251,7 @@ fun TypeTemplatesWidget(
 //                        }
                     }
                     val itemsScroll = rememberLazyListState()
-                    if (currentState is TypeTemplatesWidgetUI.Data.Types) {
+                    if (currentState is TypeTemplatesWidgetUI.Data) {
                         Spacer(modifier = Modifier.height(26.dp))
                         Text(
                             modifier = Modifier.padding(start = 20.dp),
@@ -261,7 +261,7 @@ fun TypeTemplatesWidget(
                         )
                         Spacer(modifier = Modifier.height(8.dp))
                         ObjectTypesList(
-                            state = currentState as TypeTemplatesWidgetUI.Data.Types,
+                            state = currentState as TypeTemplatesWidgetUI.Data,
                             action = action
                         )
                     }
@@ -866,7 +866,7 @@ private fun getProperTextAlign(layout: ObjectType.Layout): TextAlign {
 
 @Composable
 fun ObjectTypesList(
-    state: TypeTemplatesWidgetUI.Data.Types,
+    state: TypeTemplatesWidgetUI.Data,
     action: (TypeTemplatesWidgetUIAction) -> Unit
 ) {
     val listState = rememberLazyListState()
@@ -1006,7 +1006,7 @@ fun ComposablePreview() {
             coverImage = null,
         ),
     )
-    val state = TypeTemplatesWidgetUI.Data.Types.CreateObject(
+    val state = TypeTemplatesWidgetUI.Data.CreateObject(
         templates = items,
         showWidget = true,
         isEditing = true,

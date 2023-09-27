@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -84,6 +85,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
+import com.anytypeio.anytype.core_ui.views.ModalTitle
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -233,7 +235,7 @@ fun TypeTemplatesWidget(
                         Box(modifier = Modifier.align(Alignment.Center)) {
                             Text(
                                 text = title,
-                                style = Title1,
+                                style = ModalTitle,
                                 color = colorResource(R.color.text_primary)
                             )
                         }
@@ -403,12 +405,12 @@ private fun MenuItem(click: () -> Unit, text: String, @ColorRes color: Int = R.c
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(top = 11.dp, bottom = 11.dp)
+            .padding(top = 11.dp, bottom = 11.dp, start = 17.dp)
             .noRippleClickable { click() },
         text = text,
         style = BodyCalloutRegular,
         color = colorResource(id = color),
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Start
     )
 }
 

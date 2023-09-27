@@ -2035,6 +2035,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;
@@ -2058,6 +2059,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;

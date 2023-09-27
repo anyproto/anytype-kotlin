@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.templates
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 
@@ -25,12 +26,12 @@ sealed class TemplateView {
         val id: Id,
         val name: String,
         val typeId: Id,
-        val layout: ObjectType.Layout,
-        val emoji: String?,
-        val image: String?,
-        val coverColor: CoverColor?,
-        val coverImage: Url?,
-        val coverGradient: String?,
+        val layout: ObjectType.Layout = ObjectType.Layout.BASIC,
+        val emoji: String? = null,
+        val image: String? = null,
+        val coverColor: CoverColor? = null,
+        val coverImage: Url? = null,
+        val coverGradient: String? = null,
         override val isDefault: Boolean = false
     ) : TemplateView() {
 
@@ -49,19 +50,17 @@ sealed class TemplateView {
 }
 
 sealed class TemplateMenuClick {
-    data class Default(val templateView: TemplateView.Template) : TemplateMenuClick()
-    data class Edit(val templateView: TemplateView.Template) : TemplateMenuClick()
-    data class Duplicate(val templateView: TemplateView.Template) : TemplateMenuClick()
-    data class Delete(val templateView: TemplateView.Template) : TemplateMenuClick()
+    data class Default(val template: Id) : TemplateMenuClick()
+    data class Edit(val template: Id) : TemplateMenuClick()
+    data class Duplicate(val template: Id) : TemplateMenuClick()
+    data class Delete(val template: Id) : TemplateMenuClick()
     data class Type(val type: TemplateObjectTypeView) : TemplateMenuClick()
 }
 
 sealed class TemplateObjectTypeView {
 
     data class Item(
-        val id: Id,
-        val name: String,
-        val emoji: String?,
+        val type: ObjectWrapper.Type,
         val isDefault: Boolean = false
     ) : TemplateObjectTypeView()
 

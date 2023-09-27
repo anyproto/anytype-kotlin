@@ -1538,53 +1538,53 @@ class ObjectSetViewModel(
 
     // region TYPES AND TEMPLATES WIDGET
     private fun showTypeTemplatesWidgetForObjectCreation() {
-        viewModelScope.launch {
-            val dataView = stateReducer.state.value.dataViewState() ?: return@launch
-            val currentViewId = session.currentViewerId.value
-            val viewer = stateReducer.state.value.dataViewState()?.viewerByIdOrFirst(currentViewId) ?: return@launch
-            val (type, template) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
-            if (type == null) return@launch
-            typeTemplatesWidgetState.value = TypeTemplatesWidgetUI.Data.CreateObject(
-                showWidget = true,
-                isEditing = false,
-                viewerId = viewer.id
-            )
-            subscribeToObjectTypes()
-            subscribeToTemplates()
-            selectedTypeFlow.value = type
-        }
-        logEvent(ObjectStateAnalyticsEvent.SHOW_TEMPLATES)
+        showTypeTemplatesWidget(
+            getViewer = { it?.viewerByIdOrFirst(session.currentViewerId.value) },
+            createState = { viewer ->
+                TypeTemplatesWidgetUI.Data.CreateObject(
+                    showWidget = true,
+                    isEditing = false,
+                    viewerId = viewer.id
+                )
+            }
+        )
     }
 
     private fun showTypeTemplatesWidgetForViewerDefaultObject(viewerId: Id) {
-        viewModelScope.launch {
-            val dataView = stateReducer.state.value.dataViewState() ?: return@launch
-            val viewer = dataView.viewerById(viewerId) ?: return@launch
-            val (type, template) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
-            if (type == null) return@launch
-            typeTemplatesWidgetState.value = TypeTemplatesWidgetUI.Data.DefaultObject(
-                showWidget = true,
-                isEditing = false,
-                viewerId = viewer.id
-            )
-            subscribeToObjectTypes()
-            subscribeToTemplates()
-            selectedTypeFlow.value = type
-        }
-        logEvent(ObjectStateAnalyticsEvent.SHOW_TEMPLATES)
+        showTypeTemplatesWidget(
+            getViewer = { it?.viewerById(viewerId) },
+            createState = { viewer ->
+                TypeTemplatesWidgetUI.Data.DefaultObject(
+                    showWidget = true,
+                    isEditing = false,
+                    viewerId = viewer.id
+                )
+            }
+        )
     }
 
     private fun showTypeTemplatesWidgetForViewerDefaultTemplate(viewerId: Id) {
+        showTypeTemplatesWidget(
+            getViewer = { it?.viewerById(viewerId) },
+            createState = { viewer ->
+                TypeTemplatesWidgetUI.Data.DefaultTemplate(
+                    showWidget = true,
+                    isEditing = false,
+                    viewerId = viewer.id
+                )
+            }
+        )
+    }
+
+    private fun showTypeTemplatesWidget(
+        getViewer: (ObjectState.DataView?) -> DVViewer?,
+        createState: (DVViewer) -> TypeTemplatesWidgetUI.Data
+    ) {
         viewModelScope.launch {
             val dataView = stateReducer.state.value.dataViewState() ?: return@launch
-            val viewer = dataView.viewerById(viewerId) ?: return@launch
-            val (type, template) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
-            if (type == null) return@launch
-            typeTemplatesWidgetState.value = TypeTemplatesWidgetUI.Data.DefaultTemplate(
-                showWidget = true,
-                isEditing = false,
-                viewerId = viewer.id
-            )
+            val viewer = getViewer(dataView) ?: return@launch
+            val (type, _) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes) ?: return@launch
+            typeTemplatesWidgetState.value = createState(viewer)
             subscribeToObjectTypes()
             subscribeToTemplates()
             selectedTypeFlow.value = type

@@ -498,7 +498,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             ),
             dvSorts = listOf(mockObjectCollection.sortGallery)
         )
-        stubTemplatesContainer()
+        stubTemplatesForTemplatesContainer()
 
         // TESTING
         viewModel.onStart(ctx = root)
@@ -530,7 +530,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubWorkspaceManager(mockObjectCollection.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubTemplatesContainer(
+        stubTemplatesForTemplatesContainer(
             type = VIEW_DEFAULT_OBJECT_TYPE,
             templates = listOf(StubObject(objectType = VIEW_DEFAULT_OBJECT_TYPE))
         )
@@ -594,7 +594,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubWorkspaceManager(mockObjectCollection.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubTemplatesContainer()
+        stubTemplatesForTemplatesContainer()
 
         session.currentViewerId.value = mockObjectCollection.viewerList.id
         val dataview = mockObjectCollection.dataView.copy(

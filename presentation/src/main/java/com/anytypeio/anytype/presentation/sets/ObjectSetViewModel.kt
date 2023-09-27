@@ -1699,30 +1699,27 @@ class ObjectSetViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun subscribeToObjectTypes() {
         templatesJob += viewModelScope.launch {
-            combine(
-                stateReducer.state,
-                selectedTypeFlow.filterNotNull().distinctUntilChanged(),
-            ) { state, selectedTypeId ->
-                Pair(state, selectedTypeId)
-            }.flatMapLatest { (state, selectedTypeId) ->
-                templatesContainer.subscribeToTypes().map { types ->
-                    Triple(state, selectedTypeId, types)
+            selectedTypeFlow.filterNotNull().distinctUntilChanged()
+                .flatMapLatest { selectedTypeId ->
+                    templatesContainer.subscribeToTypes().map { types ->
+                        Pair(selectedTypeId, types)
+                    }
+                }.map { (selectedTypeId, types) ->
+                    types.map { type ->
+                        TemplateObjectTypeView.Item(
+                            type = ObjectWrapper.Type(type.map),
+                            isDefault = type.id == selectedTypeId.id
+                        )
+                    }
+                }.collectLatest { types ->
+                    typeTemplatesWidgetState.value =
+                        when (val uiState = typeTemplatesWidgetState.value) {
+                            is TypeTemplatesWidgetUI.Data.DefaultTemplate -> uiState
+                            is TypeTemplatesWidgetUI.Data.CreateObject -> uiState.copy(objectTypes = types)
+                            is TypeTemplatesWidgetUI.Data.DefaultObject -> uiState.copy(objectTypes = types)
+                            is TypeTemplatesWidgetUI.Init -> uiState
+                        }
                 }
-            }.map { (state, selectedTypeId, types) ->
-                types.map { type ->
-                    TemplateObjectTypeView.Item(
-                        type = ObjectWrapper.Type(type.map),
-                        isDefault = type.id == selectedTypeId.id
-                    )
-                }
-            }.collectLatest { types ->
-                typeTemplatesWidgetState.value = when(val uistate = typeTemplatesWidgetState.value) {
-                    is TypeTemplatesWidgetUI.Data.DefaultTemplate -> uistate
-                    is TypeTemplatesWidgetUI.Data.CreateObject -> uistate.copy(objectTypes = types)
-                    is TypeTemplatesWidgetUI.Data.DefaultObject -> uistate.copy(objectTypes = types)
-                    is TypeTemplatesWidgetUI.Init -> uistate
-                }
-            }
         }
     }
 
@@ -1775,7 +1772,7 @@ class ObjectSetViewModel(
                             )
                         }
                     }
-                    is TypeTemplatesWidgetUI.Init -> emptyList<TemplateView>()
+                    is TypeTemplatesWidgetUI.Init -> emptyList()
                 }
             }.collectLatest { templates ->
                 typeTemplatesWidgetState.value = when(val uistate = typeTemplatesWidgetState.value) {

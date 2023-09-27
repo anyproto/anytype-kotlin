@@ -88,6 +88,7 @@ import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -337,11 +338,11 @@ open class ObjectSetFragment :
                 TypeTemplatesWidget(
                     state = vm.typeTemplatesWidgetState.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onDismissTemplatesWidget,
-                    itemClick = vm::onTemplateItemClicked,
                     editClick = vm::onEditTemplateButtonClicked,
                     doneClick = vm::onDoneTemplateButtonClicked,
                     moreClick = vm::onMoreTemplateButtonClicked,
                     menuClick = vm::onMoreMenuClicked,
+                    action = vm::onTypeTemplatesWidgetAction,
                     scope = lifecycleScope
                 )
             }
@@ -1142,7 +1143,7 @@ open class ObjectSetFragment :
             when {
                 childFragmentManager.backStackEntryCount > 0 -> childFragmentManager.popBackStack()
                 vm.isCustomizeViewPanelVisible.value -> vm.onHideViewerCustomizeSwiped()
-                vm.typeTemplatesWidgetState.value.showWidget -> vm.onDismissTemplatesWidget()
+                (vm.typeTemplatesWidgetState.value as? TypeTemplatesWidgetUI.Data)?.showWidget == true -> vm.onDismissTemplatesWidget()
                 vm.viewersWidgetState.value.showWidget -> handleViewersWidgetState()
                 vm.viewerEditWidgetState.value.isVisible() -> handleViewerEditWidgetState()
                 else -> vm.onSystemBackPressed()

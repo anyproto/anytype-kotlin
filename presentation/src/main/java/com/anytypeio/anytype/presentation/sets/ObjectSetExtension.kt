@@ -435,7 +435,6 @@ fun Viewer.isEmpty(): Boolean =
 fun ObjectWrapper.Basic.toTemplateView(
     urlBuilder: UrlBuilder,
     coverImageHashProvider: CoverImageHashProvider,
-    viewerDefObjType: ObjectWrapper.Type,
     viewerDefTemplateId: Id?,
 ): TemplateView.Template {
     val coverContainer = if (coverType != CoverType.NONE) {
@@ -447,7 +446,7 @@ fun ObjectWrapper.Basic.toTemplateView(
     return TemplateView.Template(
         id = id,
         name = name.orEmpty(),
-        typeId = viewerDefObjType.id,
+        typeId = targetObjectType.orEmpty(),
         emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
         image = if (!iconImage.isNullOrBlank()) urlBuilder.thumbnail(iconImage!!) else null,
         layout = layout ?: ObjectType.Layout.BASIC,

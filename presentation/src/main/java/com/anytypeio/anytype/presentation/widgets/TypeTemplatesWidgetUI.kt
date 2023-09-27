@@ -60,7 +60,7 @@ sealed class TypeTemplatesWidgetUI {
         }
     }
 
-    fun getViewerId1(): Id? = if (this is Data) viewerId else null
+    fun getWidgetViewerId(): Id? = if (this is Data) viewerId else null
 }
 
 sealed class TypeTemplatesWidgetUIAction {

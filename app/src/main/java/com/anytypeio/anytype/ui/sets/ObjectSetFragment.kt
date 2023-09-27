@@ -108,6 +108,7 @@ import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_OBJECT_TYPE
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.bumptech.glide.Glide
 import javax.inject.Inject
@@ -1221,10 +1222,12 @@ open class ObjectSetFragment :
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME
                 && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)) {
-                val result = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID);
-                if (!result.isNullOrBlank()) {
+                val resultTemplateId = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
+                val resultObjectTypeId = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_OBJECT_TYPE)
+                if (!resultTemplateId.isNullOrBlank() && !resultObjectTypeId.isNullOrBlank()) {
                     navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
-                    vm.proceedWithDataViewObjectCreate(result)
+                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_OBJECT_TYPE)
+                    vm.proceedWithSelectedTemplate(template = resultTemplateId, objectType = resultObjectTypeId)
                 }
             }
         }

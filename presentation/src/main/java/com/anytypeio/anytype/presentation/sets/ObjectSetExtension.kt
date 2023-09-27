@@ -419,7 +419,8 @@ fun DVViewer.updateFields(fields: DVViewerFields?): DVViewer {
         hideIcon = fields.hideIcon,
         cardSize = fields.cardSize,
         coverFit = fields.coverFit,
-        defaultTemplate = fields.defaultTemplateId
+        defaultTemplate = fields.defaultTemplateId,
+        defaultObjectType = fields.defaultObjectTypeId
     )
 }
 

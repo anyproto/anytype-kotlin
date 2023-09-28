@@ -48,6 +48,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.clipboard.Clipboard
 import com.anytypeio.anytype.domain.clipboard.Copy
 import com.anytypeio.anytype.domain.clipboard.Paste
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
@@ -89,6 +90,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -273,6 +275,12 @@ open class EditorTestSetup {
     @Mock
     lateinit var setObjectInternalFlags: SetObjectInternalFlags
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
+    @Mock
+    lateinit var configStorage: ConfigStorage
+
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     lateinit var addRelationToObject: AddRelationToObject
@@ -319,8 +327,13 @@ open class EditorTestSetup {
         turnIntoDocument = TurnIntoDocument(repo)
         updateFields = UpdateFields(repo)
         setObjectType = SetObjectType(repo)
-        createObjectAsMentionOrLink =
-            CreateObjectAsMentionOrLink(repo, getDefaultPageType, getTemplates, dispatchers)
+        createObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
+            repo = repo,
+            getDefaultPageType = getDefaultPageType,
+            getTemplates = getTemplates,
+            dispatchers = dispatchers,
+            spaceManager = spaceManager
+        )
         getSearchObjects = SearchObjects(repo)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepository)
@@ -351,10 +364,11 @@ open class EditorTestSetup {
         turnIntoStyle = TurnIntoStyle(repo)
         updateDetail = UpdateDetail(repo)
         getDefaultPageType = GetDefaultPageType(
-            userSettingsRepository,
-            repo,
-            workspaceManager,
-            dispatchers
+            userSettingsRepository = userSettingsRepository,
+            blockRepository = repo,
+            dispatchers = dispatchers,
+            spaceManager = spaceManager,
+            configStorage = configStorage
         )
         createObjectSet = CreateObjectSet(repo)
         findObjectSetForType = FindObjectSetForType(repo)
@@ -466,12 +480,12 @@ open class EditorTestSetup {
             storeOfObjectTypes = storeOfObjectTypes,
             featureToggles = featureToggles,
             tableDelegate = tableDelegate,
-            workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
             objectToCollection = objectToCollection,
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
-            setObjectInternalFlags = setObjectInternalFlags
+            setObjectInternalFlags = setObjectInternalFlags,
+            spaceManager = spaceManager
         )
     }
 

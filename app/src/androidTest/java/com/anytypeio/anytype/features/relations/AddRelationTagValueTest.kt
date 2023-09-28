@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.relations.CreateRelationOption
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider
@@ -79,6 +80,9 @@ class AddRelationTagValueTest {
     @Mock
     lateinit var objectDetailProvider: ObjectDetailProvider
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
     private lateinit var createRelationOption: CreateRelationOption
     private lateinit var updateDetail: UpdateDetail
     private lateinit var getOptions: GetOptions
@@ -115,7 +119,8 @@ class AddRelationTagValueTest {
             analytics = analytics,
             setObjectDetail = updateDetail,
             detailsProvider = objectDetailProvider,
-            getOptions = getOptions
+            getOptions = getOptions,
+            spaceManager = spaceManager
         )
     }
 
@@ -491,7 +496,8 @@ class AddRelationTagValueTest {
             createRelationOption(
                 relation = any(),
                 color = any(),
-                name = any()
+                name = any(),
+                space = any()
             )
         }
     }
@@ -506,7 +512,8 @@ class AddRelationTagValueTest {
                 createRelationOption(
                     relation = any(),
                     color = any(),
-                    name = any()
+                    name = any(),
+                    space = any()
                 )
             } doReturn StubRelationOptionObject(
                 id = id,

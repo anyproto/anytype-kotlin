@@ -9,7 +9,6 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
@@ -47,7 +46,6 @@ object ObjectTypeChangeModule {
         getObjectTypes: GetObjectTypes,
         addObjectTypeToSpace: AddObjectTypeToSpace,
         dispatchers: AppCoroutineDispatchers,
-        workspaceManager: WorkspaceManager,
         spaceManager: SpaceManager,
         getDefaultPageType: GetDefaultPageType
     ): ObjectTypeChangeViewModelFactory {
@@ -55,7 +53,6 @@ object ObjectTypeChangeModule {
             getObjectTypes = getObjectTypes,
             addObjectTypeToSpace = addObjectTypeToSpace,
             dispatchers = dispatchers,
-            workspaceManager = workspaceManager,
             spaceManager = spaceManager,
             getDefaultPageType = getDefaultPageType
         )

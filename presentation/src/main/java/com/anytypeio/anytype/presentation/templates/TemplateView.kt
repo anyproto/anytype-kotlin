@@ -54,7 +54,6 @@ sealed class TemplateMenuClick {
     data class Edit(val template: Id) : TemplateMenuClick()
     data class Duplicate(val template: Id) : TemplateMenuClick()
     data class Delete(val template: Id) : TemplateMenuClick()
-    data class Type(val type: TemplateObjectTypeView) : TemplateMenuClick()
 }
 
 sealed class TemplateObjectTypeView {

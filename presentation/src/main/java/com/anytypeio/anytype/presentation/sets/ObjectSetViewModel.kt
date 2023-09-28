@@ -1891,27 +1891,32 @@ class ObjectSetViewModel(
                 is TemplateMenuClick.Delete -> proceedWithDeletionTemplate()
                 is TemplateMenuClick.Duplicate -> proceedWithDuplicateTemplate()
                 is TemplateMenuClick.Edit -> proceedWithEditingTemplate()
-                is TemplateMenuClick.Type -> TODO()
             }
         }
     }
 
     private fun proceedWithUpdatingViewDefaultTemplate() {
         when (val uiState = typeTemplatesWidgetState.value) {
-            is TypeTemplatesWidgetUI.Data.CreateObject -> Unit
+            is TypeTemplatesWidgetUI.Data.CreateObject,
             is TypeTemplatesWidgetUI.Data.DefaultObject -> {
-                when (val templateToSetAsDefault = uiState.moreMenuItem) {
+                val templateToSetAsDefault = when (uiState) {
+                    is TypeTemplatesWidgetUI.Data.CreateObject -> uiState.moreMenuItem
+                    is TypeTemplatesWidgetUI.Data.DefaultObject -> uiState.moreMenuItem
+                    else -> null
+                }
+
+                when (templateToSetAsDefault) {
                     is TemplateView.Blank -> {
-                        typeTemplatesWidgetState.value = uiState.exitEditing()
-                        proceedWithUpdateViewer(
-                            viewerId = uiState.viewerId
-                        ) { it.copy(defaultTemplate = templateToSetAsDefault.id) }
+                        typeTemplatesWidgetState.value = (uiState as TypeTemplatesWidgetUI.Data).exitEditing()
+                        proceedWithUpdateViewer(viewerId = uiState.viewerId) {
+                            it.copy(defaultTemplate = templateToSetAsDefault.id)
+                        }
                     }
                     is TemplateView.Template -> {
-                        typeTemplatesWidgetState.value = uiState.exitEditing()
-                        proceedWithUpdateViewer(
-                            viewerId = uiState.viewerId
-                        ) { it.copy(defaultTemplate = templateToSetAsDefault.id) }
+                        typeTemplatesWidgetState.value = (uiState as TypeTemplatesWidgetUI.Data).exitEditing()
+                        proceedWithUpdateViewer(viewerId = uiState.viewerId) {
+                            it.copy(defaultTemplate = templateToSetAsDefault.id)
+                        }
                     }
                     else -> Unit
                 }

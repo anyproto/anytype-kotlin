@@ -195,7 +195,7 @@ class ObjectSetViewModel(
     private var context: Id = ""
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
-    private var templatesJob = mutableListOf<Job>()
+    private val templatesJob = mutableListOf<Job>()
 
     init {
         Timber.d("ObjectSetViewModel, init")

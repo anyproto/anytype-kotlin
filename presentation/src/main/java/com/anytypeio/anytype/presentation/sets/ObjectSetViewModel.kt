@@ -1596,7 +1596,12 @@ class ObjectSetViewModel(
                             selectedTypeFlow.value = action.type
                             proceedWithUpdateViewer(
                                 viewerId = uiState.getWidgetViewerId()
-                            ) { it.copy(defaultObjectType = action.type.id) }
+                            ) {
+                                it.copy(
+                                    defaultObjectType = action.type.id,
+                                    defaultTemplate = null
+                                )
+                            }
                         }
                         is TypeTemplatesWidgetUI.Init -> Unit
                     }

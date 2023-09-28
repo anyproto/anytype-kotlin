@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -201,18 +200,13 @@ class HomeScreenViewModel(
         }
 
     init {
-        val config = configStorage.getOrNull()
-        if (config != null) {
-            proceedWithObservingSpaceIcon()
-            proceedWithLaunchingUnsubscriber()
-            proceedWithObjectViewStatePipeline(config)
-            proceedWithWidgetContainerPipeline()
-            proceedWithRenderingPipeline()
-            proceedWithObservingDispatches()
-            proceedWithSettingUpShortcuts()
-        } else {
-            Timber.e("Failed to get config to initialize home component")
-        }
+        proceedWithObservingSpaceIcon()
+        proceedWithLaunchingUnsubscriber()
+        proceedWithObjectViewStatePipeline()
+        proceedWithWidgetContainerPipeline()
+        proceedWithRenderingPipeline()
+        proceedWithObservingDispatches()
+        proceedWithSettingUpShortcuts()
     }
 
     private fun proceedWithLaunchingUnsubscriber() {
@@ -296,14 +290,16 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithObjectViewStatePipeline(config: Config) {
-        val externalChannelEvents = interceptEvents.build(
-            InterceptEvents.Params(config.widgets)
-        ).map { events ->
-            Payload(
-                context = config.widgets,
-                events = events
-            )
+    private fun proceedWithObjectViewStatePipeline() {
+        val externalChannelEvents = spaceManager.observe().flatMapLatest {  config ->
+            interceptEvents.build(
+                InterceptEvents.Params(config.widgets)
+            ).map { events ->
+                Payload(
+                    context = config.widgets,
+                    events = events
+                )
+            }
         }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()

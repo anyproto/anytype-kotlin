@@ -340,7 +340,7 @@ open class ObjectSetFragment :
                     onDismiss = vm::onDismissTemplatesWidget,
                     editClick = vm::onEditTemplateButtonClicked,
                     doneClick = vm::onDoneTemplateButtonClicked,
-                    moreClick = { vm.onMoreTemplateButtonClicked(it) },
+                    moreClick = vm::onMoreTemplateButtonClicked,
                     menuClick = vm::onMoreMenuClicked,
                     action = vm::onTypeTemplatesWidgetAction,
                     scope = lifecycleScope
@@ -1143,7 +1143,7 @@ open class ObjectSetFragment :
             when {
                 childFragmentManager.backStackEntryCount > 0 -> childFragmentManager.popBackStack()
                 vm.isCustomizeViewPanelVisible.value -> vm.onHideViewerCustomizeSwiped()
-                (vm.typeTemplatesWidgetState.value as? TypeTemplatesWidgetUI.Data)?.showWidget == true -> vm.onDismissTemplatesWidget()
+                vm.typeTemplatesWidgetState.value.showWidget -> vm.onDismissTemplatesWidget()
                 vm.viewersWidgetState.value.showWidget -> handleViewersWidgetState()
                 vm.viewerEditWidgetState.value.isVisible() -> handleViewerEditWidgetState()
                 else -> vm.onSystemBackPressed()

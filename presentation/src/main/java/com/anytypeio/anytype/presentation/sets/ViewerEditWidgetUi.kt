@@ -6,10 +6,8 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 
 
 sealed class ViewerEditWidgetUi {
@@ -27,7 +25,7 @@ sealed class ViewerEditWidgetUi {
         val filters: List<Id> = emptyList(),
         val sorts: List<Id> = emptyList(),
         val defaultTemplateId: Id?,
-        val defaultTemplate: ObjectWrapper.Basic?
+        val defaultTemplateName: String?
     ) : ViewerEditWidgetUi()
 }
 
@@ -64,11 +62,7 @@ suspend fun DVViewer.toViewerEditWidgetState(
     val viewerDefaultObjectTypeId = dvViewer.defaultObjectType ?: ObjectTypeIds.PAGE
     val viewerDefaultTemplateId = dvViewer.defaultTemplate
     val defaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId)
-    val defaultTemplate = if (viewerDefaultTemplateId == DEFAULT_TEMPLATE_ID_BLANK){
-        ObjectWrapper.Basic(mapOf(Relations.ID to viewerDefaultTemplateId))
-    } else {
-        ObjectWrapper.Basic(details[viewerDefaultTemplateId]?.map ?: emptyMap() )
-    }
+    val defaultTemplateName = details[viewerDefaultTemplateId]?.name
     return ViewerEditWidgetUi.Data(
         showWidget = true,
         id = dvViewer.id,
@@ -80,7 +74,7 @@ suspend fun DVViewer.toViewerEditWidgetState(
         defaultObjectType = defaultObjectType,
         isDefaultObjectTypeEnabled = isDefaultObjectTypeEnabled,
         defaultTemplateId = viewerDefaultTemplateId,
-        defaultTemplate = defaultTemplate
+        defaultTemplateName = defaultTemplateName
     )
 }
 

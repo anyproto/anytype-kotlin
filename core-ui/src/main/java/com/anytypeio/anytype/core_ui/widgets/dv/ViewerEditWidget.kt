@@ -193,10 +193,10 @@ fun ViewerEditWidgetContent(
                 }
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             } else {
-                val templateName = if (state.defaultTemplate?.id == DEFAULT_TEMPLATE_ID_BLANK) {
+                val templateName = if (state.defaultTemplateId == DEFAULT_TEMPLATE_ID_BLANK) {
                     stringResource(id = R.string.blank)
                 } else {
-                    state.defaultTemplate?.name.orEmpty()
+                    state.defaultTemplateName.orEmpty()
                 }
                 ColumnItem(
                     title = stringResource(id = R.string.default_template),
@@ -393,7 +393,7 @@ fun PreviewViewerEditWidget() {
         id = "1",
         defaultTemplateId = "1",
         isDefaultObjectTypeEnabled = false,
-        defaultTemplate = null
+        defaultTemplateName = null
     )
     ViewerEditWidget(state = state, action = {})
 }

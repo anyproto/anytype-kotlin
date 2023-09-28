@@ -1600,7 +1600,6 @@ class ObjectSetViewModel(
             when (action) {
                 is TypeTemplatesWidgetUIAction.TypeClick.Item -> {
                     when (uiState) {
-                        is TypeTemplatesWidgetUI.Data.DefaultTemplate -> TODO()
                         is TypeTemplatesWidgetUI.Data.CreateObject -> {
                             selectedTypeFlow.value = action.type
                         }
@@ -1616,7 +1615,6 @@ class ObjectSetViewModel(
                 TypeTemplatesWidgetUIAction.TypeClick.Search -> TODO()
                 is TypeTemplatesWidgetUIAction.TemplateClick -> {
                     when (uiState) {
-                        is TypeTemplatesWidgetUI.Data.DefaultTemplate -> TODO()
                         is TypeTemplatesWidgetUI.Data.CreateObject ->
                             uiState.onTemplateClick(action.template)
                         is TypeTemplatesWidgetUI.Data.DefaultObject ->
@@ -1716,7 +1714,6 @@ class ObjectSetViewModel(
                 }.collectLatest { types ->
                     typeTemplatesWidgetState.value =
                         when (val uiState = typeTemplatesWidgetState.value) {
-                            is TypeTemplatesWidgetUI.Data.DefaultTemplate -> uiState
                             is TypeTemplatesWidgetUI.Data.CreateObject -> uiState.copy(objectTypes = types)
                             is TypeTemplatesWidgetUI.Data.DefaultObject -> uiState.copy(objectTypes = types)
                             is TypeTemplatesWidgetUI.Init -> uiState
@@ -1743,7 +1740,6 @@ class ObjectSetViewModel(
                 val viewer = dataView.viewerById(viewerId) ?: return@map emptyList<TemplateView>()
                 val (type, template) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
                 when (typeTemplatesWidgetState.value) {
-                    is TypeTemplatesWidgetUI.Data.DefaultTemplate,
                     is TypeTemplatesWidgetUI.Data.DefaultObject-> {
                         if (type == selectedTypeFlow.value) {
                             processTemplates(
@@ -1778,7 +1774,6 @@ class ObjectSetViewModel(
                 }
             }.collectLatest { templates ->
                 typeTemplatesWidgetState.value = when(val uistate = typeTemplatesWidgetState.value) {
-                    is TypeTemplatesWidgetUI.Data.DefaultTemplate -> uistate.copy(templates = templates)
                     is TypeTemplatesWidgetUI.Data.CreateObject -> uistate.copy(templates = templates)
                     is TypeTemplatesWidgetUI.Data.DefaultObject -> uistate.copy(templates = templates)
                     is TypeTemplatesWidgetUI.Init -> uistate

@@ -226,10 +226,16 @@ fun TypeTemplatesWidget(
                                 )
                             }
                         }
-                        val title = when (currentState) {
-                            is TypeTemplatesWidgetUI.Data.DefaultTemplate -> stringResource(R.string.default_template)
+                        val title = when (val s = currentState) {
                             is TypeTemplatesWidgetUI.Data.CreateObject -> stringResource(R.string.type_templates_widget_title)
-                            is TypeTemplatesWidgetUI.Data.DefaultObject -> stringResource(R.string.default_object)
+                            is TypeTemplatesWidgetUI.Data.DefaultObject -> {
+                                if (s.isPossibleToChangeType) {
+                                    stringResource(R.string.default_object)
+                                } else {
+                                    stringResource(R.string.default_template)
+                                }
+
+                            }
                             is TypeTemplatesWidgetUI.Init -> ""
                         }
                         Box(modifier = Modifier.align(Alignment.Center)) {
@@ -1021,7 +1027,8 @@ fun ComposablePreview() {
                 )
             )
         ),
-        viewerId = ""
+        viewerId = "",
+        isPossibleToChangeType = true
     )
     TypeTemplatesWidget(
         state = state,

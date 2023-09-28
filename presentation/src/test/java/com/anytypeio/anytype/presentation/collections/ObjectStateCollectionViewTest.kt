@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObject
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
@@ -524,16 +525,18 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should be collection with templates present when default type is custom with proper recommended layout`() = runTest {
         // SETUP
 
-        val defaultObjectType = MockDataFactory.randomString()
+        val defaultObjectType = TypeKey(MockDataFactory.randomString())
         val defaultObjectTypeName = "CustomName"
 
         stubWorkspaceManager(mockObjectCollection.workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
-        stubGetDefaultPageType(defaultObjectType, defaultObjectTypeName)
+        stubGetDefaultPageType(
+            defaultObjectType, defaultObjectTypeName
+        )
         stubTemplatesContainer(
-            type = defaultObjectType,
-            templates = listOf(StubObject(objectType = defaultObjectType))
+            type = defaultObjectType.key,
+            templates = listOf(StubObject(objectType = defaultObjectType.key))
         )
 
         stubOpenObject(
@@ -581,7 +584,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should be collection without templates allowed when default type is custom with not proper recommended layout`() = runTest {
         // SETUP
 
-        val defaultObjectType = MockDataFactory.randomString()
+        val defaultObjectType = TypeKey(MockDataFactory.randomString())
         val defaultObjectTypeName = "CustomName"
 
         stubWorkspaceManager(mockObjectCollection.workspaceId)
@@ -634,7 +637,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should be collection without templates allowed when default type is NOTE`() = runTest {
         // SETUP
 
-        val defaultObjectType = ObjectTypeIds.NOTE
+        val defaultObjectType = TypeKey(ObjectTypeIds.NOTE)
         val defaultObjectTypeName = "Note"
 
         stubWorkspaceManager(mockObjectCollection.workspaceId)

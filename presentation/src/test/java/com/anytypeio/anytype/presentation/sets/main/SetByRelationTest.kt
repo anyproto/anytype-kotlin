@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.main
 
 import app.cash.turbine.test
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -59,7 +60,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         )
         doReturn(Unit).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
-                type = mockObjectSet.setOf,
+                type = TypeKey(mockObjectSet.setOf),
                 filters = mockObjectSet.filters,
                 template = null
             )
@@ -82,7 +83,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByType(
-                        type = mockObjectSet.setOf,
+                        type = TypeKey(mockObjectSet.setOf),
                         filters = mockObjectSet.filters,
                         template = null
                     )

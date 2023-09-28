@@ -19,7 +19,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.sets.MockObjectSetFactory
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -30,7 +30,6 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -66,15 +65,15 @@ class FilterViewModelInputFieldValueModifyTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
     private lateinit var viewModel: FilterViewModel
     private lateinit var urlBuilder: UrlBuilder
     private val root = MockDataFactory.randomUuid()
     private val dataViewId = MockDataFactory.randomString()
     private val session = ObjectSetSession()
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
-
-    lateinit var workspaceManager: WorkspaceManager
-    val workspaceId = MockDataFactory.randomString()
 
     //LONG TEXT
     private val relation1 = StubRelationObject(
@@ -189,10 +188,6 @@ class FilterViewModelInputFieldValueModifyTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
-        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
-        runBlocking {
-            workspaceManager.setCurrentWorkspace(workspaceId)
-        }
         viewModel = FilterViewModel(
             objectState = state,
             session = session,
@@ -205,7 +200,7 @@ class FilterViewModelInputFieldValueModifyTest {
             storeOfRelations = storeOfRelations,
             objectSetDatabase = db,
             getOptions = getOptions,
-            workspaceManager = workspaceManager
+            spaceManager = spaceManager
         )
     }
 

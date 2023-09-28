@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.collections
 
 import app.cash.turbine.testIn
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
@@ -65,11 +66,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         val newObjectId = "objNewNote-${RandomString.make()}"
         val result = CreateDataViewObject.Result(
             objectId = newObjectId,
-            objectType = ObjectTypeIds.NOTE
+            objectType = TypeKey(ObjectTypeIds.NOTE)
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
-                type = ObjectTypeIds.NOTE,
+                type = TypeKey(ObjectTypeIds.NOTE),
                 filters = mockObjectSet.filters,
                 template = null
             )
@@ -88,7 +89,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             async(
                 CreateDataViewObject.Params.SetByType(
-                    type = ObjectTypeIds.NOTE,
+                    type = TypeKey(ObjectTypeIds.NOTE),
                     filters = mockObjectSet.filters,
                     template = null
                 )
@@ -123,11 +124,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         val newObjectId = "objNewPage-${RandomString.make()}"
         val result = CreateDataViewObject.Result(
             objectId = newObjectId,
-            objectType = ObjectTypeIds.PAGE
+            objectType = TypeKey(ObjectTypeIds.PAGE)
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
-                type = ObjectTypeIds.PAGE,
+                type = TypeKey(ObjectTypeIds.PAGE),
                 filters = mockObjectSet.filters,
                 template = null
             )
@@ -149,7 +150,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             async(
                 CreateDataViewObject.Params.SetByType(
-                    type = ObjectTypeIds.PAGE,
+                    type = TypeKey(ObjectTypeIds.PAGE),
                     filters = mockObjectSet.filters,
                     template = null
                 )
@@ -184,7 +185,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         val newObjectId = "objNew-${RandomString.make()}"
         val result = CreateDataViewObject.Result(
             objectId = newObjectId,
-            objectType = ObjectTypeIds.NOTE
+            objectType = TypeKey(ObjectTypeIds.NOTE)
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByRelation(
@@ -248,7 +249,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         val newObjectId = "objNew-${RandomString.make()}"
         val result = CreateDataViewObject.Result(
             objectId = newObjectId,
-            objectType = ObjectTypeIds.NOTE
+            objectType = TypeKey(ObjectTypeIds.NOTE)
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.Collection(

@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,7 +38,7 @@ class CollectionTemplatesDelegateTest: ObjectSetViewModelTestSetup() {
     @Test
     fun `should start get templates when collection with default type allowed templates`() = runTest {
 
-        val defaultType = ObjectTypeIds.PAGE
+        val defaultType = TypeKey(ObjectTypeIds.PAGE)
         val defaultTypeName = "Page"
         val defaultTypeMap = mapOf(
             Relations.ID to defaultType,
@@ -54,7 +54,7 @@ class CollectionTemplatesDelegateTest: ObjectSetViewModelTestSetup() {
         stubInterceptThreadStatus()
         stubStoreOfObjectTypes(defaultTypeMap)
         stubGetDefaultPageType(type = defaultType, name = defaultTypeName)
-        stubTemplatesContainer(type = defaultType)
+        stubTemplatesContainer(type = defaultType.key)
 
         val details = Block.Details(
             details = mapOf(
@@ -87,7 +87,7 @@ class CollectionTemplatesDelegateTest: ObjectSetViewModelTestSetup() {
 
         advanceUntilIdle()
 
-        verify(templatesContainer, times(1)).subscribe(defaultType)
+        verify(templatesContainer, times(1)).subscribe(defaultType.key)
 
         verifyNoInteractions(createDataViewObject)
     }
@@ -95,7 +95,7 @@ class CollectionTemplatesDelegateTest: ObjectSetViewModelTestSetup() {
     @Test
     fun `should not start get templates when collection with default type not allowed templates`() = runTest {
 
-        val defaultType = ObjectTypeIds.NOTE
+        val defaultType = TypeKey(ObjectTypeIds.NOTE)
         val defaultTypeName = "Note"
         val defaultTypeMap = mapOf(
             Relations.ID to defaultType,

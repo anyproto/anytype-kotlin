@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.util.dispatchers
@@ -63,7 +64,8 @@ class CreateBlockLinkWithObjectTest {
             context = context,
             target = target,
             position = position,
-            type = type
+            typeKey = TypeKey(type),
+            typeId = TODO()
         )
         createBlockLinkWithObject.run(params)
 
@@ -76,7 +78,8 @@ class CreateBlockLinkWithObjectTest {
                 put(Relations.TYPE, type)
             },
             template = null,
-            internalFlags = listOf()
+            internalFlags = listOf(),
+            type = TypeKey(type)
         )
         verifyBlocking(repo, times(1)) { createBlockLinkWithObject(commands) }
     }
@@ -100,7 +103,8 @@ class CreateBlockLinkWithObjectTest {
             context = context,
             target = target,
             position = position,
-            type = type
+            typeKey = TypeKey(type),
+            typeId = TODO()
         )
         createBlockLinkWithObject.run(params)
 
@@ -113,7 +117,8 @@ class CreateBlockLinkWithObjectTest {
                 put(Relations.TYPE, type)
             },
             template = template,
-            internalFlags = listOf()
+            internalFlags = listOf(),
+            type = TypeKey(type)
         )
         verifyBlocking(repo, times(1)) { createBlockLinkWithObject(commands) }
     }
@@ -145,7 +150,8 @@ class CreateBlockLinkWithObjectTest {
             context = context,
             target = target,
             position = position,
-            type = type
+            typeKey = TypeKey(type),
+            typeId = TODO()
         )
         createBlockLinkWithObject.run(params)
 
@@ -154,11 +160,10 @@ class CreateBlockLinkWithObjectTest {
             context = context,
             target = target,
             position = position,
-            prefilled = buildMap {
-                put(Relations.TYPE, type)
-            },
             template = null,
-            internalFlags = listOf()
+            internalFlags = listOf(),
+            type = TypeKey(type),
+            prefilled = emptyMap()
         )
         verifyBlocking(repo, times(1)) { createBlockLinkWithObject(commands) }
     }

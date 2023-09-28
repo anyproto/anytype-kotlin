@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.model.Section
 import com.anytypeio.anytype.presentation.relations.providers.FakeObjectRelationProvider
@@ -45,11 +45,11 @@ class RelationAddViewModelBaseTest {
     lateinit var repo: BlockRepository
 
     @Mock
-    lateinit var workspaceManager: WorkspaceManager
+    lateinit var spaceManager: SpaceManager
 
     private val relationsProvider = FakeObjectRelationProvider()
 
-    private val workspaceId = MockDataFactory.randomString()
+    private val spaceId = MockDataFactory.randomString()
 
     @Before
     fun setup() {
@@ -62,13 +62,13 @@ class RelationAddViewModelBaseTest {
         // SETUP
 
         val relation = StubRelationObject(
-            workspaceId = workspaceId
+            workspaceId = spaceId
         )
 
-        workspaceManager.stub {
+        spaceManager.stub {
             onBlocking {
-                getCurrentWorkspace()
-            } doReturn workspaceId
+                get()
+            } doReturn spaceId
         }
 
         repo.stub {
@@ -81,7 +81,7 @@ class RelationAddViewModelBaseTest {
                             DVFilter(
                                 relation = Relations.WORKSPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
-                                value = workspaceId
+                                value = spaceId
                             )
                         )
                         add(
@@ -150,7 +150,7 @@ class RelationAddViewModelBaseTest {
                         id = relation.id,
                         name = relation.name.orEmpty(),
                         format = relation.format,
-                        space = workspaceId
+                        space = spaceId
                     )
                 )
             )
@@ -185,15 +185,15 @@ class RelationAddViewModelBaseTest {
             )
 
             val library = listOf(
-                StubRelationObject(sourceObject = marketplace[0].id, workspaceId = workspaceId),
-                StubRelationObject(workspaceId = workspaceId),
-                StubRelationObject(workspaceId = workspaceId)
+                StubRelationObject(sourceObject = marketplace[0].id, workspaceId = spaceId),
+                StubRelationObject(workspaceId = spaceId),
+                StubRelationObject(workspaceId = spaceId)
             )
 
-            workspaceManager.stub {
+            spaceManager.stub {
                 onBlocking {
-                    getCurrentWorkspace()
-                } doReturn workspaceId
+                    get()
+                } doReturn spaceId
             }
 
             repo.stub {
@@ -206,7 +206,7 @@ class RelationAddViewModelBaseTest {
                                 DVFilter(
                                     relation = Relations.WORKSPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
-                                    value = workspaceId
+                                    value = spaceId
                                 )
                             )
                             add(
@@ -275,21 +275,21 @@ class RelationAddViewModelBaseTest {
                             id = library[0].id,
                             name = library[0].name.orEmpty(),
                             format = library[0].format,
-                            space = workspaceId
+                            space = spaceId
                         ),
                         RelationView.Existing(
                             key = library[1].key,
                             id = library[1].id,
                             name = library[1].name.orEmpty(),
                             format = library[1].format,
-                            space = workspaceId
+                            space = spaceId
                         ),
                         RelationView.Existing(
                             key = library[2].key,
                             id = library[2].id,
                             name = library[2].name.orEmpty(),
                             format = library[2].format,
-                            space = workspaceId
+                            space = spaceId
                         ),
                         Section.Marketplace,
                         RelationView.Existing(
@@ -321,6 +321,6 @@ class RelationAddViewModelBaseTest {
             repo = repo,
             dispatchers = appCoroutineDispatchers
         ),
-        workspaceManager = workspaceManager
+        spaceManager = spaceManager
     ) {}
 }

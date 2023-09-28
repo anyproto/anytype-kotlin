@@ -1,9 +1,13 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubSmartBlock
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.page.CreateBlockLinkWithObject
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_CHANGES_DEBOUNCE_DURATION
@@ -76,7 +80,8 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
                     id = type2.id,
                     name = type2.getProperName(),
                     description = type2.description,
-                    emoji = type2.iconEmoji
+                    emoji = type2.iconEmoji,
+                    key = type2.getValue<Key>(Relations.UNIQUE_KEY)!!
                 )
             )
         )
@@ -85,7 +90,8 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             context = root,
             target = a.id,
             position = Position.BOTTOM,
-            type = type2.id
+            typeId = TypeId(type2.id),
+            typeKey = TypeKey(type2.getValue<Key>(Relations.UNIQUE_KEY)!!)
         )
 
         verifyBlocking(createBlockLinkWithObject, times(1)) { async(params) }
@@ -131,7 +137,8 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
                     id = type2.id,
                     name = type2.getProperName(),
                     description = type2.description,
-                    emoji = type2.iconEmoji
+                    emoji = type2.iconEmoji,
+                    key = type2.getValue(Relations.UNIQUE_KEY)!!
                 )
             )
         )
@@ -140,7 +147,8 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             context = root,
             target = paragraph.id,
             position = Position.REPLACE,
-            type = type2.id
+            typeId = TypeId(type2.id),
+            typeKey = TypeKey(type2.getValue(Relations.UNIQUE_KEY)!!)
         )
 
         verifyBlocking(createBlockLinkWithObject, times(1)) { async(params) }

@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
@@ -322,7 +323,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 async(
                     CreateObjectAsMentionOrLink.Params(
                         name = newPageName,
-                        type = ObjectTypeIds.NOTE
+                        typeKey = TypeKey(ObjectTypeIds.NOTE)
                     )
                 )
             } doReturn Resultat.success(
@@ -361,7 +362,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             async(
                 CreateObjectAsMentionOrLink.Params(
                     name = newPageName,
-                    type = ObjectTypeIds.NOTE
+                    typeKey = TypeKey(ObjectTypeIds.NOTE),
+                    typeId = null
                 )
             )
         }
@@ -486,7 +488,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
                 async(
                     CreateObjectAsMentionOrLink.Params(
                         name = newPageName,
-                        type = "_otarticle"
+                        typeKey = TypeKey("_otarticle"),
+                        typeId = null
                     )
                 )
             } doReturn Resultat.success(
@@ -525,7 +528,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             async(
                 CreateObjectAsMentionOrLink.Params(
                     name = newPageName,
-                    type = "_otarticle"
+                    typeKey = TypeKey("_otarticle"),
+                    typeId = null
                 )
             )
         }

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
@@ -90,7 +91,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -135,7 +136,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -338,6 +338,9 @@ open class EditorViewModelTest {
     @Mock
     lateinit var convertObjectToCollection: ConvertObjectToCollection
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
     private lateinit var updateDetail: UpdateDetail
 
     @Mock
@@ -382,8 +385,7 @@ open class EditorViewModelTest {
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
-    lateinit var workspaceManager: WorkspaceManager
-    val workspaceId = MockDataFactory.randomString()
+    val spaceId = MockDataFactory.randomString()
 
     @Before
     fun setup() {
@@ -3788,8 +3790,9 @@ open class EditorViewModelTest {
     private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
         getDefaultPageType.stub {
             onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
-                type,
-                name
+                type = type?.let { TypeKey((it)) },
+                name = name,
+                id = null
             )
         }
     }
@@ -3816,10 +3819,6 @@ open class EditorViewModelTest {
         interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
         setObjectInternalFlags = SetObjectInternalFlags(repo, dispatchers)
 
-        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
-        runBlocking {
-            workspaceManager.setCurrentWorkspace(workspaceId)
-        }
         getObjectTypes = GetObjectTypes(repo, dispatchers)
 
         vm = EditorViewModel(
@@ -3904,11 +3903,11 @@ open class EditorViewModelTest {
             storeOfObjectTypes = storeOfObjectTypes,
             featureToggles = mock(),
             tableDelegate = tableDelegate,
-            workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
-            setObjectInternalFlags = setObjectInternalFlags
+            setObjectInternalFlags = setObjectInternalFlags,
+            spaceManager = spaceManager
         )
     }
 
@@ -4377,7 +4376,8 @@ open class EditorViewModelTest {
                     event = Payload(
                         context = id,
                         events = listOf()
-                    )
+                    ),
+                    type = TODO()
                 )
             )
         }

@@ -1536,7 +1536,14 @@ class ObjectSetViewModel(
         }
     }
 
-    // region TYPES AND TEMPLATES WIDGET
+    //region TYPES AND TEMPLATES WIDGET
+    fun onNewTypeForViewerClicked(typeId: Id) {
+        viewModelScope.launch {
+            val type = storeOfObjectTypes.get(typeId)
+            selectedTypeFlow.value = type
+        }
+    }
+
     private fun showTypeTemplatesWidgetForObjectCreation() {
         val isPossibleToChangeType = stateReducer.state.value.dataViewState()?.isChangingDefaultTypeAvailable()
         showTypeTemplatesWidget(
@@ -1607,7 +1614,13 @@ class ObjectSetViewModel(
                         is TypeTemplatesWidgetUI.Init -> Unit
                     }
                 }
-                TypeTemplatesWidgetUIAction.TypeClick.Search -> TODO()
+                TypeTemplatesWidgetUIAction.TypeClick.Search -> {
+                    _commands.emit(
+                        ObjectSetCommand.Modal.OpenSelectTypeScreen(
+                            excludedTypes = emptyList()
+                        )
+                    )
+                }
                 is TypeTemplatesWidgetUIAction.TemplateClick -> {
                     when (uiState) {
                         is TypeTemplatesWidgetUI.Data.CreateObject ->
@@ -1698,12 +1711,13 @@ class ObjectSetViewModel(
                         Pair(selectedTypeId, types)
                     }
                 }.map { (selectedTypeId, types) ->
-                    types.map { type ->
-                        TemplateObjectTypeView.Item(
-                            type = ObjectWrapper.Type(type.map),
-                            isDefault = type.id == selectedTypeId.id
-                        )
-                    }
+                    listOf(TemplateObjectTypeView.Search) +
+                            types.map { type ->
+                                TemplateObjectTypeView.Item(
+                                    type = ObjectWrapper.Type(type.map),
+                                    isDefault = type.id == selectedTypeId.id
+                                )
+                            }
                 }.collectLatest { types ->
                     typeTemplatesWidgetState.value =
                         when (val uiState = typeTemplatesWidgetState.value) {

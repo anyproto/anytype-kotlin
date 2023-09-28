@@ -89,6 +89,10 @@ sealed class ObjectSetCommand {
             val ctx: Id,
             val relation: Key
         ) : Modal()
+
+        data class OpenSelectTypeScreen(
+            val excludedTypes: List<Id>
+        ) : Modal()
     }
 
     sealed class Intent : ObjectSetCommand() {

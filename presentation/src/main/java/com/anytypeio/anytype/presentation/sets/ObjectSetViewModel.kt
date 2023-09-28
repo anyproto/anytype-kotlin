@@ -1584,6 +1584,7 @@ class ObjectSetViewModel(
     }
 
     fun onTypeTemplatesWidgetAction(action: TypeTemplatesWidgetUIAction) {
+        Timber.d("onTypeTemplatesWidgetAction, action:[$action]")
         val uiState = typeTemplatesWidgetState.value
         viewModelScope.launch {
             when (action) {
@@ -1733,7 +1734,7 @@ class ObjectSetViewModel(
                 val (type, template) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
                 when (typeTemplatesWidgetState.value) {
                     is TypeTemplatesWidgetUI.Data.DefaultObject-> {
-                        if (type == selectedTypeFlow.value) {
+                        if (type?.id == selectedTypeFlow.value?.id) {
                             processTemplates(
                                 results = templates,
                                 viewerDefObjType = type ?: selectedTypeFlow.value,
@@ -1748,7 +1749,7 @@ class ObjectSetViewModel(
                         }
                     }
                     is TypeTemplatesWidgetUI.Data.CreateObject -> {
-                        if (type == selectedTypeFlow.value) {
+                        if (type?.id == selectedTypeFlow.value?.id) {
                             processTemplates(
                                 results = templates,
                                 viewerDefObjType = type ?: selectedTypeFlow.value,

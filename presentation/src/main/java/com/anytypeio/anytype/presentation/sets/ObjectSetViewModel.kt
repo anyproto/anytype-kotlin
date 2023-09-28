@@ -302,7 +302,8 @@ class ObjectSetViewModel(
                         viewerEditWidgetState.value = viewer.toViewerEditWidgetState(
                             storeOfRelations = storeOfRelations,
                             storeOfObjectTypes = storeOfObjectTypes,
-                            isDefaultObjectTypeEnabled = dataView.isChangingDefaultTypeAvailable()
+                            isDefaultObjectTypeEnabled = dataView.isChangingDefaultTypeAvailable(),
+                            details = dataView.details
                         )
                         viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.updateState(
                             viewer = viewer,
@@ -1553,26 +1554,15 @@ class ObjectSetViewModel(
     }
 
     private fun showTypeTemplatesWidgetForViewerDefaultObject(viewerId: Id) {
+        val isPossibleToChangeType = stateReducer.state.value.dataViewState()?.isChangingDefaultTypeAvailable()
         showTypeTemplatesWidget(
             getViewer = { it?.viewerById(viewerId) },
             createState = { viewer ->
                 TypeTemplatesWidgetUI.Data.DefaultObject(
                     showWidget = true,
                     isEditing = false,
-                    viewerId = viewer.id
-                )
-            }
-        )
-    }
-
-    private fun showTypeTemplatesWidgetForViewerDefaultTemplate(viewerId: Id) {
-        showTypeTemplatesWidget(
-            getViewer = { it?.viewerById(viewerId) },
-            createState = { viewer ->
-                TypeTemplatesWidgetUI.Data.DefaultTemplate(
-                    showWidget = true,
-                    isEditing = false,
-                    viewerId = viewer.id
+                    viewerId = viewer.id,
+                    isPossibleToChangeType = isPossibleToChangeType == true
                 )
             }
         )
@@ -2174,6 +2164,12 @@ class ObjectSetViewModel(
                         )
                     )
                 }
+            }
+
+            is ViewEditAction.DefaultTemplate -> {
+                showTypeTemplatesWidgetForViewerDefaultObject(
+                    viewerId = action.id
+                )
             }
         }
     }

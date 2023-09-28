@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -59,11 +58,8 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
-import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.presentation.library.LibraryEvent
 import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 
@@ -186,16 +182,25 @@ fun ViewerEditWidgetContent(
             }
             NameTextField(state = currentState, action = action)
             Spacer(modifier = Modifier.height(12.dp))
-            ColumnItem(
-                title = stringResource(id = R.string.default_object),
-                value = state.defaultObjectType?.name.orEmpty(),
-                isEnable = state.isDefaultObjectTypeEnabled
-            ) {
-                if (state.isDefaultObjectTypeEnabled) {
+            if (state.isDefaultObjectTypeEnabled) {
+                ColumnItem(
+                    title = stringResource(id = R.string.default_object),
+                    value = state.defaultObjectType?.name.orEmpty(),
+                    isEnable = true
+                ) {
                     action(ViewEditAction.DefaultObjectType(id = state.id))
                 }
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            } else {
+                ColumnItem(
+                    title = stringResource(id = R.string.default_template),
+                    value = state.defaultTemplate?.name.orEmpty(),
+                    isEnable = true
+                ) {
+                    action(ViewEditAction.DefaultTemplate(id = state.id))
+                }
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             }
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
             val layoutValue = when (state.layout) {
                 DVViewerType.LIST -> stringResource(id = R.string.view_list)
@@ -380,8 +385,9 @@ fun PreviewViewerEditWidget() {
         layout = DVViewerType.LIST,
         relations = listOf(),
         id = "1",
-        defaultTemplate = null,
-        isDefaultObjectTypeEnabled = true
+        defaultTemplateId = "1",
+        isDefaultObjectTypeEnabled = false,
+        defaultTemplate = null
     )
     ViewerEditWidget(state = state, action = {})
 }

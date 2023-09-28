@@ -424,83 +424,99 @@ private fun TemplatesList(
     action: (TypeTemplatesWidgetUIAction) -> Unit,
     moreClick: (TemplateView, IntOffset) -> Unit
 ) {
-    LazyRow(
-        state = scrollState,
-        modifier = Modifier
-            .wrapContentHeight()
-            .fillMaxWidth(),
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(5.dp)
-    )
-    {
-        itemsIndexed(
-            items = state.templates,
-            itemContent = { index, item ->
-                Box(
-                    modifier =
-                    Modifier
-                        .height(232.dp)
-                        .width(127.dp),
-                    contentAlignment = Alignment.BottomStart
-                ) {
-                    val borderWidth: Dp
-                    val borderColor: Color
-                    if (item.isDefault) {
-                        borderWidth = 2.dp
-                        borderColor = colorResource(id = R.color.palette_system_amber_50)
-                    } else {
-                        borderWidth = 1.dp
-                        borderColor = colorResource(id = R.color.shape_primary)
-                    }
+    if (state.templates.isEmpty()) {
+        Box(
+            modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+            contentAlignment = Alignment.Center) {
+            Text(
+                modifier = Modifier
+                    .wrapContentSize()
+                    .padding(top = 111.dp, bottom = 111.dp),
+                text = stringResource(id = R.string.title_templates_not_allowed),
+                style = BodyCalloutRegular,
+                color = colorResource(id = R.color.text_secondary)
+            )
+        }
+    } else {
+        LazyRow(
+            state = scrollState,
+            modifier = Modifier
+                .wrapContentHeight()
+                .fillMaxWidth(),
+            contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
+            horizontalArrangement = Arrangement.spacedBy(5.dp)
+        )
+        {
+            itemsIndexed(
+                items = state.templates,
+                itemContent = { index, item ->
                     Box(
-                        modifier = Modifier
-                            .border(
-                                width = borderWidth,
-                                color = borderColor,
-                                shape = RoundedCornerShape(size = 16.dp)
-                            )
-                            .height(224.dp)
-                            .width(120.dp)
-                            .clickable {
-                                action(TemplateClick(item))
-                            }
+                        modifier =
+                        Modifier
+                            .height(232.dp)
+                            .width(127.dp),
+                        contentAlignment = Alignment.BottomStart
                     ) {
-                        TemplateItemContent(item)
-                    }
-
-                    val showMoreButton = (item is TemplateView.Template && state.isEditing) || (state is TypeTemplatesWidgetUI.Data.DefaultObject && item is TemplateView.Blank && state.isEditing)
-                    AnimatedVisibility(
-                        visible = showMoreButton,
-                        enter = fadeIn(),
-                        exit = fadeOut(),
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(1.dp)
-                    ) {
-                        var currentCoordinates: IntOffset by remember {
-                            mutableStateOf(IntOffset(0, 0))
+                        val borderWidth: Dp
+                        val borderColor: Color
+                        if (item.isDefault) {
+                            borderWidth = 2.dp
+                            borderColor = colorResource(id = R.color.palette_system_amber_50)
+                        } else {
+                            borderWidth = 1.dp
+                            borderColor = colorResource(id = R.color.shape_primary)
                         }
-                        Image(
+                        Box(
                             modifier = Modifier
-                                .width(28.dp)
-                                .height(28.dp)
-                                .clickable { moreClick(item, currentCoordinates) }
-                                .onGloballyPositioned { coordinates ->
-                                    if (coordinates.isAttached) {
-                                        with(coordinates.positionInRoot()) {
-                                            currentCoordinates = IntOffset(x.toInt(), y.toInt())
+                                .border(
+                                    width = borderWidth,
+                                    color = borderColor,
+                                    shape = RoundedCornerShape(size = 16.dp)
+                                )
+                                .height(224.dp)
+                                .width(120.dp)
+                                .clickable {
+                                    action(TemplateClick(item))
+                                }
+                        ) {
+                            TemplateItemContent(item)
+                        }
+
+                        val showMoreButton =
+                            (item is TemplateView.Template && state.isEditing) || (state is TypeTemplatesWidgetUI.Data.DefaultObject && item is TemplateView.Blank && state.isEditing)
+                        AnimatedVisibility(
+                            visible = showMoreButton,
+                            enter = fadeIn(),
+                            exit = fadeOut(),
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(1.dp)
+                        ) {
+                            var currentCoordinates: IntOffset by remember {
+                                mutableStateOf(IntOffset(0, 0))
+                            }
+                            Image(
+                                modifier = Modifier
+                                    .width(28.dp)
+                                    .height(28.dp)
+                                    .clickable { moreClick(item, currentCoordinates) }
+                                    .onGloballyPositioned { coordinates ->
+                                        if (coordinates.isAttached) {
+                                            with(coordinates.positionInRoot()) {
+                                                currentCoordinates = IntOffset(x.toInt(), y.toInt())
+                                            }
+                                        } else {
+                                            currentCoordinates = IntOffset(0, 0)
                                         }
-                                    } else {
-                                        currentCoordinates = IntOffset(0, 0)
-                                    }
-                                },
-                            painter = painterResource(id = R.drawable.ic_edit_temlate),
-                            contentDescription = "Edit template button"
-                        )
+                                    },
+                                painter = painterResource(id = R.drawable.ic_edit_temlate),
+                                contentDescription = "Edit template button"
+                            )
+                        }
                     }
                 }
-            }
-        )
+            )
+        }
     }
 }
 

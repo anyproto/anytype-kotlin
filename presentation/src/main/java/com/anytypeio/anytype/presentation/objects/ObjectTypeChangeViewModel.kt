@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -37,7 +36,6 @@ class ObjectTypeChangeViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val addObjectTypeToSpace: AddObjectTypeToSpace,
     private val dispatchers: AppCoroutineDispatchers,
-    private val workspaceManager: WorkspaceManager,
     private val spaceManager: SpaceManager,
     private val getDefaultPageType: GetDefaultPageType,
 ) : BaseViewModel() {

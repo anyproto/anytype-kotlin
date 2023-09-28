@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.StubRelationOptionObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.RelationValueView.Option.Tag
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider
 import com.anytypeio.anytype.presentation.relations.add.BaseAddOptionsRelationViewModel
@@ -67,6 +68,9 @@ class BaseAddOptionsRelationViewModelTest {
 
     @Mock
     lateinit var getOptions: GetOptions
+
+    @Mock
+    lateinit var spaceManager: SpaceManager
 
     @Before
     fun setup() {
@@ -288,6 +292,7 @@ class BaseAddOptionsRelationViewModelTest {
             setObjectDetail = setObjectDetails,
             analytics = analytics,
             detailsProvider = objectDetailProvider,
-            getOptions = getOptions
+            getOptions = getOptions,
+            spaceManager = spaceManager
         ) {}
 }

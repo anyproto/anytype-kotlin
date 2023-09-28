@@ -49,6 +49,7 @@ import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -59,6 +60,7 @@ import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
@@ -168,6 +170,12 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var objectWatcher: ObjectWatcher
+
+    @Mock
+    lateinit var spaceWidgetContainer: SpaceWidgetContainer
+
+    @Mock
+    lateinit var spaceManager: SpaceManager
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
@@ -1054,16 +1062,7 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(any())
         stubGetWidgetSession()
         stubSaveWidgetSession()
-
-        getDefaultPageType.stub {
-            onBlocking {
-                execute(any())
-            } doReturn Resultat.Success(
-                GetDefaultPageType.Response(
-                    null, null
-                )
-            )
-        }
+        stubGetDefaultPageType()
 
         storelessSubscriptionContainer.stub {
             onBlocking {
@@ -2580,7 +2579,11 @@ class HomeScreenViewModelTest {
             onBlocking {
                 execute(any())
             } doReturn Resultat.Success(
-                GetDefaultPageType.Response(null, null)
+                GetDefaultPageType.Response(
+                    id = null,
+                    type = null,
+                    name = null
+                )
             )
         }
     }
@@ -2614,7 +2617,9 @@ class HomeScreenViewModelTest {
         spaceGradientProvider = spaceGradientProvider,
         storeOfObjectTypes = storeOfObjectTypes,
         objectWatcher = objectWatcher,
-        setWidgetActiveView = setWidgetActiveView
+        setWidgetActiveView = setWidgetActiveView,
+        spaceWidgetContainer = spaceWidgetContainer,
+        spaceManager = spaceManager
     )
 
     companion object {

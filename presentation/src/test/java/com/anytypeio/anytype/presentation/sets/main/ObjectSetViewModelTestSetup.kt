@@ -6,11 +6,11 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
@@ -44,7 +44,7 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
@@ -170,12 +170,13 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var viewerDelegate: ViewerDelegate
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
     var stateReducer = DefaultObjectStateReducer()
 
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
     lateinit var dataViewSubscription: DataViewSubscription
-
-    var workspaceManager: WorkspaceManager = WorkspaceManager.DefaultWorkspaceManager()
 
     val dispatcher = Dispatcher.Default<Payload>()
     private val delegator = Delegator.Default<Action>()
@@ -188,7 +189,7 @@ open class ObjectSetViewModelTestSetup {
 
     val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
 
-    val defaultObjectPageType = MockDataFactory.randomString()
+    val defaultObjectPageType = TypeKey(MockDataFactory.randomString())
     val defaultObjectPageTypeName = MockDataFactory.randomString()
 
     lateinit var dispatchers: AppCoroutineDispatchers
@@ -231,7 +232,6 @@ open class ObjectSetViewModelTestSetup {
             storeOfRelations = storeOfRelations,
             stateReducer = stateReducer,
             dataViewSubscription = dataViewSubscription,
-            workspaceManager = workspaceManager,
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
@@ -242,7 +242,8 @@ open class ObjectSetViewModelTestSetup {
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,
-            viewerDelegate = viewerDelegate
+            viewerDelegate = viewerDelegate,
+            spaceManager = spaceManager
         )
     }
 
@@ -266,7 +267,6 @@ open class ObjectSetViewModelTestSetup {
     fun stubOpenObject(
         doc: List<Block> = emptyList(),
         details: Block.Details = Block.Details(),
-        objectTypes: List<ObjectType> = emptyList(),
         relations: List<Relation> = emptyList(),
         additionalEvents: List<Event> = emptyList(),
         dataViewRestrictions: List<DataViewRestrictions> = emptyList()
@@ -294,8 +294,8 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    suspend fun stubWorkspaceManager(workspace: Id) {
-        workspaceManager.setCurrentWorkspace(workspace)
+    suspend fun stubWorkspaceManager(space: Id) {
+        spaceManager.set(space)
     }
 
     suspend fun stubSubscriptionResults(
@@ -372,9 +372,13 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    fun stubGetDefaultPageType(type: String = defaultObjectPageType, name: String = defaultObjectPageTypeName) {
+    fun stubGetDefaultPageType(type: TypeKey = defaultObjectPageType, name: String = defaultObjectPageTypeName) {
         getDefaultPageType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(type = type, name = name)
+            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
+                type = type,
+                name = name,
+                id = null
+            )
         }
     }
 

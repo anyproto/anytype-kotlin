@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
@@ -48,6 +49,7 @@ import com.anytypeio.anytype.domain.status.ThreadStatusChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.common.Action
@@ -143,6 +145,12 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var viewerDelegate: ViewerDelegate
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
+    @Mock
+    lateinit var configStorage: ConfigStorage
+
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultPageType: GetDefaultPageType
 
@@ -201,15 +209,17 @@ abstract class TestObjectSetSetup {
         getDefaultPageType = GetDefaultPageType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = repo,
-            workspaceManager = workspaceManager,
-            dispatchers = dispatchers
+            spaceManager = spaceManager,
+            dispatchers = dispatchers,
+            configStorage = configStorage
         )
         createDataViewObject = CreateDataViewObject(
             getTemplates = getTemplates,
             repo = repo,
             storeOfRelations = storeOfRelations,
             getDefaultPageType = getDefaultPageType,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            spaceManager = spaceManager
         )
         setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo)
@@ -253,7 +263,6 @@ abstract class TestObjectSetSetup {
             storeOfRelations = storeOfRelations,
             objectStateReducer = DefaultObjectStateReducer(),
             dataViewSubscription = DefaultDataViewSubscription(dataViewSubscriptionContainer),
-            workspaceManager = workspaceManager,
             objectToCollection = convertObjectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             objectStore = objectStore,
@@ -264,7 +273,8 @@ abstract class TestObjectSetSetup {
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,
-            viewerDelegate = viewerDelegate
+            viewerDelegate = viewerDelegate,
+            spaceManager = spaceManager
         )
     }
 

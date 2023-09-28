@@ -253,7 +253,7 @@ fun TypeTemplatesWidget(
 //                        }
                     }
                     val itemsScroll = rememberLazyListState()
-                    if (currentState is TypeTemplatesWidgetUI.Data) {
+                    if ((currentState as? TypeTemplatesWidgetUI.Data)?.isPossibleToChangeType == true) {
                         Spacer(modifier = Modifier.height(26.dp))
                         Text(
                             modifier = Modifier.padding(start = 20.dp),

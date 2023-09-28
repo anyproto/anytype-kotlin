@@ -1538,13 +1538,15 @@ class ObjectSetViewModel(
 
     // region TYPES AND TEMPLATES WIDGET
     private fun showTypeTemplatesWidgetForObjectCreation() {
+        val isPossibleToChangeType = stateReducer.state.value.dataViewState()?.isChangingDefaultTypeAvailable()
         showTypeTemplatesWidget(
             getViewer = { it?.viewerByIdOrFirst(session.currentViewerId.value) },
             createState = { viewer ->
                 TypeTemplatesWidgetUI.Data.CreateObject(
                     showWidget = true,
                     isEditing = false,
-                    viewerId = viewer.id
+                    viewerId = viewer.id,
+                    isPossibleToChangeType = isPossibleToChangeType == true
                 )
             }
         )

@@ -19,6 +19,7 @@ sealed class TypeTemplatesWidgetUI {
         abstract val moreMenuItemId: TemplateView?
         abstract val templates: List<TemplateView>
         abstract val objectTypes: List<TemplateObjectTypeView>
+        abstract val isPossibleToChangeType: Boolean
         abstract val viewerId: Id
 
         data class DefaultTemplate(
@@ -27,7 +28,8 @@ sealed class TypeTemplatesWidgetUI {
             override val moreMenuItemId: TemplateView? = null,
             override val templates: List<TemplateView> = emptyList(),
             override val objectTypes: List<TemplateObjectTypeView> = emptyList(),
-            override val viewerId: Id
+            override val viewerId: Id,
+            override val isPossibleToChangeType: Boolean = false
         ) : Data()
 
         data class DefaultObject(
@@ -37,6 +39,7 @@ sealed class TypeTemplatesWidgetUI {
             override val templates: List<TemplateView> = emptyList(),
             override val objectTypes: List<TemplateObjectTypeView> = emptyList(),
             override val viewerId: Id,
+            override val isPossibleToChangeType: Boolean = false
         ) : Data()
 
         data class CreateObject(
@@ -46,6 +49,7 @@ sealed class TypeTemplatesWidgetUI {
             override val templates: List<TemplateView> = emptyList(),
             override val objectTypes: List<TemplateObjectTypeView> = emptyList(),
             override val viewerId: Id,
+            override val isPossibleToChangeType: Boolean = false
         ) : Data()
     }
 

@@ -20,8 +20,8 @@ sealed interface ObjectTypeTemplatesContainer {
 
     suspend fun subscribeToTypes(): Flow<List<ObjectWrapper.Basic>>
     suspend fun subscribeToTemplates(type: Id): Flow<List<ObjectWrapper.Basic>>
-    suspend fun unsubscribeToTypes()
-    suspend fun unsubscribeToTemplates()
+    suspend fun unsubscribeFromTypes()
+    suspend fun unsubscribeFromTemplates()
 }
 
 class DefaultObjectTypeTemplatesContainer(
@@ -132,11 +132,11 @@ class DefaultObjectTypeTemplatesContainer(
         return storage.subscribe(objTypeParams)
     }
 
-    override suspend fun unsubscribeToTypes() {
+    override suspend fun unsubscribeFromTypes() {
         storage.unsubscribe(listOf(TYPE_TEMPLATES_TYPE_SUBSCRIPTION_ID,))
     }
 
-    override suspend fun unsubscribeToTemplates() {
+    override suspend fun unsubscribeFromTemplates() {
         storage.unsubscribe(listOf(TYPE_TEMPLATES_TEMPLATES_SUBSCRIPTION_ID,))
     }
 

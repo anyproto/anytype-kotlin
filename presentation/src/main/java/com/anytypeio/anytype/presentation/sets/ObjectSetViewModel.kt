@@ -1013,7 +1013,7 @@ class ObjectSetViewModel(
         dispatch(ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen)
     }
 
-    private suspend fun proceedWithAddingObjectToCollection(typeChosenBy: Id? = null, templateChosenBy: Id? = null) {
+    private suspend fun proceedWithAddingObjectToCollection(typeChosenByUser: Id? = null, templateChosenBy: Id? = null) {
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
 
@@ -1026,7 +1026,7 @@ class ObjectSetViewModel(
         )
         val createObjectParams = CreateDataViewObject.Params.Collection(
             templateId = validTemplateId,
-            type = typeChosenBy ?: defaultObjectType?.id
+            type = typeChosenByUser ?: defaultObjectType?.id
         )
         proceedWithCreatingDataViewObject(createObjectParams) { result ->
             val params = AddObjectToCollection.Params(
@@ -1309,8 +1309,8 @@ class ObjectSetViewModel(
 
     override fun onCleared() {
         Timber.d("onCleared, ")
-        viewModelScope.launch { templatesContainer.unsubscribeToTemplates() }
-        viewModelScope.launch { templatesContainer.unsubscribeToTypes() }
+        viewModelScope.launch { templatesContainer.unsubscribeFromTemplates() }
+        viewModelScope.launch { templatesContainer.unsubscribeFromTypes() }
         super.onCleared()
         titleUpdateChannel.cancel()
         stateReducer.clear()
@@ -1576,7 +1576,7 @@ class ObjectSetViewModel(
             val viewer = getViewer(dataView) ?: return@launch
             val (type, _) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes) ?: return@launch
             typeTemplatesWidgetState.value = createState(viewer)
-            subscribeToObjectTypes()
+            subscribeToViewerObjectTypes()
             subscribeToTemplates()
             selectedTypeFlow.value = type
         }
@@ -1690,7 +1690,7 @@ class ObjectSetViewModel(
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun subscribeToObjectTypes() {
+    private fun subscribeToViewerObjectTypes() {
         templatesJob += viewModelScope.launch {
             selectedTypeFlow.filterNotNull().distinctUntilChanged()
                 .flatMapLatest { selectedTypeId ->
@@ -1870,8 +1870,8 @@ class ObjectSetViewModel(
                     state.showWidget -> {
                         viewModelScope.launch {
                             templatesJob.cancel()
-                            templatesContainer.unsubscribeToTypes()
-                            templatesContainer.unsubscribeToTemplates()
+                            templatesContainer.unsubscribeFromTypes()
+                            templatesContainer.unsubscribeFromTemplates()
                         }
                         selectedTypeFlow.value = null
                         TypeTemplatesWidgetUI.Init()
@@ -2238,7 +2238,7 @@ class ObjectSetViewModel(
             when (state) {
                 is ObjectState.DataView.Collection -> {
                     proceedWithAddingObjectToCollection(
-                        typeChosenBy = typeChosenBy,
+                        typeChosenByUser = typeChosenBy,
                         templateChosenBy = templateId
                     )
                 }

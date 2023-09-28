@@ -62,6 +62,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
+import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -192,9 +193,14 @@ fun ViewerEditWidgetContent(
                 }
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             } else {
+                val templateName = if (state.defaultTemplate?.id == DEFAULT_TEMPLATE_ID_BLANK) {
+                    stringResource(id = R.string.blank)
+                } else {
+                    state.defaultTemplate?.name.orEmpty()
+                }
                 ColumnItem(
                     title = stringResource(id = R.string.default_template),
-                    value = state.defaultTemplate?.name.orEmpty(),
+                    value = templateName,
                     isEnable = true
                 ) {
                     action(ViewEditAction.DefaultTemplate(id = state.id))

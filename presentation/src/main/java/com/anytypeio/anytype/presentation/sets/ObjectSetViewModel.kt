@@ -8,7 +8,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -1619,7 +1618,7 @@ class ObjectSetViewModel(
     private suspend fun TypeTemplatesWidgetUI.Data.CreateObject.onTemplateClick(
         templateView: TemplateView
     ) {
-        if (moreMenuItemId != null) {
+        if (moreMenuItem != null) {
             typeTemplatesWidgetState.value = hideMoreMenu()
             return
         }
@@ -1651,7 +1650,7 @@ class ObjectSetViewModel(
     private suspend fun TypeTemplatesWidgetUI.Data.DefaultObject.onTemplateClick(
         templateView: TemplateView
     ) {
-        if (moreMenuItemId != null) {
+        if (moreMenuItem != null) {
             typeTemplatesWidgetState.value = hideMoreMenu()
             return
         }
@@ -1846,10 +1845,10 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onMoreTemplateButtonClicked(template: TemplateView.Template) {
+    fun onMoreTemplateButtonClicked(template: TemplateView) {
         Timber.d("onMoreTemplateButtonClicked, template:[$template]")
         val uiState = typeTemplatesWidgetState.value as? TypeTemplatesWidgetUI.Data ?: return
-        typeTemplatesWidgetState.value = if (uiState.moreMenuItemId != null) {
+        typeTemplatesWidgetState.value = if (uiState.moreMenuItem != null) {
             uiState.hideMoreMenu()
         } else {
             uiState.showMoreMenu(template)
@@ -1861,7 +1860,7 @@ class ObjectSetViewModel(
         typeTemplatesWidgetState.value = when (val state = typeTemplatesWidgetState.value) {
             is TypeTemplatesWidgetUI.Data -> {
                 when {
-                    state.moreMenuItemId != null -> state.hideMoreMenu()
+                    state.moreMenuItem != null -> state.hideMoreMenu()
                     state.showWidget -> {
                         viewModelScope.launch {
                             templatesJob.cancel()
@@ -1892,21 +1891,32 @@ class ObjectSetViewModel(
     }
 
     private fun proceedWithUpdatingViewDefaultTemplate() {
-        val uiState = (typeTemplatesWidgetState.value as? TypeTemplatesWidgetUI.Data) ?: return
-        val template = (uiState.moreMenuItemId as? TemplateView.Template) ?: return
-        typeTemplatesWidgetState.value = uiState.exitEditing()
-        when (uiState) {
-            is TypeTemplatesWidgetUI.Data.CreateObject -> toast("Not allowed")
-            else -> {
-                proceedWithUpdateViewer(viewerId = uiState.viewerId
-                ) { it.copy(defaultTemplate = template.id) }
+        when (val uiState = typeTemplatesWidgetState.value) {
+            is TypeTemplatesWidgetUI.Data.CreateObject -> Unit
+            is TypeTemplatesWidgetUI.Data.DefaultObject -> {
+                when (val templateToSetAsDefault = uiState.moreMenuItem) {
+                    is TemplateView.Blank -> {
+                        typeTemplatesWidgetState.value = uiState.exitEditing()
+                        proceedWithUpdateViewer(
+                            viewerId = uiState.viewerId
+                        ) { it.copy(defaultTemplate = templateToSetAsDefault.id) }
+                    }
+                    is TemplateView.Template -> {
+                        typeTemplatesWidgetState.value = uiState.exitEditing()
+                        proceedWithUpdateViewer(
+                            viewerId = uiState.viewerId
+                        ) { it.copy(defaultTemplate = templateToSetAsDefault.id) }
+                    }
+                    else -> Unit
+                }
             }
+            is TypeTemplatesWidgetUI.Init -> Unit
         }
     }
 
     private fun proceedWithDuplicateTemplate() {
         val uiState =  (typeTemplatesWidgetState.value as? TypeTemplatesWidgetUI.Data) ?: return
-        val template = (uiState.moreMenuItemId as? TemplateView.Template) ?: return
+        val template = (uiState.moreMenuItem as? TemplateView.Template) ?: return
         typeTemplatesWidgetState.value = uiState.exitEditing()
         val params = DuplicateObjects.Params(
             ids = listOf(template.id)
@@ -1926,7 +1936,7 @@ class ObjectSetViewModel(
 
     private fun proceedWithDeletionTemplate() {
         val uiState = (typeTemplatesWidgetState.value as? TypeTemplatesWidgetUI.Data) ?: return
-        val template = (uiState.moreMenuItemId as? TemplateView.Template) ?: return
+        val template = (uiState.moreMenuItem as? TemplateView.Template) ?: return
         typeTemplatesWidgetState.value = uiState.exitEditing()
         val params = SetObjectListIsArchived.Params(
             targets = listOf(template.id),
@@ -1947,7 +1957,7 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithEditingTemplate() {
         val uiState = (typeTemplatesWidgetState.value as? TypeTemplatesWidgetUI.Data) ?: return
-        val template = uiState.moreMenuItemId ?: return
+        val template = uiState.moreMenuItem ?: return
         typeTemplatesWidgetState.value = uiState.exitEditing()
         when (template) {
             is TemplateView.Template -> {

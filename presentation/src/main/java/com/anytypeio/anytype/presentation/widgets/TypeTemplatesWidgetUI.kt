@@ -16,7 +16,7 @@ sealed class TypeTemplatesWidgetUI {
 
     sealed class Data : TypeTemplatesWidgetUI() {
 
-        abstract val moreMenuItemId: TemplateView?
+        abstract val moreMenuItem: TemplateView?
         abstract val templates: List<TemplateView>
         abstract val objectTypes: List<TemplateObjectTypeView>
         abstract val isPossibleToChangeType: Boolean
@@ -25,7 +25,7 @@ sealed class TypeTemplatesWidgetUI {
         data class DefaultObject(
             override val showWidget: Boolean,
             override val isEditing: Boolean,
-            override val moreMenuItemId: TemplateView? = null,
+            override val moreMenuItem: TemplateView? = null,
             override val templates: List<TemplateView> = emptyList(),
             override val objectTypes: List<TemplateObjectTypeView> = emptyList(),
             override val viewerId: Id,
@@ -35,7 +35,7 @@ sealed class TypeTemplatesWidgetUI {
         data class CreateObject(
             override val showWidget: Boolean,
             override val isEditing: Boolean,
-            override val moreMenuItemId: TemplateView? = null,
+            override val moreMenuItem: TemplateView? = null,
             override val templates: List<TemplateView> = emptyList(),
             override val objectTypes: List<TemplateObjectTypeView> = emptyList(),
             override val viewerId: Id,
@@ -65,21 +65,21 @@ fun TypeTemplatesWidgetUI.Data.enterEditing(): TypeTemplatesWidgetUI.Data {
 
 fun TypeTemplatesWidgetUI.Data.exitEditing(): TypeTemplatesWidgetUI.Data {
     return when (this) {
-        is TypeTemplatesWidgetUI.Data.DefaultObject -> copy(isEditing = false, moreMenuItemId = null)
-        is TypeTemplatesWidgetUI.Data.CreateObject -> copy(isEditing = false, moreMenuItemId = null)
+        is TypeTemplatesWidgetUI.Data.DefaultObject -> copy(isEditing = false, moreMenuItem = null)
+        is TypeTemplatesWidgetUI.Data.CreateObject -> copy(isEditing = false, moreMenuItem = null)
     }
 }
 
 fun TypeTemplatesWidgetUI.Data.showMoreMenu(item: TemplateView): TypeTemplatesWidgetUI.Data {
     return when (this) {
-        is TypeTemplatesWidgetUI.Data.DefaultObject -> copy(moreMenuItemId = item)
-        is TypeTemplatesWidgetUI.Data.CreateObject -> copy(moreMenuItemId = item)
+        is TypeTemplatesWidgetUI.Data.DefaultObject -> copy(moreMenuItem = item)
+        is TypeTemplatesWidgetUI.Data.CreateObject -> copy(moreMenuItem = item)
     }
 }
 
 fun TypeTemplatesWidgetUI.Data.hideMoreMenu(): TypeTemplatesWidgetUI.Data {
     return when (this) {
-        is TypeTemplatesWidgetUI.Data.DefaultObject -> copy(moreMenuItemId = null)
-        is TypeTemplatesWidgetUI.Data.CreateObject -> copy(moreMenuItemId = null)
+        is TypeTemplatesWidgetUI.Data.DefaultObject -> copy(moreMenuItem = null)
+        is TypeTemplatesWidgetUI.Data.CreateObject -> copy(moreMenuItem = null)
     }
 }

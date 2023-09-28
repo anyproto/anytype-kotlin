@@ -340,7 +340,7 @@ open class ObjectSetFragment :
                     onDismiss = vm::onDismissTemplatesWidget,
                     editClick = vm::onEditTemplateButtonClicked,
                     doneClick = vm::onDoneTemplateButtonClicked,
-                    moreClick = vm::onMoreTemplateButtonClicked,
+                    moreClick = { vm.onMoreTemplateButtonClicked(it) },
                     menuClick = vm::onMoreMenuClicked,
                     action = vm::onTypeTemplatesWidgetAction,
                     scope = lifecycleScope

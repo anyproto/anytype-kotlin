@@ -26,7 +26,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -76,7 +75,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -86,7 +84,6 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.ModalTitle
-import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
@@ -109,7 +106,7 @@ import timber.log.Timber
 fun TypeTemplatesWidget(
     state: TypeTemplatesWidgetUI,
     onDismiss: () -> Unit,
-    moreClick: (TemplateView.Template) -> Unit,
+    moreClick: (TemplateView) -> Unit,
     editClick: () -> Unit,
     doneClick: () -> Unit,
     scope: CoroutineScope,
@@ -291,7 +288,7 @@ fun TypeTemplatesWidget(
                             action = action,
                             scrollState = itemsScroll
                         )
-                        if ((currentState as TypeTemplatesWidgetUI.Data).moreMenuItemId != null
+                        if ((currentState as TypeTemplatesWidgetUI.Data).moreMenuItem != null
                             && itemsScroll.isScrollInProgress
                         ) {
                             onDismiss()
@@ -301,7 +298,7 @@ fun TypeTemplatesWidget(
             }
         }
 
-        (currentState as? TypeTemplatesWidgetUI.Data)?.moreMenuItemId?.let { templateView ->
+        (currentState as? TypeTemplatesWidgetUI.Data)?.moreMenuItem?.let { templateView ->
             when (templateView) {
                 is TemplateView.Blank -> MoreMenuBlank(
                     itemId = templateView.id,
@@ -425,7 +422,7 @@ private fun TemplatesList(
     scrollState: LazyListState,
     state: TypeTemplatesWidgetUI.Data,
     action: (TypeTemplatesWidgetUIAction) -> Unit,
-    moreClick: (TemplateView.Template, IntOffset) -> Unit
+    moreClick: (TemplateView, IntOffset) -> Unit
 ) {
     LazyRow(
         state = scrollState,
@@ -470,36 +467,36 @@ private fun TemplatesList(
                     ) {
                         TemplateItemContent(item)
                     }
-                    if (item is TemplateView.Template) {
-                        AnimatedVisibility(
-                            visible = state.isEditing,
-                            enter = fadeIn(),
-                            exit = fadeOut(),
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(1.dp)
-                        ) {
-                            var currentCoordinates: IntOffset by remember {
-                                mutableStateOf(IntOffset(0, 0))
-                            }
-                            Image(
-                                modifier = Modifier
-                                    .width(28.dp)
-                                    .height(28.dp)
-                                    .clickable { moreClick(item, currentCoordinates) }
-                                    .onGloballyPositioned { coordinates ->
-                                        if (coordinates.isAttached) {
-                                            with(coordinates.positionInRoot()) {
-                                                currentCoordinates = IntOffset(x.toInt(), y.toInt())
-                                            }
-                                        } else {
-                                            currentCoordinates = IntOffset(0, 0)
-                                        }
-                                    },
-                                painter = painterResource(id = R.drawable.ic_edit_temlate),
-                                contentDescription = "Edit template button"
-                            )
+
+                    val showMoreButton = (item is TemplateView.Template && state.isEditing) || (state is TypeTemplatesWidgetUI.Data.DefaultObject && item is TemplateView.Blank && state.isEditing)
+                    AnimatedVisibility(
+                        visible = showMoreButton,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(1.dp)
+                    ) {
+                        var currentCoordinates: IntOffset by remember {
+                            mutableStateOf(IntOffset(0, 0))
                         }
+                        Image(
+                            modifier = Modifier
+                                .width(28.dp)
+                                .height(28.dp)
+                                .clickable { moreClick(item, currentCoordinates) }
+                                .onGloballyPositioned { coordinates ->
+                                    if (coordinates.isAttached) {
+                                        with(coordinates.positionInRoot()) {
+                                            currentCoordinates = IntOffset(x.toInt(), y.toInt())
+                                        }
+                                    } else {
+                                        currentCoordinates = IntOffset(0, 0)
+                                    }
+                                },
+                            painter = painterResource(id = R.drawable.ic_edit_temlate),
+                            contentDescription = "Edit template button"
+                        )
                     }
                 }
             }
@@ -1018,7 +1015,7 @@ fun ComposablePreview() {
         templates = items,
         showWidget = true,
         isEditing = true,
-        moreMenuItemId = null,
+        moreMenuItem = null,
         objectTypes = listOf(
             TemplateObjectTypeView.Search,
             TemplateObjectTypeView.Item(

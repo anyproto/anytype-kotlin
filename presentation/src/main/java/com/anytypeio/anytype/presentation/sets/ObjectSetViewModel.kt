@@ -292,7 +292,7 @@ class ObjectSetViewModel(
 
         viewModelScope.launch {
             combine(
-                widgetViewerId.filter { !it.isNullOrEmpty() },
+                widgetViewerId,
                 stateReducer.state,
             ) { viewId, state ->
                 if (viewId != null) {
@@ -1655,8 +1655,6 @@ class ObjectSetViewModel(
             typeTemplatesWidgetState.value = hideMoreMenu()
             return
         }
-        typeTemplatesWidgetState.value = copy(showWidget = false)
-        delay(DELAY_BEFORE_CREATING_TEMPLATE)
         when (templateView) {
             is TemplateView.Blank -> {
                 proceedWithUpdateViewer(
@@ -1806,7 +1804,7 @@ class ObjectSetViewModel(
                 coverImageHashProvider = coverImageHashProvider,
                 viewerDefTemplateId = viewerDefTemplateId,
             )
-        }.sortedByDescending { it.isDefault } + listOf(TemplateView.New(viewerDefObjType.id))
+        } + listOf(TemplateView.New(viewerDefObjType.id))
     }
 
     private fun proceedWithCreatingTemplate(targetObjectType: Id) {
@@ -2175,9 +2173,11 @@ class ObjectSetViewModel(
     }
 
     private fun showViewerEditWidget() {
-        val show = (viewerEditWidgetState.value as? ViewerEditWidgetUi.Data)?.copy(showWidget = true)
-                ?: ViewerEditWidgetUi.Init
-        viewerEditWidgetState.value = show
+        val uiState = viewerEditWidgetState.value
+        viewerEditWidgetState.value = when (uiState) {
+            is ViewerEditWidgetUi.Data -> uiState.copy(showWidget = true)
+            ViewerEditWidgetUi.Init -> uiState
+        }
     }
 
     private fun showViewerEditWidgetForNewView() {
@@ -2187,6 +2187,7 @@ class ObjectSetViewModel(
     }
 
     private fun hideViewerEditWidget() {
+        widgetViewerId.value = null
         viewerEditWidgetState.value = ViewerEditWidgetUi.Init
     }
 

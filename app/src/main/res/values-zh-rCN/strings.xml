@@ -172,7 +172,7 @@ val params : PrecomputedTextCompat.Params =
     <string name="clear">清除</string>
     <string name="views">视图</string>
     <string name="create">创建</string>
-    <string name="new_view">新视图</string>
+    <string name="new_view">新建视图</string>
     <string name="coming_soon">不久之后</string>
     <string name="edit_relations_title">关联</string>
     <string name="edit_view">编辑视图</string>
@@ -234,7 +234,7 @@ val params : PrecomputedTextCompat.Params =
     <string name="object_debug">对象调试</string>
     <string name="object_diagnostics">诊断</string>
     <string name="provide_name">为新对象提供名称</string>
-    <string name="wait_a_bit_message">请给我们一点时间。我们快到了…</string>
+    <string name="wait_a_bit_message">请给我们一点时间。就快好了…</string>
     <string name="soon">不久之后</string>
 
     <string name="are_you_sure_delete_one_object">是否确实要删除 1 个对象？</string>
@@ -261,7 +261,7 @@ val params : PrecomputedTextCompat.Params =
     <string name="download_from_node">存储在 Anytype 中的所有媒体文件将从您当前的设备中删除。可以从备份节点或其他设备再次下载它们。</string>
 
     <string name="new_profile">新个人资料</string>
-    <string name="back_up_your_phrase">备份短语</string>
+    <string name="back_up_your_phrase">备份恢复短语</string>
     <string name="anytype_analytics">Anytype 分析</string>
     <string name="anytype_analytics_msg">了解人们如何使用 Anytype 有助于我们改进产品。此版本的 Anytype 包含可保护您的隐私的分析代码。\n它不会记录实际文档的内容，但仍允许我们了解您如何使用 Anytype。\n请继续订阅我们的邮件列表，因为我们即将宣布允许您选择退出到新版本</string>
     <string name="retry">重试</string>
@@ -296,7 +296,7 @@ val params : PrecomputedTextCompat.Params =
     <string name="settings_screen">设置</string>
 
     <string name="snack_link_to">链接到</string>
-    <string name="snack_move_to">移至</string>
+    <string name="snack_move_to">移动至</string>
     <string name="recovery_phrase_copied">已复制恢复短语</string>
 
     <string name="library_title_types">类型</string>

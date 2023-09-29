@@ -2268,6 +2268,11 @@ class ObjectSetViewModel(
                 viewerLayoutWidgetState.value =
                     viewerLayoutWidgetState.value.copy(showCardSize = !isCardSizeMenuVisible)
             }
+            ViewerLayoutWidgetUi.Action.CoverMenu -> {
+                val isCoverMenuVisible = viewerLayoutWidgetState.value.showCoverMenu
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(showCoverMenu = !isCoverMenuVisible)
+            }
             is ViewerLayoutWidgetUi.Action.FitImage -> {
                 proceedWithUpdateViewer(
                     viewerId = viewerLayoutWidgetState.value.viewer

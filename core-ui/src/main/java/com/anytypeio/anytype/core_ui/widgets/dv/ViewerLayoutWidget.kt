@@ -202,7 +202,9 @@ fun ViewerLayoutWidget(
                                 is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> cover.name
                                 ViewerLayoutWidgetUi.State.ImagePreview.None -> stringResource(id = R.string.none)
                             },
-                            onClick = {},
+                            onClick = {
+                                action(ViewerLayoutWidgetUi.Action.CoverMenu)
+                            },
                             arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
                         )
                         Divider()
@@ -219,6 +221,10 @@ fun ViewerLayoutWidget(
             show = currentState.showCardSize,
             action = action,
             coordinates = currentCoordinates
+        )
+        ViewerLayoutCoverWidget(
+            uiState = currentState,
+            action = action
         )
     }
 }
@@ -381,7 +387,8 @@ fun PreviewLayoutScreen() {
             cardSize = ViewerLayoutWidgetUi.State.CardSize.Small,
             cover = ViewerLayoutWidgetUi.State.ImagePreview.Cover,
             showCardSize = true,
-            viewer = ""
+            viewer = "",
+            showCoverMenu = true
         ),
         action = {},
         scope = CoroutineScope(

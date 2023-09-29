@@ -662,6 +662,7 @@
     <string name="create">create</string>
     <string name="default_object">Default object</string>
     <string name="default_template">Default template</string>
+    <string name="title_templates_not_allowed">This type doesn’t support templates</string>
     <string name="layout">Layout</string>
     <string name="num_applied">%1$d applied</string>
     <string name="view_list">List</string>

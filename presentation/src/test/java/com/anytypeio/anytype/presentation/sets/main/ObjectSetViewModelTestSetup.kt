@@ -409,7 +409,8 @@ open class ObjectSetViewModelTestSetup {
                 Resultat.success(
                     CreateDataViewObject.Result(
                         objectId = objectId,
-                        objectType = objectType
+                        objectType = objectType,
+                        struct = null
                     )
                 )
             )

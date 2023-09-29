@@ -22,7 +22,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
@@ -72,7 +71,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         val newObjectId = "objNewNote-${RandomString.make()}"
         val result = CreateDataViewObject.Result(
             objectId = newObjectId,
-            objectType = ObjectTypeIds.NOTE
+            objectType = ObjectTypeIds.NOTE,
+            struct = null
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
@@ -106,7 +106,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `Should create and Set Name for Not-Note Object when clicking on New button in Set by Type`() = runTest {
+    fun `Should create and open Not-Note Object when clicking on New button in Set by Type`() = runTest {
 
         mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.PAGE)
 
@@ -130,7 +130,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         val newObjectId = "objNewPage-${RandomString.make()}"
         val result = CreateDataViewObject.Result(
             objectId = newObjectId,
-            objectType = ObjectTypeIds.PAGE
+            objectType = ObjectTypeIds.PAGE,
+            struct = null
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
@@ -149,8 +150,6 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
 
         viewModel.proceedWithDataViewObjectCreate()
 
-        assertIs<ObjectSetCommand.Modal.SetNameForCreatedObject>(commandFlow.awaitItem())
-
         advanceUntilIdle()
 
         verifyBlocking(createDataViewObject, times(1)) {
@@ -162,8 +161,6 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 )
             )
         }
-
-        verifyNoInteractions(closeBlock)
     }
 
     @Test
@@ -211,7 +208,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         val newObjectId = "objNew-${RandomString.make()}"
         val result = CreateDataViewObject.Result(
             objectId = newObjectId,
-            objectType = ObjectTypeIds.NOTE
+            objectType = ObjectTypeIds.NOTE,
+            struct = null
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByRelation(
@@ -289,7 +287,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         val newObjectId = "objNew-${RandomString.make()}"
         val result = CreateDataViewObject.Result(
             objectId = newObjectId,
-            objectType = ObjectTypeIds.NOTE
+            objectType = ObjectTypeIds.NOTE,
+            struct = null
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.Collection(

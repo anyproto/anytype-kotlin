@@ -712,7 +712,7 @@ fun Rpc.Object.Create.Response.toCoreModel(): CreateObjectResult {
     return CreateObjectResult(
         id = objectId,
         event = event.toPayload(),
-        details = details
+        details = details.orEmpty()
     )
 }
 

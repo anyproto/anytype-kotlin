@@ -1711,13 +1711,15 @@ class ObjectSetViewModel(
                         Pair(selectedTypeId, types)
                     }
                 }.map { (selectedTypeId, types) ->
-                    listOf(TemplateObjectTypeView.Search) +
-                            types.map { type ->
-                                TemplateObjectTypeView.Item(
-                                    type = ObjectWrapper.Type(type.map),
-                                    isDefault = type.id == selectedTypeId.id
-                                )
-                            }
+                    buildList {
+                        add(TemplateObjectTypeView.Search)
+                        addAll( types.map { type ->
+                            TemplateObjectTypeView.Item(
+                                type = ObjectWrapper.Type(type.map),
+                                isDefault = type.id == selectedTypeId.id
+                            )
+                        })
+                    }
                 }.collectLatest { types ->
                     typeTemplatesWidgetState.value =
                         when (val uiState = typeTemplatesWidgetState.value) {

@@ -1231,7 +1231,9 @@ open class ObjectSetFragment :
         vm.onNewTypeForViewerClicked(id)
     }
 
-    override fun onProceedWithDraftUpdateType(id: Id) {}
+    override fun onProceedWithDraftUpdateType(id: Id) {
+        // Do nothing
+    }
 
     private fun observeSelectingTemplate() {
         val navController = findNavController()

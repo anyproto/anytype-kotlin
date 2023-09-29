@@ -1677,12 +1677,22 @@ class ObjectSetViewModel(
             is TemplateView.Blank -> {
                 proceedWithUpdateViewer(
                     viewerId = getWidgetViewerId()
-                ) { it.copy(defaultTemplate = templateView.id) }
+                ) {
+                    it.copy(
+                        defaultTemplate = templateView.id,
+                        defaultObjectType = templateView.typeId
+                    )
+                }
             }
             is TemplateView.Template -> {
                 proceedWithUpdateViewer(
                     viewerId = getWidgetViewerId()
-                ) { it.copy(defaultTemplate = templateView.id) }
+                ) {
+                    it.copy(
+                        defaultTemplate = templateView.id,
+                        defaultObjectType = templateView.typeId
+                    )
+                }
             }
             is TemplateView.New -> {
                 proceedWithCreatingTemplate(

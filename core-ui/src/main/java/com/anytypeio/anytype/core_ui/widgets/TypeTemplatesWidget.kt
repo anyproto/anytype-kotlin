@@ -305,11 +305,15 @@ fun TypeTemplatesWidget(
                     currentCoordinates = currentClickedMoreButtonCoordinates,
                     menuClick = menuClick
                 )
-                is TemplateView.Template -> MoreMenu(
-                    itemId = templateView.id,
-                    currentCoordinates = currentClickedMoreButtonCoordinates,
-                    menuClick = menuClick
-                )
+                is TemplateView.Template -> {
+                    val withDefaultForView = currentState is TypeTemplatesWidgetUI.Data.DefaultObject
+                    MoreMenu(
+                        itemId = templateView.id,
+                        currentCoordinates = currentClickedMoreButtonCoordinates,
+                        menuClick = menuClick,
+                        withDefaultForView = withDefaultForView
+                    )
+                }
                 is TemplateView.New -> Unit
             }
         }
@@ -320,7 +324,8 @@ fun TypeTemplatesWidget(
 private fun MoreMenu(
     itemId: Id,
     currentCoordinates: IntOffset,
-    menuClick: (TemplateMenuClick) -> Unit
+    menuClick: (TemplateMenuClick) -> Unit,
+    withDefaultForView: Boolean
 ) {
     val moreButtonXCoordinatesDp = with(LocalDensity.current) { currentCoordinates.x.toDp() }
     val offsetX = if (moreButtonXCoordinatesDp > 244.dp) {
@@ -344,11 +349,13 @@ private fun MoreMenu(
                 shape = RoundedCornerShape(size = 10.dp)
             )
     ) {
-        MenuItem(
-            click = { menuClick(TemplateMenuClick.Default(itemId)) },
-            text = stringResource(id = R.string.templates_menu_default_for_view)
-        )
-        Divider()
+        if (withDefaultForView) {
+            MenuItem(
+                click = { menuClick(TemplateMenuClick.Default(itemId)) },
+                text = stringResource(id = R.string.templates_menu_default_for_view)
+            )
+            Divider()
+        }
         MenuItem(
             click = { menuClick(TemplateMenuClick.Edit(itemId)) },
             text = stringResource(id = R.string.templates_menu_edit)

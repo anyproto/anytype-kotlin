@@ -1052,7 +1052,7 @@ class ObjectSetViewModel(
             createDataViewObject.async(params).fold(
                 onFailure = { Timber.e(it, "Error while creating new record") },
                 onSuccess = { result ->
-                    proceedWithNewDataViewObject(params, result.objectId)
+                    proceedWithNewDataViewObject(result)
                     action?.invoke(result)
                     sendAnalyticsObjectCreateEvent(
                         startTime = startTime,
@@ -1063,27 +1063,14 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithNewDataViewObject(params: CreateDataViewObject.Params, newObject: Id) {
-        when (params) {
-            is CreateDataViewObject.Params.Collection -> {
-                proceedWithOpeningObject(newObject)
-            }
-            is CreateDataViewObject.Params.SetByRelation -> {
-                proceedWithOpeningObject(newObject)
-            }
-            is CreateDataViewObject.Params.SetByType -> {
-                if (params.type == ObjectTypeIds.NOTE) {
-                    proceedWithOpeningObject(newObject)
-                } else {
-                    dispatch(
-                        ObjectSetCommand.Modal.SetNameForCreatedObject(
-                            ctx = context,
-                            target = newObject
-                        )
-                    )
-                }
-            }
-        }
+    private suspend fun proceedWithNewDataViewObject(
+        response: CreateDataViewObject.Result,
+    ) {
+        val obj = ObjectWrapper.Basic(response.struct.orEmpty())
+        proceedWithOpeningObject(
+            target = response.objectId,
+            layout = obj.layout
+        )
     }
 
     fun onViewerCustomizeButtonClicked() {
@@ -1227,16 +1214,19 @@ class ObjectSetViewModel(
 
     //region NAVIGATION
 
-    private suspend fun proceedWithOpeningObject(target: Id) {
+    private suspend fun proceedWithOpeningObject(target: Id, layout: ObjectType.Layout? = null) {
         isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {
+            val navigateCommand = when (layout) {
+                ObjectType.Layout.SET,
+                ObjectType.Layout.COLLECTION -> AppNavigation.Command.OpenSetOrCollection(target = target)
+                else -> AppNavigation.Command.OpenObject(id = target)
+            }
             closeBlock.async(context).fold(
-                onSuccess = {
-                    navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
-                },
+                onSuccess = { navigate(EventWrapper(navigateCommand)) },
                 onFailure = {
                     Timber.e(it, "Error while closing object set: $context")
-                    navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
+                    navigate(EventWrapper(navigateCommand))
                 }
             )
         }

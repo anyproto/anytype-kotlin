@@ -157,6 +157,7 @@ fun TypeTemplatesWidget(
         var currentClickedMoreButtonCoordinates: IntOffset by remember {
             mutableStateOf(IntOffset(0, 0))
         }
+        val showPlusButton = remember { mutableStateOf(false) }
 
         AnimatedVisibility(
             visible = currentState.showWidget,
@@ -242,18 +243,29 @@ fun TypeTemplatesWidget(
                                 color = colorResource(R.color.text_primary)
                             )
                         }
-//                        Box(modifier = Modifier.align(Alignment.CenterEnd)) {
-//                            Image(
-//                                modifier = Modifier.padding(
-//                                    start = 16.dp,
-//                                    top = 12.dp,
-//                                    bottom = 12.dp,
-//                                    end = 16.dp
-//                                ),
-//                                painter = painterResource(id = R.drawable.ic_default_plus),
-//                                contentDescription = null
-//                            )
-//                        }
+                        if (showPlusButton.value) {
+                            Box(
+                                modifier = Modifier.align(Alignment.CenterEnd)
+                                    .noRippleThrottledClickable {
+                                        val templates = (currentState as? TypeTemplatesWidgetUI.Data)?.templates
+                                        val newTemplate = templates?.firstOrNull { it is TemplateView.New }
+                                        if (newTemplate != null) {
+                                            action(TemplateClick(newTemplate))
+                                        }
+                                    }
+                            ) {
+                                Image(
+                                    modifier = Modifier.padding(
+                                        start = 16.dp,
+                                        top = 12.dp,
+                                        bottom = 12.dp,
+                                        end = 16.dp
+                                    ),
+                                    painter = painterResource(id = R.drawable.ic_default_plus),
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     }
                     val itemsScroll = rememberLazyListState()
                     if ((currentState as? TypeTemplatesWidgetUI.Data)?.isPossibleToChangeType == true) {
@@ -286,7 +298,8 @@ fun TypeTemplatesWidget(
                                 moreClick(template)
                             },
                             action = action,
-                            scrollState = itemsScroll
+                            scrollState = itemsScroll,
+                            showPlusButton = { showPlusButton.value = it }
                         )
                         if ((currentState as TypeTemplatesWidgetUI.Data).moreMenuItem != null
                             && itemsScroll.isScrollInProgress
@@ -429,9 +442,11 @@ private fun TemplatesList(
     scrollState: LazyListState,
     state: TypeTemplatesWidgetUI.Data,
     action: (TypeTemplatesWidgetUIAction) -> Unit,
-    moreClick: (TemplateView, IntOffset) -> Unit
+    moreClick: (TemplateView, IntOffset) -> Unit,
+    showPlusButton: (Boolean) -> Unit
 ) {
     if (state.templates.isEmpty()) {
+        showPlusButton.invoke(false)
         Box(
             modifier = Modifier.fillMaxWidth().wrapContentHeight(),
             contentAlignment = Alignment.Center) {
@@ -445,6 +460,7 @@ private fun TemplatesList(
             )
         }
     } else {
+        showPlusButton.invoke(true)
         LazyRow(
             state = scrollState,
             modifier = Modifier

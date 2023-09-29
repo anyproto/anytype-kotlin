@@ -1075,8 +1075,10 @@ class ObjectSetViewModel(
 
     fun onViewerCustomizeButtonClicked() {
         Timber.d("onViewerCustomizeButtonClicked, ")
-        stateReducer.state.value.dataViewState() ?: return
-        isCustomizeViewPanelVisible.value = !isCustomizeViewPanelVisible.value
+        val dataView = stateReducer.state.value.dataViewState() ?: return
+        val activeViewer = dataView.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+        widgetViewerId.value = activeViewer.id
+        showViewerEditWidget()
     }
 
     fun onHideViewerCustomizeSwiped() {

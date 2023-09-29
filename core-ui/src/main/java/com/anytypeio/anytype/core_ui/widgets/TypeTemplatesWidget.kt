@@ -64,12 +64,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -84,7 +88,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.ModalTitle
-import com.anytypeio.anytype.core_ui.views.TitleInter15
+import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
@@ -819,13 +823,21 @@ private fun TemplateItemTitle(text: String, textAlign: TextAlign = TextAlign.Sta
                 end = 16.dp
             ),
         text = text.ifBlank { stringResource(id = R.string.untitled) },
-        style = TitleInter15.copy(
+        style = TemplateTitleStyle.copy(
             color = colorResource(id = R.color.text_primary)
         ),
         maxLines = 2,
         textAlign = textAlign
     )
 }
+
+val TemplateTitleStyle = TextStyle(
+    fontFamily = fontInterRegular,
+    fontWeight = FontWeight.W600,
+    fontSize = 11.sp,
+    lineHeight = 14.sp,
+    letterSpacing = (-0.006).em
+)
 
 @Composable
 private fun TemplateItemTodoTitle(text: String) {

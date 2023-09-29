@@ -52,7 +52,7 @@ import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
-import com.anytypeio.anytype.core_ui.widgets.ObjectTypeTemplatesWidget
+import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerLayoutWidget
@@ -85,10 +85,10 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
 import com.anytypeio.anytype.presentation.sets.ViewEditAction
-import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -109,6 +109,7 @@ import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_OBJECT_TYPE
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.bumptech.glide.Glide
 import javax.inject.Inject
@@ -334,14 +335,14 @@ open class ObjectSetFragment :
         binding.templatesWidget.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                ObjectTypeTemplatesWidget(
-                    state = vm.templatesWidgetState.collectAsStateWithLifecycle().value,
+                TypeTemplatesWidget(
+                    state = vm.typeTemplatesWidgetState.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onDismissTemplatesWidget,
-                    itemClick = vm::onTemplateItemClicked,
                     editClick = vm::onEditTemplateButtonClicked,
                     doneClick = vm::onDoneTemplateButtonClicked,
                     moreClick = vm::onMoreTemplateButtonClicked,
                     menuClick = vm::onMoreMenuClicked,
+                    action = vm::onTypeTemplatesWidgetAction,
                     scope = lifecycleScope
                 )
             }
@@ -1142,7 +1143,7 @@ open class ObjectSetFragment :
             when {
                 childFragmentManager.backStackEntryCount > 0 -> childFragmentManager.popBackStack()
                 vm.isCustomizeViewPanelVisible.value -> vm.onHideViewerCustomizeSwiped()
-                vm.templatesWidgetState.value.showWidget -> vm.onDismissTemplatesWidget()
+                vm.typeTemplatesWidgetState.value.showWidget -> vm.onDismissTemplatesWidget()
                 vm.viewersWidgetState.value.showWidget -> handleViewersWidgetState()
                 vm.viewerEditWidgetState.value.isVisible() -> handleViewerEditWidgetState()
                 else -> vm.onSystemBackPressed()
@@ -1222,10 +1223,12 @@ open class ObjectSetFragment :
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME
                 && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)) {
-                val result = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID);
-                if (!result.isNullOrBlank()) {
+                val resultTemplateId = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
+                val resultObjectTypeId = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_OBJECT_TYPE)
+                if (!resultTemplateId.isNullOrBlank() && !resultObjectTypeId.isNullOrBlank()) {
                     navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
-                    vm.proceedWithDataViewObjectCreate(result)
+                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_OBJECT_TYPE)
+                    vm.proceedWithSelectedTemplate(template = resultTemplateId, objectType = resultObjectTypeId)
                 }
             }
         }

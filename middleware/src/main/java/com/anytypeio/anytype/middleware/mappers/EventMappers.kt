@@ -138,6 +138,7 @@ fun MDVViewFields.toCoreModels(): DVViewerFields {
         hideIcon = hideIcon,
         cardSize = cardSize.toCodeModels(),
         coverFit = coverFit,
-        defaultTemplateId = defaultTemplateId
+        defaultTemplateId = defaultTemplateId,
+        defaultObjectTypeId = defaultObjectTypeId,
     )
 }

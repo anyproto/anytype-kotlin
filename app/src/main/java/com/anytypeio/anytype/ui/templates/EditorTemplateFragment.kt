@@ -8,6 +8,8 @@ import androidx.core.os.bundleOf
 import androidx.core.view.updateLayoutParams
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -17,6 +19,8 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import timber.log.Timber
 
 class EditorTemplateFragment : EditorFragment() {
+
+    private val targetObjectType get() = arg<Id>(ARG_TARGET_OBJECT_TYPE)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -66,7 +70,10 @@ class EditorTemplateFragment : EditorFragment() {
             btnSelectTemplate.setOnClickListener {
                 Timber.d("Select template clicked, get back to Set")
                 findNavController().apply {
-                    previousBackStackEntry?.savedStateHandle?.set(ARG_TEMPLATE_ID, ctx)
+                    previousBackStackEntry?.savedStateHandle?.apply {
+                        set(ARG_TEMPLATE_ID, ctx)
+                        set(ARG_TARGET_OBJECT_TYPE, targetObjectType)
+                    }
                     popBackStack(R.id.editorModalScreen, true)
                 }
             }
@@ -78,11 +85,15 @@ class EditorTemplateFragment : EditorFragment() {
     }
 
     companion object {
-        fun newInstance(id: String): EditorTemplateFragment =
+        fun newInstance(id: String, targetObjectType: Id): EditorTemplateFragment =
             EditorTemplateFragment().apply {
-                arguments = bundleOf(ID_KEY to id)
+                arguments = bundleOf(
+                    ID_KEY to id,
+                    ARG_TARGET_OBJECT_TYPE to targetObjectType
+                )
             }
 
         const val ARG_TEMPLATE_ID = "template_id"
+        const val ARG_TARGET_OBJECT_TYPE = "target_object_type"
     }
 }

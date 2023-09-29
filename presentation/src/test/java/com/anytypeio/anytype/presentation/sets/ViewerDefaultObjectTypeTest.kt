@@ -109,7 +109,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
                 sources = listOf(setOfValue),
                 dvFilters = filters
             )
-            stubTemplatesContainer()
+            stubTemplatesForTemplatesContainer()
         }
 
         viewModel.onStart(ctx = root)
@@ -183,7 +183,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
                 sources = listOf(relationObject3.id),
                 dvFilters = filters
             )
-            stubTemplatesContainer()
+            stubTemplatesForTemplatesContainer()
         }
 
         viewModel.onStart(ctx = root)
@@ -263,7 +263,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
                 objects = listOf(obj1, obj2),
                 dvSorts = sorts
             )
-            stubTemplatesContainer()
+            stubTemplatesForTemplatesContainer()
         }
 
         viewModel.onStart(ctx = root)

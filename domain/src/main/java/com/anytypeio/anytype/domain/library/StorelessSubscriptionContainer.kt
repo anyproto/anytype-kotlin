@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.runCatchingL
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.processors.EventAddProcessor
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.withContext
 
 interface StorelessSubscriptionContainer {
 
@@ -140,7 +142,11 @@ interface StorelessSubscriptionContainer {
         }
 
         override suspend fun unsubscribe(subscriptions: List<Id>) {
-            repo.cancelObjectSearchSubscription(subscriptions)
+            withContext(dispatchers.io) {
+                runCatchingL {
+                    repo.cancelObjectSearchSubscription(subscriptions)
+                }
+            }
         }
     }
 }

@@ -383,12 +383,20 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    fun stubTemplatesContainer(
+    fun stubTemplatesForTemplatesContainer(
         type: String = MockDataFactory.randomString(),
         templates: List<ObjectWrapper.Basic> = emptyList()
     ) {
         templatesContainer.stub {
-            onBlocking { subscribe(type) }.thenReturn(flowOf(templates))
+            onBlocking { subscribeToTemplates(type) }.thenReturn(flowOf(templates))
+        }
+    }
+
+    fun stubTypesForTemplatesContainer(
+        objTypes: List<ObjectWrapper.Basic> = emptyList()
+    ) {
+        templatesContainer.stub {
+            onBlocking { subscribeToTypes() }.thenReturn(flowOf(objTypes))
         }
     }
 

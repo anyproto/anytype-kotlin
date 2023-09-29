@@ -419,7 +419,8 @@ fun DVViewer.updateFields(fields: DVViewerFields?): DVViewer {
         hideIcon = fields.hideIcon,
         cardSize = fields.cardSize,
         coverFit = fields.coverFit,
-        defaultTemplate = fields.defaultTemplateId
+        defaultTemplate = fields.defaultTemplateId,
+        defaultObjectType = fields.defaultObjectTypeId
     )
 }
 
@@ -434,7 +435,6 @@ fun Viewer.isEmpty(): Boolean =
 fun ObjectWrapper.Basic.toTemplateView(
     urlBuilder: UrlBuilder,
     coverImageHashProvider: CoverImageHashProvider,
-    viewerDefObjType: ObjectWrapper.Type,
     viewerDefTemplateId: Id?,
 ): TemplateView.Template {
     val coverContainer = if (coverType != CoverType.NONE) {
@@ -446,7 +446,7 @@ fun ObjectWrapper.Basic.toTemplateView(
     return TemplateView.Template(
         id = id,
         name = name.orEmpty(),
-        typeId = viewerDefObjType.id,
+        typeId = targetObjectType.orEmpty(),
         emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
         image = if (!iconImage.isNullOrBlank()) urlBuilder.thumbnail(iconImage!!) else null,
         layout = layout ?: ObjectType.Layout.BASIC,

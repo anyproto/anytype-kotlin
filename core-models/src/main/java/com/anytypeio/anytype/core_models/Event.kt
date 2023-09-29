@@ -327,7 +327,8 @@ sealed class Event {
                     val hideIcon: Boolean,
                     val cardSize: DVViewerCardSize,
                     val coverFit: Boolean,
-                    val defaultTemplateId: String?
+                    val defaultTemplateId: String?,
+                    val defaultObjectTypeId: String?
                 )
             }
         }

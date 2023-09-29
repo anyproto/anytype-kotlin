@@ -731,7 +731,8 @@ class ObjectSetReducerTest {
                 coverRelationKey = relationKey1,
                 hideIcon = false,
                 type = Block.Content.DataView.Viewer.Type.GRID,
-                defaultTemplateId = null
+                defaultTemplateId = null,
+                defaultObjectTypeId = null
             )
         )
 

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
@@ -23,7 +24,8 @@ sealed class ViewerEditWidgetUi {
         val relations: List<Id> = emptyList(),
         val filters: List<Id> = emptyList(),
         val sorts: List<Id> = emptyList(),
-        val defaultTemplate: Id?
+        val defaultTemplateId: Id?,
+        val defaultTemplateName: String?
     ) : ViewerEditWidgetUi()
 }
 
@@ -31,6 +33,7 @@ sealed class ViewEditAction {
     object Dismiss : ViewEditAction()
     data class UpdateName(val id: Id, val name: String) : ViewEditAction()
     data class DefaultObjectType(val id: Id) : ViewEditAction()
+    data class DefaultTemplate(val id: Id) : ViewEditAction()
     data class Layout(val id: Id) : ViewEditAction()
     data class Relations(val id: Id) : ViewEditAction()
     data class Filters(val id: Id) : ViewEditAction()
@@ -52,13 +55,16 @@ suspend fun <T> List<T>.toView(
 suspend fun DVViewer.toViewerEditWidgetState(
     storeOfRelations: StoreOfRelations,
     storeOfObjectTypes: StoreOfObjectTypes,
-    isDefaultObjectTypeEnabled: Boolean
+    isDefaultObjectTypeEnabled: Boolean,
+    details: Map<Id, Block.Fields>
 ): ViewerEditWidgetUi {
     val dvViewer = this
     val viewerDefaultObjectTypeId = dvViewer.defaultObjectType ?: ObjectTypeIds.PAGE
     val viewerDefaultTemplateId = dvViewer.defaultTemplate
     val defaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId)
+    val defaultTemplateName = details[viewerDefaultTemplateId]?.name
     return ViewerEditWidgetUi.Data(
+        showWidget = true,
         id = dvViewer.id,
         name = dvViewer.name,
         sorts = dvViewer.sorts.toView(storeOfRelations) { it.relationKey },
@@ -67,7 +73,8 @@ suspend fun DVViewer.toViewerEditWidgetState(
         layout = dvViewer.type,
         defaultObjectType = defaultObjectType,
         isDefaultObjectTypeEnabled = isDefaultObjectTypeEnabled,
-        defaultTemplate = viewerDefaultTemplateId
+        defaultTemplateId = viewerDefaultTemplateId,
+        defaultTemplateName = defaultTemplateName
     )
 }
 

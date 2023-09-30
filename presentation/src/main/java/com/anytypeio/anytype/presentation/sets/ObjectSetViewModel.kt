@@ -2275,12 +2275,16 @@ class ObjectSetViewModel(
         Timber.d("onViewerLayoutWidgetAction, action:[$action]")
         when (action) {
             ViewerLayoutWidgetUi.Action.Dismiss -> {
-                viewerLayoutWidgetState.value =
+                val isCoverMenuVisible = viewerLayoutWidgetState.value.showCoverMenu
+                viewerLayoutWidgetState.value = if (isCoverMenuVisible) {
+                    viewerLayoutWidgetState.value.copy(showCoverMenu = false)
+                } else {
                     viewerLayoutWidgetState.value.copy(
                         showWidget = false,
                         showCardSize = false,
                         showCoverMenu = false
                     )
+                }
             }
             ViewerLayoutWidgetUi.Action.CardSizeMenu -> {
                 val isCardSizeMenuVisible = viewerLayoutWidgetState.value.showCardSize
@@ -2319,8 +2323,6 @@ class ObjectSetViewModel(
                 }
             }
             is ViewerLayoutWidgetUi.Action.Cover -> {
-                viewerLayoutWidgetState.value =
-                    viewerLayoutWidgetState.value.copy(showCoverMenu = false)
                 when (action.cover) {
                     ViewerLayoutWidgetUi.State.ImagePreview.Cover -> {
                         proceedWithUpdateViewer(

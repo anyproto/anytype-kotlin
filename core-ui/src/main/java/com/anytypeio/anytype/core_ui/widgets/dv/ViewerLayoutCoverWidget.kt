@@ -59,9 +59,9 @@ fun ViewerLayoutCoverWidget(
 ) {
 
     val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
-    val sizePx = with(LocalDensity.current) { 250.dp.toPx() }
+    val sizePx = with(LocalDensity.current) { 592.dp.toPx() }
 
-    if (swipeableState.isAnimationRunning) {
+    if (swipeableState.isAnimationRunning && swipeableState.targetValue == DragStates.DISMISSED) {
         DisposableEffect(Unit) {
             onDispose {
                 action(ViewerLayoutWidgetUi.Action.DismissCoverMenu)

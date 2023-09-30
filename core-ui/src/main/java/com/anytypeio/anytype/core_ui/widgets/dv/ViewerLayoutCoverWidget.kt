@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -21,8 +22,12 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -43,19 +48,37 @@ import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Cover
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ViewerLayoutCoverWidget(
     uiState: ViewerLayoutWidgetUi,
-    action: (ViewerLayoutWidgetUi.Action) -> Unit
+    action: (ViewerLayoutWidgetUi.Action) -> Unit,
+    scope: CoroutineScope
 ) {
 
     val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
     val sizePx = with(LocalDensity.current) { 250.dp.toPx() }
 
+    if (swipeableState.isAnimationRunning) {
+        DisposableEffect(Unit) {
+            onDispose {
+                action(ViewerLayoutWidgetUi.Action.DismissCoverMenu)
+            }
+        }
+    }
+
+    if (!uiState.showCoverMenu) {
+        DisposableEffect(Unit) {
+            onDispose {
+                scope.launch { swipeableState.snapTo(DragStates.VISIBLE) }
+            }
+        }
+    }
+
     AnimatedVisibility(
-        visible = true,
+        visible = uiState.showCoverMenu,
         enter = slideInVertically { it },
         exit = slideOutVertically(tween(200)) { it },
         modifier = Modifier
@@ -67,14 +90,16 @@ fun ViewerLayoutCoverWidget(
                 thresholds = { _, _ -> FractionalThreshold(0.3f) })
             .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
     ) {
+        val shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .background(
                     color = colorResource(id = R.color.background_secondary),
-                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-                ),
+                    shape = shape
+                )
+                .clip(shape)
         ) {
             Column(
                 modifier = Modifier
@@ -89,7 +114,7 @@ fun ViewerLayoutCoverWidget(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = stringResource(R.string.view_layout_widget_title),
+                        text = stringResource(R.string.view_layout_cover_widget_title),
                         style = TitleInter15,
                         color = colorResource(R.color.text_primary)
                     )
@@ -107,7 +132,7 @@ fun ViewerLayoutCoverWidget(
                         style = BodyCallout,
                         color = colorResource(id = R.color.text_primary)
                     )
-                    if (uiState.cover == ViewerLayoutWidgetUi.State.ImagePreview.None) {
+                    if (uiState.cover == ImagePreview.None) {
                         Image(
                             modifier = Modifier.align(Alignment.CenterEnd),
                             painter = painterResource(id = R.drawable.ic_option_checked_black),
@@ -129,7 +154,7 @@ fun ViewerLayoutCoverWidget(
                         style = BodyCallout,
                         color = colorResource(id = R.color.text_primary)
                     )
-                    if (uiState.cover == ViewerLayoutWidgetUi.State.ImagePreview.Cover) {
+                    if (uiState.cover == ImagePreview.Cover) {
                         Image(
                             modifier = Modifier.align(Alignment.CenterEnd),
                             painter = painterResource(id = R.drawable.ic_option_checked_black),
@@ -137,12 +162,13 @@ fun ViewerLayoutCoverWidget(
                         )
                     }
                 }
+                Spacer(modifier = Modifier.height(400.dp))
             }
         }
     }
 }
 
-@Preview
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
 @Composable
 fun PreviewLayoutCoverWidget() {
     ViewerLayoutWidget(

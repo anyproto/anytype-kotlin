@@ -69,6 +69,7 @@ data class ViewerLayoutWidgetUi(
         object Dismiss : Action()
         object CardSizeMenu : Action()
         object CoverMenu : Action()
+        object DismissCoverMenu : Action()
         data class Icon(val toggled: Boolean) : Action()
         data class FitImage(val toggled: Boolean) : Action()
         data class CardSize(val cardSize: State.CardSize) : Action()

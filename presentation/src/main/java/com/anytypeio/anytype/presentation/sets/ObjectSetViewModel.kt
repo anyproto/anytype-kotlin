@@ -2278,7 +2278,8 @@ class ObjectSetViewModel(
                 viewerLayoutWidgetState.value =
                     viewerLayoutWidgetState.value.copy(
                         showWidget = false,
-                        showCardSize = false
+                        showCardSize = false,
+                        showCoverMenu = false
                     )
             }
             ViewerLayoutWidgetUi.Action.CardSizeMenu -> {
@@ -2317,12 +2318,37 @@ class ObjectSetViewModel(
                     }
                 }
             }
-            is ViewerLayoutWidgetUi.Action.Cover -> {}
+            is ViewerLayoutWidgetUi.Action.Cover -> {
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(showCoverMenu = false)
+                when (action.cover) {
+                    ViewerLayoutWidgetUi.State.ImagePreview.Cover -> {
+                        proceedWithUpdateViewer(
+                            viewerId = viewerLayoutWidgetState.value.viewer
+                        ) { it.copy(coverRelationKey = Relations.PAGE_COVER) }
+                    }
+                    is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> {
+                        proceedWithUpdateViewer(
+                            viewerId = viewerLayoutWidgetState.value.viewer
+                        ) { it.copy(coverRelationKey = action.cover.name) }
+                    }
+                    ViewerLayoutWidgetUi.State.ImagePreview.None -> {
+                        proceedWithUpdateViewer(
+                            viewerId = viewerLayoutWidgetState.value.viewer
+                        ) { it.copy(coverRelationKey = null) }
+                    }
+                }
+            }
             is ViewerLayoutWidgetUi.Action.Type -> {
                 proceedWithUpdateViewer(
                     viewerId = viewerLayoutWidgetState.value.viewer
                 ) { it.copy(type = action.type) }
             }
+
+            ViewerLayoutWidgetUi.Action.DismissCoverMenu -> viewerLayoutWidgetState.value =
+                viewerLayoutWidgetState.value.copy(
+                    showCoverMenu = false
+                )
         }
     }
 

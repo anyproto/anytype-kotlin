@@ -223,8 +223,9 @@ fun ViewerLayoutWidget(
             coordinates = currentCoordinates
         )
         ViewerLayoutCoverWidget(
-            uiState = currentState,
-            action = action
+            uiState = uiState,
+            action = action,
+            scope = scope
         )
     }
 }

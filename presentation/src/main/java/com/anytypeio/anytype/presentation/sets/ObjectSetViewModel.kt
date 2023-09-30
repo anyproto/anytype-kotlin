@@ -1052,7 +1052,7 @@ class ObjectSetViewModel(
             createDataViewObject.async(params).fold(
                 onFailure = { Timber.e(it, "Error while creating new record") },
                 onSuccess = { result ->
-                    proceedWithNewDataViewObject(params, result.objectId)
+                    proceedWithNewDataViewObject(result)
                     action?.invoke(result)
                     sendAnalyticsObjectCreateEvent(
                         startTime = startTime,
@@ -1063,33 +1063,22 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithNewDataViewObject(params: CreateDataViewObject.Params, newObject: Id) {
-        when (params) {
-            is CreateDataViewObject.Params.Collection -> {
-                proceedWithOpeningObject(newObject)
-            }
-            is CreateDataViewObject.Params.SetByRelation -> {
-                proceedWithOpeningObject(newObject)
-            }
-            is CreateDataViewObject.Params.SetByType -> {
-                if (params.type == ObjectTypeIds.NOTE) {
-                    proceedWithOpeningObject(newObject)
-                } else {
-                    dispatch(
-                        ObjectSetCommand.Modal.SetNameForCreatedObject(
-                            ctx = context,
-                            target = newObject
-                        )
-                    )
-                }
-            }
-        }
+    private suspend fun proceedWithNewDataViewObject(
+        response: CreateDataViewObject.Result,
+    ) {
+        val obj = ObjectWrapper.Basic(response.struct.orEmpty())
+        proceedWithOpeningObject(
+            target = response.objectId,
+            layout = obj.layout
+        )
     }
 
     fun onViewerCustomizeButtonClicked() {
         Timber.d("onViewerCustomizeButtonClicked, ")
-        stateReducer.state.value.dataViewState() ?: return
-        isCustomizeViewPanelVisible.value = !isCustomizeViewPanelVisible.value
+        val dataView = stateReducer.state.value.dataViewState() ?: return
+        val activeViewer = dataView.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+        widgetViewerId.value = activeViewer.id
+        showViewerEditWidget()
     }
 
     fun onHideViewerCustomizeSwiped() {
@@ -1227,16 +1216,19 @@ class ObjectSetViewModel(
 
     //region NAVIGATION
 
-    private suspend fun proceedWithOpeningObject(target: Id) {
+    private suspend fun proceedWithOpeningObject(target: Id, layout: ObjectType.Layout? = null) {
         isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {
+            val navigateCommand = when (layout) {
+                ObjectType.Layout.SET,
+                ObjectType.Layout.COLLECTION -> AppNavigation.Command.OpenSetOrCollection(target = target)
+                else -> AppNavigation.Command.OpenObject(id = target)
+            }
             closeBlock.async(context).fold(
-                onSuccess = {
-                    navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
-                },
+                onSuccess = { navigate(EventWrapper(navigateCommand)) },
                 onFailure = {
                     Timber.e(it, "Error while closing object set: $context")
-                    navigate(EventWrapper(AppNavigation.Command.OpenObject(id = target)))
+                    navigate(EventWrapper(navigateCommand))
                 }
             )
         }
@@ -1536,7 +1528,14 @@ class ObjectSetViewModel(
         }
     }
 
-    // region TYPES AND TEMPLATES WIDGET
+    //region TYPES AND TEMPLATES WIDGET
+    fun onNewTypeForViewerClicked(typeId: Id) {
+        viewModelScope.launch {
+            val type = storeOfObjectTypes.get(typeId)
+            selectedTypeFlow.value = type
+        }
+    }
+
     private fun showTypeTemplatesWidgetForObjectCreation() {
         val isPossibleToChangeType = stateReducer.state.value.dataViewState()?.isChangingDefaultTypeAvailable()
         showTypeTemplatesWidget(
@@ -1607,7 +1606,13 @@ class ObjectSetViewModel(
                         is TypeTemplatesWidgetUI.Init -> Unit
                     }
                 }
-                TypeTemplatesWidgetUIAction.TypeClick.Search -> TODO()
+                TypeTemplatesWidgetUIAction.TypeClick.Search -> {
+                    _commands.emit(
+                        ObjectSetCommand.Modal.OpenSelectTypeScreen(
+                            excludedTypes = emptyList()
+                        )
+                    )
+                }
                 is TypeTemplatesWidgetUIAction.TemplateClick -> {
                     when (uiState) {
                         is TypeTemplatesWidgetUI.Data.CreateObject ->
@@ -1664,12 +1669,22 @@ class ObjectSetViewModel(
             is TemplateView.Blank -> {
                 proceedWithUpdateViewer(
                     viewerId = getWidgetViewerId()
-                ) { it.copy(defaultTemplate = templateView.id) }
+                ) {
+                    it.copy(
+                        defaultTemplate = templateView.id,
+                        defaultObjectType = templateView.typeId
+                    )
+                }
             }
             is TemplateView.Template -> {
                 proceedWithUpdateViewer(
                     viewerId = getWidgetViewerId()
-                ) { it.copy(defaultTemplate = templateView.id) }
+                ) {
+                    it.copy(
+                        defaultTemplate = templateView.id,
+                        defaultObjectType = templateView.typeId
+                    )
+                }
             }
             is TemplateView.New -> {
                 proceedWithCreatingTemplate(
@@ -1698,11 +1713,14 @@ class ObjectSetViewModel(
                         Pair(selectedTypeId, types)
                     }
                 }.map { (selectedTypeId, types) ->
-                    types.map { type ->
-                        TemplateObjectTypeView.Item(
-                            type = ObjectWrapper.Type(type.map),
-                            isDefault = type.id == selectedTypeId.id
-                        )
+                    buildList {
+                        add(TemplateObjectTypeView.Search)
+                        addAll( types.map { type ->
+                            TemplateObjectTypeView.Item(
+                                type = ObjectWrapper.Type(type.map),
+                                isDefault = type.id == selectedTypeId.id
+                            )
+                        })
                     }
                 }.collectLatest { types ->
                     typeTemplatesWidgetState.value =

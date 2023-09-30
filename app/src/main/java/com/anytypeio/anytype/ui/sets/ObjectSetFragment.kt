@@ -96,7 +96,9 @@ import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
+import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -121,7 +123,8 @@ open class ObjectSetFragment :
     NavigationFragment<FragmentObjectSetBinding>(R.layout.fragment_object_set),
     TextValueEditReceiver,
     DateValueEditReceiver,
-    OnDataViewSelectSourceAction {
+    OnDataViewSelectSourceAction,
+    OnObjectSelectTypeAction {
 
     // Controls
 
@@ -1029,6 +1032,13 @@ open class ObjectSetFragment :
                 val fr = ManageViewerFragment.new(ctx = command.ctx, dv = command.dataview)
                 fr.showChildFragment(EMPTY_TAG)
             }
+
+            is ObjectSetCommand.Modal.OpenSelectTypeScreen -> {
+                val fr = ObjectSelectTypeFragment.newInstance(
+                    excludeTypes = command.excludedTypes
+                )
+                fr.showChildFragment()
+            }
         }
     }
 
@@ -1216,6 +1226,14 @@ open class ObjectSetFragment :
     ): FragmentObjectSetBinding = FragmentObjectSetBinding.inflate(
         inflater, container, false
     )
+
+    override fun onProceedWithUpdateType(id: Id) {
+        vm.onNewTypeForViewerClicked(id)
+    }
+
+    override fun onProceedWithDraftUpdateType(id: Id) {
+        // Do nothing
+    }
 
     private fun observeSelectingTemplate() {
         val navController = findNavController()

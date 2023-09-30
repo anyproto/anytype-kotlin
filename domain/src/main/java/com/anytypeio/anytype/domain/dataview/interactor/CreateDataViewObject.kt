@@ -37,7 +37,8 @@ class CreateDataViewObject(
                 val result = repo.createObject(command)
                 Result(
                     objectId = result.id,
-                    objectType = params.type
+                    objectType = params.type,
+                    struct = result.details
                 )
             }
             is Params.SetByRelation -> {
@@ -53,7 +54,8 @@ class CreateDataViewObject(
                 val result = repo.createObject(command)
                 Result(
                     objectId = result.id,
-                    objectType = params.type
+                    objectType = params.type,
+                    struct = result.details
                 )
             }
             is Params.Collection -> {
@@ -69,7 +71,8 @@ class CreateDataViewObject(
                 val result = repo.createObject(command)
                 Result(
                     objectId = result.id,
-                    objectType = params.type
+                    objectType = params.type,
+                    struct = result.details
                 )
             }
         }
@@ -168,7 +171,8 @@ class CreateDataViewObject(
 
     data class Result(
         val objectId : Id,
-        val objectType: Id?
+        val objectType: Id?,
+        val struct: Struct?
     )
 
     companion object {

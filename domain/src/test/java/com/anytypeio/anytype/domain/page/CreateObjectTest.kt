@@ -250,7 +250,7 @@ class CreateObjectTest {
             onBlocking { createObject(any()) } doReturn CreateObjectResult(
                 id = "",
                 event = Payload(context = "", events = listOf()),
-                details = null
+                details = emptyMap()
             )
         }
     }

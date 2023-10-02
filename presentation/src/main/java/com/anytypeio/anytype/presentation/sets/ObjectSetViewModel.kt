@@ -1953,6 +1953,12 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             duplicateObjects.async(params).fold(
                 onSuccess = { ids ->
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.DUPLICATE_TEMPLATE,
+                        type = template.typeId
+                    )
                     Timber.d("Successfully duplicated templates: $ids")
                 },
                 onFailure = { e ->
@@ -1974,6 +1980,12 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             setObjectListIsArchived.async(params).fold(
                 onSuccess = { ids ->
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.DELETE_TEMPLATE,
+                        type = template.typeId
+                    )
                     Timber.d("Successfully archived templates: $ids")
                 },
                 onFailure = { e ->
@@ -1995,6 +2007,14 @@ class ObjectSetViewModel(
                     target = template.id,
                     targetObjectType = template.typeId
                 )
+                viewModelScope.launch {
+                    logEvent(
+                        state = stateReducer.state.value,
+                        analytics = analytics,
+                        event = ObjectStateAnalyticsEvent.EDIT_TEMPLATE,
+                        type = template.typeId
+                    )
+                }
             }
             else -> Unit
         }

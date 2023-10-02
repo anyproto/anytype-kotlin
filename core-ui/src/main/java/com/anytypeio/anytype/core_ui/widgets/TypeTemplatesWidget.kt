@@ -59,6 +59,7 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -140,7 +141,7 @@ fun TypeTemplatesWidget(
             )
         }
 
-        if (swipeableState.isAnimationRunning) {
+        if (swipeableState.isAnimationRunning && swipeableState.targetValue == DragStates.DISMISSED) {
             DisposableEffect(Unit) {
                 onDispose {
                     onDismiss()
@@ -156,7 +157,7 @@ fun TypeTemplatesWidget(
             }
         }
 
-        val sizePx = with(LocalDensity.current) { 312.dp.toPx() }
+        val sizePx = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
 
         var currentClickedMoreButtonCoordinates: IntOffset by remember {
             mutableStateOf(IntOffset(0, 0))

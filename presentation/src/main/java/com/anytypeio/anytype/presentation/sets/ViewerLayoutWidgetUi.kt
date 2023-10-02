@@ -15,7 +15,8 @@ data class ViewerLayoutWidgetUi(
     val fitImage: State.Toggle.FitImage,
     val cardSize: State.CardSize,
     val cover: State.ImagePreview,
-    val showCardSize: Boolean
+    val showCardSize: Boolean,
+    val showCoverMenu: Boolean
 ) {
 
     fun dismiss() = copy(showWidget = false)
@@ -39,7 +40,8 @@ data class ViewerLayoutWidgetUi(
             fitImage = State.Toggle.FitImage(toggled = false),
             cardSize = State.CardSize.Small,
             cover = State.ImagePreview.None,
-            showCardSize = false
+            showCardSize = false,
+            showCoverMenu = false
         )
     }
 
@@ -66,6 +68,8 @@ data class ViewerLayoutWidgetUi(
     sealed class Action {
         object Dismiss : Action()
         object CardSizeMenu : Action()
+        object CoverMenu : Action()
+        object DismissCoverMenu : Action()
         data class Icon(val toggled: Boolean) : Action()
         data class FitImage(val toggled: Boolean) : Action()
         data class CardSize(val cardSize: State.CardSize) : Action()

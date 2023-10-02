@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.sets.viewer
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.DVViewer
-import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.fold
@@ -21,17 +20,17 @@ interface ViewerDelegate {
 }
 
 sealed class ViewerEvent {
-    data class Delete(val ctx: Id, val dv: Id, val viewer: Id) : ViewerEvent()
-    data class Duplicate(val ctx: Id, val dv: Id, val viewer: DVViewer) : ViewerEvent()
-    data class AddNew(val ctx: Id, val dv: Id, val viewer: DVViewer, val action: (String) -> Unit) :
+    data class Delete(val ctx: Id, val dv: Id, val viewer: Id, val onResult: () -> Unit) : ViewerEvent()
+    data class Duplicate(val ctx: Id, val dv: Id, val viewer: DVViewer, val onResult: () -> Unit) : ViewerEvent()
+    data class AddNew(val ctx: Id, val dv: Id, val viewer: DVViewer, val onResult: (String) -> Unit) :
         ViewerEvent()
 
-    data class UpdatePosition(val ctx: Id, val dv: Id, val viewer: Id, val position: Int) :
+    data class UpdatePosition(val ctx: Id, val dv: Id, val viewer: Id, val position: Int, val onResult: () -> Unit) :
         ViewerEvent()
 
-    data class SetActive(val viewer: Id) : ViewerEvent()
+    data class SetActive(val viewer: Id, val onResult: () -> Unit) : ViewerEvent()
 
-    data class UpdateView(val ctx: Id, val dv: Id, val viewer: DVViewer) : ViewerEvent()
+    data class UpdateView(val ctx: Id, val dv: Id, val viewer: DVViewer, val onResult: () -> Unit) : ViewerEvent()
 }
 
 class DefaultViewerDelegate @Inject constructor(
@@ -50,44 +49,49 @@ class DefaultViewerDelegate @Inject constructor(
             is ViewerEvent.Delete -> onDelete(
                 ctx = event.ctx,
                 dv = event.dv,
-                viewer = event.viewer
+                viewer = event.viewer,
+                onResult = event.onResult
             )
 
             is ViewerEvent.AddNew -> onAddNew(
                 ctx = event.ctx,
                 dv = event.dv,
                 viewer = event.viewer,
-                action = event.action
+                onResult = event.onResult
             )
 
             is ViewerEvent.Duplicate -> onDuplicate(
                 ctx = event.ctx,
                 dv = event.dv,
-                viewer = event.viewer
+                viewer = event.viewer,
+                onResult = event.onResult
             )
 
             is ViewerEvent.UpdatePosition -> onUpdatePosition(
                 ctx = event.ctx,
                 dv = event.dv,
                 viewer = event.viewer,
-                position = event.position
+                position = event.position,
+                onResult = event.onResult
             )
 
             is ViewerEvent.SetActive -> {
                 session.currentViewerId.value = event.viewer
+                event.onResult()
             }
 
             is ViewerEvent.UpdateView -> {
                 onUpdateViewer(
                     ctx = event.ctx,
                     dv = event.dv,
-                    viewer = event.viewer
+                    viewer = event.viewer,
+                    onResult = event.onResult
                 )
             }
         }
     }
 
-    private suspend fun onAddNew(ctx: Id, dv: Id, viewer: DVViewer, action: (String) -> Unit) {
+    private suspend fun onAddNew(ctx: Id, dv: Id, viewer: DVViewer, onResult: (String) -> Unit) {
         val params = DuplicateDataViewViewer.Params(
             context = ctx,
             target = dv,
@@ -97,12 +101,12 @@ class DefaultViewerDelegate @Inject constructor(
             onFailure = { Timber.e(it, "Error while adding new viewer") },
             onSuccess = { (id, payload) ->
                 dispatcher.send(payload)
-                action(id)
+                onResult(id)
             }
         )
     }
 
-    private suspend fun onUpdatePosition(ctx: Id, dv: Id, viewer: Id, position: Int) {
+    private suspend fun onUpdatePosition(ctx: Id, dv: Id, viewer: Id, position: Int, onResult: () -> Unit) {
         val params = SetDataViewViewerPosition.Params(
             ctx = ctx,
             dv = dv,
@@ -111,11 +115,14 @@ class DefaultViewerDelegate @Inject constructor(
         )
         setDataViewViewerPosition.async(params).fold(
             onFailure = { Timber.e(it, "Error while updating position") },
-            onSuccess = { dispatcher.send(it) }
+            onSuccess = {
+                dispatcher.send(it)
+                onResult()
+            }
         )
     }
 
-    private suspend fun onDuplicate(ctx: Id, dv: Id, viewer: DVViewer) {
+    private suspend fun onDuplicate(ctx: Id, dv: Id, viewer: DVViewer, onResult: () -> Unit) {
         val params = DuplicateDataViewViewer.Params(
             context = ctx,
             target = dv,
@@ -123,11 +130,14 @@ class DefaultViewerDelegate @Inject constructor(
         )
         duplicateDataViewViewer.async(params).fold(
             onFailure = { Timber.e(it, "Error while duplicating view") },
-            onSuccess = { (_, payload) -> dispatcher.send(payload) }
+            onSuccess = { (_, payload) ->
+                dispatcher.send(payload)
+                onResult()
+            }
         )
     }
 
-    private suspend fun onDelete(ctx: Id, dv: Id, viewer: Id) {
+    private suspend fun onDelete(ctx: Id, dv: Id, viewer: Id, onResult: () -> Unit) {
         val params = DeleteDataViewViewer.Params(
             ctx = ctx,
             dataview = dv,
@@ -135,11 +145,14 @@ class DefaultViewerDelegate @Inject constructor(
         )
         deleteDataViewViewer.async(params).fold(
             onFailure = { Timber.e(it, "Error while deleting view") },
-            onSuccess = { dispatcher.send(it) }
+            onSuccess = {
+                dispatcher.send(it)
+                onResult()
+            }
         )
     }
 
-    private suspend fun onUpdateViewer(ctx: Id, dv: Id, viewer: DVViewer) {
+    private suspend fun onUpdateViewer(ctx: Id, dv: Id, viewer: DVViewer, onResult: () -> Unit) {
         val params = UpdateDataViewViewer.Params.UpdateView(
             context = ctx,
             target = dv,
@@ -147,7 +160,10 @@ class DefaultViewerDelegate @Inject constructor(
         )
         updateDataViewViewer.async(params).fold(
             onFailure = { Timber.e(it, "Error while updating view") },
-            onSuccess = { dispatcher.send(it) }
+            onSuccess = {
+                dispatcher.send(it)
+                onResult()
+            }
         )
     }
 }

@@ -297,9 +297,11 @@ private fun ViewersWidgetContent(
                                 modifier = Modifier
                                     .noRippleThrottledClickable {
                                         if (!isEditing.value) {
+
                                             action.invoke(
                                                 ViewersWidgetUi.Action.SetActive(
-                                                    view.id
+                                                    id = view.id,
+                                                    type = view.type
                                                 )
                                             )
                                         }

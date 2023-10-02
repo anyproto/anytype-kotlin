@@ -2023,6 +2023,8 @@ class ObjectSetViewModel(
 
     // region VIEWS
     fun onViewersWidgetAction(action: ViewersWidgetUi.Action) {
+        Timber.d("onViewersWidgetAction, action:[$action]")
+        val state = stateReducer.state.value.dataViewState() ?: return
         when (action) {
             ViewersWidgetUi.Action.Dismiss -> {
                 viewersWidgetState.value = viewersWidgetState.value.copy(
@@ -2037,13 +2039,21 @@ class ObjectSetViewModel(
                 viewersWidgetState.value = viewersWidgetState.value.copy(isEditing = true)
             }
             is ViewersWidgetUi.Action.Delete -> {
-                val state = stateReducer.state.value.dataViewState() ?: return
                 viewModelScope.launch {
+                    val startTime = System.currentTimeMillis()
                     onEvent(
                         ViewerEvent.Delete(
                             ctx = context,
                             dv = state.dataViewBlock.id,
                             viewer = action.viewer,
+                            onResult = {
+                                logEvent(
+                                    state = state,
+                                    analytics = analytics,
+                                    event = ObjectStateAnalyticsEvent.REMOVE_VIEW,
+                                    startTime = startTime
+                                )
+                            }
                         )
                     )
                 }
@@ -2053,31 +2063,51 @@ class ObjectSetViewModel(
                 showViewerEditWidget()
             }
             is ViewersWidgetUi.Action.OnMove -> {
-                Timber.d("onMove Viewer, from:[$action.from], to:[$action.to]")
                 if (action.from == action.to) return
-                val state = stateReducer.state.value.dataViewState() ?: return
                 if (action.to == 0 && session.currentViewerId.value.isNullOrEmpty()) {
                     session.currentViewerId.value = action.currentViews.firstOrNull()?.id
                 }
                 viewModelScope.launch {
+                    val startTime = System.currentTimeMillis()
+                    val type = action.currentViews[action.to].type
                     viewerDelegate.onEvent(
                         ViewerEvent.UpdatePosition(
                             ctx = context,
                             dv = state.dataViewBlock.id,
                             viewer = action.currentViews[action.to].id,
-                            position = action.to
+                            position = action.to,
+                            onResult = {
+                                logEvent(
+                                    state = state,
+                                    analytics = analytics,
+                                    event = ObjectStateAnalyticsEvent.REPOSITION_VIEW,
+                                    startTime = startTime,
+                                    type = type.formattedName
+                                )
+                            }
                         )
                     )
                 }
             }
             is ViewersWidgetUi.Action.SetActive -> {
+                val startTime = System.currentTimeMillis()
                 viewModelScope.launch {
-                    onEvent(ViewerEvent.SetActive(viewer = action.id))
+                    onEvent(ViewerEvent.SetActive(
+                        viewer = action.id,
+                        onResult = {
+                            logEvent(
+                                state = state,
+                                analytics = analytics,
+                                event = ObjectStateAnalyticsEvent.SWITCH_VIEW,
+                                startTime = startTime,
+                                type = action.type.formattedName
+                            )
+                        }
+                    ))
                 }
             }
 
             ViewersWidgetUi.Action.Plus -> {
-                val state = stateReducer.state.value.dataViewState() ?: return
                 val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                 val newView = activeView.copy(
                     id = "",
@@ -2085,19 +2115,26 @@ class ObjectSetViewModel(
                     type = DVViewerType.GRID
                 )
                 viewModelScope.launch {
+                    val startTime = System.currentTimeMillis()
                     viewerDelegate.onEvent(
                         ViewerEvent.AddNew(
                             ctx = context,
                             dv = state.dataViewBlock.id,
                             viewer = newView,
-                            action = { newViewId ->
+                            onResult = { newViewId ->
+                                logEvent(
+                                    state = state,
+                                    analytics = analytics,
+                                    event = ObjectStateAnalyticsEvent.ADD_VIEW,
+                                    startTime = startTime,
+                                    type = newView.type.formattedName
+                                )
                                 widgetViewerId.value = newViewId
                                 showViewerEditWidgetForNewView()
                             }
                         )
                     )
                 }
-
             }
         }
     }
@@ -2187,7 +2224,8 @@ class ObjectSetViewModel(
                         ViewerEvent.UpdateView(
                             ctx = context,
                             dv = state.dataViewBlock.id,
-                            viewer = viewer.copy(name = action.name)
+                            viewer = viewer.copy(name = action.name),
+                            onResult = {}
                         )
                     )
                 }
@@ -2200,11 +2238,20 @@ class ObjectSetViewModel(
                 val state = stateReducer.state.value.dataViewState() ?: return
                 hideViewerEditWidget()
                 viewModelScope.launch {
+                    val startTime = System.currentTimeMillis()
                     viewerDelegate.onEvent(
                         ViewerEvent.Delete(
                             ctx = context,
                             dv = state.dataViewBlock.id,
-                            viewer = action.id
+                            viewer = action.id,
+                            onResult = {
+                                logEvent(
+                                    state = state,
+                                    analytics = analytics,
+                                    event = ObjectStateAnalyticsEvent.REMOVE_VIEW,
+                                    startTime = startTime
+                                )
+                            }
                         )
                     )
                 }
@@ -2213,11 +2260,21 @@ class ObjectSetViewModel(
                 val state = stateReducer.state.value.dataViewState() ?: return
                 val viewer = state.viewerById(action.id) ?: return
                 viewModelScope.launch {
+                    val startTime = System.currentTimeMillis()
                     viewerDelegate.onEvent(
                         ViewerEvent.Duplicate(
                             ctx = context,
                             dv = state.dataViewBlock.id,
-                            viewer = viewer
+                            viewer = viewer,
+                            onResult = {
+                                logEvent(
+                                    state = state,
+                                    analytics = analytics,
+                                    event = ObjectStateAnalyticsEvent.DUPLICATE_VIEW,
+                                    startTime = startTime,
+                                    type = viewer.type.formattedName
+                                )
+                            }
                         )
                     )
                 }
@@ -2363,6 +2420,18 @@ class ObjectSetViewModel(
             }
             is ViewerLayoutWidgetUi.Action.Type -> {
                 proceedWithUpdateViewer(
+                    action = {
+                        val startTime = System.currentTimeMillis()
+                        viewModelScope.launch {
+                            logEvent(
+                                state = stateReducer.state.value,
+                                analytics = analytics,
+                                event = ObjectStateAnalyticsEvent.CHANGE_VIEW_TYPE,
+                                startTime = startTime,
+                                type = action.type.formattedName
+                            )
+                        }
+                    },
                     viewerId = viewerLayoutWidgetState.value.viewer
                 ) { it.copy(type = action.type) }
             }
@@ -2374,7 +2443,7 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun proceedWithUpdateViewer(viewerId: Id?, update: (DVViewer) -> DVViewer) {
+    private fun proceedWithUpdateViewer(action: () -> Unit = {}, viewerId: Id?, update: (DVViewer) -> DVViewer) {
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerById(viewerId)
         if (viewer == null) {
@@ -2386,7 +2455,8 @@ class ObjectSetViewModel(
                 ViewerEvent.UpdateView(
                     ctx = context,
                     dv = state.dataViewBlock.id,
-                    viewer = update.invoke(viewer)
+                    viewer = update.invoke(viewer),
+                    onResult = action
                 )
             )
         }

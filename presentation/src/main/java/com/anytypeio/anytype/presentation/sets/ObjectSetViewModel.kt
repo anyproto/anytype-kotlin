@@ -2026,7 +2026,7 @@ class ObjectSetViewModel(
                             ctx = context,
                             dv = state.dataViewBlock.id,
                             viewer = action.viewer,
-                            action = {
+                            onResult = {
                                 logEvent(
                                     state = state,
                                     analytics = analytics,
@@ -2056,7 +2056,7 @@ class ObjectSetViewModel(
                             dv = state.dataViewBlock.id,
                             viewer = action.currentViews[action.to].id,
                             position = action.to,
-                            action = {
+                            onResult = {
                                 logEvent(
                                     state = state,
                                     analytics = analytics,
@@ -2074,7 +2074,7 @@ class ObjectSetViewModel(
                 viewModelScope.launch {
                     onEvent(ViewerEvent.SetActive(
                         viewer = action.id,
-                        action = {
+                        onResult = {
                             logEvent(
                                 state = state,
                                 analytics = analytics,
@@ -2101,7 +2101,7 @@ class ObjectSetViewModel(
                             ctx = context,
                             dv = state.dataViewBlock.id,
                             viewer = newView,
-                            action = { newViewId ->
+                            onResult = { newViewId ->
                                 logEvent(
                                     state = state,
                                     analytics = analytics,
@@ -2205,7 +2205,7 @@ class ObjectSetViewModel(
                             ctx = context,
                             dv = state.dataViewBlock.id,
                             viewer = viewer.copy(name = action.name),
-                            action = {}
+                            onResult = {}
                         )
                     )
                 }
@@ -2224,7 +2224,7 @@ class ObjectSetViewModel(
                             ctx = context,
                             dv = state.dataViewBlock.id,
                             viewer = action.id,
-                            action = {
+                            onResult = {
                                 logEvent(
                                     state = state,
                                     analytics = analytics,
@@ -2246,7 +2246,7 @@ class ObjectSetViewModel(
                             ctx = context,
                             dv = state.dataViewBlock.id,
                             viewer = viewer,
-                            action = {
+                            onResult = {
                                 logEvent(
                                     state = state,
                                     analytics = analytics,
@@ -2436,7 +2436,7 @@ class ObjectSetViewModel(
                     ctx = context,
                     dv = state.dataViewBlock.id,
                     viewer = update.invoke(viewer),
-                    action = action
+                    onResult = action
                 )
             )
         }

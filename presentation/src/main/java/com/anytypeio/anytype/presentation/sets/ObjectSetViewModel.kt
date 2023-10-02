@@ -2332,16 +2332,26 @@ class ObjectSetViewModel(
         Timber.d("onViewerLayoutWidgetAction, action:[$action]")
         when (action) {
             ViewerLayoutWidgetUi.Action.Dismiss -> {
-                viewerLayoutWidgetState.value =
+                val isCoverMenuVisible = viewerLayoutWidgetState.value.showCoverMenu
+                viewerLayoutWidgetState.value = if (isCoverMenuVisible) {
+                    viewerLayoutWidgetState.value.copy(showCoverMenu = false)
+                } else {
                     viewerLayoutWidgetState.value.copy(
                         showWidget = false,
-                        showCardSize = false
+                        showCardSize = false,
+                        showCoverMenu = false
                     )
+                }
             }
             ViewerLayoutWidgetUi.Action.CardSizeMenu -> {
                 val isCardSizeMenuVisible = viewerLayoutWidgetState.value.showCardSize
                 viewerLayoutWidgetState.value =
                     viewerLayoutWidgetState.value.copy(showCardSize = !isCardSizeMenuVisible)
+            }
+            ViewerLayoutWidgetUi.Action.CoverMenu -> {
+                val isCoverMenuVisible = viewerLayoutWidgetState.value.showCoverMenu
+                viewerLayoutWidgetState.value =
+                    viewerLayoutWidgetState.value.copy(showCoverMenu = !isCoverMenuVisible)
             }
             is ViewerLayoutWidgetUi.Action.FitImage -> {
                 proceedWithUpdateViewer(
@@ -2369,7 +2379,25 @@ class ObjectSetViewModel(
                     }
                 }
             }
-            is ViewerLayoutWidgetUi.Action.Cover -> {}
+            is ViewerLayoutWidgetUi.Action.Cover -> {
+                when (action.cover) {
+                    ViewerLayoutWidgetUi.State.ImagePreview.Cover -> {
+                        proceedWithUpdateViewer(
+                            viewerId = viewerLayoutWidgetState.value.viewer
+                        ) { it.copy(coverRelationKey = Relations.PAGE_COVER) }
+                    }
+                    is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> {
+                        proceedWithUpdateViewer(
+                            viewerId = viewerLayoutWidgetState.value.viewer
+                        ) { it.copy(coverRelationKey = action.cover.name) }
+                    }
+                    ViewerLayoutWidgetUi.State.ImagePreview.None -> {
+                        proceedWithUpdateViewer(
+                            viewerId = viewerLayoutWidgetState.value.viewer
+                        ) { it.copy(coverRelationKey = null) }
+                    }
+                }
+            }
             is ViewerLayoutWidgetUi.Action.Type -> {
                 proceedWithUpdateViewer(
                     action = {
@@ -2387,6 +2415,11 @@ class ObjectSetViewModel(
                     viewerId = viewerLayoutWidgetState.value.viewer
                 ) { it.copy(type = action.type) }
             }
+
+            ViewerLayoutWidgetUi.Action.DismissCoverMenu -> viewerLayoutWidgetState.value =
+                viewerLayoutWidgetState.value.copy(
+                    showCoverMenu = false
+                )
         }
     }
 

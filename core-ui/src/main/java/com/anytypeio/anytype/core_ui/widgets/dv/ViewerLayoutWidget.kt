@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -98,7 +99,7 @@ fun ViewerLayoutWidget(
             )
         }
 
-        if (swipeableState.isAnimationRunning) {
+        if (swipeableState.isAnimationRunning && swipeableState.targetValue == DragStates.DISMISSED) {
             DisposableEffect(Unit) {
                 onDispose {
                     action(Dismiss)
@@ -114,7 +115,7 @@ fun ViewerLayoutWidget(
             }
         }
 
-        val sizePx = with(LocalDensity.current) { 312.dp.toPx() }
+        val sizePx = with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
 
         var currentCoordinates: androidx.compose.ui.geometry.Rect by remember {
             mutableStateOf(androidx.compose.ui.geometry.Rect.Zero)
@@ -202,7 +203,9 @@ fun ViewerLayoutWidget(
                                 is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> cover.name
                                 ViewerLayoutWidgetUi.State.ImagePreview.None -> stringResource(id = R.string.none)
                             },
-                            onClick = {},
+                            onClick = {
+                                action(ViewerLayoutWidgetUi.Action.CoverMenu)
+                            },
                             arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
                         )
                         Divider()
@@ -219,6 +222,11 @@ fun ViewerLayoutWidget(
             show = currentState.showCardSize,
             action = action,
             coordinates = currentCoordinates
+        )
+        ViewerLayoutCoverWidget(
+            uiState = uiState,
+            action = action,
+            scope = scope
         )
     }
 }
@@ -381,7 +389,8 @@ fun PreviewLayoutScreen() {
             cardSize = ViewerLayoutWidgetUi.State.CardSize.Small,
             cover = ViewerLayoutWidgetUi.State.ImagePreview.Cover,
             showCardSize = true,
-            viewer = ""
+            viewer = "",
+            showCoverMenu = true
         ),
         action = {},
         scope = CoroutineScope(

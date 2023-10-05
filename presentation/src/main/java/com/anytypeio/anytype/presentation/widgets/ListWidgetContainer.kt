@@ -63,8 +63,10 @@ class ListWidgetContainer(
                         storage.subscribe(
                             StoreSearchByIdsParams(
                                 subscription = subscription,
-                                targets = order.keys.toList(),
-                                keys = keys
+                                keys = keys,
+                                targets = order.keys
+                                    .sortedBy { key -> order[key] }
+                                    .take(resolveLimit()),
                             )
 
                         ).map { objects ->

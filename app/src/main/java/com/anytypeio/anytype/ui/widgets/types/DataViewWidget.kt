@@ -100,7 +100,7 @@ fun DataViewListWidgetCard(
                 isInEditMode = mode is InteractionMode.Edit,
                 onDropDownMenuAction = onDropDownMenuAction
             )
-            if (item.tabs.isNotEmpty() && item.isExpanded) {
+            if (item.tabs.size > 1 && item.isExpanded) {
                 DataViewTabs(item, onChangeWidgetView)
             }
             if (item.elements.isNotEmpty()) {

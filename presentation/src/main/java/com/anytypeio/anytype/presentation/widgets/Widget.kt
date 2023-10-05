@@ -120,7 +120,11 @@ fun List<Block>.parseWidgets(
                             ObjectWrapper.Basic(raw)
                         )
                     }
-                    if (!WidgetConfig.excludedTypes.contains(source.type)) {
+                    val hasValidSource = when(source) {
+                        is Widget.Source.Bundled -> true
+                        is Widget.Source.Default -> source.obj.notDeletedNorArchived
+                    }
+                    if (hasValidSource && !WidgetConfig.excludedTypes.contains(source.type)) {
                         when (widgetContent.layout) {
                             Block.Content.Widget.Layout.TREE -> {
                                 add(

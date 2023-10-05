@@ -129,6 +129,8 @@ sealed class ObjectWrapper {
         val targetObjectType: Id? by default
 
         val isValid get() = map.containsKey(Relations.ID)
+
+        val notDeletedNorArchived get() = (isDeleted != true && isArchived != true)
     }
 
     /**

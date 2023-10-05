@@ -775,14 +775,6 @@ class HomeScreenViewModelTest {
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenWidgetObject(givenObjectView)
-        stubFavoritesObjectWatcher()
-
-        stubSearchByIds(
-            subscription = favoriteWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink),
-            keys = TreeWidgetContainer.keys
-        )
 
         stubSearchByIds(
             subscription = recentWidgetBlock.id,
@@ -797,14 +789,43 @@ class HomeScreenViewModelTest {
             keys = TreeWidgetContainer.keys
         )
 
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.FAVORITE,
-                workspace = config.workspace,
-                keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.NO_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
+        val firstLinkToObjectFavoriteObjectBlock =  StubLinkToObjectBlock(
+            target = firstLink.id
+        )
+
+        val secondLinkToObjectFavoriteObjectBlock =  StubLinkToObjectBlock(
+            target = secondLink.id
+        )
+
+        stubFavoritesObjectWatcher(
+            objectView = StubObjectView(
+                root = config.home,
+                blocks = listOf(
+                    StubSmartBlock(
+                        id = config.home,
+                        children = listOf(
+                            firstLinkToObjectFavoriteObjectBlock.id,
+                            secondLinkToObjectFavoriteObjectBlock.id
+                        )
+                    ),
+                    firstLinkToObjectFavoriteObjectBlock,
+                    secondLinkToObjectFavoriteObjectBlock
+                )
+            )
+        )
+
+        stubSearchByIds(
+            subscription = BundledWidgetSourceIds.FAVORITE,
+            targets = listOf(firstLink.id, secondLink.id),
+            results = listOf(firstLink, secondLink),
+            keys = TreeWidgetContainer.keys,
+        )
+
+        stubSearchByIds(
+            subscription = favoriteWidgetBlock.id,
+            targets = listOf(firstLink.id, secondLink.id),
+            results = listOf(firstLink, secondLink),
+            keys = TreeWidgetContainer.keys
         )
 
         stubDefaultSearch(
@@ -812,7 +833,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.NO_LIMIT
+                limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -822,7 +843,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.NO_LIMIT
+                limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1476,10 +1497,43 @@ class HomeScreenViewModelTest {
         stubInterceptEvents(events = emptyFlow())
         stubOpenWidgetObject(givenObjectView)
 
+        val firstLinkToObjectFavoriteObjectBlock =  StubLinkToObjectBlock(
+            target = firstLink.id
+        )
+
+        val secondLinkToObjectFavoriteObjectBlock =  StubLinkToObjectBlock(
+            target = secondLink.id
+        )
+
+        stubFavoritesObjectWatcher(
+            objectView = StubObjectView(
+                root = config.home,
+                blocks = listOf(
+                    StubSmartBlock(
+                        id = config.home,
+                        children = listOf(
+                            firstLinkToObjectFavoriteObjectBlock.id,
+                            secondLinkToObjectFavoriteObjectBlock.id
+                        )
+                    ),
+                    firstLinkToObjectFavoriteObjectBlock,
+                    secondLinkToObjectFavoriteObjectBlock
+                )
+            )
+        )
+
+        stubSearchByIds(
+            subscription = BundledWidgetSourceIds.FAVORITE,
+            targets = listOf(firstLink.id, secondLink.id),
+            results = listOf(firstLink, secondLink),
+            keys = TreeWidgetContainer.keys,
+        )
+
         stubSearchByIds(
             subscription = favoriteWidgetBlock.id,
             targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink)
+            results = listOf(firstLink, secondLink),
+            keys = TreeWidgetContainer.keys
         )
 
         stubSearchByIds(
@@ -1496,20 +1550,10 @@ class HomeScreenViewModelTest {
 
         stubDefaultSearch(
             params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.FAVORITE,
-                workspace = config.workspace,
-                keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.NO_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        )
-
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
                 workspace = config.workspace,
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.NO_LIMIT
+                limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1519,7 +1563,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.SETS,
                 workspace = config.workspace,
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.NO_LIMIT
+                limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )
@@ -1528,7 +1572,6 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
         stubCloseObject()
-        stubFavoritesObjectWatcher()
 
         val vm = buildViewModel()
 
@@ -1542,11 +1585,10 @@ class HomeScreenViewModelTest {
 
         verifyBlocking(storelessSubscriptionContainer, times(1)) {
             subscribe(
-                ListWidgetContainer.params(
+                StoreSearchByIdsParams(
                     subscription = favoriteSource.id,
-                    workspace = config.workspace,
+                    targets = listOf(firstLink.id, secondLink.id),
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.NO_LIMIT
                 )
             )
         }
@@ -1557,7 +1599,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     workspace = config.workspace,
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -1568,7 +1610,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     workspace = config.workspace,
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -1595,11 +1637,10 @@ class HomeScreenViewModelTest {
 
         verifyBlocking(storelessSubscriptionContainer, times(2)) {
             subscribe(
-                ListWidgetContainer.params(
+                StoreSearchByIdsParams(
                     subscription = favoriteSource.id,
-                    workspace = config.workspace,
+                    targets = listOf(firstLink.id, secondLink.id),
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.NO_LIMIT
                 )
             )
         }
@@ -1610,7 +1651,7 @@ class HomeScreenViewModelTest {
                     subscription = setsSource.id,
                     workspace = config.workspace,
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -1621,7 +1662,7 @@ class HomeScreenViewModelTest {
                     subscription = recentSource.id,
                     workspace = config.workspace,
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.NO_LIMIT
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
             )
         }
@@ -2563,15 +2604,13 @@ class HomeScreenViewModelTest {
         }
     }
 
-    private fun stubFavoritesObjectWatcher() {
+    private fun stubFavoritesObjectWatcher(
+        objectView: ObjectView = StubObjectView(root = config.home)
+    ) {
         objectWatcher.stub {
             on {
                 watch(config.home)
-            } doReturn flowOf(
-                StubObjectView(
-                    root = config.home
-                )
-            )
+            } doReturn flowOf(objectView)
         }
     }
 

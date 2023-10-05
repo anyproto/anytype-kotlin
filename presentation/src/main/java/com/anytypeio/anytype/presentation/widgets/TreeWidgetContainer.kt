@@ -138,31 +138,30 @@ class TreeWidgetContainer(
 
     private suspend fun fetchRootLevelBundledSourceObjects(): Flow<List<ObjectWrapper.Basic>> {
         return if (widget.source.id == BundledWidgetSourceIds.FAVORITE) {
-            combine(
-                objectWatcher
-                    .watch(config.home)
-                    .map { obj -> obj.orderOfRootObjects(obj.root) }
-                    .catch { emit(emptyMap()) },
-                container.subscribe(
-                    ListWidgetContainer.params(
-                        subscription = widget.source.id,
-                        workspace = workspace,
-                        keys = keys,
-                        limit = resolveLimit()
-                    )
-                ).map { favorites ->
-                    favorites.filter { obj -> obj.isArchived != true && obj.isDeleted != true }
+            objectWatcher
+                .watch(config.home)
+                .map { obj -> obj.orderOfRootObjects(obj.root) }
+                .catch { emit(emptyMap()) }
+                .flatMapLatest { order ->
+                    container.subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = widget.source.id,
+                            targets = order.keys.toList(),
+                            keys = keys
+                        )
+                    ).map { favorites ->
+                        favorites
+                            .filter { obj -> obj.notDeletedNorArchived }
+                            .sortedBy { obj -> order[obj.id] }
+                    }
                 }
-            ) { order, rootLevelObjects ->
-                rootLevelObjects.sortedBy { obj -> order[obj.id] }
-            }
         } else {
             container.subscribe(
                 ListWidgetContainer.params(
                     subscription = widget.source.id,
                     workspace = workspace,
                     keys = keys,
-                    limit = resolveLimit()
+                    limit = rootLevelLimit
                 )
             )
         }

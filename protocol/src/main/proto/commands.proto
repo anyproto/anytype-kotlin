@@ -1635,6 +1635,8 @@ message Rpc {
                 Error error = 1;
                 ResponseEvent event = 2;
                 UndoRedoCounter counters = 3;
+                string blockId = 4;
+                anytype.model.Range range = 5;
 
                 message Error {
                     Code code = 1;
@@ -1660,6 +1662,8 @@ message Rpc {
                 Error error = 1;
                 ResponseEvent event = 2;
                 UndoRedoCounter counters = 3;
+                string blockId = 4;
+                anytype.model.Range range = 5;
 
                 message Error {
                     Code code = 1;
@@ -3524,6 +3528,29 @@ message Rpc {
                 }
             }
         }
+
+        message SetCarriage {
+            message Request {
+                string contextId = 1;
+                string blockId = 2;
+                anytype.model.Range range = 3;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
     }
 
     message BlockLatex {
@@ -3560,6 +3587,7 @@ message Rpc {
                 string blockId = 2;
                 string text = 3;
                 anytype.model.Block.Content.Text.Marks marks = 4;
+                anytype.model.Range selectedTextRange = 5;
             }
 
             message Response {
@@ -5376,6 +5404,7 @@ message Rpc {
 
         message SpaceSummary {
             message Request {
+                string spaceId = 1;
             }
 
             message Response {

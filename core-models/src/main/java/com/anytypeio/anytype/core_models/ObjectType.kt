@@ -43,11 +43,13 @@ data class ObjectType(
         SPACE(10),
         BOOKMARK(11),
         DATABASE(20),
+        RELATION_OPTION_LIST(12),
         RELATION_OPTION(13),
         COLLECTION(14),
         AUDIO(15),
         VIDEO(16),
-        DATE(17)
+        DATE(17),
+        SPACE_VIEW(18)
     }
 
     /**

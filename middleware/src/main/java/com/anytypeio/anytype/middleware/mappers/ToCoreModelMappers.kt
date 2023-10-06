@@ -638,6 +638,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.collection -> ObjectType.Layout.COLLECTION
     MOTypeLayout.relationOption -> ObjectType.Layout.RELATION_OPTION
     MOTypeLayout.relationOptionsList -> TODO()
+    MOTypeLayout.spaceView -> ObjectType.Layout.SPACE_VIEW
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {

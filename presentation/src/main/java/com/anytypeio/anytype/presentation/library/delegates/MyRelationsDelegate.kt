@@ -75,15 +75,6 @@ class MyRelationsDelegate @Inject constructor(
                         value = workspaceId
                     )
                 )
-                add(
-                    DVFilter(
-                        relation = Relations.RELATION_KEY,
-                        condition = DVFilterCondition.NOT_IN,
-                        value = Relations.systemRelationKeys.filter { key ->
-                            key != Relations.DESCRIPTION
-                        }
-                    )
-                )
             }
         )
     }

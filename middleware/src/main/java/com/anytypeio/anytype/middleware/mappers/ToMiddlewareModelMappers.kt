@@ -453,6 +453,8 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.AUDIO -> MOTypeLayout.audio
     ObjectType.Layout.VIDEO -> MOTypeLayout.video
     ObjectType.Layout.RELATION_OPTION -> MOTypeLayout.relationOption
+    ObjectType.Layout.RELATION_OPTION_LIST -> MOTypeLayout.relationOptionsList
+    ObjectType.Layout.SPACE_VIEW -> MOTypeLayout.spaceView
 }
 
 fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {

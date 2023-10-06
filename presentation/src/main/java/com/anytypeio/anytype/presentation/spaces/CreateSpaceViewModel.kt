@@ -34,6 +34,9 @@ class CreateSpaceViewModel @Inject constructor(
     val isDismissed = MutableStateFlow(false)
 
     fun onCreateSpace(name: String) {
+        if (isDismissed.value) {
+            return
+        }
         if (name.isEmpty()) {
             sendToast("Name should not be empty")
             return

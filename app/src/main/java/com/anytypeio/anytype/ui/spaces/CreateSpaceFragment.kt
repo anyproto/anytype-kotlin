@@ -40,6 +40,11 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                     onSpaceIconClicked = vm::onSpaceIconClicked
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect() { toast(it) } }
+                LaunchedEffect(Unit) {
+                    vm.isDismissed.collect { isDismissed ->
+                        if (isDismissed) dismiss()
+                    }
+                }
             }
         }
     }

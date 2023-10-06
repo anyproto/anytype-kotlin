@@ -39,6 +39,8 @@ enum SmartBlockType {
     Workspace = 0x206;
     STRelation = 0x209;
     STType = 0x210;
+    STRelationOption = 0x211;
+    SpaceView = 0x212;
 
     MissingObject = 0x207;
 }
@@ -322,12 +324,12 @@ message Block {
                 repeated Sort sorts = 4;
                 repeated Filter filters = 5;
                 repeated Relation relations = 6; // relations fields/columns options, also used to provide the order
-				        string coverRelationKey = 7; // Relation used for cover in gallery
+                string coverRelationKey = 7; // Relation used for cover in gallery
                 bool hideIcon = 8; // Hide icon near name
                 Size cardSize = 9; // Gallery card size
                 bool coverFit = 10; // Image fits container
                 string groupRelationKey = 11; // Group view by this relationKey
-				        bool groupBackgroundColors = 12; // Enable backgrounds in groups
+                bool groupBackgroundColors = 12; // Enable backgrounds in groups
                 int32 pageLimit = 13; // Limit of objects shown in widget
                 string defaultTemplateId = 14; // Default template that is chosen for new object created within the view
                 string defaultObjectTypeId = 15; // Default object type that is chosen for new object created within the view
@@ -447,7 +449,7 @@ message Block {
                 string groupId = 1;
                 int32 index = 2;
                 bool hidden = 3;
-				string backgroundColor = 4;
+                string backgroundColor = 4;
             }
 
             message ObjectOrder {
@@ -494,8 +496,8 @@ message Block {
         }
 
         message Table {}
-		    message TableColumn {}
-		    message TableRow {
+        message TableColumn {}
+        message TableRow {
             bool isHeader = 1;
         }
 
@@ -649,7 +651,12 @@ message Object {
     message ChangePayload {
         SmartBlockType smartBlockType = 1;
         string key = 2;
+        bytes data = 3;
     }
+}
+
+message SpaceObjectHeader {
+    string spaceID = 1;
 }
 
 message ObjectType {
@@ -685,7 +692,7 @@ message ObjectType {
         audio = 15;
         video = 16;
         date = 17;
-
+        spaceView = 18;
 
         database = 20; // to be released later
     }
@@ -833,4 +840,23 @@ message ObjectView {
         int32 undo = 1;
         int32 redo = 2;
     }
+}
+
+
+enum SpaceStatus {
+    // Unknown means the space is not loaded yet
+    Unknown = 0;
+    // Loading - the space in progress of loading
+    Loading = 1;
+    // Ok - the space loaded and available
+    Ok = 2;
+    // Missing - the space is missing
+    Missing = 3;
+    // Error - the space loading ended with an error
+    Error = 4;
+
+    // RemoteWaitingDeletion - network status is "waiting deletion"
+    RemoteWaitingDeletion = 5;
+    // RemoteDeleted - the space is deleted in the current network
+    RemoteDeleted = 6;
 }

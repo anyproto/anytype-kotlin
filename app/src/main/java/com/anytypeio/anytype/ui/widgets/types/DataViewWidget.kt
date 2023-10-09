@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -47,7 +48,8 @@ fun DataViewListWidgetCard(
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -108,7 +110,8 @@ fun DataViewListWidgetCard(
                     CompactListWidgetList(
                         mode = mode,
                         elements = item.elements,
-                        onWidgetElementClicked = onWidgetObjectClicked
+                        onWidgetElementClicked = onWidgetObjectClicked,
+                        onObjectCheckboxClicked = onObjectCheckboxClicked
                     )
                 } else {
                     item.elements.forEachIndexed { idx, element ->
@@ -116,7 +119,8 @@ fun DataViewListWidgetCard(
                             onWidgetObjectClicked = onWidgetObjectClicked,
                             obj = element.obj,
                             icon = element.objectIcon,
-                            mode = mode
+                            mode = mode,
+                            onObjectCheckboxClicked = onObjectCheckboxClicked
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -189,6 +193,7 @@ private fun DataViewTabs(
 fun ListWidgetElement(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     icon: ObjectIcon,
     obj: ObjectWrapper.Basic
 ) {
@@ -213,7 +218,13 @@ fun ListWidgetElement(
                 icon = icon,
                 modifier = Modifier
                     .align(Alignment.CenterStart)
-                    .padding(start = 16.dp)
+                    .padding(start = 16.dp),
+                onTaskIconClicked = { isChecked ->
+                    onObjectCheckboxClicked(
+                        obj.id,
+                        isChecked
+                    )
+                }
             )
         }
         Text(

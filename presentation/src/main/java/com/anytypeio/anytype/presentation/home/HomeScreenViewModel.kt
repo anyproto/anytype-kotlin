@@ -97,6 +97,7 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
@@ -358,69 +359,39 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithOpeningWidgetObject(widgetObject: Id) {
-        viewModelScope.launch {
-            openObject.stream(
-                OpenObject.Params(widgetObject, false)
-            ).collect { result ->
-                when (result) {
-                    is Resultat.Failure -> {
-                        objectViewState.value = ObjectViewState.Failure(result.exception).also {
-                            onSessionFailed()
-                        }
-                        Timber.e(result.exception, "Error while opening object.")
-                    }
-                    is Resultat.Loading -> {
-                        objectViewState.value = ObjectViewState.Loading
-                    }
-                    is Resultat.Success -> {
-                        objectViewState.value = ObjectViewState.Success(
-                            obj = result.value
-                        ).also {
-                            onSessionStarted()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun proceedWithClosingWidgetObject(widgetObject: Id) {
-        viewModelScope.launch {
-            // TODO save widget session per space
-            saveWidgetSession.async(
-                SaveWidgetSession.Params(
-                    WidgetSession(
-                        collapsed = collapsedWidgetStateHolder.get(),
-                        widgetsToActiveViews = emptyMap()
-                    )
+    private suspend fun proceedWithClosingWidgetObject(widgetObject: Id) {
+        saveWidgetSession.async(
+            SaveWidgetSession.Params(
+                WidgetSession(
+                    collapsed = collapsedWidgetStateHolder.get(),
+                    widgetsToActiveViews = emptyMap()
                 )
             )
-            val subscriptions = buildList {
-                addAll(
-                    widgets.value.orEmpty().map { widget ->
-                        if (widget.source is Widget.Source.Bundled)
-                            widget.source.id
-                        else
-                            widget.id
+        )
+        val subscriptions = buildList {
+            addAll(
+                widgets.value.orEmpty().map { widget ->
+                    if (widget.source is Widget.Source.Bundled)
+                        widget.source.id
+                    else
+                        widget.id
+                }
+            )
+            add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
+        }
+        if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
+        // TODO close widget object also when switching to a new space
+        closeObject.stream(widgetObject).collect { status ->
+            status.fold(
+                onFailure = {
+                    Timber.e(it, "Error while closing widget object")
+                },
+                onSuccess = {
+                    onSessionStopped().also {
+                        Timber.d("Widget object closed successfully")
                     }
-                )
-                add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
-            }
-            if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
-            // TODO close widget object also when switching to a new space
-            closeObject.stream(widgetObject).collect { status ->
-                status.fold(
-                    onFailure = {
-                        Timber.e(it, "Error while closing widget object")
-                    },
-                    onSuccess = {
-                        onSessionStopped().also {
-                            Timber.d("Widget object closed successfully")
-                        }
-                    }
-                )
-            }
+                }
+            )
         }
     }
 
@@ -941,14 +912,12 @@ class HomeScreenViewModel(
         Timber.d("onStart")
         objectViewPipelineJobs += viewModelScope.launch {
             if (!isWidgetSessionRestored) {
-                // TODO restore sessions
-//                val session = withContext(appCoroutineDispatchers.io) {
-//                    getWidgetSession.async(Unit).getOrNull()
-//                }
-//                if (session != null) {
-//                    collapsedWidgetStateHolder.set(session.collapsed)
-//                }
-
+                val session = withContext(appCoroutineDispatchers.io) {
+                    getWidgetSession.async(Unit).getOrNull()
+                }
+                if (session != null) {
+                    collapsedWidgetStateHolder.set(session.collapsed)
+                }
             }
             objectViewPipeline.collect {
                 objectViewState.value = it
@@ -960,7 +929,12 @@ class HomeScreenViewModel(
         Timber.d("onStop")
         // Temporary workaround for app crash when user is logged out and config storage is not initialized.
         try {
-            proceedWithClosingWidgetObject(widgetObject = configStorage.get().widgets)
+            viewModelScope.launch {
+                val config = spaceManager.getConfig()
+                if (config != null) {
+                    proceedWithClosingWidgetObject(widgetObject = config.widgets)
+                }
+            }
         } catch (e: Exception) {
             Timber.e(e, "Error while closing widget object")
         }

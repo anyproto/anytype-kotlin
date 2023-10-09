@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -41,7 +42,8 @@ fun ListWidgetCard(
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -93,7 +95,8 @@ fun ListWidgetCard(
                     CompactListWidgetList(
                         mode = mode,
                         elements = item.elements,
-                        onWidgetElementClicked = onWidgetObjectClicked
+                        onWidgetElementClicked = onWidgetObjectClicked,
+                        onObjectCheckboxClicked = onObjectCheckboxClicked
                     )
                 } else {
                     item.elements.forEachIndexed { idx, element ->
@@ -101,7 +104,8 @@ fun ListWidgetCard(
                             onWidgetObjectClicked = onWidgetObjectClicked,
                             obj = element.obj,
                             icon = element.objectIcon,
-                            mode = mode
+                            mode = mode,
+                            onObjectCheckboxClicked = onObjectCheckboxClicked
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -134,7 +138,8 @@ fun ListWidgetCard(
 fun CompactListWidgetList(
     mode: InteractionMode,
     elements: List<WidgetView.Element>,
-    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit
+    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
 ) {
     elements.forEachIndexed { idx, element ->
         Column {
@@ -152,7 +157,10 @@ fun CompactListWidgetList(
                     icon = element.objectIcon,
                     paddingStart = 8.dp,
                     paddingEnd = 4.dp,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    onTaskIconClicked = { isChecked ->
+                        onObjectCheckboxClicked(element.obj.id, isChecked)
+                    }
                 )
                 Text(
                     text = element.obj.getWidgetObjectName()

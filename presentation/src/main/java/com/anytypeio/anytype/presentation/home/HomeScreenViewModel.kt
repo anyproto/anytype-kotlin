@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -130,7 +131,8 @@ class HomeScreenViewModel(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
-    private val setWidgetActiveView: SetWidgetActiveView
+    private val setWidgetActiveView: SetWidgetActiveView,
+    private val setObjectDetails: SetObjectDetails
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -600,6 +602,30 @@ class HomeScreenViewModel(
             proceedWithOpeningObject(obj)
         } else {
             sendToast("Open bin to restore your archived object")
+        }
+    }
+
+    fun onObjectCheckboxClicked(id: Id, isChecked: Boolean) {
+        proceedWithTogglingObjectCheckboxState(id = id, isChecked = isChecked)
+    }
+
+    private fun proceedWithTogglingObjectCheckboxState(id: Id, isChecked: Boolean) {
+        viewModelScope.launch {
+            setObjectDetails.async(
+                SetObjectDetails.Params(
+                    ctx = id,
+                    details = mapOf(
+                        Relations.DONE to !isChecked
+                    )
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Updated checkbox state")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while toggling object checkbox state")
+                }
+            )
         }
     }
 
@@ -1180,7 +1206,8 @@ class HomeScreenViewModel(
         private val spaceGradientProvider: SpaceGradientProvider,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val objectWatcher: ObjectWatcher,
-        private val setWidgetActiveView: SetWidgetActiveView
+        private val setWidgetActiveView: SetWidgetActiveView,
+        private val setObjectDetails: SetObjectDetails
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1212,7 +1239,8 @@ class HomeScreenViewModel(
             spaceGradientProvider = spaceGradientProvider,
             storeOfObjectTypes = storeOfObjectTypes,
             objectWatcher = objectWatcher,
-            setWidgetActiveView = setWidgetActiveView
+            setWidgetActiveView = setWidgetActiveView,
+            setObjectDetails = setObjectDetails
         ) as T
     }
 

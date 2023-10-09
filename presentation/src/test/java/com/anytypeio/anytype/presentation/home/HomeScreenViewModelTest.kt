@@ -39,6 +39,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -114,6 +115,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var closeObject: CloseBlock
+
+    @Mock
+    lateinit var setObjectDetails: SetObjectDetails
 
     @Mock
     lateinit var getObject: GetObject
@@ -2653,7 +2657,8 @@ class HomeScreenViewModelTest {
         spaceGradientProvider = spaceGradientProvider,
         storeOfObjectTypes = storeOfObjectTypes,
         objectWatcher = objectWatcher,
-        setWidgetActiveView = setWidgetActiveView
+        setWidgetActiveView = setWidgetActiveView,
+        setObjectDetails = setObjectDetails
     )
 
     companion object {

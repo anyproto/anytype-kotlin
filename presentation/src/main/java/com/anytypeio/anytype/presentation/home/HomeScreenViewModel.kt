@@ -387,6 +387,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithClosingWidgetObject(widgetObject: Id) {
         viewModelScope.launch {
+            // TODO save widget session per space
             saveWidgetSession.async(
                 SaveWidgetSession.Params(
                     WidgetSession(
@@ -407,6 +408,7 @@ class HomeScreenViewModel(
                 add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
             }
             if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
+            // TODO close widget object also when switching to a new space
             closeObject.stream(widgetObject).collect { status ->
                 status.fold(
                     onFailure = {

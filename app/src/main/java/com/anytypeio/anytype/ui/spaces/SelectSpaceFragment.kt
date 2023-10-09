@@ -77,6 +77,9 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                     R.id.createSpaceScreen
                 )
             }
+            is Command.Dismiss -> {
+                findNavController().popBackStack()
+            }
         }
     }
 

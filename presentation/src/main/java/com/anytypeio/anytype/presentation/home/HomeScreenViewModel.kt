@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -18,8 +17,10 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.letNotNull
 import com.anytypeio.anytype.core_utils.ext.replace
+import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
@@ -79,10 +80,12 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
@@ -91,9 +94,9 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
@@ -144,6 +147,8 @@ class HomeScreenViewModel(
     CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
     Unsubscriber by unsubscriber {
 
+    val jobs = mutableListOf<Job>()
+
     val views = MutableStateFlow<List<WidgetView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
@@ -164,19 +169,44 @@ class HomeScreenViewModel(
 
     val icon = MutableStateFlow<SpaceIconView>(SpaceIconView.Loading)
 
-    init {
-        val config = configStorage.getOrNull()
-        if (config != null) {
-            proceedWithObservingSpaceIcon()
-            proceedWithLaunchingUnsubscriber()
-            proceedWithObjectViewStatePipeline(config)
-            proceedWithWidgetContainerPipeline()
-            proceedWithRenderingPipeline()
-            proceedWithObservingDispatches(config)
-            proceedWithSettingUpShortcuts()
-        } else {
-            Timber.e("Failed to get config to initialize home component")
+    private val objectViewPipelineJobs = mutableListOf<Job>()
+
+    private val objectViewPipeline = spaceManager
+        .observe()
+        .flatMapLatest { config ->
+            openObject.stream(
+                OpenObject.Params(
+                    obj = config.widgets,
+                    saveAsLastOpened = false
+                )
+            )
         }
+        .onEach { result ->
+            result.fold(
+                onSuccess = { onSessionStarted() },
+                onFailure = { e ->
+                    onSessionFailed().also {
+                        Timber.e(e, "Error while opening object.")
+                    }
+                }
+            )
+        }
+        .map { result ->
+            when (result) {
+                is Resultat.Failure -> ObjectViewState.Failure(result.exception)
+                is Resultat.Loading -> ObjectViewState.Loading
+                is Resultat.Success -> ObjectViewState.Success(obj = result.value)
+            }
+        }
+
+    init {
+        proceedWithObservingSpaceIcon()
+        proceedWithLaunchingUnsubscriber()
+        proceedWithObjectViewStatePipeline()
+        proceedWithWidgetContainerPipeline()
+        proceedWithRenderingPipeline()
+        proceedWithObservingDispatches()
+        proceedWithSettingUpShortcuts()
     }
 
     private fun proceedWithLaunchingUnsubscriber() {
@@ -260,14 +290,16 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithObjectViewStatePipeline(config: Config) {
-        val externalChannelEvents = interceptEvents.build(
-            InterceptEvents.Params(config.widgets)
-        ).map { events ->
-            Payload(
-                context = config.widgets,
-                events = events
-            )
+    private fun proceedWithObjectViewStatePipeline() {
+        val externalChannelEvents = spaceManager.observe().flatMapLatest {  config ->
+            interceptEvents.build(
+                InterceptEvents.Params(config.widgets)
+            ).map { events ->
+                Payload(
+                    context = config.widgets,
+                    events = events
+                )
+            }
         }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()
@@ -355,6 +387,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithClosingWidgetObject(widgetObject: Id) {
         viewModelScope.launch {
+            // TODO save widget session per space
             saveWidgetSession.async(
                 SaveWidgetSession.Params(
                     WidgetSession(
@@ -375,6 +408,7 @@ class HomeScreenViewModel(
                 add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
             }
             if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
+            // TODO close widget object also when switching to a new space
             closeObject.stream(widgetObject).collect { status ->
                 status.fold(
                     onFailure = {
@@ -390,93 +424,93 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithObservingDispatches(config: Config) {
+    private fun proceedWithObservingDispatches() {
         viewModelScope.launch {
-            widgetEventDispatcher.flow().collect { dispatch ->
-                Timber.d("New dispatch: $dispatch")
-                when (dispatch) {
-                    is WidgetDispatchEvent.SourcePicked.Default -> {
-                        commands.emit(
-                            Command.SelectWidgetType(
+            widgetEventDispatcher
+                .flow()
+                .withLatestFrom(spaceManager.observe()) { dispatch, config ->
+                    when (dispatch) {
+                        is WidgetDispatchEvent.SourcePicked.Default -> {
+                            commands.emit(
+                                Command.SelectWidgetType(
+                                    ctx = config.widgets,
+                                    source = dispatch.source,
+                                    layout = dispatch.sourceLayout,
+                                    target = dispatch.target,
+                                    isInEditMode = isInEditMode()
+                                )
+                            )
+                        }
+                        is WidgetDispatchEvent.SourcePicked.Bundled -> {
+                            commands.emit(
+                                Command.SelectWidgetType(
+                                    ctx = config.widgets,
+                                    source = dispatch.source,
+                                    layout = ObjectType.Layout.SET.code,
+                                    target = dispatch.target,
+                                    isInEditMode = isInEditMode()
+                                )
+                            )
+                        }
+                        is WidgetDispatchEvent.SourceChanged -> {
+                            proceedWithUpdatingWidget(
+                                ctx = config.widgets,
+                                widget = dispatch.widget,
+                                source = dispatch.source,
+                                type = dispatch.type
+                            )
+                        }
+
+                        is WidgetDispatchEvent.TypePicked -> {
+                            proceedWithCreatingWidget(
                                 ctx = config.widgets,
                                 source = dispatch.source,
-                                layout = dispatch.sourceLayout,
-                                target = dispatch.target,
-                                isInEditMode = isInEditMode()
+                                type = dispatch.widgetType,
+                                target = dispatch.target
                             )
-                        )
+                        }
                     }
-                    is WidgetDispatchEvent.SourcePicked.Bundled -> {
-                        commands.emit(
-                            Command.SelectWidgetType(
-                                ctx = config.widgets,
-                                source = dispatch.source,
-                                layout = ObjectType.Layout.SET.code,
-                                target = dispatch.target,
-                                isInEditMode = isInEditMode()
-                            )
-                        )
-                    }
-                    is WidgetDispatchEvent.SourceChanged -> {
-                        proceedWithUpdatingWidget(
-                            widget = dispatch.widget,
-                            source = dispatch.source,
-                            type = dispatch.type
-                        )
-                    }
-                    is WidgetDispatchEvent.TypePicked -> {
-                        proceedWithCreatingWidget(
-                            source = dispatch.source,
-                            type = dispatch.widgetType,
-                            target = dispatch.target
-                        )
-                    }
-                }
-            }
+                }.collect()
         }
     }
 
     private fun proceedWithCreatingWidget(
+        ctx: Id,
         source: Id,
         type: Int,
         target: Id?
     ) {
         viewModelScope.launch {
-            val config = configStorage.getOrNull()
-            if (config != null) {
-                createWidget(
-                    CreateWidget.Params(
-                        ctx = config.widgets,
-                        source = source,
-                        type = when (type) {
-                            Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
-                            Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
-                            Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
-                            Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
-                            else -> WidgetLayout.LINK
-                        },
-                        target = target,
-                        position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
-                    )
-                ).flowOn(appCoroutineDispatchers.io).collect { status ->
-                    Timber.d("Status while creating widget: $status")
-                    when (status) {
-                        is Resultat.Failure -> {
-                            sendToast("Error while creating widget: ${status.exception}")
-                            Timber.e(status.exception, "Error while creating widget")
-                        }
+            createWidget(
+                CreateWidget.Params(
+                    ctx = ctx,
+                    source = source,
+                    type = when (type) {
+                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
+                        else -> WidgetLayout.LINK
+                    },
+                    target = target,
+                    position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
+                )
+            ).flowOn(appCoroutineDispatchers.io).collect { status ->
+                Timber.d("Status while creating widget: $status")
+                when (status) {
+                    is Resultat.Failure -> {
+                        sendToast("Error while creating widget: ${status.exception}")
+                        Timber.e(status.exception, "Error while creating widget")
+                    }
 
-                        is Resultat.Loading -> {
-                            // Do nothing?
-                        }
+                    is Resultat.Loading -> {
+                        // Do nothing?
+                    }
 
-                        is Resultat.Success -> {
-                            objectPayloadDispatcher.send(status.value)
-                        }
+                    is Resultat.Success -> {
+                        objectPayloadDispatcher.send(status.value)
                     }
                 }
-            } else {
-                Timber.e("Failed to get config to create widgets")
             }
         }
     }
@@ -485,47 +519,43 @@ class HomeScreenViewModel(
      * @param [type] type code from [Command.ChangeWidgetType]
      */
     private fun proceedWithUpdatingWidget(
+        ctx: Id,
         widget: Id,
         source: Id,
         type: Int
     ) {
         viewModelScope.launch {
-            val config = configStorage.getOrNull()
-            if (config != null) {
-                updateWidget(
-                    UpdateWidget.Params(
-                        ctx = config.widgets,
-                        source = source,
-                        widget = widget,
-                        type = when (type) {
-                            Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
-                            Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
-                            Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
-                            Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
-                            else -> throw IllegalStateException("Unexpected type: $type")
-                        }
-                    )
-                ).flowOn(appCoroutineDispatchers.io).collect { status ->
-                    Timber.d("Status while creating widget: $status")
-                    when (status) {
-                        is Resultat.Failure -> {
-                            sendToast("Error while creating widget: ${status.exception}")
-                            Timber.e(status.exception, "Error while creating widget")
-                        }
+            updateWidget(
+                UpdateWidget.Params(
+                    ctx = ctx,
+                    source = source,
+                    widget = widget,
+                    type = when (type) {
+                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
+                        else -> throw IllegalStateException("Unexpected type: $type")
+                    }
+                )
+            ).flowOn(appCoroutineDispatchers.io).collect { status ->
+                Timber.d("Status while creating widget: $status")
+                when (status) {
+                    is Resultat.Failure -> {
+                        sendToast("Error while creating widget: ${status.exception}")
+                        Timber.e(status.exception, "Error while creating widget")
+                    }
 
-                        is Resultat.Loading -> {
-                            // Do nothing?
-                        }
+                    is Resultat.Loading -> {
+                        // Do nothing?
+                    }
 
-                        is Resultat.Success -> {
-                            launch {
-                                objectPayloadDispatcher.send(status.value)
-                            }
+                    is Resultat.Success -> {
+                        launch {
+                            objectPayloadDispatcher.send(status.value)
                         }
                     }
                 }
-            } else {
-                Timber.e("Failed to get config to update widgets")
             }
         }
     }
@@ -909,26 +939,20 @@ class HomeScreenViewModel(
 
     fun onStart() {
         Timber.d("onStart")
-        if (!isWidgetSessionRestored) {
-            viewModelScope.launch {
-                val session = withContext(appCoroutineDispatchers.io) {
-                    getWidgetSession.async(Unit).getOrNull()
-                }
-                if (session != null) {
-                    collapsedWidgetStateHolder.set(session.collapsed)
-                }
-                val config = configStorage.getOrNull()
-                if (config != null)
-                    proceedWithOpeningWidgetObject(widgetObject = config.widgets)
-                else
-                    Timber.d("Failed to get config to open widget object")
+        objectViewPipelineJobs += viewModelScope.launch {
+            if (!isWidgetSessionRestored) {
+                // TODO restore sessions
+//                val session = withContext(appCoroutineDispatchers.io) {
+//                    getWidgetSession.async(Unit).getOrNull()
+//                }
+//                if (session != null) {
+//                    collapsedWidgetStateHolder.set(session.collapsed)
+//                }
+
             }
-        } else {
-            val config = configStorage.getOrNull()
-            if (config != null)
-                proceedWithOpeningWidgetObject(widgetObject = config.widgets)
-            else
-                Timber.d("Failed to get config to open widget object")
+            objectViewPipeline.collect {
+                objectViewState.value = it
+            }
         }
     }
 
@@ -940,6 +964,7 @@ class HomeScreenViewModel(
         } catch (e: Exception) {
             Timber.e(e, "Error while closing widget object")
         }
+        jobs.cancel()
     }
 
     private fun proceedWithExitingEditMode() {

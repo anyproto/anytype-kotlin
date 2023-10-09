@@ -136,12 +136,19 @@ class SelectSpaceViewModel(
     fun onSpaceClicked(view: WorkspaceView) {
         viewModelScope.launch {
             Timber.d("Setting space: $view")
-            spaceManager.set(view.space)
-            saveCurrentSpace.async(SaveCurrentSpace.Params(SpaceId(view.space))).fold(
-                onFailure = {
-                    Timber.e(it, "Error while saving current space in user settings")
-                }
-            )
+            if (!view.isSelected) {
+                spaceManager.set(view.space)
+                saveCurrentSpace.async(SaveCurrentSpace.Params(SpaceId(view.space))).fold(
+                    onFailure = {
+                        Timber.e(it, "Error while saving current space in user settings")
+                    },
+                    onSuccess = {
+                        commands.emit(Command.Dismiss)
+                    }
+                )
+            } else {
+                commands.emit(Command.Dismiss)
+            }
         }
     }
 
@@ -216,4 +223,5 @@ sealed class SelectSpaceView {
 
 sealed class Command {
     object CreateSpace : Command()
+    object Dismiss : Command()
 }

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -28,7 +29,10 @@ class SpaceWidgetContainer @Inject constructor(
                 StoreSearchByIdsParams(
                     subscription = SPACE_WIDGET_SUBSCRIPTION,
                     targets = listOf(config.workspace),
-                    keys = ObjectSearchConstants.defaultKeys
+                    keys = buildList {
+                        addAll(ObjectSearchConstants.defaultKeys)
+                        add(Relations.ICON_OPTION)
+                    }
                 )
             )
         }.mapNotNull { results ->

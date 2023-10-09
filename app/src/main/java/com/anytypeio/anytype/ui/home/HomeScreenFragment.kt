@@ -87,7 +87,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                         navigation().openSettings()
                     },
                     onBundledWidgetClicked = vm::onBundledWidgetClicked,
-                    onMove = vm::onMove
+                    onMove = vm::onMove,
+                    onObjectCheckboxClicked = vm::onObjectCheckboxClicked
                 )
             }
         }

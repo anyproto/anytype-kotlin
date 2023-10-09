@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -79,6 +80,8 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
+import java.util.LinkedList
+import java.util.Queue
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -97,6 +100,8 @@ import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -148,7 +153,8 @@ class HomeScreenViewModel(
     CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
     Unsubscriber by unsubscriber {
 
-    val jobs = mutableListOf<Job>()
+    private val jobs = mutableListOf<Job>()
+    private val mutex = Mutex()
 
     val views = MutableStateFlow<List<WidgetView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
@@ -170,10 +176,16 @@ class HomeScreenViewModel(
 
     val icon = MutableStateFlow<SpaceIconView>(SpaceIconView.Loading)
 
-    private val objectViewPipelineJobs = mutableListOf<Job>()
+    private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
-    private val objectViewPipeline = spaceManager
+    private val openWidgetObjectsHistory : Queue<Id> = LinkedList()
+
+    private val widgetObjectPipeline = spaceManager
         .observe()
+        .onEach { currentConfig ->
+            // Closing previosly opened widget object when switching spaces without leaving home screen
+            proceedWithClearingObjectSessionHistory(currentConfig)
+        }
         .flatMapLatest { config ->
             openObject.stream(
                 OpenObject.Params(
@@ -184,7 +196,11 @@ class HomeScreenViewModel(
         }
         .onEach { result ->
             result.fold(
-                onSuccess = { onSessionStarted() },
+                onSuccess = { objectView ->
+                    onSessionStarted().also {
+                        mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                    }
+                },
                 onFailure = { e ->
                     onSessionFailed().also {
                         Timber.e(e, "Error while opening object.")
@@ -208,6 +224,22 @@ class HomeScreenViewModel(
         proceedWithRenderingPipeline()
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
+    }
+
+    private suspend fun proceedWithClearingObjectSessionHistory(currentConfig: Config) {
+        mutex.withLock {
+            while (openWidgetObjectsHistory.isNotEmpty()) {
+                val previouslyOpenedWidgetObject = openWidgetObjectsHistory.peek()
+                if (previouslyOpenedWidgetObject != null && previouslyOpenedWidgetObject != currentConfig.widgets) {
+                    closeObject
+                        .async(previouslyOpenedWidgetObject)
+                        .fold(
+                            onSuccess = { openWidgetObjectsHistory.remove(previouslyOpenedWidgetObject) },
+                            onFailure = { Timber.e(it, "Error while closing object from history") }
+                        )
+                }
+            }
+        }
     }
 
     private fun proceedWithLaunchingUnsubscriber() {
@@ -910,7 +942,7 @@ class HomeScreenViewModel(
 
     fun onStart() {
         Timber.d("onStart")
-        objectViewPipelineJobs += viewModelScope.launch {
+        widgetObjectPipelineJobs += viewModelScope.launch {
             if (!isWidgetSessionRestored) {
                 val session = withContext(appCoroutineDispatchers.io) {
                     getWidgetSession.async(Unit).getOrNull()
@@ -919,7 +951,7 @@ class HomeScreenViewModel(
                     collapsedWidgetStateHolder.set(session.collapsed)
                 }
             }
-            objectViewPipeline.collect {
+            widgetObjectPipeline.collect {
                 objectViewState.value = it
             }
         }

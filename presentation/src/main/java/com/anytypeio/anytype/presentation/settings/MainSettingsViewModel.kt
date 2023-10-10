@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer.Companion.SUBSCRIPTION_SETTINGS
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
@@ -23,7 +22,6 @@ import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
-import javax.inject.Named
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -95,6 +93,12 @@ class MainSettingsViewModel(
             .onEach { event -> dispatchAnalyticEvent(event) }
             .onEach { event -> dispatchCommand(event) }
             .launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenSettingSpacesSpaceIndex
+            )
+        }
     }
 
     fun onOptionClicked(event: Event) {

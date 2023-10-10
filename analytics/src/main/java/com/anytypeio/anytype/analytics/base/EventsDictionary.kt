@@ -18,6 +18,10 @@ object EventsDictionary {
     const val restoreFromBin = "RestoreFromBin"
 
     // Settings events
+
+    const val screenSettingSpacesSpaceIndex = "ScreenSettingsSpaceIndex"
+
+
     const val wallpaperSet = "SettingsWallpaperSet"
     const val keychainCopy = "KeychainCopy"
     const val defaultTypeChanged = "DefaultTypeChange"

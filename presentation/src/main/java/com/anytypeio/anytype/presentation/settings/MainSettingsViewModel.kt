@@ -160,7 +160,7 @@ class MainSettingsViewModel(
             Event.OnAboutClicked -> {
                 viewModelScope.sendEvent(
                     analytics = analytics,
-                    eventName = EventsDictionary.aboutScreenShow
+                    eventName = EventsDictionary.MENU_HELP
                 )
             }
             Event.OnProfileClicked -> {

@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.interactor.GetLibraryVersion
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -32,15 +32,17 @@ class AboutAppViewModel(
         }
     }
 
+    fun onContactUsClicked() {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.MENU_HELP_CONTACT_US
+        )
+    }
+
     private fun proceedWithAnalytics(link: ExternalLink) {
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = link.eventName,
-            props = Props(
-                mapOf(
-                    "type" to link.eventType
-                )
-            )
+            eventName = link.eventName
         )
     }
 
@@ -77,31 +79,12 @@ class AboutAppViewModel(
         class OpenExternalLink(val link: ExternalLink) : Navigation
     }
 
-    sealed class ExternalLink(val eventName: String, val eventType: String) {
-        object WhatIsNew : ExternalLink(
-            EVENT_HELP_AND_COMMUNITY,
-            EVENT_VALUE_WHAT_IS_NEW
-        )
-
-        object AnytypeCommunity : ExternalLink(
-            EVENT_HELP_AND_COMMUNITY,
-            EVENT_VALUE_COMMUNITY
-        )
-
-        object HelpAndTutorials : ExternalLink(
-            EVENT_HELP_AND_COMMUNITY,
-            EVENT_VALUE_HELP_AND_TUTORIALS
-        )
-
-        object TermsOfUse : ExternalLink(
-            EVENT_LEGAL,
-            EVENT_VALUE_TERMS_OF_USE
-        )
-
-        object PrivacyPolicy : ExternalLink(
-            EVENT_LEGAL,
-            EVENT_VALUE_PRIVACY_POLICY
-        )
+    sealed class ExternalLink(val eventName: String) {
+        object WhatIsNew : ExternalLink(EventsDictionary.MENU_HELP_WHAT_IS_NEW)
+        object AnytypeCommunity : ExternalLink(EventsDictionary.MENU_HELP_COMMUNITY)
+        object HelpAndTutorials : ExternalLink(EventsDictionary.MENU_HELP_TUTORIAL)
+        object TermsOfUse : ExternalLink(EventsDictionary.MENU_HELP_TERMS)
+        object PrivacyPolicy : ExternalLink(EventsDictionary.MENU_HELP_PRIVACY)
     }
 
     class Factory @Inject constructor(
@@ -122,11 +105,3 @@ class AboutAppViewModel(
         }
     }
 }
-
-private const val EVENT_HELP_AND_COMMUNITY = "Help_and_Community"
-private const val EVENT_LEGAL = "Legal"
-private const val EVENT_VALUE_TERMS_OF_USE = "terms_of_use"
-private const val EVENT_VALUE_PRIVACY_POLICY = "privacy_policy"
-private const val EVENT_VALUE_WHAT_IS_NEW = "what_is_new"
-private const val EVENT_VALUE_COMMUNITY = "anytype_community"
-private const val EVENT_VALUE_HELP_AND_TUTORIALS = "help_and_tutorials"

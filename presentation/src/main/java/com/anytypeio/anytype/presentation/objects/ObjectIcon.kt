@@ -17,6 +17,7 @@ sealed class ObjectIcon {
     sealed class Profile : ObjectIcon() {
         data class Avatar(val name: String) : Profile()
         data class Image(val hash: Hash) : Profile()
+        data class Gradient(val from: String, val to: String) : Profile()
     }
 
     data class Task(val isChecked: Boolean) : ObjectIcon()

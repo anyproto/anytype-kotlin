@@ -139,6 +139,10 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Basic.Avatar -> setBasicInitials(icon.name)
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
+            is ObjectIcon.Profile.Gradient -> {
+                // Temporarily solution
+                removeIcon()
+            }
             is ObjectIcon.Task -> setCheckbox(icon.isChecked)
             is ObjectIcon.Bookmark -> setBookmark(icon.image)
             is ObjectIcon.None -> removeIcon()

@@ -39,7 +39,7 @@ interface SpaceManager {
         private val configStorage: ConfigStorage
     ) : SpaceManager {
 
-        private val currentSpace = MutableStateFlow("")
+        private val currentSpace = MutableStateFlow(NO_SPACE_OR_DEFAULT)
         private val info = mutableMapOf<Id, Config>()
 
         override suspend fun get(): Id {
@@ -87,7 +87,12 @@ interface SpaceManager {
         }
 
         override fun clear() {
-            TODO("Not yet implemented")
+            info.clear()
+            currentSpace.value = NO_SPACE_OR_DEFAULT
+        }
+
+        companion object {
+            const val NO_SPACE_OR_DEFAULT = ""
         }
     }
 }

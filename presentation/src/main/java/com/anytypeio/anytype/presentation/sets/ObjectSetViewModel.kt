@@ -1007,7 +1007,7 @@ class ObjectSetViewModel(
                 targets = listOf(result.objectId)
             )
             viewModelScope.launch {
-                addObjectToCollection.execute(params).fold(
+                addObjectToCollection.async(params).fold(
                     onSuccess = { payload -> dispatcher.send(payload) },
                     onFailure = { Timber.e(it, "Error while adding object to collection") }
                 )
@@ -1480,7 +1480,7 @@ class ObjectSetViewModel(
                 ctx = context,
                 query = query
             )
-            setQueryToObjectSet.execute(params).fold(
+            setQueryToObjectSet.async(params).fold(
                 onSuccess = { payload ->
                     logEvent(
                         state = stateReducer.state.value,
@@ -1500,7 +1500,7 @@ class ObjectSetViewModel(
         val startTime = System.currentTimeMillis()
         val params = ConvertObjectToCollection.Params(ctx = context)
         viewModelScope.launch {
-            objectToCollection.execute(params).fold(
+            objectToCollection.async(params).fold(
                 onFailure = { error -> Timber.e(error, "Error convert object to collection") },
                 onSuccess = {
                     isCustomizeViewPanelVisible.value = false

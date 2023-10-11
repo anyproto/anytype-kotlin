@@ -36,7 +36,7 @@ class OtherSettingsViewModel(
 
     init {
         viewModelScope.launch {
-            getDefaultPageType.execute(Unit).fold(
+            getDefaultPageType.async(Unit).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while getting user settings")
                 },

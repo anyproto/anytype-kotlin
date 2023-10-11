@@ -2295,7 +2295,7 @@ open class EditorViewModelTest {
 
         runBlockingTest {
 
-            verify(createBlock, never()).execute(params = any())
+            verify(createBlock, never()).async(params = any())
 
             verify(updateTextStyle, times(1)).invoke(
                 params = eq(

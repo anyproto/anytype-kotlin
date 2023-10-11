@@ -59,7 +59,7 @@ class TypeCreationViewModel(
             return
         }
         viewModelScope.launch {
-            createTypeInteractor.execute(
+            createTypeInteractor.async(
                 CreateType.Params(
                     name = name,
                     emojiUnicode = uiState.value.emojiUnicode.orNull()

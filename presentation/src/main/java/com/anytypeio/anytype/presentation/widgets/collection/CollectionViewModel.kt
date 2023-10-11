@@ -752,7 +752,7 @@ class CollectionViewModel(
 
         val startTime = System.currentTimeMillis()
         launch {
-            createObject.execute(CreateObject.Param(type = null))
+            createObject.async(CreateObject.Param(type = null))
                 .fold(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(

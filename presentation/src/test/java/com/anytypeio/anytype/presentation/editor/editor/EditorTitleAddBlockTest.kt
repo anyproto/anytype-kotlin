@@ -447,7 +447,7 @@ class EditorTitleAddBlockTest : EditorPresentationTestSetup() {
         params: CreateBlock.Params
     ) {
         createBlock.stub {
-            onBlocking { execute(params) } doReturn Resultat.success(
+            onBlocking { async(params) } doReturn Resultat.success(
                 Pair(
                     MockDataFactory.randomUuid(),
                     Payload(

@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.collectionsSorts
 import com.anytypeio.anytype.presentation.search.Subscriptions
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emptyFlow
@@ -30,6 +31,7 @@ class ListWidgetContainer(
     private val subscription: Id,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
+    private val spaceGradientProvider: SpaceGradientProvider,
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
     isSessionActive: Flow<Boolean>
@@ -98,7 +100,10 @@ class ListWidgetContainer(
         elements = objects.map { obj ->
             WidgetView.ListOfObjects.Element(
                 obj = obj,
-                objectIcon = obj.widgetElementIcon(urlBuilder)
+                objectIcon = obj.widgetElementIcon(
+                    builder = urlBuilder,
+                    gradientProvider = spaceGradientProvider
+                )
             )
         },
         isExpanded = true,

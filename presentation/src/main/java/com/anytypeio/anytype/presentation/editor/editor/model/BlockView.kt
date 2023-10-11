@@ -17,9 +17,9 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CODE_SNIPPET
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_DEFAULT
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_SOURCE_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_DATA
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_EMPTY_SOURCE
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DATA_VIEW_SOURCE_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DESCRIPTION
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_DOTS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_DIVIDER_LINE
@@ -75,6 +75,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.choose.ObjectAppearanceChooseSettingsView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 /**
  * UI-models for different types of blocks.
@@ -686,7 +687,8 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override var cursor: Int? = null,
             override val searchFields: List<Searchable.Field> = emptyList(),
-            override val hint: String? = null
+            override val hint: String? = null,
+            val spaceGradient: SpaceIconView.Gradient? = null
         ) : Title(), Searchable {
             override fun getViewType() = HOLDER_PROFILE_TITLE
         }

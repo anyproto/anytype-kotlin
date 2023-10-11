@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -24,6 +25,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
@@ -256,4 +258,25 @@ fun ProfileOption(
             Arrow()
         }
     }
+}
+
+@Composable
+fun GradientComposeView(
+    modifier: Modifier,
+    from: String,
+    to: String,
+    size: Dp
+) {
+    val gradient = Brush.radialGradient(
+        colors = listOf(
+            Color(from.toColorInt()),
+            Color(to.toColorInt())
+        )
+    )
+    Box(
+        modifier = modifier
+            .size(size)
+            .clip(CircleShape)
+            .background(gradient)
+    )
 }

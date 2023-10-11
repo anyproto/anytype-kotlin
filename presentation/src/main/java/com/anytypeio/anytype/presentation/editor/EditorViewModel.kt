@@ -94,8 +94,8 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
-import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.ObjectTypesWidgetEvent
+import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
 import com.anytypeio.anytype.presentation.editor.editor.Command
 import com.anytypeio.anytype.presentation.editor.editor.Intent
@@ -228,6 +228,7 @@ import com.anytypeio.anytype.presentation.relations.getObjectRelations
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -5818,7 +5819,8 @@ class EditorViewModel(
                         val objects = result
                             .toView(
                                 urlBuilder = urlBuilder,
-                                objectTypes = storeOfObjectTypes.getAll()
+                                objectTypes = storeOfObjectTypes.getAll(),
+                                gradientProvider = SpaceGradientProvider.Default
                             )
                             .filter {
                                 SupportedLayouts.layouts.contains(it.layout)

@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.presentation.spaces
 
-import javax.inject.Inject
-
 interface SpaceGradientProvider {
 
     fun get(id: Double): Gradient
@@ -11,7 +9,7 @@ interface SpaceGradientProvider {
      */
     fun randomId(): Int
 
-    class Impl @Inject constructor(): SpaceGradientProvider {
+    object Default : SpaceGradientProvider {
 
         override fun get(id: Double): Gradient {
             return gradients[id] ?: Gradient("#F6EB7D", "#CBD2FA")

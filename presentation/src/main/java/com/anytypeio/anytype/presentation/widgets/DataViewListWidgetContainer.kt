@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -29,6 +30,7 @@ class DataViewListWidgetContainer(
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
+    private val gradientProvider: SpaceGradientProvider,
     private val activeView: Flow<Id?>,
     private val isWidgetCollapsed: Flow<Boolean>,
     isSessionActive: Flow<Boolean>
@@ -76,7 +78,10 @@ class DataViewListWidgetContainer(
                                 elements = objects.map { obj ->
                                     WidgetView.SetOfObjects.Element(
                                         obj = obj,
-                                        objectIcon = obj.widgetElementIcon(urlBuilder)
+                                        objectIcon = obj.widgetElementIcon(
+                                            builder = urlBuilder,
+                                            gradientProvider = gradientProvider
+                                        )
                                     )
                                 },
                                 isExpanded = true,

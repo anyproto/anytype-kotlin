@@ -54,7 +54,7 @@ object OnboardingSoulCreationAnimModule {
     @JvmStatic
     @Provides
     @SoulCreationAnimScreenScope
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Impl()
+    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
 
     @Module
     interface Declarations {

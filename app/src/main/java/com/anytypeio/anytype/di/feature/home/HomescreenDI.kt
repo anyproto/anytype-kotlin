@@ -204,7 +204,7 @@ object HomeScreenModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Impl()
+    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
 
     @Module
     interface Declarations {

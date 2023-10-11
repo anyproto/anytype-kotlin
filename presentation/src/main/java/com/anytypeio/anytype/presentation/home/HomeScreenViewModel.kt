@@ -213,7 +213,8 @@ class HomeScreenViewModel(
                             urlBuilder = urlBuilder,
                             workspace = config.workspace,
                             config = config,
-                            objectWatcher = objectWatcher
+                            objectWatcher = objectWatcher,
+                            spaceGradientProvider = spaceGradientProvider
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
@@ -223,6 +224,7 @@ class HomeScreenViewModel(
                                 storage = storelessSubscriptionContainer,
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 urlBuilder = urlBuilder,
+                                spaceGradientProvider = spaceGradientProvider,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
                                 config = config
@@ -236,7 +238,8 @@ class HomeScreenViewModel(
                                 activeView = observeCurrentWidgetView(widget.id),
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 isSessionActive = isSessionActive,
-                                urlBuilder = urlBuilder
+                                urlBuilder = urlBuilder,
+                                gradientProvider = spaceGradientProvider
                             )
                         }
                     }

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -41,6 +42,9 @@ class TreeWidgetContainerTest {
 
     @Mock
     lateinit var gateway: Gateway
+
+    @Mock
+    lateinit var spaceGradientProvider: SpaceGradientProvider
 
     @Mock
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
@@ -97,7 +101,8 @@ class TreeWidgetContainerTest {
                 workspace = workspace,
                 isSessionActive = flowOf(true),
                 config = config,
-                objectWatcher = objectWatcher
+                objectWatcher = objectWatcher,
+                spaceGradientProvider = spaceGradientProvider
             )
 
             stubObjectSearch(
@@ -167,7 +172,8 @@ class TreeWidgetContainerTest {
             workspace = workspace,
             isSessionActive = flowOf(true),
             config = config,
-            objectWatcher = objectWatcher
+            objectWatcher = objectWatcher,
+            spaceGradientProvider = spaceGradientProvider
         )
 
         stubObjectSearch(
@@ -252,7 +258,8 @@ class TreeWidgetContainerTest {
                 workspace = workspace,
                 isSessionActive = flowOf(true),
                 config = config,
-                objectWatcher = objectWatcher
+                objectWatcher = objectWatcher,
+                spaceGradientProvider = spaceGradientProvider
             )
 
             stubObjectSearch(
@@ -392,7 +399,8 @@ class TreeWidgetContainerTest {
             workspace = workspace,
             isSessionActive = flowOf(true),
             config = config,
-            objectWatcher = objectWatcher
+            objectWatcher = objectWatcher,
+            spaceGradientProvider = spaceGradientProvider
         )
 
         stubObjectSearch(
@@ -449,7 +457,8 @@ class TreeWidgetContainerTest {
             workspace = workspace,
             isSessionActive = flowOf(true),
             config = config,
-            objectWatcher = objectWatcher
+            objectWatcher = objectWatcher,
+            spaceGradientProvider = spaceGradientProvider
         )
 
         stubObjectSearch(

@@ -35,6 +35,12 @@
             android:layout_height="match_parent"
             android:layout_margin="4dp" />
 
+        <androidx.compose.ui.platform.ComposeView
+            android:id="@+id/gradient"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="4dp" />
+
         <TextView
             android:id="@+id/imageText"
             style="@style/TextView.ContentStyle.Initials"

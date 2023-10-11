@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -27,6 +28,7 @@ class TreeWidgetContainer(
     private val config: Config,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
+    private val spaceGradientProvider: SpaceGradientProvider,
     private val expandedBranches: Flow<List<TreePath>>,
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
@@ -217,7 +219,10 @@ class TreeWidgetContainer(
                             expanded = expanded,
                             currentLinkPath = currentLinkPath
                         ),
-                        objectIcon = obj.widgetElementIcon(urlBuilder),
+                        objectIcon = obj.widgetElementIcon(
+                            builder = urlBuilder,
+                            gradientProvider = spaceGradientProvider
+                        ),
                         indent = level,
                         obj = obj,
                         path = path + link

@@ -56,7 +56,7 @@ object MainSettingsModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Impl()
+    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
 
     @JvmStatic
     @Provides

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 
 sealed class ObjectIcon {
     object None : ObjectIcon()
@@ -31,7 +32,8 @@ sealed class ObjectIcon {
             obj: ObjectWrapper.Basic,
             layout: ObjectType.Layout?,
             builder: UrlBuilder,
-            objectTypeNoIcon: Boolean = false
+            objectTypeNoIcon: Boolean = false,
+            gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
         ): ObjectIcon {
             val img = obj.iconImage
             val emoji = obj.iconEmoji
@@ -47,10 +49,18 @@ sealed class ObjectIcon {
                     !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
                     else -> Basic.Avatar(obj.name.orEmpty())
                 }
-                ObjectType.Layout.PROFILE -> if (!img.isNullOrBlank()) {
-                    Profile.Image(hash = builder.thumbnail(img))
-                } else {
-                    Profile.Avatar(name = obj.name.orEmpty())
+                ObjectType.Layout.PROFILE -> {
+                    val option = obj.iconOption
+                    val gradient = option?.let { code ->
+                        gradientProvider.get(code)
+                    }
+                    if (!img.isNullOrBlank()) {
+                        Profile.Image(hash = builder.thumbnail(img))
+                    } else if (gradient != null) {
+                        Profile.Gradient(from = gradient.from, to = gradient.to)
+                    } else {
+                        Profile.Avatar(name = obj.name.orEmpty())
+                    }
                 }
                 ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> if (!img.isNullOrBlank()) {
                     Basic.Image(hash = builder.thumbnail(img))

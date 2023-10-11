@@ -236,7 +236,7 @@ object SetupNewAccountModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Impl()
+    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
 
     @JvmStatic
     @Provides

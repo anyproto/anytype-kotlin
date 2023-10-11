@@ -142,30 +142,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Basic.Avatar -> setBasicInitials(icon.name)
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
-            is ObjectIcon.Profile.Gradient -> {
-                // Temporarily solution
-                with(binding) {
-                    ivCheckbox.gone()
-                    initialContainer.gone()
-                    emojiContainer.gone()
-                    ivBookmark.gone()
-                    ivImage.gone()
-                    ivBookmark.setImageDrawable(null)
-                    ivEmoji.setImageDrawable(null)
-                }
-                binding.composeView.visible()
-                binding.composeView.apply {
-                    setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-                    setContent {
-                        RadialGradientComposeView(
-                            modifier = Modifier,
-                            from = icon.from,
-                            to = icon.to,
-                            size = 0.dp
-                        )
-                    }
-                }
-            }
+            is ObjectIcon.Profile.Gradient -> setSpaceGradientView(icon)
             is ObjectIcon.Task -> setCheckbox(icon.isChecked)
             is ObjectIcon.Bookmark -> setBookmark(icon.image)
             is ObjectIcon.None -> removeIcon()
@@ -173,6 +150,30 @@ class ObjectIconWidget @JvmOverloads constructor(
                 mime = icon.mime,
                 fileName = icon.fileName
             )
+        }
+    }
+
+    private fun setSpaceGradientView(icon: ObjectIcon.Profile.Gradient) {
+        with(binding) {
+            ivCheckbox.gone()
+            initialContainer.gone()
+            emojiContainer.gone()
+            ivBookmark.gone()
+            ivImage.gone()
+            ivBookmark.setImageDrawable(null)
+            ivEmoji.setImageDrawable(null)
+        }
+        binding.composeView.visible()
+        binding.composeView.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                RadialGradientComposeView(
+                    modifier = Modifier,
+                    from = icon.from,
+                    to = icon.to,
+                    size = 0.dp
+                )
+            }
         }
     }
 

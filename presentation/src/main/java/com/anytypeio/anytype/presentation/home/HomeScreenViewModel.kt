@@ -80,8 +80,6 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
-import java.util.LinkedList
-import java.util.Queue
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
@@ -178,7 +176,7 @@ class HomeScreenViewModel(
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
-    private val openWidgetObjectsHistory : Queue<Id> = LinkedList()
+    private val openWidgetObjectsHistory : MutableSet<Id> = LinkedHashSet()
 
     private val widgetObjectPipeline = spaceManager
         .observe()
@@ -187,7 +185,6 @@ class HomeScreenViewModel(
              proceedWithClearingObjectSessionHistory(currentConfig)
         }
         .flatMapLatest { config ->
-            Timber.d("Opening object for config: $config")
             openObject.stream(
                 OpenObject.Params(
                     obj = config.widgets,
@@ -229,16 +226,19 @@ class HomeScreenViewModel(
 
     private suspend fun proceedWithClearingObjectSessionHistory(currentConfig: Config) {
         mutex.withLock {
-            while (openWidgetObjectsHistory.size > 1) {
-                val previouslyOpenedWidgetObject = openWidgetObjectsHistory.peek()
-                if (previouslyOpenedWidgetObject != null && previouslyOpenedWidgetObject != currentConfig.widgets) {
+            val closed = mutableSetOf<Id>()
+            openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
+                if (previouslyOpenedWidgetObject != currentConfig.widgets) {
                     closeObject
-                        .async(previouslyOpenedWidgetObject)
+                        .async(params = previouslyOpenedWidgetObject)
                         .fold(
-                            onSuccess = { openWidgetObjectsHistory.remove(previouslyOpenedWidgetObject) },
+                            onSuccess = { closed.add(previouslyOpenedWidgetObject) },
                             onFailure = { Timber.e(it, "Error while closing object from history") }
                         )
                 }
+            }
+            if (closed.isNotEmpty()) {
+                openWidgetObjectsHistory.removeAll(closed)
             }
         }
     }

@@ -364,7 +364,7 @@ class ListBlockTesting : EditorTestSetup() {
     ) {
         createBlock.stub {
             onBlocking {
-                execute(params)
+                async(params)
             } doReturn Resultat.success(
                 Pair(new.id, Payload(context = root, events = events))
             )

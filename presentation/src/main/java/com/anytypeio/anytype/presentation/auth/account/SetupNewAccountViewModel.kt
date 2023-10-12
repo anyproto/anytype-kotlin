@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.base.fold
@@ -20,7 +19,6 @@ import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -95,7 +93,7 @@ class SetupNewAccountViewModel(
 
     private fun setupUseCase() {
         viewModelScope.launch {
-            setupMobileUseCaseSkip.execute(Unit).fold(
+            setupMobileUseCaseSkip.async(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
                     navigateToDashboard()

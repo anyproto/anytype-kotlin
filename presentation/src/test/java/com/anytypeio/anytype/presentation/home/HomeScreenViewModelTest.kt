@@ -266,7 +266,7 @@ class HomeScreenViewModelTest {
     ) {
         saveWidgetSession.stub {
             onBlocking {
-                execute(SaveWidgetSession.Params(session))
+                async(SaveWidgetSession.Params(session))
             } doReturn Resultat.Success(Unit)
         }
     }
@@ -1082,7 +1082,7 @@ class HomeScreenViewModelTest {
 
         getDefaultPageType.stub {
             onBlocking {
-                execute(any())
+                async(any())
             } doReturn Resultat.Success(
                 GetDefaultPageType.Response(
                     null, null
@@ -2621,7 +2621,7 @@ class HomeScreenViewModelTest {
     private fun stubGetDefaultPageType() {
         getDefaultPageType.stub {
             onBlocking {
-                execute(any())
+                async(any())
             } doReturn Resultat.Success(
                 GetDefaultPageType.Response(null, null)
             )

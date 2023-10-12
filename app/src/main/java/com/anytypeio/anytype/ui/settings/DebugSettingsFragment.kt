@@ -22,12 +22,13 @@ import com.anytypeio.anytype.domain.config.GetDebugSettings
 import com.anytypeio.anytype.domain.config.UseCustomContextMenu
 import com.anytypeio.anytype.domain.debugging.DebugLocalStore
 import com.anytypeio.anytype.domain.debugging.DebugSpace
-import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Locale
 import javax.inject.Inject
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class DebugSettingsFragment : BaseFragment<FragmentDebugSettingsBinding>(R.layout.fragment_debug_settings) {
 
@@ -55,7 +56,7 @@ class DebugSettingsFragment : BaseFragment<FragmentDebugSettingsBinding>(R.layou
 
         binding.btnSync.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
-                debugSpace.execute(Unit).fold(
+                debugSpace.async(Unit).fold(
                     onSuccess = { status -> saveToFile(status) }
                 )
             }

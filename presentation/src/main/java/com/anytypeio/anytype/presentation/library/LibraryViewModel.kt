@@ -137,7 +137,7 @@ class LibraryViewModel(
 
     private fun proceedWithCreateDoc() {
         viewModelScope.launch {
-            createObject.execute(CreateObject.Param(type = null))
+            createObject.async(CreateObject.Param(type = null))
                 .fold(
                     onSuccess = { result ->
                         navigate(Navigation.CreateDoc(result.objectId))
@@ -231,7 +231,7 @@ class LibraryViewModel(
 
     private fun uninstallObject(item: LibraryView, id: Id) {
         viewModelScope.launch {
-            removeObjectsFromWorkspace.execute(
+            removeObjectsFromWorkspace.async(
                 RemoveObjectsFromWorkspace.Params(listOf(id))
             ).fold(
                 onFailure = {
@@ -257,7 +257,7 @@ class LibraryViewModel(
 
     fun uninstallObject(id: Id, type: LibraryItem, name: String) {
         viewModelScope.launch {
-            removeObjectsFromWorkspace.execute(
+            removeObjectsFromWorkspace.async(
                 RemoveObjectsFromWorkspace.Params(listOf(id))
             ).fold(
                 onFailure = {
@@ -343,7 +343,7 @@ class LibraryViewModel(
 
     fun updateObject(id: String, name: String, icon: String?) {
         viewModelScope.launch {
-            setObjectDetails.execute(
+            setObjectDetails.async(
                 SetObjectDetails.Params(
                     ctx = id,
                     details = mapOf(

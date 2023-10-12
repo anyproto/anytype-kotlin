@@ -202,7 +202,7 @@ class MainSettingsViewModel(
 
     fun onNameSet(name: String) {
         viewModelScope.launch {
-            setObjectDetails.execute(
+            setObjectDetails.async(
                 SetObjectDetails.Params(
                     ctx = configStorage.get().workspace,
                     details = mapOf(

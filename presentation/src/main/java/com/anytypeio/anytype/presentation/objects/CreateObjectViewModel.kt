@@ -22,7 +22,7 @@ class CreateObjectViewModel(private val createObject: CreateObject) : ViewModel(
     private fun onCreatePage(type: String) {
         val params = CreateObject.Param(type = type)
         jobs += viewModelScope.launch {
-            createObject.execute(params).fold(
+            createObject.async(params).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while creating a new object with type:$type")
                 },

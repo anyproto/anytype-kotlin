@@ -65,7 +65,7 @@ class GetObjectTypeTest {
         runBlocking {
             stubGetObjectTypes(types = listOf(type1, type2, type3))
 
-            val firstTimeResult = usecase.execute(params = defaultParams)
+            val firstTimeResult = usecase.async(params = defaultParams)
             firstTimeResult.fold(
                 onFailure = { Assert.fail() },
                 onSuccess = { results ->
@@ -75,7 +75,7 @@ class GetObjectTypeTest {
                     )
                 }
             )
-            val secondTimeResult = usecase.execute(params = defaultParams)
+            val secondTimeResult = usecase.async(params = defaultParams)
             assertEquals(firstTimeResult, secondTimeResult)
 
             verify(repo, times(2)).searchObjects(

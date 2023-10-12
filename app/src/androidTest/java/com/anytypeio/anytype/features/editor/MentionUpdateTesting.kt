@@ -112,7 +112,7 @@ class MentionUpdateTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubUpdateText()
         openPage.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,

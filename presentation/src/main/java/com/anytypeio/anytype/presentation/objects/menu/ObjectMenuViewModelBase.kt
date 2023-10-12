@@ -3,16 +3,15 @@ package com.anytypeio.anytype.presentation.objects.menu
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.presentation.common.Action
@@ -227,7 +226,7 @@ abstract class ObjectMenuViewModelBase(
         )
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
-            addObjectToCollection.execute(params).fold(
+            addObjectToCollection.async(params).fold(
                 onSuccess = { payload ->
                     dispatcher.send(payload)
                     sendAnalyticsAddToCollectionEvent(
@@ -253,7 +252,7 @@ abstract class ObjectMenuViewModelBase(
         Timber.d("onLinkedMyselfTo, myself:[$myself], addTo:[$addTo], fromName:[$fromName]")
         jobs += viewModelScope.launch {
             val startTime = System.currentTimeMillis()
-            addBackLinkToObject.execute(
+            addBackLinkToObject.async(
                 AddBackLinkToObject.Params(objectToLink = myself, objectToPlaceLink = addTo)
             ).fold(
                 onSuccess = { obj ->

@@ -499,7 +499,7 @@ open class EditorTestSetup {
         relations: List<Relation> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,
@@ -523,7 +523,7 @@ open class EditorTestSetup {
         events: List<Event.Command>
     ) {
         createBlock.stub {
-            onBlocking { execute(params) } doReturn Resultat.success(
+            onBlocking { async(params) } doReturn Resultat.success(
                 Pair(
                     MockDataFactory.randomUuid(),
                     Payload(context = root, events = events)

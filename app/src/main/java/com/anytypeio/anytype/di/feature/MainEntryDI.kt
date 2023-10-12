@@ -141,12 +141,14 @@ object MainEntryModule {
         repo: AuthRepository,
         provider: ConfigStorage,
         user: UserSettingsRepository,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): Logout = Logout(
         repo = repo,
         user = user,
         config = provider,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

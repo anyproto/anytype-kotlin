@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.settings.ProfileFragment
 import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
@@ -78,12 +79,14 @@ object ProfileModule {
         repo: AuthRepository,
         provider: ConfigStorage,
         user: UserSettingsRepository,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): Logout = Logout(
         repo = repo,
         config = provider,
         user = user,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

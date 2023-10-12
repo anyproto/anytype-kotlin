@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.ui.settings.LogoutWarningFragment
 import com.anytypeio.anytype.ui_settings.account.LogoutWarningViewModel
 import dagger.Module
@@ -53,11 +54,13 @@ object LogoutWarningModule {
         repo: AuthRepository,
         provider: ConfigStorage,
         user: UserSettingsRepository,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): Logout = Logout(
         repo = repo,
         config = provider,
         user = user,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 }

@@ -187,6 +187,7 @@ class HomeScreenViewModel(
             proceedWithClearingObjectSessionHistory(currentConfig)
         }
         .flatMapLatest { config ->
+            Timber.d("Opening object for config: $config")
             openObject.stream(
                 OpenObject.Params(
                     obj = config.widgets,

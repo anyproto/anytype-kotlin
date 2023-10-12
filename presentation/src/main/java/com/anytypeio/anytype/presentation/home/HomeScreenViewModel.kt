@@ -183,8 +183,8 @@ class HomeScreenViewModel(
     private val widgetObjectPipeline = spaceManager
         .observe()
         .onEach { currentConfig ->
-            // Closing previosly opened widget object when switching spaces without leaving home screen
-            proceedWithClearingObjectSessionHistory(currentConfig)
+            // Closing previously opened widget object when switching spaces without leaving home screen
+             proceedWithClearingObjectSessionHistory(currentConfig)
         }
         .flatMapLatest { config ->
             Timber.d("Opening object for config: $config")
@@ -229,7 +229,7 @@ class HomeScreenViewModel(
 
     private suspend fun proceedWithClearingObjectSessionHistory(currentConfig: Config) {
         mutex.withLock {
-            while (openWidgetObjectsHistory.isNotEmpty()) {
+            while (openWidgetObjectsHistory.size > 1) {
                 val previouslyOpenedWidgetObject = openWidgetObjectsHistory.peek()
                 if (previouslyOpenedWidgetObject != null && previouslyOpenedWidgetObject != currentConfig.widgets) {
                     closeObject

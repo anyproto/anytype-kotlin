@@ -528,28 +528,6 @@ private fun isActiveViewer(index: Int, viewer: DVViewer, session: ObjectSetSessi
     }
 }
 
-suspend fun List<ViewerView>.isActiveWithTemplates(storeOfObjectTypes: StoreOfObjectTypes): Boolean {
-    val activeViewer = firstOrNull { it.isActive }
-    val viewerDefaultObjectTypeId = activeViewer?.defaultObjectType ?: return false
-    val viewerDefaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId) ?: return false
-    return viewerDefaultObjectType.isTemplatesAllowed()
-}
-
-suspend fun DVViewer.getProperTemplateId(
-    storeOfObjectTypes: StoreOfObjectTypes
-): Id? {
-    val defaultObjectTypeId = defaultObjectType
-    return if (defaultObjectTypeId != null) {
-        if (defaultTemplate != null) {
-            defaultTemplate
-        } else {
-            storeOfObjectTypes.get(defaultObjectTypeId)?.defaultTemplateId
-        }
-    } else {
-        null
-    }
-}
-
 suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
     ctx: Id,
     activeView: DVViewer?,

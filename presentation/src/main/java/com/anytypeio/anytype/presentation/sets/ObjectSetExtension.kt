@@ -30,7 +30,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
-import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
@@ -247,6 +246,16 @@ fun ObjectState.DataView.viewerByIdOrFirst(currentViewerId: String?): DVViewer? 
 fun ObjectState.DataView.viewerById(currentViewerId: String?): DVViewer? {
     if (!isInitialized) return null
     return dataViewContent.viewers.find { it.id == currentViewerId }
+}
+
+fun ObjectState.DataView.viewerAndIndexById(currentViewerId: String?): Pair<DVViewer, Int>? {
+    if (!isInitialized) return null
+    val index = dataViewContent.viewers.indexOfFirst { it.id == currentViewerId }
+    return if (index != -1) {
+        Pair(dataViewContent.viewers[index], index)
+    } else {
+        null
+    }
 }
 
 fun ObjectState.DataView.Collection.getObjectOrderIds(currentViewerId: String): List<Id> {
@@ -510,7 +519,7 @@ private suspend fun mapViewers(
             name = viewer.name,
             type = viewer.type,
             isUnsupported = viewer.type == VIEW_TYPE_UNSUPPORTED,
-            isActive = isActiveViewer(index, viewer, session),
+            isActive = viewer.isActiveViewer(index, session),
             defaultObjectType = defaultObjectType.invoke(viewer),
             relations = viewer.viewerRelations.toView(storeOfRelations) { it.key },
             sorts = viewer.sorts.toView(storeOfRelations) { it.relationKey },
@@ -520,9 +529,9 @@ private suspend fun mapViewers(
     }
 }
 
-private fun isActiveViewer(index: Int, viewer: DVViewer, session: ObjectSetSession): Boolean {
+fun DVViewer.isActiveViewer(index: Int, session: ObjectSetSession): Boolean {
     return if (session.currentViewerId.value != null) {
-        viewer.id == session.currentViewerId.value
+        id == session.currentViewerId.value
     } else {
         index == 0
     }

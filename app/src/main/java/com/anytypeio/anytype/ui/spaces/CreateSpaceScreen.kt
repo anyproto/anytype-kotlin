@@ -18,6 +18,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,7 +35,7 @@ import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
@@ -46,7 +47,8 @@ import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 fun CreateSpaceScreen(
     spaceIconView: SpaceIconView,
     onCreate: (Name) -> Unit,
-    onSpaceIconClicked: () -> Unit
+    onSpaceIconClicked: () -> Unit,
+    isLoading: State<Boolean>
 ) {
     val input = remember {
         mutableStateOf("")
@@ -77,7 +79,8 @@ fun CreateSpaceScreen(
             CreateSpaceButton(
                 onCreate = onCreate,
                 input = input,
-                modifier = Modifier.align(Alignment.BottomCenter)
+                modifier = Modifier.align(Alignment.BottomCenter),
+                isLoading = isLoading
             )
         }
     }
@@ -87,22 +90,27 @@ fun CreateSpaceScreen(
 private fun CreateSpaceButton(
     modifier: Modifier,
     onCreate: (Name) -> Unit,
-    input: MutableState<String>
+    input: State<String>,
+    isLoading: State<Boolean>
 ) {
     Box(
         modifier = modifier
             .height(78.dp)
             .fillMaxWidth()
-            .padding(bottom = 10.dp)
     ) {
-        ButtonPrimary(
+        ButtonPrimaryLoading(
             onClick = { onCreate(input.value) },
             text = stringResource(id = R.string.create),
             size = ButtonSize.Large,
-            modifier = Modifier
+            modifierButton = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp)
+            ,
+            modifierBox = Modifier
+                .padding(bottom = 10.dp)
                 .align(Alignment.BottomCenter)
+            ,
+            loading = isLoading.value
         )
     }
 }

@@ -18,6 +18,8 @@ class CreateSpaceViewModel @Inject constructor(
     private val spaceGradientProvider: SpaceGradientProvider
 ) : BaseViewModel() {
 
+    val isInProgress = MutableStateFlow(false)
+
     private var spaceGradientId = spaceGradientProvider.randomId()
 
     val spaceGradient : MutableStateFlow<SpaceIconView.Gradient>
@@ -37,31 +39,40 @@ class CreateSpaceViewModel @Inject constructor(
         if (isDismissed.value) {
             return
         }
+        if (isInProgress.value) {
+            sendToast("Please wait...")
+            return
+        }
         if (name.isEmpty()) {
             sendToast("Name should not be empty")
             return
         }
         viewModelScope.launch {
-            createSpace.async(
+            createSpace.stream(
                 CreateSpace.Params(
                     details = mapOf(
                         Relations.NAME to name,
                         Relations.ICON_OPTION to spaceGradientId.toDouble()
                     )
                 )
-            ).fold(
-                onSuccess = { space: Id ->
-                    sendToast("Space created")
-                    Timber.d("Successfully created space: $space").also {
-                        isDismissed.value = true
+            ).collect { result ->
+                result.fold(
+                    onLoading = { isInProgress.value = true },
+                    onSuccess = { space: Id ->
+                        sendToast("Space created")
+                        Timber.d("Successfully created space: $space").also {
+                            isDismissed.value = true
+                            isInProgress.value = false
+                        }
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while creating space").also {
+                            sendToast("Error while creating space, please try again.")
+                            isInProgress.value = false
+                        }
                     }
-                },
-                onFailure = {
-                    Timber.e(it, "Error while creating space").also {
-                        sendToast("Error while creating space, please try again.")
-                    }
-                }
-            )
+                )
+            }
         }
     }
 

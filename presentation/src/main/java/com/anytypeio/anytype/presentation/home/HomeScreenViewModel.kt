@@ -27,7 +27,6 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
@@ -113,7 +112,6 @@ import timber.log.Timber
  * Change subscription IDs for bundled widgets?
  */
 class HomeScreenViewModel(
-    private val configStorage: ConfigStorage,
     private val openObject: OpenObject,
     private val closeObject: CloseBlock,
     private val createWidget: CreateWidget,
@@ -260,7 +258,7 @@ class HomeScreenViewModel(
                         array.toList()
                     }
                 } else {
-                    flowOf(emptyList())
+                    spaceWidgetView.map { view -> listOf(view) }
                 }
             }.flowOn(appCoroutineDispatchers.io).collect {
                 views.value = it + listOf(WidgetView.Library, bin) + actions
@@ -566,7 +564,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithDeletingWidget(widget: Id) {
         viewModelScope.launch {
-            val config = configStorage.getOrNull()
+            val config = spaceManager.getConfig()
             if (config != null) {
                 val target = widgets.value.orEmpty().find { it.id == widget }
                 deleteWidget.stream(
@@ -779,7 +777,7 @@ class HomeScreenViewModel(
         val curr = widgets.value.orEmpty().find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
-                val config = configStorage.getOrNull()
+                val config = spaceManager.getConfig()
                 if (config != null) {
                     commands.emit(
                         Command.ChangeWidgetType(
@@ -809,7 +807,7 @@ class HomeScreenViewModel(
         val curr = widgets.value.orEmpty().find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
-                val config = configStorage.getOrNull()
+                val config = spaceManager.getConfig()
                 if (config != null) {
                     commands.emit(
                         Command.ChangeWidgetSource(
@@ -1023,9 +1021,9 @@ class HomeScreenViewModel(
     }
 
     fun onMove(views: List<WidgetView>, from: Int, to: Int) {
-        val config = configStorage.getOrNull()
-        if (config != null)
-            viewModelScope.launch {
+        viewModelScope.launch {
+            val config = spaceManager.getConfig()
+            if (config != null) {
                 val direction = if (from < to) Position.BOTTOM else Position.TOP
                 val subject = views[to]
                 val target = if (direction == Position.TOP) views[to.inc()].id else views[to.dec()].id
@@ -1048,8 +1046,9 @@ class HomeScreenViewModel(
                     )
                 }
             }
-        else
-            Timber.e("Failed to get config for move operation")
+            else
+                Timber.e("Failed to get config for move operation")
+        }
     }
 
     private fun proceedWithSettingUpShortcuts() {
@@ -1176,7 +1175,7 @@ class HomeScreenViewModel(
             view = view
         ).also {
             viewModelScope.launch {
-                val config = configStorage.getOrNull()
+                val config = spaceManager.getConfig()
                 if (config != null)
                     setWidgetActiveView.stream(
                         SetWidgetActiveView.Params(
@@ -1210,7 +1209,6 @@ class HomeScreenViewModel(
     }
 
     class Factory @Inject constructor(
-        private val configStorage: ConfigStorage,
         private val openObject: OpenObject,
         private val closeObject: CloseBlock,
         private val createObject: CreateObject,
@@ -1244,7 +1242,6 @@ class HomeScreenViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
-            configStorage = configStorage,
             openObject = openObject,
             closeObject = closeObject,
             createObject = createObject,

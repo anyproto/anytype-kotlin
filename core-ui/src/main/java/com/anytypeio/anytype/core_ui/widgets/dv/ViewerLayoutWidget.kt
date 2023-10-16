@@ -40,6 +40,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
@@ -56,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
@@ -149,21 +151,9 @@ fun ViewerLayoutWidget(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(bottom = 20.dp, top = 8.dp)
+                        .padding(bottom = 20.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                    ) {
-                        Box(modifier = Modifier.align(Alignment.Center)) {
-                            Text(
-                                text = stringResource(R.string.view_layout_widget_title),
-                                style = TitleInter15,
-                                color = colorResource(R.color.text_primary)
-                            )
-                        }
-                    }
+                    WidgetHeader(title = stringResource(R.string.view_layout_widget_title))
                     LayoutIcons(uiState = currentState, action = action)
                     Spacer(modifier = Modifier.height(8.dp))
                     LayoutSwitcherItem(
@@ -256,7 +246,8 @@ fun LayoutIcon(
     }
     Column(
         modifier = modifier
-            .wrapContentSize()
+            .fillMaxWidth()
+            .wrapContentHeight()
             .shadow(
                 elevation = 4.dp,
                 spotColor = Color(0x0D000000),
@@ -267,7 +258,7 @@ fun LayoutIcon(
                 color = borderColor,
                 shape = RoundedCornerShape(size = 12.dp)
             )
-            .padding(top = 14.dp, start = 26.25.dp, end = 26.25.dp, bottom = 14.dp)
+            .padding(top = 14.dp, bottom = 14.dp)
             .noRippleThrottledClickable { click() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -298,10 +289,11 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 5.dp, end = 5.dp)
+            .padding(start = 20.dp, end = 20.dp)
             .wrapContentHeight(),
-        horizontalArrangement = Arrangement.Start,
-        verticalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        maxItemsInEachRow = 3
     ) {
         val itemModifier = Modifier.weight(1f)
         LayoutIcon(
@@ -339,6 +331,28 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
             imageResource = R.drawable.ic_layout_kanban,
             contentDescription = "Kanban",
             click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
+        )
+        LayoutIcon(
+            modifier = itemModifier
+                .padding(top = 8.dp)
+                .alpha(0F),
+            uiState = uiState,
+            layoutType = DVViewerType.BOARD,
+            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+            imageResource = R.drawable.ic_layout_kanban,
+            contentDescription = "",
+            click = { }
+        )
+        LayoutIcon(
+            modifier = itemModifier
+                .padding(top = 8.dp)
+                .alpha(0F),
+            uiState = uiState,
+            layoutType = DVViewerType.BOARD,
+            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+            imageResource = R.drawable.ic_layout_kanban,
+            contentDescription = "",
+            click = { }
         )
     }
 }
@@ -381,7 +395,7 @@ fun LayoutSwitcherItem(
     }
 }
 
-@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, device = Devices.NEXUS_5)
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, device = Devices.NEXUS_7)
 @Composable
 fun PreviewLayoutScreen() {
     ViewerLayoutWidget(

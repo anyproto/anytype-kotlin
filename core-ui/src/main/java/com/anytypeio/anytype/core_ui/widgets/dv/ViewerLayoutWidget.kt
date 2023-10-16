@@ -286,8 +286,6 @@ fun LayoutIcon(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Action) -> Unit) {
-    val rows = 2
-    val columns = 3
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()

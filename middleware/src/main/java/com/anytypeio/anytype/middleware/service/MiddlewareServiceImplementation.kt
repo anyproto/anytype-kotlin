@@ -1421,13 +1421,13 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun workspaceInfo(request: Rpc.Workspace.Info.Request): Rpc.Workspace.Info.Response {
-        val encoded = Service.workspaceInfo(
-            Rpc.Workspace.Info.Request.ADAPTER.encode(request)
+    override fun workspaceOpen(request: Rpc.Workspace.Open.Request): Rpc.Workspace.Open.Response {
+        val encoded = Service.workspaceOpen(
+            Rpc.Workspace.Open.Request.ADAPTER.encode(request)
         )
-        val response = Rpc.Workspace.Info.Response.ADAPTER.decode(encoded)
+        val response = Rpc.Workspace.Open.Response.ADAPTER.decode(encoded)
         val error = response.error
-        if (error != null && error.code != Rpc.Workspace.Info.Response.Error.Code.NULL) {
+        if (error != null && error.code != Rpc.Workspace.Open.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

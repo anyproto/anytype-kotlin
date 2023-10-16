@@ -28,7 +28,7 @@ class SpaceWidgetContainer @Inject constructor(
             storelessSubscriptionContainer.subscribe(
                 StoreSearchByIdsParams(
                     subscription = SPACE_WIDGET_SUBSCRIPTION,
-                    targets = listOf(config.workspace),
+                    targets = listOf(config.spaceView),
                     keys = buildList {
                         addAll(ObjectSearchConstants.defaultKeys)
                         add(Relations.ICON_OPTION)

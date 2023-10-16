@@ -535,6 +535,7 @@ fun MDVViewType.toCoreModels(): DVViewerType = when (this) {
     MDVViewType.List -> DVViewerType.LIST
     MDVViewType.Gallery -> DVViewerType.GALLERY
     MDVViewType.Kanban -> DVViewerType.BOARD
+    MDVViewType.Calendar -> DVViewerType.CALENDAR
 }
 
 fun MDVFilter.toCoreModels(): DVFilter = DVFilter(
@@ -751,7 +752,7 @@ fun Account.Info.config() : Config = Config(
     profile = profileObjectId,
     gateway = gatewayUrl,
     space = accountSpaceId,
-    workspace = workspaceObjectId,
+    spaceView = spaceViewId,
     widgets = widgetsId,
     analytics = analyticsId,
     device = deviceId

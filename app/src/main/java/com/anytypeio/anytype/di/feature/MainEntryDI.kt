@@ -21,7 +21,6 @@ import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
@@ -81,14 +80,12 @@ object MainEntryModule {
         pathProvider: PathProvider,
         configStorage: ConfigStorage,
         featuresConfigProvider: FeaturesConfigProvider,
-        workspaceManager: WorkspaceManager,
         metricsProvider: MetricsProvider
     ): ResumeAccount = ResumeAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         configStorage = configStorage,
         featuresConfigProvider = featuresConfigProvider,
-        workspaceManager = workspaceManager,
         metricsProvider = metricsProvider
     )
 

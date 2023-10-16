@@ -58,12 +58,10 @@ object OnboardingVoidModule {
     fun provideCreateAccountUseCase(
         authRepository: AuthRepository,
         configStorage: ConfigStorage,
-        workspaceManager: WorkspaceManager,
         metricsProvider: MetricsProvider
     ): CreateAccount = CreateAccount(
         repository = authRepository,
         configStorage = configStorage,
-        workspaceManager = workspaceManager,
         metricsProvider = metricsProvider
     )
 

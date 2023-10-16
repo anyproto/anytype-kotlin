@@ -58,7 +58,7 @@ class TreeWidgetContainerTest {
 
 
     private val config = StubConfig()
-    private val workspace = config.workspace
+    private val workspace = config.spaceView
 
     @Before
     fun setup() {

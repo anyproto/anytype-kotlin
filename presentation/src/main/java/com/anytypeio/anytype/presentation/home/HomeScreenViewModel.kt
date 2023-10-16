@@ -370,7 +370,7 @@ class HomeScreenViewModel(
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
                             subscription = HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.workspace),
+                            targets = listOf(config.spaceView),
                             keys = listOf(
                                 Relations.ID,
                                 Relations.ICON_EMOJI,

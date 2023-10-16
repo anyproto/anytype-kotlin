@@ -417,11 +417,18 @@ fun CoroutineScope.sendAnalyticsMoveToBinEvent(
 
 fun CoroutineScope.sendAnalyticsDuplicateEvent(
     analytics: Analytics,
-    startTime: Long
+    startTime: Long,
+    count: Int = 1
 ) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.count to count
+        )
+    )
     sendEvent(
         analytics = analytics,
         eventName = objectDuplicate,
+        props = props,
         startTime = startTime,
         middleTime = System.currentTimeMillis()
     )

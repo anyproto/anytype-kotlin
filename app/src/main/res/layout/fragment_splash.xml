@@ -30,7 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginBottom="100dp"
-        android:text="@string/failed_to_launch_wallet"
+        android:text="@string/generic_error"
         android:textColor="@color/palette_system_red"
         android:visibility="invisible"
         tools:ignore="SmallSp"

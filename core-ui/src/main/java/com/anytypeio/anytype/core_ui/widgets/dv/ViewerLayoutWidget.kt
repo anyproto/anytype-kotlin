@@ -58,9 +58,10 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.TitleInter15
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Dismiss
@@ -242,13 +243,16 @@ fun LayoutIcon(
     contentDescription: String,
     click: () -> Unit
 ) {
-    val (borderColor, textcolor) = if (uiState.layoutType == layoutType) {
+    val (borderColor, borderWidth) = if (uiState.layoutType == layoutType) {
         Pair(
             colorResource(id = R.color.palette_system_amber_50),
-            colorResource(id = R.color.amber_100)
+            2.dp
         )
     } else {
-        Pair(colorResource(id = R.color.shape_primary), colorResource(id = R.color.text_secondary))
+        Pair(
+            colorResource(id = R.color.shape_primary),
+            0.5.dp
+        )
     }
     Column(
         modifier = modifier
@@ -259,7 +263,7 @@ fun LayoutIcon(
                 ambientColor = Color(0x0D000000)
             )
             .border(
-                width = 2.dp,
+                width = borderWidth,
                 color = borderColor,
                 shape = RoundedCornerShape(size = 12.dp)
             )
@@ -275,10 +279,15 @@ fun LayoutIcon(
             },
             contentDescription = contentDescription
         )
+        val (textColor, textStyle) = if (uiState.layoutType == layoutType) {
+            Pair(colorResource(id = R.color.amber_100), Caption2Medium)
+        } else {
+            Pair(colorResource(id = R.color.text_secondary), Caption2Regular)
+        }
         Text(
             text = contentDescription,
-            style = Caption2Medium,
-            color = textcolor
+            style = textStyle,
+            color = textColor
         )
     }
 }
@@ -351,7 +360,7 @@ fun LayoutSwitcherItem(
         Text(
             modifier = Modifier.align(Alignment.CenterStart),
             text = text,
-            style = BodyCallout,
+            style = UXBody,
             color = colorResource(id = R.color.text_primary)
         )
         Switch(
@@ -364,6 +373,7 @@ fun LayoutSwitcherItem(
             colors = SwitchDefaults.colors(
                 checkedThumbColor = colorResource(id = R.color.white),
                 checkedTrackColor = colorResource(id = R.color.palette_system_amber_50),
+                checkedTrackAlpha = 1f,
                 uncheckedThumbColor = colorResource(id = R.color.white),
                 uncheckedTrackColor = colorResource(id = R.color.shape_secondary)
             )
@@ -377,9 +387,9 @@ fun PreviewLayoutScreen() {
     ViewerLayoutWidget(
         uiState = ViewerLayoutWidgetUi(
             showWidget = true,
-            layoutType = DVViewerType.GRID,
+            layoutType = DVViewerType.GALLERY,
             withIcon = ViewerLayoutWidgetUi.State.Toggle.WithIcon(
-                toggled = false
+                toggled = true
             ),
             fitImage = ViewerLayoutWidgetUi.State.Toggle.FitImage(
                 toggled = false

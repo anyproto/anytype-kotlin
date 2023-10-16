@@ -60,6 +60,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
@@ -345,7 +346,7 @@ fun ColumnItem(
                     bottom.linkTo(parent.bottom)
                 },
             text = title,
-            style = BodyRegular,
+            style = UXBody,
             color = colorResource(id = R.color.text_primary),
         )
         Image(

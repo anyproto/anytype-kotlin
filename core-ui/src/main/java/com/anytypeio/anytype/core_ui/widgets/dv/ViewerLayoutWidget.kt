@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -285,54 +286,53 @@ fun LayoutIcon(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Action) -> Unit) {
-    Column(
+    val rows = 2
+    val columns = 3
+    FlowRow(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(start = 20.dp, end = 20.dp)
+            .padding(start = 5.dp, end = 5.dp)
+            .wrapContentHeight(),
+        horizontalArrangement = Arrangement.Start,
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            maxItemsInEachRow = 3,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            LayoutIcon(
-                uiState = uiState,
-                layoutType = DVViewerType.GRID,
-                imageResource = R.drawable.ic_layout_grid,
-                imageResourceSelected = R.drawable.ic_layout_grid_selected,
-                contentDescription = "Grid",
-                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GRID)) }
-            )
-            LayoutIcon(
-                uiState = uiState,
-                layoutType = DVViewerType.GALLERY,
-                imageResourceSelected = R.drawable.ic_layout_gallery_selected,
-                imageResource = R.drawable.ic_layout_gallery,
-                contentDescription = "Gallery",
-                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GALLERY)) }
-            )
-            LayoutIcon(
-                uiState = uiState,
-                layoutType = DVViewerType.LIST,
-                imageResourceSelected = R.drawable.ic_layout_list_selected,
-                imageResource = R.drawable.ic_layout_list,
-                contentDescription = "List",
-                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.LIST)) }
-            )
-            LayoutIcon(
-                modifier = Modifier.padding(top = 8.dp),
-                uiState = uiState,
-                layoutType = DVViewerType.BOARD,
-                imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-                imageResource = R.drawable.ic_layout_kanban,
-                contentDescription = "Kanban",
-                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
-            )
-        }
+        val itemModifier = Modifier.weight(1f)
+        LayoutIcon(
+            modifier = itemModifier,
+            uiState = uiState,
+            layoutType = DVViewerType.GRID,
+            imageResource = R.drawable.ic_layout_grid,
+            imageResourceSelected = R.drawable.ic_layout_grid_selected,
+            contentDescription = "Grid",
+            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GRID)) }
+        )
+        LayoutIcon(
+            modifier = itemModifier,
+            uiState = uiState,
+            layoutType = DVViewerType.GALLERY,
+            imageResourceSelected = R.drawable.ic_layout_gallery_selected,
+            imageResource = R.drawable.ic_layout_gallery,
+            contentDescription = "Gallery",
+            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GALLERY)) }
+        )
+        LayoutIcon(
+            modifier = itemModifier,
+            uiState = uiState,
+            layoutType = DVViewerType.LIST,
+            imageResourceSelected = R.drawable.ic_layout_list_selected,
+            imageResource = R.drawable.ic_layout_list,
+            contentDescription = "List",
+            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.LIST)) }
+        )
+        LayoutIcon(
+            modifier = itemModifier.padding(top = 8.dp),
+            uiState = uiState,
+            layoutType = DVViewerType.BOARD,
+            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+            imageResource = R.drawable.ic_layout_kanban,
+            contentDescription = "Kanban",
+            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
+        )
     }
 }
 
@@ -373,7 +373,7 @@ fun LayoutSwitcherItem(
     }
 }
 
-@Preview
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, device = Devices.NEXUS_5)
 @Composable
 fun PreviewLayoutScreen() {
     ViewerLayoutWidget(
@@ -388,9 +388,9 @@ fun PreviewLayoutScreen() {
             ),
             cardSize = ViewerLayoutWidgetUi.State.CardSize.Small,
             cover = ViewerLayoutWidgetUi.State.ImagePreview.Cover,
-            showCardSize = true,
+            showCardSize = false,
             viewer = "",
-            showCoverMenu = true
+            showCoverMenu = false
         ),
         action = {},
         scope = CoroutineScope(

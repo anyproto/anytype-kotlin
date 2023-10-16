@@ -60,7 +60,6 @@ class ResumeAccountTest {
             repository = repo,
             configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider,
-            workspaceManager = workspaceManager,
             pathProvider = pathProvider,
             metricsProvider = metricsProvider
         )
@@ -102,7 +101,7 @@ class ResumeAccountTest {
 
         verifyBlocking(workspaceManager, times(1)) {
             setCurrentWorkspace(
-                givenAccountSetup.config.workspace
+                givenAccountSetup.config.spaceView
             )
         }
     }

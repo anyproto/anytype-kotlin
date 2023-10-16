@@ -48,7 +48,6 @@ class CreateAccountTest {
         createAccount = CreateAccount(
             repository = repo,
             configStorage = configStorage,
-            workspaceManager = workspaceManager,
             metricsProvider = metricsProvider
         )
     }
@@ -109,7 +108,7 @@ class CreateAccountTest {
         createAccount.run(param)
 
         verify(workspaceManager, times(1)).setCurrentWorkspace(
-            setup.config.workspace
+            setup.config.spaceView
         )
     }
 

@@ -7,7 +7,6 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
 /**
  * Blocking use-case for resuming account session when application is killed by OS.
@@ -17,7 +16,6 @@ class ResumeAccount(
     private val pathProvider: PathProvider,
     private val configStorage: ConfigStorage,
     private val featuresConfigProvider: FeaturesConfigProvider,
-    private val workspaceManager: WorkspaceManager,
     private val metricsProvider: MetricsProvider
 ) : BaseUseCase<Id, BaseUseCase.None>() {
 
@@ -43,7 +41,6 @@ class ResumeAccount(
                 enableSpaces = setup.features.enableSpaces ?: false
             )
             configStorage.set(config = setup.config)
-            workspaceManager.setCurrentWorkspace(setup.config.workspace)
             setup.account.id
         }
     }

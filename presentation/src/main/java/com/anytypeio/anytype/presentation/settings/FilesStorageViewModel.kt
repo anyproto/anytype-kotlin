@@ -205,7 +205,7 @@ class FilesStorageViewModel(
     }
 
     private fun subscribeToSpace() {
-        val workspaceId = configStorage.get().workspace
+        val workspaceId = configStorage.get().spaceView
         val profileId = configStorage.get().profile
         jobs += viewModelScope.launch {
             val subscribeParams = StoreSearchByIdsParams(

@@ -200,6 +200,7 @@ fun DVViewerType.getPropName() = when (this) {
     Block.Content.DataView.Viewer.Type.LIST -> "list"
     Block.Content.DataView.Viewer.Type.GALLERY -> "gallery"
     Block.Content.DataView.Viewer.Type.BOARD -> "kanban"
+    Block.Content.DataView.Viewer.Type.CALENDAR -> "calendar"
 }
 
 fun DVFilterCondition.getPropName() = when (this) {

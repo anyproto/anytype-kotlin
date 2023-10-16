@@ -52,7 +52,7 @@ class MainSettingsViewModel(
             storelessSubscriptionContainer.subscribe(
                 StoreSearchByIdsParams(
                     subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
-                    targets = listOf(config.workspace, config.profile),
+                    targets = listOf(config.spaceView, config.profile),
                     keys = listOf(
                         Relations.ID,
                         Relations.SPACE_ID,
@@ -63,7 +63,7 @@ class MainSettingsViewModel(
                     )
                 )
             ).map { result ->
-                val workspace = result.find { it.id == config.workspace }
+                val workspace = result.find { it.id == config.spaceView }
                 if (workspace == null) Timber.w("Workspace not found")
                 val profile = result.find { it.id == config.profile }
                 if (profile == null) Timber.w("Profile not found")
@@ -114,7 +114,7 @@ class MainSettingsViewModel(
                 if (config != null) {
                     commands.emit(
                         Command.OpenSpaceImageSet(
-                            id = config.workspace,
+                            id = config.spaceView,
                             showRemoveButton = isShowRemoveButton()
                         )
                     )
@@ -202,7 +202,7 @@ class MainSettingsViewModel(
             if (config != null) {
                 setObjectDetails.async(
                     SetObjectDetails.Params(
-                        ctx = config.workspace,
+                        ctx = config.spaceView,
                         details = mapOf(
                             Relations.NAME to name
                         )

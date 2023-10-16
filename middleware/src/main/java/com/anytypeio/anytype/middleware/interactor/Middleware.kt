@@ -1949,11 +1949,11 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun workspaceInfo(space: Id): Config {
-        val request = Rpc.Workspace.Info.Request(
+        val request = Rpc.Workspace.Open.Request(
             spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.workspaceInfo(request)
+        val response = service.workspaceOpen(request)
         if (BuildConfig.DEBUG) logResponse(response)
         val info = response.info
         if (info != null) {

@@ -67,7 +67,6 @@ class StartAccountTest {
             repository = repo,
             configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider,
-            workspaceManager = workspaceManager,
             metricsProvider = metricsProvider
         )
     }
@@ -312,7 +311,7 @@ class StartAccountTest {
 
         verifyBlocking(workspaceManager, times(1)) {
             setCurrentWorkspace(
-                givenAccountSetup.config.workspace
+                givenAccountSetup.config.spaceView
             )
         }
     }

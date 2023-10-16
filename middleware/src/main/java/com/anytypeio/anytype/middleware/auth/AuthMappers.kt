@@ -48,7 +48,7 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
             home = info.homeObjectId,
             profile = info.profileObjectId,
             gateway = info.gatewayUrl,
-            workspace = info.workspaceObjectId,
+            spaceView = info.spaceViewId,
             space = info.accountSpaceId,
             widgets = info.widgetsId,
             analytics = info.analyticsId,

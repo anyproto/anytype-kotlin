@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.features.auth.fragments.TestSetupSelectedAccountFragment
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModelFactory
@@ -73,9 +72,6 @@ class SetupSelectedAccountTest {
     lateinit var configStorage: ConfigStorage
 
     @Mock
-    lateinit var workspaceManager: WorkspaceManager
-
-    @Mock
     private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
 
     @Mock
@@ -87,9 +83,6 @@ class SetupSelectedAccountTest {
     @Mock
     private lateinit var metricsProvider: MetricsProvider
 
-    @Mock
-    private lateinit var config: ConfigStorage
-
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -97,7 +90,6 @@ class SetupSelectedAccountTest {
             repository = authRepository,
             featuresConfigProvider = featuresConfigProvider,
             configStorage = configStorage,
-            workspaceManager = workspaceManager,
             metricsProvider = metricsProvider
         )
         TestSetupSelectedAccountFragment.testViewModelFactory =

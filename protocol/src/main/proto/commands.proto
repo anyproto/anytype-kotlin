@@ -614,7 +614,7 @@ message Rpc {
             }
         }
 
-        message Info {
+        message Open {
             message Request {
                 string spaceId = 1;
             }
@@ -708,10 +708,10 @@ message Rpc {
             }
         }
 
-        message SetIsHighlighted {
+        message SetInfo {
             message Request {
-                string objectId = 1;
-                bool isHighlighted = 2;
+                string spaceId = 1;
+                google.protobuf.Struct details = 2;
             }
 
             message Response {

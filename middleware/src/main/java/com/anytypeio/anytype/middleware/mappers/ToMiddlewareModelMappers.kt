@@ -337,6 +337,7 @@ fun Block.Content.DataView.Viewer.Type.toMiddlewareModel(): MDVViewType = when (
     Block.Content.DataView.Viewer.Type.LIST -> MDVViewType.List
     Block.Content.DataView.Viewer.Type.GALLERY -> MDVViewType.Gallery
     Block.Content.DataView.Viewer.Type.BOARD -> MDVViewType.Kanban
+    Block.Content.DataView.Viewer.Type.CALENDAR -> MDVViewType.Calendar
 }
 
 fun Block.Content.DataView.Sort.toMiddlewareModel(): MDVSort =

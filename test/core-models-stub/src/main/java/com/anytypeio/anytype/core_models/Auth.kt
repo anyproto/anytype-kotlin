@@ -39,7 +39,7 @@ fun StubConfig(
     home = home,
     profile = profile,
     gateway = gateway,
-    workspace = workspace,
+    spaceView = workspace,
     space = space,
     widgets = widgets,
     analytics = analytics,

@@ -68,7 +68,7 @@ class OnboardingSoulCreationViewModel @Inject constructor(
                 )
                 setObjectDetails.async(
                     SetObjectDetails.Params(
-                        ctx = config.workspace,
+                        ctx = config.spaceView,
                         details = mapOf(Relations.NAME to name)
                     )
                 ).fold(

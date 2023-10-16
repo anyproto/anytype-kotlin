@@ -393,7 +393,8 @@ fun PreviewViewerEditWidget() {
         id = "1",
         defaultTemplateId = "1",
         isDefaultObjectTypeEnabled = false,
-        defaultTemplateName = null
+        defaultTemplateName = null,
+        isActive = false
     )
     ViewerEditWidget(state = state, action = {})
 }

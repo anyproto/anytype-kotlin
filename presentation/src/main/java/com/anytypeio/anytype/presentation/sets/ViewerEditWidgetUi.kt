@@ -25,7 +25,8 @@ sealed class ViewerEditWidgetUi {
         val filters: List<Id> = emptyList(),
         val sorts: List<Id> = emptyList(),
         val defaultTemplateId: Id?,
-        val defaultTemplateName: String?
+        val defaultTemplateName: String?,
+        val isActive: Boolean
     ) : ViewerEditWidgetUi()
 }
 
@@ -56,9 +57,12 @@ suspend fun DVViewer.toViewerEditWidgetState(
     storeOfRelations: StoreOfRelations,
     storeOfObjectTypes: StoreOfObjectTypes,
     isDefaultObjectTypeEnabled: Boolean,
-    details: Map<Id, Block.Fields>
+    details: Map<Id, Block.Fields>,
+    index: Int,
+    session: ObjectSetSession
 ): ViewerEditWidgetUi {
     val dvViewer = this
+    val isActive = dvViewer.isActiveViewer(index, session)
     val viewerDefaultObjectTypeId = dvViewer.defaultObjectType ?: ObjectTypeIds.PAGE
     val viewerDefaultTemplateId = dvViewer.defaultTemplate
     val defaultObjectType = storeOfObjectTypes.get(viewerDefaultObjectTypeId)
@@ -74,7 +78,8 @@ suspend fun DVViewer.toViewerEditWidgetState(
         defaultObjectType = defaultObjectType,
         isDefaultObjectTypeEnabled = isDefaultObjectTypeEnabled,
         defaultTemplateId = viewerDefaultTemplateId,
-        defaultTemplateName = defaultTemplateName
+        defaultTemplateName = defaultTemplateName,
+        isActive = isActive
     )
 }
 

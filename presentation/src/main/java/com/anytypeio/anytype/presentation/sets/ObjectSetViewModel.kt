@@ -296,16 +296,18 @@ class ObjectSetViewModel(
             ) { viewId, state ->
                 if (viewId != null) {
                     val dataView = state.dataViewState()
-                    val viewer = dataView?.viewerById(viewId)
-                    if (dataView != null && viewer != null) {
-                        viewerEditWidgetState.value = viewer.toViewerEditWidgetState(
+                    val pair = dataView?.viewerAndIndexById(viewId)
+                    if (dataView != null && pair != null) {
+                        viewerEditWidgetState.value = pair.first.toViewerEditWidgetState(
                             storeOfRelations = storeOfRelations,
                             storeOfObjectTypes = storeOfObjectTypes,
                             isDefaultObjectTypeEnabled = dataView.isChangingDefaultTypeAvailable(),
-                            details = dataView.details
+                            details = dataView.details,
+                            index = pair.second,
+                            session = session
                         )
                         viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.updateState(
-                            viewer = viewer,
+                            viewer = pair.first,
                             storeOfRelations = storeOfRelations
                         )
                     } else {

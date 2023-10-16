@@ -63,19 +63,21 @@ fun ViewerEditMoreMenu(
                         action(ViewEditAction.Duplicate(currentState.id))
                     }
             )
-            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
-            Text(
-                text = stringResource(R.string.delete_view),
-                style = BodyCallout,
-                color = colorResource(id = R.color.palette_system_red),
-                modifier = Modifier
-                    .height(44.dp)
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, top = 11.dp)
-                    .noRippleThrottledClickable {
-                        action(ViewEditAction.Delete(currentState.id))
-                    }
-            )
+            if (!currentState.isActive) {
+                Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
+                Text(
+                    text = stringResource(R.string.delete_view),
+                    style = BodyCallout,
+                    color = colorResource(id = R.color.palette_system_red),
+                    modifier = Modifier
+                        .height(44.dp)
+                        .fillMaxWidth()
+                        .padding(start = 16.dp, top = 11.dp)
+                        .noRippleThrottledClickable {
+                            action(ViewEditAction.Delete(currentState.id))
+                        }
+                )
+            }
         }
     }
 }

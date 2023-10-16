@@ -46,6 +46,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.constraintlayout.compose.Visibility
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
@@ -136,6 +137,12 @@ private fun ViewersWidgetContent(
                 .wrapContentHeight()
                 .padding(bottom = 16.dp)
         ) {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 6.dp, bottom = 6.dp)
+            ) {
+                Dragger(modifier = Modifier.align(Alignment.Center))
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

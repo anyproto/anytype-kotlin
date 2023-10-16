@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
@@ -57,18 +56,16 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
-import com.anytypeio.anytype.core_ui.views.TitleInter15
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Dismiss
-import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Icon
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.FitImage
+import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Icon
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -85,6 +87,13 @@ class SelectSpaceViewModel(
                     relation = Relations.LAYOUT,
                     value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
                     condition = DVFilterCondition.EQUAL
+                )
+            ),
+            sorts = listOf(
+                DVSort(
+                    relationKey = Relations.LAST_OPENED_DATE,
+                    type = DVSortType.DESC,
+                    includeTime = true
                 )
             )
         )

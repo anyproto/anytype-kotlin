@@ -593,14 +593,8 @@ open class ObjectSetFragment :
     }
 
     private fun setupNewButtons(isTemplatesAllowed: Boolean) {
-        if (isTemplatesAllowed) {
-            addNewButton.gone()
-            addNewIconButton.visible()
-        } else {
-            addNewButton.visible()
-            addNewButton.isEnabled = true
-            addNewIconButton.gone()
-        }
+        addNewButton.gone()
+        addNewIconButton.visible()
     }
 
     private fun setViewer(viewer: Viewer?) {

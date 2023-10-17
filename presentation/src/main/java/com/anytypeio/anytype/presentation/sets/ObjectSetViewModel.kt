@@ -305,9 +305,6 @@ class ObjectSetViewModel(
                     if (dataView != null && pair != null) {
                         viewerEditWidgetState.value = pair.first.toViewerEditWidgetState(
                             storeOfRelations = storeOfRelations,
-                            storeOfObjectTypes = storeOfObjectTypes,
-                            isDefaultObjectTypeEnabled = dataView.isChangingDefaultTypeAvailable(),
-                            details = dataView.details,
                             index = pair.second,
                             session = session
                         )
@@ -1577,22 +1574,7 @@ class ObjectSetViewModel(
         showTypeTemplatesWidget(
             getViewer = { it?.viewerByIdOrFirst(session.currentViewerId.value) },
             createState = { viewer ->
-                TypeTemplatesWidgetUI.Data.CreateObject(
-                    showWidget = true,
-                    isEditing = false,
-                    viewerId = viewer.id,
-                    isPossibleToChangeType = isPossibleToChangeType == true
-                )
-            }
-        )
-    }
-
-    private fun showTypeTemplatesWidgetForViewerDefaultObject(viewerId: Id) {
-        val isPossibleToChangeType = stateReducer.state.value.dataViewState()?.isChangingDefaultTypeAvailable()
-        showTypeTemplatesWidget(
-            getViewer = { it?.viewerById(viewerId) },
-            createState = { viewer ->
-                TypeTemplatesWidgetUI.Data.DefaultObject(
+                TypeTemplatesWidgetUI.Data(
                     showWidget = true,
                     isEditing = false,
                     viewerId = viewer.id,
@@ -1625,10 +1607,7 @@ class ObjectSetViewModel(
             when (action) {
                 is TypeTemplatesWidgetUIAction.TypeClick.Item -> {
                     when (uiState) {
-                        is TypeTemplatesWidgetUI.Data.CreateObject -> {
-                            selectedTypeFlow.value = action.type
-                        }
-                        is TypeTemplatesWidgetUI.Data.DefaultObject -> {
+                        is TypeTemplatesWidgetUI.Data -> {
                             selectedTypeFlow.value = action.type
                             proceedWithUpdateViewer(
                                 viewerId = uiState.getWidgetViewerId()
@@ -1651,10 +1630,7 @@ class ObjectSetViewModel(
                 }
                 is TypeTemplatesWidgetUIAction.TemplateClick -> {
                     when (uiState) {
-                        is TypeTemplatesWidgetUI.Data.CreateObject ->
-                            uiState.onTemplateClick(action.template)
-                        is TypeTemplatesWidgetUI.Data.DefaultObject ->
-                            uiState.onTemplateClick(action.template)
+                        is TypeTemplatesWidgetUI.Data -> uiState.onTemplateClick(action.template)
                         is TypeTemplatesWidgetUI.Init -> Unit
                     }
                 }
@@ -1671,7 +1647,7 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun TypeTemplatesWidgetUI.Data.CreateObject.onTemplateClick(
+    private suspend fun TypeTemplatesWidgetUI.Data.onTemplateClick(
         templateView: TemplateView
     ) {
         if (moreMenuItem != null) {
@@ -1683,6 +1659,14 @@ class ObjectSetViewModel(
         when (templateView) {
             is TemplateView.Blank -> {
                 logEvent(ObjectStateAnalyticsEvent.SELECT_TEMPLATE)
+                proceedWithUpdateViewer(
+                    viewerId = getWidgetViewerId()
+                ) {
+                    it.copy(
+                        defaultTemplate = templateView.id,
+                        defaultObjectType = templateView.typeId
+                    )
+                }
                 proceedWithDataViewObjectCreate(
                     typeChosenBy = templateView.typeId,
                     templateId = templateView.id
@@ -1690,46 +1674,18 @@ class ObjectSetViewModel(
             }
             is TemplateView.Template -> {
                 logEvent(ObjectStateAnalyticsEvent.SELECT_TEMPLATE)
+                proceedWithUpdateViewer(
+                    viewerId = getWidgetViewerId()
+                ) {
+                    it.copy(
+                        defaultTemplate = templateView.id,
+                        defaultObjectType = templateView.typeId
+                    )
+                }
                 proceedWithDataViewObjectCreate(
                     typeChosenBy = templateView.typeId,
                     templateId = templateView.id
                 )
-            }
-            is TemplateView.New -> {
-                proceedWithCreatingTemplate(
-                    targetObjectType = templateView.targetObjectType
-                )
-            }
-        }
-    }
-
-    private suspend fun TypeTemplatesWidgetUI.Data.DefaultObject.onTemplateClick(
-        templateView: TemplateView
-    ) {
-        if (moreMenuItem != null) {
-            typeTemplatesWidgetState.value = hideMoreMenu()
-            return
-        }
-        when (templateView) {
-            is TemplateView.Blank -> {
-                proceedWithUpdateViewer(
-                    viewerId = getWidgetViewerId()
-                ) {
-                    it.copy(
-                        defaultTemplate = templateView.id,
-                        defaultObjectType = templateView.typeId
-                    )
-                }
-            }
-            is TemplateView.Template -> {
-                proceedWithUpdateViewer(
-                    viewerId = getWidgetViewerId()
-                ) {
-                    it.copy(
-                        defaultTemplate = templateView.id,
-                        defaultObjectType = templateView.typeId
-                    )
-                }
             }
             is TemplateView.New -> {
                 proceedWithCreatingTemplate(
@@ -1770,8 +1726,7 @@ class ObjectSetViewModel(
                 }.collectLatest { types ->
                     typeTemplatesWidgetState.value =
                         when (val uiState = typeTemplatesWidgetState.value) {
-                            is TypeTemplatesWidgetUI.Data.CreateObject -> uiState.copy(objectTypes = types)
-                            is TypeTemplatesWidgetUI.Data.DefaultObject -> uiState.copy(objectTypes = types)
+                            is TypeTemplatesWidgetUI.Data -> uiState.copy(objectTypes = types)
                             is TypeTemplatesWidgetUI.Init -> uiState
                         }
                 }
@@ -1796,22 +1751,7 @@ class ObjectSetViewModel(
                 val viewer = dataView.viewerById(viewerId) ?: return@map emptyList<TemplateView>()
                 val (type, template) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
                 when (typeTemplatesWidgetState.value) {
-                    is TypeTemplatesWidgetUI.Data.DefaultObject-> {
-                        if (type?.id == selectedTypeFlow.value?.id) {
-                            processTemplates(
-                                results = templates,
-                                viewerDefObjType = type ?: selectedTypeFlow.value,
-                                viewerDefTemplateId = template ?: selectedTypeFlow.value?.defaultTemplateId
-                            )
-                        } else {
-                            processTemplates(
-                                results = templates,
-                                viewerDefObjType = selectedTypeFlow.value,
-                                viewerDefTemplateId = selectedTypeFlow.value?.defaultTemplateId
-                            )
-                        }
-                    }
-                    is TypeTemplatesWidgetUI.Data.CreateObject -> {
+                    is TypeTemplatesWidgetUI.Data -> {
                         if (type?.id == selectedTypeFlow.value?.id) {
                             processTemplates(
                                 results = templates,
@@ -1830,8 +1770,7 @@ class ObjectSetViewModel(
                 }
             }.collectLatest { templates ->
                 typeTemplatesWidgetState.value = when(val uistate = typeTemplatesWidgetState.value) {
-                    is TypeTemplatesWidgetUI.Data.CreateObject -> uistate.copy(templates = templates)
-                    is TypeTemplatesWidgetUI.Data.DefaultObject -> uistate.copy(templates = templates)
+                    is TypeTemplatesWidgetUI.Data -> uistate.copy(templates = templates)
                     is TypeTemplatesWidgetUI.Init -> uistate
                 }
             }
@@ -1960,23 +1899,16 @@ class ObjectSetViewModel(
 
     private fun proceedWithUpdatingViewDefaultTemplate() {
         when (val uiState = typeTemplatesWidgetState.value) {
-            is TypeTemplatesWidgetUI.Data.CreateObject,
-            is TypeTemplatesWidgetUI.Data.DefaultObject -> {
-                val templateToSetAsDefault = when (uiState) {
-                    is TypeTemplatesWidgetUI.Data.CreateObject -> uiState.moreMenuItem
-                    is TypeTemplatesWidgetUI.Data.DefaultObject -> uiState.moreMenuItem
-                    else -> null
-                }
-
-                when (templateToSetAsDefault) {
+            is TypeTemplatesWidgetUI.Data -> {
+                when (val templateToSetAsDefault = uiState.moreMenuItem) {
                     is TemplateView.Blank -> {
-                        typeTemplatesWidgetState.value = (uiState as TypeTemplatesWidgetUI.Data).exitEditing()
+                        typeTemplatesWidgetState.value = uiState.exitEditing()
                         proceedWithUpdateViewer(viewerId = uiState.viewerId) {
                             it.copy(defaultTemplate = templateToSetAsDefault.id)
                         }
                     }
                     is TemplateView.Template -> {
-                        typeTemplatesWidgetState.value = (uiState as TypeTemplatesWidgetUI.Data).exitEditing()
+                        typeTemplatesWidgetState.value = uiState.exitEditing()
                         proceedWithUpdateViewer(viewerId = uiState.viewerId) {
                             it.copy(defaultTemplate = templateToSetAsDefault.id)
                         }
@@ -2228,11 +2160,6 @@ class ObjectSetViewModel(
         Timber.d("onViewerEditWidgetAction, action:[$action]")
         when (action) {
             ViewEditAction.Dismiss -> { hideViewerEditWidget() }
-            is ViewEditAction.DefaultObjectType -> {
-                showTypeTemplatesWidgetForViewerDefaultObject(
-                    viewerId = action.id
-                )
-            }
             is ViewEditAction.Filters -> {
                 viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
                 hideViewerEditWidget()
@@ -2325,12 +2252,6 @@ class ObjectSetViewModel(
                         )
                     )
                 }
-            }
-
-            is ViewEditAction.DefaultTemplate -> {
-                showTypeTemplatesWidgetForViewerDefaultObject(
-                    viewerId = action.id
-                )
             }
         }
     }

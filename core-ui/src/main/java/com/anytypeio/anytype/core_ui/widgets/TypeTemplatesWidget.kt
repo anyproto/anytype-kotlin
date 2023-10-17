@@ -230,18 +230,7 @@ fun TypeTemplatesWidget(
                                 )
                             }
                         }
-                        val title = when (val s = currentState) {
-                            is TypeTemplatesWidgetUI.Data.CreateObject -> stringResource(R.string.type_templates_widget_title)
-                            is TypeTemplatesWidgetUI.Data.DefaultObject -> {
-                                if (s.isPossibleToChangeType) {
-                                    stringResource(R.string.default_object)
-                                } else {
-                                    stringResource(R.string.default_template)
-                                }
-
-                            }
-                            is TypeTemplatesWidgetUI.Init -> ""
-                        }
+                        val title = stringResource(R.string.type_templates_widget_title)
                         Box(modifier = Modifier.align(Alignment.Center)) {
                             Text(
                                 text = title,
@@ -325,12 +314,10 @@ fun TypeTemplatesWidget(
                     menuClick = menuClick
                 )
                 is TemplateView.Template -> {
-                    val withDefaultForView = currentState is TypeTemplatesWidgetUI.Data.DefaultObject
                     MoreMenu(
                         itemId = templateView.id,
                         currentCoordinates = currentClickedMoreButtonCoordinates,
                         menuClick = menuClick,
-                        withDefaultForView = withDefaultForView
                     )
                 }
                 is TemplateView.New -> Unit
@@ -343,8 +330,7 @@ fun TypeTemplatesWidget(
 private fun MoreMenu(
     itemId: Id,
     currentCoordinates: IntOffset,
-    menuClick: (TemplateMenuClick) -> Unit,
-    withDefaultForView: Boolean
+    menuClick: (TemplateMenuClick) -> Unit
 ) {
     val moreButtonXCoordinatesDp = with(LocalDensity.current) { currentCoordinates.x.toDp() }
     val offsetX = if (moreButtonXCoordinatesDp > 244.dp) {
@@ -365,13 +351,6 @@ private fun MoreMenu(
         elevation = 30.dp
     ) {
         Column {
-            if (withDefaultForView) {
-                MenuItem(
-                    click = { menuClick(TemplateMenuClick.Default(itemId)) },
-                    text = stringResource(id = R.string.templates_menu_default_for_view)
-                )
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-            }
             MenuItem(
                 click = { menuClick(TemplateMenuClick.Edit(itemId)) },
                 text = stringResource(id = R.string.templates_menu_edit)
@@ -509,8 +488,7 @@ private fun TemplatesList(
                             TemplateItemContent(item)
                         }
 
-                        val showMoreButton =
-                            (item is TemplateView.Template && state.isEditing) || (state is TypeTemplatesWidgetUI.Data.DefaultObject && item is TemplateView.Blank && state.isEditing)
+                        val showMoreButton = (item is TemplateView.Template && state.isEditing)
                         AnimatedVisibility(
                             visible = showMoreButton,
                             enter = fadeIn(),
@@ -1062,7 +1040,7 @@ fun ComposablePreview() {
             coverImage = null,
         ),
     )
-    val state = TypeTemplatesWidgetUI.Data.CreateObject(
+    val state = TypeTemplatesWidgetUI.Data(
         templates = items,
         showWidget = true,
         isEditing = true,

@@ -14,34 +14,15 @@ sealed class TypeTemplatesWidgetUI {
         override val isEditing: Boolean = false
     ) : TypeTemplatesWidgetUI()
 
-    sealed class Data : TypeTemplatesWidgetUI() {
-
-        abstract val moreMenuItem: TemplateView?
-        abstract val templates: List<TemplateView>
-        abstract val objectTypes: List<TemplateObjectTypeView>
-        abstract val isPossibleToChangeType: Boolean
-        abstract val viewerId: Id
-
-        data class DefaultObject(
-            override val showWidget: Boolean,
-            override val isEditing: Boolean,
-            override val moreMenuItem: TemplateView? = null,
-            override val templates: List<TemplateView> = emptyList(),
-            override val objectTypes: List<TemplateObjectTypeView> = emptyList(),
-            override val viewerId: Id,
-            override val isPossibleToChangeType: Boolean
-        ) : Data()
-
-        data class CreateObject(
-            override val showWidget: Boolean,
-            override val isEditing: Boolean,
-            override val moreMenuItem: TemplateView? = null,
-            override val templates: List<TemplateView> = emptyList(),
-            override val objectTypes: List<TemplateObjectTypeView> = emptyList(),
-            override val viewerId: Id,
-            override val isPossibleToChangeType: Boolean
-        ) : Data()
-    }
+    data class Data(
+        override val showWidget: Boolean,
+        override val isEditing: Boolean,
+        val moreMenuItem: TemplateView? = null,
+        val templates: List<TemplateView> = emptyList(),
+        val objectTypes: List<TemplateObjectTypeView> = emptyList(),
+        val viewerId: Id,
+        val isPossibleToChangeType: Boolean
+    ) : TypeTemplatesWidgetUI()
 
     fun getWidgetViewerId(): Id? = if (this is Data) viewerId else null
 }
@@ -57,29 +38,17 @@ sealed class TypeTemplatesWidgetUIAction {
 }
 
 fun TypeTemplatesWidgetUI.Data.enterEditing(): TypeTemplatesWidgetUI.Data {
-    return when (this) {
-        is TypeTemplatesWidgetUI.Data.DefaultObject -> copy(isEditing = true)
-        is TypeTemplatesWidgetUI.Data.CreateObject -> copy(isEditing = true)
-    }
+    return this.copy(isEditing = true)
 }
 
 fun TypeTemplatesWidgetUI.Data.exitEditing(): TypeTemplatesWidgetUI.Data {
-    return when (this) {
-        is TypeTemplatesWidgetUI.Data.DefaultObject -> copy(isEditing = false, moreMenuItem = null)
-        is TypeTemplatesWidgetUI.Data.CreateObject -> copy(isEditing = false, moreMenuItem = null)
-    }
+    return this.copy(isEditing = false, moreMenuItem = null)
 }
 
 fun TypeTemplatesWidgetUI.Data.showMoreMenu(item: TemplateView): TypeTemplatesWidgetUI.Data {
-    return when (this) {
-        is TypeTemplatesWidgetUI.Data.DefaultObject -> copy(moreMenuItem = item)
-        is TypeTemplatesWidgetUI.Data.CreateObject -> copy(moreMenuItem = item)
-    }
+    return this.copy(moreMenuItem = item)
 }
 
 fun TypeTemplatesWidgetUI.Data.hideMoreMenu(): TypeTemplatesWidgetUI.Data {
-    return when (this) {
-        is TypeTemplatesWidgetUI.Data.DefaultObject -> copy(moreMenuItem = null)
-        is TypeTemplatesWidgetUI.Data.CreateObject -> copy(moreMenuItem = null)
-    }
+    return this.copy(moreMenuItem = null)
 }

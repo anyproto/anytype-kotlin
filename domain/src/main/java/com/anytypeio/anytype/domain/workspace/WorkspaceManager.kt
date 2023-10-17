@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -36,7 +37,8 @@ interface SpaceManager {
     class Impl @Inject constructor(
         private val repo: BlockRepository,
         private val dispatchers: AppCoroutineDispatchers,
-        private val configStorage: ConfigStorage
+        private val configStorage: ConfigStorage,
+        private val logger: Logger
     ) : SpaceManager {
 
         private val currentSpace = MutableStateFlow(NO_SPACE_OR_DEFAULT)
@@ -61,8 +63,10 @@ interface SpaceManager {
 
         override suspend fun set(space: Id)  = withContext(dispatchers.io) {
             if (!info.containsKey(space)) {
-                val config = repo.getSpaceConfig(space)
-                info[space] = config
+                runCatching { repo.getSpaceConfig(space) }.fold(
+                    onSuccess = { config -> info[space] = config },
+                    onFailure = logger::logException
+                )
             }
             currentSpace.value = space
         }

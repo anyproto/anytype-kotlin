@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.page.Redo
@@ -243,6 +244,8 @@ interface BlockRepository {
         ctx: Id,
         details: Struct
     ): Payload
+
+    suspend fun setSpaceDetails(space: SpaceId, details: Struct)
 
     suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload
 

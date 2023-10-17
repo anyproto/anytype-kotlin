@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
@@ -758,6 +759,13 @@ class BlockDataRepository(
     override suspend fun createWorkspace(details: Struct): Id = remote.createWorkspace(
         details = details
     )
+
+    override suspend fun setSpaceDetails(space: SpaceId, details: Struct) {
+        remote.setSpaceDetails(
+            space = space,
+            details = details
+        )
+    }
 
     override suspend fun getSpaceConfig(space: Id): Config = remote.getSpaceConfig(
         space = space

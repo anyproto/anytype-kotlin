@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,6 +20,7 @@ import timber.log.Timber
 
 class OnboardingSoulCreationViewModel @Inject constructor(
     private val setObjectDetails: SetObjectDetails,
+    private val setSpaceDetails: SetSpaceDetails,
     private val configStorage: ConfigStorage,
     private val analytics: Analytics
 ) : ViewModel() {
@@ -66,9 +69,9 @@ class OnboardingSoulCreationViewModel @Inject constructor(
                     analytics = analytics,
                     step = EventsDictionary.ScreenOnboardingStep.SPACE_CREATING
                 )
-                setObjectDetails.async(
-                    SetObjectDetails.Params(
-                        ctx = config.spaceView,
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = SpaceId(config.space),
                         details = mapOf(Relations.NAME to name)
                     )
                 ).fold(
@@ -97,6 +100,7 @@ class OnboardingSoulCreationViewModel @Inject constructor(
 
     class Factory @Inject constructor(
         private val setObjectDetails: SetObjectDetails,
+        private val setSpaceDetails: SetSpaceDetails,
         private val configStorage: ConfigStorage,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
@@ -104,6 +108,7 @@ class OnboardingSoulCreationViewModel @Inject constructor(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return OnboardingSoulCreationViewModel(
                 setObjectDetails = setObjectDetails,
+                setSpaceDetails = setSpaceDetails,
                 configStorage = configStorage,
                 analytics = analytics
             ) as T

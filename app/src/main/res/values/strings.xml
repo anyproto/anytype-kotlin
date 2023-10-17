@@ -396,4 +396,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="loading_please_wait">Loading... please wait</string>
     <string name="personal">Personal</string>
     <string name="create_space">Create a space</string>
+
+    <string name="generic_error">Something went wrong. Please try again.</string>
+
 </resources>

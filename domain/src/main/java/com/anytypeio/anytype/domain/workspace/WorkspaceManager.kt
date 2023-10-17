@@ -62,13 +62,13 @@ interface SpaceManager {
         }
 
         override suspend fun set(space: Id)  = withContext(dispatchers.io) {
-            if (!info.containsKey(space)) {
-                runCatching { repo.getSpaceConfig(space) }.fold(
-                    onSuccess = { config -> info[space] = config },
-                    onFailure = logger::logException
-                )
-            }
-            currentSpace.value = space
+            runCatching { repo.getSpaceConfig(space) }.fold(
+                onSuccess = { config ->
+                    info[space] = config
+                    currentSpace.value = space
+                },
+                onFailure = logger::logException
+            )
         }
 
         override fun observe(): Flow<Config> {

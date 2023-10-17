@@ -32,6 +32,7 @@ object Relations {
     @Deprecated("To be deleted")
     const val WORKSPACE_ID = "workspaceId"
     const val SPACE_ID = "spaceId"
+    const val TARGET_SPACE_ID = "targetSpaceId"
     const val SET_OF = "setOf"
     const val URL = "url"
     const val SOURCE = "source"

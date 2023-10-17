@@ -74,7 +74,7 @@ class SelectSpaceViewModel(
             subscription = SELECT_SPACE_SUBSCRIPTION,
             keys = listOf(
                 Relations.ID,
-                Relations.SPACE_ID,
+                Relations.TARGET_SPACE_ID,
                 Relations.NAME,
                 Relations.ICON_IMAGE,
                 Relations.ICON_EMOJI,
@@ -83,7 +83,7 @@ class SelectSpaceViewModel(
             filters = listOf(
                 DVFilter(
                     relation = Relations.LAYOUT,
-                    value = ObjectType.Layout.SPACE.code.toDouble(),
+                    value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
                     condition = DVFilterCondition.EQUAL
                 )
             )
@@ -109,7 +109,7 @@ class SelectSpaceViewModel(
                     )
                     addAll(
                         spaces.mapNotNull { wrapper ->
-                            val space = wrapper.getValue<String>(Relations.SPACE_ID)
+                            val space = wrapper.getValue<String>(Relations.TARGET_SPACE_ID)
                             if (space != null) {
                                 SelectSpaceView.Space(
                                     WorkspaceView(

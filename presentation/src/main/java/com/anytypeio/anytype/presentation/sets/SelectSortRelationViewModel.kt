@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
@@ -22,20 +23,18 @@ import timber.log.Timber
 
 class SelectSortRelationViewModel(
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val storeOfRelations: StoreOfRelations,
     private val analytics: Analytics
 ) : SearchRelationViewModel(
     objectState = objectState,
-    session = session,
     storeOfRelations = storeOfRelations
 ) {
 
-    fun onRelationClicked(ctx: Id, relation: SimpleRelationView) {
+    fun onRelationClicked(ctx: Id, viewerId: Id, relation: SimpleRelationView) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = UpdateDataViewViewer.Params.Sort.Add(
@@ -47,8 +46,8 @@ class SelectSortRelationViewModel(
                     type = DVSortType.ASC
                 )
             )
-            updateDataViewViewer(params).process(
-                success = {
+            updateDataViewViewer.async(params).fold(
+                onSuccess = {
                     dispatcher.send(it).also {
                         logEvent(
                             state = objectState.value,
@@ -60,7 +59,7 @@ class SelectSortRelationViewModel(
                         isDismissed.emit(true)
                     }
                 },
-                failure = {
+                onFailure = {
                     Timber.e(it, "Error while adding a sort").also {
                         _toasts.emit(USE_CASE_ERROR)
                     }
@@ -71,7 +70,6 @@ class SelectSortRelationViewModel(
 
     class Factory(
         private val objectState: StateFlow<ObjectState>,
-        private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val storeOfRelations: StoreOfRelations,
@@ -81,7 +79,6 @@ class SelectSortRelationViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return SelectSortRelationViewModel(
                 objectState = objectState,
-                session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,
                 storeOfRelations = storeOfRelations,

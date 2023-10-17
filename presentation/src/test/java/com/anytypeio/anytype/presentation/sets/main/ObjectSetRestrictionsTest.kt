@@ -118,7 +118,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
 
             // ASSERT ERROR TOAST
             viewModel.toasts.test {
-                viewModel.proceedWithCreatingNewDataViewObject()
+                viewModel.proceedWithDataViewObjectCreate()
                 assertEquals(ObjectSetViewModel.NOT_ALLOWED, awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }
@@ -256,7 +256,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
 
             // ASSERT ERROR TOAST
             viewModel.toasts.test {
-                viewModel.onViewerSettingsClicked()
+                viewModel.onViewerSettingsClicked(viewer = mockObjectSet.viewer.id)
                 assertEquals(ObjectSetViewModel.NOT_ALLOWED, awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }

@@ -347,7 +347,7 @@ class BlockDataRepository(
         context: Id,
         target: Id,
         viewer: DVViewer
-    ): Payload = remote.duplicateDataViewViewer(
+    ): Pair<Id, Payload> = remote.duplicateDataViewViewer(
         context = context,
         target = target,
         viewer = viewer
@@ -886,5 +886,9 @@ class BlockDataRepository(
 
     override suspend fun duplicateObjectsList(ids: List<Id>): List<Id> {
         return remote.duplicateObjectsList(ids)
+    }
+
+    override suspend fun createTemplateFromObject(ctx: Id): Id {
+        return remote.createTemplateFromObject(ctx)
     }
 }

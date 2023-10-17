@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -190,7 +190,6 @@ class FilterViewModelInputFieldValueModifyTest {
         urlBuilder = UrlBuilder(gateway)
         viewModel = FilterViewModel(
             objectState = state,
-            session = session,
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,
             updateDataViewViewer = updateDataViewViewer,
@@ -319,22 +318,24 @@ class FilterViewModelInputFieldValueModifyTest {
     ) {
         stubUpdateDataView()
 
+        val viewer = state.value.dataViewState()!!.viewers[0]
+
         viewModel.onStart(
             relationKey = relation1.key,
-            filterIndex = filterIndex
+            filterIndex = filterIndex,
+            viewerId = viewer.id
         )
 
         viewModel.onConditionUpdate(condition)
 
         viewModel.onModifyApplyClicked(
             ctx = root,
-            input = textInput
+            input = textInput,
+            viewerId = viewer.id
         )
 
-        val viewer = state.value.dataViewState()!!.viewers[0]
-
         verifyBlocking(updateDataViewViewer, times(1)) {
-            invoke(
+            async(
                 UpdateDataViewViewer.Params.Filter.Replace(
                     ctx = root,
                     dv = dataViewId,
@@ -359,22 +360,24 @@ class FilterViewModelInputFieldValueModifyTest {
 
         stubUpdateDataView()
 
+        val viewer = state.value.dataViewState()!!.viewers[0]
+
         viewModel.onStart(
             relationKey = relation1.key,
-            filterIndex = filterIndex
+            filterIndex = filterIndex,
+            viewerId = viewer.id
         )
 
         viewModel.onConditionUpdate(condition)
 
         viewModel.onModifyApplyClicked(
             ctx = root,
-            input = textInput
+            input = textInput,
+            viewerId = viewer.id
         )
 
-        val viewer = state.value.dataViewState()!!.viewers[0]
-
         verifyBlocking(updateDataViewViewer, times(1)) {
-            invoke(
+            async(
                 UpdateDataViewViewer.Params.Filter.Replace(
                     ctx = root,
                     dv = dataViewId,
@@ -392,7 +395,7 @@ class FilterViewModelInputFieldValueModifyTest {
 
     private fun stubUpdateDataView() {
         updateDataViewViewer.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Payload(
                     context = "",
                     events = emptyList()

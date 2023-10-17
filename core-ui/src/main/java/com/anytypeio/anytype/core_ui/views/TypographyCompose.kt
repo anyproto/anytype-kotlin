@@ -177,6 +177,14 @@ val CodeBlock = TextStyle(
     letterSpacing = (-0.016).em
 )
 
+val TitleInter15 = TextStyle(
+    fontFamily = fontInterRegular,
+    fontWeight = FontWeight.W600,
+    fontSize = 15.sp,
+    lineHeight = 20.sp,
+    letterSpacing = (-0.02).em
+)
+
 //UX/Title 1/Semibold
 val Title1 = TextStyle(
     fontFamily = fontInterSemibold,
@@ -291,4 +299,12 @@ val ButtonRegular = TextStyle(
     fontSize = 17.sp,
     lineHeight = 24.sp,
     letterSpacing = (-0.024).em
+)
+
+val ModalTitle = TextStyle(
+    fontFamily = fontInterSemibold,
+    fontWeight = FontWeight.W600,
+    fontSize = 15.sp,
+    lineHeight = 20.sp,
+    letterSpacing = (-0.014).em
 )

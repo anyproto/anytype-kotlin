@@ -6,7 +6,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -37,7 +36,6 @@ object ViewerFilterModule {
     @ViewerFilterByScope
     fun provideViewerFilterViewModelFactory(
         state: MutableStateFlow<ObjectState>,
-        session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         updateDataViewViewer: UpdateDataViewViewer,
         urlBuilder: UrlBuilder,
@@ -46,7 +44,6 @@ object ViewerFilterModule {
         db: ObjectSetDatabase
     ): ViewerFilterViewModel.Factory = ViewerFilterViewModel.Factory(
         state = state,
-        session = session,
         dispatcher = dispatcher,
         updateDataViewViewer = updateDataViewViewer,
         urlBuilder = urlBuilder,

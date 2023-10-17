@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -17,6 +18,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 
 class TreeWidgetContainer(
@@ -25,11 +28,14 @@ class TreeWidgetContainer(
     private val config: Config,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
+    private val spaceGradientProvider: SpaceGradientProvider,
     private val expandedBranches: Flow<List<TreePath>>,
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
     isSessionActive: Flow<Boolean>
 ) : WidgetContainer {
+
+    private val mutex = Mutex()
 
     private val rootLevelLimit = WidgetConfig.resolveTreeWidgetLimit(widget.limit)
 
@@ -72,9 +78,11 @@ class TreeWidgetContainer(
                 }.map { (rootLevelLinks, objectWrappers) ->
                     val valid = objectWrappers.filter { obj -> isValidObject(obj) }
                     val data = valid.associateBy { r -> r.id }
-                    with(nodes) {
-                        clear()
-                        putAll(valid.associate { obj -> obj.id to obj.links })
+                    mutex.withLock {
+                        with(nodes) {
+                            clear()
+                            putAll(valid.associate { obj -> obj.id to obj.links })
+                        }
                     }
                     WidgetView.Tree(
                         id = widget.id,
@@ -107,9 +115,11 @@ class TreeWidgetContainer(
                 ).map { results ->
                     val valid = results.filter { obj -> isValidObject(obj) }
                     val data = valid.associateBy { r -> r.id }
-                    with(nodes) {
-                        clear()
-                        putAll(valid.associate { obj -> obj.id to obj.links })
+                    mutex.withLock {
+                        with(nodes) {
+                            clear()
+                            putAll(valid.associate { obj -> obj.id to obj.links })
+                        }
                     }
                     WidgetView.Tree(
                         id = widget.id,
@@ -130,53 +140,58 @@ class TreeWidgetContainer(
 
     private suspend fun fetchRootLevelBundledSourceObjects(): Flow<List<ObjectWrapper.Basic>> {
         return if (widget.source.id == BundledWidgetSourceIds.FAVORITE) {
-            combine(
-                objectWatcher
-                    .watch(config.home)
-                    .map { obj -> obj.orderOfRootObjects(obj.root) }
-                    .catch { emit(emptyMap()) },
-                container.subscribe(
-                    ListWidgetContainer.params(
-                        subscription = widget.source.id,
-                        space = space,
-                        keys = keys,
-                        limit = resolveLimit()
-                    )
-                )
-            ) { order, rootLevelObjects ->
-                rootLevelObjects.sortedBy { obj -> order[obj.id] }
-            }
+            objectWatcher
+                .watch(config.home)
+                .map { obj -> obj.orderOfRootObjects(obj.root) }
+                .catch { emit(emptyMap()) }
+                .flatMapLatest { order ->
+                    container.subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = widget.source.id,
+                            targets = order.keys.toList(),
+                            keys = keys
+                        )
+                    ).map { favorites ->
+                        favorites
+                            .filter { obj -> obj.notDeletedNorArchived }
+                            .sortedBy { obj -> order[obj.id] }
+                    }
+                }
         } else {
             container.subscribe(
                 ListWidgetContainer.params(
                     subscription = widget.source.id,
                     space = space,
                     keys = keys,
-                    limit = resolveLimit()
+                    limit = rootLevelLimit
                 )
             )
         }
     }
 
-    private fun getDefaultSubscriptionTargets(
+    private suspend fun getDefaultSubscriptionTargets(
         paths: List<TreePath>,
         source: Widget.Source.Default
     ) = buildList {
         if (source.obj.isArchived != true && source.obj.isDeleted != true) {
             addAll(source.obj.links)
-            nodes.forEach { (id, links) ->
-                if (paths.any { path -> path.contains(id) }) addAll(links)
+            mutex.withLock {
+                nodes.forEach { (id, links) ->
+                    if (paths.any { path -> path.contains(id) }) addAll(links)
+                }
             }
         }
     }.distinct()
 
-    private fun getBundledSubscriptionTargets(
+    private suspend fun getBundledSubscriptionTargets(
         paths: List<TreePath>,
         links: List<Id>,
     ) = buildList {
         addAll(links)
-        nodes.forEach { (id, links) ->
-            if (paths.any { path -> path.contains(id) }) addAll(links)
+        mutex.withLock {
+            nodes.forEach { (id, links) ->
+                if (paths.any { path -> path.contains(id) }) addAll(links)
+            }
         }
     }.distinct()
 
@@ -204,7 +219,10 @@ class TreeWidgetContainer(
                             expanded = expanded,
                             currentLinkPath = currentLinkPath
                         ),
-                        objectIcon = obj.widgetElementIcon(urlBuilder),
+                        objectIcon = obj.widgetElementIcon(
+                            builder = urlBuilder,
+                            gradientProvider = spaceGradientProvider
+                        ),
                         indent = level,
                         obj = obj,
                         path = path + link

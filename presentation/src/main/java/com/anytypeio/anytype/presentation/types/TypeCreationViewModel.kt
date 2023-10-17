@@ -56,7 +56,10 @@ class TypeCreationViewModel(
     )
 
     fun createType(name: String) {
-        if (name.isEmpty()) return
+        if (name.isEmpty()) {
+            sendToast("Name should not be empty")
+            return
+        }
         viewModelScope.launch {
             createTypeInteractor.execute(
                 CreateType.Params(

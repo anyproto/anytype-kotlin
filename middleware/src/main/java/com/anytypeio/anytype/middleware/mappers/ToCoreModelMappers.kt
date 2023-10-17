@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -505,7 +506,8 @@ fun MDVView.toCoreModels(): DVViewer = DVViewer(
     hideIcon = hideIcon,
     coverFit = coverFit,
     coverRelationKey = coverRelationKey.ifEmpty { null },
-    defaultTemplateId = defaultTemplateId.ifEmpty { null }
+    defaultTemplate = defaultTemplateId.ifEmpty { null },
+    defaultObjectType = defaultObjectTypeId.ifEmpty { ObjectTypeIds.PAGE }
 )
 
 fun MDVRelation.toCoreModels(): DVViewerRelation = DVViewerRelation(
@@ -717,7 +719,7 @@ fun Rpc.Object.Create.Response.toCoreModel(): CreateObjectResult {
     return CreateObjectResult(
         id = objectId,
         event = event.toPayload(),
-        details = details
+        details = details.orEmpty()
     )
 }
 

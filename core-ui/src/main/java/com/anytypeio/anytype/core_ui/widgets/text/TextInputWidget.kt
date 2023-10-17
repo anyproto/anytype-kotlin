@@ -25,7 +25,6 @@ import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
 import com.anytypeio.anytype.core_ui.tools.TextInputTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightDrawer
-import com.anytypeio.anytype.core_utils.ext.multilineIme
 import com.anytypeio.anytype.core_utils.ext.showKeyboard
 import com.anytypeio.anytype.core_utils.text.OnEnterActionListener
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -248,10 +247,10 @@ class TextInputWidget : AppCompatEditText {
         }
     }
 
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         // need to draw bg first so that text can be on top during super.onDraw()
         if (text is Spanned && layout != null) {
-            canvas?.withTranslation(totalPaddingLeft.toFloat(), totalPaddingTop.toFloat()) {
+            canvas.withTranslation(totalPaddingLeft.toFloat(), totalPaddingTop.toFloat()) {
                 highlightDrawer?.draw(canvas, text as Spanned, layout, context.resources)
             }
         }

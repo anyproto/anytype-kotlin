@@ -42,7 +42,7 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
 
         // TESTING
         viewModel.onStart(ctx = root)
-        viewModel.proceedWithCreatingNewDataViewObject()
+        viewModel.proceedWithDataViewObjectCreate()
 
         // ASSERT
         verifyNoInteractions(createObject)

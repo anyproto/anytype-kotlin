@@ -26,15 +26,18 @@ import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.ui_settings.main.GradientComposeView
 
 @Composable
 fun TreeWidgetObjectIcon(
     modifier: Modifier = Modifier,
     icon: ObjectIcon,
     paddingStart: Dp,
-    paddingEnd: Dp
+    paddingEnd: Dp,
+    onTaskIconClicked: (Boolean) -> Unit
 ) {
     when (icon) {
         is ObjectIcon.Profile.Avatar -> {
@@ -65,6 +68,14 @@ fun TreeWidgetObjectIcon(
                 modifier = modifier.padding(start = paddingStart, end = paddingEnd)
             )
         }
+        is ObjectIcon.Profile.Gradient -> {
+            GradientComposeView(
+                modifier = modifier.padding(start = paddingStart, end = paddingEnd),
+                from = icon.from,
+                to = icon.to,
+                size = 18.dp
+            )
+        }
         is ObjectIcon.Basic.Emoji -> {
             UriImage(
                 uri = Emojifier.safeUri(icon.unicode),
@@ -90,7 +101,9 @@ fun TreeWidgetObjectIcon(
                 else
                     painterResource(id = R.drawable.ic_dashboard_task_checkbox_not_checked),
                 contentDescription = "Task icon",
-                modifier = modifier.padding(start = paddingStart, end = paddingEnd)
+                modifier = modifier
+                    .padding(start = paddingStart, end = paddingEnd)
+                    .noRippleClickable { onTaskIconClicked(icon.isChecked) }
             )
         }
         else -> {
@@ -117,15 +130,22 @@ fun UriImage(
 fun ListWidgetObjectIcon(
     icon: ObjectIcon,
     modifier: Modifier,
-    iconSize: Dp = 48.dp
+    iconSize: Dp = 48.dp,
+    onTaskIconClicked: (Boolean) -> Unit = {}
 ) {
     when (icon) {
         is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon)
         is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
+        is ObjectIcon.Profile.Gradient -> GradientComposeView(
+            modifier = modifier,
+            from = icon.from,
+            to = icon.to,
+            size = iconSize
+        )
         is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
         is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
-        is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon)
+        is ObjectIcon.Task -> DefaultTaskObjectIcon(modifier, iconSize, icon, onTaskIconClicked)
         else -> {
             // Draw nothing.
         }
@@ -136,9 +156,14 @@ fun ListWidgetObjectIcon(
 private fun DefaultTaskObjectIcon(
     modifier: Modifier,
     iconSize: Dp,
-    icon: ObjectIcon.Task
+    icon: ObjectIcon.Task,
+    onIconClicked: (Boolean) -> Unit
 ) {
-    Box(modifier = modifier.size(iconSize)) {
+    Box(
+        modifier = modifier
+            .size(iconSize)
+            .noRippleClickable { onIconClicked(icon.isChecked) }
+    ) {
         Image(
             painter = if (icon.isChecked)
                 painterResource(id = R.drawable.ic_gallery_view_task_checked)

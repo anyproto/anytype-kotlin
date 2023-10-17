@@ -96,6 +96,12 @@ class MainSettingsViewModel(
             .onEach { event -> dispatchAnalyticEvent(event) }
             .onEach { event -> dispatchCommand(event) }
             .launchIn(viewModelScope)
+
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenSettingSpacesSpaceIndex
+            )
+        }
     }
 
     fun onOptionClicked(event: Event) {
@@ -161,7 +167,7 @@ class MainSettingsViewModel(
             Event.OnAboutClicked -> {
                 viewModelScope.sendEvent(
                     analytics = analytics,
-                    eventName = EventsDictionary.aboutScreenShow
+                    eventName = EventsDictionary.MENU_HELP
                 )
             }
             Event.OnProfileClicked -> {

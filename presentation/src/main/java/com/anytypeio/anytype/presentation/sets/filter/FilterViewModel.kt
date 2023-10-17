@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -41,7 +42,6 @@ import com.anytypeio.anytype.presentation.relations.toFilterValue
 import com.anytypeio.anytype.presentation.relations.toViewRelation
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.FilterValue
@@ -60,7 +60,6 @@ import timber.log.Timber
 
 open class FilterViewModel(
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val searchObjects: SearchObjects,
@@ -87,23 +86,24 @@ open class FilterViewModel(
     val filterValueListState = MutableStateFlow<List<CreateFilterView>>(emptyList())
     val optionCountState = MutableStateFlow(0)
 
-    private fun startObservingCondition() {
+    private fun startObservingCondition(viewerId: Id) {
         jobs += viewModelScope.launch {
             conditionState.collect { condition ->
                 setValueStates(
                     condition = condition?.condition,
-                    index = filterIndex
+                    index = filterIndex,
+                    viewerId = viewerId
                 )
             }
         }
     }
 
-    fun onStart(relationKey: Key, filterIndex: Int?) {
-        Timber.d("onStart, relationKey:[$relationKey], filterIndex:[$filterIndex]")
+    fun onStart(viewerId: Id, relationKey: Key, filterIndex: Int?) {
+        Timber.d("onStart, viewer:[$viewerId], relationKey:[$relationKey], filterIndex:[$filterIndex]")
         this.filterIndex = filterIndex
         this.relationKey = relationKey
-        startObservingCondition()
-        initStates()
+        startObservingCondition(viewerId = viewerId)
+        initStates(viewerId)
     }
 
     fun onStop() {
@@ -111,11 +111,11 @@ open class FilterViewModel(
         jobs.clear()
     }
 
-    private fun initStates() {
+    private fun initStates(viewerId: Id) {
         jobs += viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
                 try {
-                    val viewer = state.viewerById(session.currentViewerId.value) ?: return@collect
+                    val viewer = state.viewerById(viewerId) ?: return@collect
                     val key = relationKey
                     if (key != null) {
                         val relation = storeOfRelations.getByKey(key)
@@ -128,7 +128,8 @@ open class FilterViewModel(
                             setConditionState(viewer, relation, filterIndex)
                             setValueStates(
                                 condition = conditionState.value?.condition,
-                                index = filterIndex
+                                index = filterIndex,
+                                viewerId = viewerId
                             )
                         } else {
                             Timber.e("Couldn't find relation in StoreOfRelations by relationKey:[$relationKey]")
@@ -219,6 +220,7 @@ open class FilterViewModel(
     }
 
     private suspend fun setValueStates(
+        viewerId: Id,
         condition: Viewer.Filter.Condition?,
         index: Int?
     ) {
@@ -229,7 +231,7 @@ open class FilterViewModel(
         }
 
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         val key = relationKey
         if (key != null) {
             val relation = storeOfRelations.getByKey(key) ?: return
@@ -284,9 +286,15 @@ open class FilterViewModel(
         }
         Relation.Format.OBJECT -> {
             val ids = filter?.value as? List<*>
+            val limitObjectTypes = buildList {
+                if (relation.relationFormatObjectTypes.isNotEmpty()) {
+                    addAll(relation.relationFormatObjectTypes)
+                }
+            }
             proceedWithSearchObjects(
                 ids = ids,
-                objectTypes = storeOfObjectTypes.getAll()
+                objectTypes = storeOfObjectTypes.getAll(),
+                limitObjectTypes = limitObjectTypes
             )
         }
         Relation.Format.CHECKBOX -> {
@@ -357,13 +365,15 @@ open class FilterViewModel(
 
     private fun proceedWithSearchObjects(
         ids: List<*>? = null,
-        objectTypes: List<ObjectWrapper.Type>
+        objectTypes: List<ObjectWrapper.Type>,
+        limitObjectTypes: List<Key> = emptyList()
     ) {
         viewModelScope.launch {
             searchObjects(
                 SearchObjects.Params(
                     sorts = ObjectSearchConstants.sortAddObjectToFilter,
                     filters = ObjectSearchConstants.filterAddObjectToFilter(
+                        limitObjectTypes = limitObjectTypes,
                         space = spaceManager.get()
                     ),
                     fulltext = SearchObjects.EMPTY_TEXT,
@@ -458,7 +468,7 @@ open class FilterViewModel(
         }
     }
 
-    fun onCreateInputValueFilterClicked(ctx: Id, relation: Id, input: String) {
+    fun onCreateInputValueFilterClicked(ctx: Id, viewerId: Id, relation: Id, input: String) {
         val condition = conditionState.value?.condition
         checkNotNull(condition)
         val format = relationState.value?.format
@@ -472,6 +482,7 @@ open class FilterViewModel(
         viewModelScope.launch {
             proceedWithCreatingFilter(
                 ctx = ctx,
+                viewerId = viewerId,
                 relationKey = relation,
                 value = value,
                 condition = condition.toDomain(),
@@ -508,7 +519,7 @@ open class FilterViewModel(
         setFilterState(quickOption, numberOfDays)
     }
 
-    fun onCreateFilterFromSelectedValueClicked(ctx: Id, relation: Id) {
+    fun onCreateFilterFromSelectedValueClicked(ctx: Id, viewerId: Id, relation: Id) {
         val condition = conditionState.value?.condition
         checkNotNull(condition)
         viewModelScope.launch {
@@ -521,6 +532,7 @@ open class FilterViewModel(
                         val selected = tags.filter { it.isSelected }.map { tag -> tag.id }
                         proceedWithCreatingFilter(
                             ctx = ctx,
+                            viewerId = viewerId,
                             relationKey = relation,
                             value = selected,
                             condition = condition.toDomain(),
@@ -532,6 +544,7 @@ open class FilterViewModel(
                         val selected = statuses.filter { it.isSelected }.map { status -> status.id }
                         proceedWithCreatingFilter(
                             ctx = ctx,
+                            viewerId = viewerId,
                             relationKey = relation,
                             value = selected,
                             condition = condition.toDomain()
@@ -543,6 +556,7 @@ open class FilterViewModel(
                         val selected = dates.firstOrNull { it.isSelected }
                         proceedWithCreatingFilter(
                             ctx = ctx,
+                            viewerId = viewerId,
                             relationKey = relation,
                             value = selected?.value?.toDouble(),
                             quickOption = selected?.type ?: DVFilterQuickOption.EXACT_DATE,
@@ -557,6 +571,7 @@ open class FilterViewModel(
                             .map { obj -> obj.id }
                         proceedWithCreatingFilter(
                             ctx = ctx,
+                            viewerId = viewerId,
                             relationKey = relation,
                             value = selected,
                             condition = condition.toDomain(),
@@ -566,6 +581,7 @@ open class FilterViewModel(
                         val value = filterValueListState.value.checkboxFilterValue()
                         proceedWithCreatingFilter(
                             ctx = ctx,
+                            viewerId = viewerId,
                             relationKey = relation,
                             value = value,
                             condition = condition.toDomain()
@@ -579,7 +595,7 @@ open class FilterViewModel(
         }
     }
 
-    fun onModifyApplyClicked(ctx: Id, input: String) {
+    fun onModifyApplyClicked(ctx: Id, input: String, viewerId: Id) {
         val condition = conditionState.value?.condition
         checkNotNull(condition)
         val relation = this.relationKey
@@ -594,7 +610,7 @@ open class FilterViewModel(
             format = format
         )
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
             val filterId = viewer.filters.getOrNull(idx)?.id
             if (filterId == null) {
@@ -616,7 +632,7 @@ open class FilterViewModel(
         }
     }
 
-    fun onModifyApplyClicked(ctx: Id) {
+    fun onModifyApplyClicked(ctx: Id, viewerId: Id) {
         val condition = conditionState.value?.condition
         checkNotNull(condition)
         val relation = this.relationKey
@@ -624,7 +640,7 @@ open class FilterViewModel(
         val idx = filterIndex
         checkNotNull(idx)
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         viewModelScope.launch {
             val filterId = viewer.filters.getOrNull(idx)?.id
             if (filterId == null) {
@@ -744,9 +760,9 @@ open class FilterViewModel(
             view = viewer.id,
             filter = updatedFilter
         )
-        updateDataViewViewer(params).process(
-            failure = { Timber.e(it, "Error while creating filter") },
-            success = {
+        updateDataViewViewer.async(params).fold(
+            onFailure = { Timber.e(it, "Error while creating filter") },
+            onSuccess = {
                 dispatcher.send(it).also {
                     viewModelScope.logEvent(
                         state = objectState.value,
@@ -763,6 +779,7 @@ open class FilterViewModel(
 
     private suspend fun proceedWithCreatingFilter(
         ctx: Id,
+        viewerId: Id,
         relationKey: String,
         relationFormat: RelationFormat? = null,
         operator: DVFilterOperator = DVFilterOperator.AND,
@@ -772,7 +789,7 @@ open class FilterViewModel(
     ) {
         val startTime = System.currentTimeMillis()
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         val params = UpdateDataViewViewer.Params.Filter.Add(
             ctx = ctx,
             dv = state.dataViewBlock.id,
@@ -784,9 +801,9 @@ open class FilterViewModel(
             quickOption = quickOption,
             value = value
         )
-        updateDataViewViewer(params).process(
-            failure = { Timber.e(it, "Error while creating filter") },
-            success = {
+        updateDataViewViewer.async(params).fold(
+            onFailure = { Timber.e(it, "Error while creating filter") },
+            onSuccess = {
                 dispatcher.send(it).also {
                     viewModelScope.logEvent(
                         state = objectState.value,
@@ -852,7 +869,6 @@ open class FilterViewModel(
 
     class Factory(
         private val objectState: StateFlow<ObjectState>,
-        private val session: ObjectSetSession,
         private val dispatcher: Dispatcher<Payload>,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val searchObjects: SearchObjects,
@@ -868,7 +884,6 @@ open class FilterViewModel(
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return FilterViewModel(
                 objectState = objectState,
-                session = session,
                 dispatcher = dispatcher,
                 updateDataViewViewer = updateDataViewViewer,
                 searchObjects = searchObjects,

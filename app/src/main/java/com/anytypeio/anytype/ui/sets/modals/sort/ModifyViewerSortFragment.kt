@@ -29,6 +29,7 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
     private val ctx: Id get() = arg(CTX_KEY)
     private val sortId: Id get() = arg(SORT_ID_KEY)
     private val relationKey: Key get() = arg(RELATION_KEY)
+    private val viewer: Id get() = arg(VIEWER_ID_KEY)
 
     @Inject
     lateinit var factory: ModifyViewerSortViewModel.Factory
@@ -39,10 +40,10 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
         super.onViewCreated(view, savedInstanceState)
         with(lifecycleScope) {
             subscribe(binding.tvSortAsc.clicks()) {
-                vm.onSortAscSelected(ctx = ctx, sortId = sortId)
+                vm.onSortAscSelected(ctx = ctx, viewerId = viewer, sortId = sortId)
             }
             subscribe(binding.tvSortDesc.clicks()) {
-                vm.onSortDescSelected(ctx = ctx, sortId = sortId)
+                vm.onSortDescSelected(ctx = ctx, viewerId = viewer, sortId = sortId)
             }
         }
     }
@@ -70,7 +71,7 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
             }
         }
         super.onStart()
-        vm.onStart(sortId = sortId, relationKey = relationKey)
+        vm.onStart(sortId = sortId, viewerId = viewer, relationKey = relationKey)
     }
 
     override fun onStop() {
@@ -94,14 +95,15 @@ class ModifyViewerSortFragment : BaseBottomSheetFragment<FragmentModifyViewerSor
     )
 
     companion object {
-        fun new(ctx: Id, sortId: Id, relation: Key): ModifyViewerSortFragment =
+        fun new(ctx: Id, viewer: Id, sortId: Id, relation: Key): ModifyViewerSortFragment =
             ModifyViewerSortFragment().apply {
                 arguments =
-                    bundleOf(CTX_KEY to ctx, SORT_ID_KEY to sortId, RELATION_KEY to relation)
+                    bundleOf(CTX_KEY to ctx, SORT_ID_KEY to sortId, RELATION_KEY to relation, VIEWER_ID_KEY to viewer)
             }
 
         private const val CTX_KEY = "arg.modify-viewer-sort.ctx"
         private const val SORT_ID_KEY = "arg.modify-viewer-sort.sort-id"
         private const val RELATION_KEY = "arg.modify-viewer-sort.relation"
+        private const val VIEWER_ID_KEY = "arg.modify-viewer-sort.viewer-id"
     }
 }

@@ -89,10 +89,13 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun openModalEditor(id: String) {
+    override fun openModalEditor(id: String, targetObjectType: Id) {
         navController?.navigate(
             R.id.nav_editor_modal,
-            bundleOf(EditorModalFragment.ARG_ID to id)
+            bundleOf(
+                EditorModalFragment.ARG_ID to id,
+                EditorModalFragment.ARG_TARGET_OBJECT_TYPE to targetObjectType
+            )
         )
     }
 

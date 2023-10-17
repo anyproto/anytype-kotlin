@@ -9,7 +9,12 @@ data class ViewerView(
     val type: DVViewerType,
     val isActive: Boolean,
     val showActionMenu: Boolean = false,
-    val isUnsupported: Boolean = false
+    val isUnsupported: Boolean = false,
+    val defaultObjectType: Id?,
+    val relations: List<Id>,
+    val sorts: List<Id>,
+    val filters: List<Id>,
+    val isDefaultObjectTypeEnabled: Boolean
 )
 
 

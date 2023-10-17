@@ -14,7 +14,6 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -25,8 +24,6 @@ import javax.inject.Inject
  */
 class CreateDataViewObject @Inject constructor(
     private val repo: BlockRepository,
-    private val getTemplates: GetTemplates,
-    private val getDefaultPageType: GetDefaultPageType,
     private val storeOfRelations: StoreOfRelations,
     private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
@@ -48,7 +45,8 @@ class CreateDataViewObject @Inject constructor(
                 val result = repo.createObject(command)
                 Result(
                     objectId = result.id,
-                    objectType = params.type
+                    objectType = params.type,
+                    struct = result.details
                 )
             }
             is Params.SetByRelation -> {
@@ -66,7 +64,8 @@ class CreateDataViewObject @Inject constructor(
                 val result = repo.createObject(command)
                 Result(
                     objectId = result.id,
-                    objectType = type
+                    objectType = params.type,
+                    struct = result.details
                 )
             }
             is Params.Collection -> {
@@ -84,7 +83,8 @@ class CreateDataViewObject @Inject constructor(
                 val result = repo.createObject(command)
                 Result(
                     objectId = result.id,
-                    objectType = type
+                    objectType = params.type,
+                    struct = result.details
                 )
             }
         }
@@ -102,6 +102,7 @@ class CreateDataViewObject @Inject constructor(
             }
         }
     }
+
 
     private suspend fun resolveSetByRelationPrefilledObjectData(
         filters: List<DVFilter>,
@@ -170,17 +171,20 @@ class CreateDataViewObject @Inject constructor(
         data class SetByRelation(
             val filters: List<DVFilter>,
             val relations: List<Id>,
-            val template: Id?
+            val template: Id?,
+            val type: Id?
         ) : Params()
 
         data class Collection(
+            val type: Id?,
             val templateId: Id?
         ) : Params()
     }
 
     data class Result(
         val objectId : Id,
-        val objectType: TypeKey
+        val objectType: TypeKey,
+        val struct: Struct?
     )
 
     companion object {

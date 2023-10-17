@@ -31,6 +31,8 @@ import androidx.core.view.updateLayoutParams
 import androidx.core.view.updatePadding
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -50,8 +52,10 @@ import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
-import com.anytypeio.anytype.core_ui.widgets.ObjectTypeTemplatesWidget
+import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
+import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
+import com.anytypeio.anytype.core_ui.widgets.dv.ViewerLayoutWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
@@ -80,7 +84,11 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
+import com.anytypeio.anytype.presentation.sets.ViewEditAction
+import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
+import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -88,18 +96,23 @@ import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
+import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
+import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
+import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
+import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_OBJECT_TYPE
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
-import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.SELECTED_TEMPLATE_INITIAL_VALUE
 import com.bumptech.glide.Glide
 import javax.inject.Inject
 import kotlinx.coroutines.flow.launchIn
@@ -110,7 +123,8 @@ open class ObjectSetFragment :
     NavigationFragment<FragmentObjectSetBinding>(R.layout.fragment_object_set),
     TextValueEditReceiver,
     DateValueEditReceiver,
-    OnDataViewSelectSourceAction {
+    OnDataViewSelectSourceAction,
+    OnObjectSelectTypeAction {
 
     // Controls
 
@@ -221,14 +235,14 @@ open class ObjectSetFragment :
         binding.root.setTransitionListener(transitionListener)
 
         with(lifecycleScope) {
-            subscribe(addNewButton.clicks().throttleFirst()) { vm.proceedWithCreatingNewDataViewObject() }
-            subscribe(addNewIconButton.buttonClicks()) { vm.proceedWithCreatingNewDataViewObject() }
+            subscribe(addNewButton.clicks().throttleFirst()) { vm.proceedWithDataViewObjectCreate() }
+            subscribe(addNewIconButton.buttonClicks()) { vm.proceedWithDataViewObjectCreate() }
             subscribe(addNewIconButton.iconClicks()) { vm.onNewButtonIconClicked() }
             subscribe(dataViewInfo.clicks().throttleFirst()) { type ->
                 when (type) {
-                    DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.onCreateObjectInCollectionClicked()
+                    DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.proceedWithDataViewObjectCreate()
                     DataViewInfo.TYPE.SET_NO_QUERY -> vm.onSelectQueryButtonClicked()
-                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.proceedWithCreatingNewDataViewObject()
+                    DataViewInfo.TYPE.SET_NO_ITEMS -> vm.proceedWithDataViewObjectCreate()
                     DataViewInfo.TYPE.INIT -> {}
                 }
             }
@@ -249,7 +263,6 @@ open class ObjectSetFragment :
             subscribe(binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSettings).clicks()
                     .throttleFirst()
             ) {
-                vm.onViewerSettingsClicked()
             }
             subscribe(
                 binding.bottomPanel.root.findViewById<FrameLayout>(R.id.btnSort).clicks()
@@ -325,14 +338,14 @@ open class ObjectSetFragment :
         binding.templatesWidget.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                ObjectTypeTemplatesWidget(
-                    state = vm.templatesWidgetState.collectAsStateWithLifecycle().value,
+                TypeTemplatesWidget(
+                    state = vm.typeTemplatesWidgetState.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onDismissTemplatesWidget,
-                    itemClick = vm::onTemplateItemClicked,
                     editClick = vm::onEditTemplateButtonClicked,
                     doneClick = vm::onDoneTemplateButtonClicked,
                     moreClick = vm::onMoreTemplateButtonClicked,
                     menuClick = vm::onMoreMenuClicked,
+                    action = vm::onTypeTemplatesWidgetAction,
                     scope = lifecycleScope
                 )
             }
@@ -346,6 +359,27 @@ open class ObjectSetFragment :
                 ViewersWidget(
                     state = vm.viewersWidgetState.collectAsStateWithLifecycle().value,
                     action = vm::onViewersWidgetAction
+                )
+            }
+        }
+
+        binding.viewerEditWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ViewerEditWidget(
+                    state = vm.viewerEditWidgetState.collectAsStateWithLifecycle().value,
+                    action = vm::onViewerEditWidgetAction
+                )
+            }
+        }
+
+        binding.viewerLayoutWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ViewerLayoutWidget(
+                    uiState = vm.viewerLayoutWidgetState.collectAsStateWithLifecycle().value,
+                    action = vm::onViewerLayoutWidgetAction,
+                    scope = lifecycleScope
                 )
             }
         }
@@ -948,12 +982,13 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.ModifyViewerFilters -> {
                 val fr = ViewerFilterFragment.new(
-                    ctx = command.ctx
+                    ctx = command.ctx,
+                    viewer = command.viewer,
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.ModifyViewerSorts -> {
-                val fr = ViewerSortFragment.new(ctx)
+                val fr = ViewerSortFragment.new(ctx = ctx, viewer = command.viewer)
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.OpenCoverActionMenu -> {
@@ -977,6 +1012,31 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen -> {
                 val fr = EmptyDataViewSelectSourceFragment()
+                fr.showChildFragment()
+            }
+            is ObjectSetCommand.Modal.CreateViewer -> {
+                val fr = CreateDataViewViewerFragment.new(
+                    ctx = command.ctx,
+                    target = command.target
+                )
+                fr.showChildFragment(EMPTY_TAG)
+            }
+            is ObjectSetCommand.Modal.EditDataViewViewer -> {
+                val fr = EditDataViewViewerFragment.new(
+                    ctx = command.ctx,
+                    viewer = command.viewer
+                )
+                fr.showChildFragment(EMPTY_TAG)
+            }
+            is ObjectSetCommand.Modal.ManageViewer -> {
+                val fr = ManageViewerFragment.new(ctx = command.ctx, dv = command.dataview)
+                fr.showChildFragment(EMPTY_TAG)
+            }
+
+            is ObjectSetCommand.Modal.OpenSelectTypeScreen -> {
+                val fr = ObjectSelectTypeFragment.newInstance(
+                    excludeTypes = command.excludedTypes
+                )
                 fr.showChildFragment()
             }
         }
@@ -1090,25 +1150,27 @@ open class ObjectSetFragment :
 
     private fun setupOnBackPressedDispatcher() {
         requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (childFragmentManager.backStackEntryCount > 0) {
-                childFragmentManager.popBackStack()
-            } else {
-                when {
-                    vm.isCustomizeViewPanelVisible.value -> {
-                        vm.onHideViewerCustomizeSwiped()
-                    }
-                    vm.templatesWidgetState.value.showWidget -> {
-                        vm.onDismissTemplatesWidget()
-                    }
-                    vm.viewersWidgetState.value.showWidget -> {
-                        vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)
-                    }
-                    else -> {
-                        vm.onSystemBackPressed()
-                    }
-                }
+            when {
+                childFragmentManager.backStackEntryCount > 0 -> childFragmentManager.popBackStack()
+                vm.isCustomizeViewPanelVisible.value -> vm.onHideViewerCustomizeSwiped()
+                vm.typeTemplatesWidgetState.value.showWidget -> vm.onDismissTemplatesWidget()
+                vm.viewersWidgetState.value.showWidget -> handleViewersWidgetState()
+                vm.viewerEditWidgetState.value.isVisible() -> handleViewerEditWidgetState()
+                else -> vm.onSystemBackPressed()
             }
         }
+    }
+
+    private fun handleViewersWidgetState() = when {
+        vm.viewerEditWidgetState.value.isVisible() -> handleViewerEditWidgetState()
+        else -> vm.onViewersWidgetAction(ViewersWidgetUi.Action.Dismiss)
+    }
+
+    private fun handleViewerEditWidgetState() = when {
+        vm.viewerLayoutWidgetState.value.showWidget -> vm.onViewerLayoutWidgetAction(
+            ViewerLayoutWidgetUi.Action.Dismiss
+        )
+        else -> vm.onViewerEditWidgetAction(ViewEditAction.Dismiss)
     }
 
     override fun onTextValueChanged(
@@ -1165,14 +1227,36 @@ open class ObjectSetFragment :
         inflater, container, false
     )
 
+    override fun onProceedWithUpdateType(id: Id) {
+        vm.onNewTypeForViewerClicked(id)
+    }
+
+    override fun onProceedWithDraftUpdateType(id: Id) {
+        // Do nothing
+    }
+
     private fun observeSelectingTemplate() {
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(
-            ARG_TEMPLATE_ID,
-            SELECTED_TEMPLATE_INITIAL_VALUE
-        )?.observe(viewLifecycleOwner) { template: Id ->
-            Timber.d("Get result from EditorTemplateFragment: $template")
-            if (template.isNotEmpty()) vm.proceedWithCreatingNewDataViewObject(template)
+        val navController = findNavController()
+        val navBackStackEntry = navController.getBackStackEntry(R.id.objectSetScreen)
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME
+                && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)) {
+                val resultTemplateId = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
+                val resultObjectTypeId = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_OBJECT_TYPE)
+                if (!resultTemplateId.isNullOrBlank() && !resultObjectTypeId.isNullOrBlank()) {
+                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
+                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_OBJECT_TYPE)
+                    vm.proceedWithSelectedTemplate(template = resultTemplateId, objectType = resultObjectTypeId)
+                }
+            }
         }
+        navBackStackEntry.lifecycle.addObserver(observer)
+
+        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                navBackStackEntry.lifecycle.removeObserver(observer)
+            }
+        })
     }
 
     companion object {

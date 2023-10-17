@@ -15,6 +15,7 @@ import javax.inject.Inject
 class SelectFilterRelationFragment : SearchRelationFragment() {
 
     override val ctx: String get() = arg(CTX_KEY)
+    override val viewer: String get() = arg(VIEWER_ID_KEY)
 
     @Inject
     lateinit var factory: SelectFilterRelationViewModel.Factory
@@ -34,10 +35,11 @@ class SelectFilterRelationFragment : SearchRelationFragment() {
     }
 
     companion object {
-        fun new(ctx: Id): SelectFilterRelationFragment = SelectFilterRelationFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        fun new(ctx: Id, viewerId: Id): SelectFilterRelationFragment = SelectFilterRelationFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, VIEWER_ID_KEY to viewerId)
         }
 
         const val CTX_KEY = "arg.select-filter-relation.ctx"
+        const val VIEWER_ID_KEY = "arg.select-filter-relation.viewer"
     }
 }

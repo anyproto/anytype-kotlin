@@ -41,6 +41,7 @@ open class ModifyFilterFromSelectedValueFragment :
     private val ctx: String get() = arg(CTX_KEY)
     private val relation: String get() = arg(RELATION_KEY)
     private val index: Int get() = arg(IDX_KEY)
+    private val viewer: String get() = arg(VIEWER_KEY)
 
     private val helper = FilterHelper()
 
@@ -83,7 +84,7 @@ open class ModifyFilterFromSelectedValueFragment :
                 vm.onConditionClicked()
             }
             subscribe(binding.btnBottomAction.clicks()) {
-                vm.onModifyApplyClicked(ctx = ctx)
+                vm.onModifyApplyClicked(ctx = ctx, viewerId = viewer)
             }
             subscribe(vm.relationState.filterNotNull()) {
                 if (it.format == ColumnView.Format.DATE) {
@@ -181,7 +182,7 @@ open class ModifyFilterFromSelectedValueFragment :
     override fun onStart() {
         super.onStart()
         expand()
-        vm.onStart(relation, index)
+        vm.onStart(relationKey = relation, filterIndex = index, viewerId = viewer)
     }
 
     override fun onStop() {
@@ -205,13 +206,24 @@ open class ModifyFilterFromSelectedValueFragment :
     )
 
     companion object {
-        fun new(ctx: Id, relation: Id, index: Int): ModifyFilterFromSelectedValueFragment =
+        fun new(
+            ctx: Id,
+            relation: Id,
+            index: Int,
+            viewer: Id
+        ): ModifyFilterFromSelectedValueFragment =
             ModifyFilterFromSelectedValueFragment().apply {
-                arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation, IDX_KEY to index)
+                arguments = bundleOf(
+                    CTX_KEY to ctx,
+                    RELATION_KEY to relation,
+                    IDX_KEY to index,
+                    VIEWER_KEY to viewer
+                )
             }
 
         const val CTX_KEY = "arg.modify-filter-relation.ctx"
         const val RELATION_KEY = "arg.modify-filter-relation.relation"
         const val IDX_KEY = "arg.modify-filter-relation.index"
+        private const val VIEWER_KEY = "arg.modify-filter-relation.viewer"
     }
 }

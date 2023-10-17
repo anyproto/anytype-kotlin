@@ -14,5 +14,6 @@ enum class ObjectAction {
     LOCK,
     UNLOCK,
     LINK_TO,
-    DELETE_FILES
+    DELETE_FILES,
+    SET_AS_DEFAULT
 }

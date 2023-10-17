@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.FileSyncStatus
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.AUDIO
@@ -473,6 +474,7 @@ object ObjectSearchConstants {
         Relations.NAME,
         Relations.ICON_IMAGE,
         Relations.ICON_EMOJI,
+        Relations.ICON_OPTION,
         Relations.TYPE,
         Relations.LAYOUT,
         Relations.IS_ARCHIVED,

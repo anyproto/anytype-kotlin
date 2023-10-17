@@ -46,6 +46,7 @@ import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
@@ -151,6 +152,9 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var configStorage: ConfigStorage
 
+    @Mock
+    lateinit var createTemplate: CreateTemplate
+
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultPageType: GetDefaultPageType
 
@@ -214,15 +218,13 @@ abstract class TestObjectSetSetup {
             configStorage = configStorage
         )
         createDataViewObject = CreateDataViewObject(
-            getTemplates = getTemplates,
             repo = repo,
             storeOfRelations = storeOfRelations,
-            getDefaultPageType = getDefaultPageType,
             dispatchers = dispatchers,
             spaceManager = spaceManager
         )
         setObjectDetails = UpdateDetail(repo)
-        updateDataViewViewer = UpdateDataViewViewer(repo)
+        updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
         interceptThreadStatus = InterceptThreadStatus(channel = threadStatusChannel)
         closeBlock = CloseBlock(repo, dispatchers)
         urlBuilder = UrlBuilder(gateway)
@@ -275,6 +277,8 @@ abstract class TestObjectSetSetup {
             duplicateObjects = duplicateObjects,
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager
+            viewerDelegate = viewerDelegate,
+            createTemplate = createTemplate
         )
     }
 

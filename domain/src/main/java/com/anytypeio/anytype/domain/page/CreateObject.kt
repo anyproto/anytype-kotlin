@@ -36,7 +36,7 @@ class CreateObject @Inject constructor(
         }
 
         val command = Command.CreateObject(
-            template = null,
+            template = params.template,
             prefilled = emptyMap(),
             internalFlags = internalFlags,
             space = SpaceId(spaceManager.get()),
@@ -53,7 +53,10 @@ class CreateObject @Inject constructor(
         )
     }
 
-    data class Param(val type: TypeKey? = null)
+    data class Param(
+        val type: TypeKey? = null,
+        val template: Id? = null
+    )
 
     data class Result(
         val objectId: Id,

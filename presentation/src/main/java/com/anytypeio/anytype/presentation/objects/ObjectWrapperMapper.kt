@@ -15,13 +15,15 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.relations.DateParser
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
 import timber.log.Timber
 
 @Deprecated("To be deleted")
 fun List<ObjectWrapper.Basic>.toView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
 ): List<DefaultObjectView> =
     this.map { obj ->
         val typeUrl = obj.getProperType()
@@ -39,14 +41,16 @@ fun List<ObjectWrapper.Basic>.toView(
             icon = ObjectIcon.from(
                 obj = obj,
                 layout = layout,
-                builder = urlBuilder
+                builder = urlBuilder,
+                gradientProvider = gradientProvider
             )
         )
     }
 
 fun List<ObjectWrapper.Basic>.toViews(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
 ): List<DefaultObjectView> = map { obj ->
     val typeUrl = obj.getProperType()
     val layout = obj.getProperLayout()
@@ -60,7 +64,8 @@ fun List<ObjectWrapper.Basic>.toViews(
         icon = ObjectIcon.from(
             obj = obj,
             layout = layout,
-            builder = urlBuilder
+            builder = urlBuilder,
+            gradientProvider = gradientProvider
         ),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
         lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
@@ -70,9 +75,10 @@ fun List<ObjectWrapper.Basic>.toViews(
 
 fun List<ObjectWrapper.Basic>.toLibraryViews(
     urlBuilder: UrlBuilder,
+    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
 ): List<LibraryView> = map { obj ->
     val space = obj.getValue<Id?>(Relations.SPACE_ID)
-    when (obj.layout) {
+    when (val type = obj.layout) {
         ObjectType.Layout.OBJECT_TYPE -> {
             if (space == Marketplace.MARKETPLACE_SPACE_ID) {
                 LibraryView.LibraryTypeView(
@@ -81,7 +87,8 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     icon = ObjectIcon.from(
                         obj = obj,
                         layout = obj.getProperLayout(),
-                        builder = urlBuilder
+                        builder = urlBuilder,
+                    gradientProvider = gradientProvider
                     ),
                 )
             } else {
@@ -91,7 +98,8 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     icon = ObjectIcon.from(
                         obj = obj,
                         layout = obj.getProperLayout(),
-                        builder = urlBuilder
+                        builder = urlBuilder,
+                    gradientProvider = gradientProvider
                     ),
                     sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
                     readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
@@ -117,6 +125,22 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
                 )
             }
+            LibraryView.MyRelationView(
+                id = obj.id,
+                name = obj.name.orEmpty(),
+                format = relation.format,
+                sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+                readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+                editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
+            )
+        }
+        MarketplaceObjectTypeIds.RELATION -> {
+            val relation = ObjectWrapper.Relation(obj.map)
+            LibraryView.LibraryRelationView(
+                id = obj.id,
+                name = obj.name.orEmpty(),
+                format = relation.format
+            )
         }
         else -> {
             Timber.e("Unknown type: ${obj.getProperType()}")
@@ -130,7 +154,8 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
 
 fun List<ObjectWrapper.Basic>.toLinkToView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
 ): List<LinkToItemView.Object> =
     this.mapIndexed { index, obj ->
         val typeUrl = obj.getProperType()
@@ -144,7 +169,8 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
             icon = ObjectIcon.from(
                 obj = obj,
                 layout = layout,
-                builder = urlBuilder
+                builder = urlBuilder,
+                gradientProvider = gradientProvider
             ),
             position = index
         )
@@ -152,6 +178,7 @@ fun List<ObjectWrapper.Basic>.toLinkToView(
 
 fun ObjectWrapper.Basic.toLinkToObjectView(
     urlBuilder: UrlBuilder,
+    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
     objectTypes: List<ObjectWrapper.Type>
 ): LinkToItemView.LinkedTo.Object {
     val typeUrl = this.getProperType()
@@ -165,7 +192,8 @@ fun ObjectWrapper.Basic.toLinkToObjectView(
         icon = ObjectIcon.from(
             obj = this,
             layout = layout,
-            builder = urlBuilder
+            builder = urlBuilder,
+            gradientProvider = gradientProvider
         )
     )
 }
@@ -173,7 +201,8 @@ fun ObjectWrapper.Basic.toLinkToObjectView(
 fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
     ids: List<*>? = null,
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
 ): List<CreateFilterView.Object> =
     this.map { obj ->
         CreateFilterView.Object(
@@ -186,7 +215,8 @@ fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
             icon = ObjectIcon.from(
                 obj = obj,
                 layout = obj.getProperLayout(),
-                builder = urlBuilder
+                builder = urlBuilder,
+                gradientProvider = gradientProvider
             ),
             isSelected = ids?.contains(obj.id) ?: false
         )
@@ -195,7 +225,8 @@ fun List<ObjectWrapper.Basic>.toCreateFilterObjectView(
 fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
     excluded: List<Id>,
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>
+    objectTypes: List<ObjectWrapper.Type>,
+    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
 ): List<RelationValueView.Object> =
     this.mapNotNull { obj ->
         val typeUrl = obj.getProperType()
@@ -214,7 +245,8 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
                     icon = ObjectIcon.from(
                         obj = obj,
                         layout = layout,
-                        builder = urlBuilder
+                        builder = urlBuilder,
+                        gradientProvider = gradientProvider
                     ),
                     isSelected = false,
                     removable = false

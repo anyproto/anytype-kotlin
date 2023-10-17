@@ -149,7 +149,7 @@
         tools:visibility="visible" />
 
     <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/templatesWidget"
+        android:id="@+id/viewersWidget"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
@@ -157,7 +157,23 @@
         app:layout_constraintBottom_toBottomOf="parent"/>
 
     <androidx.compose.ui.platform.ComposeView
-        android:id="@+id/viewersWidget"
+        android:id="@+id/viewerEditWidget"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/viewerLayoutWidget"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"/>
+
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/templatesWidget"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"

@@ -125,6 +125,12 @@ sealed class ObjectWrapper {
                 }
                 else -> emptyList()
             }
+
+        val targetObjectType: Id? by default
+
+        val isValid get() = map.containsKey(Relations.ID)
+
+        val notDeletedNorArchived get() = (isDeleted != true && isArchived != true)
     }
 
     /**
@@ -209,7 +215,7 @@ sealed class ObjectWrapper {
                 else -> emptyList()
             }
 
-        val relationFormatObjectTypes get() = getValues<Id>(RELATION_FORMAT_OBJECT_TYPES)
+        val relationFormatObjectTypes get() = getValues<Key>(RELATION_FORMAT_OBJECT_TYPES)
 
         val type: List<Id> get() = getValues(Relations.TYPE)
 

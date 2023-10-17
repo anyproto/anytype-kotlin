@@ -15,10 +15,10 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.sort.ViewerSortViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -54,20 +54,21 @@ class ViewerObjectSortTest {
     @Mock
     lateinit var storeOfRelations: StoreOfRelations
 
+    @Mock
+    lateinit var dispatchers: AppCoroutineDispatchers
+
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
 
     private val root = MockDataFactory.randomUuid()
-    private val session = ObjectSetSession()
     private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val dispatcher = Dispatcher.Default<Payload>()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        updateDataViewViewer = UpdateDataViewViewer(repo)
+        updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
         TestViewerSortFragment.testVmFactory = ViewerSortViewModel.Factory(
             state = state,
-            session = session,
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
             analytics = analytics,

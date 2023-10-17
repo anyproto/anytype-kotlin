@@ -42,6 +42,7 @@ enum SmartBlockType {
   STRelationOption = 0x211;
   SpaceView = 0x212;
 
+  Identity = 0x214;
   MissingObject = 0x207;
 }
 
@@ -584,6 +585,7 @@ message Account {
     string accountSpaceId = 9;
     string widgetsId = 10;
     string spaceViewId = 13;
+    string techSpaceId = 14;
 
     string gatewayUrl = 101; // gateway url for fetching static files
     string localStoragePath = 103; // path to local storage

@@ -2315,31 +2315,6 @@ message Rpc {
                     }
                 }
             }
-
-            message List {
-                message Request {
-                    string objectTypeUrl = 1;
-                    bool appendRelationsFromOtherTypes = 2; // add relations from other object types in the end
-                }
-
-                message Response {
-                    Error error = 1;
-                    repeated anytype.model.RelationLink relations = 2;
-
-                    message Error {
-                        Code code = 1;
-                        string description = 2;
-
-                        enum Code {
-                            NULL = 0;
-                            UNKNOWN_ERROR = 1;
-                            BAD_INPUT = 2;
-                            UNKNOWN_OBJECT_TYPE_URL = 3;
-                            // ...
-                        }
-                    }
-                }
-            }
         }
     }
 

@@ -13,7 +13,6 @@ message ObjectInfo {
 
     string snippet = 5;
     bool hasInboundLinks = 6; // DEPRECATED
-    SmartBlockType objectType = 7;
 }
 
 message ObjectDetails {

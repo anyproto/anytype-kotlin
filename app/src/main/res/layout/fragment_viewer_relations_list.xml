@@ -6,11 +6,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <View
+        android:id="@+id/dragger"
+        android:layout_width="48dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/page_icon_picker_dragger_background" />
+
     <FrameLayout
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="@dimen/default_toolbar_height"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="6dp">
 
         <TextView
             android:id="@+id/editBtn"
@@ -38,7 +46,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            style="@style/TextView.UXStyle.Titles.2.Semibold"
+            style="@style/TextView.UXStyle.Titles.1"
+            android:textColor="@color/text_primary"
             android:text="@string/relations"/>
 
         <ImageView

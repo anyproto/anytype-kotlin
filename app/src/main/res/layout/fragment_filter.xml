@@ -19,7 +19,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="48dp"
         android:layout_marginTop="@dimen/dp_6">
 
         <TextView
@@ -27,8 +27,6 @@
             style="@style/ViewerModalTitleStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginBottom="12dp"
             android:text="@string/filter"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -39,12 +37,12 @@
             android:id="@+id/editBtn"
             style="@style/ViewerModalStateButtonsStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingStart="16dp"
             android:paddingEnd="@dimen/dp_16"
-            android:paddingBottom="@dimen/dp_10"
             android:text="@string/edit"
             android:visibility="invisible"
+            android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -65,11 +63,12 @@
             android:id="@+id/doneBtn"
             style="@style/ViewerModalStateButtonsStyle"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:paddingStart="@dimen/dp_16"
             android:paddingEnd="16dp"
             android:text="@string/done"
             android:visibility="invisible"
+            android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

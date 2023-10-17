@@ -100,7 +100,7 @@ ext.getBuildVersionName = {
         def date = getCurrentDate()
         return "${versionMajor}.${versionMinor}.${versionPatch}-${date}"
     } else {
-        return "${versionMajor}.${versionMinor}.${versionPatch}-multispaces-19"
+        return "${versionMajor}.${versionMinor}.${versionPatch}-multispaces-20"
     }
 }
 

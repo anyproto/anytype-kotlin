@@ -35,6 +35,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Icon
@@ -352,43 +353,41 @@ private fun MoreMenu(
         0.dp
     }
 
-    Column(
+    Card(
         modifier = Modifier
             .width(244.dp)
             .wrapContentHeight()
-            .offset(x = offsetX, y = -260.dp)
-            .shadow(
-                elevation = 40.dp,
-                spotColor = Color(0x40000000),
-                ambientColor = Color(0x40000000)
-            )
-            .background(
-                color = colorResource(id = R.color.background_secondary),
-                shape = RoundedCornerShape(size = 10.dp)
-            )
+            .offset(x = offsetX + 10.dp, y = -265.dp)
+            .shadow(spotColor = Color(0xCC000000), elevation = 30.dp)
+            .clip(RoundedCornerShape(size = 10.dp)),
+        shape = RoundedCornerShape(size = 10.dp),
+        backgroundColor = colorResource(id = R.color.background_secondary),
+        elevation = 30.dp
     ) {
-        if (withDefaultForView) {
+        Column {
+            if (withDefaultForView) {
+                MenuItem(
+                    click = { menuClick(TemplateMenuClick.Default(itemId)) },
+                    text = stringResource(id = R.string.templates_menu_default_for_view)
+                )
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            }
             MenuItem(
-                click = { menuClick(TemplateMenuClick.Default(itemId)) },
-                text = stringResource(id = R.string.templates_menu_default_for_view)
+                click = { menuClick(TemplateMenuClick.Edit(itemId)) },
+                text = stringResource(id = R.string.templates_menu_edit)
             )
-            Divider()
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            MenuItem(
+                click = { menuClick(TemplateMenuClick.Duplicate(itemId)) },
+                text = stringResource(id = R.string.templates_menu_duplicate)
+            )
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            MenuItem(
+                click = { menuClick(TemplateMenuClick.Delete(itemId)) },
+                text = stringResource(id = R.string.templates_menu_delete),
+                color = R.color.palette_system_red
+            )
         }
-        MenuItem(
-            click = { menuClick(TemplateMenuClick.Edit(itemId)) },
-            text = stringResource(id = R.string.templates_menu_edit)
-        )
-        Divider()
-        MenuItem(
-            click = { menuClick(TemplateMenuClick.Duplicate(itemId)) },
-            text = stringResource(id = R.string.templates_menu_duplicate)
-        )
-        Divider()
-        MenuItem(
-            click = { menuClick(TemplateMenuClick.Delete(itemId)) },
-            text = stringResource(id = R.string.templates_menu_delete),
-            color = R.color.palette_system_red
-        )
     }
 }
 
@@ -1067,7 +1066,7 @@ fun ComposablePreview() {
         templates = items,
         showWidget = true,
         isEditing = true,
-        moreMenuItem = null,
+        moreMenuItem = TemplateView.Template(id = "123", name = "Template 1", typeId = "page"),
         objectTypes = listOf(
             TemplateObjectTypeView.Search,
             TemplateObjectTypeView.Item(

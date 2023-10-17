@@ -2067,7 +2067,9 @@ class ObjectSetViewModel(
             is ViewersWidgetUi.Action.OnMove -> {
                 if (action.from == action.to) return
                 if (action.to == 0 && session.currentViewerId.value.isNullOrEmpty()) {
-                    session.currentViewerId.value = action.currentViews.firstOrNull()?.id
+                    state.dataViewContent.viewers.firstOrNull()?.let {
+                        session.currentViewerId.value = it.id
+                    }
                 }
                 viewModelScope.launch {
                     val startTime = System.currentTimeMillis()

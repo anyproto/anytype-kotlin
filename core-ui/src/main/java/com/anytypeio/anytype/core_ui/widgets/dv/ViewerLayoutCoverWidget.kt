@@ -106,20 +106,9 @@ fun ViewerLayoutCoverWidget(
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .padding(bottom = 20.dp, top = 8.dp)
+                    .padding(bottom = 20.dp)
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.view_layout_cover_widget_title),
-                        style = TitleInter15,
-                        color = colorResource(R.color.text_primary)
-                    )
-                }
+                WidgetHeader(title = stringResource(R.string.view_layout_cover_widget_title))
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()

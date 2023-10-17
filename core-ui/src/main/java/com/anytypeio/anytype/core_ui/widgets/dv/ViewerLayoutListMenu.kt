@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -48,6 +49,9 @@ fun ViewerLayoutListMenu(
                     color = colorResource(id = R.color.background_secondary),
                     shape = RoundedCornerShape(size = 10.dp)
                 )
+                .clickable {
+                    // Do nothing
+                }
         ) {
             Text(
                 text = stringResource(R.string.small),

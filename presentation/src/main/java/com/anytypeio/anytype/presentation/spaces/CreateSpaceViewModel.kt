@@ -7,15 +7,17 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.spaces.CreateSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class CreateSpaceViewModel @Inject constructor(
+class CreateSpaceViewModel(
     private val createSpace: CreateSpace,
-    private val spaceGradientProvider: SpaceGradientProvider
+    private val spaceGradientProvider: SpaceGradientProvider,
+    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
     val isInProgress = MutableStateFlow(false)
@@ -59,7 +61,7 @@ class CreateSpaceViewModel @Inject constructor(
                 result.fold(
                     onLoading = { isInProgress.value = true },
                     onSuccess = { space: Id ->
-                        sendToast("Space created")
+                        setNewSpaceAsCurrentSpace(space)
                         Timber.d("Successfully created space: $space").also {
                             isDismissed.value = true
                             isInProgress.value = false
@@ -74,6 +76,10 @@ class CreateSpaceViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private suspend fun setNewSpaceAsCurrentSpace(space: Id) {
+        spaceManager.set(space)
     }
 
     fun onSpaceIconClicked() {
@@ -93,13 +99,15 @@ class CreateSpaceViewModel @Inject constructor(
     class Factory @Inject constructor(
         private val createSpace: CreateSpace,
         private val spaceGradientProvider: SpaceGradientProvider,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ) = CreateSpaceViewModel(
             createSpace = createSpace,
-            spaceGradientProvider = spaceGradientProvider
+            spaceGradientProvider = spaceGradientProvider,
+            spaceManager = spaceManager
         ) as T
     }
 }

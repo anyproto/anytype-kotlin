@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment
@@ -40,7 +41,7 @@ object CreateSpaceModule {
 
         @Binds
         @PerScreen
-        fun spaceGradienProvider(provider: SpaceGradientProvider.Impl): SpaceGradientProvider
+        fun spaceGradientProvider(provider: SpaceGradientProvider.Impl): SpaceGradientProvider
     }
 }
 
@@ -48,4 +49,5 @@ interface CreateSpaceDependencies : ComponentDependencies {
     fun repo(): BlockRepository
     fun analytics(): Analytics
     fun dispatchers(): AppCoroutineDispatchers
+    fun spaceManager(): SpaceManager
 }

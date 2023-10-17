@@ -49,7 +49,9 @@ fun ViewerLayoutListMenu(
                     color = colorResource(id = R.color.background_secondary),
                     shape = RoundedCornerShape(size = 10.dp)
                 )
-                .clickable {  }
+                .clickable {
+                    // Do nothing
+                }
         ) {
             Text(
                 text = stringResource(R.string.small),

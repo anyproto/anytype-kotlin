@@ -41,7 +41,7 @@ class SelectSpaceViewModel(
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
 
-    val profile = spaceManager
+    private val profile = spaceManager
         .observe()
         .flatMapLatest { config ->
             storelessSubscriptionContainer.subscribe(
@@ -69,7 +69,7 @@ class SelectSpaceViewModel(
             }
         }
 
-    val spaces : Flow<List<ObjectWrapper.Basic>> = storelessSubscriptionContainer.subscribe(
+    private val spaces: Flow<List<ObjectWrapper.Basic>> = storelessSubscriptionContainer.subscribe(
         StoreSearchParams(
             subscription = SELECT_SPACE_SUBSCRIPTION,
             keys = listOf(

@@ -450,6 +450,8 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun workspaceOpen(request: Rpc.Workspace.Open.Request): Rpc.Workspace.Open.Response
 
+    fun workspaceSetInfo(request: Rpc.Workspace.SetInfo.Request): Rpc.Workspace.SetInfo.Response
+
     @Throws(Exception::class)
     fun workspaceObjectListAdd(request: Rpc.Workspace.Object.ListAdd.Request): Rpc.Workspace.Object.ListAdd.Response
 

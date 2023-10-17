@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 interface BlockRemote {
 
@@ -324,8 +325,12 @@ interface BlockRemote {
         position: Position
     ): Payload
 
+    suspend fun setSpaceDetails(space: SpaceId, details: Struct)
+
     suspend fun createWorkspace(details: Struct): Id
+
     suspend fun getSpaceConfig(space: Id): Config
+
     suspend fun addObjectListToSpace(objects: List<Id>, space: Id): List<Id>
     suspend fun addObjectToSpace(obj: Id, space: Id) : Id
     suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id>

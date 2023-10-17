@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
@@ -40,7 +41,7 @@ class SelectSpaceViewModel(
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
 
-    val profile = spaceManager
+    private val profile = spaceManager
         .observe()
         .flatMapLatest { config ->
             storelessSubscriptionContainer.subscribe(
@@ -68,29 +69,31 @@ class SelectSpaceViewModel(
             }
         }
 
+    private val spaces: Flow<List<ObjectWrapper.Basic>> = storelessSubscriptionContainer.subscribe(
+        StoreSearchParams(
+            subscription = SELECT_SPACE_SUBSCRIPTION,
+            keys = listOf(
+                Relations.ID,
+                Relations.SPACE_ID,
+                Relations.NAME,
+                Relations.ICON_IMAGE,
+                Relations.ICON_EMOJI,
+                Relations.ICON_OPTION
+            ),
+            filters = listOf(
+                DVFilter(
+                    relation = Relations.LAYOUT,
+                    value = ObjectType.Layout.SPACE.code.toDouble(),
+                    condition = DVFilterCondition.EQUAL
+                )
+            )
+        )
+    )
+
     init {
         viewModelScope.launch {
             combine(
-                storelessSubscriptionContainer.subscribe(
-                    StoreSearchParams(
-                        subscription = SELECT_SPACE_SUBSCRIPTION,
-                        keys = listOf(
-                            Relations.ID,
-                            Relations.SPACE_ID,
-                            Relations.NAME,
-                            Relations.ICON_IMAGE,
-                            Relations.ICON_EMOJI,
-                            Relations.ICON_OPTION
-                        ),
-                        filters = listOf(
-                            DVFilter(
-                                relation = Relations.LAYOUT,
-                                value = ObjectType.Layout.SPACE.code.toDouble(),
-                                condition = DVFilterCondition.EQUAL
-                            )
-                        )
-                    )
-                ),
+                spaces,
                 profile,
                 spaceManager.observe()
             ) { spaces, profile, config ->

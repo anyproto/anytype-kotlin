@@ -9,19 +9,21 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
@@ -37,7 +39,7 @@ class MainSettingsViewModel(
     private val analytics: Analytics,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val setObjectDetails: SetObjectDetails,
+    private val setSpaceDetails: SetSpaceDetails,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
     private val spaceManager: SpaceManager
@@ -200,12 +202,10 @@ class MainSettingsViewModel(
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null) {
-                setObjectDetails.async(
-                    SetObjectDetails.Params(
-                        ctx = config.spaceView,
-                        details = mapOf(
-                            Relations.NAME to name
-                        )
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = SpaceId(config.space),
+                        details = mapOf(Relations.NAME to name)
                     )
                 ).fold(
                     onFailure = {
@@ -221,11 +221,11 @@ class MainSettingsViewModel(
         }
     }
 
-    class Factory(
+    class Factory @Inject constructor(
         private val analytics: Analytics,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
-        private val setObjectDetails: SetObjectDetails,
+        private val setSpaceDetails: SetSpaceDetails,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
         private val spaceManager: SpaceManager
@@ -237,10 +237,10 @@ class MainSettingsViewModel(
             analytics = analytics,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             urlBuilder = urlBuilder,
-            setObjectDetails = setObjectDetails,
             spaceGradientProvider = spaceGradientProvider,
             debugSpaceShareDownloader = debugSpaceShareDownloader,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            setSpaceDetails = setSpaceDetails
         ) as T
     }
 

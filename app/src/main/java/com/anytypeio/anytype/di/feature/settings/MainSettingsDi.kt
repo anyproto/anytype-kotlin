@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -65,15 +66,15 @@ object MainSettingsModule {
         analytics: Analytics,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
         urlBuilder: UrlBuilder,
-        setObjectDetails: SetObjectDetails,
         spaceGradientProvider: SpaceGradientProvider,
         debugSpaceShareDownloader: DebugSpaceShareDownloader,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        setSpaceDetails: SetSpaceDetails
     ): MainSettingsViewModel.Factory = MainSettingsViewModel.Factory(
         analytics = analytics,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         urlBuilder = urlBuilder,
-        setObjectDetails = setObjectDetails,
+        setSpaceDetails = setSpaceDetails,
         spaceGradientProvider = spaceGradientProvider,
         debugSpaceShareDownloader = debugSpaceShareDownloader,
         spaceManager = spaceManager

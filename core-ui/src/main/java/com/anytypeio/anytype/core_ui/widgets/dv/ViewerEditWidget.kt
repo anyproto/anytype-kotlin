@@ -55,11 +55,13 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
 import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
@@ -136,8 +138,14 @@ fun ViewerEditWidgetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(bottom = 16.dp, top = 8.dp, start = 20.dp, end = 20.dp)
+                .padding(bottom = 16.dp, start = 20.dp, end = 20.dp)
         ) {
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 6.dp, bottom = 6.dp)
+            ) {
+                Dragger(modifier = Modifier.align(Alignment.Center))
+            }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -345,7 +353,7 @@ fun ColumnItem(
                     bottom.linkTo(parent.bottom)
                 },
             text = title,
-            style = BodyRegular,
+            style = UXBody,
             color = colorResource(id = R.color.text_primary),
         )
         Image(

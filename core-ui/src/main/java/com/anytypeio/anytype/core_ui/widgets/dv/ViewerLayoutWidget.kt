@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.FractionalThreshold
@@ -40,6 +39,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
@@ -49,6 +49,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Devices
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -57,14 +58,14 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
-import com.anytypeio.anytype.core_ui.views.TitleInter15
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
+import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Dismiss
-import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Icon
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.FitImage
+import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.Action.Icon
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -147,21 +148,9 @@ fun ViewerLayoutWidget(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(bottom = 20.dp, top = 8.dp)
+                        .padding(bottom = 20.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                    ) {
-                        Box(modifier = Modifier.align(Alignment.Center)) {
-                            Text(
-                                text = stringResource(R.string.view_layout_widget_title),
-                                style = TitleInter15,
-                                color = colorResource(R.color.text_primary)
-                            )
-                        }
-                    }
+                    WidgetHeader(title = stringResource(R.string.view_layout_widget_title))
                     LayoutIcons(uiState = currentState, action = action)
                     Spacer(modifier = Modifier.height(8.dp))
                     LayoutSwitcherItem(
@@ -241,28 +230,32 @@ fun LayoutIcon(
     contentDescription: String,
     click: () -> Unit
 ) {
-    val (borderColor, textcolor) = if (uiState.layoutType == layoutType) {
+    val (borderColor, borderWidth) = if (uiState.layoutType == layoutType) {
         Pair(
             colorResource(id = R.color.palette_system_amber_50),
-            colorResource(id = R.color.amber_100)
+            2.dp
         )
     } else {
-        Pair(colorResource(id = R.color.shape_primary), colorResource(id = R.color.text_secondary))
+        Pair(
+            colorResource(id = R.color.shape_primary),
+            0.5.dp
+        )
     }
     Column(
         modifier = modifier
-            .wrapContentSize()
+            .fillMaxWidth()
+            .wrapContentHeight()
             .shadow(
                 elevation = 4.dp,
                 spotColor = Color(0x0D000000),
                 ambientColor = Color(0x0D000000)
             )
             .border(
-                width = 2.dp,
+                width = borderWidth,
                 color = borderColor,
                 shape = RoundedCornerShape(size = 12.dp)
             )
-            .padding(top = 14.dp, start = 26.25.dp, end = 26.25.dp, bottom = 14.dp)
+            .padding(top = 14.dp, bottom = 14.dp)
             .noRippleThrottledClickable { click() },
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -274,10 +267,15 @@ fun LayoutIcon(
             },
             contentDescription = contentDescription
         )
+        val (textColor, textStyle) = if (uiState.layoutType == layoutType) {
+            Pair(colorResource(id = R.color.amber_100), Caption2Medium)
+        } else {
+            Pair(colorResource(id = R.color.text_secondary), Caption2Regular)
+        }
         Text(
             text = contentDescription,
-            style = Caption2Medium,
-            color = textcolor
+            style = textStyle,
+            color = textColor
         )
     }
 }
@@ -285,54 +283,74 @@ fun LayoutIcon(
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Action) -> Unit) {
-    Column(
+    FlowRow(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
             .padding(start = 20.dp, end = 20.dp)
+            .wrapContentHeight(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.SpaceBetween,
+        maxItemsInEachRow = 3
     ) {
-        FlowRow(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            maxItemsInEachRow = 3,
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            LayoutIcon(
-                uiState = uiState,
-                layoutType = DVViewerType.GRID,
-                imageResource = R.drawable.ic_layout_grid,
-                imageResourceSelected = R.drawable.ic_layout_grid_selected,
-                contentDescription = "Grid",
-                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GRID)) }
-            )
-            LayoutIcon(
-                uiState = uiState,
-                layoutType = DVViewerType.GALLERY,
-                imageResourceSelected = R.drawable.ic_layout_gallery_selected,
-                imageResource = R.drawable.ic_layout_gallery,
-                contentDescription = "Gallery",
-                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GALLERY)) }
-            )
-            LayoutIcon(
-                uiState = uiState,
-                layoutType = DVViewerType.LIST,
-                imageResourceSelected = R.drawable.ic_layout_list_selected,
-                imageResource = R.drawable.ic_layout_list,
-                contentDescription = "List",
-                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.LIST)) }
-            )
-            LayoutIcon(
-                modifier = Modifier.padding(top = 8.dp),
-                uiState = uiState,
-                layoutType = DVViewerType.BOARD,
-                imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-                imageResource = R.drawable.ic_layout_kanban,
-                contentDescription = "Kanban",
-                click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
-            )
-        }
+        val itemModifier = Modifier.weight(1f)
+        LayoutIcon(
+            modifier = itemModifier,
+            uiState = uiState,
+            layoutType = DVViewerType.GRID,
+            imageResource = R.drawable.ic_layout_grid,
+            imageResourceSelected = R.drawable.ic_layout_grid_selected,
+            contentDescription = "Grid",
+            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GRID)) }
+        )
+        LayoutIcon(
+            modifier = itemModifier,
+            uiState = uiState,
+            layoutType = DVViewerType.GALLERY,
+            imageResourceSelected = R.drawable.ic_layout_gallery_selected,
+            imageResource = R.drawable.ic_layout_gallery,
+            contentDescription = "Gallery",
+            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GALLERY)) }
+        )
+        LayoutIcon(
+            modifier = itemModifier,
+            uiState = uiState,
+            layoutType = DVViewerType.LIST,
+            imageResourceSelected = R.drawable.ic_layout_list_selected,
+            imageResource = R.drawable.ic_layout_list,
+            contentDescription = "List",
+            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.LIST)) }
+        )
+        LayoutIcon(
+            modifier = itemModifier.padding(top = 8.dp),
+            uiState = uiState,
+            layoutType = DVViewerType.BOARD,
+            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+            imageResource = R.drawable.ic_layout_kanban,
+            contentDescription = "Kanban",
+            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
+        )
+        LayoutIcon(
+            modifier = itemModifier
+                .padding(top = 8.dp)
+                .alpha(0F),
+            uiState = uiState,
+            layoutType = DVViewerType.BOARD,
+            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+            imageResource = R.drawable.ic_layout_kanban,
+            contentDescription = "",
+            click = { }
+        )
+        LayoutIcon(
+            modifier = itemModifier
+                .padding(top = 8.dp)
+                .alpha(0F),
+            uiState = uiState,
+            layoutType = DVViewerType.BOARD,
+            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
+            imageResource = R.drawable.ic_layout_kanban,
+            contentDescription = "",
+            click = { }
+        )
     }
 }
 
@@ -353,7 +371,7 @@ fun LayoutSwitcherItem(
         Text(
             modifier = Modifier.align(Alignment.CenterStart),
             text = text,
-            style = BodyCallout,
+            style = UXBody,
             color = colorResource(id = R.color.text_primary)
         )
         Switch(
@@ -366,6 +384,7 @@ fun LayoutSwitcherItem(
             colors = SwitchDefaults.colors(
                 checkedThumbColor = colorResource(id = R.color.white),
                 checkedTrackColor = colorResource(id = R.color.palette_system_amber_50),
+                checkedTrackAlpha = 1f,
                 uncheckedThumbColor = colorResource(id = R.color.white),
                 uncheckedTrackColor = colorResource(id = R.color.shape_secondary)
             )
@@ -373,24 +392,24 @@ fun LayoutSwitcherItem(
     }
 }
 
-@Preview
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, device = Devices.NEXUS_7)
 @Composable
 fun PreviewLayoutScreen() {
     ViewerLayoutWidget(
         uiState = ViewerLayoutWidgetUi(
             showWidget = true,
-            layoutType = DVViewerType.GRID,
+            layoutType = DVViewerType.GALLERY,
             withIcon = ViewerLayoutWidgetUi.State.Toggle.WithIcon(
-                toggled = false
+                toggled = true
             ),
             fitImage = ViewerLayoutWidgetUi.State.Toggle.FitImage(
                 toggled = false
             ),
             cardSize = ViewerLayoutWidgetUi.State.CardSize.Small,
             cover = ViewerLayoutWidgetUi.State.ImagePreview.Cover,
-            showCardSize = true,
+            showCardSize = false,
             viewer = "",
-            showCoverMenu = true
+            showCoverMenu = false
         ),
         action = {},
         scope = CoroutineScope(

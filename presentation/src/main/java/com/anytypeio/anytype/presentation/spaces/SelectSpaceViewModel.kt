@@ -9,13 +9,17 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -37,7 +41,9 @@ class SelectSpaceViewModel(
     private val spaceManager: SpaceManager,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
-    private val saveCurrentSpace: SaveCurrentSpace
+    private val saveCurrentSpace: SaveCurrentSpace,
+    private val appActionManager: AppActionManager,
+    private val getDefaultPageType: GetDefaultPageType
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
@@ -155,12 +161,43 @@ class SelectSpaceViewModel(
                         Timber.e(it, "Error while saving current space in user settings")
                     },
                     onSuccess = {
-                        commands.emit(Command.Dismiss)
+                        resetDefaultObjectTypeForAppActions(
+                            onExit = { commands.emit(Command.Dismiss) }
+                        )
                     }
                 )
             } else {
                 commands.emit(Command.Dismiss)
             }
+        }
+    }
+
+    private fun resetDefaultObjectTypeForAppActions(
+        onExit: suspend () -> Unit
+    ) {
+        viewModelScope.launch {
+            getDefaultPageType.async(Unit).fold(
+                onSuccess = { result ->
+                    val type = result.type
+                    if (type != null) {
+                        appActionManager.setup(
+                            AppActionManager.Action.CreateNew(
+                                type = type,
+                                name = result.name ?: "Object"
+                            )
+                        )
+                    } else {
+                        appActionManager.setup(
+                            AppActionManager.Action.CreateNew(
+                                type = TypeKey(ObjectTypeUniqueKeys.NOTE),
+                                name = "Note"
+                            )
+                        )
+                    }
+                    onExit()
+                },
+                onFailure = { onExit() }
+            )
         }
     }
 
@@ -192,7 +229,9 @@ class SelectSpaceViewModel(
         private val spaceManager: SpaceManager,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val urlBuilder: UrlBuilder,
-        private val saveCurrentSpace: SaveCurrentSpace
+        private val saveCurrentSpace: SaveCurrentSpace,
+        private val appActionManager: AppActionManager,
+        private val getDefaultPageType: GetDefaultPageType
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -202,7 +241,9 @@ class SelectSpaceViewModel(
             spaceManager = spaceManager,
             spaceGradientProvider = spaceGradientProvider,
             urlBuilder = urlBuilder,
-            saveCurrentSpace = saveCurrentSpace
+            saveCurrentSpace = saveCurrentSpace,
+            appActionManager = appActionManager,
+            getDefaultPageType = getDefaultPageType
         ) as T
     }
 

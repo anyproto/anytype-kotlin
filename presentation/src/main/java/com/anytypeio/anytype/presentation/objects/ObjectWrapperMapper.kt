@@ -17,7 +17,6 @@ import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
-import timber.log.Timber
 
 @Deprecated("To be deleted")
 fun List<ObjectWrapper.Basic>.toView(
@@ -134,21 +133,10 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                 editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
             )
         }
-        MarketplaceObjectTypeIds.RELATION -> {
-            val relation = ObjectWrapper.Relation(obj.map)
-            LibraryView.LibraryRelationView(
-                id = obj.id,
-                name = obj.name.orEmpty(),
-                format = relation.format
-            )
-        }
-        else -> {
-            Timber.e("Unknown type: ${obj.getProperType()}")
-            LibraryView.UnknownView(
-                id = obj.id,
-                name = obj.name.orEmpty()
-            )
-        }
+        else -> LibraryView.UnknownView(
+            id = obj.id,
+            name = obj.name.orEmpty()
+        )
     }
 }
 

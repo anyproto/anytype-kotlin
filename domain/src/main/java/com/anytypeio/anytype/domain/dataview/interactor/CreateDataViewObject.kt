@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Struct
@@ -67,7 +66,6 @@ class CreateDataViewObject @Inject constructor(
                 )
             }
             is Params.Collection -> {
-                val type = resolveDefaultObjectType()
                 val command = Command.CreateObject(
                     template = params.templateId,
                     prefilled = resolveSetByRelationPrefilledObjectData(
@@ -76,12 +74,12 @@ class CreateDataViewObject @Inject constructor(
                     ),
                     internalFlags = listOf(),
                     space = space,
-                    type = type
+                    type = params.type
                 )
                 val result = repo.createObject(command)
                 Result(
                     objectId = result.id,
-                    objectType = type,
+                    objectType = params.type,
                     struct = result.details
                 )
             }
@@ -131,12 +129,6 @@ class CreateDataViewObject @Inject constructor(
         emptyMap()
     }
 
-    private suspend fun resolveDefaultObjectType(): TypeKey {
-        return getDefaultPageType
-            .async(Unit)
-            .getOrNull()?.type ?: TypeKey(ObjectTypeUniqueKeys.NOTE)
-    }
-
     private fun resolveDefaultValueByFormat(format: RelationFormat): Any? {
         when (format) {
             Relation.Format.LONG_TEXT,
@@ -167,14 +159,14 @@ class CreateDataViewObject @Inject constructor(
         ) : Params()
 
         data class SetByRelation(
+            val type: TypeKey,
             val filters: List<DVFilter>,
             val relations: List<Id>,
-            val template: Id?,
-            val type: TypeKey
+            val template: Id?
         ) : Params()
 
         data class Collection(
-            val type: Id?,
+            val type: TypeKey,
             val templateId: Id?
         ) : Params()
     }

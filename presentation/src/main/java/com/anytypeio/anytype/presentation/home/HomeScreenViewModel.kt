@@ -141,7 +141,7 @@ class HomeScreenViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
     private val spaceManager: SpaceManager,
-    private val spaceWidgetContainer: SpaceWidgetContainer
+    private val spaceWidgetContainer: SpaceWidgetContainer,
     private val setWidgetActiveView: SetWidgetActiveView,
     private val setObjectDetails: SetObjectDetails
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
@@ -1267,7 +1267,7 @@ class HomeScreenViewModel(
         private val objectWatcher: ObjectWatcher,
         private val setWidgetActiveView: SetWidgetActiveView,
         private val spaceManager: SpaceManager,
-        private val spaceWidgetContainer: SpaceWidgetContainer
+        private val spaceWidgetContainer: SpaceWidgetContainer,
         private val setObjectDetails: SetObjectDetails
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")

@@ -249,8 +249,7 @@ open class ObjectSetViewModelTestSetup {
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,
             viewerDelegate = viewerDelegate,
-            spaceManager = spaceManager
-            viewerDelegate = viewerDelegate,
+            spaceManager = spaceManager,
             createTemplate = createTemplate
         )
     }
@@ -407,14 +406,15 @@ open class ObjectSetViewModelTestSetup {
 
     fun stubCreateDataViewObject(
         objectId: Id = MockDataFactory.randomString(),
-        objectType: Id = MockDataFactory.randomString()
+        // TODO pass key here, not id
+        objectType: Key = MockDataFactory.randomString()
     ) {
         createDataViewObject.stub {
             onBlocking { async(any()) }.thenReturn(
                 Resultat.success(
                     CreateDataViewObject.Result(
                         objectId = objectId,
-                        objectType = objectType,
+                        objectType = TypeKey(objectType),
                         struct = null
                     )
                 )

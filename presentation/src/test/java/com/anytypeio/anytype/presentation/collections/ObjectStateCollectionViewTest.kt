@@ -547,9 +547,11 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                     mockObjectCollection.viewerList.copy(defaultObjectType = ObjectTypeIds.PAGE)
                 )
             )
+        )
         stubGetDefaultPageType(
             defaultObjectType, defaultObjectTypeName
         )
+
         stubTemplatesContainer(
             type = defaultObjectType.key,
             templates = listOf(StubObject(objectType = defaultObjectType.key))

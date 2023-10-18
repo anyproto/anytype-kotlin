@@ -718,252 +718,255 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should emit three bundled widgets with tree layout, each having 2 elements, library and bin`() = runTest {
+    fun `should emit three bundled widgets with tree layout, each having 2 elements, library and bin`() =
+        runTest {
 
-        // SETUP
+            // SETUP
 
-        val firstLink = StubObject(
-            id = "First link",
-            layout = ObjectType.Layout.BASIC.code.toDouble()
-        )
-        val secondLink = StubObject(
-            id = "Second link",
-            layout = ObjectType.Layout.BASIC.code.toDouble()
-        )
-
-        val layout = Block.Content.Widget.Layout.TREE
-
-        val favoriteSource = StubObject(id = BundledWidgetSourceIds.FAVORITE)
-        val recentSource = StubObject(id = BundledWidgetSourceIds.RECENT)
-        val setsSource = StubObject(id = BundledWidgetSourceIds.SETS)
-
-        val favoriteLink = StubLinkToObjectBlock(
-            target = favoriteSource.id
-        )
-
-        val recentLink = StubLinkToObjectBlock(
-            target = recentSource.id
-        )
-
-        val setsLink = StubLinkToObjectBlock(
-            target = setsSource.id
-        )
-
-        val favoriteWidgetBlock = StubWidgetBlock(
-            layout = layout,
-            children = listOf(favoriteLink.id)
-        )
-
-        val recentWidgetBlock = StubWidgetBlock(
-            layout = layout,
-            children = listOf(recentLink.id)
-        )
-
-        val setsWidgetBlock = StubWidgetBlock(
-            layout = layout,
-            children = listOf(setsLink.id)
-        )
-
-        val smartBlock = StubSmartBlock(
-            id = WIDGET_OBJECT_ID,
-            children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
-        )
-
-        val givenObjectView = StubObjectView(
-            root = WIDGET_OBJECT_ID,
-            blocks = listOf(
-                smartBlock,
-                favoriteWidgetBlock,
-                favoriteLink,
-                recentWidgetBlock,
-                recentLink,
-                setsWidgetBlock,
-                setsLink
+            val firstLink = StubObject(
+                id = "First link",
+                layout = ObjectType.Layout.BASIC.code.toDouble()
             )
-        )
+            val secondLink = StubObject(
+                id = "Second link",
+                layout = ObjectType.Layout.BASIC.code.toDouble()
+            )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
+            val layout = Block.Content.Widget.Layout.TREE
 
-        stubConfig()
-        stubInterceptEvents(events = emptyFlow())
-        stubOpenWidgetObject(givenObjectView)
+            val favoriteSource = StubObject(id = BundledWidgetSourceIds.FAVORITE)
+            val recentSource = StubObject(id = BundledWidgetSourceIds.RECENT)
+            val setsSource = StubObject(id = BundledWidgetSourceIds.SETS)
 
-        stubSearchByIds(
-            subscription = recentWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink)
-        )
+            val favoriteLink = StubLinkToObjectBlock(
+                target = favoriteSource.id
+            )
 
-        stubSearchByIds(
-            subscription = setsWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink),
-            keys = TreeWidgetContainer.keys
-        )
+            val recentLink = StubLinkToObjectBlock(
+                target = recentSource.id
+            )
 
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.FAVORITE,
-                space = config.spaceView,
-                keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.NO_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        val firstLinkToObjectFavoriteObjectBlock =  StubLinkToObjectBlock(
-            target = firstLink.id
-        )
+            val setsLink = StubLinkToObjectBlock(
+                target = setsSource.id
+            )
 
-        val secondLinkToObjectFavoriteObjectBlock =  StubLinkToObjectBlock(
-            target = secondLink.id
-        )
+            val favoriteWidgetBlock = StubWidgetBlock(
+                layout = layout,
+                children = listOf(favoriteLink.id)
+            )
 
-        stubFavoritesObjectWatcher(
-            objectView = StubObjectView(
-                root = config.home,
+            val recentWidgetBlock = StubWidgetBlock(
+                layout = layout,
+                children = listOf(recentLink.id)
+            )
+
+            val setsWidgetBlock = StubWidgetBlock(
+                layout = layout,
+                children = listOf(setsLink.id)
+            )
+
+            val smartBlock = StubSmartBlock(
+                id = WIDGET_OBJECT_ID,
+                children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id, setsWidgetBlock.id),
+            )
+
+            val givenObjectView = StubObjectView(
+                root = WIDGET_OBJECT_ID,
                 blocks = listOf(
-                    StubSmartBlock(
-                        id = config.home,
-                        children = listOf(
-                            firstLinkToObjectFavoriteObjectBlock.id,
-                            secondLinkToObjectFavoriteObjectBlock.id
-                        )
-                    ),
-                    firstLinkToObjectFavoriteObjectBlock,
-                    secondLinkToObjectFavoriteObjectBlock
+                    smartBlock,
+                    favoriteWidgetBlock,
+                    favoriteLink,
+                    recentWidgetBlock,
+                    recentLink,
+                    setsWidgetBlock,
+                    setsLink
                 )
             )
-        )
 
-        stubSearchByIds(
-            subscription = BundledWidgetSourceIds.FAVORITE,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink),
-            keys = TreeWidgetContainer.keys,
-        )
+            val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_ARCHIVED)
 
-        stubSearchByIds(
-            subscription = favoriteWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink),
-            keys = TreeWidgetContainer.keys
-        )
+            stubConfig()
+            stubInterceptEvents(events = emptyFlow())
+            stubOpenWidgetObject(givenObjectView)
 
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.RECENT,
-                space = config.spaceView,
-                keys = TreeWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_TREE_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        )
-
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.SETS,
-                space = config.spaceView,
-                keys = TreeWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_TREE_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        )
-
-        stubCollapsedWidgetState(any())
-        stubGetWidgetSession()
-        stubWidgetActiveView(favoriteWidgetBlock)
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.onStart()
-
-        vm.views.test {
-            val firstTimeState = awaitItem()
-            assertEquals(
-                actual = firstTimeState,
-                expected = emptyList()
+            stubSearchByIds(
+                subscription = recentWidgetBlock.id,
+                targets = listOf(firstLink.id, secondLink.id),
+                results = listOf(firstLink, secondLink)
             )
-            val secondTimeState = awaitItem()
-            assertEquals(
-                expected = buildList {
-                    add(
-                        WidgetView.Tree(
-                            id = favoriteWidgetBlock.id,
-                            source = Widget.Source.Bundled.Favorites,
-                            elements = listOf(
-                                WidgetView.Tree.Element(
-                                    elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                    obj = firstLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
-                                    indent = 0,
-                                    path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + firstLink.id
-                                ),
-                                WidgetView.Tree.Element(
-                                    elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                    obj = secondLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
-                                    indent = 0,
-                                    path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + secondLink.id
-                                )
-                            ),
-                            isExpanded = true
-                        )
-                    )
-                    add(
-                        WidgetView.Tree(
-                            id = recentWidgetBlock.id,
-                            source = Widget.Source.Bundled.Recent,
-                            elements = listOf(
-                                WidgetView.Tree.Element(
-                                    elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                    obj = firstLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
-                                    indent = 0,
-                                    path = recentWidgetBlock.id + "/" + recentSource.id + "/" + firstLink.id
-                                ),
-                                WidgetView.Tree.Element(
-                                    elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                    obj = secondLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
-                                    indent = 0,
-                                    path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id
-                                )
-                            ),
-                            isExpanded = true
-                        )
-                    )
-                    add(
-                        WidgetView.Tree(
-                            id = setsWidgetBlock.id,
-                            source = Widget.Source.Bundled.Sets,
-                            elements = listOf(
-                                WidgetView.Tree.Element(
-                                    elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                    obj = firstLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
-                                    indent = 0,
-                                    path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id
-                                ),
-                                WidgetView.Tree.Element(
-                                    elementIcon = WidgetView.Tree.ElementIcon.Leaf,
-                                    obj = secondLink,
-                                    objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
-                                    indent = 0,
-                                    path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id
-                                )
-                            ),
-                            isExpanded = true
-                        )
-                    )
-                    add(WidgetView.Library)
-                    add(binWidget)
-                    addAll(HomeScreenViewModel.actions)
-                },
-                actual = secondTimeState
+
+            stubSearchByIds(
+                subscription = setsWidgetBlock.id,
+                targets = listOf(firstLink.id, secondLink.id),
+                results = listOf(firstLink, secondLink),
+                keys = TreeWidgetContainer.keys
             )
+
+            stubDefaultSearch(
+                params = ListWidgetContainer.params(
+                    subscription = BundledWidgetSourceIds.FAVORITE,
+                    space = config.spaceView,
+                    keys = TreeWidgetContainer.keys,
+                    limit = TreeWidgetContainer.NO_LIMIT
+                ),
+                results = listOf(firstLink, secondLink)
+            )
+
+            val firstLinkToObjectFavoriteObjectBlock = StubLinkToObjectBlock(
+                target = firstLink.id
+            )
+
+            val secondLinkToObjectFavoriteObjectBlock = StubLinkToObjectBlock(
+                target = secondLink.id
+            )
+
+            stubFavoritesObjectWatcher(
+                objectView = StubObjectView(
+                    root = config.home,
+                    blocks = listOf(
+                        StubSmartBlock(
+                            id = config.home,
+                            children = listOf(
+                                firstLinkToObjectFavoriteObjectBlock.id,
+                                secondLinkToObjectFavoriteObjectBlock.id
+                            )
+                        ),
+                        firstLinkToObjectFavoriteObjectBlock,
+                        secondLinkToObjectFavoriteObjectBlock
+                    )
+                )
+            )
+
+            stubSearchByIds(
+                subscription = BundledWidgetSourceIds.FAVORITE,
+                targets = listOf(firstLink.id, secondLink.id),
+                results = listOf(firstLink, secondLink),
+                keys = TreeWidgetContainer.keys,
+            )
+
+            stubSearchByIds(
+                subscription = favoriteWidgetBlock.id,
+                targets = listOf(firstLink.id, secondLink.id),
+                results = listOf(firstLink, secondLink),
+                keys = TreeWidgetContainer.keys
+            )
+
+            stubDefaultSearch(
+                params = ListWidgetContainer.params(
+                    subscription = BundledWidgetSourceIds.RECENT,
+                    space = config.spaceView,
+                    keys = TreeWidgetContainer.keys,
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
+                ),
+                results = listOf(firstLink, secondLink)
+            )
+
+            stubDefaultSearch(
+                params = ListWidgetContainer.params(
+                    subscription = BundledWidgetSourceIds.SETS,
+                    space = config.spaceView,
+                    keys = TreeWidgetContainer.keys,
+                    limit = WidgetConfig.DEFAULT_TREE_LIMIT
+                ),
+                results = listOf(firstLink, secondLink)
+            )
+
+            stubCollapsedWidgetState(any())
+            stubGetWidgetSession()
+            stubWidgetActiveView(favoriteWidgetBlock)
+
+            val vm = buildViewModel()
+
+            // TESTING
+
+            vm.onStart()
+
+            vm.views.test {
+                val firstTimeState = awaitItem()
+                assertEquals(
+                    actual = firstTimeState,
+                    expected = emptyList()
+                )
+                val secondTimeState = awaitItem()
+                assertEquals(
+                    expected = buildList {
+                        add(
+                            WidgetView.Tree(
+                                id = favoriteWidgetBlock.id,
+                                source = Widget.Source.Bundled.Favorites,
+                                elements = listOf(
+                                    WidgetView.Tree.Element(
+                                        elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                        obj = firstLink,
+                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        indent = 0,
+                                        path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + firstLink.id
+                                    ),
+                                    WidgetView.Tree.Element(
+                                        elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                        obj = secondLink,
+                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        indent = 0,
+                                        path = favoriteWidgetBlock.id + "/" + favoriteSource.id + "/" + secondLink.id
+                                    )
+                                ),
+                                isExpanded = true
+                            )
+                        )
+                        add(
+                            WidgetView.Tree(
+                                id = recentWidgetBlock.id,
+                                source = Widget.Source.Bundled.Recent,
+                                elements = listOf(
+                                    WidgetView.Tree.Element(
+                                        elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                        obj = firstLink,
+                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        indent = 0,
+                                        path = recentWidgetBlock.id + "/" + recentSource.id + "/" + firstLink.id
+                                    ),
+                                    WidgetView.Tree.Element(
+                                        elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                        obj = secondLink,
+                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        indent = 0,
+                                        path = recentWidgetBlock.id + "/" + recentSource.id + "/" + secondLink.id
+                                    )
+                                ),
+                                isExpanded = true
+                            )
+                        )
+                        add(
+                            WidgetView.Tree(
+                                id = setsWidgetBlock.id,
+                                source = Widget.Source.Bundled.Sets,
+                                elements = listOf(
+                                    WidgetView.Tree.Element(
+                                        elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                        obj = firstLink,
+                                        objectIcon = ObjectIcon.Basic.Avatar(firstLink.name.orEmpty()),
+                                        indent = 0,
+                                        path = setsWidgetBlock.id + "/" + setsSource.id + "/" + firstLink.id
+                                    ),
+                                    WidgetView.Tree.Element(
+                                        elementIcon = WidgetView.Tree.ElementIcon.Leaf,
+                                        obj = secondLink,
+                                        objectIcon = ObjectIcon.Basic.Avatar(secondLink.name.orEmpty()),
+                                        indent = 0,
+                                        path = setsWidgetBlock.id + "/" + setsSource.id + "/" + secondLink.id
+                                    )
+                                ),
+                                isExpanded = true
+                            )
+                        )
+                        add(WidgetView.Library)
+                        add(binWidget)
+                        addAll(HomeScreenViewModel.actions)
+                    },
+                    actual = secondTimeState
+                )
+            }
         }
-    }
 
     @Test
     fun `should emit link-widget, library, bin and actions`() = runTest {
@@ -1508,11 +1511,11 @@ class HomeScreenViewModelTest {
         stubInterceptEvents(events = emptyFlow())
         stubOpenWidgetObject(givenObjectView)
 
-        val firstLinkToObjectFavoriteObjectBlock =  StubLinkToObjectBlock(
+        val firstLinkToObjectFavoriteObjectBlock = StubLinkToObjectBlock(
             target = firstLink.id
         )
 
-        val secondLinkToObjectFavoriteObjectBlock =  StubLinkToObjectBlock(
+        val secondLinkToObjectFavoriteObjectBlock = StubLinkToObjectBlock(
             target = secondLink.id
         )
 
@@ -1609,7 +1612,6 @@ class HomeScreenViewModelTest {
                 StoreSearchByIdsParams(
                     subscription = favoriteSource.id,
                     targets = listOf(firstLink.id, secondLink.id),
-                    space = config.spaceView,
                     keys = TreeWidgetContainer.keys,
                 )
             )
@@ -1661,7 +1663,6 @@ class HomeScreenViewModelTest {
             subscribe(
                 StoreSearchByIdsParams(
                     subscription = favoriteSource.id,
-                    space = config.spaceView,
                     targets = listOf(firstLink.id, secondLink.id),
                     keys = TreeWidgetContainer.keys,
                 )
@@ -2121,97 +2122,98 @@ class HomeScreenViewModelTest {
     }
 
     @Test
-    fun `should react to change-widget-source event when source type is page for old and new source`() = runTest {
+    fun `should react to change-widget-source event when source type is page for old and new source`() =
+        runTest {
 
-        val currentSourceObject = StubObject(
-            id = "SOURCE OBJECT 1",
-            links = emptyList(),
-            objectType = ObjectTypeIds.PAGE
-        )
-
-        val newSourceObject = StubObject(
-            id = "SOURCE OBJECT 2",
-            links = emptyList(),
-            objectType = ObjectTypeIds.PAGE
-        )
-
-        val sourceLink = StubLinkToObjectBlock(
-            id = "SOURCE LINK",
-            target = currentSourceObject.id
-        )
-
-        val widgetBlock = StubWidgetBlock(
-            id = "WIDGET BLOCK",
-            layout = Block.Content.Widget.Layout.TREE,
-            children = listOf(sourceLink.id)
-        )
-
-        val smartBlock = StubSmartBlock(
-            id = WIDGET_OBJECT_ID,
-            children = listOf(widgetBlock.id),
-        )
-
-        val givenObjectView = StubObjectView(
-            root = WIDGET_OBJECT_ID,
-            blocks = listOf(
-                smartBlock,
-                widgetBlock,
-                sourceLink
-            ),
-            details = mapOf(
-                currentSourceObject.id to currentSourceObject.map
+            val currentSourceObject = StubObject(
+                id = "SOURCE OBJECT 1",
+                links = emptyList(),
+                objectType = ObjectTypeIds.PAGE
             )
-        )
 
-        stubConfig()
-        stubInterceptEvents(
-            events = flow {
-                delay(300)
-                emit(
-                    listOf(
-                        Event.Command.LinkGranularChange(
-                            context = WIDGET_OBJECT_ID,
-                            id = sourceLink.id,
-                            target = newSourceObject.id
+            val newSourceObject = StubObject(
+                id = "SOURCE OBJECT 2",
+                links = emptyList(),
+                objectType = ObjectTypeIds.PAGE
+            )
+
+            val sourceLink = StubLinkToObjectBlock(
+                id = "SOURCE LINK",
+                target = currentSourceObject.id
+            )
+
+            val widgetBlock = StubWidgetBlock(
+                id = "WIDGET BLOCK",
+                layout = Block.Content.Widget.Layout.TREE,
+                children = listOf(sourceLink.id)
+            )
+
+            val smartBlock = StubSmartBlock(
+                id = WIDGET_OBJECT_ID,
+                children = listOf(widgetBlock.id),
+            )
+
+            val givenObjectView = StubObjectView(
+                root = WIDGET_OBJECT_ID,
+                blocks = listOf(
+                    smartBlock,
+                    widgetBlock,
+                    sourceLink
+                ),
+                details = mapOf(
+                    currentSourceObject.id to currentSourceObject.map
+                )
+            )
+
+            stubConfig()
+            stubInterceptEvents(
+                events = flow {
+                    delay(300)
+                    emit(
+                        listOf(
+                            Event.Command.LinkGranularChange(
+                                context = WIDGET_OBJECT_ID,
+                                id = sourceLink.id,
+                                target = newSourceObject.id
+                            )
                         )
                     )
-                )
-            }
-        )
-        stubOpenWidgetObject(givenObjectView)
-        stubSearchByIds(
-            subscription = widgetBlock.id,
-            targets = emptyList()
-        )
-        stubCollapsedWidgetState(any())
-        stubGetWidgetSession()
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        vm.onStart()
-
-        vm.views.test {
-            val firstTimeState = awaitItem()
-            assertEquals(
-                actual = firstTimeState,
-                expected = emptyList()
+                }
             )
-            delay(1)
-            val secondTimeItem = awaitItem()
-            assertTrue {
-                val firstWidget = secondTimeItem.first()
-                firstWidget is WidgetView.Tree && firstWidget.source.id == currentSourceObject.id
-            }
-            val thirdTimeItem = awaitItem()
-            advanceUntilIdle()
-            assertTrue {
-                val firstWidget = thirdTimeItem.first()
-                firstWidget is WidgetView.Tree && firstWidget.source.id == newSourceObject.id
+            stubOpenWidgetObject(givenObjectView)
+            stubSearchByIds(
+                subscription = widgetBlock.id,
+                targets = emptyList()
+            )
+            stubCollapsedWidgetState(any())
+            stubGetWidgetSession()
+
+            val vm = buildViewModel()
+
+            // TESTING
+
+            vm.onStart()
+
+            vm.views.test {
+                val firstTimeState = awaitItem()
+                assertEquals(
+                    actual = firstTimeState,
+                    expected = emptyList()
+                )
+                delay(1)
+                val secondTimeItem = awaitItem()
+                assertTrue {
+                    val firstWidget = secondTimeItem.first()
+                    firstWidget is WidgetView.Tree && firstWidget.source.id == currentSourceObject.id
+                }
+                val thirdTimeItem = awaitItem()
+                advanceUntilIdle()
+                assertTrue {
+                    val firstWidget = thirdTimeItem.first()
+                    firstWidget is WidgetView.Tree && firstWidget.source.id == newSourceObject.id
+                }
             }
         }
-    }
 
     @Test
     fun `should react to change-widget-layout event when tree changed to link`() = runTest {

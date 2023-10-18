@@ -174,7 +174,7 @@ class CreateDataViewObject @Inject constructor(
     data class Result(
         val objectId : Id,
         val objectType: TypeKey,
-        val struct: Struct?
+        val struct: Struct? = null
     )
 
     companion object {

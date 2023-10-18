@@ -51,9 +51,8 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -939,6 +938,7 @@ class ObjectSetViewModel(
         showTypeTemplatesWidgetForObjectCreation()
     }
 
+    // TODO Multispaces refactor this method
     private suspend fun proceedWithCreatingSetObject(currentState: ObjectState.DataView.Set, templateChosenBy: Id?) {
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
             toast(NOT_ALLOWED)
@@ -952,11 +952,16 @@ class ObjectSetViewModel(
                 return
             }
 
-            val (defaultObjectType, defaultTemplate)
-                    = currentState.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
+            val (defaultObjectType, defaultTemplate) = currentState.getActiveViewTypeAndTemplate(
+                ctx = context,
+                activeView = viewer,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+
+            val objectTypeUniqueKey = defaultObjectType?.uniqueKey
 
             val sourceId = setObject.setOf.singleOrNull()
-            if (defaultObjectType == null) {
+            if (objectTypeUniqueKey == null) {
                 toast("Unable to define a source for a new object.")
             } else {
                 val sourceDetails = currentState.details[sourceId]
@@ -981,7 +986,6 @@ class ObjectSetViewModel(
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = TypeKey(uniqueKey),
-                                        type = defaultObjectType.id,
                                         filters = viewer.filters,
                                         template = validTemplateId
                                     )
@@ -998,7 +1002,7 @@ class ObjectSetViewModel(
                                     filters = viewer.filters,
                                     relations = setObject.setOf,
                                     template = validTemplateId,
-                                    type = defaultObjectType.id
+                                    type = TypeKey(objectTypeUniqueKey)
                                 )
                             )
                         }
@@ -1023,12 +1027,18 @@ class ObjectSetViewModel(
         dispatch(ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen)
     }
 
-    private suspend fun proceedWithAddingObjectToCollection(typeChosenByUser: Id? = null, templateChosenBy: Id? = null) {
+    private suspend fun proceedWithAddingObjectToCollection(
+        typeChosenByUser: Id? = null,
+        templateChosenBy: Id? = null
+    ) {
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
 
-        val (defaultObjectType, defaultTemplate)
-                = state.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
+        val (defaultObjectType, defaultTemplate) = state.getActiveViewTypeAndTemplate(
+            ctx = context,
+            activeView = viewer,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
 
         val validTemplateId = getValidTemplateId(
             templateChosenBy = templateChosenBy,

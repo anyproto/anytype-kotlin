@@ -121,7 +121,6 @@ object RelationCreateFromScratchForDataViewModule {
         addRelationToDataView = addRelationToDataView,
         dispatcher = dispatcher,
         objectState = state,
-        session = session,
         updateDataViewViewer = updateDataViewViewer,
         analytics = analytics,
         createFromScratchState = createFromScratchState,

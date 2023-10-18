@@ -3171,7 +3171,10 @@ class EditorViewModel(
     private fun proceedWithCreatingNewObject(type: Id?, template: Id?) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val params = CreateObject.Param(type = type, template = template)
+            val params = CreateObject.Param(
+                type = TODO("You need to pass unique key"),
+                template = template
+            )
             createObject.async(params = params)
                 .fold(
                     onSuccess = { result ->

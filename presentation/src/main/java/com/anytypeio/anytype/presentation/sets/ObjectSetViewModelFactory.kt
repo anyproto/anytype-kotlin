@@ -72,7 +72,7 @@ class ObjectSetViewModelFactory(
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val createTemplate: CreateTemplate
+    private val createTemplate: CreateTemplate,
     private val viewerDelegate: ViewerDelegate,
     private val spaceManager: SpaceManager
 ) : ViewModelProvider.Factory {
@@ -113,8 +113,7 @@ class ObjectSetViewModelFactory(
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             viewerDelegate = viewerDelegate,
-            spaceManager = spaceManager
-            viewerDelegate = viewerDelegate,
+            spaceManager = spaceManager,
             createTemplate = createTemplate
         ) as T
     }

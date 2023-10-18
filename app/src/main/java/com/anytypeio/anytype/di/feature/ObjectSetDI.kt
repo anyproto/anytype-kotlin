@@ -262,7 +262,6 @@ object ObjectSetModule {
         setObjectListIsArchived = setObjectListIsArchived,
         viewerDelegate = viewerDelegate,
         spaceManager = spaceManager,
-        viewerDelegate = viewerDelegate,
         createTemplate = createTemplate
     )
 

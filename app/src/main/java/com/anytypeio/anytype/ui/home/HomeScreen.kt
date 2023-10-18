@@ -96,7 +96,7 @@ fun HomeScreen(
     onOpenSpacesClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onSpaceClicked: () -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
 ) {
@@ -181,7 +181,7 @@ private fun WidgetList(
     onEditWidgets: () -> Unit,
     onLibraryClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onOpenSpacesClicked: () -> Unit,
     onSpaceWidgetClicked: () -> Unit
 ) {

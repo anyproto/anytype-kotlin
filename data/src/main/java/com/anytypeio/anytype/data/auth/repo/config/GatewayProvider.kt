@@ -10,7 +10,7 @@ class GatewayProvider(
 ) : Gateway {
     override fun provide(): String {
         val gateway = spaceManager.getConfig()?.gateway
-        if (gateway != null) {
+        if (gateway == null) {
             logger.logException(IllegalStateException("Gateway not found"))
         }
         return gateway.orEmpty()

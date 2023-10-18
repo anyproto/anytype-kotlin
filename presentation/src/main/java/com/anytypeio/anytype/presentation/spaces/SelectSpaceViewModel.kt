@@ -27,8 +27,6 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import javax.inject.Inject
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -157,25 +155,24 @@ class SelectSpaceViewModel(
         viewModelScope.launch {
             Timber.d("Setting space: $view")
             if (!view.isSelected) {
-                awaitAll(
-                    async { spaceManager.set(view.space) },
-                    async { resetDefaultObjectTypeForAppActions() },
-                    async {
-                        saveCurrentSpace.async(SaveCurrentSpace.Params(SpaceId(view.space))).fold(
-                            onFailure = {
-                                Timber.e(it, "Error while saving current space in user settings")
-                            }
+                spaceManager.set(view.space)
+                saveCurrentSpace.async(SaveCurrentSpace.Params(SpaceId(view.space))).fold(
+                    onFailure = {
+                        Timber.e(it, "Error while saving current space in user settings")
+                    },
+                    onSuccess = {
+                        resetDefaultObjectTypeForAppActions(
+                            onExit = { commands.emit(Command.Dismiss) }
                         )
                     }
                 )
-                commands.emit(Command.Dismiss)
             } else {
                 commands.emit(Command.Dismiss)
             }
         }
     }
 
-    private suspend fun resetDefaultObjectTypeForAppActions() {
+    private suspend fun resetDefaultObjectTypeForAppActions(onExit: suspend () -> Unit) {
         getDefaultPageType.async(Unit).fold(
             onSuccess = { result ->
                 val type = result.type
@@ -194,7 +191,9 @@ class SelectSpaceViewModel(
                         )
                     )
                 }
-            }
+                onExit()
+            },
+            onFailure = { onExit() }
         )
     }
 

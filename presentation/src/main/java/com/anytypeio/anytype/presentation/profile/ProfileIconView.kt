@@ -14,16 +14,24 @@ sealed class ProfileIconView {
     data class Gradient(val from: String, val to: String): ProfileIconView()
 }
 
-fun ObjectWrapper.Basic.profileIcon(builder: UrlBuilder, gradientProvider: SpaceGradientProvider): ProfileIconView = when {
+fun ObjectWrapper.Basic.profileIcon(
+    builder: UrlBuilder,
+    gradientProvider: SpaceGradientProvider,
+    useIconOption: Boolean = false
+): ProfileIconView = when {
     !iconImage.isNullOrEmpty() -> {
         val hash = checkNotNull(iconImage)
         ProfileIconView.Image(builder.thumbnail(hash))
     }
     iconOption != null -> {
-        iconOption?.let {
-            val gradient = gradientProvider.get(it)
-            ProfileIconView.Gradient(gradient.from, gradient.to)
-        } ?: ProfileIconView.Placeholder
+        if (useIconOption) {
+            iconOption?.let {
+                val gradient = gradientProvider.get(it)
+                ProfileIconView.Gradient(gradient.from, gradient.to)
+            } ?: ProfileIconView.Placeholder
+        } else {
+            ProfileIconView.Placeholder
+        }
     }
     else -> ProfileIconView.Placeholder
 }

@@ -148,8 +148,7 @@ class ObjectSetViewModel(
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val viewerDelegate: ViewerDelegate,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
     private val viewerDelegate: ViewerDelegate,
     private val createTemplate: CreateTemplate
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
@@ -1028,7 +1027,7 @@ class ObjectSetViewModel(
     }
 
     private suspend fun proceedWithAddingObjectToCollection(
-        typeChosenByUser: Id? = null,
+        typeChosenByUser: TypeKey? = null,
         templateChosenBy: Id? = null
     ) {
         val state = stateReducer.state.value.dataViewState() ?: return
@@ -1040,13 +1039,22 @@ class ObjectSetViewModel(
             storeOfObjectTypes = storeOfObjectTypes
         )
 
+        val defaultObjectTypeUniqueKey = defaultObjectType?.uniqueKey?.let {
+            TypeKey(it)
+        }
+
+        if (typeChosenByUser == null && defaultObjectTypeUniqueKey == null) {
+            toast("Could not define type for new object")
+            return
+        }
+
         val validTemplateId = getValidTemplateId(
             templateChosenBy = templateChosenBy,
             viewDefaultTemplate = defaultTemplate
         )
         val createObjectParams = CreateDataViewObject.Params.Collection(
             templateId = validTemplateId,
-            type = typeChosenByUser ?: defaultObjectType?.id
+            type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         )
         proceedWithCreatingDataViewObject(createObjectParams) { result ->
             val params = AddObjectToCollection.Params(
@@ -1136,16 +1144,7 @@ class ObjectSetViewModel(
         ) {
             toast(NOT_ALLOWED)
         } else {
-            if (BuildConfig.ENABLE_VIEWS_MENU) {
-                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = true)
-            } else {
-                dispatch(
-                    ObjectSetCommand.Modal.ManageViewer(
-                        ctx = context,
-                        dataview = state.dataViewBlock.id
-                    )
-                )
-            }
+            viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = true)
         }
     }
 
@@ -1153,14 +1152,6 @@ class ObjectSetViewModel(
         Timber.d("onViewerEditClicked, ")
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
-        if (!BuildConfig.ENABLE_VIEWS_MENU) {
-            dispatch(
-                ObjectSetCommand.Modal.EditDataViewViewer(
-                    ctx = context,
-                    viewer = viewer.id
-                )
-            )
-        }
     }
 
     fun onMenuClicked() {
@@ -1678,7 +1669,7 @@ class ObjectSetViewModel(
                     )
                 }
                 proceedWithDataViewObjectCreate(
-                    typeChosenBy = templateView.typeId,
+                    typeChosenBy = templateView.typeUniqueKey?.let { TypeKey(it) },
                     templateId = templateView.id
                 )
             }
@@ -1689,11 +1680,11 @@ class ObjectSetViewModel(
                 ) {
                     it.copy(
                         defaultTemplate = templateView.id,
-                        defaultObjectType = templateView.typeId
+                        defaultObjectType = templateView.typeUniqueKey
                     )
                 }
                 proceedWithDataViewObjectCreate(
-                    typeChosenBy = templateView.typeId,
+                    typeChosenBy = templateView.typeUniqueKey?.let { TypeKey(it) },
                     templateId = templateView.id
                 )
             }
@@ -1792,7 +1783,12 @@ class ObjectSetViewModel(
         objectType: Id
     ) {
         Timber.d("proceedWithSelectedTemplate, template:[$template], objectType:[$objectType]")
-        val templateView = TemplateView.Template(id = template, typeId = objectType, name = "")
+        val templateView = TemplateView.Template(
+            id = template,
+            typeId = objectType,
+            name = "",
+            typeUniqueKey = TODO("We should work with unique key")
+        )
         onTypeTemplatesWidgetAction(action = TypeTemplatesWidgetUIAction.TemplateClick(templateView))
     }
 
@@ -2297,7 +2293,7 @@ class ObjectSetViewModel(
     //endregion
 
     // region CREATE OBJECT
-    fun proceedWithDataViewObjectCreate(typeChosenBy: Id? = null, templateId: Id? = null) {
+    fun proceedWithDataViewObjectCreate(typeChosenBy: TypeKey? = null, templateId: Id? = null) {
         Timber.d("proceedWithDataViewObjectCreate, typeChosenBy:[$typeChosenBy], templateId:[$templateId]")
 
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {

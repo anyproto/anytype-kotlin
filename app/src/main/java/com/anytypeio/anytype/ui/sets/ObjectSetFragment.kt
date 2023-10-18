@@ -52,8 +52,8 @@ import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
-import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
+import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerLayoutWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
@@ -78,7 +78,6 @@ import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
-import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -86,9 +85,9 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModelFactory
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
 import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
+import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
 import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
-import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -1246,10 +1245,14 @@ open class ObjectSetFragment :
                 if (!resultTemplateId.isNullOrBlank() && !resultObjectTypeId.isNullOrBlank()) {
                     navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
                     navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_OBJECT_TYPE)
-                    vm.proceedWithSelectedTemplate(template = resultTemplateId, objectType = resultObjectTypeId)
+                    vm.proceedWithSelectedTemplate(
+                        template = resultTemplateId,
+                        objectType = resultObjectTypeId,
+                    )
                 }
             }
         }
+
         navBackStackEntry.lifecycle.addObserver(observer)
 
         viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->

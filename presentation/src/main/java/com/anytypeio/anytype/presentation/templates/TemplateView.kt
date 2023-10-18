@@ -12,7 +12,9 @@ sealed class TemplateView {
 
     data class Blank(
         val id: Id,
+        @Deprecated("Multispaces. To be deleted")
         val typeId: Id,
+        val typeUniqueKey: String?,
         val typeName: String = "",
         val layout: Int,
         override val isDefault: Boolean = false
@@ -25,7 +27,9 @@ sealed class TemplateView {
     data class Template(
         val id: Id,
         val name: String,
+        @Deprecated("Multispaces. To be deleted")
         val typeId: Id,
+        val typeUniqueKey: String?,
         val layout: ObjectType.Layout = ObjectType.Layout.BASIC,
         val emoji: String? = null,
         val image: String? = null,

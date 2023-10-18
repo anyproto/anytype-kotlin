@@ -485,7 +485,8 @@ fun ObjectWrapper.Basic.toTemplateView(
         coverColor = coverContainer?.coverColor,
         coverImage = coverContainer?.coverImage,
         coverGradient = coverContainer?.coverGradient,
-        isDefault = viewerDefTemplateId == id
+        isDefault = viewerDefTemplateId == id,
+        typeUniqueKey = getValue<String?>(Relations.UNIQUE_KEY)
     )
 }
 
@@ -496,7 +497,8 @@ fun ObjectWrapper.Type.toTemplateViewBlank(
         id = DEFAULT_TEMPLATE_ID_BLANK,
         typeId = id,
         layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
-        isDefault = viewerDefaultTemplate.isNullOrEmpty() || viewerDefaultTemplate == DEFAULT_TEMPLATE_ID_BLANK
+        isDefault = viewerDefaultTemplate.isNullOrEmpty() || viewerDefaultTemplate == DEFAULT_TEMPLATE_ID_BLANK,
+        typeUniqueKey = uniqueKey
     )
 }
 

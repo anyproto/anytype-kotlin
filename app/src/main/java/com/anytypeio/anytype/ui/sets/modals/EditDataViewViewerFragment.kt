@@ -128,7 +128,12 @@ EditDataViewViewerFragment : BaseBottomSheetFragment<FragmentEditDataViewViewerB
                     isGalleryChosen.invisible()
                 }
             }
-            EditDataViewViewerViewModel.ViewState.Kanban -> {}
+            EditDataViewViewerViewModel.ViewState.Kanban -> {
+                toast("TODO")
+            }
+            EditDataViewViewerViewModel.ViewState.Calendar -> {
+                toast("TODO")
+            }
         }
     }
 

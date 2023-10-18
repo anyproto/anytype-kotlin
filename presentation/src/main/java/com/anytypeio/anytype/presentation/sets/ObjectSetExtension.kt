@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVVie
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -23,7 +24,6 @@ import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -31,14 +31,12 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
-import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.title
-import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
@@ -412,28 +410,8 @@ fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): Lis
 fun ObjectState.DataView.Set.isSetByRelation(setOfValue: List<Id>): Boolean {
     if (setOfValue.isEmpty()) return false
     val objectDetails = details[setOfValue.first()]?.map.orEmpty()
-    return when (objectDetails.type) {
-        ObjectTypeIds.OBJECT_TYPE -> {
-            val objectWrapper = ObjectWrapper.Type(objectDetails)
-            objectWrapper.isTemplatesAllowed()
-        }
-        ObjectTypeIds.RELATION -> {
-            //We have set of relations, need to check default object type
-            storeOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType)
-        }
-        else -> false
-    }
-}
-
-suspend fun StoreOfObjectTypes.isTemplatesAllowedForDefaultType(getDefaultPageType: GetDefaultPageType): Boolean {
-    try {
-        val defaultObjectType = getDefaultPageType.run(Unit).type?.key ?: return false
-        val defaultObjType = get(defaultObjectType) ?: return false
-        return defaultObjType.isTemplatesAllowed()
-    } catch (e: Exception) {
-        return false
-    }
-    return objectDetails.type == ObjectTypeIds.RELATION
+    val wrapper = ObjectWrapper.Type(objectDetails)
+    return wrapper.uniqueKey == ObjectTypeUniqueKeys.RELATION
 }
 
 private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {

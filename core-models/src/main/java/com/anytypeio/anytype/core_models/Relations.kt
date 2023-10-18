@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_models
 
 /**
  * Keys for predefined, bundled relations.
+ * // TODO remove outdated or deprecated relations
  */
 object Relations {
 
@@ -29,7 +30,7 @@ object Relations {
     const val DONE = "done"
     const val FEATURED_RELATIONS = "featuredRelations"
     const val SNIPPET = "snippet"
-    @Deprecated("To be deleted")
+    @Deprecated("To be deleted. Replace by SPACE_ID relation")
     const val WORKSPACE_ID = "workspaceId"
     const val SPACE_ID = "spaceId"
     const val TARGET_SPACE_ID = "targetSpaceId"

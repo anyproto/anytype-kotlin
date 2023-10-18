@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.Flow
@@ -101,9 +100,9 @@ class DefaultObjectTypeTemplatesContainer(
                 addAll(ObjectSearchConstants.filterTypes())
                 add(
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = workspaceManager.getCurrentWorkspace()
+                        value = spaceManager.get()
                     )
                 )
                 add(

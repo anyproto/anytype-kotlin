@@ -99,8 +99,8 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUI
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction
-import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.TypeClick
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.TemplateClick
+import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.TypeClick
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -1025,6 +1025,7 @@ fun ComposablePreview() {
         TemplateView.Blank(
             id = DEFAULT_TEMPLATE_ID_BLANK,
             typeId = "page",
+            typeUniqueKey = "ot-page",
             typeName = "Page",
             layout = ObjectType.Layout.BASIC.code
         ),
@@ -1032,6 +1033,7 @@ fun ComposablePreview() {
             id = "1",
             name = "Template 1",
             typeId = "page",
+            typeUniqueKey = "ot-page",
             layout = ObjectType.Layout.BASIC,
             image = null,
             emoji = null,
@@ -1044,7 +1046,12 @@ fun ComposablePreview() {
         templates = items,
         showWidget = true,
         isEditing = true,
-        moreMenuItem = TemplateView.Template(id = "123", name = "Template 1", typeId = "page"),
+        moreMenuItem = TemplateView.Template(
+            id = "123",
+            name = "Template 1",
+            typeId = "page",
+            typeUniqueKey = "ot-page",
+        ),
         objectTypes = listOf(
             TemplateObjectTypeView.Search,
             TemplateObjectTypeView.Item(

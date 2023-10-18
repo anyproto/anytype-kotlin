@@ -193,33 +193,57 @@ object ObjectSearchConstants {
     //endregion
 
     //region ADD OBJECT TO FILTER
-    fun filterAddObjectToFilter(space: Id) = listOf(
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.IN,
-            value = SupportedLayouts.layouts.map { it.code.toDouble() }
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+    fun filterAddObjectToFilter(
+        space: Id,
+        limitObjectTypes: List<Key>
+    ) = buildList {
+        add(
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
         )
-    )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.SPACE_ID,
+                condition = DVFilterCondition.EQUAL,
+                value = space
+            )
+        )
+        // TODO check these filters
+        if (limitObjectTypes.isEmpty()) {
+            add(
+                DVFilter(
+                    relation = Relations.LAYOUT,
+                    condition = DVFilterCondition.IN,
+                    value = SupportedLayouts.layouts.map { it.code.toDouble() }
+                )
+            )
+        } else {
+            add(
+                DVFilter(
+                    relation = Relations.TYPE_UNIQUE_KEY,
+                    condition = DVFilterCondition.IN,
+                    value = limitObjectTypes
+                )
+            )
+        }
+    }
 
     val sortAddObjectToFilter = listOf(
         DVSort(

@@ -27,15 +27,6 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Account.Create.Response.Error.Code.NULL) {
             when (error.code) {
-                Rpc.Account.Create.Response.Error.Code.NET_OFFLINE -> {
-                    throw CreateAccountException.OfflineDevice
-                }
-                Rpc.Account.Create.Response.Error.Code.BAD_INVITE_CODE -> {
-                    throw CreateAccountException.BadInviteCode
-                }
-                Rpc.Account.Create.Response.Error.Code.NET_ERROR -> {
-                    throw CreateAccountException.NetworkError
-                }
                 else -> throw Exception(error.description)
             }
         } else {

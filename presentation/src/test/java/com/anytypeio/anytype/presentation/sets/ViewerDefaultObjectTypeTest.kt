@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.presentation.collections.MockCollection
@@ -29,26 +28,32 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
     private lateinit var mockSetByRelation: MockSet
     private lateinit var mockCollection: MockCollection
 
-    val defaultTypeId = VIEW_DEFAULT_OBJECT_TYPE
+    val defaultTypeId = "defaultTypeId-${RandomString.make()}"
+    val defaultTypeKey = VIEW_DEFAULT_OBJECT_TYPE
     val customType1Id = "customType1-${RandomString.make()}"
+    val customType1Key = "customType1Key-${RandomString.make()}"
     val customType2Id = "customType2-${RandomString.make()}"
+    val customType2Key = "customType2Key-${RandomString.make()}"
     val customType1Map = mapOf(
         Relations.ID to customType1Id,
-        Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+        Relations.UNIQUE_KEY to customType1Key,
+        Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
         Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.TODO.code.toDouble(),
         Relations.NAME to "customType1"
     )
 
     val customType2Map = mapOf(
         Relations.ID to customType2Id,
-        Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+        Relations.UNIQUE_KEY to customType2Key,
+        Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
         Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.SET.code.toDouble(),
         Relations.NAME to "customType2"
     )
 
     val pageTypeMap = mapOf(
         Relations.ID to defaultTypeId,
-        Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+        Relations.UNIQUE_KEY to defaultTypeKey,
+        Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
         Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
         Relations.NAME to MockDataFactory.randomString()
     )
@@ -84,7 +89,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
 
             val viewer1 = viewerGrid.copy(defaultObjectType = customType1Id)
             val viewer2 = viewerGallery.copy(defaultObjectType = customType2Id)
-            val viewer3 = viewerList.copy(defaultObjectType = ObjectTypeIds.PAGE)
+            val viewer3 = viewerList.copy(defaultObjectType = defaultTypeId)
 
             val dataViewWith3Views = StubDataView(
                 id = "dv-${RandomString.make()}",
@@ -143,7 +148,10 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by relation should has proper views default object type ids`() = runTest {
 
-        mockSetByRelation = MockSet(context = root, setOfValue = MockSet("").relationObject3.id)
+        mockSetByRelation = MockSet(
+            context = root,
+            setOfValue = MockSet("").relationObject3.id
+        )
         with(mockSetByRelation) {
 
             stubSpaceManager(spaceId)
@@ -158,7 +166,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
 
             val viewer1 = viewerGrid.copy(defaultObjectType = customType1Id)
             val viewer2 = viewerGallery.copy(defaultObjectType = customType2Id)
-            val viewer3 = viewerList.copy(defaultObjectType = ObjectTypeIds.PAGE)
+            val viewer3 = viewerList.copy(defaultObjectType = defaultTypeId)
 
             val dataViewWith3Views = StubDataView(
                 id = "dv-${RandomString.make()}",
@@ -234,7 +242,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
 
             val viewer1 = viewerGrid.copy(defaultObjectType = customType1Id)
             val viewer2 = viewerGallery.copy(defaultObjectType = customType2Id)
-            val viewer3 = viewerList.copy(defaultObjectType = ObjectTypeIds.PAGE)
+            val viewer3 = viewerList.copy(defaultObjectType = defaultTypeId)
 
             session.currentViewerId.value = viewer3.id
 

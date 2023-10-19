@@ -218,7 +218,7 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
                 mapOf(
                     Relations.ID to relationObject3.id,
                     Relations.RELATION_KEY to relationObject3.key,
-                    Relations.TYPE to ObjectTypeIds.RELATION
+                    Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble()
                 )
             )
         )

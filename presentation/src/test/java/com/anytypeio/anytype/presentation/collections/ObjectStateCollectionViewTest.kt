@@ -588,8 +588,9 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should be collection without templates allowed when active viewer default type is NOTE`() = runTest {
         // SETUP
 
-        val defaultObjectType = TypeKey(MockDataFactory.randomString())
-        val defaultObjectTypeName = "CustomName"
+        val noteTypeId = MockDataFactory.randomString()
+        val noteTypeUniqueKey = TypeKey(ObjectTypeIds.NOTE)
+        val noteTypeName = "Note"
 
         stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
@@ -600,8 +601,8 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         val dataview = mockObjectCollection.dataView.copy(
             content = (mockObjectCollection.dataView.content as DV).copy(
                 viewers = listOf(
-                    mockObjectCollection.viewerGrid.copy(defaultObjectType = ObjectTypeIds.PROFILE),
-                    mockObjectCollection.viewerList.copy(defaultObjectType = ObjectTypeIds.NOTE)
+                    mockObjectCollection.viewerGrid.copy(defaultObjectType = RandomString.make()),
+                    mockObjectCollection.viewerList.copy(defaultObjectType = noteTypeId)
                 )
             )
         )
@@ -615,11 +616,13 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             details = mockObjectCollection.details
         )
         stubStoreOfObjectTypes(
-            ObjectTypeIds.NOTE,
+            noteTypeId,
             mapOf(
-                Relations.ID to ObjectTypeIds.NOTE,
+                Relations.ID to noteTypeId,
+                Relations.UNIQUE_KEY to noteTypeUniqueKey.key,
+                Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
                 Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),
-                Relations.NAME to "NOTE"
+                Relations.NAME to noteTypeName
             )
         )
         stubStoreOfRelations(mockObjectCollection)

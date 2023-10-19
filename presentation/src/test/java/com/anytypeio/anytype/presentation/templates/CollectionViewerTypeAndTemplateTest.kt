@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.StubDataViewViewRelation
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubRelationObject
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -35,17 +36,17 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
     private lateinit var viewModel: ObjectSetViewModel
     private lateinit var closable: AutoCloseable
 
-    val pageTypeId = ObjectState.VIEW_DEFAULT_OBJECT_TYPE
+    val pageTypeId = TypeKey(ObjectState.VIEW_DEFAULT_OBJECT_TYPE)
     val pageTemplate1 = StubObject(
         id = "pagetemplate1-${RandomString.make()}",
         objectType = ObjectTypeIds.TEMPLATE,
-        targetObjectType = pageTypeId
+        targetObjectType = pageTypeId.key
     )
 
     val pageTemplate2 = StubObject(
         id = "pagetemplate2-${RandomString.make()}",
         objectType = ObjectTypeIds.TEMPLATE,
-        targetObjectType = pageTypeId
+        targetObjectType = pageTypeId.key
     )
 
     val customType1Id = "customType1-${RandomString.make()}"
@@ -115,15 +116,15 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         val details = Block.Details(
             details = mapOf(
                 root to Block.Fields(map = collectionObjDetails),
-                pageTypeId to Block.Fields(map = pageTypeMap)
+                pageTypeId.key to Block.Fields(map = pageTypeMap)
             )
         )
 
         with(storeOfObjectTypes) {
-            set(pageTypeId, pageTypeMap)
+            set(pageTypeId.key, pageTypeMap)
         }
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -131,12 +132,12 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         )
 
         stubTemplatesForTemplatesContainer(
-            type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
+            type = pageTypeId.key, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = workspaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
@@ -204,15 +205,15 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         val details = Block.Details(
             details = mapOf(
                 root to Block.Fields(map = collectionObjDetails),
-                pageTypeId to Block.Fields(map = pageTypeMap)
+                pageTypeId.key to Block.Fields(map = pageTypeMap)
             )
         )
 
         with(storeOfObjectTypes) {
-            set(pageTypeId, pageTypeMap)
+            set(pageTypeId.key, pageTypeMap)
         }
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -220,12 +221,12 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         )
 
         stubTemplatesForTemplatesContainer(
-            type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
+            type = pageTypeId.key, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = workspaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
@@ -293,15 +294,15 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         val details = Block.Details(
             details = mapOf(
                 root to Block.Fields(map = collectionObjDetails),
-                pageTypeId to Block.Fields(map = pageTypeMap)
+                pageTypeId.key to Block.Fields(map = pageTypeMap)
             )
         )
 
         with(storeOfObjectTypes) {
-            set(pageTypeId, pageTypeMap)
+            set(pageTypeId.key, pageTypeMap)
         }
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -309,12 +310,12 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         )
 
         stubTemplatesForTemplatesContainer(
-            type = pageTypeId, templates = listOf(pageTemplate1, pageTemplate2)
+            type = pageTypeId.key, templates = listOf(pageTemplate1, pageTemplate2)
         )
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = workspaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
@@ -390,7 +391,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             set(customType1Id, customType1Map)
         }
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -403,7 +404,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = workspaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
@@ -428,7 +429,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         // ASSERT OBJECT CREATION ON NEW BUTTON CLICK
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.Collection(
-                type = customType1Id,
+                type = TypeKey(customType1Id),
                 templateId = template1.id
             )
             async(params)
@@ -479,7 +480,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             set(customType1Id, customType1Map)
         }
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -492,7 +493,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = workspaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
@@ -517,7 +518,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         // ASSERT OBJECT CREATION ON NEW BUTTON CLICK
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.Collection(
-                type = customType1Id,
+                type = TypeKey(customType1Id),
                 templateId = null
             )
             async(params)
@@ -568,7 +569,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
             set(customType1Id, customType1Map)
         }
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -581,7 +582,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = workspaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             objects = listOf(),
@@ -606,7 +607,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         // ASSERT OBJECT CREATION ON NEW BUTTON CLICK
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.Collection(
-                type = customType1Id,
+                type = TypeKey(customType1Id),
                 templateId = template2.id
             )
             async(params)

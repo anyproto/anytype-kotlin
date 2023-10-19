@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.sets.main
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -123,9 +125,6 @@ open class ObjectSetViewModelTestSetup {
     lateinit var setDocCoverImage: SetDocCoverImage
 
     @Mock
-    lateinit var getTemplates: GetTemplates
-
-    @Mock
     lateinit var createObject: CreateObject
 
     @Mock
@@ -172,11 +171,12 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var viewerDelegate: ViewerDelegate
 
-    @Mock
     lateinit var spaceManager: SpaceManager
 
     @Mock
     lateinit var createTemplate: CreateTemplate
+
+    lateinit var spaceConfig: Config
 
     var stateReducer = DefaultObjectStateReducer()
 
@@ -205,6 +205,22 @@ open class ObjectSetViewModelTestSetup {
             io = rule.dispatcher,
             computation = rule.dispatcher,
             main = rule.dispatcher
+        )
+        spaceConfig = Config(
+            home = "morbi",
+            profile = "indoctum",
+            gateway = "luctus",
+            space = "nonumy",
+            spaceView = "etiam",
+            widgets = "eloquentiam",
+            analytics = "quem",
+            device = "elaboraret"
+        )
+        spaceManager = SpaceManager.Impl(
+            repo = repo,
+            dispatchers = dispatchers,
+            configStorage = ConfigStorage.CacheStorage(),
+            logger = mock()
         )
         dataViewSubscriptionContainer = DataViewSubscriptionContainer(
             repo = repo,
@@ -301,13 +317,25 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    suspend fun stubWorkspaceManager(space: Id) {
+    suspend fun stubSpaceManager(space: Id) {
+        repo.stub {
+            onBlocking { getSpaceConfig(space) } doReturn Config(
+                home = "morbi",
+                profile = "indoctum",
+                gateway = "luctus",
+                space = space,
+                spaceView = "etiam",
+                widgets = "eloquentiam",
+                analytics = "quem",
+                device = "elaboraret"
+            )
+        }
         spaceManager.set(space)
     }
 
     suspend fun stubSubscriptionResults(
         subscription: Id = MockDataFactory.randomString(),
-        workspace: Id,
+        spaceId: Id,
         collection: Id? = null,
         objects: List<ObjectWrapper.Basic> = emptyList(),
         dependencies: List<ObjectWrapper.Basic>  = listOf(),
@@ -327,7 +355,7 @@ open class ObjectSetViewModelTestSetup {
             subscription = subscription,
             collection = collection,
             filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = workspace
+                space = spaceId
             ),
             sorts = dvSorts,
             keys = dvKeys,

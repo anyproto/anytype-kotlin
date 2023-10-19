@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.StubDataViewViewRelation
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubRelationObject
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -18,7 +19,6 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
@@ -132,7 +132,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             set(pageTypeId, pageTypeMap)
         }
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -145,7 +145,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = workspaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(setByRelationId),
@@ -171,7 +171,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.SetByRelation(
                 filters = listOf(),
-                type = pageTypeId,
+                type = TypeKey(pageTypeId),
                 template = null,
                 relations = listOf(setByRelationId),
             )
@@ -221,7 +221,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             set(pageTypeId, pageTypeMap)
         }
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -234,7 +234,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = workspaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(setByRelationId),
@@ -260,7 +260,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.SetByRelation(
                 filters = listOf(),
-                type = pageTypeId,
+                type = TypeKey(pageTypeId),
                 template = null,
                 relations = listOf(setByRelationId),
             )
@@ -310,7 +310,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             set(pageTypeId, pageTypeMap)
         }
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(workspaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -323,7 +323,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = workspaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(setByRelationId),
@@ -349,7 +349,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.SetByRelation(
                 filters = listOf(),
-                type = pageTypeId,
+                type = TypeKey(pageTypeId),
                 template = pageTemplate2.id,
                 relations = listOf(setByRelationId),
             )
@@ -409,7 +409,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 set(customType1Id, customType1Map)
             }
 
-            stubWorkspaceManager(workspaceId)
+            stubSpaceManager(workspaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
@@ -422,7 +422,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             stubSubscriptionResults(
                 subscription = subscriptionId,
-                workspace = workspaceId,
+                spaceId = workspaceId,
                 storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setByRelationId),
@@ -448,7 +448,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 val params = CreateDataViewObject.Params.SetByRelation(
                     filters = listOf(),
-                    type = customType1Id,
+                    type = TypeKey(customType1Id),
                     template = template1.id,
                     relations = listOf(setByRelationId),
                 )
@@ -508,7 +508,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 set(customType1Id, customType1Map)
             }
 
-            stubWorkspaceManager(workspaceId)
+            stubSpaceManager(workspaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
@@ -521,7 +521,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             stubSubscriptionResults(
                 subscription = subscriptionId,
-                workspace = workspaceId,
+                spaceId = workspaceId,
                 storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setByRelationId),
@@ -547,7 +547,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 val params = CreateDataViewObject.Params.SetByRelation(
                     filters = listOf(),
-                    type = customType1Id,
+                    type = TypeKey(customType1Id),
                     template = null,
                     relations = listOf(setByRelationId),
                 )
@@ -607,7 +607,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 set(customType1Id, customType1Map)
             }
 
-            stubWorkspaceManager(workspaceId)
+            stubSpaceManager(workspaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
@@ -620,7 +620,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             stubSubscriptionResults(
                 subscription = subscriptionId,
-                workspace = workspaceId,
+                spaceId = workspaceId,
                 storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setByRelationId),
@@ -646,7 +646,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 val params = CreateDataViewObject.Params.SetByRelation(
                     filters = listOf(),
-                    type = customType1Id,
+                    type = TypeKey(customType1Id),
                     template = null,
                     relations = listOf(setByRelationId),
                 )
@@ -706,7 +706,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 set(customType1Id, customType1Map)
             }
 
-            stubWorkspaceManager(workspaceId)
+            stubSpaceManager(workspaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
@@ -719,7 +719,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             stubSubscriptionResults(
                 subscription = subscriptionId,
-                workspace = workspaceId,
+                spaceId = workspaceId,
                 storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setByRelationId),
@@ -745,7 +745,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 val params = CreateDataViewObject.Params.SetByRelation(
                     filters = listOf(),
-                    type = customType1Id,
+                    type = TypeKey(customType1Id),
                     template = null,
                     relations = listOf(setByRelationId),
                 )
@@ -805,7 +805,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 set(customType1Id, customType1Map)
             }
 
-            stubWorkspaceManager(workspaceId)
+            stubSpaceManager(workspaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
@@ -818,7 +818,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             stubSubscriptionResults(
                 subscription = subscriptionId,
-                workspace = workspaceId,
+                spaceId = workspaceId,
                 storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setByRelationId),
@@ -844,7 +844,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 val params = CreateDataViewObject.Params.SetByRelation(
                     filters = listOf(),
-                    type = customType1Id,
+                    type = TypeKey(customType1Id),
                     template = template2.id,
                     relations = listOf(setByRelationId),
                 )

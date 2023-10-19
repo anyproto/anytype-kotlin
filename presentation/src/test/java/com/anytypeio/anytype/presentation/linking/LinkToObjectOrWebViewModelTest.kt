@@ -63,6 +63,7 @@ open class LinkToObjectOrWebViewModelTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     @After
@@ -297,4 +298,10 @@ open class LinkToObjectOrWebViewModelTest {
         storeOfObjectTypes = storeOfObjectTypes,
         spaceManager = spaceManager
     )
+
+    fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking { get() } doReturn ""
+        }
+    }
 }

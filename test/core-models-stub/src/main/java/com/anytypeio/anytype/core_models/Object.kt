@@ -6,6 +6,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 
 fun StubObject(
     id: String = MockDataFactory.randomUuid(),
+    uniqueKey: String? = MockDataFactory.randomUuid(),
     name: String = MockDataFactory.randomString(),
     objectType: String = MockDataFactory.randomString(),
     layout: Double = ObjectType.Layout.BASIC.code.toDouble(),
@@ -32,7 +33,8 @@ fun StubObject(
         Relations.IS_READ_ONLY to isReadOnly,
         Relations.IS_HIDDEN to isHidden,
         Relations.LINKS to links,
-        Relations.TARGET_OBJECT_TYPE to targetObjectType
+        Relations.TARGET_OBJECT_TYPE to targetObjectType,
+        Relations.UNIQUE_KEY to uniqueKey,
     )
 )
 

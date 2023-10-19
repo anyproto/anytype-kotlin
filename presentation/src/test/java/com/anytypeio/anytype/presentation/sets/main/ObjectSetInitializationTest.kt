@@ -32,7 +32,7 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should not start creating new record if dv is not initialized yet`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -52,7 +52,7 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
     fun `when open object set and setOf has empty value, should not start subscription to the records`() =
         runTest {
             // SETUP
-            stubWorkspaceManager(mockObjectSet.workspaceId)
+            stubSpaceManager(mockObjectSet.spaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(

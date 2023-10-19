@@ -204,6 +204,7 @@ class HomeScreenViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
+        stubSpaceManager()
     }
 
     @Test
@@ -2650,6 +2651,12 @@ class HomeScreenViewModelTest {
                     name = null
                 )
             )
+        }
+    }
+
+    fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking { get() } doReturn ""
         }
     }
 

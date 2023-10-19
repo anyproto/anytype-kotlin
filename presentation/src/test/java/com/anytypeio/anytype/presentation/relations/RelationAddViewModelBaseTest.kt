@@ -62,7 +62,7 @@ class RelationAddViewModelBaseTest {
         // SETUP
 
         val relation = StubRelationObject(
-            workspaceId = spaceId
+            spaceId = spaceId
         )
 
         spaceManager.stub {
@@ -179,15 +179,15 @@ class RelationAddViewModelBaseTest {
             // SETUP
 
             val marketplace = listOf(
-                StubRelationObject(workspaceId = MARKETPLACE_SPACE_ID),
-                StubRelationObject(workspaceId = MARKETPLACE_SPACE_ID),
-                StubRelationObject(workspaceId = MARKETPLACE_SPACE_ID)
+                StubRelationObject(spaceId = MARKETPLACE_SPACE_ID),
+                StubRelationObject(spaceId = MARKETPLACE_SPACE_ID),
+                StubRelationObject(spaceId = MARKETPLACE_SPACE_ID)
             )
 
             val library = listOf(
-                StubRelationObject(sourceObject = marketplace[0].id, workspaceId = spaceId),
-                StubRelationObject(workspaceId = spaceId),
-                StubRelationObject(workspaceId = spaceId)
+                StubRelationObject(sourceObject = marketplace[0].id, spaceId = spaceId),
+                StubRelationObject(spaceId = spaceId),
+                StubRelationObject(spaceId = spaceId)
             )
 
             spaceManager.stub {

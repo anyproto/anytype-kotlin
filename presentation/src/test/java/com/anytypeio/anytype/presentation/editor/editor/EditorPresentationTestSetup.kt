@@ -765,4 +765,10 @@ open class EditorPresentationTestSetup {
             onBlocking { async(any()) } doReturn Resultat.success(Payload(root, emptyList()))
         }
     }
+
+    fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking { get() } doReturn ""
+        }
+    }
 }

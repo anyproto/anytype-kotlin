@@ -41,7 +41,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should restart subscription when sort is updated`() = runTest {
         // SETUP
-        stubWorkspaceManager(objectCollection.workspaceId)
+        stubSpaceManager(objectCollection.spaceId)
         stubStoreOfRelations(objectCollection)
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -57,7 +57,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
         stubSubscriptionResults(
             subscription = objectCollection.subscriptionId,
             collection = root,
-            workspace = objectCollection.workspaceId,
+            spaceId = objectCollection.spaceId,
             storeOfRelations = storeOfRelations,
             keys = objectCollection.dvKeys,
             objects = listOf(objectCollection.obj1, objectCollection.obj2),
@@ -99,7 +99,7 @@ class CollectionDataViewUpdateTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = objectCollection.subscriptionId,
                 collection = root,
-                workspace = objectCollection.workspaceId,
+                spaceId = objectCollection.spaceId,
                 storeOfRelations = storeOfRelations,
                 keys = objectCollection.dvKeys,
                 objects = listOf(objectCollection.obj1, objectCollection.obj2),

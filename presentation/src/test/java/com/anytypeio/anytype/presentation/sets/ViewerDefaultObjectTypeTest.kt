@@ -72,7 +72,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
         mockSetByType = MockSet(context = root, setOfValue = setOfValue)
 
         with(mockSetByType) {
-            stubWorkspaceManager(workspaceId)
+            stubSpaceManager(spaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
 
@@ -103,7 +103,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             )
             stubSubscriptionResults(
                 subscription = subscriptionId,
-                workspace = workspaceId,
+                spaceId = spaceId,
                 storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(setOfValue),
@@ -146,7 +146,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
         mockSetByRelation = MockSet(context = root, setOfValue = MockSet("").relationObject3.id)
         with(mockSetByRelation) {
 
-            stubWorkspaceManager(workspaceId)
+            stubSpaceManager(spaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
 
@@ -177,7 +177,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             )
             stubSubscriptionResults(
                 subscription = subscriptionId,
-                workspace = workspaceId,
+                spaceId = spaceId,
                 storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(relationObject3.id),
@@ -219,10 +219,10 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
 
         mockCollection = MockCollection(context = root)
         with(mockCollection) {
-            stubWorkspaceManager(workspaceId)
+            stubSpaceManager(spaceId)
             stubStoreOfRelations(this)
 
-            stubWorkspaceManager(workspaceId)
+            stubSpaceManager(spaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
 
@@ -257,7 +257,7 @@ class ViewerDefaultObjectTypeTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = this.subscriptionId,
                 collection = root,
-                workspace = workspaceId,
+                spaceId = spaceId,
                 storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 objects = listOf(obj1, obj2),

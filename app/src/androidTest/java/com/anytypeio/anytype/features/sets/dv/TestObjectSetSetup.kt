@@ -163,7 +163,6 @@ abstract class TestObjectSetSetup {
     private val paginator = ObjectSetPaginator()
     private val store: ObjectStore = DefaultObjectStore()
     private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
-    private val workspaceManager: WorkspaceManager = WorkspaceManager.DefaultWorkspaceManager()
 
     private lateinit var database: ObjectSetDatabase
     private lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
@@ -207,9 +206,6 @@ abstract class TestObjectSetSetup {
         setDataViewQuery = SetDataViewQuery(repo)
         updateText = UpdateText(repo)
         openObjectSet = OpenObjectSet(repo, auth)
-        runBlocking {
-            workspaceManager.setCurrentWorkspace(workspaceId)
-        }
         getDefaultPageType = GetDefaultPageType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = repo,
@@ -276,8 +272,7 @@ abstract class TestObjectSetSetup {
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,
             viewerDelegate = viewerDelegate,
-            spaceManager = spaceManager
-            viewerDelegate = viewerDelegate,
+            spaceManager = spaceManager,
             createTemplate = createTemplate
         )
     }

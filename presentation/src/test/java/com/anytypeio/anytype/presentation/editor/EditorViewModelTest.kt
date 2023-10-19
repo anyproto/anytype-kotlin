@@ -4357,7 +4357,6 @@ open class EditorViewModelTest {
         vm.onStart(root)
 
 
-        givenDelegateId(id)
         vm.onAddNewDocumentClicked()
 
         vm.navigation

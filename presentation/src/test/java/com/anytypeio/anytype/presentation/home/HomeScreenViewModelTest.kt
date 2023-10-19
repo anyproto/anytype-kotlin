@@ -236,15 +236,16 @@ class HomeScreenViewModelTest {
 
         // TESTING
 
-        vm.onStart()
-
         vm.views.test {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
                 expected = emptyList()
             )
+            vm.onStart()
             val secondTimeState = awaitItem()
+            verify(openObject, times(1))
+                .stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
@@ -254,10 +255,6 @@ class HomeScreenViewModelTest {
                 }
             )
         }
-
-        delay(1)
-
-        verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
     }
 
     private fun stubGetWidgetSession(

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -51,6 +52,8 @@ class CreateObjectAsMentionOrLinkTest {
 
     lateinit var createObjectAsMentionOrLink: CreateObjectAsMentionOrLink
 
+    private val spaceId = MockDataFactory.randomString()
+
     @Before
     fun setup() {
         createObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
@@ -60,6 +63,7 @@ class CreateObjectAsMentionOrLinkTest {
             getTemplates = getTemplates,
             spaceManager = spaceManager
         )
+        stubSpaceManager()
     }
 
     @Test
@@ -68,7 +72,11 @@ class CreateObjectAsMentionOrLinkTest {
         //SETUP
         val type = null
         val name = MockDataFactory.randomString()
-        givenGetDefaultObjectType()
+
+        val defaultTypeKey = MockDataFactory.randomString()
+        givenGetDefaultObjectType(
+            type = TypeKey(defaultTypeKey),
+        )
         stubCreateObject()
 
         //TESTING
@@ -86,8 +94,8 @@ class CreateObjectAsMentionOrLinkTest {
             },
             template = null,
             internalFlags = listOf(),
-            space = TODO(),
-            type = TODO()
+            space = SpaceId(spaceId),
+            type = TypeKey(defaultTypeKey)
         )
         verifyBlocking(repo, times(1)) { createObject(commands) }
     }
@@ -118,13 +126,12 @@ class CreateObjectAsMentionOrLinkTest {
             //ASSERT
             val commands = Command.CreateObject(
                 prefilled = buildMap {
-                    put(Relations.TYPE, typeDefault)
                     put(Relations.NAME, name)
                 },
                 template = null,
                 internalFlags = listOf(),
-                space = TODO(),
-                type = TODO()
+                space = SpaceId(spaceId),
+                type = TypeKey(typeDefault)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -137,11 +144,13 @@ class CreateObjectAsMentionOrLinkTest {
             val type = null
             val name = MockDataFactory.randomString()
             val typeDefault = MockDataFactory.randomString()
+            val typeDefaultId = MockDataFactory.randomString()
             val typeDefaultName = MockDataFactory.randomString()
             val template = MockDataFactory.randomString()
             givenGetDefaultObjectType(
                 type = TypeKey(typeDefault),
-                name = typeDefaultName
+                name = typeDefaultName,
+                id = TypeId(typeDefaultId)
             )
             givenGetTemplates(listOf(ObjectWrapper.Basic(buildMap {
                 put(Relations.ID, template)
@@ -158,13 +167,12 @@ class CreateObjectAsMentionOrLinkTest {
             //ASSERT
             val commands = Command.CreateObject(
                 prefilled = buildMap {
-                    put(Relations.TYPE, typeDefault)
                     put(Relations.NAME, name)
                 },
                 template = template,
                 internalFlags = listOf(),
-                space = TODO(),
-                type = TODO()
+                space = SpaceId(spaceId),
+                type = TypeKey(typeDefault)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -207,13 +215,12 @@ class CreateObjectAsMentionOrLinkTest {
             //ASSERT
             val commands = Command.CreateObject(
                 prefilled = buildMap {
-                    put(Relations.TYPE, typeDefault)
                     put(Relations.NAME, name)
                 },
                 template = null,
                 internalFlags = listOf(),
-                space = TODO(),
-                type = TODO()
+                space = SpaceId(spaceId),
+                type = TypeKey(typeDefault)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -245,6 +252,12 @@ class CreateObjectAsMentionOrLinkTest {
                 event = Payload(context = "", events = listOf()),
                 details = emptyMap()
             )
+        }
+    }
+
+    private fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking { get() } doReturn spaceId
         }
     }
 }

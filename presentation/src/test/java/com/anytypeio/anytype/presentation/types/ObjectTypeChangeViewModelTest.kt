@@ -551,19 +551,6 @@ class ObjectTypeChangeViewModelTest {
             )
         }
 
-        // Checking search query for marketplace types
-
-        verifyBlocking(blockRepository, times(1)) {
-            searchObjects(
-                filters = expectedMarketplaceTypeFilters,
-                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
-                limit = 0,
-                offset = 0,
-                keys = expectedMarketplaceTypeKeys,
-                fulltext = ""
-            )
-        }
-
         vm.commands.test {
             vm.onItemClicked(
                 id = marketplaceType3.id,

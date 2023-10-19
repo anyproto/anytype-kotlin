@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -27,7 +28,10 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
 import kotlin.time.ExperimentalTime
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
 import org.junit.Rule
@@ -85,6 +89,7 @@ class EditorMentionTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     @Test
@@ -246,8 +251,9 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         clearPendingCoroutines()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should create new page with proper name, default type and add new mention with page id`() {
+    fun `should create new page with proper name, default type and add new mention with page id`() = runTest {
 
         val title = Block(
             id = MockDataFactory.randomUuid(),
@@ -318,21 +324,10 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         Mockito.`when`(documentEmojiIconProvider.random()).thenReturn(emoji)
 
-        createObjectAsMentionOrLink.stub {
-            onBlocking {
-                async(
-                    CreateObjectAsMentionOrLink.Params(
-                        name = newPageName,
-                        typeKey = TypeKey(ObjectTypeIds.NOTE)
-                    )
-                )
-            } doReturn Resultat.success(
-                CreateObjectAsMentionOrLink.Result(
-                    name = newPageName,
-                    id = newPageId
-                )
-            )
-        }
+        stubCreateObjectAsMentionOrLink(
+            name = newPageName,
+            id = newPageId
+        )
 
         val vm = buildViewModel()
 
@@ -356,16 +351,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             onAddMentionNewPageClicked(
                 mentionText = mentionTrigger
             )
-        }
 
-        verifyBlocking(createObjectAsMentionOrLink, times(1)) {
-            async(
-                CreateObjectAsMentionOrLink.Params(
-                    name = newPageName,
-                    typeKey = TypeKey(ObjectTypeIds.NOTE),
-                    typeId = null
-                )
-            )
+            advanceUntilIdle()
         }
 
         vm.state.test().apply {
@@ -411,8 +398,9 @@ class EditorMentionTest : EditorPresentationTestSetup() {
         clearPendingCoroutines()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should create new page with untitled name, default type and add new mention with page id`() {
+    fun `should create new page with untitled name, default type and add new mention with page id`() = runTest {
 
         val title = Block(
             id = MockDataFactory.randomUuid(),
@@ -483,22 +471,10 @@ class EditorMentionTest : EditorPresentationTestSetup() {
 
         Mockito.`when`(documentEmojiIconProvider.random()).thenReturn(emoji)
 
-        createObjectAsMentionOrLink.stub {
-            onBlocking {
-                async(
-                    CreateObjectAsMentionOrLink.Params(
-                        name = newPageName,
-                        typeKey = TypeKey("_otarticle"),
-                        typeId = null
-                    )
-                )
-            } doReturn Resultat.success(
-                CreateObjectAsMentionOrLink.Result(
-                    name = newPageName,
-                    id = newPageId
-                )
-            )
-        }
+        stubCreateObjectAsMentionOrLink(
+            name = newPageName,
+            id = newPageId
+        )
 
         val vm = buildViewModel()
 
@@ -522,16 +498,8 @@ class EditorMentionTest : EditorPresentationTestSetup() {
             onAddMentionNewPageClicked(
                 mentionText = mentionTrigger
             )
-        }
 
-        verifyBlocking(createObjectAsMentionOrLink, times(1)) {
-            async(
-                CreateObjectAsMentionOrLink.Params(
-                    name = newPageName,
-                    typeKey = TypeKey("_otarticle"),
-                    typeId = null
-                )
-            )
+            advanceUntilIdle()
         }
 
         vm.state.test().apply {

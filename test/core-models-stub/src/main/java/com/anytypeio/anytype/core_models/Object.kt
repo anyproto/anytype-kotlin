@@ -56,6 +56,7 @@ fun StubObjectView(
 
 fun StubObjectType(
     id: String = MockDataFactory.randomUuid(),
+    uniqueKey: String? = MockDataFactory.randomUuid(),
     name: String = MockDataFactory.randomString(),
     objectType: String = MockDataFactory.randomString(),
     layout: Double = ObjectType.Layout.BASIC.code.toDouble(),
@@ -82,6 +83,7 @@ fun StubObjectType(
         Relations.IS_READ_ONLY to isReadOnly,
         Relations.IS_HIDDEN to isHidden,
         Relations.SOURCE_OBJECT to sourceObject,
-        Relations.RECOMMENDED_LAYOUT to recommendedLayout
+        Relations.RECOMMENDED_LAYOUT to recommendedLayout,
+        Relations.UNIQUE_KEY to uniqueKey,
     )
 )

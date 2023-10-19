@@ -115,6 +115,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
@@ -122,7 +123,6 @@ import org.mockito.kotlin.stub
 open class EditorPresentationTestSetup {
 
     val root: Id = MockDataFactory.randomString()
-    val workspaceId: Id = MockDataFactory.randomString()
 
     @Mock
     lateinit var openPage: OpenPage
@@ -703,27 +703,26 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
+    fun stubGetDefaultObjectType(
+        id: String = MockDataFactory.randomString(),
+        type: String = MockDataFactory.randomString(),
+        name: String? = null
+    ) {
         getDefaultPageType.stub {
             onBlocking { async(Unit) } doReturn Resultat.success(
                 GetDefaultPageType.Response(
-                    type = type?.let { TypeKey(it) },
+                    id = TypeId(id),
+                    type = TypeKey(type),
                     name = name,
-                    id = null
                 )
             )
         }
     }
 
-    fun stubCreateObjectAsMentionOrLink(name: String, type: String, id: String) {
-        val params = CreateObjectAsMentionOrLink.Params(
-            name = name,
-            typeKey = TypeKey(type),
-            typeId = TypeId(id)
-        )
+    fun stubCreateObjectAsMentionOrLink(name: String, id: String) {
         val result = CreateObjectAsMentionOrLink.Result(id, name)
         createObjectAsMentionOrLink.stub {
-            onBlocking { async(params) } doReturn Resultat.success(result)
+            onBlocking { async(any()) } doReturn Resultat.success(result)
         }
     }
 

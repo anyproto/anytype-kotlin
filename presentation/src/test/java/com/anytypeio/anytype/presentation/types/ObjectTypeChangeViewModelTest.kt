@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.types
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
@@ -23,7 +24,6 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -105,6 +105,7 @@ class ObjectTypeChangeViewModelTest {
 
         // SETUP
 
+        stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = buildList {
@@ -154,6 +155,7 @@ class ObjectTypeChangeViewModelTest {
         val installedType1 = StubObjectType(sourceObject = marketplaceType1.id)
         val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
 
+        stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = buildList {
@@ -259,6 +261,7 @@ class ObjectTypeChangeViewModelTest {
         val installedType1 = StubObjectType(sourceObject = marketplaceType1.id)
         val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
 
+        stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = buildList {
@@ -430,20 +433,25 @@ class ObjectTypeChangeViewModelTest {
     }
 
     @Test
-    fun `should add marketplace object to workspace if marketplace type is selected, then dispatch selected type`() = runTest {
+    fun `should add marketplace object to space if marketplace type is selected, then dispatch selected type`() = runTest {
 
         // SETUP
 
+        val space = "space-id"
+        stubSpaceManager(space)
         val marketplaceType1 = StubObjectType()
         val marketplaceType2 = StubObjectType()
-        val marketplaceType3 = StubObjectType(id = MarketplaceObjectTypeIds.PAGE)
+        val marketplaceType3 = StubObjectType(
+            id = MarketplaceObjectTypeIds.PAGE,
+            uniqueKey = ObjectTypeIds.PAGE
+        )
         val installedType1 = StubObjectType(sourceObject = marketplaceType1.id)
         val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
 
-        val expectedInstalledTypeId = ObjectTypeIds.PAGE
+        val expectedInstalledTypeUniqueId = ObjectTypeIds.PAGE
 
         val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(spaceId))
+            addAll(ObjectSearchConstants.filterObjectTypeLibrary(space))
             add(
                 DVFilter(
                     relation = Relations.RECOMMENDED_LAYOUT,
@@ -464,8 +472,8 @@ class ObjectTypeChangeViewModelTest {
                     relation = Relations.ID,
                     condition = DVFilterCondition.NOT_IN,
                     value = listOf(
-                        marketplaceType1.id,
-                        marketplaceType2.id,
+                        marketplaceType1.uniqueKey,
+                        marketplaceType2.uniqueKey,
                         MarketplaceObjectTypeIds.BOOKMARK
                     )
                 )
@@ -511,11 +519,11 @@ class ObjectTypeChangeViewModelTest {
 
         blockRepository.stub {
             onBlocking {
-                addObjectListToSpace(
-                    objects = listOf(marketplaceType3.id),
-                    space = spaceId
+                addObjectToSpace(
+                    obj = marketplaceType3.id,
+                    space = space
                 )
-            } doReturn listOf(expectedInstalledTypeId)
+            } doReturn expectedInstalledTypeUniqueId
         }
 
         val vm = givenViewModel()
@@ -562,7 +570,6 @@ class ObjectTypeChangeViewModelTest {
                 key = marketplaceType3.uniqueKey.orEmpty(),
                 name = marketplaceType3.name.orEmpty()
             )
-            delay(100)
             assertEquals(
                 expected =
                 ObjectTypeChangeViewModel.Command.TypeAdded(type = marketplaceType3.name.orEmpty()),
@@ -570,16 +577,16 @@ class ObjectTypeChangeViewModelTest {
             )
             assertEquals(
                 expected = ObjectTypeChangeViewModel.Command.DispatchType(
-                    id = expectedInstalledTypeId,
+                    id = expectedInstalledTypeUniqueId,
                     key = marketplaceType3.uniqueKey.orEmpty(),
                     name = marketplaceType3.name.orEmpty()
                 ),
                 actual = awaitItem()
             )
             verifyBlocking(blockRepository, times(1)) {
-                addObjectListToSpace(
-                    space = spaceId,
-                    objects = listOf(marketplaceType3.id)
+                addObjectToSpace(
+                    space = space,
+                    obj = marketplaceType3.id
                 )
             }
         }
@@ -596,6 +603,7 @@ class ObjectTypeChangeViewModelTest {
         val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
 
 
+        stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = buildList {
@@ -668,4 +676,10 @@ class ObjectTypeChangeViewModelTest {
         spaceManager = spaceManager,
         getDefaultPageType = getDefaultPageType
     )
+
+    fun stubSpaceManager(spaceId: Id) {
+        spaceManager.stub {
+            onBlocking { get() } doReturn spaceId
+        }
+    }
 }

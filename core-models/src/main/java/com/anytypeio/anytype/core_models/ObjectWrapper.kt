@@ -54,6 +54,8 @@ sealed class ObjectWrapper {
 
         val id: Id by default
 
+        val uniqueKey: String? by default
+
         val done: Boolean? by default
 
         val snippet: String? by default
@@ -167,9 +169,11 @@ sealed class ObjectWrapper {
                 is Double -> ObjectType.Layout.values().singleOrNull { layout ->
                     layout.code == value.toInt()
                 }
-                else -> null
+                else -> ObjectType.Layout.BASIC
             }
         val defaultTemplateId: Id? by default
+
+        val key: String? get() = uniqueKey
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {
@@ -193,6 +197,7 @@ sealed class ObjectWrapper {
         private val relationReadonlyValue: Boolean? by default
 
         val id: Id by default
+        val uniqueKey: String? by default
         val key: Key get() = relationKey
         val spaceId: Id? by default
         val sourceObject: Id? by default

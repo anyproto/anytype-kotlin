@@ -410,8 +410,8 @@ fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): Lis
 fun ObjectState.DataView.Set.isSetByRelation(setOfValue: List<Id>): Boolean {
     if (setOfValue.isEmpty()) return false
     val objectDetails = details[setOfValue.first()]?.map.orEmpty()
-    val wrapper = ObjectWrapper.Type(objectDetails)
-    return wrapper.uniqueKey == ObjectTypeUniqueKeys.RELATION
+    val wrapper = ObjectWrapper.Basic(objectDetails)
+    return wrapper.layout == ObjectType.Layout.RELATION
 }
 
 private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {
@@ -583,7 +583,7 @@ private suspend fun resolveTypeAndActiveViewTemplate(
     } else {
         VIEW_DEFAULT_OBJECT_TYPE
     }
-    val defaultSetObjectType = storeOfObjectTypes.get(defaultSetObjectTypId)
+    val defaultSetObjectType = storeOfObjectTypes.get(defaultSetObjectTypId) ?: storeOfObjectTypes.getByKey(defaultSetObjectTypId)
     return if (activeView.defaultTemplate.isNullOrEmpty()) {
         val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
         Pair(defaultSetObjectType, defaultTemplateId)

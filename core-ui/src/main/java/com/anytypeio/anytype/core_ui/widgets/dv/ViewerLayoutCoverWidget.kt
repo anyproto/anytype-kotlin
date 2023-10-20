@@ -26,8 +26,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -40,8 +38,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.views.BodyCallout
-import com.anytypeio.anytype.core_ui.views.TitleInter15
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi.State.ImagePreview
@@ -119,7 +116,7 @@ fun ViewerLayoutCoverWidget(
                     Text(
                         modifier = Modifier.align(Alignment.CenterStart),
                         text = stringResource(id = R.string.none),
-                        style = BodyCallout,
+                        style = BodyRegular,
                         color = colorResource(id = R.color.text_primary)
                     )
                     if (uiState.cover == ImagePreview.None) {
@@ -141,7 +138,7 @@ fun ViewerLayoutCoverWidget(
                     Text(
                         modifier = Modifier.align(Alignment.CenterStart),
                         text = stringResource(id = R.string.page_cover),
-                        style = BodyCallout,
+                        style = BodyRegular,
                         color = colorResource(id = R.color.text_primary)
                     )
                     if (uiState.cover == ImagePreview.Cover) {

@@ -83,6 +83,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
@@ -192,8 +193,14 @@ fun TypeTemplatesWidget(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(bottom = 20.dp, top = 8.dp)
+                        .padding(bottom = 20.dp)
                 ) {
+                    Box(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 6.dp, bottom = 6.dp)
+                    ) {
+                        Dragger(modifier = Modifier.align(Alignment.Center))
+                    }
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()

@@ -1580,7 +1580,8 @@ class ObjectSetViewModel(
                     showWidget = true,
                     isEditing = false,
                     viewerId = viewer.id,
-                    isPossibleToChangeType = isPossibleToChangeType == true
+                    isPossibleToChangeType = isPossibleToChangeType == true,
+                    isPossibleToChangeTemplate = false
                 )
             }
         )
@@ -1637,15 +1638,6 @@ class ObjectSetViewModel(
                     }
                 }
             }
-        }
-    }
-
-    private suspend fun resolveObjectType(type: Id?): ObjectWrapper.Type? {
-        return if (type == null) {
-            val defaultObjectType = getDefaultPageType.run(Unit).type?.key ?: return null
-            storeOfObjectTypes.get(defaultObjectType)
-        } else {
-            storeOfObjectTypes.get(type)
         }
     }
 
@@ -1809,6 +1801,13 @@ class ObjectSetViewModel(
                 ?: return emptyList()
 
         val isTemplatesAllowed = viewerDefType.isTemplatesAllowed()
+
+        typeTemplatesWidgetState.value = when (val state = typeTemplatesWidgetState.value) {
+            is TypeTemplatesWidgetUI.Data -> state.copy(
+                isPossibleToChangeTemplate = isTemplatesAllowed
+            )
+            is TypeTemplatesWidgetUI.Init -> state
+        }
 
         val newTemplate = if (!isTemplatesAllowed) {
             emptyList()

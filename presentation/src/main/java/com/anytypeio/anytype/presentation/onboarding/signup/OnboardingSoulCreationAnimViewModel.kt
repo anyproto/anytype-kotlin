@@ -43,7 +43,7 @@ class OnboardingSoulCreationAnimViewModel @Inject constructor(
         Resultat.Success(
             AccountData(
                 name = obj?.name.orEmpty(),
-                icon = (obj?.profileIcon(urlBuilder, gradientProvider) as? ProfileIconView.Gradient)
+                icon = (obj?.profileIcon(urlBuilder, gradientProvider, true) as? ProfileIconView.Gradient)
                     ?: ProfileIconView.Gradient(
                         gradientProvider.get(0.0).from,
                         gradientProvider.get(0.0).to

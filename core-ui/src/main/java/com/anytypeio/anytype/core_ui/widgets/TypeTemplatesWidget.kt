@@ -81,6 +81,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -1031,16 +1033,16 @@ fun ComposablePreview() {
     val items = listOf(
         TemplateView.Blank(
             id = DEFAULT_TEMPLATE_ID_BLANK,
-            typeId = "page",
-            typeUniqueKey = "ot-page",
+            targetTypeId = TypeId("page"),
+            targetTypeKey = TypeKey("ot-page"),
             typeName = "Page",
             layout = ObjectType.Layout.BASIC.code
         ),
         TemplateView.Template(
             id = "1",
             name = "Template 1",
-            typeId = "page",
-            typeUniqueKey = "ot-page",
+            targetTypeId = TypeId("page"),
+            targetTypeKey = TypeKey("ot-page"),
             layout = ObjectType.Layout.BASIC,
             image = null,
             emoji = null,
@@ -1056,8 +1058,8 @@ fun ComposablePreview() {
         moreMenuItem = TemplateView.Template(
             id = "123",
             name = "Template 1",
-            typeId = "page",
-            typeUniqueKey = "ot-page",
+            targetTypeId = TypeId("page"),
+            targetTypeKey = TypeKey("ot-page"),
         ),
         objectTypes = listOf(
             TemplateObjectTypeView.Search,

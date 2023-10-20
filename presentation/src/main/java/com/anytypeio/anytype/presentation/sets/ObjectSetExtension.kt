@@ -15,11 +15,12 @@ import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVVie
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.title
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
@@ -446,6 +447,7 @@ fun ObjectWrapper.Basic.toTemplateView(
     urlBuilder: UrlBuilder,
     coverImageHashProvider: CoverImageHashProvider,
     viewerDefTemplateId: Id?,
+    viewerDefTypeKey: TypeKey
 ): TemplateView.Template {
     val coverContainer = if (coverType != CoverType.NONE) {
         BasicObjectCoverWrapper(this)
@@ -456,7 +458,7 @@ fun ObjectWrapper.Basic.toTemplateView(
     return TemplateView.Template(
         id = id,
         name = name.orEmpty(),
-        typeId = targetObjectType.orEmpty(),
+        targetTypeId = TypeId(targetObjectType.orEmpty()),
         emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
         image = if (!iconImage.isNullOrBlank()) urlBuilder.thumbnail(iconImage!!) else null,
         layout = layout ?: ObjectType.Layout.BASIC,
@@ -464,19 +466,7 @@ fun ObjectWrapper.Basic.toTemplateView(
         coverImage = coverContainer?.coverImage,
         coverGradient = coverContainer?.coverGradient,
         isDefault = viewerDefTemplateId == id,
-        typeUniqueKey = getValue<String?>(Relations.UNIQUE_KEY)
-    )
-}
-
-fun ObjectWrapper.Type.toTemplateViewBlank(
-    viewerDefaultTemplate: Id?
-): TemplateView.Blank {
-    return TemplateView.Blank(
-        id = DEFAULT_TEMPLATE_ID_BLANK,
-        typeId = id,
-        layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
-        isDefault = viewerDefaultTemplate.isNullOrEmpty() || viewerDefaultTemplate == DEFAULT_TEMPLATE_ID_BLANK,
-        typeUniqueKey = uniqueKey
+        targetTypeKey = viewerDefTypeKey
     )
 }
 

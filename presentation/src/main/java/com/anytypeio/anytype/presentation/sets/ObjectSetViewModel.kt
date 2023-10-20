@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
@@ -52,7 +53,6 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -1268,11 +1268,12 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithOpeningTemplate(target: Id, targetObjectType: Id) {
+    private suspend fun proceedWithOpeningTemplate(target: Id, targetTypeId: Id, targetTypeKey: Id) {
         isCustomizeViewPanelVisible.value = false
         val event = AppNavigation.Command.OpenModalEditor(
             id = target,
-            targetObjectType = targetObjectType
+            targetTypeId = targetTypeId,
+            targetTypeKey = targetTypeKey
         )
         viewModelScope.launch {
             closeBlock.async(context).fold(
@@ -1665,11 +1666,11 @@ class ObjectSetViewModel(
                 ) {
                     it.copy(
                         defaultTemplate = templateView.id,
-                        defaultObjectType = templateView.typeId
+                        defaultObjectType = templateView.targetTypeId.id
                     )
                 }
                 proceedWithDataViewObjectCreate(
-                    typeChosenBy = templateView.typeUniqueKey?.let { TypeKey(it) },
+                    typeChosenBy = templateView.targetTypeKey,
                     templateId = templateView.id
                 )
             }
@@ -1680,17 +1681,18 @@ class ObjectSetViewModel(
                 ) {
                     it.copy(
                         defaultTemplate = templateView.id,
-                        defaultObjectType = templateView.typeUniqueKey
+                        defaultObjectType = templateView.targetTypeId.id
                     )
                 }
                 proceedWithDataViewObjectCreate(
-                    typeChosenBy = templateView.typeUniqueKey?.let { TypeKey(it) },
+                    typeChosenBy = templateView.targetTypeKey,
                     templateId = templateView.id
                 )
             }
             is TemplateView.New -> {
                 proceedWithCreatingTemplate(
-                    targetObjectType = templateView.targetObjectType
+                    targetTypeId = templateView.targetTypeId.id,
+                    targetTypeKey = templateView.targetTypeKey.key
                 )
             }
         }
@@ -1755,15 +1757,15 @@ class ObjectSetViewModel(
                     is TypeTemplatesWidgetUI.Data -> {
                         if (type?.id == selectedTypeFlow.value?.id) {
                             processTemplates(
-                                results = templates,
-                                viewerDefObjType = type ?: selectedTypeFlow.value,
-                                viewerDefTemplateId = template ?: selectedTypeFlow.value?.defaultTemplateId
+                                templates = templates,
+                                viewerDefType = type ?: selectedTypeFlow.value,
+                                viewerDefTemplate = template ?: selectedTypeFlow.value?.defaultTemplateId
                             )
                         } else {
                             processTemplates(
-                                results = templates,
-                                viewerDefObjType = selectedTypeFlow.value,
-                                viewerDefTemplateId = selectedTypeFlow.value?.defaultTemplateId
+                                templates = templates,
+                                viewerDefType = selectedTypeFlow.value,
+                                viewerDefTemplate = selectedTypeFlow.value?.defaultTemplateId
                             )
                         }
                     }
@@ -1780,53 +1782,70 @@ class ObjectSetViewModel(
 
     fun proceedWithSelectedTemplate(
         template: Id,
-        objectType: Id
+        typeId: Id,
+        typeKey: Id
     ) {
-        Timber.d("proceedWithSelectedTemplate, template:[$template], objectType:[$objectType]")
+        Timber.d("proceedWithSelectedTemplate, template:[$template], objectType:[$typeId]")
         val templateView = TemplateView.Template(
             id = template,
-            typeId = objectType,
-            name = "",
-            typeUniqueKey = TODO("We should work with unique key")
+            targetTypeId = TypeId(typeId),
+            targetTypeKey = TypeKey(typeKey),
+            name = ""
         )
         onTypeTemplatesWidgetAction(action = TypeTemplatesWidgetUIAction.TemplateClick(templateView))
     }
 
     private fun processTemplates(
-        results: List<ObjectWrapper.Basic>,
-        viewerDefObjType: ObjectWrapper.Type?,
-        viewerDefTemplateId: Id?
+        templates: List<ObjectWrapper.Basic>,
+        viewerDefType: ObjectWrapper.Type?,
+        viewerDefTemplate: Id?
     ): List<TemplateView> {
 
-        if (viewerDefObjType == null) return emptyList()
+        if (viewerDefType == null) return emptyList()
 
-        val isTemplatesAllowed = viewerDefObjType.isTemplatesAllowed()
+        val viewerDefTypeId = viewerDefType.id
+        val viewerDefTypeKey =
+            (if (viewerDefType.uniqueKey != null) TypeKey(viewerDefType.uniqueKey!!) else null)
+                ?: return emptyList()
+
+        val isTemplatesAllowed = viewerDefType.isTemplatesAllowed()
 
         val newTemplate = if (!isTemplatesAllowed) {
             emptyList()
         } else {
-            listOf(TemplateView.New(viewerDefObjType.id))
+            listOf(
+                TemplateView.New(
+                    targetTypeId = TypeId(viewerDefTypeId),
+                    targetTypeKey = viewerDefTypeKey
+                )
+            )
         }
 
         val blankTemplate = listOf(
-            viewerDefObjType.toTemplateViewBlank(
-                viewerDefaultTemplate = viewerDefTemplateId
+            TemplateView.Blank(
+                id = TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
+                targetTypeId = TypeId(viewerDefTypeId),
+                targetTypeKey = viewerDefTypeKey,
+                layout = viewerDefType.recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
+                isDefault = viewerDefTemplate.isNullOrEmpty()
+                        || viewerDefTemplate == TemplateView.DEFAULT_TEMPLATE_ID_BLANK,
             )
         )
-        return blankTemplate + results.map { objTemplate ->
+        return blankTemplate + templates.map { objTemplate ->
             objTemplate.toTemplateView(
                 urlBuilder = urlBuilder,
                 coverImageHashProvider = coverImageHashProvider,
-                viewerDefTemplateId = viewerDefTemplateId,
+                viewerDefTemplateId = viewerDefTemplate,
+                viewerDefTypeKey = viewerDefTypeKey
             )
         } + newTemplate
     }
 
-    private fun proceedWithCreatingTemplate(targetObjectType: Id) {
+    private fun proceedWithCreatingTemplate(targetTypeId: Id, targetTypeKey: Id) {
         viewModelScope.launch {
             delay(DELAY_BEFORE_CREATING_TEMPLATE)
             val params = CreateTemplate.Params(
-                targetObjectTypeId = targetObjectType
+                targetObjectTypeId = targetTypeId
             )
             createTemplate.async(params).fold(
                 onSuccess = { id ->
@@ -1834,9 +1853,13 @@ class ObjectSetViewModel(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.CREATE_TEMPLATE,
-                        type = storeOfObjectTypes.get(targetObjectType)?.sourceObject
+                        type = storeOfObjectTypes.get(targetTypeId)?.sourceObject
                     )
-                    proceedWithOpeningTemplate(target = id, targetObjectType = targetObjectType)
+                    proceedWithOpeningTemplate(
+                        target = id,
+                        targetTypeId = targetTypeId,
+                        targetTypeKey = targetTypeKey
+                    )
                 },
                 onFailure = { e ->
                     Timber.e(e, "Error while creating new template")
@@ -1942,7 +1965,7 @@ class ObjectSetViewModel(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.DUPLICATE_TEMPLATE,
-                        type = template.typeId
+                        type = template.targetTypeId.id
                     )
                     Timber.d("Successfully duplicated templates: $ids")
                 },
@@ -1969,7 +1992,7 @@ class ObjectSetViewModel(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.DELETE_TEMPLATE,
-                        type = template.typeId
+                        type = template.targetTypeKey.key
                     )
                     Timber.d("Successfully archived templates: $ids")
                 },
@@ -1990,14 +2013,15 @@ class ObjectSetViewModel(
                 delay(DELAY_BEFORE_CREATING_TEMPLATE)
                 proceedWithOpeningTemplate(
                     target = template.id,
-                    targetObjectType = template.typeId
+                    targetTypeId = template.targetTypeId.id,
+                    targetTypeKey = template.targetTypeKey.key
                 )
                 viewModelScope.launch {
                     logEvent(
                         state = stateReducer.state.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.EDIT_TEMPLATE,
-                        type = template.typeId
+                        type = template.targetTypeKey.key
                     )
                 }
             }

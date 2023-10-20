@@ -110,7 +110,8 @@ import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
-import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_OBJECT_TYPE
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_ID
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_KEY
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.bumptech.glide.Glide
 import javax.inject.Inject
@@ -1236,13 +1237,16 @@ open class ObjectSetFragment :
             if (event == Lifecycle.Event.ON_RESUME
                 && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)) {
                 val resultTemplateId = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
-                val resultObjectTypeId = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_OBJECT_TYPE)
-                if (!resultTemplateId.isNullOrBlank() && !resultObjectTypeId.isNullOrBlank()) {
+                val resultTypeId = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_ID)
+                val resultTypeKey = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_KEY)
+                if (!resultTemplateId.isNullOrBlank() && !resultTypeId.isNullOrBlank() && !resultTypeKey.isNullOrBlank()) {
                     navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
-                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_OBJECT_TYPE)
+                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_ID)
+                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_KEY)
                     vm.proceedWithSelectedTemplate(
                         template = resultTemplateId,
-                        objectType = resultObjectTypeId,
+                        typeId = resultTypeId,
+                        typeKey = resultTypeKey
                     )
                 }
             }

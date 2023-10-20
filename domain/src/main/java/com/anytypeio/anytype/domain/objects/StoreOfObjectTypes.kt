@@ -12,6 +12,7 @@ import kotlinx.coroutines.sync.withLock
 interface StoreOfObjectTypes {
     val size: Int
     suspend fun get(id: Id): ObjectWrapper.Type?
+    suspend fun getByKey(key: Key): ObjectWrapper.Type?
     suspend fun getAll(): List<ObjectWrapper.Type>
     suspend fun merge(types: List<ObjectWrapper.Type>)
     suspend fun amend(target: Id, diff: Map<Id, Any?>)
@@ -34,6 +35,10 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
 
     override suspend fun getAll(): List<ObjectWrapper.Type> = mutex.withLock {
         store.values.toList()
+    }
+
+    override suspend fun getByKey(key: Key): ObjectWrapper.Type? {
+        return store.values.firstOrNull { it.uniqueKey == key }
     }
 
     override suspend fun merge(types: List<ObjectWrapper.Type>): Unit = mutex.withLock {

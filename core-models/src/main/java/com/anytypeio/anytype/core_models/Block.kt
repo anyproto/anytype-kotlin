@@ -31,6 +31,7 @@ data class Block(
         val featuredRelations: List<String>? by default
         val name: String? by default
         val iconEmoji: String? by default
+        val iconOption: Double? by default
         val coverId: String? by default
         val coverType: Double? by default
         val iconImage: String? by default
@@ -287,7 +288,8 @@ data class Block(
                 val hideIcon: Boolean = false,
                 val coverFit: Boolean = false,
                 val coverRelationKey: String? = null,
-                val defaultTemplateId: Id? = null,
+                val defaultTemplate: Id? = null,
+                val defaultObjectType: Id? = null,
             ) {
 
                 enum class Type(val formattedName: String) {

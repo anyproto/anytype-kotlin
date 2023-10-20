@@ -27,6 +27,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 @ExperimentalCoroutinesApi
@@ -54,6 +55,7 @@ class RelationAddViewModelBaseTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        repo = mock(verboseLogging = true)
     }
 
     @Test
@@ -62,7 +64,7 @@ class RelationAddViewModelBaseTest {
         // SETUP
 
         val relation = StubRelationObject(
-            workspaceId = spaceId
+            spaceId = spaceId
         )
 
         spaceManager.stub {
@@ -79,7 +81,7 @@ class RelationAddViewModelBaseTest {
                         addAll(ObjectSearchConstants.filterMyRelations())
                         add(
                             DVFilter(
-                                relation = Relations.WORKSPACE_ID,
+                                relation = Relations.SPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
                                 value = spaceId
                             )
@@ -114,7 +116,7 @@ class RelationAddViewModelBaseTest {
                         )
                         add(
                             DVFilter(
-                                relation = Relations.WORKSPACE_ID,
+                                relation = Relations.SPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
                                 value = MARKETPLACE_SPACE_ID
                             )
@@ -179,15 +181,15 @@ class RelationAddViewModelBaseTest {
             // SETUP
 
             val marketplace = listOf(
-                StubRelationObject(workspaceId = MARKETPLACE_SPACE_ID),
-                StubRelationObject(workspaceId = MARKETPLACE_SPACE_ID),
-                StubRelationObject(workspaceId = MARKETPLACE_SPACE_ID)
+                StubRelationObject(spaceId = MARKETPLACE_SPACE_ID),
+                StubRelationObject(spaceId = MARKETPLACE_SPACE_ID),
+                StubRelationObject(spaceId = MARKETPLACE_SPACE_ID)
             )
 
             val library = listOf(
-                StubRelationObject(sourceObject = marketplace[0].id, workspaceId = spaceId),
-                StubRelationObject(workspaceId = spaceId),
-                StubRelationObject(workspaceId = spaceId)
+                StubRelationObject(sourceObject = marketplace[0].id, spaceId = spaceId),
+                StubRelationObject(spaceId = spaceId),
+                StubRelationObject(spaceId = spaceId)
             )
 
             spaceManager.stub {
@@ -204,7 +206,7 @@ class RelationAddViewModelBaseTest {
                             addAll(ObjectSearchConstants.filterMyRelations())
                             add(
                                 DVFilter(
-                                    relation = Relations.WORKSPACE_ID,
+                                    relation = Relations.SPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
                                     value = spaceId
                                 )
@@ -239,7 +241,7 @@ class RelationAddViewModelBaseTest {
                             )
                             add(
                                 DVFilter(
-                                    relation = Relations.WORKSPACE_ID,
+                                    relation = Relations.SPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
                                     value = MARKETPLACE_SPACE_ID
                                 )

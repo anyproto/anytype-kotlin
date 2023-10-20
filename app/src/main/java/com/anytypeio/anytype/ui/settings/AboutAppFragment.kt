@@ -61,6 +61,7 @@ class AboutAppFragment : BaseBottomSheetComposeFragment() {
                         deviceId = vm.deviceId.collectAsState().value,
                         onMetaClicked = { copyMetaToClipboard() },
                         onContactUsClicked = {
+                            vm.onContactUsClicked()
                             proceedWithAction(
                                 SystemAction.MailTo(
                                     generateSupportMail(

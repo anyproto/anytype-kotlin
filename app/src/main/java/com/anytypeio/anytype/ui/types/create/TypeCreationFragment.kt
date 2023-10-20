@@ -16,6 +16,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
@@ -78,6 +79,7 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
                 }
             }
         }
+        subscribe(vm.toasts) { toast(it) }
     }
 
     override fun injectDependencies() {

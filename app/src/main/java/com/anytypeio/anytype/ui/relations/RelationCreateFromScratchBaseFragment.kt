@@ -224,13 +224,14 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
 class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBaseFragment() {
 
     private val dv get() = arg<Id>(DV_KEY)
+    private val viewer get() = arg<Id>(VIEWER_KEY)
 
     @Inject
     lateinit var factory: RelationCreateFromScratchForDataViewViewModel.Factory
     override val vm: RelationCreateFromScratchForDataViewViewModel by viewModels { factory }
 
     override fun onCreateRelationClicked() {
-        vm.onCreateRelationClicked(ctx = ctx, dv = dv)
+        vm.onCreateRelationClicked(ctx = ctx, viewerId = viewer, dv = dv)
     }
 
     override fun onLimitObjectTypeClicked() {
@@ -262,12 +263,14 @@ class RelationCreateFromScratchForDataViewFragment : RelationCreateFromScratchBa
     }
 
     companion object {
-        fun new(ctx: Id, dv: Id, query: String) =
+        fun new(ctx: Id, viewer: Id, dv: Id, query: String) =
             RelationCreateFromScratchForDataViewFragment().apply {
-                arguments = bundleOf(CTX_KEY to ctx, DV_KEY to dv, QUERY_KEY to query)
+                arguments =
+                    bundleOf(CTX_KEY to ctx, DV_KEY to dv, QUERY_KEY to query, VIEWER_KEY to viewer)
             }
 
         const val DV_KEY = "arg.relation-create-from-scratch-for-data-view.ctx"
+        const val VIEWER_KEY = "arg.relation-create-from-scratch-for-data-view.viewer"
     }
 }
 

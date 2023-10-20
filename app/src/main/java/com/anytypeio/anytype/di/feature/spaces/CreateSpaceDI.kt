@@ -13,6 +13,7 @@ import com.anytypeio.anytype.ui.spaces.CreateSpaceFragment
 import dagger.Binds
 import dagger.Component
 import dagger.Module
+import dagger.Provides
 
 @Component(
     dependencies = [CreateSpaceDependencies::class],
@@ -33,15 +34,17 @@ interface CreateSpaceComponent {
 
 @Module
 object CreateSpaceModule {
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
+
     @Module
     interface Declarations {
         @Binds
         @PerScreen
         fun bindViewModelFactory(factory: CreateSpaceViewModel.Factory): ViewModelProvider.Factory
-
-        @Binds
-        @PerScreen
-        fun spaceGradientProvider(provider: SpaceGradientProvider.Impl): SpaceGradientProvider
     }
 }
 

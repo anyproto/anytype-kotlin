@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -54,8 +55,8 @@ class CreateBlockLinkWithObjectTest {
         val context = MockDataFactory.randomString()
         val target = MockDataFactory.randomString()
         val position = Position.LEFT
+        val typeId = MockDataFactory.randomString()
         val type = MockDataFactory.randomString()
-        val name = MockDataFactory.randomString()
         stubCreateBlockLinkWithObject()
         givenGetTemplates(listOf())
 
@@ -65,7 +66,7 @@ class CreateBlockLinkWithObjectTest {
             target = target,
             position = position,
             typeKey = TypeKey(type),
-            typeId = TODO()
+            typeId = TypeId(typeId)
         )
         createBlockLinkWithObject.run(params)
 
@@ -74,9 +75,7 @@ class CreateBlockLinkWithObjectTest {
             context = context,
             target = target,
             position = position,
-            prefilled = buildMap {
-                put(Relations.TYPE, type)
-            },
+            prefilled = emptyMap(),
             template = null,
             internalFlags = listOf(),
             type = TypeKey(type)
@@ -92,6 +91,7 @@ class CreateBlockLinkWithObjectTest {
         val target = MockDataFactory.randomString()
         val position = Position.LEFT
         val type = MockDataFactory.randomString()
+        val typeId = MockDataFactory.randomString()
         val template = MockDataFactory.randomString()
         stubCreateBlockLinkWithObject()
         givenGetTemplates(listOf(ObjectWrapper.Basic(buildMap {
@@ -104,7 +104,7 @@ class CreateBlockLinkWithObjectTest {
             target = target,
             position = position,
             typeKey = TypeKey(type),
-            typeId = TODO()
+            typeId = TypeId(typeId)
         )
         createBlockLinkWithObject.run(params)
 
@@ -113,9 +113,7 @@ class CreateBlockLinkWithObjectTest {
             context = context,
             target = target,
             position = position,
-            prefilled = buildMap {
-                put(Relations.TYPE, type)
-            },
+            prefilled = emptyMap(),
             template = template,
             internalFlags = listOf(),
             type = TypeKey(type)
@@ -131,6 +129,7 @@ class CreateBlockLinkWithObjectTest {
         val target = MockDataFactory.randomString()
         val position = Position.LEFT
         val type = MockDataFactory.randomString()
+        val typeId = MockDataFactory.randomString()
         val templateOne = MockDataFactory.randomString()
         val templateTwo = MockDataFactory.randomString()
         stubCreateBlockLinkWithObject()
@@ -151,7 +150,7 @@ class CreateBlockLinkWithObjectTest {
             target = target,
             position = position,
             typeKey = TypeKey(type),
-            typeId = TODO()
+            typeId = TypeId(typeId)
         )
         createBlockLinkWithObject.run(params)
 
@@ -160,7 +159,7 @@ class CreateBlockLinkWithObjectTest {
             context = context,
             target = target,
             position = position,
-            template = null,
+            template = templateOne,
             internalFlags = listOf(),
             type = TypeKey(type),
             prefilled = emptyMap()

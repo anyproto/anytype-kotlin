@@ -7,7 +7,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.relations.ObjectSetSettingsViewModel
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
@@ -36,7 +35,6 @@ object ObjectSetSettingsModule {
     @PerModal
     fun provideViewModelFactory(
         state: MutableStateFlow<ObjectState>,
-        session: ObjectSetSession,
         dispatcher: Dispatcher<Payload>,
         updateDataViewViewer: UpdateDataViewViewer,
         store: StoreOfRelations,
@@ -44,7 +42,6 @@ object ObjectSetSettingsModule {
         deleteRelationFromDataView: DeleteRelationFromDataView,
     ): ObjectSetSettingsViewModel.Factory = ObjectSetSettingsViewModel.Factory(
         objectState = state,
-        session = session,
         dispatcher = dispatcher,
         updateDataViewViewer = updateDataViewViewer,
         analytics = analytics,

@@ -41,7 +41,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should create new object with source object type if given set is aggregated by specific object type`() = runTest{
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfRelations(mockObjectSet)
@@ -51,7 +51,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -77,67 +77,13 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             val second = awaitItem()
             assertIs<DataViewViewState.Set.Default>(second)
 
-            viewModel.proceedWithCreatingNewDataViewObject()
+            viewModel.proceedWithDataViewObjectCreate()
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByType(
                         type = TypeKey(mockObjectSet.setOf),
-                        filters = mockObjectSet.filters,
-                        template = null
-                    )
-                )
-            }
-        }
-    }
-
-    @Test
-    fun `should create new object with default object type if given set is aggregated by relations`() = runTest {
-        // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
-        stubInterceptEvents()
-        stubInterceptThreadStatus()
-        stubStoreOfRelations(mockObjectSet)
-        stubOpenObject(
-            doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
-            details = mockObjectSet.detailsSetByRelation
-        )
-        stubSubscriptionResults(
-            subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
-            storeOfRelations = storeOfRelations,
-            keys = mockObjectSet.dvKeys,
-            sources = listOf(mockObjectSet.relationObject3.id),
-            objects = listOf(mockObjectSet.obj1, mockObjectSet.obj2),
-            dvFilters = mockObjectSet.filters
-        )
-        doReturn(Unit).`when`(createDataViewObject).async(
-            CreateDataViewObject.Params.SetByRelation(
-                relations = listOf(mockObjectSet.relationObject3.id),
-                filters = mockObjectSet.filters,
-                template = null
-            )
-        )
-
-        // TESTING
-        viewModel.onStart(ctx = root)
-
-        // ASSERT DATA VIEW STATE
-        viewModel.currentViewer.test {
-            val first = awaitItem()
-            assertIs<DataViewViewState.Init>(first)
-
-            val second = awaitItem()
-            assertIs<DataViewViewState.Set.Default>(second)
-
-            viewModel.proceedWithCreatingNewDataViewObject()
-
-            advanceUntilIdle()
-            verifyBlocking(createDataViewObject, times(1)) {
-                async(
-                    CreateDataViewObject.Params.SetByRelation(
-                        relations = listOf(mockObjectSet.relationObject3.id),
                         filters = mockObjectSet.filters,
                         template = null
                     )

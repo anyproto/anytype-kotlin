@@ -5,12 +5,12 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
@@ -22,7 +22,6 @@ import timber.log.Timber
 
 class ModifyViewerSortViewModel(
     private val objectState: StateFlow<ObjectState>,
-    private val session: ObjectSetSession,
     private val dispatcher: Dispatcher<Payload>,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val analytics: Analytics,
@@ -34,11 +33,11 @@ class ModifyViewerSortViewModel(
     val viewState = MutableStateFlow<ViewState?>(null)
     private val jobs = mutableListOf<Job>()
 
-    fun onStart(sortId: Id, relationKey: Key) {
+    fun onStart(viewerId: Id, sortId: Id, relationKey: Key) {
         Timber.d("onStart, sortId: [$sortId], relationKey:[$relationKey]")
         jobs += viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
-                val viewer = state.viewerById(session.currentViewerId.value) ?: return@collect
+                val viewer = state.viewerById(viewerId) ?: return@collect
                 val sort = viewer.sorts.find { it.id == sortId }
                 if (sort != null) {
                     val relation = storeOfRelations.getByKey(relationKey)
@@ -63,31 +62,34 @@ class ModifyViewerSortViewModel(
         jobs.clear()
     }
 
-    fun onSortDescSelected(ctx: Id, sortId: Id) {
+    fun onSortDescSelected(ctx: Id, viewerId: Id, sortId: Id) {
         Timber.d("onSortDescSelected, ctx:[$ctx], sortId:[$sortId]")
         proceedWithUpdatingSortType(
             ctx = ctx,
             sortId = sortId,
-            type = DVSortType.DESC
+            type = DVSortType.DESC,
+            viewerId = viewerId
         )
     }
 
-    fun onSortAscSelected(ctx: Id, sortId: Id) {
+    fun onSortAscSelected(ctx: Id, viewerId: Id, sortId: Id) {
         Timber.d("onSortDescSelected, ctx:[$ctx], sortId:[$sortId]")
         proceedWithUpdatingSortType(
             ctx = ctx,
             sortId = sortId,
-            type = DVSortType.ASC
+            type = DVSortType.ASC,
+            viewerId = viewerId
         )
     }
 
     private fun proceedWithUpdatingSortType(
         ctx: Id,
+        viewerId: Id,
         sortId: Id,
         type: Block.Content.DataView.Sort.Type
     ) {
         val state = objectState.value.dataViewState() ?: return
-        val viewer = state.viewerById(session.currentViewerId.value) ?: return
+        val viewer = state.viewerById(viewerId) ?: return
         val sort = viewer.sorts.find { it.id == sortId }
         if (sort == null) {
             Timber.e("Couldn't find sort in view:[$viewer] by sortId:[$sortId]")
@@ -101,8 +103,8 @@ class ModifyViewerSortViewModel(
                 view = viewer.id,
                 sort = sort.copy(type = type)
             )
-            updateDataViewViewer(params).process(
-                success = {
+            updateDataViewViewer.async(params).fold(
+                onSuccess = {
                     dispatcher.send(it).also {
                         logEvent(
                             state = objectState.value,
@@ -114,7 +116,7 @@ class ModifyViewerSortViewModel(
                         isDismissed.emit(true)
                     }
                 },
-                failure = { Timber.e(it, "Error while updating sort type") }
+                onFailure = { Timber.e(it, "Error while updating sort type") }
             )
         }
     }
@@ -128,7 +130,6 @@ class ModifyViewerSortViewModel(
     class Factory(
         private val state: StateFlow<ObjectState>,
         private val dispatcher: Dispatcher<Payload>,
-        private val session: ObjectSetSession,
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val analytics: Analytics,
         private val storeOfRelations: StoreOfRelations
@@ -138,7 +139,6 @@ class ModifyViewerSortViewModel(
             return ModifyViewerSortViewModel(
                 objectState = state,
                 dispatcher = dispatcher,
-                session = session,
                 updateDataViewViewer = updateDataViewViewer,
                 analytics = analytics,
                 storeOfRelations = storeOfRelations

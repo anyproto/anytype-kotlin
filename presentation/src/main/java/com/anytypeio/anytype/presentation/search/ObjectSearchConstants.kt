@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.FileSyncStatus
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.AUDIO
@@ -192,33 +193,57 @@ object ObjectSearchConstants {
     //endregion
 
     //region ADD OBJECT TO FILTER
-    fun filterAddObjectToFilter(space: Id) = listOf(
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.IN,
-            value = SupportedLayouts.layouts.map { it.code.toDouble() }
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+    fun filterAddObjectToFilter(
+        space: Id,
+        limitObjectTypes: List<Key>
+    ) = buildList {
+        add(
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
         )
-    )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.SPACE_ID,
+                condition = DVFilterCondition.EQUAL,
+                value = space
+            )
+        )
+        // TODO check these filters
+        if (limitObjectTypes.isEmpty()) {
+            add(
+                DVFilter(
+                    relation = Relations.LAYOUT,
+                    condition = DVFilterCondition.IN,
+                    value = SupportedLayouts.layouts.map { it.code.toDouble() }
+                )
+            )
+        } else {
+            add(
+                DVFilter(
+                    relation = Relations.TYPE_UNIQUE_KEY,
+                    condition = DVFilterCondition.IN,
+                    value = limitObjectTypes
+                )
+            )
+        }
+    }
 
     val sortAddObjectToFilter = listOf(
         DVSort(
@@ -473,6 +498,7 @@ object ObjectSearchConstants {
         Relations.NAME,
         Relations.ICON_IMAGE,
         Relations.ICON_EMOJI,
+        Relations.ICON_OPTION,
         Relations.TYPE,
         Relations.LAYOUT,
         Relations.IS_ARCHIVED,

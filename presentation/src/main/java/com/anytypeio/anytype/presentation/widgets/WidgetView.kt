@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 
 sealed class WidgetView {
 
@@ -128,9 +129,15 @@ fun ObjectWrapper.Basic.getWidgetObjectName(): String? {
     }
 }
 
-fun ObjectWrapper.Basic.widgetElementIcon(builder: UrlBuilder) : ObjectIcon {
+fun ObjectWrapper.Basic.widgetElementIcon(
+    builder: UrlBuilder,
+    gradientProvider: SpaceGradientProvider
+) : ObjectIcon {
     val img = iconImage
     val emoji = iconEmoji
+    val option = iconOption?.let { code ->
+        gradientProvider.get(code)
+    }
     return when (layout) {
         ObjectType.Layout.BASIC -> when {
             !img.isNullOrBlank() -> ObjectIcon.Basic.Image(hash = builder.thumbnail(img))
@@ -142,10 +149,17 @@ fun ObjectWrapper.Basic.widgetElementIcon(builder: UrlBuilder) : ObjectIcon {
             !emoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(unicode = emoji)
             else -> ObjectIcon.None
         }
-        ObjectType.Layout.PROFILE -> if (!img.isNullOrBlank()) {
-            ObjectIcon.Profile.Image(hash = builder.thumbnail(img))
-        } else {
-            ObjectIcon.Profile.Avatar(name = name.orEmpty())
+        ObjectType.Layout.PROFILE -> {
+            if (!img.isNullOrBlank()) {
+                ObjectIcon.Profile.Image(hash = builder.thumbnail(img))
+            } else if (option != null) {
+                ObjectIcon.Profile.Gradient(
+                    from = option.from,
+                    to = option.to
+                )
+            } else {
+                ObjectIcon.Profile.Avatar(name = name.orEmpty())
+            }
         }
         ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> if (!img.isNullOrBlank()) {
             ObjectIcon.Basic.Image(hash = builder.thumbnail(img))

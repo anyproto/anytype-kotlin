@@ -20,14 +20,21 @@ class ViewerCardSizeSelectFragment : BaseBottomSheetFragment<FragmentViewerCardS
     private val vm: ViewerCardSizeSelectViewModel by viewModels { factory }
 
     private val ctx get() = arg<String>(CTX_KEY)
+    private val viewer get() = arg<String>(VIEWER_KEY)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.btnCardSmall.setOnClickListener {
-            vm.onSmallCardClicked(ctx)
+            vm.onSmallCardClicked(
+                ctx = ctx,
+                viewerId = viewer
+            )
         }
         binding.btnCardLarge.setOnClickListener {
-            vm.onLargeCardClicked(ctx)
+            vm.onLargeCardClicked(
+                ctx = ctx,
+                viewerId = viewer
+            )
         }
         with(lifecycleScope) {
             subscribe(vm.viewState) { state ->
@@ -74,5 +81,6 @@ class ViewerCardSizeSelectFragment : BaseBottomSheetFragment<FragmentViewerCardS
 
     companion object {
         const val CTX_KEY = "arg.viewer-card-size-select.ctx"
+        const val VIEWER_KEY = "arg.viewer-card-size-select.viewer"
     }
 }

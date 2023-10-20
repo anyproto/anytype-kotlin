@@ -14,7 +14,11 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.sets.SearchRelationAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
-import com.anytypeio.anytype.core_utils.ext.*
+import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.drawable
+import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentSelectSortOrFilterRelationBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -24,10 +28,11 @@ import javax.inject.Inject
 class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSelectSortOrFilterRelationBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
+    private val viewer: String get() = arg(VIEWER_ID_KEY)
 
     private val searchRelationAdapter by lazy {
         SearchRelationAdapter { relation ->
-            vm.onRelationClicked(ctx = ctx, relation = relation)
+            vm.onRelationClicked(ctx = ctx, viewerId = viewer, relation = relation)
         }
     }
 
@@ -74,6 +79,16 @@ class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSele
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        vm.onStart(viewer)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         with(lifecycleScope) {
@@ -100,10 +115,11 @@ class SelectSortRelationFragment : BaseBottomSheetTextInputFragment<FragmentSele
 
     companion object {
 
-        fun new(ctx: Id): SelectSortRelationFragment = SelectSortRelationFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        fun new(ctx: Id, viewerId: Id): SelectSortRelationFragment = SelectSortRelationFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, VIEWER_ID_KEY to viewerId)
         }
 
         const val CTX_KEY = "arg.select-sort-relation.ctx"
+        const val VIEWER_ID_KEY = "arg.select-sort-relation.viewer"
     }
 }

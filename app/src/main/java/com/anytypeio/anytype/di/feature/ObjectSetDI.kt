@@ -28,7 +28,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.DuplicateDataViewViewer
-import com.anytypeio.anytype.domain.dataview.interactor.RenameDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.SetDataViewViewerPosition
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
@@ -60,6 +59,7 @@ import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.status.ThreadStatusChannel
+import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
@@ -148,6 +148,10 @@ interface ObjectSetSubComponent {
     fun objectRelationListComponent(): ObjectRelationListComponent.Builder
     fun relationAddToObjectComponent(): RelationAddToObjectSubComponent.Builder
     fun relationCreateFromScratchForObjectComponent(): RelationCreateFromScratchForObjectSubComponent.Builder
+
+    fun createDataViewViewerSubComponent(): CreateDataViewViewerSubComponent.Builder
+    fun editDataViewViewerComponent(): EditDataViewViewerSubComponent.Builder
+    fun manageViewerComponent(): ManageViewerSubComponent.Builder
 }
 
 @Module(
@@ -219,6 +223,7 @@ object ObjectSetModule {
         duplicateObjects: DuplicateObjects,
         templatesContainer: ObjectTypeTemplatesContainer,
         setObjectListIsArchived: SetObjectListIsArchived,
+        createTemplate: CreateTemplate,
         viewerDelegate: ViewerDelegate,
         spaceManager: SpaceManager
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
@@ -256,7 +261,8 @@ object ObjectSetModule {
         templatesContainer = templatesContainer,
         setObjectListIsArchived = setObjectListIsArchived,
         viewerDelegate = viewerDelegate,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        createTemplate = createTemplate
     )
 
     @JvmStatic
@@ -321,24 +327,15 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideUpdateDataViewViewerUseCase(
-        repo: BlockRepository
-    ): UpdateDataViewViewer = UpdateDataViewViewer(repo = repo)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideCreateDataViewRecordUseCase(
         repo: BlockRepository,
         storeOfRelations: StoreOfRelations,
         getDefaultPageType: GetDefaultPageType,
         getTemplates: GetTemplates,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        dispatchers: AppCoroutineDispatchers
     ): CreateDataViewObject = CreateDataViewObject(
         repo = repo,
-        getDefaultPageType = getDefaultPageType,
-        getTemplates = getTemplates,
         storeOfRelations = storeOfRelations,
         dispatchers = dispatchers,
         spaceManager = spaceManager
@@ -656,7 +653,7 @@ object ObjectSetModule {
     fun provideRenameDataViewViewerUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): RenameDataViewViewer = RenameDataViewViewer(repo = repo, dispatchers = dispatchers)
+    ): UpdateDataViewViewer = UpdateDataViewViewer(repo = repo, dispatchers = dispatchers)
 
     @JvmStatic
     @Provides
@@ -688,16 +685,16 @@ object ObjectSetModule {
     fun provideViewerDelegate(
         session: ObjectSetSession,
         addDataViewViewer: AddDataViewViewer,
-        renameDataViewViewer: RenameDataViewViewer,
         duplicateDataViewViewer: DuplicateDataViewViewer,
         deleteDataViewViewer: DeleteDataViewViewer,
         setDataViewViewerPosition: SetDataViewViewerPosition,
         analytics: Analytics,
-        dispatcher: Dispatcher<Payload>
+        dispatcher: Dispatcher<Payload>,
+        updateDataViewViewer: UpdateDataViewViewer
     ): ViewerDelegate = DefaultViewerDelegate(
         session = session,
         addDataViewViewer = addDataViewViewer,
-        renameDataViewViewer = renameDataViewViewer,
+        updateDataViewViewer = updateDataViewViewer,
         duplicateDataViewViewer = duplicateDataViewViewer,
         deleteDataViewViewer = deleteDataViewViewer,
         setDataViewViewerPosition = setDataViewViewerPosition,

@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -95,6 +96,7 @@ fun HomeScreen(
     onOpenSpacesClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onSpaceClicked: () -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
 ) {
@@ -114,7 +116,8 @@ fun HomeScreen(
             onLibraryClicked = onLibraryClicked,
             onOpenSpacesClicked = onOpenSpacesClicked,
             onSpaceWidgetClicked = onSpaceWidgetClicked,
-            onMove = onMove
+            onMove = onMove,
+            onObjectCheckboxClicked = onObjectCheckboxClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -177,9 +180,10 @@ private fun WidgetList(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onEditWidgets: () -> Unit,
     onLibraryClicked: () -> Unit,
+    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onOpenSpacesClicked: () -> Unit,
-    onSpaceWidgetClicked: () -> Unit,
-    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
+    onSpaceWidgetClicked: () -> Unit
 ) {
     val views = remember { mutableStateOf(widgets) }
     views.value = widgets
@@ -245,6 +249,7 @@ private fun WidgetList(
                                     onWidgetMenuAction(item.id, action)
                                 },
                                 onWidgetObjectClicked = onWidgetObjectClicked,
+                                onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 mode = mode
@@ -351,7 +356,8 @@ private fun WidgetList(
                                 },
                                 onChangeWidgetView = onChangeWidgetView,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                mode = mode
+                                mode = mode,
+                                onObjectCheckboxClicked = onObjectCheckboxClicked
                             )
                             AnimatedVisibility(
                                 visible = mode is InteractionMode.Edit,
@@ -407,7 +413,8 @@ private fun WidgetList(
                                 onDropDownMenuAction = { action ->
                                     onWidgetMenuAction(item.id, action)
                                 },
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState
+                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                                onObjectCheckboxClicked = onObjectCheckboxClicked
                             )
                             AnimatedVisibility(
                                 visible = mode is InteractionMode.Edit,

@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
@@ -139,9 +140,10 @@ class HomeScreenViewModel(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
-    private val setWidgetActiveView: SetWidgetActiveView,
     private val spaceManager: SpaceManager,
-    private val spaceWidgetContainer: SpaceWidgetContainer
+    private val spaceWidgetContainer: SpaceWidgetContainer,
+    private val setWidgetActiveView: SetWidgetActiveView,
+    private val setObjectDetails: SetObjectDetails
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -287,7 +289,8 @@ class HomeScreenViewModel(
                             urlBuilder = urlBuilder,
                             space = config.space,
                             config = config,
-                            objectWatcher = objectWatcher
+                            objectWatcher = objectWatcher,
+                            spaceGradientProvider = spaceGradientProvider
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
@@ -297,6 +300,7 @@ class HomeScreenViewModel(
                                 storage = storelessSubscriptionContainer,
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 urlBuilder = urlBuilder,
+                                spaceGradientProvider = spaceGradientProvider,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
                                 config = config
@@ -310,7 +314,8 @@ class HomeScreenViewModel(
                                 activeView = observeCurrentWidgetView(widget.id),
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 isSessionActive = isSessionActive,
-                                urlBuilder = urlBuilder
+                                urlBuilder = urlBuilder,
+                                gradientProvider = spaceGradientProvider
                             )
                         }
                     }
@@ -411,7 +416,7 @@ class HomeScreenViewModel(
             add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
         }
         if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
-        // TODO close widget object also when switching to a new space
+
         closeObject.stream(widgetObject).collect { status ->
             status.fold(
                 onFailure = {
@@ -657,6 +662,30 @@ class HomeScreenViewModel(
             proceedWithOpeningObject(obj)
         } else {
             sendToast("Open bin to restore your archived object")
+        }
+    }
+
+    fun onObjectCheckboxClicked(id: Id, isChecked: Boolean) {
+        proceedWithTogglingObjectCheckboxState(id = id, isChecked = isChecked)
+    }
+
+    private fun proceedWithTogglingObjectCheckboxState(id: Id, isChecked: Boolean) {
+        viewModelScope.launch {
+            setObjectDetails.async(
+                SetObjectDetails.Params(
+                    ctx = id,
+                    details = mapOf(
+                        Relations.DONE to !isChecked
+                    )
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Updated checkbox state")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while toggling object checkbox state")
+                }
+            )
         }
     }
 
@@ -1238,7 +1267,8 @@ class HomeScreenViewModel(
         private val objectWatcher: ObjectWatcher,
         private val setWidgetActiveView: SetWidgetActiveView,
         private val spaceManager: SpaceManager,
-        private val spaceWidgetContainer: SpaceWidgetContainer
+        private val spaceWidgetContainer: SpaceWidgetContainer,
+        private val setObjectDetails: SetObjectDetails
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1271,7 +1301,8 @@ class HomeScreenViewModel(
             objectWatcher = objectWatcher,
             setWidgetActiveView = setWidgetActiveView,
             spaceManager = spaceManager,
-            spaceWidgetContainer = spaceWidgetContainer
+            spaceWidgetContainer = spaceWidgetContainer,
+            setObjectDetails = setObjectDetails
         ) as T
     }
 

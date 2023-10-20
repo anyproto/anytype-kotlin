@@ -87,31 +87,6 @@ class CreateAccountTest {
             verify(configStorage, times(1)).set(setup.config)
         }
 
-    @Test
-    fun `should set current workspace id after creating account`() = runTest {
-
-        val name = MockDataFactory.randomString()
-        val path = null
-        val icon = 1
-        val setup = StubAccountSetup()
-
-        val param = CreateAccount.Params(
-            name = name,
-            avatarPath = path,
-            iconGradientValue = icon
-        )
-
-        repo.stub {
-            onBlocking { createAccount(name, path, icon) } doReturn setup
-        }
-
-        createAccount.run(param)
-
-        verify(workspaceManager, times(1)).setCurrentWorkspace(
-            setup.config.spaceView
-        )
-    }
-
     private fun stubMetricsProvider(version: String, platform: String) {
         metricsProvider.stub {
             onBlocking {

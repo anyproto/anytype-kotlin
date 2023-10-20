@@ -18,6 +18,10 @@ object EventsDictionary {
     const val restoreFromBin = "RestoreFromBin"
 
     // Settings events
+
+    const val screenSettingSpacesSpaceIndex = "ScreenSettingsSpaceIndex"
+
+
     const val wallpaperSet = "SettingsWallpaperSet"
     const val keychainCopy = "KeychainCopy"
     const val defaultTypeChanged = "DefaultTypeChange"
@@ -160,6 +164,16 @@ object EventsDictionary {
     const val screenOnboarding = "ScreenOnboarding"
     const val clickOnboarding = "ClickOnboarding"
     const val clickLogin = "ClickLogin"
+
+    // About-app screen
+
+    const val MENU_HELP = "MenuHelp"
+    const val MENU_HELP_WHAT_IS_NEW = "MenuHelpWhatsNew"
+    const val MENU_HELP_TUTORIAL = "MenuHelpTutorial"
+    const val MENU_HELP_COMMUNITY = "MenuHelpCommunity"
+    const val MENU_HELP_TERMS = "MenuHelpTerms"
+    const val MENU_HELP_PRIVACY = "MenuHelpPrivacy"
+    const val MENU_HELP_CONTACT_US = "MenuHelpContact"
 
     enum class ScreenOnboardingStep(val value: String) {
         VOID("Void"),

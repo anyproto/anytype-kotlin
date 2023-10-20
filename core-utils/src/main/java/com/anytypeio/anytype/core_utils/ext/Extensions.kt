@@ -137,3 +137,8 @@ fun <T> MutableList<T>.moveOnTop(
     clear()
     addAll(first + last)
 }
+
+inline fun <T, R> Iterable<T>.allUniqueBy(transform: (T) -> R): Boolean {
+    val hashset = hashSetOf<R>()
+    return this.all { hashset.add(transform(it)) }
+}

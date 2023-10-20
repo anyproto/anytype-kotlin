@@ -103,7 +103,8 @@ class MiddlewareTest {
             targetId = command.target,
             position = Block.Position.Inner,
             details = mapOf<String, Any?>(),
-            templateId = templateId
+            templateId = templateId,
+            objectTypeUniqueKey = typeKey.key
         )
 
         service.stub {
@@ -156,7 +157,8 @@ class MiddlewareTest {
             contextId = command.context,
             targetId = command.target,
             position = Block.Position.Inner,
-            details = buildMap { put(Relations.NAME, name) }
+            details = buildMap { put(Relations.NAME, name) },
+            objectTypeUniqueKey = typeKey.key
         )
 
         service.stub {

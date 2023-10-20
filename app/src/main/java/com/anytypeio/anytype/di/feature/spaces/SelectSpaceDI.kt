@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import dagger.Binds
 import dagger.Component
 import dagger.Module
+import dagger.Provides
 
 @Component(
     dependencies = [SelectSpaceDependencies::class],
@@ -39,6 +41,12 @@ interface SelectSpaceComponent {
 
 @Module
 object SelectSpaceModule {
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
+
     @Module
     interface Declarations {
         @PerScreen
@@ -47,9 +55,6 @@ object SelectSpaceModule {
         @Binds
         @PerScreen
         fun bindViewModelFactory(factory: SelectSpaceViewModel.Factory): ViewModelProvider.Factory
-        @PerScreen
-        @Binds
-        fun factory(provider: SpaceGradientProvider.Impl): SpaceGradientProvider
     }
 }
 
@@ -61,6 +66,7 @@ interface SelectSpaceDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun urlBuilder(): UrlBuilder
     fun userSettings(): UserSettingsRepository
+    fun logger(): Logger
     fun appActionManager(): AppActionManager
     fun configStorage(): ConfigStorage
 }

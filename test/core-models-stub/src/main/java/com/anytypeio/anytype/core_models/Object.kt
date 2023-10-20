@@ -6,6 +6,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 
 fun StubObject(
     id: String = MockDataFactory.randomUuid(),
+    uniqueKey: String? = MockDataFactory.randomUuid(),
     name: String = MockDataFactory.randomString(),
     objectType: String = MockDataFactory.randomString(),
     layout: Double = ObjectType.Layout.BASIC.code.toDouble(),
@@ -16,7 +17,8 @@ fun StubObject(
     iconEmoji: String? = null,
     isReadOnly: Boolean? = null,
     isHidden: Boolean? = null,
-    links: List<Id> = emptyList()
+    links: List<Id> = emptyList(),
+    targetObjectType: Id? = null
 ): ObjectWrapper.Basic = ObjectWrapper.Basic(
     map = mapOf(
         Relations.ID to id,
@@ -30,7 +32,9 @@ fun StubObject(
         Relations.ICON_EMOJI to iconEmoji,
         Relations.IS_READ_ONLY to isReadOnly,
         Relations.IS_HIDDEN to isHidden,
-        Relations.LINKS to links
+        Relations.LINKS to links,
+        Relations.TARGET_OBJECT_TYPE to targetObjectType,
+        Relations.UNIQUE_KEY to uniqueKey,
     )
 )
 
@@ -52,6 +56,7 @@ fun StubObjectView(
 
 fun StubObjectType(
     id: String = MockDataFactory.randomUuid(),
+    uniqueKey: String? = MockDataFactory.randomUuid(),
     name: String = MockDataFactory.randomString(),
     objectType: String = MockDataFactory.randomString(),
     layout: Double = ObjectType.Layout.BASIC.code.toDouble(),
@@ -78,6 +83,7 @@ fun StubObjectType(
         Relations.IS_READ_ONLY to isReadOnly,
         Relations.IS_HIDDEN to isHidden,
         Relations.SOURCE_OBJECT to sourceObject,
-        Relations.RECOMMENDED_LAYOUT to recommendedLayout
+        Relations.RECOMMENDED_LAYOUT to recommendedLayout,
+        Relations.UNIQUE_KEY to uniqueKey,
     )
 )

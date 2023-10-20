@@ -15,9 +15,9 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 class DuplicateDataViewViewer(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Params, Payload>(dispatchers.io) {
+) : ResultInteractor<Params, Pair<Id, Payload>>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params): Payload {
+    override suspend fun doWork(params: Params): Pair<Id, Payload> {
         return repo.duplicateDataViewViewer(
             context = params.context,
             target = params.target,

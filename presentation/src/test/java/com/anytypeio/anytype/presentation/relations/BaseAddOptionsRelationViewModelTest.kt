@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations
 
 import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -81,6 +82,7 @@ class BaseAddOptionsRelationViewModelTest {
     fun `query is empty - there is only tag view`() = runTest {
 
         // SETUP
+        stubSpaceManager()
         val viewModel = createViewModel()
         relationsProvider.relation = relation
 
@@ -116,6 +118,7 @@ class BaseAddOptionsRelationViewModelTest {
 
         // SETUP
 
+        stubSpaceManager()
         val viewModel = createViewModel()
         relationsProvider.relation = relation
 
@@ -155,6 +158,7 @@ class BaseAddOptionsRelationViewModelTest {
 
         // SETUP
 
+        stubSpaceManager()
         val viewModel = createViewModel()
         relationsProvider.relation = relation
 
@@ -196,6 +200,7 @@ class BaseAddOptionsRelationViewModelTest {
 
         // SETUP
 
+        stubSpaceManager()
         val viewModel = createViewModel()
         relationsProvider.relation = relation
 
@@ -237,6 +242,7 @@ class BaseAddOptionsRelationViewModelTest {
 
         // SETUP
 
+        stubSpaceManager()
         val viewModel = createViewModel()
         relationsProvider.relation = relation
 
@@ -295,4 +301,10 @@ class BaseAddOptionsRelationViewModelTest {
             getOptions = getOptions,
             spaceManager = spaceManager
         ) {}
+
+    suspend fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking { get() } doReturn ""
+        }
+    }
 }

@@ -4345,41 +4345,4 @@ open class EditorViewModelTest {
 
         coroutineTestRule.advanceTime(200)
     }
-
-    @Test
-    fun `should close editor and navigate to page screen - when page is created`() {
-
-        val id = MockDataFactory.randomUuid()
-        stubOpenPage(root)
-        stubInterceptEvents()
-        stubClosePage()
-        givenViewModel()
-        vm.onStart(root)
-
-
-        givenDelegateId(id)
-        vm.onAddNewDocumentClicked()
-
-        vm.navigation
-            .test()
-            .assertHasValue()
-            .assertValue { value ->
-                (value.peekContent() as AppNavigation.Command.OpenObject).id == id
-            }
-    }
-
-    private fun givenDelegateId(id: String) {
-        createObject.stub {
-            onBlocking { async(CreateObject.Param(null)) } doReturn Resultat.success(
-                CreateObject.Result(
-                    objectId = id,
-                    event = Payload(
-                        context = id,
-                        events = listOf()
-                    ),
-                    type = TODO()
-                )
-            )
-        }
-    }
 }

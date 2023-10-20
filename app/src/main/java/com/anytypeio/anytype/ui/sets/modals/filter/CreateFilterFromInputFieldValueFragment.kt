@@ -28,6 +28,7 @@ class CreateFilterFromInputFieldValueFragment :
 
     private val ctx: String get() = arg(CTX_KEY)
     private val relation: String get() = arg(RELATION_KEY)
+    private val viewer: String get() = arg(VIEWER_KEY)
 
     @Inject
     lateinit var factory: FilterViewModel.Factory
@@ -40,6 +41,7 @@ class CreateFilterFromInputFieldValueFragment :
             subscribe(binding.btnBottomAction.clicks()) {
                 vm.onCreateInputValueFilterClicked(
                     ctx = ctx,
+                    viewerId = viewer,
                     relation = relation,
                     input = binding.enterTextValueInputField.text.toString()
                 )
@@ -74,7 +76,11 @@ class CreateFilterFromInputFieldValueFragment :
     override fun onStart() {
         setupJobs()
         super.onStart()
-        vm.onStart(relation, FILTER_INDEX_EMPTY)
+        vm.onStart(
+            viewerId = viewer,
+            relationKey = relation,
+            filterIndex = FILTER_INDEX_EMPTY
+        )
     }
 
     override fun onStop() {
@@ -119,12 +125,13 @@ class CreateFilterFromInputFieldValueFragment :
     )
 
     companion object {
-        fun new(ctx: Id, relation: Id) = CreateFilterFromInputFieldValueFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation)
+        fun new(ctx: Id, relation: Id, viewer: Id) = CreateFilterFromInputFieldValueFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation, VIEWER_KEY to viewer)
         }
 
         private const val CTX_KEY = "arg.create-filter-relation.ctx"
         private const val RELATION_KEY = "arg.create-filter-relation.relation"
+        private const val VIEWER_KEY = "arg.create-filter-relation.viewer"
         val FILTER_INDEX_EMPTY: Int? = null
     }
 }

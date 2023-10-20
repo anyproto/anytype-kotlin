@@ -329,7 +329,8 @@ fun Block.Content.DataView.Viewer.toMiddlewareModel(): MDVView =
             Block.Content.DataView.Viewer.Size.MEDIUM -> MDVViewCardSize.Medium
             Block.Content.DataView.Viewer.Size.LARGE -> MDVViewCardSize.Large
         },
-        defaultTemplateId = defaultTemplateId.orEmpty()
+        defaultTemplateId = defaultTemplate.orEmpty(),
+        defaultObjectTypeId = defaultObjectType.orEmpty(),
     )
 
 fun Block.Content.DataView.Viewer.Type.toMiddlewareModel(): MDVViewType = when (this) {

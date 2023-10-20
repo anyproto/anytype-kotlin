@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.presentation.editor.editor
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory.page
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory.profile
@@ -136,5 +139,41 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         vm.onDocumentMenuClicked()
 
         observer.assertNoValue()
+    }
+
+    @Test
+    fun `should send open profile menu event`() {
+
+        // SETUP
+
+        val doc = page(root)
+        val details =
+            Block.Details(
+                mapOf(
+                    root to Block.Fields(
+                        mapOf(Relations.TYPE to ObjectTypeIds.PROFILE)))
+            )
+
+        stubInterceptEvents()
+        stubOpenDocument(document = doc, details = details)
+
+        val vm = buildViewModel()
+
+        // TESTING
+
+        vm.onStart(root)
+
+        val observer = vm.commands.test()
+
+        observer.assertNoValue()
+
+        vm.onDocumentMenuClicked()
+
+        observer.assertValue { value ->
+            value.peekContent() == Command.OpenProfileMenu(
+                isFavorite = false,
+                isLocked = false
+            )
+        }
     }
 }

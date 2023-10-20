@@ -39,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
@@ -61,7 +62,8 @@ fun TreeWidgetCard(
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -114,7 +116,8 @@ fun TreeWidgetCard(
                     item = item,
                     mode = mode,
                     onExpand = onExpandElement,
-                    onWidgetElementClicked = onWidgetObjectClicked
+                    onWidgetElementClicked = onWidgetObjectClicked,
+                    onObjectCheckboxClicked = onObjectCheckboxClicked
                 )
             } else {
                 if (item.isExpanded) {
@@ -135,7 +138,8 @@ private fun TreeWidgetTreeItems(
     mode: InteractionMode,
     item: WidgetView.Tree,
     onExpand: (TreePath) -> Unit,
-    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit
+    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
 ) {
     item.elements.forEachIndexed { idx, element ->
         Row(
@@ -201,7 +205,10 @@ private fun TreeWidgetTreeItems(
                     icon = element.objectIcon,
                     paddingStart = 8.dp,
                     paddingEnd = 4.dp,
-                    modifier = Modifier.align(Alignment.CenterVertically)
+                    modifier = Modifier.align(Alignment.CenterVertically),
+                    onTaskIconClicked = { isChecked ->
+                        onObjectCheckboxClicked(element.obj.id, isChecked)
+                    }
                 )
             }
             Text(

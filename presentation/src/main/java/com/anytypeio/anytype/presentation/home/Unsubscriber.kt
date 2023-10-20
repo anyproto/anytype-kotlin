@@ -5,6 +5,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -27,6 +28,7 @@ interface Unsubscriber {
             queue
                 .onEach { Timber.d("Unsubscribing: $it") }
                 .map { subscriptions -> manager.unsubscribe(subscriptions) }
+                .catch { Timber.e(it, "Error on unsubscribing") }
                 .flowOn(dispatchers.io)
                 .collect()
         }

@@ -276,46 +276,6 @@ class StartAccountTest {
         assertTrue { result == Either.Right(Pair(config.analytics, AccountStatus.Active)) }
     }
 
-    @Test
-    fun `should set workspace id after resuming account`() = runTest {
-
-        // SETUP
-
-        val givenAccount = StubAccount()
-        val givenAccountSetup = StubAccountSetup(account = givenAccount)
-        val givenPath = MockDataFactory.randomString()
-
-        repo.stub {
-            onBlocking {
-                selectAccount(
-                    id = givenAccount.id,
-                    path = givenPath
-                )
-            } doReturn givenAccountSetup
-        }
-
-        repo.stub {
-            onBlocking {
-                getCurrentAccountId()
-            } doReturn givenAccount.id
-        }
-
-        val givenParams = SelectAccount.Params(
-            id = givenAccount.id,
-            path = givenPath
-        )
-
-        // TESTING
-
-        selectAccount.run(givenParams)
-
-        verifyBlocking(workspaceManager, times(1)) {
-            setCurrentWorkspace(
-                givenAccountSetup.config.spaceView
-            )
-        }
-    }
-
     private fun stubMetricsProvider(version: String, platform: String) {
         metricsProvider.stub {
             onBlocking {

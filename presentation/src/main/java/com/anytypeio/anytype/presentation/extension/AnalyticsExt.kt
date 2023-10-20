@@ -5,12 +5,16 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addFilter
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addSort
 import com.anytypeio.anytype.analytics.base.EventsDictionary.addView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.changeDefaultTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeFilterValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeSortValue
 import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.clickNewOption
 import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
+import com.anytypeio.anytype.analytics.base.EventsDictionary.createTemplate
+import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
+import com.anytypeio.anytype.analytics.base.EventsDictionary.editTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectDuplicate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectMoveToBin
@@ -414,11 +418,18 @@ fun CoroutineScope.sendAnalyticsMoveToBinEvent(
 
 fun CoroutineScope.sendAnalyticsDuplicateEvent(
     analytics: Analytics,
-    startTime: Long
+    startTime: Long,
+    count: Int = 1
 ) {
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.count to count
+        )
+    )
     sendEvent(
         analytics = analytics,
         eventName = objectDuplicate,
+        props = props,
         startTime = startTime,
         middleTime = System.currentTimeMillis()
     )
@@ -1236,6 +1247,73 @@ fun CoroutineScope.logEvent(
                 )
             )
         }
+        ObjectStateAnalyticsEvent.CREATE_TEMPLATE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = createTemplate,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route,
+                    objectType = type ?: OBJ_TYPE_CUSTOM
+                )
+            )
+        }
+
+        ObjectStateAnalyticsEvent.EDIT_TEMPLATE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = editTemplate,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route,
+                    objectType = type ?: OBJ_TYPE_CUSTOM
+                )
+            )
+        }
+
+        ObjectStateAnalyticsEvent.DUPLICATE_TEMPLATE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = duplicateTemplate,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route,
+                    objectType = type ?: OBJ_TYPE_CUSTOM
+                )
+            )
+        }
+
+        ObjectStateAnalyticsEvent.DELETE_TEMPLATE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = objectMoveToBin,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route,
+                    objectType = type ?: OBJ_TYPE_CUSTOM
+                )
+            )
+        }
     }
 }
 
@@ -1279,7 +1357,11 @@ enum class ObjectStateAnalyticsEvent {
     REMOVE_SORT,
     OBJECT_CREATE,
     SELECT_TEMPLATE,
-    SHOW_TEMPLATES
+    SHOW_TEMPLATES,
+    CREATE_TEMPLATE,
+    EDIT_TEMPLATE,
+    DUPLICATE_TEMPLATE,
+    DELETE_TEMPLATE
 }
 
 fun CoroutineScope.sendEditWidgetsEvent(
@@ -1643,6 +1725,19 @@ suspend fun Analytics.proceedWithAccountEvent(
     )
 }
 
+suspend fun Analytics.sendOpenAccountEvent(
+    analytics: Id
+) {
+    val userProperty = UserProperty.AccountId(analytics)
+    updateUserProperty(userProperty)
+    sendEvent(
+        startTime = null,
+        middleTime = System.currentTimeMillis(),
+        eventName = EventsDictionary.openAccount,
+        props = Props(map = mapOf("accountId" to analytics))
+    )
+}
+
 suspend fun Analytics.sendDeletionWarning() {
     sendEvent(
         eventName = EventsDictionary.deletionWarningShow
@@ -1731,5 +1826,45 @@ fun CoroutineScope.sendAnalyticsSelectTemplateEvent(
                 put(EventsPropertiesKey.route, "Navigation")
             }
         )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
+    analytics: Analytics,
+    objectType: String?,
+    startTime: Long
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = createTemplate,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.route, "MenuObject")
+                put(EventsPropertiesKey.objectType, objectType)
+            }
+        ),
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
+    )
+}
+
+fun CoroutineScope.sendAnalyticsDefaultTemplateEvent(
+    analytics: Analytics,
+    objType: ObjectWrapper.Type,
+    startTime: Long,
+    route: String? = null
+) {
+    val objectType = objType.sourceObject ?: OBJ_TYPE_CUSTOM
+    sendEvent(
+        analytics = analytics,
+        eventName = changeDefaultTemplate,
+        props = Props(
+            buildMap {
+                put(EventsPropertiesKey.type, objectType)
+                put(EventsPropertiesKey.route, route)
+            }
+        ),
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
     )
 }

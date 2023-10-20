@@ -36,7 +36,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should show error toast when clicked on viewer button`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -51,7 +51,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -82,7 +82,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should show error toast when clicked on add object button`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -97,7 +97,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -118,7 +118,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
 
             // ASSERT ERROR TOAST
             viewModel.toasts.test {
-                viewModel.proceedWithCreatingNewDataViewObject()
+                viewModel.proceedWithDataViewObjectCreate()
                 assertEquals(ObjectSetViewModel.NOT_ALLOWED, awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }
@@ -128,7 +128,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should show error toast when clicked on add filter button`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -143,7 +143,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -174,7 +174,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should show error toast when clicked on add sorts button`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -189,7 +189,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -220,7 +220,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should show error toast when clicked on relations button`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -235,7 +235,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -256,7 +256,7 @@ class ObjectSetRestrictionsTest : ObjectSetViewModelTestSetup() {
 
             // ASSERT ERROR TOAST
             viewModel.toasts.test {
-                viewModel.onViewerSettingsClicked()
+                viewModel.onViewerSettingsClicked(viewer = mockObjectSet.viewer.id)
                 assertEquals(ObjectSetViewModel.NOT_ALLOWED, awaitItem())
                 cancelAndIgnoreRemainingEvents()
             }

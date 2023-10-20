@@ -10,7 +10,7 @@ import com.anytypeio.anytype.presentation.sets.filterOutDeletedAndMissingObjects
 import com.anytypeio.anytype.presentation.sets.getSetOfValue
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
-import com.anytypeio.anytype.presentation.sets.viewerById
+import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import timber.log.Timber
@@ -54,7 +54,7 @@ class DefaultDataViewSubscription(
             Timber.w("Data view collection subscription: context or collection is empty")
             return emptyFlow()
         }
-        val activeViewer = state.viewerById(currentViewerId)
+        val activeViewer = state.viewerByIdOrFirst(currentViewerId)
         if (activeViewer == null) {
             Timber.w("Data view collection subscription: active viewer is null")
             return emptyFlow()
@@ -91,7 +91,7 @@ class DefaultDataViewSubscription(
             Timber.w("Data view set subscription: context is empty")
             return emptyFlow()
         }
-        val activeViewer = state.viewerById(currentViewerId)
+        val activeViewer = state.viewerByIdOrFirst(currentViewerId)
         if (activeViewer == null) {
             Timber.w("Data view set subscription: active viewer is null")
             return emptyFlow()

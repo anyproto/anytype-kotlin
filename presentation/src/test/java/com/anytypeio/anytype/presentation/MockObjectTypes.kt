@@ -25,7 +25,8 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 object MockObjectTypes {
 
     val objectTypeSet = StubObjectType(
-        id = SET,
+        id = MockDataFactory.randomString(),
+        uniqueKey = SET,
         name = "Set",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(),
@@ -35,7 +36,8 @@ object MockObjectTypes {
     )
 
     val objectTypeCollection = StubObjectType(
-        id = COLLECTION,
+        id = MockDataFactory.randomString(),
+        uniqueKey = COLLECTION,
         name = "Collection",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(),
@@ -45,7 +47,8 @@ object MockObjectTypes {
     )
 
     val objectTypeAudio = StubObjectType(
-        id = AUDIO,
+        id = MockDataFactory.randomString(),
+        uniqueKey = AUDIO,
         name = "Audio",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.FILE.code.toDouble()),
@@ -56,7 +59,8 @@ object MockObjectTypes {
     )
 
     val objectTypeVideo = StubObjectType(
-        id = VIDEO,
+        id = MockDataFactory.randomString(),
+        uniqueKey = VIDEO,
         name = "Video",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.FILE.code.toDouble()),
@@ -67,8 +71,9 @@ object MockObjectTypes {
     )
 
     val objectTypeFile = StubObjectType(
-        id = FILE,
+        id = MockDataFactory.randomString(),
         name = "File",
+        uniqueKey = FILE,
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.FILE.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
@@ -78,8 +83,9 @@ object MockObjectTypes {
     )
 
     val objectTypeBookmark = StubObjectType(
-        id = BOOKMARK,
+        id = MockDataFactory.randomString(),
         name = "Bookmark",
+        uniqueKey = BOOKMARK,
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
@@ -89,8 +95,9 @@ object MockObjectTypes {
     )
 
     val objectTypeDashboard = StubObjectType(
-        id = DASHBOARD,
+        id = MockDataFactory.randomString(),
         name = "Dashboard",
+        uniqueKey = DASHBOARD,
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.HOME.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
@@ -101,8 +108,9 @@ object MockObjectTypes {
     )
 
     val objectTypeDate = StubObjectType(
-        id = DATE,
+        id = MockDataFactory.randomString(),
         name = "Date",
+        uniqueKey = DATE,
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.DATE.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
@@ -112,8 +120,9 @@ object MockObjectTypes {
     )
 
     val objectTypeNote = StubObjectType(
-        id = NOTE,
+        id = MockDataFactory.randomString(),
         name = "Note",
+        uniqueKey = NOTE,
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
@@ -123,8 +132,9 @@ object MockObjectTypes {
     )
 
     val objectTypeTask = StubObjectType(
-        id = TASK,
+        id = MockDataFactory.randomString(),
         name = "Task",
+        uniqueKey = TASK,
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
@@ -134,7 +144,8 @@ object MockObjectTypes {
     )
 
     val objectTypeType = StubObjectType(
-        id = OBJECT_TYPE,
+        id = MockDataFactory.randomString(),
+        uniqueKey = OBJECT_TYPE,
         name = "Type",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(
@@ -148,8 +159,9 @@ object MockObjectTypes {
     )
 
     val objectTypePage = StubObjectType(
-        id = PAGE,
+        id = MockDataFactory.randomString(),
         name = "Page",
+        uniqueKey = PAGE,
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
@@ -159,7 +171,8 @@ object MockObjectTypes {
     )
 
     val objectTypeHuman = StubObjectType(
-        id = PROFILE,
+        id = MockDataFactory.randomString(),
+        uniqueKey = PROFILE,
         name = "Human",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(
@@ -173,7 +186,8 @@ object MockObjectTypes {
     )
 
     val objectTypeRelation = StubObjectType(
-        id = RELATION,
+        id = MockDataFactory.randomString(),
+        uniqueKey = RELATION,
         name = "Relation",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(
@@ -188,7 +202,8 @@ object MockObjectTypes {
     )
 
     val objectTypeRelationOption = StubObjectType(
-        id = RELATION_OPTION,
+        id = MockDataFactory.randomString(),
+        uniqueKey = RELATION_OPTION,
         name = "Relation option",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.SUB_OBJECT.code.toDouble()),
@@ -200,7 +215,8 @@ object MockObjectTypes {
     )
 
     val objectTypeSpace = StubObjectType(
-        id = WORKSPACE,
+        id = MockDataFactory.randomString(),
+        uniqueKey = WORKSPACE,
         name = "Space",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.WORKSPACE.code.toDouble()),
@@ -212,7 +228,8 @@ object MockObjectTypes {
     )
 
     val objectTypeTemplate = StubObjectType(
-        id = TEMPLATE,
+        id = MockDataFactory.randomString(),
+        uniqueKey = TEMPLATE,
         name = "Template",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.TEMPLATE.code.toDouble()),
@@ -225,6 +242,7 @@ object MockObjectTypes {
 
     val objectTypeCustom = StubObjectType(
         id = MockDataFactory.randomString(),
+        uniqueKey = MockDataFactory.randomString(),
         name = "Custom object type",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
@@ -235,6 +253,7 @@ object MockObjectTypes {
 
     val objectTypeCustomDeleted = StubObjectType(
         id = MockDataFactory.randomString(),
+        uniqueKey = MockDataFactory.randomString(),
         name = "Custom object type deleted",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
@@ -245,6 +264,7 @@ object MockObjectTypes {
     )
     val objectTypeCustomArchived = StubObjectType(
         id = MockDataFactory.randomString(),
+        uniqueKey = MockDataFactory.randomString(),
         name = "Custom object type archived",
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
@@ -252,15 +272,5 @@ object MockObjectTypes {
         description = "Custom object type description",
         iconEmoji = "",
         isArchived = true
-    )
-
-    val objectTypeList = listOf(
-        objectTypeAudio, objectTypeType, objectTypeDate,
-        objectTypeSpace, objectTypeBookmark, objectTypeCustom,
-        objectTypeDashboard, objectTypeFile, objectTypeHuman,
-        objectTypeNote, objectTypePage, objectTypeRelation,
-        objectTypeRelationOption, objectTypeCollection, objectTypeSet, objectTypeTask,
-        objectTypeTemplate, objectTypeVideo,
-        objectTypeCustomArchived, objectTypeCustomDeleted
     )
 }

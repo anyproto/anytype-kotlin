@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.Action
@@ -71,6 +72,7 @@ class ObjectSetViewModelFactory(
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val createTemplate: CreateTemplate,
     private val viewerDelegate: ViewerDelegate,
     private val spaceManager: SpaceManager
 ) : ViewModelProvider.Factory {
@@ -111,7 +113,8 @@ class ObjectSetViewModelFactory(
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             viewerDelegate = viewerDelegate,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            createTemplate = createTemplate
         ) as T
     }
 }

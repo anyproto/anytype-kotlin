@@ -6,7 +6,7 @@ sealed class ViewerFilterCommand {
 
     sealed class Modal : ViewerFilterCommand() {
 
-        object ShowRelationList : Modal()
+        data class ShowRelationList(val viewer: Id) : Modal()
 
         data class UpdateInputValueFilter(
             val relation: Id,

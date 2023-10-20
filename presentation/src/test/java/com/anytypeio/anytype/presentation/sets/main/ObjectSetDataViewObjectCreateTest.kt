@@ -39,7 +39,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `create pre-populated record`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -48,7 +48,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -74,7 +74,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             val second = awaitItem()
             assertIs<DataViewViewState.Set.Default>(second)
 
-            viewModel.proceedWithCreatingNewDataViewObject()
+            viewModel.proceedWithDataViewObjectCreate()
 
             advanceUntilIdle()
             verifyBlocking(createDataViewObject, times(1)) {

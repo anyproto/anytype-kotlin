@@ -36,7 +36,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
     fun `should show error toast when clicking on read-only cell, and edit the cell when it's not read-only`() =
         runTest {
             // SETUP
-            stubWorkspaceManager(mockObjectSet.workspaceId)
+            stubSpaceManager(mockObjectSet.spaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
@@ -53,7 +53,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
             )
             stubSubscriptionResults(
                 subscription = mockObjectSet.subscriptionId,
-                workspace = mockObjectSet.workspaceId,
+                spaceId = mockObjectSet.spaceId,
                 storeOfRelations = storeOfRelations,
                 keys = mockObjectSet.dvKeys,
                 sources = listOf(mockObjectSet.setOf),

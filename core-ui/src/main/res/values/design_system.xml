@@ -168,6 +168,14 @@
         <item name="android:letterSpacing">-0.014</item>
     </style>
 
+    <style name="TextView.UXStyle.Titles.2.Semibold" parent="BaseTextView">
+        <item name="android:fontFamily">@font/inter_regular</item>
+        <item name="android:fontWeight">600</item>
+        <item name="android:textSize">15sp</item>
+        <item name="lineHeight" tools:targetApi="28">20sp</item>
+        <item name="android:letterSpacing">-0.014</item>
+    </style>
+
     <!-- Body -->
     <style name="TextView.UXStyle.Body" parent="BaseTextView">
         <item name="android:fontFamily">@font/inter_regular</item>

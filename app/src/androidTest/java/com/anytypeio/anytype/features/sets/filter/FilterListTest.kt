@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
@@ -23,7 +24,6 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.filter.ViewerFilterViewModel
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -61,12 +61,14 @@ class FilterListTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var dispatchers: AppCoroutineDispatchers
+
     lateinit var updateDataViewViewer: UpdateDataViewViewer
     lateinit var searchObjects: SearchObjects
     lateinit var urlBuilder: UrlBuilder
 
     private val root = MockDataFactory.randomUuid()
-    private val session = ObjectSetSession()
     private val state: MutableStateFlow<ObjectState> = MutableStateFlow(ObjectState.Init)
     private val dispatcher = Dispatcher.Default<Payload>()
     private val storeOfObjects = DefaultObjectStore()
@@ -76,11 +78,10 @@ class FilterListTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        updateDataViewViewer = UpdateDataViewViewer(repo)
+        updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers = dispatchers)
         searchObjects = SearchObjects(repo)
         urlBuilder = UrlBuilder(gateway)
         TestViewerFilterFragment.testVmFactory = ViewerFilterViewModel.Factory(
-            session = session,
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,

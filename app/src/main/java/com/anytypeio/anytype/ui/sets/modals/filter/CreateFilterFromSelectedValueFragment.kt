@@ -48,6 +48,7 @@ open class CreateFilterFromSelectedValueFragment :
 
     private val ctx: String get() = arg(CTX_KEY)
     private val relation: String get() = arg(RELATION_KEY)
+    private val viewer: String get() = arg(VIEWER_KEY)
 
     private val helper = FilterHelper()
 
@@ -90,7 +91,11 @@ open class CreateFilterFromSelectedValueFragment :
                 vm.onConditionClicked()
             }
             subscribe(binding.btnBottomAction.clicks()) {
-                vm.onCreateFilterFromSelectedValueClicked(ctx = ctx, relation = relation)
+                vm.onCreateFilterFromSelectedValueClicked(
+                    viewerId = viewer,
+                    ctx = ctx,
+                    relation = relation
+                )
             }
             subscribe(vm.relationState.filterNotNull()) {
                 binding.tvRelationName.text = it.title
@@ -133,7 +138,11 @@ open class CreateFilterFromSelectedValueFragment :
 
     override fun onStart() {
         super.onStart()
-        vm.onStart(relationKey = relation, filterIndex = FILTER_INDEX_EMPTY)
+        vm.onStart(
+            viewerId = viewer,
+            relationKey = relation,
+            filterIndex = FILTER_INDEX_EMPTY
+        )
     }
 
     override fun onStop() {
@@ -211,11 +220,12 @@ open class CreateFilterFromSelectedValueFragment :
     )
 
     companion object {
-        fun new(ctx: Id, relation: Id): CreateFilterFromSelectedValueFragment = CreateFilterFromSelectedValueFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation)
+        fun new(ctx: Id, relation: Id, viewer: Id): CreateFilterFromSelectedValueFragment = CreateFilterFromSelectedValueFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, RELATION_KEY to relation, VIEWER_KEY to viewer)
         }
 
         const val CTX_KEY = "arg.create-filter-relation.ctx"
         const val RELATION_KEY = "arg.create-filter-relation.relation"
+        private const val VIEWER_KEY = "arg.create-filter-relation.viewer"
     }
 }

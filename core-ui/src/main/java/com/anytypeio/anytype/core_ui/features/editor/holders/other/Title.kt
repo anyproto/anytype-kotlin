@@ -5,6 +5,9 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.postDelayed
 import androidx.core.view.updateLayoutParams
@@ -20,6 +23,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.`interface`.TextHolder
 import com.anytypeio.anytype.core_ui.tools.DefaultSpannableFactory
+import com.anytypeio.anytype.core_ui.widgets.RadialGradientComposeView
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -381,6 +385,10 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override val content: TextInputWidget = binding.title
         override val selectionView: View = itemView
 
+        val gradientView : ComposeView get() = binding
+            .docProfileIconContainer
+            .findViewById(R.id.gradient)
+
         private val iconText = binding.imageText
         private var hasImage = false
 
@@ -407,6 +415,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
         override fun setImage(item: BlockView.Title) {
             item.image?.let { url ->
                 iconText.text = ""
+                gradientView.gone()
                 hasImage = true
                 image.visible()
                 Glide
@@ -417,8 +426,23 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                     .into(image)
             } ?: apply {
                 hasImage = false
-                setIconText(item.text)
-                image.setImageDrawable(null)
+                if (item is BlockView.Title.Profile && item.spaceGradient != null) {
+                    val gradient = item.spaceGradient
+                    requireNotNull(gradient)
+                    gradientView.visible()
+                    gradientView.setContent {
+                        RadialGradientComposeView(
+                            modifier = Modifier,
+                            from = gradient.from,
+                            to = gradient.to,
+                            size = 0.dp
+                        )
+                    }
+                } else {
+                    gradientView.gone()
+                    setIconText(item.text)
+                    image.setImageDrawable(null)
+                }
             }
         }
 

@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.core_models.StubDataViewView
@@ -729,7 +730,8 @@ class ObjectSetReducerTest {
                 coverRelationKey = relationKey1,
                 hideIcon = false,
                 type = Block.Content.DataView.Viewer.Type.GRID,
-                defaultTemplateId = null
+                defaultTemplateId = null,
+                defaultObjectTypeId = null
             )
         )
 

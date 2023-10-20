@@ -27,7 +27,6 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Account.Create.Response.Error.Code.NULL) {
             when (error.code) {
-                // TODO support errors
                 else -> throw Exception(error.description)
             }
         } else {
@@ -1636,6 +1635,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.BlockDataview.ViewRelation.Sort.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.BlockDataview.ViewRelation.Sort.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun createTemplateFromObject(request: Rpc.Template.CreateFromObject.Request): Rpc.Template.CreateFromObject.Response {
+        val encoded = Service.templateCreateFromObject(
+            Rpc.Template.CreateFromObject.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Template.CreateFromObject.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Template.CreateFromObject.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

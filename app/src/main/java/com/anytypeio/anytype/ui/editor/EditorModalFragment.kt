@@ -14,11 +14,15 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment
 class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>() {
 
     private val ctx get() = arg<Id>(ARG_ID)
+    private val targetObjectType get() = arg<Id>(ARG_TARGET_OBJECT_TYPE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.AppBottomSecondarySheetDialogTheme)
-        val editorFragment = EditorTemplateFragment.newInstance(ctx)
+        val editorFragment = EditorTemplateFragment.newInstance(
+            id = ctx,
+            targetObjectType = targetObjectType
+        )
         childFragmentManager.beginTransaction()
             .add(R.id.fragment_container_view, editorFragment)
             .commit()
@@ -48,5 +52,6 @@ class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>(
 
     companion object {
         const val ARG_ID = "arg_id"
+        const val ARG_TARGET_OBJECT_TYPE = "arg_target_object_type"
     }
 }

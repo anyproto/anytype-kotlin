@@ -230,6 +230,7 @@ import com.anytypeio.anytype.presentation.relations.getObjectRelations
 import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -316,7 +317,7 @@ class EditorViewModel(
         when (state) {
             is SelectTemplateState.Available -> {
                 SelectTemplateViewState.Active(
-                    count = state.templates.size,
+                    count = state.templates.size + 1,
                     typeName = state.typeName
                 )
             }
@@ -1096,8 +1097,7 @@ class EditorViewModel(
         if (editorHasChildrenScreens) {
             dispatch(Command.PopBackStack)
         } else {
-            val state = controlPanelViewState.value
-            checkNotNull(state) { "Control panel state is null" }
+            val state = controlPanelViewState.value ?: return
             when {
                 state.styleTextToolbar.isVisible -> {
                     onCloseBlockStyleToolbarClicked()
@@ -1480,15 +1480,25 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
-        dispatch(
-            command = Command.OpenDocumentMenu(
-                isArchived = details[context]?.isArchived ?: false,
-                isFavorite = details[context]?.isFavorite ?: false,
-                isLocked = mode == EditorMode.Locked,
-                fromName = wrapper.getProperObjectName().orEmpty(),
-                isTemplate = isObjectTemplate()
+        val isProfile = wrapper.type.firstOrNull() == ObjectTypeIds.PROFILE
+        if (isProfile) {
+            dispatch(
+                command = Command.OpenProfileMenu(
+                    isFavorite = details[context]?.isFavorite ?: false,
+                    isLocked = mode == EditorMode.Locked
+                )
             )
-        )
+        } else {
+            dispatch(
+                command = Command.OpenDocumentMenu(
+                    isArchived = details[context]?.isArchived ?: false,
+                    isFavorite = details[context]?.isFavorite ?: false,
+                    isLocked = mode == EditorMode.Locked,
+                    fromName = wrapper.getProperObjectName().orEmpty(),
+                    isTemplate = isObjectTemplate()
+                )
+            )
+        }
     }
 
     fun onEmptyBlockBackspaceClicked(id: String) {
@@ -3149,23 +3159,35 @@ class EditorViewModel(
     fun onAddNewDocumentClicked() {
 
         Timber.d("onAddNewDocumentClicked, ")
+        proceedWithCreatingNewObject(type = null, template = null)
+    }
 
+    fun onCreateObjectWithTemplateClicked(template: Id) {
+        Timber.d("onCreateObjectWithTemplateClicked, template:[$template]")
+        val objType = getObjectTypeFromDetails() ?: return
+        proceedWithCreatingNewObject(type = objType, template = template)
+    }
+
+    private fun proceedWithCreatingNewObject(type: Id?, template: Id?) {
         val startTime = System.currentTimeMillis()
-        jobs += viewModelScope.launch {
-            createObject.async(CreateObject.Param(type = null))
+        viewModelScope.launch {
+            val params = CreateObject.Param(
+                type = TODO("You need to pass unique key"),
+                template = template
+            )
+            createObject.async(params = params)
                 .fold(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
                             type = result.objectId,
                             storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.navigation,
-                            view = EventsDictionary.View.viewNavbar,
+                            route = EventsDictionary.Routes.objPowerTool,
                             startTime = startTime
                         )
                         proceedWithOpeningObject(result.objectId)
                     },
-                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+                    onFailure = { e -> Timber.e(e, "Error while creating a new object") }
                 )
         }
     }
@@ -5830,7 +5852,8 @@ class EditorViewModel(
                         val objects = result
                             .toView(
                                 urlBuilder = urlBuilder,
-                                objectTypes = storeOfObjectTypes.getAll()
+                                objectTypes = storeOfObjectTypes.getAll(),
+                                gradientProvider = SpaceGradientProvider.Default
                             )
                             .filter {
                                 SupportedLayouts.layouts.contains(it.layout)

@@ -48,6 +48,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     /**
@@ -70,6 +71,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
+
 
         stubInterceptEvents()
         stubUpdateText()

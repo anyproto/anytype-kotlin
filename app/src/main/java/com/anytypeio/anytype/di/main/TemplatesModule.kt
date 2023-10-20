@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.main
 
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -21,8 +22,9 @@ object TemplatesModule {
         repo: BlockRepository,
         channel: SubscriptionEventChannel,
         dispatchers: AppCoroutineDispatchers,
+        logger: Logger
     ): StorelessSubscriptionContainer =
-        StorelessSubscriptionContainer.Impl(repo, channel, dispatchers)
+        StorelessSubscriptionContainer.Impl(repo, channel, dispatchers, logger)
 
     @JvmStatic
     @Provides

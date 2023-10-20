@@ -43,7 +43,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should start collection subscription after changing from set to collection`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -52,7 +52,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -98,7 +98,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
                 eq(listOf()),
                 eq(
                     mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                        mockObjectSet.workspaceId
+                        mockObjectSet.spaceId
                     )
                 ),
                 eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),

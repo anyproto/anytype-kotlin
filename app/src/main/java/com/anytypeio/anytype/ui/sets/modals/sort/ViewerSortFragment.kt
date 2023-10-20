@@ -31,6 +31,7 @@ import javax.inject.Inject
 open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBinding>() {
 
     private val ctx: String get() = arg(CTX_KEY)
+    private val viewer: String get() = arg(VIEWER_ID_KEY)
 
     @Inject
     lateinit var factory: ViewerSortViewModel.Factory
@@ -47,7 +48,7 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
             },
             onRemoveViewerSortClicked = {
                 vm.onRemoveViewerSortClicked(
-                    ctx = ctx, view = it
+                    ctx = ctx, view = it, viewerId = viewer
                 )
             }
         )
@@ -57,12 +58,12 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
     private lateinit var dividerItemEdit: RecyclerView.ItemDecoration
 
     private fun navigateToSelectSort() {
-        val fr = SelectSortRelationFragment.new(ctx)
+        val fr = SelectSortRelationFragment.new(ctx = ctx, viewerId = viewer)
         fr.show(parentFragmentManager, null)
     }
 
     private fun navigateToChangeSort(sortId: Id, relation: Key) {
-        val fr = ModifyViewerSortFragment.new(ctx = ctx, sortId = sortId, relation = relation)
+        val fr = ModifyViewerSortFragment.new(ctx = ctx, viewer = viewer, sortId = sortId, relation = relation)
         fr.show(parentFragmentManager, null)
     }
 
@@ -98,7 +99,7 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
             jobs += subscribe(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
         }
         super.onStart()
-        vm.onStart()
+        vm.onStart(viewerId = viewer)
     }
 
     override fun onStop() {
@@ -156,10 +157,11 @@ open class ViewerSortFragment : BaseBottomSheetFragment<FragmentViewerSortBindin
     )
 
     companion object {
-        fun new(ctx: Id): ViewerSortFragment = ViewerSortFragment().apply {
-            arguments = bundleOf(CTX_KEY to ctx)
+        fun new(ctx: Id, viewer: Id): ViewerSortFragment = ViewerSortFragment().apply {
+            arguments = bundleOf(CTX_KEY to ctx, VIEWER_ID_KEY to viewer)
         }
 
         const val CTX_KEY = "arg.viewer-sort.ctx"
+        const val VIEWER_ID_KEY = "arg.viewer-sort.viewer"
     }
 }

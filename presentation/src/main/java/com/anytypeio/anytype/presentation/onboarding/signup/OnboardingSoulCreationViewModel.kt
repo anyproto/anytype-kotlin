@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
+import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -79,6 +80,7 @@ class OnboardingSoulCreationViewModel @Inject constructor(
                         Timber.e(it, "Error while updating object details")
                     },
                     onSuccess = {
+                        analytics.sendOpenAccountEvent(analytics = config.analytics)
                         _navigationFlow.emit(Navigation.OpenSoulCreationAnim(name))
                     }
                 )

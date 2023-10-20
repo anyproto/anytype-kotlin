@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.widgets.FromIndex
@@ -36,7 +37,7 @@ data class ViewersWidgetUi(
             val to: ToIndex
         ) : Action()
 
-        data class SetActive(val id: Id) : Action()
+        data class SetActive(val id: Id, val type: DVViewerType) : Action()
 
         object Plus : Action()
     }

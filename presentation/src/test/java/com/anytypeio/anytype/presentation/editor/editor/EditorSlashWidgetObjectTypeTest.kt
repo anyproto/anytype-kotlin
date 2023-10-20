@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -36,6 +37,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     @After
@@ -48,9 +50,9 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         // SETUP
         val doc = MockTypicalDocumentFactory.page(root)
         val a = MockTypicalDocumentFactory.a
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObject(name = "Hd")
+        val type2 = StubObject(name = "Df")
+        val type3 = StubObject(name = "LK")
 
         stubInterceptEvents()
         stubInterceptThreadStatus()
@@ -105,9 +107,9 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         val smart = StubSmartBlock(children = listOf(paragraph.id))
         val doc = listOf(smart, paragraph)
 
-        val type1 = MockTypicalDocumentFactory.objectType("Hd")
-        val type2 = MockTypicalDocumentFactory.objectType("Df")
-        val type3 = MockTypicalDocumentFactory.objectType("LK")
+        val type1 = StubObject(name = "Hd")
+        val type2 = StubObject(name = "Df")
+        val type3 = StubObject(name = "LK")
 
         stubInterceptEvents()
         stubInterceptThreadStatus()

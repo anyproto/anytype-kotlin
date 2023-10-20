@@ -48,9 +48,8 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        viewModel = givenViewModel()
         objectCollection = MockCollection(context = root)
-        stubGetDefaultPageType()
+        viewModel = givenViewModel()
     }
 
     @After
@@ -63,12 +62,12 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should add new relation to data view`() = runTest {
         // SETUP
-        stubWorkspaceManager(objectCollection.workspaceId)
+        stubSpaceManager(objectCollection.spaceId)
         stubStoreOfRelations(objectCollection)
         stubSubscriptionResults(
             subscription = objectCollection.subscriptionId,
             collection = root,
-            workspace = objectCollection.workspaceId,
+            spaceId = objectCollection.spaceId,
             storeOfRelations = storeOfRelations,
             keys = objectCollection.dvKeys,
             objects = listOf(objectCollection.obj1, objectCollection.obj2),
@@ -104,7 +103,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             id = relationId4,
             key = relationKey4,
             name = relationName4,
-            workspaceId = objectCollection.workspaceId
+            spaceId = objectCollection.spaceId
         )
         val relationLink4 = RelationLink(relationKey4, relationObject4.format)
         val dvViewerRelation4 = DVViewerRelation(
@@ -235,7 +234,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             stubSubscriptionResults(
                 subscription = objectCollection.subscriptionId,
                 collection = root,
-                workspace = objectCollection.workspaceId,
+                spaceId = objectCollection.spaceId,
                 storeOfRelations = storeOfRelations,
                 keys = objectCollection.dvKeys + relationObject4.key,
                 objects = listOf(objectCollection.obj1, objectCollection.obj2),

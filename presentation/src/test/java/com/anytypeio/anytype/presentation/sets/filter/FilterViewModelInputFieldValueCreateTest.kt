@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.domain.base.Either
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -22,7 +22,6 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.mapper.toDomain
 import com.anytypeio.anytype.presentation.sets.MockObjectSetFactory
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
-import com.anytypeio.anytype.presentation.sets.ObjectSetSession
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -71,7 +70,6 @@ class FilterViewModelInputFieldValueCreateTest {
     private lateinit var urlBuilder: UrlBuilder
     private val root = MockDataFactory.randomUuid()
     private val dataViewId = MockDataFactory.randomString()
-    private val session = ObjectSetSession()
     private val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
     val spaceId = MockDataFactory.randomString()
@@ -184,7 +182,6 @@ class FilterViewModelInputFieldValueCreateTest {
         urlBuilder = UrlBuilder(gateway)
         viewModel = FilterViewModel(
             objectState = state,
-            session = session,
             dispatcher = dispatcher,
             urlBuilder = urlBuilder,
             updateDataViewViewer = updateDataViewViewer,
@@ -919,9 +916,12 @@ class FilterViewModelInputFieldValueCreateTest {
     ) {
         stubUpdateDataView()
 
+        val viewer = state.value.dataViewState()!!.viewers[0]
+
         viewModel.onStart(
             relationKey = relation1.key,
-            filterIndex = filterIndex
+            filterIndex = filterIndex,
+            viewerId = viewer.id
         )
 
         viewModel.onConditionUpdate(condition)
@@ -929,13 +929,12 @@ class FilterViewModelInputFieldValueCreateTest {
         viewModel.onCreateInputValueFilterClicked(
             ctx = root,
             relation = relationKey,
-            input = textInput
+            input = textInput,
+            viewerId = viewer.id
         )
 
-        val viewer = state.value.dataViewState()!!.viewers[0]
-
         verifyBlocking(updateDataViewViewer, times(1)) {
-            invoke(
+            async(
                 UpdateDataViewViewer.Params.Filter.Add(
                     ctx = root,
                     dv = dataViewId,
@@ -957,9 +956,12 @@ class FilterViewModelInputFieldValueCreateTest {
     ) {
         stubUpdateDataView()
 
+        val viewer = state.value.dataViewState()!!.viewers[0]
+
         viewModel.onStart(
             relationKey = relation1.key,
-            filterIndex = filterIndex
+            filterIndex = filterIndex,
+            viewerId = viewer.id
         )
 
         viewModel.onConditionUpdate(condition)
@@ -967,13 +969,12 @@ class FilterViewModelInputFieldValueCreateTest {
         viewModel.onCreateInputValueFilterClicked(
             ctx = root,
             relation = relationKey,
-            input = textInput
+            input = textInput,
+            viewerId = viewer.id
         )
 
-        val viewer = state.value.dataViewState()!!.viewers[0]
-
         verifyBlocking(updateDataViewViewer, times(1)) {
-            invoke(
+            async(
                 UpdateDataViewViewer.Params.Filter.Add(
                     ctx = root,
                     dv = dataViewId,
@@ -996,9 +997,12 @@ class FilterViewModelInputFieldValueCreateTest {
     ) {
         stubUpdateDataView()
 
+        val viewer = state.value.dataViewState()!!.viewers[0]
+
         viewModel.onStart(
             relationKey = relationKey,
-            filterIndex = filterIndex
+            filterIndex = filterIndex,
+            viewerId = viewer.id
         )
 
         viewModel.onConditionUpdate(condition)
@@ -1006,13 +1010,12 @@ class FilterViewModelInputFieldValueCreateTest {
         viewModel.onCreateInputValueFilterClicked(
             ctx = root,
             relation = relationKey,
-            input = textInput
+            input = textInput,
+            viewerId = viewer.id
         )
 
-        val viewer = state.value.dataViewState()!!.viewers[0]
-
         verifyBlocking(updateDataViewViewer, times(1)) {
-            invoke(
+            async(
                 UpdateDataViewViewer.Params.Filter.Add(
                     ctx = root,
                     dv = dataViewId,
@@ -1028,7 +1031,7 @@ class FilterViewModelInputFieldValueCreateTest {
 
     private fun stubUpdateDataView() {
         updateDataViewViewer.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right(
+            onBlocking { async(any()) } doReturn Resultat.success(
                 Payload(
                     context = "",
                     events = emptyList()

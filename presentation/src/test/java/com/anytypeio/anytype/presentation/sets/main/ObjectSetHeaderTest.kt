@@ -33,7 +33,7 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should return header with title but without emoji`() = runTest {
 
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -50,7 +50,7 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -84,7 +84,7 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should return header with title but with emoji`() = runTest {
 
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -105,7 +105,7 @@ class ObjectSetHeaderTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),

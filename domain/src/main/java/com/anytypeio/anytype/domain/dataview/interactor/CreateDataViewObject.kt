@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Struct
@@ -14,9 +13,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
@@ -25,8 +22,6 @@ import javax.inject.Inject
  */
 class CreateDataViewObject @Inject constructor(
     private val repo: BlockRepository,
-    private val getTemplates: GetTemplates,
-    private val getDefaultPageType: GetDefaultPageType,
     private val storeOfRelations: StoreOfRelations,
     private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
@@ -48,11 +43,11 @@ class CreateDataViewObject @Inject constructor(
                 val result = repo.createObject(command)
                 Result(
                     objectId = result.id,
-                    objectType = params.type
+                    objectType = params.type,
+                    struct = result.details
                 )
             }
             is Params.SetByRelation -> {
-                val type = resolveDefaultObjectType()
                 val command = Command.CreateObject(
                     template = params.template,
                     prefilled = resolveSetByRelationPrefilledObjectData(
@@ -61,16 +56,16 @@ class CreateDataViewObject @Inject constructor(
                     ),
                     internalFlags = listOf(),
                     space = space,
-                    type = type
+                    type = params.type
                 )
                 val result = repo.createObject(command)
                 Result(
                     objectId = result.id,
-                    objectType = type
+                    objectType = params.type,
+                    struct = result.details
                 )
             }
             is Params.Collection -> {
-                val type = resolveDefaultObjectType()
                 val command = Command.CreateObject(
                     template = params.templateId,
                     prefilled = resolveSetByRelationPrefilledObjectData(
@@ -79,12 +74,13 @@ class CreateDataViewObject @Inject constructor(
                     ),
                     internalFlags = listOf(),
                     space = space,
-                    type = type
+                    type = params.type
                 )
                 val result = repo.createObject(command)
                 Result(
                     objectId = result.id,
-                    objectType = type
+                    objectType = params.type,
+                    struct = result.details
                 )
             }
         }
@@ -102,6 +98,7 @@ class CreateDataViewObject @Inject constructor(
             }
         }
     }
+
 
     private suspend fun resolveSetByRelationPrefilledObjectData(
         filters: List<DVFilter>,
@@ -130,12 +127,6 @@ class CreateDataViewObject @Inject constructor(
         }
     } catch (e: Exception) {
         emptyMap()
-    }
-
-    private suspend fun resolveDefaultObjectType(): TypeKey {
-        return getDefaultPageType
-            .async(Unit)
-            .getOrNull()?.type ?: TypeKey(ObjectTypeUniqueKeys.NOTE)
     }
 
     private fun resolveDefaultValueByFormat(format: RelationFormat): Any? {
@@ -168,19 +159,22 @@ class CreateDataViewObject @Inject constructor(
         ) : Params()
 
         data class SetByRelation(
+            val type: TypeKey,
             val filters: List<DVFilter>,
             val relations: List<Id>,
             val template: Id?
         ) : Params()
 
         data class Collection(
+            val type: TypeKey,
             val templateId: Id?
         ) : Params()
     }
 
     data class Result(
         val objectId : Id,
-        val objectType: TypeKey
+        val objectType: TypeKey,
+        val struct: Struct? = null
     )
 
     companion object {

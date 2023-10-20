@@ -39,6 +39,8 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import javax.inject.Inject
 import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
@@ -1516,6 +1518,13 @@ class DefaultBlockViewRenderer @Inject constructor(
                         else
                             null
                     },
+                    spaceGradient = details.details[root.id]?.iconOption?.let { code ->
+                        val gradient = SpaceGradientProvider.Default.get(code)
+                        SpaceIconView.Gradient(
+                            from = gradient.from,
+                            to = gradient.to
+                        )
+                    },
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
@@ -1548,8 +1557,32 @@ class DefaultBlockViewRenderer @Inject constructor(
                     color = block.textColor()
                 )
             }
-
-            else -> throw IllegalStateException("Unexpected layout: $layout")
+            else -> {
+                // Fallback to basic title in case of unexpected layout
+                BlockView.Title.Basic(
+                    mode = blockMode,
+                    id = block.id,
+                    text = content.text,
+                    emoji = details.details[root.id]?.iconEmoji?.let { name ->
+                        name.ifEmpty { null }
+                    },
+                    image = details.details[root.id]?.iconImage?.let { name ->
+                        if (name.isNotEmpty())
+                            urlBuilder.thumbnail(name)
+                        else
+                            null
+                    },
+                    isFocused = resolveIsFocused(focus, block),
+                    cursor = cursor,
+                    coverColor = coverContainer.coverColor,
+                    coverImage = coverContainer.coverImage,
+                    coverGradient = coverContainer.coverGradient,
+                    background = block.parseThemeBackgroundColor(),
+                    color = block.textColor()
+                ).also {
+                    Timber.e("Unexpected layout for title: $layout")
+                }
+            }
         }
     }
 

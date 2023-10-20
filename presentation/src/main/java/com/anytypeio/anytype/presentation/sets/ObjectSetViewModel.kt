@@ -1802,8 +1802,10 @@ class ObjectSetViewModel(
 
         val isTemplatesAllowed = viewerDefObjType.isTemplatesAllowed()
 
-        if (!isTemplatesAllowed) {
-            return emptyList()
+        val newTemplate = if (!isTemplatesAllowed) {
+            emptyList()
+        } else {
+            listOf(TemplateView.New(viewerDefObjType.id))
         }
 
         val blankTemplate = listOf(
@@ -1817,7 +1819,7 @@ class ObjectSetViewModel(
                 coverImageHashProvider = coverImageHashProvider,
                 viewerDefTemplateId = viewerDefTemplateId,
             )
-        } + listOf(TemplateView.New(viewerDefObjType.id))
+        } + newTemplate
     }
 
     private fun proceedWithCreatingTemplate(targetObjectType: Id) {

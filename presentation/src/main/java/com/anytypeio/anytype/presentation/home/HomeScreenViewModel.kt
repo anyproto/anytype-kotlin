@@ -416,7 +416,7 @@ class HomeScreenViewModel(
             add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
         }
         if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
-        // TODO close widget object also when switching to a new space
+
         closeObject.stream(widgetObject).collect { status ->
             status.fold(
                 onFailure = {

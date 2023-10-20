@@ -805,7 +805,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.FAVORITE,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = TreeWidgetContainer.NO_LIMIT
                 ),
@@ -854,7 +854,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.RECENT,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -864,7 +864,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.SETS,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -1322,7 +1322,12 @@ class HomeScreenViewModelTest {
             advanceUntilIdle()
 
             verifyBlocking(unsubscriber, times(1)) {
-                unsubscribe(subscriptions = listOf(widgetBlock.id))
+                unsubscribe(
+                    subscriptions = listOf(
+                        widgetBlock.id,
+                        SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
+                    )
+                )
             }
 
             verify(closeObject, times(1)).stream(params = WIDGET_OBJECT_ID)
@@ -1457,7 +1462,10 @@ class HomeScreenViewModelTest {
         verifyBlocking(unsubscriber, times(1)) {
             unsubscribe(
                 subscriptions = listOf(
-                    favoriteSource.id, recentSource.id, setsSource.id
+                    favoriteSource.id,
+                    recentSource.id,
+                    setsSource.id,
+                    SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
                 )
             )
         }
@@ -1580,7 +1588,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                space = defaultSpaceConfig.spaceView,
+                space = defaultSpaceConfig.space,
                 keys = TreeWidgetContainer.keys,
                 limit = TreeWidgetContainer.NO_LIMIT
             ),
@@ -1590,7 +1598,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                space = defaultSpaceConfig.spaceView,
+                space = defaultSpaceConfig.space,
                 keys = TreeWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
@@ -1600,7 +1608,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                space = defaultSpaceConfig.spaceView,
+                space = defaultSpaceConfig.space,
                 keys = TreeWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
@@ -1638,7 +1646,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
@@ -1649,7 +1657,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
@@ -1665,7 +1673,10 @@ class HomeScreenViewModelTest {
         verifyBlocking(unsubscriber, times(1)) {
             unsubscribe(
                 subscriptions = listOf(
-                    favoriteSource.id, recentSource.id, setsSource.id
+                    favoriteSource.id,
+                    recentSource.id,
+                    setsSource.id,
+                    SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
                 )
             )
         }
@@ -1690,7 +1701,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
@@ -1701,7 +1712,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
@@ -1797,7 +1808,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                space = defaultSpaceConfig.spaceView,
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1807,7 +1818,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                space = defaultSpaceConfig.spaceView,
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1817,7 +1828,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                space = defaultSpaceConfig.spaceView,
+                space = defaultSpaceConfig.space,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1856,7 +1867,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1867,7 +1878,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1883,7 +1894,10 @@ class HomeScreenViewModelTest {
         verifyBlocking(unsubscriber, times(1)) {
             unsubscribe(
                 subscriptions = listOf(
-                    favoriteSource.id, recentSource.id, setsSource.id
+                    favoriteSource.id,
+                    recentSource.id,
+                    setsSource.id,
+                    SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
                 )
             )
         }
@@ -1908,7 +1922,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1919,7 +1933,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    space = defaultSpaceConfig.spaceView,
+                    space = defaultSpaceConfig.space,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -2412,7 +2426,7 @@ class HomeScreenViewModelTest {
         val firstTimeParams = StoreSearchParams(
             subscription = widgetBlock.id,
             filters = buildList {
-                addAll(ObjectSearchConstants.defaultDataViewFilters(defaultSpaceConfig.spaceView))
+                addAll(ObjectSearchConstants.defaultDataViewFilters(defaultSpaceConfig.space))
                 add(
                     DVFilter(
                         relation = Relations.TYPE,
@@ -2692,6 +2706,9 @@ class HomeScreenViewModelTest {
         }
         spaceManager.stub {
             onBlocking { get() } doReturn defaultSpaceConfig.space
+        }
+        spaceManager.stub {
+            on { getConfig() } doReturn defaultSpaceConfig
         }
     }
 

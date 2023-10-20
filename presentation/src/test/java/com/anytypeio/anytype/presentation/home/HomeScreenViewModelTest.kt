@@ -55,6 +55,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
@@ -194,8 +195,13 @@ class HomeScreenViewModelTest {
         computation = coroutineTestRule.dispatcher
     )
 
-    private val config = StubConfig(
+    private val defaultSpaceConfig = StubConfig(
         widgets = WIDGET_OBJECT_ID
+    )
+
+    private val defaultSpaceWidgetView = WidgetView.SpaceWidget.View(
+        space = StubObject(),
+        icon = SpaceIconView.Placeholder
     )
 
     private lateinit var urlBuilder: UrlBuilder
@@ -204,11 +210,10 @@ class HomeScreenViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
-        stubSpaceManager()
     }
 
     @Test
-    fun `should emit bin, library and actions if there is no block`() = runTest {
+    fun `should emit bin, library and actions and space view if there is no block`() = runTest {
 
         // SETUP
 
@@ -231,6 +236,8 @@ class HomeScreenViewModelTest {
         stubOpenWidgetObject(givenObjectView)
         stubCollapsedWidgetState(any())
         stubGetWidgetSession()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -244,36 +251,16 @@ class HomeScreenViewModelTest {
             )
             vm.onStart()
             val secondTimeState = awaitItem()
-            verify(openObject, times(1))
-                .stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+            verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
+                    add(defaultSpaceWidgetView)
                     add(WidgetView.Library)
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
                 }
             )
-        }
-    }
-
-    private fun stubGetWidgetSession(
-        session: WidgetSession = WidgetSession(emptyList())
-    ) {
-        getWidgetSession.stub {
-            onBlocking {
-                async(any())
-            } doReturn Resultat.Success(session)
-        }
-    }
-
-    private fun stubSaveWidgetSession(
-        session: WidgetSession = WidgetSession(emptyList())
-    ) {
-        saveWidgetSession.stub {
-            onBlocking {
-                execute(SaveWidgetSession.Params(session))
-            } doReturn Resultat.Success(Unit)
         }
     }
 
@@ -301,6 +288,8 @@ class HomeScreenViewModelTest {
             stubOpenWidgetObject(givenObjectView)
             stubCollapsedWidgetState(any())
             stubGetWidgetSession()
+            stubSpaceManager()
+            stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
             val vm = buildViewModel()
 
@@ -317,6 +306,7 @@ class HomeScreenViewModelTest {
                 val secondTimeItem = awaitItem()
                 assertEquals(
                     expected = buildList {
+                        add(defaultSpaceWidgetView)
                         add(WidgetView.Library)
                         add(binWidget)
                         addAll(HomeScreenViewModel.actions)
@@ -377,6 +367,8 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(any())
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -393,6 +385,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
+                    add(defaultSpaceWidgetView)
                     add(
                         WidgetView.Tree(
                             id = widgetBlock.id,
@@ -473,6 +466,8 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(any())
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -489,6 +484,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
+                    add(defaultSpaceWidgetView)
                     add(
                         WidgetView.Tree(
                             id = widgetBlock.id,
@@ -583,6 +579,8 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(any())
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -599,6 +597,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
+                    add(defaultSpaceWidgetView)
                     add(
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
@@ -680,6 +679,8 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(any())
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -696,6 +697,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
+                    add(defaultSpaceWidgetView)
                     add(
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
@@ -803,7 +805,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.FAVORITE,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = TreeWidgetContainer.keys,
                     limit = TreeWidgetContainer.NO_LIMIT
                 ),
@@ -820,10 +822,10 @@ class HomeScreenViewModelTest {
 
             stubFavoritesObjectWatcher(
                 objectView = StubObjectView(
-                    root = config.home,
+                    root = defaultSpaceConfig.home,
                     blocks = listOf(
                         StubSmartBlock(
-                            id = config.home,
+                            id = defaultSpaceConfig.home,
                             children = listOf(
                                 firstLinkToObjectFavoriteObjectBlock.id,
                                 secondLinkToObjectFavoriteObjectBlock.id
@@ -852,7 +854,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.RECENT,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -862,7 +864,7 @@ class HomeScreenViewModelTest {
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.SETS,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 ),
@@ -872,6 +874,9 @@ class HomeScreenViewModelTest {
             stubCollapsedWidgetState(any())
             stubGetWidgetSession()
             stubWidgetActiveView(favoriteWidgetBlock)
+
+            stubSpaceManager()
+            stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
             val vm = buildViewModel()
 
@@ -888,6 +893,7 @@ class HomeScreenViewModelTest {
                 val secondTimeState = awaitItem()
                 assertEquals(
                     expected = buildList {
+                        add(defaultSpaceWidgetView)
                         add(
                             WidgetView.Tree(
                                 id = favoriteWidgetBlock.id,
@@ -1015,6 +1021,8 @@ class HomeScreenViewModelTest {
         )
         stubCollapsedWidgetState(any())
         stubGetWidgetSession()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -1032,6 +1040,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
+                    add(defaultSpaceWidgetView)
                     add(
                         WidgetView.Link(
                             id = widgetBlock.id,
@@ -1097,13 +1106,15 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSaveWidgetSession()
         stubGetDefaultPageType()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         storelessSubscriptionContainer.stub {
             onBlocking {
                 subscribe(
                     StoreSearchByIdsParams(
                         subscription = HomeScreenViewModel.HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
-                        targets = listOf(config.spaceView),
+                        targets = listOf(defaultSpaceConfig.spaceView),
                         keys = listOf(Relations.ID, Relations.ICON_EMOJI, Relations.ICON_IMAGE)
                     )
                 )
@@ -1225,6 +1236,8 @@ class HomeScreenViewModelTest {
         )
         stubCollapsedWidgetState(any())
         stubGetWidgetSession()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -1293,6 +1306,8 @@ class HomeScreenViewModelTest {
             stubCollapsedWidgetState(any())
             stubGetWidgetSession()
             stubCloseObject()
+            stubSpaceManager()
+            stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
             val vm = buildViewModel()
 
@@ -1394,7 +1409,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                space = config.spaceView,
+                space = defaultSpaceConfig.spaceView,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1404,7 +1419,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                space = config.spaceView,
+                space = defaultSpaceConfig.spaceView,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1414,7 +1429,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                space = config.spaceView,
+                space = defaultSpaceConfig.spaceView,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1424,6 +1439,8 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(any())
         stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -1519,10 +1536,10 @@ class HomeScreenViewModelTest {
 
         stubFavoritesObjectWatcher(
             objectView = StubObjectView(
-                root = config.home,
+                root = defaultSpaceConfig.home,
                 blocks = listOf(
                     StubSmartBlock(
-                        id = config.home,
+                        id = defaultSpaceConfig.home,
                         children = listOf(
                             firstLinkToObjectFavoriteObjectBlock.id,
                             secondLinkToObjectFavoriteObjectBlock.id
@@ -1563,7 +1580,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                space = config.spaceView,
+                space = defaultSpaceConfig.spaceView,
                 keys = TreeWidgetContainer.keys,
                 limit = TreeWidgetContainer.NO_LIMIT
             ),
@@ -1573,7 +1590,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                space = config.spaceView,
+                space = defaultSpaceConfig.spaceView,
                 keys = TreeWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
@@ -1583,7 +1600,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                space = config.spaceView,
+                space = defaultSpaceConfig.spaceView,
                 keys = TreeWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_TREE_LIMIT
             ),
@@ -1594,6 +1611,8 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubWidgetActiveView(favoriteWidgetBlock)
         stubCloseObject()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -1619,7 +1638,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
@@ -1630,7 +1649,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
@@ -1671,7 +1690,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
@@ -1682,7 +1701,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = TreeWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_TREE_LIMIT
                 )
@@ -1778,7 +1797,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.FAVORITE,
-                space = config.spaceView,
+                space = defaultSpaceConfig.spaceView,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1788,7 +1807,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.RECENT,
-                space = config.spaceView,
+                space = defaultSpaceConfig.spaceView,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1798,7 +1817,7 @@ class HomeScreenViewModelTest {
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
-                space = config.spaceView,
+                space = defaultSpaceConfig.spaceView,
                 keys = ListWidgetContainer.keys,
                 limit = WidgetConfig.DEFAULT_LIST_LIMIT
             ),
@@ -1810,6 +1829,8 @@ class HomeScreenViewModelTest {
         stubWidgetActiveView(favoriteWidgetBlock)
         stubFavoritesObjectWatcher()
         stubCloseObject()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -1835,7 +1856,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1846,7 +1867,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1887,7 +1908,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = setsSource.id,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1898,7 +1919,7 @@ class HomeScreenViewModelTest {
             subscribe(
                 ListWidgetContainer.params(
                     subscription = recentSource.id,
-                    space = config.spaceView,
+                    space = defaultSpaceConfig.spaceView,
                     keys = ListWidgetContainer.keys,
                     limit = WidgetConfig.DEFAULT_LIST_LIMIT
                 )
@@ -1958,6 +1979,8 @@ class HomeScreenViewModelTest {
 
         stubObserveSpaceObject()
         stubGetWidgetSession()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -1976,6 +1999,7 @@ class HomeScreenViewModelTest {
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
+                    add(defaultSpaceWidgetView)
                     add(WidgetView.Library)
                     add(binWidget)
                     addAll(HomeScreenViewModel.actions)
@@ -2032,6 +2056,8 @@ class HomeScreenViewModelTest {
         )
         stubCollapsedWidgetState(any())
         stubGetWidgetSession()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -2099,6 +2125,8 @@ class HomeScreenViewModelTest {
             )
             stubCollapsedWidgetState(any())
             stubGetWidgetSession()
+            stubSpaceManager()
+            stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
             val vm = buildViewModel()
 
@@ -2185,6 +2213,8 @@ class HomeScreenViewModelTest {
             )
             stubCollapsedWidgetState(any())
             stubGetWidgetSession()
+            stubSpaceManager()
+            stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
             val vm = buildViewModel()
 
@@ -2201,14 +2231,14 @@ class HomeScreenViewModelTest {
                 delay(1)
                 val secondTimeItem = awaitItem()
                 assertTrue {
-                    val firstWidget = secondTimeItem.first()
-                    firstWidget is WidgetView.Tree && firstWidget.source.id == currentSourceObject.id
+                    val secondWidget = secondTimeItem[1]
+                    secondWidget is WidgetView.Tree && secondWidget.source.id == currentSourceObject.id
                 }
                 val thirdTimeItem = awaitItem()
                 advanceUntilIdle()
                 assertTrue {
-                    val firstWidget = thirdTimeItem.first()
-                    firstWidget is WidgetView.Tree && firstWidget.source.id == newSourceObject.id
+                    val secondWidget = thirdTimeItem[1]
+                    secondWidget is WidgetView.Tree && secondWidget.source.id == newSourceObject.id
                 }
             }
         }
@@ -2272,6 +2302,8 @@ class HomeScreenViewModelTest {
         )
         stubCollapsedWidgetState(any())
         stubGetWidgetSession()
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
 
         val vm = buildViewModel()
 
@@ -2288,13 +2320,13 @@ class HomeScreenViewModelTest {
             delay(1)
             val secondTimeItem = awaitItem()
             assertTrue {
-                val firstWidget = secondTimeItem.first()
+                val firstWidget = secondTimeItem[1]
                 firstWidget is WidgetView.Tree
             }
             val thirdTimeItem = awaitItem()
             advanceUntilIdle()
             assertTrue {
-                val firstWidget = thirdTimeItem.first()
+                val firstWidget = thirdTimeItem[1]
                 firstWidget is WidgetView.Link
             }
         }
@@ -2380,7 +2412,7 @@ class HomeScreenViewModelTest {
         val firstTimeParams = StoreSearchParams(
             subscription = widgetBlock.id,
             filters = buildList {
-                addAll(ObjectSearchConstants.defaultDataViewFilters(config.spaceView))
+                addAll(ObjectSearchConstants.defaultDataViewFilters(defaultSpaceConfig.spaceView))
                 add(
                     DVFilter(
                         relation = Relations.TYPE,
@@ -2433,6 +2465,9 @@ class HomeScreenViewModelTest {
         stubGetDefaultPageType()
         stubObserveSpaceObject()
 
+        stubSpaceManager()
+        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+
         // Using real implementation here
         activeViewStateHolder = WidgetActiveViewStateHolder.Impl()
 
@@ -2451,8 +2486,8 @@ class HomeScreenViewModelTest {
             delay(1)
             val secondTimeItem = awaitItem()
             assertTrue {
-                val firstWidget = secondTimeItem.first()
-                firstWidget is WidgetView.SetOfObjects && firstWidget.tabs.first().isSelected
+                val secondWidget = secondTimeItem[1]
+                secondWidget is WidgetView.SetOfObjects && secondWidget.tabs.first().isSelected
             }
             verifyBlocking(getObject, times(1)) {
                 run(params = currentWidgetSourceObject.id)
@@ -2460,7 +2495,7 @@ class HomeScreenViewModelTest {
             verify(storelessSubscriptionContainer, times(1)).subscribe(
                 StoreSearchByIdsParams(
                     subscription = HomeScreenViewModel.HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
-                    targets = listOf(config.spaceView),
+                    targets = listOf(defaultSpaceConfig.spaceView),
                     keys = listOf(
                         Relations.ID,
                         Relations.ICON_EMOJI,
@@ -2484,8 +2519,8 @@ class HomeScreenViewModelTest {
             val thirdTimeItem = awaitItem()
             advanceUntilIdle()
             assertTrue {
-                val firstWidget = thirdTimeItem.first()
-                firstWidget is WidgetView.SetOfObjects && firstWidget.tabs.last().isSelected
+                val secondWidget = thirdTimeItem[1]
+                secondWidget is WidgetView.SetOfObjects && secondWidget.tabs.last().isSelected
             }
             verify(storelessSubscriptionContainer, times(1)).subscribe(
                 secondTimeParams
@@ -2502,7 +2537,7 @@ class HomeScreenViewModelTest {
             on {
                 stream(
                     params = SetWidgetActiveView.Params(
-                        ctx = config.widgets,
+                        ctx = defaultSpaceConfig.widgets,
                         widget = widget,
                         view = view
                     )
@@ -2532,10 +2567,10 @@ class HomeScreenViewModelTest {
 
     private fun stubConfig() {
         configStorage.stub {
-            on { get() } doReturn config
+            on { get() } doReturn defaultSpaceConfig
         }
         configStorage.stub {
-            on { getOrNull() } doReturn config
+            on { getOrNull() } doReturn defaultSpaceConfig
         }
     }
 
@@ -2619,7 +2654,7 @@ class HomeScreenViewModelTest {
                 subscribe(
                     StoreSearchByIdsParams(
                         subscription = HomeScreenViewModel.HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
-                        targets = listOf(config.spaceView),
+                        targets = listOf(defaultSpaceConfig.spaceView),
                         keys = listOf(Relations.ID, Relations.ICON_EMOJI, Relations.ICON_IMAGE)
                     )
                 )
@@ -2628,11 +2663,11 @@ class HomeScreenViewModelTest {
     }
 
     private fun stubFavoritesObjectWatcher(
-        objectView: ObjectView = StubObjectView(root = config.home)
+        objectView: ObjectView = StubObjectView(root = defaultSpaceConfig.home)
     ) {
         objectWatcher.stub {
             on {
-                watch(config.home)
+                watch(defaultSpaceConfig.home)
             } doReturn flowOf(objectView)
         }
     }
@@ -2653,7 +2688,40 @@ class HomeScreenViewModelTest {
 
     fun stubSpaceManager() {
         spaceManager.stub {
-            onBlocking { get() } doReturn ""
+            on { observe() } doReturn flowOf(defaultSpaceConfig)
+        }
+        spaceManager.stub {
+            onBlocking { get() } doReturn defaultSpaceConfig.space
+        }
+    }
+
+    private fun stubGetWidgetSession(
+        session: WidgetSession = WidgetSession(emptyList())
+    ) {
+        getWidgetSession.stub {
+            onBlocking {
+                async(any())
+            } doReturn Resultat.Success(session)
+        }
+    }
+
+    private fun stubSaveWidgetSession(
+        session: WidgetSession = WidgetSession(emptyList())
+    ) {
+        saveWidgetSession.stub {
+            onBlocking {
+                execute(SaveWidgetSession.Params(session))
+            } doReturn Resultat.Success(Unit)
+        }
+    }
+
+    private fun stubSpaceWidgetContainer(defaultSpaceWidgetView: WidgetView.SpaceWidget.View) {
+        spaceWidgetContainer.stub {
+            on {
+                view
+            } doReturn flowOf(
+                defaultSpaceWidgetView
+            )
         }
     }
 

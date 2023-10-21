@@ -21,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -71,10 +72,12 @@ fun Dragger(modifier: Modifier = Modifier) {
 @Composable
 fun Divider(
     paddingStart: Dp = 20.dp,
-    paddingEnd: Dp = 20.dp
+    paddingEnd: Dp = 20.dp,
+    visible: Boolean = true
 ) {
     Box(
         Modifier
+            .alpha(if (visible) 1f else 0f)
             .padding(start = paddingStart, end = paddingEnd)
             .background(color = colorResource(R.color.shape_primary))
             .height(0.5.dp)

@@ -48,7 +48,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -358,7 +358,7 @@ private fun ActionText(text: String, click: () -> Unit) {
             )
             .noRippleThrottledClickable { click() },
         text = text,
-        style = BodyCalloutRegular,
+        style = BodyRegular,
         color = colorResource(id = R.color.glyph_active),
         textAlign = TextAlign.Center
     )

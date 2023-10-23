@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -110,7 +111,7 @@ object RelationAddToDataViewModule {
         state: MutableStateFlow<ObjectState>,
         updateDataViewViewer: UpdateDataViewViewer,
         analytics: Analytics,
-        @Named(INTRINSIC_PROVIDER_TYPE) relationsProvider: ObjectRelationProvider,
+        @Named(DATA_VIEW_PROVIDER_TYPE) relationsProvider: ObjectRelationProvider,
         appCoroutineDispatchers: AppCoroutineDispatchers,
         getRelations: GetRelations,
         addObjectToWorkspace: AddObjectToWorkspace,

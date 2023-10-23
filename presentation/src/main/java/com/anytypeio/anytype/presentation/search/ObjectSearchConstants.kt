@@ -643,6 +643,7 @@ object ObjectSearchConstants {
 
     val defaultKeysObjectType = listOf(
         Relations.ID,
+        Relations.UNIQUE_KEY,
         Relations.NAME,
         Relations.DESCRIPTION,
         Relations.ICON_IMAGE,
@@ -653,8 +654,7 @@ object ObjectSearchConstants {
         Relations.IS_DELETED,
         Relations.SMARTBLOCKTYPES,
         Relations.SOURCE_OBJECT,
-        Relations.RECOMMENDED_LAYOUT,
-        Relations.UNIQUE_KEY
+        Relations.RECOMMENDED_LAYOUT
     )
 
     //endregion

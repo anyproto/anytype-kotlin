@@ -51,6 +51,7 @@ import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
@@ -81,6 +82,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -164,7 +167,6 @@ fun TypeTemplatesWidget(
         var currentClickedMoreButtonCoordinates: IntOffset by remember {
             mutableStateOf(IntOffset(0, 0))
         }
-        val showPlusButton = remember { mutableStateOf(false) }
 
         AnimatedVisibility(
             visible = currentState.showWidget,
@@ -216,7 +218,9 @@ fun TypeTemplatesWidget(
                                         .padding(
                                             start = 15.dp, top = 12.dp, bottom = 12.dp, end = 16.dp
                                         )
-                                        .noRippleClickable { doneClick() },
+                                        .noRippleClickable { doneClick() }
+                                        .alpha(if (currentState.isPossibleToChangeTemplate) 1f else 0f)
+                                    ,
                                     text = stringResource(id = R.string.done),
                                     style = BodyCalloutRegular,
                                     color = colorResource(id = R.color.glyph_active)
@@ -230,7 +234,8 @@ fun TypeTemplatesWidget(
                                             bottom = 12.dp,
                                             end = 16.dp
                                         )
-                                        .noRippleClickable { editClick() },
+                                        .noRippleClickable { editClick() }
+                                        .alpha(if (currentState.isPossibleToChangeTemplate) 1f else 0f),
                                     text = stringResource(id = R.string.edit),
                                     style = BodyCalloutRegular,
                                     color = colorResource(id = R.color.glyph_active)
@@ -245,28 +250,30 @@ fun TypeTemplatesWidget(
                                 color = colorResource(R.color.text_primary)
                             )
                         }
-                        if (showPlusButton.value) {
-                            Box(
-                                modifier = Modifier.align(Alignment.CenterEnd)
-                                    .noRippleThrottledClickable {
-                                        val templates = (currentState as? TypeTemplatesWidgetUI.Data)?.templates
-                                        val newTemplate = templates?.firstOrNull { it is TemplateView.New }
-                                        if (newTemplate != null) {
-                                            action(TemplateClick(newTemplate))
-                                        }
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .noRippleThrottledClickable {
+                                    val templates =
+                                        (currentState as? TypeTemplatesWidgetUI.Data)?.templates
+                                    val newTemplate =
+                                        templates?.firstOrNull { it is TemplateView.New }
+                                    if (newTemplate != null) {
+                                        action(TemplateClick(newTemplate))
                                     }
-                            ) {
-                                Image(
-                                    modifier = Modifier.padding(
-                                        start = 16.dp,
-                                        top = 12.dp,
-                                        bottom = 12.dp,
-                                        end = 16.dp
-                                    ),
-                                    painter = painterResource(id = R.drawable.ic_default_plus),
-                                    contentDescription = null
-                                )
-                            }
+                                }
+                                .alpha(if (currentState.isPossibleToChangeTemplate) 1f else 0f)
+                        ) {
+                            Image(
+                                modifier = Modifier.padding(
+                                    start = 16.dp,
+                                    top = 12.dp,
+                                    bottom = 12.dp,
+                                    end = 16.dp
+                                ),
+                                painter = painterResource(id = R.drawable.ic_default_plus),
+                                contentDescription = null
+                            )
                         }
                     }
                     val itemsScroll = rememberLazyListState()
@@ -301,7 +308,6 @@ fun TypeTemplatesWidget(
                             },
                             action = action,
                             scrollState = itemsScroll,
-                            showPlusButton = { showPlusButton.value = it }
                         )
                         if ((currentState as TypeTemplatesWidgetUI.Data).moreMenuItem != null
                             && itemsScroll.isScrollInProgress
@@ -432,103 +438,85 @@ private fun TemplatesList(
     scrollState: LazyListState,
     state: TypeTemplatesWidgetUI.Data,
     action: (TypeTemplatesWidgetUIAction) -> Unit,
-    moreClick: (TemplateView, IntOffset) -> Unit,
-    showPlusButton: (Boolean) -> Unit
+    moreClick: (TemplateView, IntOffset) -> Unit
 ) {
-    if (state.templates.isEmpty()) {
-        showPlusButton.invoke(false)
-        Box(
-            modifier = Modifier.fillMaxWidth().wrapContentHeight(),
-            contentAlignment = Alignment.Center) {
-            Text(
-                modifier = Modifier
-                    .wrapContentSize()
-                    .padding(top = 111.dp, bottom = 111.dp),
-                text = stringResource(id = R.string.title_templates_not_allowed),
-                style = BodyCalloutRegular,
-                color = colorResource(id = R.color.text_secondary)
-            )
-        }
-    } else {
-        showPlusButton.invoke(true)
-        LazyRow(
-            state = scrollState,
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth(),
-            contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
-            horizontalArrangement = Arrangement.spacedBy(5.dp)
-        )
-        {
-            itemsIndexed(
-                items = state.templates,
-                itemContent = { index, item ->
+    LazyRow(
+        state = scrollState,
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth(),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
+        horizontalArrangement = Arrangement.spacedBy(5.dp)
+    )
+    {
+        itemsIndexed(
+            items = state.templates,
+            itemContent = { index, item ->
+                Box(
+                    modifier =
+                    Modifier
+                        .height(232.dp)
+                        .width(127.dp),
+                    contentAlignment = Alignment.BottomStart
+                ) {
+                    val borderWidth: Dp
+                    val borderColor: Color
+                    if (item.isDefault) {
+                        borderWidth = 2.dp
+                        borderColor = colorResource(id = R.color.palette_system_amber_50)
+                    } else {
+                        borderWidth = 1.dp
+                        borderColor = colorResource(id = R.color.shape_primary)
+                    }
                     Box(
-                        modifier =
-                        Modifier
-                            .height(232.dp)
-                            .width(127.dp),
-                        contentAlignment = Alignment.BottomStart
-                    ) {
-                        val borderWidth: Dp
-                        val borderColor: Color
-                        if (item.isDefault) {
-                            borderWidth = 2.dp
-                            borderColor = colorResource(id = R.color.palette_system_amber_50)
-                        } else {
-                            borderWidth = 1.dp
-                            borderColor = colorResource(id = R.color.shape_primary)
-                        }
-                        Box(
-                            modifier = Modifier
-                                .border(
-                                    width = borderWidth,
-                                    color = borderColor,
-                                    shape = RoundedCornerShape(size = 16.dp)
-                                )
-                                .height(224.dp)
-                                .width(120.dp)
-                                .clickable {
-                                    action(TemplateClick(item))
-                                }
-                        ) {
-                            TemplateItemContent(item)
-                        }
-
-                        val showMoreButton = (item is TemplateView.Template && state.isEditing)
-                        AnimatedVisibility(
-                            visible = showMoreButton,
-                            enter = fadeIn(),
-                            exit = fadeOut(),
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(1.dp)
-                        ) {
-                            var currentCoordinates: IntOffset by remember {
-                                mutableStateOf(IntOffset(0, 0))
-                            }
-                            Image(
-                                modifier = Modifier
-                                    .width(28.dp)
-                                    .height(28.dp)
-                                    .clickable { moreClick(item, currentCoordinates) }
-                                    .onGloballyPositioned { coordinates ->
-                                        if (coordinates.isAttached) {
-                                            with(coordinates.positionInRoot()) {
-                                                currentCoordinates = IntOffset(x.toInt(), y.toInt())
-                                            }
-                                        } else {
-                                            currentCoordinates = IntOffset(0, 0)
-                                        }
-                                    },
-                                painter = painterResource(id = R.drawable.ic_edit_temlate),
-                                contentDescription = "Edit template button"
+                        modifier = Modifier
+                            .border(
+                                width = borderWidth,
+                                color = borderColor,
+                                shape = RoundedCornerShape(size = 16.dp)
                             )
+                            .height(224.dp)
+                            .width(120.dp)
+                            .clickable {
+                                action(TemplateClick(item))
+                            }
+                    ) {
+                        TemplateItemContent(item)
+                    }
+
+                    val showMoreButton = (item is TemplateView.Template && state.isEditing)
+                    AnimatedVisibility(
+                        visible = showMoreButton,
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(1.dp)
+                    ) {
+                        var currentCoordinates: IntOffset by remember {
+                            mutableStateOf(IntOffset(0, 0))
                         }
+                        Image(
+                            modifier = Modifier
+                                .width(28.dp)
+                                .height(28.dp)
+                                .clickable { moreClick(item, currentCoordinates) }
+                                .onGloballyPositioned { coordinates ->
+                                    if (coordinates.isAttached) {
+                                        with(coordinates.positionInRoot()) {
+                                            currentCoordinates = IntOffset(x.toInt(), y.toInt())
+                                        }
+                                    } else {
+                                        currentCoordinates = IntOffset(0, 0)
+                                    }
+                                },
+                            painter = painterResource(id = R.drawable.ic_edit_temlate),
+                            contentDescription = "Edit template button"
+                        )
                     }
                 }
-            )
-        }
+            }
+        )
     }
 }
 
@@ -1031,16 +1019,16 @@ fun ComposablePreview() {
     val items = listOf(
         TemplateView.Blank(
             id = DEFAULT_TEMPLATE_ID_BLANK,
-            typeId = "page",
-            typeUniqueKey = "ot-page",
+            targetTypeId = TypeId("page"),
+            targetTypeKey = TypeKey("ot-page"),
             typeName = "Page",
             layout = ObjectType.Layout.BASIC.code
         ),
         TemplateView.Template(
             id = "1",
             name = "Template 1",
-            typeId = "page",
-            typeUniqueKey = "ot-page",
+            targetTypeId = TypeId("page"),
+            targetTypeKey = TypeKey("ot-page"),
             layout = ObjectType.Layout.BASIC,
             image = null,
             emoji = null,
@@ -1056,8 +1044,8 @@ fun ComposablePreview() {
         moreMenuItem = TemplateView.Template(
             id = "123",
             name = "Template 1",
-            typeId = "page",
-            typeUniqueKey = "ot-page",
+            targetTypeId = TypeId("page"),
+            targetTypeKey = TypeKey("ot-page"),
         ),
         objectTypes = listOf(
             TemplateObjectTypeView.Search,
@@ -1068,7 +1056,8 @@ fun ComposablePreview() {
             )
         ),
         viewerId = "",
-        isPossibleToChangeType = true
+        isPossibleToChangeType = true,
+        isPossibleToChangeTemplate = false
     )
     TypeTemplatesWidget(
         state = state,

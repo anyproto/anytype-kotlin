@@ -91,9 +91,11 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.ModalTitle
+import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
@@ -222,7 +224,7 @@ fun TypeTemplatesWidget(
                                         .alpha(if (currentState.isPossibleToChangeTemplate) 1f else 0f)
                                     ,
                                     text = stringResource(id = R.string.done),
-                                    style = BodyCalloutRegular,
+                                    style = BodyRegular,
                                     color = colorResource(id = R.color.glyph_active)
                                 )
                             } else {
@@ -237,7 +239,7 @@ fun TypeTemplatesWidget(
                                         .noRippleClickable { editClick() }
                                         .alpha(if (currentState.isPossibleToChangeTemplate) 1f else 0f),
                                     text = stringResource(id = R.string.edit),
-                                    style = BodyCalloutRegular,
+                                    style = BodyRegular,
                                     color = colorResource(id = R.color.glyph_active)
                                 )
                             }
@@ -246,7 +248,7 @@ fun TypeTemplatesWidget(
                         Box(modifier = Modifier.align(Alignment.Center)) {
                             Text(
                                 text = title,
-                                style = ModalTitle,
+                                style = Title1,
                                 color = colorResource(R.color.text_primary)
                             )
                         }

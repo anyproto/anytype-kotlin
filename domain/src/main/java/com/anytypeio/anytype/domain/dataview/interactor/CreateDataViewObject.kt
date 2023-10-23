@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
@@ -36,7 +37,7 @@ class CreateDataViewObject @Inject constructor(
                     prefilled = resolveSetByTypePrefilledObjectData(
                         filters = params.filters
                     ),
-                    internalFlags = listOf(),
+                    internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
                     type = params.type
                 )
@@ -54,7 +55,7 @@ class CreateDataViewObject @Inject constructor(
                         filters = params.filters,
                         relations = params.relations
                     ),
-                    internalFlags = listOf(),
+                    internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
                     type = params.type
                 )
@@ -72,7 +73,7 @@ class CreateDataViewObject @Inject constructor(
                         filters = emptyList(),
                         relations = emptyList()
                     ),
-                    internalFlags = listOf(),
+                    internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
                     type = params.type
                 )

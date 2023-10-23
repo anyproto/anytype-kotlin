@@ -20,6 +20,8 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -29,14 +31,22 @@ import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
-import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.core_utils.ui.ViewState
+import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.Section
 import com.anytypeio.anytype.ui.spaces.TypeOfSpace
 import com.anytypeio.anytype.ui_settings.main.SpaceHeader
+import javax.inject.Inject
+import timber.log.Timber
 
 class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
+
+    @Inject
+    lateinit var factory: SpaceSettingsViewModel.Factory
+
+    private val vm by viewModels<SpaceSettingsViewModel> { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -47,29 +57,25 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
         setContent {
             MaterialTheme(typography = typography) {
                 SpaceSettingsScreen(onSpaceIconClick = {},
-                    onNameSet = {},
-                    workspace = MainSettingsViewModel.WorkspaceAndAccount.Account(
-                        space = MainSettingsViewModel.WorkspaceAndAccount.SpaceData(
-                            "Personal space", icon = SpaceIconView.Placeholder
-                        ), profile = null
-                    )
+                    onNameSet = vm::onNameSet,
+                    spaceData = vm.spaceViewState.collectAsStateWithLifecycle().value
                 )
             }
         }
     }
 
     override fun injectDependencies() {
-        // TODO
+        componentManager().spaceSettingsComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        // TODO
+        componentManager().spaceSettingsComponent.release()
     }
 }
 
 @Composable
 fun SpaceSettingsScreen(
-    workspace: MainSettingsViewModel.WorkspaceAndAccount,
+    spaceData: ViewState<SpaceSettingsViewModel.SpaceData>,
     onSpaceIconClick: () -> Unit,
     onNameSet: (String) -> Unit
 ) {
@@ -82,7 +88,16 @@ fun SpaceSettingsScreen(
         item {
             SpaceHeader(
                 modifier = Modifier,
-                workspace = workspace,
+                name = when (spaceData) {
+                    is ViewState.Success -> spaceData.data.name.also {
+                        Timber.d("Setting name: $it")
+                    }
+                    else -> null
+                },
+                icon = when (spaceData) {
+                    is ViewState.Success -> spaceData.data.icon
+                    else -> null
+                },
                 onSpaceIconClick = onSpaceIconClick,
                 onNameSet = onNameSet
             )

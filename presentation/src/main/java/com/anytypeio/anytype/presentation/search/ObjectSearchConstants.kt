@@ -654,7 +654,8 @@ object ObjectSearchConstants {
         Relations.IS_DELETED,
         Relations.SMARTBLOCKTYPES,
         Relations.SOURCE_OBJECT,
-        Relations.RECOMMENDED_LAYOUT
+        Relations.RECOMMENDED_LAYOUT,
+        Relations.DEFAULT_TEMPLATE_ID
     )
 
     //endregion

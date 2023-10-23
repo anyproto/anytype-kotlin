@@ -3092,8 +3092,7 @@ class EditorViewModel(
     }
 
     private fun onAddNewObjectClicked(
-        typeId: TypeId,
-        typeKey: TypeKey
+        objectTypeView: ObjectTypeView
     ) {
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnAddBlockToolbarOptionSelected)
 
@@ -3123,17 +3122,18 @@ class EditorViewModel(
             }
         }
 
-        val params = CreateBlockLinkWithObject.Params(
-            context = context,
-            position = position,
-            target = target,
-            typeId = typeId,
-            typeKey = typeKey
-        )
-
         val startTime = System.currentTimeMillis()
 
         viewModelScope.launch {
+            val params = CreateBlockLinkWithObject.Params(
+                context = context,
+                position = position,
+                target = target,
+                typeId = TypeId(objectTypeView.id),
+                typeKey = TypeKey(objectTypeView.key),
+                template = objectTypeView.defaultTemplate,
+                space = spaceManager.get()
+            )
             createBlockLinkWithObject.async(
                 params = params
             ).fold(
@@ -3144,7 +3144,7 @@ class EditorViewModel(
                     orchestrator.proxies.payloads.send(result.payload)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = typeId.id,
+                        type = objectTypeView.key,
                         storeOfObjectTypes = storeOfObjectTypes,
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime
@@ -4678,10 +4678,7 @@ class EditorViewModel(
             is SlashItem.ObjectType -> {
                 cutSlashFilter(targetId = targetId)
                 controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
-                onAddNewObjectClicked(
-                    typeId = TypeId(item.objectTypeView.id),
-                    typeKey = TypeKey(item.objectTypeView.key)
-                )
+                onAddNewObjectClicked(objectTypeView = item.objectTypeView)
             }
             is SlashItem.Relation -> {
                 val isBlockEmpty = cutSlashFilter(targetId = targetId)

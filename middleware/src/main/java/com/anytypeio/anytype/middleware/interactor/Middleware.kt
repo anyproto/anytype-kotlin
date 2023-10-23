@@ -885,7 +885,8 @@ class Middleware @Inject constructor(
             internalFlags = command.internalFlags.toMiddlewareModel(),
             targetId = command.target,
             position = command.position.toMiddlewareModel(),
-            fields = null
+            fields = null,
+            spaceId = command.space
         )
 
         if (BuildConfig.DEBUG) logRequest(request)

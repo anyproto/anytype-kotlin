@@ -173,7 +173,8 @@ sealed class Command {
         val position: Position,
         val template: Id?,
         val prefilled: Struct,
-        val internalFlags: List<InternalFlags>
+        val internalFlags: List<InternalFlags>,
+        val space: Id
     )
 
     /**

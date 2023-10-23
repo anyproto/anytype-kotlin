@@ -809,7 +809,7 @@ val TemplateTitleStyle = TextStyle(
     fontWeight = FontWeight.W600,
     fontSize = 11.sp,
     lineHeight = 14.sp,
-    letterSpacing = (-0.006).em
+    letterSpacing = (-0.00636363).em
 )
 
 @Composable

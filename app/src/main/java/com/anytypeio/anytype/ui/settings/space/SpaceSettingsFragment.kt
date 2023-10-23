@@ -25,6 +25,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -132,13 +133,13 @@ fun SpaceSettingsScreen(
         item {
             Option(image = R.drawable.ic_file_storage,
                 text = stringResource(R.string.remote_storage),
-                onClick = { onFileStorageClick() }
+                onClick = throttledClick(onFileStorageClick)
             )
         }
         item {
             Option(image = R.drawable.ic_personalization,
                 text = stringResource(R.string.personalization),
-                onClick = { onPersonalizationClicked() }
+                onClick = throttledClick(onPersonalizationClicked)
             )
         }
         item {

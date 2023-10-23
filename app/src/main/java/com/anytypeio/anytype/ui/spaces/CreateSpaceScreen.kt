@@ -225,7 +225,7 @@ fun SpaceNameInput(
 fun Section(
     title: String
 ) {
-    Box(modifier = Modifier.height(52.dp)) {
+    Box(modifier = Modifier.height(52.dp).fillMaxWidth()) {
         Text(
             modifier = Modifier
                 .padding(

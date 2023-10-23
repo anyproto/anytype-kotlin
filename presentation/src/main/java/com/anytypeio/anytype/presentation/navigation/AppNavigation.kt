@@ -17,7 +17,7 @@ interface AppNavigation {
     fun setupSelectedAccount(id: String)
     fun chooseAccount()
     fun workspace()
-    fun openSettings()
+    fun openSpaceSettings()
 
     fun openObjectSet(target: String, isPopUpToDashboard: Boolean = false)
     fun openDocument(id: String)

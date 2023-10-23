@@ -131,7 +131,7 @@ private fun Settings(
 }
 
 @Composable
-private fun SpaceHeader(
+fun SpaceHeader(
     modifier: Modifier = Modifier,
     workspace: MainSettingsViewModel.WorkspaceAndAccount,
     onSpaceIconClick: () -> Unit,

@@ -30,7 +30,7 @@ class NavigationRouter(
                 )
 
                 is AppNavigation.Command.ConfirmPinCodeScreen -> navigation.confirmPinCode(command.code)
-                is AppNavigation.Command.OpenSettings -> navigation.openSettings()
+                is AppNavigation.Command.OpenSettings -> navigation.openSpaceSettings()
                 is AppNavigation.Command.OpenObject -> navigation.openDocument(command.id)
                 is AppNavigation.Command.OpenModalEditor -> navigation.openModalEditor(
                     id = command.id, targetObjectType = command.targetObjectType

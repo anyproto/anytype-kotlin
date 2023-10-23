@@ -72,9 +72,9 @@ class Navigator : AppNavigation {
 
     override fun workspace() {}
 
-    override fun openSettings() {
+    override fun openSpaceSettings() {
         try {
-            navController?.navigate(R.id.action_open_settings)
+            navController?.navigate(R.id.action_open_space_settings)
         } catch (e: Exception) {
             Timber.e(e, "Error while opening settings")
         }

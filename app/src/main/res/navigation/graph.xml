@@ -145,8 +145,8 @@
         android:label="Home screen"
         tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_open_settings"
-            app:destination="@id/settingsScreen" />
+            android:id="@+id/action_open_space_settings"
+            app:destination="@id/spaceSettingsScreen" />
         <action
             android:id="@+id/action_open_spaces"
             app:destination="@id/selectSpaceScreen" />
@@ -177,6 +177,11 @@
     <dialog
         android:id="@+id/createSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment"/>
+
+    <dialog
+        android:id="@+id/spaceSettingsScreen"
+        android:name="com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment"
+        android:label="SpaceSettingsScreen"/>
 
     <dialog
         android:id="@+id/settingsScreen"

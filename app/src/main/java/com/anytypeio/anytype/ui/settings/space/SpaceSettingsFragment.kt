@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -30,6 +31,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.di.common.componentManager
@@ -58,7 +60,16 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(typography = typography) {
                 SpaceSettingsScreen(onSpaceIconClick = {},
                     onNameSet = vm::onNameSet,
-                    spaceData = vm.spaceViewState.collectAsStateWithLifecycle().value
+                    spaceData = vm.spaceViewState.collectAsStateWithLifecycle().value,
+                    onDeleteSpaceClicked = {
+                        toast("Coming soon...")
+                    },
+                    onFileStorageClick = {
+                        findNavController().navigate(R.id.filesStorageScreen)
+                    },
+                    onPersonalizationClicked = {
+                       findNavController().navigate(R.id.personalizationScreen)
+                    }
                 )
             }
         }
@@ -77,7 +88,10 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
 fun SpaceSettingsScreen(
     spaceData: ViewState<SpaceSettingsViewModel.SpaceData>,
     onSpaceIconClick: () -> Unit,
-    onNameSet: (String) -> Unit
+    onNameSet: (String) -> Unit,
+    onDeleteSpaceClicked: () -> Unit,
+    onFileStorageClick: () -> Unit,
+    onPersonalizationClicked: () -> Unit,
 ) {
     LazyColumn(
         modifier = Modifier
@@ -118,16 +132,14 @@ fun SpaceSettingsScreen(
         item {
             Option(image = R.drawable.ic_file_storage,
                 text = stringResource(R.string.remote_storage),
-                onClick = {
-                    // TODO
-                })
+                onClick = { onFileStorageClick() }
+            )
         }
         item {
             Option(image = R.drawable.ic_personalization,
                 text = stringResource(R.string.personalization),
-                onClick = {
-                    // TODO
-                })
+                onClick = { onPersonalizationClicked() }
+            )
         }
         item {
             Section(title = stringResource(id = R.string.space_info))
@@ -140,16 +152,20 @@ fun SpaceSettingsScreen(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "Space ID", style = Title1, modifier = Modifier.padding(top = 12.dp)
+                    text = stringResource(id = R.string.space_id),
+                    style = Title1,
+                    modifier = Modifier.padding(top = 12.dp)
                 )
-                Text(
-                    text = "sddsdsds;lds;dsld;sld;wd ssdsd s dsdsdsdsdsdsdsd sd sd sdsdsds sd sds d d",
-                    style = PreviewTitle2Regular,
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(bottom = 12.dp, end = 50.dp),
-                    maxLines = 2
-                )
+                if (spaceData is ViewState.Success) {
+                    Text(
+                        text = spaceData.data.spaceId ?: stringResource(id = R.string.unknown),
+                        style = PreviewTitle2Regular,
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(bottom = 12.dp, end = 50.dp),
+                        maxLines = 2
+                    )
+                }
             }
         }
         item {
@@ -164,14 +180,16 @@ fun SpaceSettingsScreen(
                     style = Title1,
                     modifier = Modifier.padding(top = 12.dp)
                 )
-                Text(
-                    text = "sddsdsds;lds;dsld;sld;wd ssdsd s dsdsdsdsdsdsdsd sd sd sdsdsds sd sds d d",
-                    style = PreviewTitle2Regular,
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(bottom = 12.dp, end = 50.dp),
-                    maxLines = 1
-                )
+                if (spaceData is ViewState.Success) {
+                    Text(
+                        text = spaceData.data.createdBy ?: stringResource(id = R.string.unknown),
+                        style = PreviewTitle2Regular,
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(bottom = 12.dp, end = 50.dp),
+                        maxLines = 1
+                    )
+                }
             }
         }
         item {
@@ -186,20 +204,22 @@ fun SpaceSettingsScreen(
                     style = Title1,
                     modifier = Modifier.padding(top = 12.dp)
                 )
-                Text(
-                    text = "sddsdsds;lds;dsld;sld;wd ssdsd s dsdsdsdsdsdsdsd sd sd sdsdsds sd sds d d",
-                    style = PreviewTitle2Regular,
-                    modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(bottom = 12.dp, end = 50.dp),
-                    maxLines = 1
-                )
+                if (spaceData is ViewState.Success) {
+                    Text(
+                        text = spaceData.data.createdDate ?: stringResource(id = R.string.unknown),
+                        style = PreviewTitle2Regular,
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(bottom = 12.dp, end = 50.dp),
+                        maxLines = 1
+                    )
+                }
             }
         }
         item {
             Box(modifier = Modifier.height(78.dp)) {
                 ButtonWarning(
-                    onClick = {},
+                    onClick = { onDeleteSpaceClicked() },
                     text = "Delete space",
                     modifier = Modifier
                         .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)

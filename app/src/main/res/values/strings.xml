@@ -401,5 +401,6 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="space_info">Space info</string>
     <string name="creation_date">Creation date</string>
     <string name="created_by">Created by</string>
+    <string name="space_id">Space ID</string>
 
 </resources>

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.ViewState
@@ -50,7 +51,9 @@ class SpaceSettingsViewModel(
                                 Relations.ICON_EMOJI,
                                 Relations.ICON_IMAGE,
                                 Relations.ICON_OPTION,
-                                Relations.CREATED_DATE
+                                Relations.CREATED_DATE,
+                                Relations.CREATOR,
+                                Relations.TARGET_SPACE_ID
                             )
                         )
                     ).mapNotNull { results ->
@@ -61,7 +64,14 @@ class SpaceSettingsViewModel(
                             icon = wrapper.spaceIcon(
                                 builder = urlBuilder,
                                 spaceGradientProvider = gradientProvider
-                            )
+                            ),
+                            createdDate = wrapper
+                                .getValue<Double?>(Relations.CREATED_DATE)
+                                .toString(),
+                            createdBy = wrapper
+                                .getValue<Id?>(Relations.CREATOR)
+                                .toString(),
+                            spaceId = wrapper.getValue<Id>(Relations.TARGET_SPACE_ID)
                         )
                     }
                 }.collect {
@@ -101,9 +111,11 @@ class SpaceSettingsViewModel(
     }
 
     data class SpaceData(
+        val spaceId: Id?,
+        val createdDate: String?,
+        val createdBy: Id?,
         val name: String,
         val icon: SpaceIconView,
-        val createdDate: String = ""
     )
 
     class Factory @Inject constructor(

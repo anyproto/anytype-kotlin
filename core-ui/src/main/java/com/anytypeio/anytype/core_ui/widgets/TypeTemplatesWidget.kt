@@ -922,47 +922,48 @@ fun ObjectTypesList(
                             borderWidth = 1.dp
                             borderColor = colorResource(id = R.color.shape_primary)
                         }
-                        Box(modifier = Modifier
-                            .border(
-                                width = borderWidth,
-                                color = borderColor,
-                                shape = RoundedCornerShape(size = 10.dp)
-                            )
-                            .wrapContentSize()
-                            .noRippleThrottledClickable {
-                                action(TypeClick.Item(item.type))
-                            }) {
+                        Box(
+                            modifier = Modifier
+                                .height(48.dp)
+                                .wrapContentWidth()
+                                .border(
+                                    width = borderWidth,
+                                    color = borderColor,
+                                    shape = RoundedCornerShape(size = 10.dp)
+                                )
+                                .noRippleThrottledClickable {
+                                    action(TypeClick.Item(item.type))
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            val typeIcon = item.type.iconEmoji
+                            val (rowPaddingStart, textPaddingStart) = if (typeIcon != null) {
+                                14.dp to 8.dp
+                            } else {
+                                16.dp to 0.dp
+                            }
                             Row(
                                 modifier = Modifier.padding(
-                                    start = 14.dp,
-                                    end = 16.dp,
-                                    top = 13.dp,
-                                    bottom = 13.dp
-                                )
+                                    start = rowPaddingStart,
+                                    end = 16.dp
+                                ),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                item.type.iconEmoji?.let {
+                                if (typeIcon != null) {
                                     Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .background(
-                                                color = colorResource(id = R.color.shape_tertiary)
-                                            )
-                                            .border(
-                                                width = 2.dp,
-                                                color = colorResource(id = R.color.background_primary),
-                                                shape = RoundedCornerShape(8.dp)
-                                            )
+                                        modifier = Modifier.wrapContentSize()
                                     ) {
                                         Image(
                                             painter = rememberAsyncImagePainter(
-                                                model = Emojifier.safeUri(it),
-                                                error = painterResource(id = R.drawable.ic_home_widget_space)
+                                                Emojifier.safeUri(
+                                                    typeIcon
+                                                )
                                             ),
-                                            contentDescription = "Emoji template's icon",
+                                            contentDescription = "Type's icon",
                                             modifier = Modifier
-                                                .size(20.dp)
+                                                .size(18.dp)
                                                 .align(Alignment.Center),
-                                            contentScale = ContentScale.Crop
+                                            alignment = Alignment.Center
                                         )
                                     }
                                 }
@@ -972,7 +973,7 @@ fun ObjectTypesList(
                                         color = colorResource(id = R.color.text_primary)
                                     ),
                                     modifier = Modifier
-                                        .padding(start = 8.dp)
+                                        .padding(start = textPaddingStart)
                                         .widthIn(max = 100.dp),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis

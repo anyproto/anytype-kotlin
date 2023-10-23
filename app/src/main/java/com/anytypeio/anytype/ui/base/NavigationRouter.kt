@@ -33,7 +33,9 @@ class NavigationRouter(
                 is AppNavigation.Command.OpenSettings -> navigation.openSettings()
                 is AppNavigation.Command.OpenObject -> navigation.openDocument(command.id)
                 is AppNavigation.Command.OpenModalEditor -> navigation.openModalEditor(
-                    id = command.id, targetObjectType = command.targetObjectType
+                    id = command.id,
+                    targetTypeId = command.targetTypeId,
+                    targetTypeKey = command.targetTypeKey
                 )
                 is AppNavigation.Command.OpenSetOrCollection -> navigation.openObjectSet(
                     command.target,

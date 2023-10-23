@@ -107,13 +107,6 @@ class DefaultObjectTypeTemplatesContainer(
                 )
                 add(
                     DVFilter(
-                        relation = Relations.TYPE,
-                        condition = DVFilterCondition.EQUAL,
-                        value = ObjectTypeIds.OBJECT_TYPE
-                    )
-                )
-                add(
-                    DVFilter(
                         relation = Relations.RECOMMENDED_LAYOUT,
                         condition = DVFilterCondition.IN,
                         value = SupportedLayouts.createObjectLayouts.map { layout ->
@@ -125,10 +118,12 @@ class DefaultObjectTypeTemplatesContainer(
             sorts = emptyList(),
             keys = listOf(
                 Relations.ID,
+                Relations.UNIQUE_KEY,
                 Relations.NAME,
                 Relations.ICON_EMOJI,
                 Relations.DEFAULT_TEMPLATE_ID,
-                Relations.RECOMMENDED_LAYOUT
+                Relations.RECOMMENDED_LAYOUT,
+                Relations.LAYOUT
             ),
         )
         return storage.subscribe(objTypeParams)

@@ -8,10 +8,12 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 sealed class TypeTemplatesWidgetUI {
     abstract val showWidget: Boolean
     abstract val isEditing: Boolean
+    abstract val isPossibleToChangeTemplate: Boolean
 
     data class Init(
         override val showWidget: Boolean = false,
-        override val isEditing: Boolean = false
+        override val isEditing: Boolean = false,
+        override val isPossibleToChangeTemplate: Boolean = false
     ) : TypeTemplatesWidgetUI()
 
     data class Data(
@@ -21,7 +23,8 @@ sealed class TypeTemplatesWidgetUI {
         val templates: List<TemplateView> = emptyList(),
         val objectTypes: List<TemplateObjectTypeView> = emptyList(),
         val viewerId: Id,
-        val isPossibleToChangeType: Boolean
+        val isPossibleToChangeType: Boolean,
+        override val isPossibleToChangeTemplate: Boolean
     ) : TypeTemplatesWidgetUI()
 
     fun getWidgetViewerId(): Id? = if (this is Data) viewerId else null

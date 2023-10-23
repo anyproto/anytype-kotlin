@@ -91,9 +91,11 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
 import com.anytypeio.anytype.core_ui.views.ModalTitle
+import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
@@ -222,7 +224,7 @@ fun TypeTemplatesWidget(
                                         .alpha(if (currentState.isPossibleToChangeTemplate) 1f else 0f)
                                     ,
                                     text = stringResource(id = R.string.done),
-                                    style = BodyCalloutRegular,
+                                    style = BodyRegular,
                                     color = colorResource(id = R.color.glyph_active)
                                 )
                             } else {
@@ -237,7 +239,7 @@ fun TypeTemplatesWidget(
                                         .noRippleClickable { editClick() }
                                         .alpha(if (currentState.isPossibleToChangeTemplate) 1f else 0f),
                                     text = stringResource(id = R.string.edit),
-                                    style = BodyCalloutRegular,
+                                    style = BodyRegular,
                                     color = colorResource(id = R.color.glyph_active)
                                 )
                             }
@@ -246,7 +248,7 @@ fun TypeTemplatesWidget(
                         Box(modifier = Modifier.align(Alignment.Center)) {
                             Text(
                                 text = title,
-                                style = ModalTitle,
+                                style = Title1,
                                 color = colorResource(R.color.text_primary)
                             )
                         }
@@ -809,7 +811,7 @@ val TemplateTitleStyle = TextStyle(
     fontWeight = FontWeight.W600,
     fontSize = 11.sp,
     lineHeight = 14.sp,
-    letterSpacing = (-0.006).em
+    letterSpacing = (-0.00636363).em
 )
 
 @Composable
@@ -922,47 +924,48 @@ fun ObjectTypesList(
                             borderWidth = 1.dp
                             borderColor = colorResource(id = R.color.shape_primary)
                         }
-                        Box(modifier = Modifier
-                            .border(
-                                width = borderWidth,
-                                color = borderColor,
-                                shape = RoundedCornerShape(size = 10.dp)
-                            )
-                            .wrapContentSize()
-                            .noRippleThrottledClickable {
-                                action(TypeClick.Item(item.type))
-                            }) {
+                        Box(
+                            modifier = Modifier
+                                .height(48.dp)
+                                .wrapContentWidth()
+                                .border(
+                                    width = borderWidth,
+                                    color = borderColor,
+                                    shape = RoundedCornerShape(size = 10.dp)
+                                )
+                                .noRippleThrottledClickable {
+                                    action(TypeClick.Item(item.type))
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            val typeIcon = item.type.iconEmoji
+                            val (rowPaddingStart, textPaddingStart) = if (typeIcon != null) {
+                                14.dp to 8.dp
+                            } else {
+                                16.dp to 0.dp
+                            }
                             Row(
                                 modifier = Modifier.padding(
-                                    start = 14.dp,
-                                    end = 16.dp,
-                                    top = 13.dp,
-                                    bottom = 13.dp
-                                )
+                                    start = rowPaddingStart,
+                                    end = 16.dp
+                                ),
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
-                                item.type.iconEmoji?.let {
+                                if (typeIcon != null) {
                                     Box(
-                                        modifier = Modifier
-                                            .clip(RoundedCornerShape(8.dp))
-                                            .background(
-                                                color = colorResource(id = R.color.shape_tertiary)
-                                            )
-                                            .border(
-                                                width = 2.dp,
-                                                color = colorResource(id = R.color.background_primary),
-                                                shape = RoundedCornerShape(8.dp)
-                                            )
+                                        modifier = Modifier.wrapContentSize()
                                     ) {
                                         Image(
                                             painter = rememberAsyncImagePainter(
-                                                model = Emojifier.safeUri(it),
-                                                error = painterResource(id = R.drawable.ic_home_widget_space)
+                                                Emojifier.safeUri(
+                                                    typeIcon
+                                                )
                                             ),
-                                            contentDescription = "Emoji template's icon",
+                                            contentDescription = "Type's icon",
                                             modifier = Modifier
-                                                .size(20.dp)
+                                                .size(18.dp)
                                                 .align(Alignment.Center),
-                                            contentScale = ContentScale.Crop
+                                            alignment = Alignment.Center
                                         )
                                     }
                                 }
@@ -972,7 +975,7 @@ fun ObjectTypesList(
                                         color = colorResource(id = R.color.text_primary)
                                     ),
                                     modifier = Modifier
-                                        .padding(start = 8.dp)
+                                        .padding(start = textPaddingStart)
                                         .widthIn(max = 100.dp),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis

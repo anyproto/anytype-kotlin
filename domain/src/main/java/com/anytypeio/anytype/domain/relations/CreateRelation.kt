@@ -19,6 +19,7 @@ class CreateRelation(
 
     override suspend fun run(params: Params) = safe {
         repo.createRelation(
+            space = params.space,
             name = params.name,
             format = params.format,
             formatObjectTypes = params.limitObjectTypes,
@@ -39,6 +40,7 @@ class CreateRelation(
      * @param [prefilled] (optional) pre-filled values for this relation
      */
     class Params(
+        val space: Id,
         val name: String,
         val format: RelationFormat,
         val limitObjectTypes: List<Id>,

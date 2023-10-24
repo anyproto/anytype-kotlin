@@ -3,14 +3,15 @@ package com.anytypeio.anytype.presentation.sets.main
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
@@ -47,7 +49,7 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.common.Action
@@ -123,9 +125,6 @@ open class ObjectSetViewModelTestSetup {
     lateinit var setDocCoverImage: SetDocCoverImage
 
     @Mock
-    lateinit var getTemplates: GetTemplates
-
-    @Mock
     lateinit var createObject: CreateObject
 
     @Mock
@@ -172,15 +171,17 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var viewerDelegate: ViewerDelegate
 
+    lateinit var spaceManager: SpaceManager
+
     @Mock
     lateinit var createTemplate: CreateTemplate
+
+    lateinit var spaceConfig: Config
 
     var stateReducer = DefaultObjectStateReducer()
 
     lateinit var dataViewSubscriptionContainer: DataViewSubscriptionContainer
     lateinit var dataViewSubscription: DataViewSubscription
-
-    var workspaceManager: WorkspaceManager = WorkspaceManager.DefaultWorkspaceManager()
 
     val dispatcher = Dispatcher.Default<Payload>()
     private val delegator = Delegator.Default<Action>()
@@ -193,7 +194,7 @@ open class ObjectSetViewModelTestSetup {
 
     val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
 
-    val defaultObjectPageType = MockDataFactory.randomString()
+    val defaultObjectPageType = TypeKey(MockDataFactory.randomString())
     val defaultObjectPageTypeName = MockDataFactory.randomString()
 
     lateinit var dispatchers: AppCoroutineDispatchers
@@ -204,6 +205,22 @@ open class ObjectSetViewModelTestSetup {
             io = rule.dispatcher,
             computation = rule.dispatcher,
             main = rule.dispatcher
+        )
+        spaceConfig = Config(
+            home = "morbi",
+            profile = "indoctum",
+            gateway = "luctus",
+            space = "nonumy",
+            spaceView = "etiam",
+            widgets = "eloquentiam",
+            analytics = "quem",
+            device = "elaboraret"
+        )
+        spaceManager = SpaceManager.Impl(
+            repo = repo,
+            dispatchers = dispatchers,
+            configStorage = ConfigStorage.CacheStorage(),
+            logger = mock()
         )
         dataViewSubscriptionContainer = DataViewSubscriptionContainer(
             repo = repo,
@@ -237,7 +254,6 @@ open class ObjectSetViewModelTestSetup {
             storeOfRelations = storeOfRelations,
             stateReducer = stateReducer,
             dataViewSubscription = dataViewSubscription,
-            workspaceManager = workspaceManager,
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
@@ -249,6 +265,7 @@ open class ObjectSetViewModelTestSetup {
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,
             viewerDelegate = viewerDelegate,
+            spaceManager = spaceManager,
             createTemplate = createTemplate
         )
     }
@@ -273,7 +290,6 @@ open class ObjectSetViewModelTestSetup {
     fun stubOpenObject(
         doc: List<Block> = emptyList(),
         details: Block.Details = Block.Details(),
-        objectTypes: List<ObjectType> = emptyList(),
         relations: List<Relation> = emptyList(),
         additionalEvents: List<Event> = emptyList(),
         dataViewRestrictions: List<DataViewRestrictions> = emptyList()
@@ -301,13 +317,25 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    suspend fun stubWorkspaceManager(workspace: Id) {
-        workspaceManager.setCurrentWorkspace(workspace)
+    suspend fun stubSpaceManager(space: Id) {
+        repo.stub {
+            onBlocking { getSpaceConfig(space) } doReturn Config(
+                home = "morbi",
+                profile = "indoctum",
+                gateway = "luctus",
+                space = space,
+                spaceView = "etiam",
+                widgets = "eloquentiam",
+                analytics = "quem",
+                device = "elaboraret"
+            )
+        }
+        spaceManager.set(space)
     }
 
     suspend fun stubSubscriptionResults(
         subscription: Id = MockDataFactory.randomString(),
-        workspace: Id,
+        spaceId: Id,
         collection: Id? = null,
         objects: List<ObjectWrapper.Basic> = emptyList(),
         dependencies: List<ObjectWrapper.Basic>  = listOf(),
@@ -327,7 +355,7 @@ open class ObjectSetViewModelTestSetup {
             subscription = subscription,
             collection = collection,
             filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                workspaceId = workspace
+                space = spaceId
             ),
             sorts = dvSorts,
             keys = dvKeys,
@@ -377,9 +405,13 @@ open class ObjectSetViewModelTestSetup {
         storeOfObjectTypes.set(id, map)
     }
 
-    fun stubGetDefaultPageType(type: String = defaultObjectPageType, name: String = defaultObjectPageTypeName) {
+    fun stubGetDefaultPageType(type: TypeKey = defaultObjectPageType, name: String = defaultObjectPageTypeName) {
         getDefaultPageType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(type = type, name = name)
+            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
+                type = type,
+                name = name,
+                id = null
+            )
         }
     }
 
@@ -402,14 +434,15 @@ open class ObjectSetViewModelTestSetup {
 
     fun stubCreateDataViewObject(
         objectId: Id = MockDataFactory.randomString(),
-        objectType: Id = MockDataFactory.randomString()
+        // TODO pass key here, not id
+        objectType: Key = MockDataFactory.randomString()
     ) {
         createDataViewObject.stub {
             onBlocking { async(any()) }.thenReturn(
                 Resultat.success(
                     CreateDataViewObject.Result(
                         objectId = objectId,
-                        objectType = objectType,
+                        objectType = TypeKey(objectType),
                         struct = null
                     )
                 )

@@ -14,11 +14,9 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
-import com.anytypeio.anytype.domain.`object`.ObjectTypesProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -60,12 +58,6 @@ class SetupSelectedAccountViewModelTest {
     lateinit var configStorage: ConfigStorage
 
     @Mock
-    lateinit var workspaceManager: WorkspaceManager
-
-    @Mock
-    lateinit var objectTypesProvider: ObjectTypesProvider
-
-    @Mock
     lateinit var metricsProvider: MetricsProvider
 
     @Mock
@@ -86,7 +78,6 @@ class SetupSelectedAccountViewModelTest {
             repository = authRepo,
             featuresConfigProvider = featuresConfigProvider,
             configStorage = configStorage,
-            workspaceManager = workspaceManager,
             metricsProvider = metricsProvider
         )
     }

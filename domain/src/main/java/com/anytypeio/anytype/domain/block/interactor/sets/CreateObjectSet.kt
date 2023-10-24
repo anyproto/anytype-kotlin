@@ -10,10 +10,11 @@ class CreateObjectSet(
 ) : BaseUseCase<CreateObjectSet.Response, CreateObjectSet.Params>() {
 
     override suspend fun run(params: Params) = safe {
-        repo.createSet(objectType = params.type)
+        repo.createSet(space = params.space, objectType = params.type)
     }
 
     data class Params(
+        val space: Id,
         val type: Id? = null
     )
 

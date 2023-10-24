@@ -8,6 +8,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -23,7 +24,7 @@ class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.
     lateinit var factory: CreateObjectViewModel.Factory
     private val vm by viewModels<CreateObjectViewModel> { factory }
 
-    private val mType get() = arg<String>(TYPE_KEY)
+    private val mType get() = arg<Key>(TYPE_KEY)
 
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.createObjectStatus) { state ->

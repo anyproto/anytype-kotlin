@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import java.time.Duration
@@ -59,6 +60,9 @@ class DeleteAccountViewModelTest {
     lateinit var appActionManager: AppActionManager
 
     @Mock
+    lateinit var spaceManager: SpaceManager
+
+    @Mock
     private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
 
     lateinit var restoreAccount: RestoreAccount
@@ -77,7 +81,8 @@ class DeleteAccountViewModelTest {
             repo = repo,
             config = configStorage,
             dispatchers = testDispatchers,
-            user = userSettingsRepository
+            user = userSettingsRepository,
+            spaceManager = spaceManager
         )
         vm = DeletedAccountViewModel(
             restoreAccount = restoreAccount,

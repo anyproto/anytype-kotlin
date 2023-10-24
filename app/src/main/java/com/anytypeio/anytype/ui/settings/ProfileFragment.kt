@@ -91,6 +91,13 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
         setupBottomSheetBehavior(PADDING_TOP)
     }
 
+    override fun onStart() {
+        super.onStart()
+        subscribe(vm.toasts) {
+            toast(it)
+        }
+    }
+
     private fun proceedWithAccountDeletion() {
         vm.proceedWithAccountDeletion()
         val dialog = DeleteAccountWarning()

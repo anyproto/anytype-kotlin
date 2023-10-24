@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -22,10 +23,10 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.getCover
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class TemplateSelectViewModel(
@@ -60,7 +61,7 @@ class TemplateSelectViewModel(
     private fun proceedWithGettingTemplates(
         objType: ObjectWrapper.Type, withoutBlankTemplate: Boolean
     ) {
-        val params = GetTemplates.Params(objType.id)
+        val params = GetTemplates.Params(TypeId(objType.id))
         viewModelScope.launch {
             getTemplates.async(params)
                     .fold(

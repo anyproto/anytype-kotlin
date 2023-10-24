@@ -14,9 +14,11 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager.Companion.ACTION_CREATE_NEW_TYPE_KEY
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseFragment
+import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentSplashBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
@@ -43,23 +45,40 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
         showVersion()
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                vm.commands.collect {
-                    try {
-                        observe(it)
-                    } catch (e: Exception) {
-                        toast(e.message ?: resources.getString(R.string.unknown_error))
+                launch {
+                    vm.commands.collect {
+                        try {
+                            observe(it)
+                        } catch (e: Exception) {
+                            toast(e.message ?: resources.getString(R.string.unknown_error))
+                        }
                     }
                 }
+                launch {
+                    vm.state.collect { state ->
+                        when(state) {
+                            is ViewState.Error -> {
+                                binding.error.text = state.error
+                                binding.error.visible()
+                            }
+                            else -> {
+                                binding.error.gone()
+                                binding.error.text = ""
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        if (BuildConfig.DEBUG) {
+            binding.error.setOnClickListener {
+                vm.onErrorClicked()
             }
         }
     }
 
     private fun observe(command: SplashViewModel.Command) {
         when (command) {
-            is SplashViewModel.Command.Error -> {
-                toast(command.msg)
-                binding.error.visible()
-            }
             SplashViewModel.Command.NavigateToDashboard -> {
                 try {
                     findNavController().navigate(

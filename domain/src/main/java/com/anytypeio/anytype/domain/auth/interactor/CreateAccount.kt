@@ -5,7 +5,6 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 
 /**
  * Creates an account, then stores it and sets as current user account.
@@ -13,7 +12,6 @@ import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 open class CreateAccount(
     private val repository: AuthRepository,
     private val configStorage: ConfigStorage,
-    private val workspaceManager: WorkspaceManager,
     private val metricsProvider: MetricsProvider
 ) : BaseUseCase<Account, CreateAccount.Params>() {
 
@@ -32,7 +30,6 @@ open class CreateAccount(
             setCurrentAccount(setup.account.id)
         }
         configStorage.set(setup.config)
-        workspaceManager.setCurrentWorkspace(setup.config.workspace)
         setup.account
     }
 

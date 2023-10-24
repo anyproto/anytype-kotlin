@@ -158,52 +158,55 @@ fun ViewerLayoutWidget(
                         checked = currentState.withIcon.toggled,
                         onCheckedChanged = { action(Icon(it)) }
                     )
-                    if (currentState.layoutType == DVViewerType.GALLERY) {
-                        Divider()
-                        ColumnItem(
-                            modifier = Modifier
-                                .padding(start = 20.dp, end = 20.dp),
-                            title = stringResource(id = R.string.card_size),
-                            value = when (currentState.cardSize) {
-                                ViewerLayoutWidgetUi.State.CardSize.Large -> stringResource(id = R.string.large)
-                                ViewerLayoutWidgetUi.State.CardSize.Small -> stringResource(id = R.string.small)
-                            },
-                            onClick = {
-                                action(ViewerLayoutWidgetUi.Action.CardSizeMenu)
-                            },
-                            arrow = painterResource(id = R.drawable.ic_list_arrow_18),
-                            imageModifier = Modifier
-                                .onGloballyPositioned { coordinates ->
-                                    if (coordinates.isAttached) {
-                                        with(coordinates.boundsInRoot()) {
-                                            currentCoordinates = this
-                                        }
-                                    } else {
-                                        currentCoordinates = androidx.compose.ui.geometry.Rect.Zero
+                    val isGallery = currentState.layoutType == DVViewerType.GALLERY
+                    Divider(visible = isGallery)
+                    ColumnItem(
+                        modifier = Modifier
+                            .padding(start = 20.dp, end = 20.dp)
+                            .alpha(if (isGallery) 1f else 0f),
+                        title = stringResource(id = R.string.card_size),
+                        value = when (currentState.cardSize) {
+                            ViewerLayoutWidgetUi.State.CardSize.Large -> stringResource(id = R.string.large)
+                            ViewerLayoutWidgetUi.State.CardSize.Small -> stringResource(id = R.string.small)
+                        },
+                        onClick = {
+                            action(ViewerLayoutWidgetUi.Action.CardSizeMenu)
+                        },
+                        arrow = painterResource(id = R.drawable.ic_list_arrow_18),
+                        imageModifier = Modifier
+                            .onGloballyPositioned { coordinates ->
+                                if (coordinates.isAttached) {
+                                    with(coordinates.boundsInRoot()) {
+                                        currentCoordinates = this
                                     }
+                                } else {
+                                    currentCoordinates = androidx.compose.ui.geometry.Rect.Zero
                                 }
-                        )
-                        Divider()
-                        ColumnItem(
-                            modifier = Modifier.padding(start = 20.dp, end = 20.dp),
-                            title = stringResource(id = R.string.cover),
-                            value = when (val cover = currentState.cover) {
-                                ViewerLayoutWidgetUi.State.ImagePreview.Cover -> stringResource(id = R.string.cover)
-                                is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> cover.name
-                                ViewerLayoutWidgetUi.State.ImagePreview.None -> stringResource(id = R.string.none)
-                            },
-                            onClick = {
-                                action(ViewerLayoutWidgetUi.Action.CoverMenu)
-                            },
-                            arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
-                        )
-                        Divider()
-                        LayoutSwitcherItem(
-                            text = stringResource(id = R.string.fit_image),
-                            checked = currentState.fitImage.toggled,
-                            onCheckedChanged = { action(FitImage(it)) }
-                        )
-                    }
+                            }
+                    )
+                    Divider(visible = isGallery)
+                    ColumnItem(
+                        modifier = Modifier
+                            .padding(start = 20.dp, end = 20.dp)
+                            .alpha(if (isGallery) 1f else 0f),
+                        title = stringResource(id = R.string.cover),
+                        value = when (val cover = currentState.cover) {
+                            ViewerLayoutWidgetUi.State.ImagePreview.Cover -> stringResource(id = R.string.cover)
+                            is ViewerLayoutWidgetUi.State.ImagePreview.Custom -> cover.name
+                            ViewerLayoutWidgetUi.State.ImagePreview.None -> stringResource(id = R.string.none)
+                        },
+                        onClick = {
+                            action(ViewerLayoutWidgetUi.Action.CoverMenu)
+                        },
+                        arrow = painterResource(id = R.drawable.ic_arrow_disclosure_18)
+                    )
+                    Divider(visible = isGallery)
+                    LayoutSwitcherItem(
+                        modifier = Modifier.alpha(if (isGallery) 1f else 0f),
+                        text = stringResource(id = R.string.fit_image),
+                        checked = currentState.fitImage.toggled,
+                        onCheckedChanged = { action(FitImage(it)) }
+                    )
                 }
             }
         }
@@ -356,6 +359,7 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
 
 @Composable
 fun LayoutSwitcherItem(
+    modifier: Modifier = Modifier,
     text: String,
     checked: Boolean,
     onCheckedChanged: (Boolean) -> Unit
@@ -363,7 +367,7 @@ fun LayoutSwitcherItem(
     var switchCheckedState by remember(checked) { mutableStateOf(checked) }
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp)
             .height(58.dp)
@@ -398,7 +402,7 @@ fun PreviewLayoutScreen() {
     ViewerLayoutWidget(
         uiState = ViewerLayoutWidgetUi(
             showWidget = true,
-            layoutType = DVViewerType.GALLERY,
+            layoutType = DVViewerType.GRID,
             withIcon = ViewerLayoutWidgetUi.State.Toggle.WithIcon(
                 toggled = true
             ),

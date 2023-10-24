@@ -7,10 +7,14 @@ import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.util.dispatchers
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
@@ -44,11 +48,20 @@ class CreateObjectTest {
     @Mock
     lateinit var getTemplates: GetTemplates
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
     lateinit var createObject: CreateObject
 
     @Before
     fun setup() {
-        createObject = CreateObject(repo, getDefaultPageType, getTemplates, dispatchers)
+        createObject = CreateObject(
+            repo = repo,
+            getDefaultPageType = getDefaultPageType,
+            spaceManager = spaceManager,
+            dispatchers = dispatchers
+        )
+        stubSpaceManager()
     }
 
     @Test
@@ -56,7 +69,8 @@ class CreateObjectTest {
 
         //SETUP
         val type = null
-        givenGetDefaultObjectType()
+        val appDefaultTypeKey = TypeKey(MockDataFactory.randomString())
+        givenGetDefaultObjectType(type = appDefaultTypeKey)
         stubCreateObject()
 
         //TESTING
@@ -72,7 +86,9 @@ class CreateObjectTest {
                 InternalFlags.ShouldSelectType,
                 InternalFlags.ShouldSelectTemplate,
                 InternalFlags.ShouldEmptyDelete
-            )
+            ),
+            space = SpaceId(""),
+            type = appDefaultTypeKey
         )
         verifyBlocking(repo, times(1)) { createObject(commands) }
     }
@@ -84,8 +100,9 @@ class CreateObjectTest {
             //SETUP
             val type = null
             val defaultType = MockDataFactory.randomString()
-            val defaultTypeName = MockDataFactory.randomString()
-            givenGetDefaultObjectType(defaultType, defaultTypeName)
+            givenGetDefaultObjectType(
+                type = TypeKey(defaultType)
+            )
             givenGetTemplates()
             stubCreateObject()
 
@@ -95,13 +112,15 @@ class CreateObjectTest {
 
             //ASSERT
             val commands = Command.CreateObject(
-                prefilled = buildMap { put(Relations.TYPE, defaultType) },
+                prefilled = emptyMap(),
                 template = null,
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
-                )
+                ),
+                space = SpaceId(""),
+                type = TypeKey(defaultType)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -115,7 +134,9 @@ class CreateObjectTest {
             val defaultType = MockDataFactory.randomString()
             val defaultTypeName = MockDataFactory.randomString()
             val templateBook = MockDataFactory.randomString()
-            givenGetDefaultObjectType(defaultType, defaultTypeName)
+            givenGetDefaultObjectType(
+                type = TypeKey(defaultType)
+            )
             givenGetTemplates(listOf(ObjectWrapper.Basic(buildMap {
                 put(Relations.ID, templateBook)
             })))
@@ -127,13 +148,15 @@ class CreateObjectTest {
 
             //ASSERT
             val commands = Command.CreateObject(
-                prefilled = buildMap { put(Relations.TYPE, defaultType) },
+                prefilled = emptyMap(),
                 template = null,
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
-                )
+                ),
+                space = SpaceId(""),
+                type = TypeKey(defaultType)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -148,19 +171,21 @@ class CreateObjectTest {
             stubCreateObject()
 
             //TESTING
-            val params = CreateObject.Param(type)
+            val params = CreateObject.Param(TypeKey(type))
             createObject.run(params)
 
             //ASSERT
             verifyNoInteractions(getDefaultPageType)
             val commands = Command.CreateObject(
-                prefilled = buildMap { put(Relations.TYPE, type) },
+                prefilled = emptyMap(),
                 template = null,
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
-                )
+                ),
+                space = SpaceId(""),
+                type = TypeKey(type)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -178,19 +203,21 @@ class CreateObjectTest {
             stubCreateObject()
 
             //TESTING
-            val params = CreateObject.Param(type)
+            val params = CreateObject.Param(TypeKey(type))
             createObject.run(params)
 
             //ASSERT
             verifyNoInteractions(getDefaultPageType)
             val commands = Command.CreateObject(
-                prefilled = buildMap { put(Relations.TYPE, type) },
+                prefilled = emptyMap(),
                 template = null,
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
-                )
+                ),
+                space = SpaceId(""),
+                type = TypeKey(type)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -216,26 +243,36 @@ class CreateObjectTest {
             stubCreateObject()
 
             //TESTING
-            val params = CreateObject.Param(type)
+            val params = CreateObject.Param(TypeKey(type))
             createObject.run(params)
 
             //ASSERT
             verifyNoInteractions(getDefaultPageType)
             val commands = Command.CreateObject(
-                prefilled = buildMap { put(Relations.TYPE, type) },
+                prefilled = emptyMap(),
                 template = null,
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
-                )
+                ),
+                space = SpaceId(""),
+                type = TypeKey(type)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
 
-    private fun givenGetDefaultObjectType(type: String? = null, name: String? = null) {
+    private fun givenGetDefaultObjectType(
+        type: TypeKey? = null,
+        name: String? = null,
+        id: TypeId? = null
+    ) {
         getDefaultPageType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(type, name)
+            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
+                type = type,
+                name = name,
+                id = id
+            )
         }
     }
 
@@ -252,6 +289,12 @@ class CreateObjectTest {
                 event = Payload(context = "", events = listOf()),
                 details = emptyMap()
             )
+        }
+    }
+
+    fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking { get() } doReturn ""
         }
     }
 }

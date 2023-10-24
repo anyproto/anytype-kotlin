@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.openAccount
 import com.anytypeio.anytype.analytics.base.sendEvent
@@ -9,9 +10,13 @@ import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
+import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -19,14 +24,13 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.CrashReporter
-import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -45,13 +49,22 @@ class SplashViewModel(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val featureToggles: FeatureToggles,
-    private val crashReporter: com.anytypeio.anytype.CrashReporter
+    private val crashReporter: CrashReporter
 ) : ViewModel() {
+
+    val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
 
     val commands = MutableSharedFlow<Command>(replay = 0)
 
     init {
         checkAuthorizationStatus()
+    }
+
+    fun onErrorClicked() {
+        if (BuildConfig.DEBUG && state.value is ViewState.Error) {
+            state.value = ViewState.Loading
+            proceedWithLaunchingAccount()
+        }
     }
 
     private fun checkAuthorizationStatus() {
@@ -89,7 +102,8 @@ class SplashViewModel(
             launchWallet(BaseUseCase.None).process(
                 failure = { e ->
                     Timber.e(e, "Error while retrying launching wallet")
-                    commands.emit(Command.Error(e.toString()))
+                    val msg = "Error while launching account: ${e.message}"
+                    state.value = ViewState.Error(msg)
                 },
                 success = {
                     proceedWithLaunchingAccount()
@@ -117,10 +131,10 @@ class SplashViewModel(
                             commands.emit(Command.NavigateToMigration)
                         }
                         is NeedToUpdateApplicationException -> {
-                            commands.emit(Command.Error(ERROR_NEED_UPDATE))
+                            state.value = ViewState.Error(ERROR_NEED_UPDATE)
                         }
                         else -> {
-                            commands.emit(Command.Error(ERROR_MESSAGE))
+                            state.value = ViewState.Error(ERROR_MESSAGE)
                         }
                     }
                 }
@@ -133,10 +147,10 @@ class SplashViewModel(
         objectTypesSubscriptionManager.onStart()
     }
 
-    fun onIntentCreateNewObject(type: Id) {
+    fun onIntentCreateNewObject(type: Key) {
         viewModelScope.launch {
             createObject.execute(
-                CreateObject.Param(type = type)
+                CreateObject.Param(type = TypeKey(type))
             ).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while creating a new object with type:$type")
@@ -219,7 +233,6 @@ class SplashViewModel(
         object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id) : Command()
         data class NavigateToObjectSet(val id: Id) : Command()
-        data class Error(val msg: String) : Command()
     }
 
     companion object {

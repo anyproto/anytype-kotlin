@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
@@ -46,7 +47,8 @@ class LibraryViewModel(
     private val resourceManager: LibraryResourceManager,
     private val setObjectDetails: SetObjectDetails,
     private val createObject: CreateObject,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val spaceManager: SpaceManager
 ) : NavigationViewModel<LibraryViewModel.Navigation>() {
 
     private val uiEvents = MutableStateFlow<LibraryEvent>(LibraryEvent.Query.MyTypes(""))
@@ -137,7 +139,7 @@ class LibraryViewModel(
 
     private fun proceedWithCreateDoc() {
         viewModelScope.launch {
-            createObject.execute(CreateObject.Param(type = null))
+            createObject.async(CreateObject.Param(type = null))
                 .fold(
                     onSuccess = { result ->
                         navigate(Navigation.CreateDoc(result.objectId))
@@ -207,7 +209,12 @@ class LibraryViewModel(
 
     private fun installObject(item: LibraryView) {
         viewModelScope.launch {
-            addObjectToWorkspace(AddObjectToWorkspace.Params(listOf(item.id))).proceed(
+            addObjectToWorkspace(
+                AddObjectToWorkspace.Params(
+                    space = spaceManager.get(),
+                    objects = listOf (item.id)
+                )
+            ).proceed(
                 success = {
                     when (item) {
                         is LibraryView.LibraryRelationView -> {
@@ -387,7 +394,8 @@ class LibraryViewModel(
         private val resourceManager: LibraryResourceManager,
         private val setObjectDetails: SetObjectDetails,
         private val createObject: CreateObject,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -401,7 +409,8 @@ class LibraryViewModel(
                 resourceManager,
                 setObjectDetails,
                 createObject,
-                analytics
+                analytics,
+                spaceManager
             ) as T
         }
     }

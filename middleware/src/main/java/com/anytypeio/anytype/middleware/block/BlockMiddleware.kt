@@ -3,6 +3,7 @@ package com.anytypeio.anytype.middleware.block
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
@@ -171,8 +173,11 @@ class BlockMiddleware(
     ): Payload = middleware.blockBookmarkCreateAndFetch(command)
 
     override suspend fun createBookmarkObject(
-        url: Url
-    ): Id = middleware.objectCreateBookmark(url = url)
+        space: Id, url: Url
+    ): Id = middleware.objectCreateBookmark(
+        space = space,
+        url = url
+    )
 
     override suspend fun fetchBookmarkObject(
         ctx: Id,
@@ -186,7 +191,11 @@ class BlockMiddleware(
         command: Command.Undo
     ): Payload = middleware.objectUndo(command)
 
-    override suspend fun importUseCaseSkip() = middleware.objectImportUseCaseSkip()
+    override suspend fun importUseCaseSkip(
+        space: Id
+    ) = middleware.objectImportUseCaseSkip(
+        space = space
+    )
 
     override suspend fun redo(
         command: Command.Redo
@@ -229,8 +238,10 @@ class BlockMiddleware(
     ): Payload = middleware.blockListSetFields(command)
 
     override suspend fun createSet(
+        space: Id,
         objectType: String?
     ): Response.Set.Create = middleware.objectCreateSet(
+        space = space,
         objectType = objectType
     )
 
@@ -437,8 +448,12 @@ class BlockMiddleware(
     override suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload =
         middleware.blockRelationAdd(command)
 
-    override suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload =
-        middleware.objectSetObjectType(ctx = ctx, typeId = typeId)
+    override suspend fun setObjectTypeToObject(
+        ctx: Id, objectTypeKey: Id
+    ): Payload = middleware.objectSetObjectType(
+        ctx = ctx,
+        objectTypeKey = objectTypeKey
+    )
 
     override suspend fun addToFeaturedRelations(
         ctx: Id,
@@ -463,7 +478,7 @@ class BlockMiddleware(
     override suspend fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean
-    ): Payload = middleware.objectSetIsArchived(ctx = ctx, isArchived = isArchived)
+    ) = middleware.objectSetIsArchived(ctx = ctx, isArchived = isArchived)
 
     override suspend fun deleteObjects(targets: List<Id>) = middleware.objectListDelete(
         targets = targets
@@ -646,11 +661,13 @@ class BlockMiddleware(
     }
 
     override suspend fun createRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,
         prefilled: Struct
     ): ObjectWrapper.Relation = middleware.objectCreateRelation(
+        space = space,
         name = name,
         format = format,
         formatObjectTypes = formatObjectTypes,
@@ -658,18 +675,22 @@ class BlockMiddleware(
     )
 
     override suspend fun createType(
+        space: Id,
         name: String,
         emojiUnicode: String?
     ): ObjectWrapper.Type = middleware.objectCreateObjectType(
+        space = space,
         name = name,
         emojiUnicode = emojiUnicode
     )
 
     override suspend fun createRelationOption(
+        space: Id,
         relation: Key,
         name: String,
         color: String
     ): ObjectWrapper.Option = middleware.objectCreateRelationOption(
+        space = space,
         relation = relation,
         name = name,
         color = color
@@ -689,9 +710,35 @@ class BlockMiddleware(
         )
     }
 
-    override suspend fun addObjectToWorkspace(objects: List<Id>): List<Id> {
-        return middleware.workspaceObjectListAdd(objects)
+    override suspend fun setSpaceDetails(space: SpaceId, details: Struct) {
+        middleware.workspaceSetInfo(
+            space = space,
+            struct = details
+        )
     }
+
+    override suspend fun createWorkspace(details: Struct): Id = middleware.workspaceCreate(
+        details = details
+    )
+
+    override suspend fun getSpaceConfig(space: Id): Config = middleware.workspaceOpen(
+        space = space
+    )
+
+    override suspend fun addObjectListToSpace(objects: List<Id>, space: Id): List<Id> {
+        return middleware.workspaceObjectListAdd(
+            objects = objects,
+            space = space
+        )
+    }
+
+    override suspend fun addObjectToSpace(
+        obj: Id,
+        space: Id
+    ): Id = middleware.workspaceObjectAdd(
+        obj = obj,
+        space = space
+    )
 
     override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
         return middleware.workspaceObjectListRemove(objects)
@@ -789,8 +836,8 @@ class BlockMiddleware(
         return middleware.setQueryToSet(command)
     }
 
-    override suspend fun fileSpaceUsage(): FileLimits {
-        return middleware.fileSpaceUsage()
+    override suspend fun fileSpaceUsage(space: SpaceId): FileLimits {
+        return middleware.fileSpaceUsage(space)
     }
 
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {

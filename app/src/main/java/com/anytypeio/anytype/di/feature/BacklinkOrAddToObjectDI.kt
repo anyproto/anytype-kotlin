@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.linking.BackLinkOrAddToObjectViewModelFactory
 import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
@@ -77,4 +78,5 @@ interface BacklinkOrAddToObjectDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun dispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
+    fun spaceManager(): SpaceManager
 }

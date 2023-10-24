@@ -3,14 +3,14 @@ package com.anytypeio.anytype.presentation.relations
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
+import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.model.RelationView
 import com.anytypeio.anytype.presentation.relations.model.Section
 import com.anytypeio.anytype.presentation.relations.providers.FakeObjectRelationProvider
@@ -27,6 +27,7 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
 
 @ExperimentalCoroutinesApi
@@ -45,15 +46,16 @@ class RelationAddViewModelBaseTest {
     lateinit var repo: BlockRepository
 
     @Mock
-    lateinit var workspaceManager: WorkspaceManager
+    lateinit var spaceManager: SpaceManager
 
     private val relationsProvider = FakeObjectRelationProvider()
 
-    private val workspaceId = MockDataFactory.randomString()
+    private val spaceId = MockDataFactory.randomString()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        repo = mock(verboseLogging = true)
     }
 
     @Test
@@ -62,13 +64,13 @@ class RelationAddViewModelBaseTest {
         // SETUP
 
         val relation = StubRelationObject(
-            workspaceId = workspaceId
+            spaceId = spaceId
         )
 
-        workspaceManager.stub {
+        spaceManager.stub {
             onBlocking {
-                getCurrentWorkspace()
-            } doReturn workspaceId
+                get()
+            } doReturn spaceId
         }
 
         repo.stub {
@@ -79,9 +81,9 @@ class RelationAddViewModelBaseTest {
                         addAll(ObjectSearchConstants.filterMyRelations())
                         add(
                             DVFilter(
-                                relation = Relations.WORKSPACE_ID,
+                                relation = Relations.SPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
-                                value = workspaceId
+                                value = spaceId
                             )
                         )
                         add(
@@ -114,9 +116,9 @@ class RelationAddViewModelBaseTest {
                         )
                         add(
                             DVFilter(
-                                relation = Relations.WORKSPACE_ID,
+                                relation = Relations.SPACE_ID,
                                 condition = DVFilterCondition.EQUAL,
-                                value = MARKETPLACE_ID
+                                value = MARKETPLACE_SPACE_ID
                             )
                         )
                         add(
@@ -150,7 +152,7 @@ class RelationAddViewModelBaseTest {
                         id = relation.id,
                         name = relation.name.orEmpty(),
                         format = relation.format,
-                        workspace = workspaceId
+                        space = spaceId
                     )
                 )
             )
@@ -179,21 +181,21 @@ class RelationAddViewModelBaseTest {
             // SETUP
 
             val marketplace = listOf(
-                StubRelationObject(workspaceId = MARKETPLACE_ID),
-                StubRelationObject(workspaceId = MARKETPLACE_ID),
-                StubRelationObject(workspaceId = MARKETPLACE_ID)
+                StubRelationObject(spaceId = MARKETPLACE_SPACE_ID),
+                StubRelationObject(spaceId = MARKETPLACE_SPACE_ID),
+                StubRelationObject(spaceId = MARKETPLACE_SPACE_ID)
             )
 
             val library = listOf(
-                StubRelationObject(sourceObject = marketplace[0].id, workspaceId = workspaceId),
-                StubRelationObject(workspaceId = workspaceId),
-                StubRelationObject(workspaceId = workspaceId)
+                StubRelationObject(sourceObject = marketplace[0].id, spaceId = spaceId),
+                StubRelationObject(spaceId = spaceId),
+                StubRelationObject(spaceId = spaceId)
             )
 
-            workspaceManager.stub {
+            spaceManager.stub {
                 onBlocking {
-                    getCurrentWorkspace()
-                } doReturn workspaceId
+                    get()
+                } doReturn spaceId
             }
 
             repo.stub {
@@ -204,9 +206,9 @@ class RelationAddViewModelBaseTest {
                             addAll(ObjectSearchConstants.filterMyRelations())
                             add(
                                 DVFilter(
-                                    relation = Relations.WORKSPACE_ID,
+                                    relation = Relations.SPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
-                                    value = workspaceId
+                                    value = spaceId
                                 )
                             )
                             add(
@@ -239,9 +241,9 @@ class RelationAddViewModelBaseTest {
                             )
                             add(
                                 DVFilter(
-                                    relation = Relations.WORKSPACE_ID,
+                                    relation = Relations.SPACE_ID,
                                     condition = DVFilterCondition.EQUAL,
-                                    value = MARKETPLACE_ID
+                                    value = MARKETPLACE_SPACE_ID
                                 )
                             )
                             add(
@@ -275,21 +277,21 @@ class RelationAddViewModelBaseTest {
                             id = library[0].id,
                             name = library[0].name.orEmpty(),
                             format = library[0].format,
-                            workspace = workspaceId
+                            space = spaceId
                         ),
                         RelationView.Existing(
                             key = library[1].key,
                             id = library[1].id,
                             name = library[1].name.orEmpty(),
                             format = library[1].format,
-                            workspace = workspaceId
+                            space = spaceId
                         ),
                         RelationView.Existing(
                             key = library[2].key,
                             id = library[2].id,
                             name = library[2].name.orEmpty(),
                             format = library[2].format,
-                            workspace = workspaceId
+                            space = spaceId
                         ),
                         Section.Marketplace,
                         RelationView.Existing(
@@ -297,14 +299,14 @@ class RelationAddViewModelBaseTest {
                             id = marketplace[1].id,
                             name = marketplace[1].name.orEmpty(),
                             format = marketplace[1].format,
-                            workspace = MARKETPLACE_ID
+                            space = MARKETPLACE_SPACE_ID
                         ),
                         RelationView.Existing(
                             key = marketplace[2].key,
                             id = marketplace[2].id,
                             name = marketplace[2].name.orEmpty(),
                             format = marketplace[2].format,
-                            workspace = MARKETPLACE_ID
+                            space = MARKETPLACE_SPACE_ID
                         ),
                     )
                 )
@@ -321,6 +323,6 @@ class RelationAddViewModelBaseTest {
             repo = repo,
             dispatchers = appCoroutineDispatchers
         ),
-        workspaceManager = workspaceManager
+        spaceManager = spaceManager
     ) {}
 }

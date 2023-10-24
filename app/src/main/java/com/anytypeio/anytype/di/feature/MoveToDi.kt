@@ -5,9 +5,9 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.moving.MoveToViewModelFactory
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import dagger.Module
@@ -53,12 +53,12 @@ object MoveToModule {
         getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
         analytics: Analytics,
-        workspaceManager: WorkspaceManager
+        spaceManager: SpaceManager
     ): MoveToViewModelFactory = MoveToViewModelFactory(
         urlBuilder = urlBuilder,
         getObjectTypes = getObjectTypes,
         searchObjects = searchObjects,
         analytics = analytics,
-        workspaceManager = workspaceManager
+        spaceManager = spaceManager
     )
 }

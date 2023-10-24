@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.FeaturesConfig
+import com.anytypeio.anytype.middleware.mappers.config
 import com.anytypeio.anytype.middleware.mappers.core
 
 fun Rpc.Account.Create.Response.toAccountSetup() : AccountSetup {
@@ -23,15 +24,7 @@ fun Rpc.Account.Create.Response.toAccountSetup() : AccountSetup {
             avatar = null
         ),
         features = FeaturesConfig(),
-        config = Config(
-            home = info.homeObjectId,
-            profile = info.profileObjectId,
-            gateway = info.gatewayUrl,
-            workspace = info.accountSpaceId,
-            widgets = info.widgetsId,
-            analytics = info.analyticsId,
-            device = info.deviceId
-        ),
+        config = info.config(),
         status = status?.core() ?: AccountStatus.Unknown
     )
 }
@@ -55,10 +48,11 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
             home = info.homeObjectId,
             profile = info.profileObjectId,
             gateway = info.gatewayUrl,
-            workspace = info.accountSpaceId,
+            spaceView = info.spaceViewId,
+            space = info.accountSpaceId,
             widgets = info.widgetsId,
             analytics = info.analyticsId,
-            device = info.deviceId
+            device = info.deviceId,
         ),
         status = status?.core() ?: AccountStatus.Unknown
     )

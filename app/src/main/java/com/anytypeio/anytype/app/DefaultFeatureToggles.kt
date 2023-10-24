@@ -3,7 +3,6 @@ package com.anytypeio.anytype.app
 import android.content.Context
 import android.content.SharedPreferences
 import com.anytypeio.anytype.BuildConfig
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.device.BuildProvider
 import javax.inject.Inject
@@ -33,4 +32,6 @@ class DefaultFeatureToggles @Inject constructor(
     override val isAutoUpdateEnabled: Boolean = false
 
     override val isConciseLogging: Boolean = true
+
+    override val enableSpaces: Boolean = true
 }

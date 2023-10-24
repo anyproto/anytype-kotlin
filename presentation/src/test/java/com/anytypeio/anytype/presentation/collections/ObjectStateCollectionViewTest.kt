@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObject
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -14,19 +15,18 @@ import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
-import org.mockito.kotlin.verifyNoInteractions
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
@@ -50,7 +50,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should display init state when opening object without DataView block`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -76,16 +76,12 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             actual = (headerFlow.awaitItem() as SetOrCollectionHeaderState.Default).title.text
         )
         viewerFlow.expectNoEvents()
-
-        // ASSERT NO SUBSCRIPTION TO COLLECTION RECORDS
-        advanceUntilIdle()
-        verifyNoInteractions(repo)
     }
 
     @Test
     fun `should display collection no view state when opening object without view`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -109,16 +105,14 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         assertIs<ObjectState.DataView.Collection>(stateFlow.awaitItem())
         assertIs<DataViewViewState.Collection.NoView>(viewerFlow.awaitItem())
 
-        // ASSERT NO SUBSCRIPTION TO COLLECTION RECORDS
-        advanceUntilIdle()
-        verifyNoInteractions(repo)
+        viewerFlow.expectNoEvents()
     }
 
 
     @Test
     fun `should display collection no items state when opening object without records`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -132,7 +126,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -156,7 +150,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should display collection default state when opening object with records`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -170,7 +164,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -196,7 +190,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should sort LIST collection objects by data view object order`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -210,7 +204,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -250,7 +244,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should not sort LIST collection objects by empty data view object order`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -264,7 +258,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -305,7 +299,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should sort GRID collection objects by data view object order`() = runTest {
         // SETUP
         session.currentViewerId.value = mockObjectCollection.viewerGrid.id
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -319,7 +313,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -344,7 +338,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
         //assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
-        assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem()).also {dataViewState ->
+        assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem()).also { dataViewState ->
             val rows = (dataViewState.viewer as Viewer.GridView).rows
             assertEquals(5, rows.size)
 
@@ -361,7 +355,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should NOT sort GRID collection objects by empty data view object order`() = runTest {
         // SETUP
         session.currentViewerId.value = mockObjectCollection.viewerGrid.id
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -375,7 +369,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -416,7 +410,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should sort GALLERY collection objects by data view object order`() = runTest {
         // SETUP
         session.currentViewerId.value = mockObjectCollection.viewerGallery.id
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -430,7 +424,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -471,7 +465,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should NOT sort GALLERY collection objects by empty data view object order`() = runTest {
         // SETUP
         session.currentViewerId.value = mockObjectCollection.viewerGallery.id
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -485,7 +479,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -527,7 +521,10 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should be collection with templates present when active view hasn't defaultTemplateId`() = runTest {
         // SETUP
 
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        val defaultObjectType = TypeKey(MockDataFactory.randomString())
+        val defaultObjectTypeName = "CustomName"
+
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubTemplatesForTemplatesContainer(
@@ -564,7 +561,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -591,7 +588,11 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should be collection without templates allowed when active viewer default type is NOTE`() = runTest {
         // SETUP
 
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        val noteTypeId = MockDataFactory.randomString()
+        val noteTypeUniqueKey = TypeKey(ObjectTypeIds.NOTE)
+        val noteTypeName = "Note"
+
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubTemplatesForTemplatesContainer()
@@ -600,8 +601,8 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         val dataview = mockObjectCollection.dataView.copy(
             content = (mockObjectCollection.dataView.content as DV).copy(
                 viewers = listOf(
-                    mockObjectCollection.viewerGrid.copy(defaultObjectType = ObjectTypeIds.PROFILE),
-                    mockObjectCollection.viewerList.copy(defaultObjectType = ObjectTypeIds.NOTE)
+                    mockObjectCollection.viewerGrid.copy(defaultObjectType = RandomString.make()),
+                    mockObjectCollection.viewerList.copy(defaultObjectType = noteTypeId)
                 )
             )
         )
@@ -615,17 +616,19 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             details = mockObjectCollection.details
         )
         stubStoreOfObjectTypes(
-            ObjectTypeIds.NOTE,
+            noteTypeId,
             mapOf(
-                Relations.ID to ObjectTypeIds.NOTE,
+                Relations.ID to noteTypeId,
+                Relations.UNIQUE_KEY to noteTypeUniqueKey.key,
+                Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
                 Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),
-                Relations.NAME to "NOTE"
+                Relations.NAME to noteTypeName
             )
         )
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -655,7 +658,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         val defaultObjectType = RandomString.make()
         val defaultObjectTypeName = RandomString.make()
 
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
 
@@ -688,7 +691,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,
@@ -715,10 +718,11 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
     fun `should be collection with templates allowed when active viewer default type is custom type with recommended layouts`() = runTest {
         // SETUP
 
-        val defaultObjectType = RandomString.make()
-        val defaultObjectTypeName = RandomString.make()
+        val defaultObjectTypeId = RandomString.make()
+        val defaultObjectTypeUniqueKey = TypeKey(ObjectTypeIds.PAGE)
+        val defaultObjectTypeName = "Page"
 
-        stubWorkspaceManager(mockObjectCollection.workspaceId)
+        stubSpaceManager(mockObjectCollection.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
 
@@ -726,8 +730,8 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         val dataview = mockObjectCollection.dataView.copy(
             content = (mockObjectCollection.dataView.content as DV).copy(
                 viewers = listOf(
-                    mockObjectCollection.viewerGrid.copy(defaultObjectType = ObjectTypeIds.PROFILE),
-                    mockObjectCollection.viewerList.copy(defaultObjectType = defaultObjectType)
+                    mockObjectCollection.viewerGrid.copy(defaultObjectType = ObjectTypeIds.NOTE),
+                    mockObjectCollection.viewerList.copy(defaultObjectType = defaultObjectTypeId)
                 )
             )
         )
@@ -741,9 +745,10 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             details = mockObjectCollection.details
         )
         stubStoreOfObjectTypes(
-            defaultObjectType,
+            defaultObjectTypeId,
             mapOf(
-                Relations.ID to defaultObjectType,
+                Relations.ID to defaultObjectTypeId,
+                Relations.UNIQUE_KEY to defaultObjectTypeUniqueKey.key,
                 Relations.RECOMMENDED_LAYOUT to SupportedLayouts.editorLayouts.random().code.toDouble(),
                 Relations.NAME to defaultObjectTypeName
             )
@@ -751,7 +756,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         stubStoreOfRelations(mockObjectCollection)
         stubSubscriptionResults(
             subscription = mockObjectCollection.subscriptionId,
-            workspace = mockObjectCollection.workspaceId,
+            spaceId = mockObjectCollection.spaceId,
             collection = root,
             storeOfRelations = storeOfRelations,
             keys = mockObjectCollection.dvKeys,

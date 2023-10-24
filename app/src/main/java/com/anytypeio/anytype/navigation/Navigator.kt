@@ -72,9 +72,9 @@ class Navigator : AppNavigation {
 
     override fun workspace() {}
 
-    override fun openSettings() {
+    override fun openSpaceSettings() {
         try {
-            navController?.navigate(R.id.action_open_settings)
+            navController?.navigate(R.id.action_open_space_settings)
         } catch (e: Exception) {
             Timber.e(e, "Error while opening settings")
         }
@@ -89,12 +89,13 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun openModalEditor(id: String, targetObjectType: Id) {
+    override fun openModalEditor(id: String, targetTypeId: Id, targetTypeKey: Id) {
         navController?.navigate(
             R.id.nav_editor_modal,
             bundleOf(
                 EditorModalFragment.ARG_ID to id,
-                EditorModalFragment.ARG_TARGET_OBJECT_TYPE to targetObjectType
+                EditorModalFragment.ARG_TARGET_TYPE_ID to targetTypeId,
+                EditorModalFragment.ARG_TARGET_TYPE_KEY to targetTypeKey
             )
         )
     }

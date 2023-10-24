@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.splash
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -11,7 +12,6 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -70,7 +70,7 @@ class SplashViewModelTest {
     @Mock lateinit var featureToggles: FeatureToggles
 
     @Mock
-    private lateinit var crashReporter: com.anytypeio.anytype.CrashReporter
+    private lateinit var crashReporter: CrashReporter
 
     lateinit var vm: SplashViewModel
 

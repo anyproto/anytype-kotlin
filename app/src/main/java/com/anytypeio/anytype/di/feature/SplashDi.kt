@@ -18,13 +18,14 @@ import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.launch.SetDefaultEditorType
+import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
@@ -71,15 +72,17 @@ object SplashModule {
         pathProvider: PathProvider,
         featuresConfigProvider: FeaturesConfigProvider,
         configStorage: ConfigStorage,
-        workspaceManager: WorkspaceManager,
-        metricsProvider: MetricsProvider
+        spaceManager: SpaceManager,
+        metricsProvider: MetricsProvider,
+        userSettings: UserSettingsRepository
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         featuresConfigProvider = featuresConfigProvider,
         configStorage = configStorage,
-        workspaceManager = workspaceManager,
-        metricsProvider = metricsProvider
+        spaceManager = spaceManager,
+        metricsProvider = metricsProvider,
+        settings = userSettings
     )
 
     @JvmStatic
@@ -111,34 +114,41 @@ object SplashModule {
     fun provideGetDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
-        userSettingsRepository,
-        blockRepository,
-        workspaceManager,
-        dispatchers
+        userSettingsRepository = userSettingsRepository,
+        blockRepository = blockRepository,
+        spaceManager = spaceManager,
+        dispatchers = dispatchers,
+        configStorage = configStorage
     )
 
     @JvmStatic
     @PerScreen
     @Provides
-    fun provideSetDefaultPageType(repo: UserSettingsRepository): SetDefaultEditorType =
-        SetDefaultEditorType(repo)
+    fun provideSetDefaultPageType(
+        repo: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDefaultObjectType = SetDefaultObjectType(
+        repo = repo,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @Provides
     @PerScreen
     fun getCreateObject(
         repo: BlockRepository,
-        getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
-        getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -177,4 +187,5 @@ interface SplashDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun crashReporter(): CrashReporter
     fun metricsProvider(): MetricsProvider
+    fun spaceManager(): SpaceManager
 }

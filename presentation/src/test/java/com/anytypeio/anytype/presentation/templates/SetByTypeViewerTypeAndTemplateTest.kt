@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.StubDataViewViewRelation
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationLink
 import com.anytypeio.anytype.core_models.StubRelationObject
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -35,6 +36,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     private lateinit var closable: AutoCloseable
 
     private val customType1Id = "customType1-${RandomString.make()}"
+    private val customType1Key = TypeKey("customTypeKey-${RandomString.make()}")
 
     private val template1 = StubObject(
         id = "template1-${RandomString.make()}",
@@ -75,7 +77,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by type, type default template is empty, views settings are empty`() = runTest {
-        val workspaceId = RandomString.make()
+        val spaceId = RandomString.make()
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -90,7 +92,8 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val dvKeys = listOf(relationObject1.key)
         val customType1Map = mapOf(
             Relations.ID to customType1Id,
-            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+            Relations.UNIQUE_KEY to customType1Key.key,
+            Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
             Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.TODO.code.toDouble(),
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to null
@@ -102,7 +105,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -120,7 +123,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = spaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(customType1Id),
@@ -146,7 +149,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.SetByType(
                 filters = listOf(),
-                type = customType1Id,
+                type = customType1Key,
                 template = null,
             )
             async(params)
@@ -162,7 +165,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by type, type default template is blank, views settings are empty`() = runTest {
-        val workspaceId = RandomString.make()
+        val spaceId = RandomString.make()
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -177,7 +180,8 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val dvKeys = listOf(relationObject1.key)
         val customType1Map = mapOf(
             Relations.ID to customType1Id,
-            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+            Relations.UNIQUE_KEY to customType1Key.key,
+            Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
             Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.TODO.code.toDouble(),
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to DEFAULT_TEMPLATE_ID_BLANK
@@ -189,7 +193,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -207,7 +211,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = spaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(customType1Id),
@@ -233,7 +237,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.SetByType(
                 filters = listOf(),
-                type = customType1Id,
+                type = customType1Key,
                 template = null,
             )
             async(params)
@@ -249,7 +253,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by type, type default template is not blank, views settings are empty`() = runTest {
-        val workspaceId = RandomString.make()
+        val spaceId = RandomString.make()
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -264,7 +268,8 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val dvKeys = listOf(relationObject1.key)
         val customType1Map = mapOf(
             Relations.ID to customType1Id,
-            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+            Relations.UNIQUE_KEY to customType1Key.key,
+            Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
             Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.TODO.code.toDouble(),
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to template2.id
@@ -276,7 +281,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -294,7 +299,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = spaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(customType1Id),
@@ -320,7 +325,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.SetByType(
                 filters = listOf(),
-                type = customType1Id,
+                type = customType1Key,
                 template = template2.id,
             )
             async(params)
@@ -339,7 +344,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `set by type, type default template is not blank, views settings has different type and template`() =
         runTest {
-            val workspaceId = RandomString.make()
+            val spaceId = RandomString.make()
             val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
             val relationObject1 = StubRelationObject()
             val dvViewerRelation1 =
@@ -348,15 +353,18 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             val dvKeys = listOf(relationObject1.key)
             val customType1Map = mapOf(
                 Relations.ID to customType1Id,
-                Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+                Relations.UNIQUE_KEY to customType1Key.key,
+                Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
                 Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.TODO.code.toDouble(),
                 Relations.NAME to "name-$customType1Id",
                 Relations.DEFAULT_TEMPLATE_ID to template2.id
             )
             val customType2Id = "customType2-${RandomString.make()}"
+            val customType2Key = TypeKey("customTypeKey-${RandomString.make()}")
             val customType2Map = mapOf(
                 Relations.ID to customType2Id,
-                Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+                Relations.UNIQUE_KEY to customType2Key.key,
+                Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
                 Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.TODO.code.toDouble(),
                 Relations.NAME to RandomString.make(),
                 Relations.DEFAULT_TEMPLATE_ID to template1.id
@@ -375,7 +383,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 )
             )
 
-            stubWorkspaceManager(workspaceId)
+            stubSpaceManager(spaceId)
             stubInterceptEvents()
             stubInterceptThreadStatus()
             stubOpenObject(
@@ -393,7 +401,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
             stubSubscriptionResults(
                 subscription = subscriptionId,
-                workspace = workspaceId,
+                spaceId = spaceId,
                 storeOfRelations = storeOfRelations,
                 keys = dvKeys,
                 sources = listOf(customType1Id),
@@ -419,7 +427,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 val params = CreateDataViewObject.Params.SetByType(
                     filters = listOf(),
-                    type = customType1Id,
+                    type = customType1Key,
                     template = template1.id,
                 )
                 async(params)
@@ -435,7 +443,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by type, type default template is not blank, view template is different`() = runTest {
-        val workspaceId = RandomString.make()
+        val spaceId = RandomString.make()
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -450,7 +458,8 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val dvKeys = listOf(relationObject1.key)
         val customType1Map = mapOf(
             Relations.ID to customType1Id,
-            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+            Relations.UNIQUE_KEY to customType1Key.key,
+            Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
             Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.TODO.code.toDouble(),
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to template2.id
@@ -462,7 +471,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -480,7 +489,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = spaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(customType1Id),
@@ -506,7 +515,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.SetByType(
                 filters = listOf(),
-                type = customType1Id,
+                type = customType1Key,
                 template = template1.id,
             )
             async(params)
@@ -522,7 +531,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
      */
     @Test
     fun `set by type, type default template is not blank, view template is blank`() = runTest {
-        val workspaceId = RandomString.make()
+        val spaceId = RandomString.make()
         val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(root)
         val relationObject1 = StubRelationObject()
         val dvViewerRelation1 =
@@ -537,7 +546,8 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val dvKeys = listOf(relationObject1.key)
         val customType1Map = mapOf(
             Relations.ID to customType1Id,
-            Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
+            Relations.UNIQUE_KEY to customType1Key.key,
+            Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
             Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.TODO.code.toDouble(),
             Relations.NAME to "name-$customType1Id",
             Relations.DEFAULT_TEMPLATE_ID to template2.id
@@ -549,7 +559,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             )
         )
 
-        stubWorkspaceManager(workspaceId)
+        stubSpaceManager(spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -567,7 +577,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = subscriptionId,
-            workspace = workspaceId,
+            spaceId = spaceId,
             storeOfRelations = storeOfRelations,
             keys = dvKeys,
             sources = listOf(customType1Id),
@@ -593,7 +603,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.SetByType(
                 filters = listOf(),
-                type = customType1Id,
+                type = customType1Key,
                 template = null
             )
             async(params)

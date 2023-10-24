@@ -4,28 +4,37 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 
 sealed class TemplateView {
 
     abstract val isDefault: Boolean
+    abstract val targetTypeId: TypeId
+    abstract val targetTypeKey: TypeKey
 
     data class Blank(
         val id: Id,
-        val typeId: Id,
+        override val targetTypeId: TypeId,
+        override val targetTypeKey: TypeKey,
         val typeName: String = "",
         val layout: Int,
         override val isDefault: Boolean = false
     ) : TemplateView()
 
-    data class New(val targetObjectType: Id) : TemplateView() {
+    data class New(
+        override val targetTypeId: TypeId,
+        override val targetTypeKey: TypeKey,
+    ) : TemplateView() {
         override val isDefault: Boolean = false
     }
 
     data class Template(
         val id: Id,
         val name: String,
-        val typeId: Id,
+        override val targetTypeId: TypeId,
+        override val targetTypeKey: TypeKey,
         val layout: ObjectType.Layout = ObjectType.Layout.BASIC,
         val emoji: String? = null,
         val image: String? = null,

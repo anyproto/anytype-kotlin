@@ -14,7 +14,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 )
 class SetObjectIsArchived(
     private val repo: BlockRepository
-) : BaseUseCase<Payload, SetObjectIsArchived.Params>() {
+) : BaseUseCase<Unit, SetObjectIsArchived.Params>() {
 
     override suspend fun run(params: Params) = safe {
         repo.setObjectIsArchived(

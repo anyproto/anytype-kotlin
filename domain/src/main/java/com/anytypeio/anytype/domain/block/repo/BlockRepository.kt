@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.block.repo
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.page.Redo
@@ -124,13 +126,13 @@ interface BlockRepository {
     /**
      * Creates bookmark object from url and returns its id.
      */
-    suspend fun createBookmarkObject(url: Url): Id
+    suspend fun createBookmarkObject(space: Id, url: Url): Id
 
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
 
     suspend fun undo(command: Command.Undo): Undo.Result
 
-    suspend fun importUseCaseSkip()
+    suspend fun importUseCaseSkip(space: Id)
 
     suspend fun redo(command: Command.Redo): Redo.Result
 
@@ -142,6 +144,7 @@ interface BlockRepository {
     suspend fun setFields(command: Command.SetFields): Payload
 
     suspend fun createSet(
+        space: Id,
         objectType: String? = null
     ): CreateObjectSet.Response
 
@@ -242,18 +245,20 @@ interface BlockRepository {
         details: Struct
     ): Payload
 
+    suspend fun setSpaceDetails(space: SpaceId, details: Struct)
+
     suspend fun updateBlocksMark(command: Command.UpdateBlocksMark): Payload
 
     suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload
 
-    suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload
+    suspend fun setObjectTypeToObject(ctx: Id, objectTypeKey: Key): Payload
 
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
 
     suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean): Payload
     suspend fun setObjectListIsFavorite(objectIds: List<Id>, isFavorite: Boolean)
-    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean): Payload
+    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean)
     suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
 
     suspend fun deleteObjects(targets: List<Id>)
@@ -289,6 +294,7 @@ interface BlockRepository {
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
 
     suspend fun createRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,
@@ -296,11 +302,13 @@ interface BlockRepository {
     ) : ObjectWrapper.Relation
 
     suspend fun createType(
+        space: Id,
         name: String,
         emojiUnicode: String?
     ): ObjectWrapper.Type
 
     suspend fun createRelationOption(
+        space: Id,
         relation: Id,
         name: String,
         color: String
@@ -373,7 +381,10 @@ interface BlockRepository {
         position: Position
     ): Payload
 
-    suspend fun addObjectToWorkspace(objects: List<Id>) : List<Id>
+    suspend fun createWorkspace(details: Struct): Id
+    suspend fun getSpaceConfig(space: Id): Config
+    suspend fun addObjectListToSpace(objects: List<Id>, space: Id) : List<Id>
+    suspend fun addObjectToSpace(obj: Id, space: Id) : Id
     suspend fun removeObjectFromWorkspace(objects: List<Id>) : List<Id>
 
     suspend fun createWidget(
@@ -411,7 +422,7 @@ interface BlockRepository {
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
-    suspend fun fileSpaceUsage(): FileLimits
+    suspend fun fileSpaceUsage(space: SpaceId): FileLimits
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
     suspend fun duplicateObjectsList(ids: List<Id>): List<Id>
     suspend fun createTemplateFromObject(ctx: Id): Id

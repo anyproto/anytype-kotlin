@@ -11,6 +11,7 @@ class CreateRelationOption(
 
     override suspend fun run(params: Params) = safe {
         repo.createRelationOption(
+            space = params.space,
             name = params.name,
             relation = params.relation,
             color = params.color
@@ -21,6 +22,7 @@ class CreateRelationOption(
      * [relation] relation key or id for new option
      */
     data class Params(
+        val space: Id,
         val relation: Id,
         val name: String,
         val color: String,

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.RelationCreateFromLibraryViewModel
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
@@ -91,4 +92,5 @@ object RelationCreateFromLibraryModule {
 interface RelationCreateFromLibraryDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun urlBuilder(): UrlBuilder
+    fun spaceManager(): SpaceManager
 }

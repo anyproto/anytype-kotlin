@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectTypeHorizontalItemBinding
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeHorizontalHolder
@@ -12,7 +13,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
 class ObjectTypeHorizontalListAdapter(
     private var data: ArrayList<ObjectTypeView>,
-    private val onItemClick: (Id, String) -> Unit,
+    private val onItemClick: (Id, Key, String) -> Unit,
     private val onSearchClick: (() -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -34,7 +35,7 @@ class ObjectTypeHorizontalListAdapter(
                     itemView.setOnClickListener {
                         if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
                             val item = data[bindingAdapterPosition - 1] as ObjectTypeView
-                            onItemClick(item.id, item.name)
+                            onItemClick(item.id, item.key, item.name)
                         }
                     }
                 }

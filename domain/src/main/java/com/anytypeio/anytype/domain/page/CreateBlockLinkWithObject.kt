@@ -1,11 +1,12 @@
 package com.anytypeio.anytype.domain.page
 
 import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.templates.GetTemplates
-import kotlinx.coroutines.Dispatchers
 
 /**
  * UseCase for creating a new Object with block linked to this Object
@@ -19,19 +20,18 @@ class CreateBlockLinkWithObject(
 
     override suspend fun doWork(params: Params): Result {
 
-        val prefilled = buildMap {
-            put(Relations.TYPE, params.type)
-        }
-
-        val template = getTemplates.run(GetTemplates.Params(params.type)).singleOrNull()?.id
+        val template = getTemplates.run(
+            GetTemplates.Params(params.typeId)
+        ).firstOrNull()?.id
 
         val command = Command.CreateBlockLinkWithObject(
             context = params.context,
             target = params.target,
             position = params.position,
-            prefilled = prefilled,
+            prefilled = emptyMap(),
             template = template,
-            internalFlags = listOf()
+            internalFlags = listOf(),
+            type = params.typeKey
         )
 
         val result = repo.createBlockLinkWithObject(command)
@@ -54,7 +54,8 @@ class CreateBlockLinkWithObject(
         val context: Id,
         val target: Id,
         val position: Position,
-        val type: String
+        val typeId: TypeId,
+        val typeKey: TypeKey
     )
 
     /**

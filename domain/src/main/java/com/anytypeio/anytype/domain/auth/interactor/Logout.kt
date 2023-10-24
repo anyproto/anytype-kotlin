@@ -5,6 +5,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
 /**
@@ -14,6 +15,7 @@ class Logout @Inject constructor(
     private val repo: AuthRepository,
     private val config: ConfigStorage,
     private val user: UserSettingsRepository,
+    private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers,
 ) : Interactor<Logout.Params>(context = dispatchers.io) {
 
@@ -21,6 +23,7 @@ class Logout @Inject constructor(
         repo.logout(clearLocalRepositoryData = params.clearLocalRepositoryData)
         user.clear()
         config.clear()
+        spaceManager.clear()
     }
 
     class Params(

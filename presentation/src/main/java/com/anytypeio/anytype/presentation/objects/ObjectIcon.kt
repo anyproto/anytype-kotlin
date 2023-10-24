@@ -133,7 +133,7 @@ sealed class ObjectIcon {
                 ObjectType.Layout.DASHBOARD -> None
                 ObjectType.Layout.SPACE -> None
                 ObjectType.Layout.DATABASE -> None
-                null -> None
+                else -> None
             }
         }
     }

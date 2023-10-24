@@ -2,6 +2,7 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 interface BlockRemote {
 
@@ -69,10 +71,10 @@ interface BlockRemote {
     suspend fun uploadBlock(command: Command.UploadBlock): Payload
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
     suspend fun createAndFetchBookmarkBlock(command: Command.CreateBookmark): Payload
-    suspend fun createBookmarkObject(url: Url): Id
+    suspend fun createBookmarkObject(space: Id, url: Url): Id
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
     suspend fun undo(command: Command.Undo): Payload
-    suspend fun importUseCaseSkip()
+    suspend fun importUseCaseSkip(space: Id)
     suspend fun redo(command: Command.Redo): Payload
     suspend fun turnIntoDocument(command: Command.TurnIntoDocument): List<Id>
     suspend fun paste(command: Command.Paste): Response.Clipboard.Paste
@@ -88,6 +90,7 @@ interface BlockRemote {
     suspend fun setFields(command: Command.SetFields): Payload
 
     suspend fun createSet(
+        space: Id,
         objectType: String?
     ): Response.Set.Create
 
@@ -198,7 +201,7 @@ interface BlockRemote {
 
     suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload
 
-    suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload
+    suspend fun setObjectTypeToObject(ctx: Id, objectTypeKey: Key): Payload
 
     suspend fun addToFeaturedRelations(ctx: Id, relations: List<Id>): Payload
     suspend fun removeFromFeaturedRelations(ctx: Id, relations: List<Id>): Payload
@@ -206,7 +209,7 @@ interface BlockRemote {
     suspend fun setObjectIsFavorite(ctx: Id, isFavorite: Boolean): Payload
     suspend fun setObjectListIsFavorite(objectIds: List<Id>, isFavorite: Boolean)
 
-    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean): Payload
+    suspend fun setObjectIsArchived(ctx: Id, isArchived: Boolean)
 
     suspend fun setObjectListIsArchived(targets: List<Id>, isArchived: Boolean)
     suspend fun deleteObjects(targets: List<Id>)
@@ -235,6 +238,7 @@ interface BlockRemote {
     suspend fun blockDataViewSetSource(ctx: Id, block: Id, sources: List<String>): Payload
 
     suspend fun createRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,
@@ -242,11 +246,13 @@ interface BlockRemote {
     ): ObjectWrapper.Relation
 
     suspend fun createType(
+        space: Id,
         name: String,
         emojiUnicode: String?
     ): ObjectWrapper.Type
 
     suspend fun createRelationOption(
+        space: Id,
         relation: Id,
         name: String,
         color: String
@@ -319,7 +325,14 @@ interface BlockRemote {
         position: Position
     ): Payload
 
-    suspend fun addObjectToWorkspace(objects: List<Id>): List<Id>
+    suspend fun setSpaceDetails(space: SpaceId, details: Struct)
+
+    suspend fun createWorkspace(details: Struct): Id
+
+    suspend fun getSpaceConfig(space: Id): Config
+
+    suspend fun addObjectListToSpace(objects: List<Id>, space: Id): List<Id>
+    suspend fun addObjectToSpace(obj: Id, space: Id) : Id
     suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id>
 
     suspend fun createObject(command: Command.CreateObject): CreateObjectResult
@@ -359,7 +372,7 @@ interface BlockRemote {
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
-    suspend fun fileSpaceUsage(): FileLimits
+    suspend fun fileSpaceUsage(space: SpaceId): FileLimits
 
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
 

@@ -62,7 +62,7 @@ message Event {
             Block.Dataview.ViewSet blockDataviewViewSet = 19;
             Block.Dataview.ViewDelete blockDataviewViewDelete = 20;
             Block.Dataview.ViewOrder blockDataviewViewOrder = 29;
-            Block.Dataview.SourceSet blockDataviewSourceSet = 35;
+            Block.Dataview.SourceSet blockDataviewSourceSet = 35; // deprecated, source is no longer used
             Block.Dataview.GroupOrderUpdate blockDataViewGroupOrderUpdate = 38;
             Block.Dataview.ObjectOrderUpdate blockDataViewObjectOrderUpdate = 39;
             Block.Dataview.RelationDelete blockDataviewRelationDelete = 124;

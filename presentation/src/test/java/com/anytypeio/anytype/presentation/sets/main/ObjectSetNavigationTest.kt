@@ -51,7 +51,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should emit command for editing relation-tag cell`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfRelations(mockObjectSet)
@@ -61,7 +61,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
         )
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -99,7 +99,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should emit command for editing relation-object cell if this relation is read-only and object's layout is supported`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfRelations(mockObjectSet)
@@ -124,7 +124,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -169,7 +169,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should close current object before navigating to some other object`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfRelations(mockObjectSet)
@@ -180,7 +180,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),
@@ -215,7 +215,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should not emit any navigation command for opening an object if object's layout is not supported`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubStoreOfRelations(mockObjectSet)
@@ -236,7 +236,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
         stubSubscriptionResults(
             subscription = mockObjectSet.subscriptionId,
-            workspace = mockObjectSet.workspaceId,
+            spaceId = mockObjectSet.spaceId,
             storeOfRelations = storeOfRelations,
             keys = mockObjectSet.dvKeys,
             sources = listOf(mockObjectSet.setOf),

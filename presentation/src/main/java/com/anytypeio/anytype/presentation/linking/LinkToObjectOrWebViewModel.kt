@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -39,7 +39,7 @@ class LinkToObjectOrWebViewModel(
     private val analytics: Analytics,
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator,
-    private val workspaceManager: WorkspaceManager
+    private val spaceManager: SpaceManager
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
@@ -226,7 +226,7 @@ class LinkToObjectOrWebViewModel(
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
         filters = ObjectSearchConstants.getFilterLinkTo(
             ignore = ignore,
-            workspaceId = workspaceManager.getCurrentWorkspace()
+            space = spaceManager.get()
         ),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = ObjectSearchViewModel.EMPTY_QUERY,

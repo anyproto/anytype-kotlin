@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.objects
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.page.CreateObject
 import kotlinx.coroutines.Job
@@ -15,12 +17,12 @@ class CreateObjectViewModel(private val createObject: CreateObject) : ViewModel(
     val createObjectStatus = MutableSharedFlow<State>(replay = 0)
     private val jobs = mutableListOf<Job>()
 
-    fun onStart(type: String) {
+    fun onStart(type: Key) {
         onCreatePage(type)
     }
 
-    private fun onCreatePage(type: String) {
-        val params = CreateObject.Param(type = type)
+    private fun onCreatePage(type: Key) {
+        val params = CreateObject.Param(type = TypeKey(type))
         jobs += viewModelScope.launch {
             createObject.execute(params).fold(
                 onFailure = { e ->

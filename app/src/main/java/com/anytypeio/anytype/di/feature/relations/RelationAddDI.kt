@@ -11,10 +11,11 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.GetRelations
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.RelationAddToDataViewViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddToObjectViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -55,7 +56,7 @@ object RelationAddToObjectModule {
         getRelations: GetRelations,
         appCoroutineDispatchers: AppCoroutineDispatchers,
         addObjectToWorkspace: AddObjectToWorkspace,
-        workspaceManager: WorkspaceManager
+        spaceManager: SpaceManager
     ): RelationAddToObjectViewModel.Factory = RelationAddToObjectViewModel.Factory(
         storeOfRelations = storeOfRelations,
         addRelationToObject = addRelationToObject,
@@ -65,7 +66,7 @@ object RelationAddToObjectModule {
         getRelations = getRelations,
         appCoroutineDispatchers = appCoroutineDispatchers,
         addObjectToWorkspace = addObjectToWorkspace,
-        workspaceManager = workspaceManager
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -110,11 +111,11 @@ object RelationAddToDataViewModule {
         state: MutableStateFlow<ObjectState>,
         updateDataViewViewer: UpdateDataViewViewer,
         analytics: Analytics,
-        @Named(INTRINSIC_PROVIDER_TYPE) relationsProvider: ObjectRelationProvider,
+        @Named(DATA_VIEW_PROVIDER_TYPE) relationsProvider: ObjectRelationProvider,
         appCoroutineDispatchers: AppCoroutineDispatchers,
         getRelations: GetRelations,
         addObjectToWorkspace: AddObjectToWorkspace,
-        workspaceManager: WorkspaceManager
+        spaceManager: SpaceManager
     ): RelationAddToDataViewViewModel.Factory = RelationAddToDataViewViewModel.Factory(
         addRelationToDataView = addRelationToDataView,
         dispatcher = dispatcher,
@@ -125,7 +126,7 @@ object RelationAddToDataViewModule {
         appCoroutineDispatchers = appCoroutineDispatchers,
         getRelations = getRelations,
         addObjectToWorkspace = addObjectToWorkspace,
-        workspaceManager = workspaceManager
+        spaceManager = spaceManager
     )
 
     @JvmStatic

@@ -68,6 +68,7 @@ import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LibraryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.SpaceWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
@@ -92,10 +93,12 @@ fun HomeScreen(
     onExitEditMode: () -> Unit,
     onSearchClicked: () -> Unit,
     onLibraryClicked: () -> Unit,
+    onOpenSpacesClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onSpaceClicked: () -> Unit,
-    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onSpaceWidgetClicked: () -> Unit,
+    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -111,6 +114,8 @@ fun HomeScreen(
             onChangeWidgetView = onChangeWidgetView,
             onEditWidgets = onEditWidgets,
             onLibraryClicked = onLibraryClicked,
+            onOpenSpacesClicked = onOpenSpacesClicked,
+            onSpaceWidgetClicked = onSpaceWidgetClicked,
             onMove = onMove,
             onObjectCheckboxClicked = onObjectCheckboxClicked
         )
@@ -176,7 +181,9 @@ private fun WidgetList(
     onEditWidgets: () -> Unit,
     onLibraryClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onOpenSpacesClicked: () -> Unit,
+    onSpaceWidgetClicked: () -> Unit
 ) {
     val views = remember { mutableStateOf(widgets) }
     views.value = widgets
@@ -208,6 +215,13 @@ private fun WidgetList(
             key = { _, item -> item.id }
         ) { index, item ->
             when (item) {
+                is WidgetView.SpaceWidget.View -> {
+                    SpaceWidgetCard(
+                        onClick = onSpaceWidgetClicked,
+                        name = item.space.name.orEmpty(),
+                        icon = item.icon
+                    )
+                }
                 is WidgetView.Tree -> {
                     ReorderableItem(lazyListState, key = item.id) { isDragged ->
                         val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
@@ -434,6 +448,25 @@ private fun WidgetList(
                         onClick = { onBundledWidgetHeaderClicked(item.id) },
                         mode = mode
                     )
+                }
+                is WidgetView.Space -> {
+                    Box(
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp)
+                            .animateItemPlacement(
+                                spring(
+                                    stiffness = Spring.StiffnessHigh,
+                                    visibilityThreshold = IntOffset.Zero
+                                )
+                            )
+                    ) {
+                        WidgetActionButton(
+                            label = "Open spaces",
+                            onClick = onOpenSpacesClicked,
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
+                    }
                 }
                 is WidgetView.Library -> {
                     LibraryWidgetCard(

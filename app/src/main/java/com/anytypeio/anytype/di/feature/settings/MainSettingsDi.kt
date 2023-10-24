@@ -5,12 +5,13 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.device.share.debug.DebugSpaceDeviceFileContentSaver
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceContentSaver
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -64,19 +65,19 @@ object MainSettingsModule {
     fun provideViewModelFactory(
         analytics: Analytics,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
-        configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
-        setObjectDetails: SetObjectDetails,
         spaceGradientProvider: SpaceGradientProvider,
-        debugSpaceShareDownloader: DebugSpaceShareDownloader
+        debugSpaceShareDownloader: DebugSpaceShareDownloader,
+        spaceManager: SpaceManager,
+        setSpaceDetails: SetSpaceDetails
     ): MainSettingsViewModel.Factory = MainSettingsViewModel.Factory(
         analytics = analytics,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
-        configStorage = configStorage,
         urlBuilder = urlBuilder,
-        setObjectDetails = setObjectDetails,
+        setSpaceDetails = setSpaceDetails,
         spaceGradientProvider = spaceGradientProvider,
-        debugSpaceShareDownloader = debugSpaceShareDownloader
+        debugSpaceShareDownloader = debugSpaceShareDownloader,
+        spaceManager = spaceManager
     )
 
     @Module

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations
 
 import app.cash.turbine.test
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -10,6 +11,7 @@ import com.anytypeio.anytype.core_models.StubRelationOptionObject
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.RelationValueView.Option.Tag
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvider
 import com.anytypeio.anytype.presentation.relations.add.BaseAddOptionsRelationViewModel
@@ -68,6 +70,9 @@ class BaseAddOptionsRelationViewModelTest {
     @Mock
     lateinit var getOptions: GetOptions
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -77,6 +82,7 @@ class BaseAddOptionsRelationViewModelTest {
     fun `query is empty - there is only tag view`() = runTest {
 
         // SETUP
+        stubSpaceManager()
         val viewModel = createViewModel()
         relationsProvider.relation = relation
 
@@ -112,6 +118,7 @@ class BaseAddOptionsRelationViewModelTest {
 
         // SETUP
 
+        stubSpaceManager()
         val viewModel = createViewModel()
         relationsProvider.relation = relation
 
@@ -151,6 +158,7 @@ class BaseAddOptionsRelationViewModelTest {
 
         // SETUP
 
+        stubSpaceManager()
         val viewModel = createViewModel()
         relationsProvider.relation = relation
 
@@ -192,6 +200,7 @@ class BaseAddOptionsRelationViewModelTest {
 
         // SETUP
 
+        stubSpaceManager()
         val viewModel = createViewModel()
         relationsProvider.relation = relation
 
@@ -233,6 +242,7 @@ class BaseAddOptionsRelationViewModelTest {
 
         // SETUP
 
+        stubSpaceManager()
         val viewModel = createViewModel()
         relationsProvider.relation = relation
 
@@ -288,6 +298,13 @@ class BaseAddOptionsRelationViewModelTest {
             setObjectDetail = setObjectDetails,
             analytics = analytics,
             detailsProvider = objectDetailProvider,
-            getOptions = getOptions
+            getOptions = getOptions,
+            spaceManager = spaceManager
         ) {}
+
+    suspend fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking { get() } doReturn ""
+        }
+    }
 }

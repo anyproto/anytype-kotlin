@@ -32,7 +32,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -43,7 +43,6 @@ import com.anytypeio.anytype.ui.sets.modals.filter.ModifyFilterFromSelectedValue
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.not
 import org.junit.Before
 import org.junit.Rule
@@ -74,6 +73,9 @@ class ModifyTagFilterTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
     private lateinit var updateDataViewViewer: UpdateDataViewViewer
     private lateinit var searchObjects: SearchObjects
     private lateinit var getOptions: GetOptions
@@ -87,9 +89,6 @@ class ModifyTagFilterTest {
     private val objectStore: ObjectStore = DefaultObjectStore()
     private val db = ObjectSetDatabase(store = objectStore)
 
-    lateinit var workspaceManager: WorkspaceManager
-    val workspaceId = MockDataFactory.randomString()
-
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -97,10 +96,6 @@ class ModifyTagFilterTest {
         searchObjects = SearchObjects(repo)
         getOptions = GetOptions(repo)
         urlBuilder = UrlBuilder(gateway)
-        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
-        runBlocking {
-            workspaceManager.setCurrentWorkspace(workspaceId)
-        }
         TestModifyFilterFromSelectedValueFragment.testVmFactory = FilterViewModel.Factory(
             objectState = state,
             updateDataViewViewer = updateDataViewViewer,
@@ -112,7 +107,7 @@ class ModifyTagFilterTest {
             storeOfRelations = storeOfRelations,
             objectSetDatabase = db,
             getOptions = getOptions,
-            workspaceManager = workspaceManager
+            spaceManager = spaceManager
         )
     }
 

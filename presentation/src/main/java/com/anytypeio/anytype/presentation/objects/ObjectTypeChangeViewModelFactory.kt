@@ -5,14 +5,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 
 class ObjectTypeChangeViewModelFactory(
     private val getObjectTypes: GetObjectTypes,
-    private val addObjectToWorkspace: AddObjectToWorkspace,
+    private val addObjectTypeToSpace: AddObjectTypeToSpace,
     private val dispatchers: AppCoroutineDispatchers,
-    private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager,
     private val getDefaultPageType: GetDefaultPageType
 ) : ViewModelProvider.Factory {
 
@@ -20,9 +20,9 @@ class ObjectTypeChangeViewModelFactory(
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         return ObjectTypeChangeViewModel(
             getObjectTypes = getObjectTypes,
-            addObjectToWorkspace = addObjectToWorkspace,
+            addObjectTypeToSpace = addObjectTypeToSpace,
             dispatchers = dispatchers,
-            workspaceManager = workspaceManager,
+            spaceManager = spaceManager,
             getDefaultPageType = getDefaultPageType
         ) as T
     }

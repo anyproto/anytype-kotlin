@@ -7,7 +7,6 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import javax.inject.Inject
 
 /**
@@ -16,7 +15,6 @@ import javax.inject.Inject
 class SelectAccount @Inject constructor(
     private val repository: AuthRepository,
     private val configStorage: ConfigStorage,
-    private val workspaceManager: WorkspaceManager,
     private val featuresConfigProvider: FeaturesConfigProvider,
     private val metricsProvider: MetricsProvider
 ) : BaseUseCase<StartAccountResult, SelectAccount.Params>() {
@@ -41,7 +39,6 @@ class SelectAccount @Inject constructor(
             enableSpaces = setup.features.enableSpaces ?: false
         )
         configStorage.set(config = setup.config)
-        workspaceManager.setCurrentWorkspace(setup.config.workspace)
         StartAccountResult(setup.config.analytics, setup.status)
     }
 

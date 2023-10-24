@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
@@ -62,7 +63,7 @@ import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -213,7 +214,6 @@ object ObjectSetModule {
         storeOfRelations: StoreOfRelations,
         objectStateReducer: ObjectStateReducer,
         dataViewSubscription: DataViewSubscription,
-        workspaceManager: WorkspaceManager,
         @Named("object-set-store") objectStore: ObjectStore,
         addObjectToCollection: AddObjectToCollection,
         convertObjectToCollection: ConvertObjectToCollection,
@@ -223,8 +223,9 @@ object ObjectSetModule {
         duplicateObjects: DuplicateObjects,
         templatesContainer: ObjectTypeTemplatesContainer,
         setObjectListIsArchived: SetObjectListIsArchived,
+        createTemplate: CreateTemplate,
         viewerDelegate: ViewerDelegate,
-        createTemplate: CreateTemplate
+        spaceManager: SpaceManager
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -250,7 +251,6 @@ object ObjectSetModule {
         storeOfRelations = storeOfRelations,
         objectStateReducer = objectStateReducer,
         dataViewSubscription = dataViewSubscription,
-        workspaceManager = workspaceManager,
         objectStore = objectStore,
         addObjectToCollection = addObjectToCollection,
         objectToCollection = convertObjectToCollection,
@@ -261,6 +261,7 @@ object ObjectSetModule {
         templatesContainer = templatesContainer,
         setObjectListIsArchived = setObjectListIsArchived,
         viewerDelegate = viewerDelegate,
+        spaceManager = spaceManager,
         createTemplate = createTemplate
     )
 
@@ -280,14 +281,14 @@ object ObjectSetModule {
     @PerScreen
     fun getCreateObject(
         repo: BlockRepository,
-        getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
-        getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -304,13 +305,15 @@ object ObjectSetModule {
     fun provideGetDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        workspaceManager = workspaceManager,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic
@@ -327,11 +330,15 @@ object ObjectSetModule {
     fun provideCreateDataViewRecordUseCase(
         repo: BlockRepository,
         storeOfRelations: StoreOfRelations,
+        getDefaultPageType: GetDefaultPageType,
+        getTemplates: GetTemplates,
+        spaceManager: SpaceManager,
         dispatchers: AppCoroutineDispatchers
     ): CreateDataViewObject = CreateDataViewObject(
         repo = repo,
         storeOfRelations = storeOfRelations,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

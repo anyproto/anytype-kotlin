@@ -2,9 +2,9 @@ package com.anytypeio.anytype.domain.search
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class RelationsSubscriptionManager @Inject constructor(
     private val scope: CoroutineScope = GlobalScope,
     private val subscription: RelationsSubscriptionContainer,
-    private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager
 ) {
 
     private var job: Job? = null
@@ -28,9 +28,9 @@ class RelationsSubscriptionManager @Inject constructor(
                 subscription = RelationsSubscriptionContainer.SUBSCRIPTION_ID,
                 filters = listOf(
                     DVFilter(
-                        relation = Relations.TYPE,
+                        relation = Relations.LAYOUT,
                         condition = DVFilterCondition.EQUAL,
-                        value = ObjectTypeIds.RELATION
+                        value = ObjectType.Layout.RELATION.code.toDouble()
                     ),
                     DVFilter(
                         relation = Relations.IS_DELETED,
@@ -38,9 +38,9 @@ class RelationsSubscriptionManager @Inject constructor(
                         value = false
                     ),
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = workspaceManager.getCurrentWorkspace()
+                        value = spaceManager.get()
                     )
                 ),
                 limit = 0,
@@ -49,6 +49,7 @@ class RelationsSubscriptionManager @Inject constructor(
                 sources = emptyList(),
                 keys = listOf(
                     Relations.ID,
+                    Relations.SPACE_ID,
                     Relations.TYPE,
                     Relations.LAYOUT,
                     Relations.NAME,

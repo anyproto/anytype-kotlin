@@ -12,10 +12,12 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.After
@@ -26,8 +28,6 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
-import kotlin.test.assertEquals
-import kotlin.test.assertNull
 
 
 open class LinkToObjectOrWebViewModelTest {
@@ -47,14 +47,15 @@ open class LinkToObjectOrWebViewModelTest {
     @Mock
     lateinit var urlValidator: UrlValidator
 
-    lateinit var workspaceManager: WorkspaceManager
+    @Mock
+    lateinit var spaceManager: SpaceManager
 
     @Mock
     lateinit var gateway: Gateway
 
     var store: Editor.Storage = Editor.Storage()
     var ctx = ""
-    val workspaceId = MockDataFactory.randomString()
+    val spaceId = MockDataFactory.randomString()
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
@@ -62,7 +63,7 @@ open class LinkToObjectOrWebViewModelTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
+        stubSpaceManager()
     }
 
     @After
@@ -73,7 +74,7 @@ open class LinkToObjectOrWebViewModelTest {
     @Test
     fun `should return selected block error state when block is not present in state`() = runTest {
 
-        workspaceManager.setCurrentWorkspace(workspaceId)
+        spaceManager.set(spaceId)
 
         val target = MockDataFactory.randomString()
 
@@ -101,7 +102,7 @@ open class LinkToObjectOrWebViewModelTest {
     @Test
     fun `should return selected range error state when selection range end is bigger then text length`() = runTest {
 
-        workspaceManager.setCurrentWorkspace(workspaceId)
+        spaceManager.set(spaceId)
         val target = MockDataFactory.randomString()
 
         val start = 0
@@ -134,7 +135,7 @@ open class LinkToObjectOrWebViewModelTest {
     @Test
     fun `should return selected range error state when selection range start is equal end`() = runTest {
 
-        workspaceManager.setCurrentWorkspace(workspaceId)
+        spaceManager.set(spaceId)
         val target = MockDataFactory.randomString()
 
         val start = 3
@@ -165,7 +166,7 @@ open class LinkToObjectOrWebViewModelTest {
     @Test
     fun `should set markup link param when present in text link type markup`() = runTest {
 
-        workspaceManager.setCurrentWorkspace(workspaceId)
+        spaceManager.set(spaceId)
         val target = MockDataFactory.randomUuid()
         val url = MockDataFactory.randomString()
 
@@ -202,7 +203,7 @@ open class LinkToObjectOrWebViewModelTest {
     @Test
     fun `should set markup object param when present in text object type markup`() = runTest {
 
-        workspaceManager.setCurrentWorkspace(workspaceId)
+        spaceManager.set(spaceId)
         val target = MockDataFactory.randomUuid()
         val url = MockDataFactory.randomString()
 
@@ -238,7 +239,7 @@ open class LinkToObjectOrWebViewModelTest {
     @Test
     fun `should not set object link when not present in range text markup`() = runTest {
 
-        workspaceManager.setCurrentWorkspace(workspaceId)
+        spaceManager.set(spaceId)
         val target = MockDataFactory.randomUuid()
         val url = MockDataFactory.randomString()
 
@@ -295,6 +296,12 @@ open class LinkToObjectOrWebViewModelTest {
         urlBuilder = builder,
         urlValidator = urlValidator,
         storeOfObjectTypes = storeOfObjectTypes,
-        workspaceManager = workspaceManager
+        spaceManager = spaceManager
     )
+
+    fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking { get() } doReturn ""
+        }
+    }
 }

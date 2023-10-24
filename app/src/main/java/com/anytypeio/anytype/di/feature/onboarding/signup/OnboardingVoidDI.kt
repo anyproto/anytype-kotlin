@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingVoidViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -57,12 +58,10 @@ object OnboardingVoidModule {
     fun provideCreateAccountUseCase(
         authRepository: AuthRepository,
         configStorage: ConfigStorage,
-        workspaceManager: WorkspaceManager,
         metricsProvider: MetricsProvider
     ): CreateAccount = CreateAccount(
         repository = authRepository,
         configStorage = configStorage,
-        workspaceManager = workspaceManager,
         metricsProvider = metricsProvider
     )
 
@@ -107,4 +106,5 @@ interface OnboardingVoidDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
     fun crashReporter(): CrashReporter
+    fun spaceManager(): SpaceManager
 }

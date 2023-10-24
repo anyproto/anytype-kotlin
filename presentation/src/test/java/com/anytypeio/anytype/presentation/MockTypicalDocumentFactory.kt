@@ -3,11 +3,7 @@ package com.anytypeio.anytype.presentation
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds.OBJECT_TYPE
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.SmartBlockType
-import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.test_utils.MockDataFactory
 
@@ -72,15 +68,5 @@ object MockTypicalDocumentFactory {
         name = name,
         format = Relation.Format.SHORT_TEXT,
         isHidden = isHidden
-    )
-
-    fun objectType(name: String) = StubObject(
-        id = MockDataFactory.randomString(),
-        name = name,
-        objectType = OBJECT_TYPE,
-        smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
-        layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
-        description = MockDataFactory.randomString(),
-        iconEmoji = MockDataFactory.randomString()
     )
 }

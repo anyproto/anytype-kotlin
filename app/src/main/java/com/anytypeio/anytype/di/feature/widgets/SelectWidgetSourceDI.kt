@@ -2,13 +2,12 @@ package com.anytypeio.anytype.di.feature.widgets
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.SelectWidgetSourceViewModel
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -41,17 +40,17 @@ object SelectWidgetSourceModule {
     fun factory(
         urlBuilder: UrlBuilder,
         analytics: Analytics,
-        workspaceManager: WorkspaceManager,
         searchObjects: SearchObjects,
         getObjectTypes: GetObjectTypes,
-        dispatcher: Dispatcher<WidgetDispatchEvent>
+        dispatcher: Dispatcher<WidgetDispatchEvent>,
+        spaceManager: SpaceManager
     ): SelectWidgetSourceViewModel.Factory = SelectWidgetSourceViewModel.Factory(
         urlBuilder = urlBuilder,
         searchObjects = searchObjects,
         analytics = analytics,
-        workspaceManager = workspaceManager,
         getObjectTypes = getObjectTypes,
-        dispatcher = dispatcher
+        dispatcher = dispatcher,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

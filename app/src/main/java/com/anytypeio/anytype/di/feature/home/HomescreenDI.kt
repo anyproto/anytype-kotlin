@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
@@ -124,11 +125,11 @@ object HomeScreenModule {
     fun emptyBin(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
-        workspaceManager: WorkspaceManager
+        spaceManager: SpaceManager
     ) : EmptyBin = EmptyBin(
         repo = repo,
         dispatchers = dispatchers,
-        workspaceManager = workspaceManager
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -149,12 +150,12 @@ object HomeScreenModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
         getDefaultEditorType: GetDefaultPageType,
-        getTemplates: GetTemplates
+        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
         dispatchers = dispatchers,
-        getTemplates = getTemplates,
-        getDefaultPageType = getDefaultEditorType
+        getDefaultPageType = getDefaultEditorType,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -163,13 +164,15 @@ object HomeScreenModule {
     fun getDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        workspaceManager: WorkspaceManager,
         dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ) : GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        workspaceManager = workspaceManager,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic
@@ -259,4 +262,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun appActionManager(): AppActionManager
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun logger(): Logger
+    fun spaceManager(): SpaceManager
 }

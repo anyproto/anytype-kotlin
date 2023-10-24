@@ -4,20 +4,22 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import javax.inject.Inject
 
 /**
  * Use case for creating a new object
  */
-class CreateObject(
+class CreateObject @Inject constructor(
     private val repo: BlockRepository,
     private val getDefaultPageType: GetDefaultPageType,
-    private val getTemplates: GetTemplates,
+    private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateObject.Param, CreateObject.Result>(dispatchers.io) {
 
@@ -25,20 +27,20 @@ class CreateObject(
 
         val type = params.type ?: getDefaultPageType.run(Unit).type
 
+        requireNotNull(type) { "Type is undefined" }
+
         val internalFlags = buildList {
             add(InternalFlags.ShouldSelectType)
             add(InternalFlags.ShouldSelectTemplate)
             add(InternalFlags.ShouldEmptyDelete)
         }
 
-        val prefilled = buildMap {
-            if (type != null) put(Relations.TYPE, type)
-        }
-
         val command = Command.CreateObject(
             template = params.template,
-            prefilled = prefilled,
-            internalFlags = internalFlags
+            prefilled = emptyMap(),
+            internalFlags = internalFlags,
+            space = SpaceId(spaceManager.get()),
+            type = type
         )
 
         val result = repo.createObject(command)
@@ -52,7 +54,7 @@ class CreateObject(
     }
 
     data class Param(
-        val type: String?,
+        val type: TypeKey? = null,
         val template: Id? = null
     )
 
@@ -60,6 +62,6 @@ class CreateObject(
         val objectId: Id,
         val event: Payload,
         val appliedTemplate: String? = null,
-        val type: String? = null
+        val type: TypeKey
     )
 }

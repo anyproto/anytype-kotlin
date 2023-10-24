@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
 import com.anytypeio.anytype.middleware.service.MiddlewareService
@@ -79,13 +80,16 @@ class MiddlewareTest {
 
         val templateId = MockDataFactory.randomUuid()
 
+        val typeKey = TypeKey(MockDataFactory.randomUuid())
+
         val command = Command.CreateBlockLinkWithObject(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
             position = Position.INNER,
             template = templateId,
             prefilled = emptyMap(),
-            internalFlags = listOf()
+            internalFlags = listOf(),
+            type = typeKey
         )
 
         val response = Rpc.BlockLink.CreateWithObject.Response(
@@ -99,7 +103,8 @@ class MiddlewareTest {
             targetId = command.target,
             position = Block.Position.Inner,
             details = mapOf<String, Any?>(),
-            templateId = templateId
+            templateId = templateId,
+            objectTypeUniqueKey = typeKey.key
         )
 
         service.stub {
@@ -130,13 +135,16 @@ class MiddlewareTest {
 
         val name = MockDataFactory.randomString()
 
+        val typeKey = TypeKey(MockDataFactory.randomUuid())
+
         val command = Command.CreateBlockLinkWithObject(
             context = MockDataFactory.randomUuid(),
             target = MockDataFactory.randomUuid(),
             position = Position.INNER,
             template = null,
             prefilled = buildMap { put(Relations.NAME, name) },
-            internalFlags = listOf()
+            internalFlags = listOf(),
+            type = typeKey
         )
 
         val response = Rpc.BlockLink.CreateWithObject.Response(
@@ -149,7 +157,8 @@ class MiddlewareTest {
             contextId = command.context,
             targetId = command.target,
             position = Block.Position.Inner,
-            details = buildMap { put(Relations.NAME, name) }
+            details = buildMap { put(Relations.NAME, name) },
+            objectTypeUniqueKey = typeKey.key
         )
 
         service.stub {

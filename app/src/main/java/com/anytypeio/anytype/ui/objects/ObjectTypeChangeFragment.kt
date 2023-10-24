@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -27,7 +28,7 @@ abstract class BaseObjectTypeChangeFragment :
 
     abstract fun setTitle()
     abstract fun startWithParams()
-    abstract fun onItemClicked(id: Id, name: String)
+    abstract fun onItemClicked(id: Id, key: Key, name: String)
 
     @Inject
     lateinit var factory: ObjectTypeChangeViewModelFactory
@@ -66,11 +67,13 @@ abstract class BaseObjectTypeChangeFragment :
             jobs += subscribe(binding.searchObjectTypeInput.textChanges()) {
                 vm.onQueryChanged(it.toString())
             }
+            jobs += subscribe(vm.toasts) { toast -> toast(toast) }
             jobs += subscribe(vm.commands) { command ->
                 when (command) {
                     is Command.DispatchType -> {
                         onItemClicked(
                             id = command.id,
+                            key = command.key,
                             name = command.name
                         )
                     }

@@ -38,6 +38,7 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     @After

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.ext.DefaultDateHelper
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
@@ -60,12 +61,14 @@ object DeletedAccountModule {
         repo: AuthRepository,
         provider: ConfigStorage,
         dispatchers: AppCoroutineDispatchers,
-        user: UserSettingsRepository
+        user: UserSettingsRepository,
+        spaceManager: SpaceManager
     ): Logout = Logout(
         repo = repo,
         config = provider,
         user = user,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -93,4 +96,5 @@ interface DeletedAccountDependencies : ComponentDependencies {
     fun configStorage(): ConfigStorage
     fun authRepository(): AuthRepository
     fun userSettingsRepository(): UserSettingsRepository
+    fun spaceManager(): SpaceManager
 }

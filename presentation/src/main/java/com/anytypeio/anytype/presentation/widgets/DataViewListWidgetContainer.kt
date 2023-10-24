@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.map
 
 class DataViewListWidgetContainer(
     private val widget: Widget.List,
-    private val workspace: Id,
+    private val space: Id,
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
@@ -158,7 +158,7 @@ class DataViewListWidgetContainer(
             }.distinct(),
             filters = buildList {
                 addAll(view.filters)
-                addAll(ObjectSearchConstants.defaultDataViewFilters(workspace))
+                addAll(ObjectSearchConstants.defaultDataViewFilters(space))
                 add(
                     DVFilter(
                         relation = Relations.TYPE,

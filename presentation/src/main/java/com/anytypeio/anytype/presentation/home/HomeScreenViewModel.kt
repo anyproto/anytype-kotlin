@@ -18,14 +18,15 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.letNotNull
 import com.anytypeio.anytype.core_utils.ext.replace
+import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
@@ -46,6 +47,7 @@ import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
@@ -65,6 +67,7 @@ import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -78,8 +81,12 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
@@ -88,8 +95,11 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -103,7 +113,6 @@ import timber.log.Timber
  * Change subscription IDs for bundled widgets?
  */
 class HomeScreenViewModel(
-    private val configStorage: ConfigStorage,
     private val openObject: OpenObject,
     private val closeObject: CloseBlock,
     private val createWidget: CreateWidget,
@@ -131,6 +140,8 @@ class HomeScreenViewModel(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
+    private val spaceManager: SpaceManager,
+    private val spaceWidgetContainer: SpaceWidgetContainer,
     private val setWidgetActiveView: SetWidgetActiveView,
     private val setObjectDetails: SetObjectDetails
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
@@ -139,6 +150,9 @@ class HomeScreenViewModel(
     WidgetSessionStateHolder by widgetSessionStateHolder,
     CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
     Unsubscriber by unsubscriber {
+
+    private val jobs = mutableListOf<Job>()
+    private val mutex = Mutex()
 
     val views = MutableStateFlow<List<WidgetView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
@@ -156,20 +170,76 @@ class HomeScreenViewModel(
     // Bundled widget containing archived objects
     private val bin = WidgetView.Bin(Subscriptions.SUBSCRIPTION_ARCHIVED)
 
+    private val spaceWidgetView = spaceWidgetContainer.view
+
     val icon = MutableStateFlow<SpaceIconView>(SpaceIconView.Loading)
 
+    private val widgetObjectPipelineJobs = mutableListOf<Job>()
+
+    private val openWidgetObjectsHistory : MutableSet<Id> = LinkedHashSet()
+
+    private val widgetObjectPipeline = spaceManager
+        .observe()
+        .onEach { currentConfig ->
+            // Closing previously opened widget object when switching spaces without leaving home screen
+             proceedWithClearingObjectSessionHistory(currentConfig)
+        }
+        .flatMapLatest { config ->
+            openObject.stream(
+                OpenObject.Params(
+                    obj = config.widgets,
+                    saveAsLastOpened = false
+                )
+            )
+        }
+        .onEach { result ->
+            result.fold(
+                onSuccess = { objectView ->
+                    onSessionStarted().also {
+                        mutex.withLock { openWidgetObjectsHistory.add(objectView.root) }
+                    }
+                },
+                onFailure = { e ->
+                    onSessionFailed().also {
+                        Timber.e(e, "Error while opening object.")
+                    }
+                }
+            )
+        }
+        .map { result ->
+            when (result) {
+                is Resultat.Failure -> ObjectViewState.Failure(result.exception)
+                is Resultat.Loading -> ObjectViewState.Loading
+                is Resultat.Success -> ObjectViewState.Success(obj = result.value)
+            }
+        }
+
     init {
-        val config = configStorage.getOrNull()
-        if (config != null) {
-            proceedWithObservingSpaceIcon(config)
-            proceedWithLaunchingUnsubscriber()
-            proceedWithObjectViewStatePipeline(config)
-            proceedWithWidgetContainerPipeline(config)
-            proceedWithRenderingPipeline()
-            proceedWithObservingDispatches(config)
-            proceedWithSettingUpShortcuts()
-        } else {
-            Timber.e("Failed to get config to initialize home component")
+        proceedWithObservingSpaceIcon()
+        proceedWithLaunchingUnsubscriber()
+        proceedWithObjectViewStatePipeline()
+        proceedWithWidgetContainerPipeline()
+        proceedWithRenderingPipeline()
+        proceedWithObservingDispatches()
+        proceedWithSettingUpShortcuts()
+    }
+
+    private suspend fun proceedWithClearingObjectSessionHistory(currentConfig: Config) {
+        mutex.withLock {
+            val closed = mutableSetOf<Id>()
+            openWidgetObjectsHistory.forEach { previouslyOpenedWidgetObject ->
+                if (previouslyOpenedWidgetObject != currentConfig.widgets) {
+                    closeObject
+                        .async(params = previouslyOpenedWidgetObject)
+                        .fold(
+                            onSuccess = { closed.add(previouslyOpenedWidgetObject) },
+                            onFailure = { Timber.e(it, "Error while closing object from history") }
+                        )
+                }
+            }
+            if (closed.isNotEmpty()) {
+                openWidgetObjectsHistory.removeAll(closed)
+            }
         }
     }
 
@@ -182,12 +252,15 @@ class HomeScreenViewModel(
             containers.filterNotNull().flatMapLatest { list ->
                 if (list.isNotEmpty()) {
                     combine(
-                        list.map { m -> m.view }
+                        flows = buildList<Flow<WidgetView>> {
+                            add(spaceWidgetView)
+                            addAll(list.map { m -> m.view })
+                        }
                     ) { array ->
                         array.toList()
                     }
                 } else {
-                    flowOf(emptyList())
+                    spaceWidgetView.map { view -> listOf(view) }
                 }
             }.flowOn(appCoroutineDispatchers.io).collect {
                 views.value = it + listOf(WidgetView.Library, bin) + actions
@@ -195,10 +268,13 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithWidgetContainerPipeline(config: Config) {
+    private fun proceedWithWidgetContainerPipeline() {
         viewModelScope.launch {
-            widgets.filterNotNull().map {
-                it.map { widget ->
+            combine(
+                spaceManager.observe(),
+                widgets.filterNotNull()
+            ) { config, widgets ->
+                widgets.map { widget ->
                     // TODO caching logic for containers could be implemented here.
                     when (widget) {
                         is Widget.Link -> LinkWidgetContainer(
@@ -211,7 +287,7 @@ class HomeScreenViewModel(
                             isWidgetCollapsed = isCollapsed(widget.id),
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
-                            workspace = config.workspace,
+                            space = config.space,
                             config = config,
                             objectWatcher = objectWatcher,
                             spaceGradientProvider = spaceGradientProvider
@@ -220,7 +296,7 @@ class HomeScreenViewModel(
                             ListWidgetContainer(
                                 widget = widget,
                                 subscription = widget.source.id,
-                                workspace = config.workspace,
+                                space = config.space,
                                 storage = storelessSubscriptionContainer,
                                 isWidgetCollapsed = isCollapsed(widget.id),
                                 urlBuilder = urlBuilder,
@@ -232,7 +308,7 @@ class HomeScreenViewModel(
                         } else {
                             DataViewListWidgetContainer(
                                 widget = widget,
-                                workspace = config.workspace,
+                                space = config.space,
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
@@ -251,14 +327,16 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithObjectViewStatePipeline(config: Config) {
-        val externalChannelEvents = interceptEvents.build(
-            InterceptEvents.Params(config.widgets)
-        ).map { events ->
-            Payload(
-                context = config.widgets,
-                events = events
-            )
+    private fun proceedWithObjectViewStatePipeline() {
+        val externalChannelEvents = spaceManager.observe().flatMapLatest {  config ->
+            interceptEvents.build(
+                InterceptEvents.Params(config.widgets)
+            ).map { events ->
+                Payload(
+                    context = config.widgets,
+                    events = events
+                )
+            }
         }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()
@@ -289,174 +367,157 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithObservingSpaceIcon(config: Config) {
+    private fun proceedWithObservingSpaceIcon() {
         viewModelScope.launch {
-            storelessSubscriptionContainer.subscribe(
-                StoreSearchByIdsParams(
-                    subscription = HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
-                    targets = listOf(config.workspace),
-                    keys = listOf(
-                        Relations.ID,
-                        Relations.ICON_EMOJI,
-                        Relations.ICON_IMAGE,
-                        Relations.ICON_OPTION
-                    )
-                )
-            ).map { result ->
-                val obj = result.firstOrNull()
-                obj?.spaceIcon(urlBuilder, spaceGradientProvider) ?: SpaceIconView.Placeholder
-            }.flowOn(appCoroutineDispatchers.io).collect {
-                icon.value = it
-            }
-        }
-    }
-
-    private fun proceedWithOpeningWidgetObject(widgetObject: Id) {
-        viewModelScope.launch {
-            openObject.stream(
-                OpenObject.Params(widgetObject, false)
-            ).collect { result ->
-                when (result) {
-                    is Resultat.Failure -> {
-                        objectViewState.value = ObjectViewState.Failure(result.exception).also {
-                            onSessionFailed()
-                        }
-                        Timber.e(result.exception, "Error while opening object.")
-                    }
-                    is Resultat.Loading -> {
-                        objectViewState.value = ObjectViewState.Loading
-                    }
-                    is Resultat.Success -> {
-                        objectViewState.value = ObjectViewState.Success(
-                            obj = result.value
-                        ).also {
-                            onSessionStarted()
-                        }
+            spaceManager
+                .observe()
+                .flatMapLatest { config ->
+                    storelessSubscriptionContainer.subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                            targets = listOf(config.spaceView),
+                            keys = listOf(
+                                Relations.ID,
+                                Relations.ICON_EMOJI,
+                                Relations.ICON_IMAGE,
+                                Relations.ICON_OPTION
+                            )
+                        )
+                    ).map { result ->
+                        val obj = result.firstOrNull()
+                        obj?.spaceIcon(urlBuilder, spaceGradientProvider)
+                            ?: SpaceIconView.Placeholder
                     }
                 }
-            }
+                .catch { Timber.e(it, "Error while observing space icon") }
+                .flowOn(appCoroutineDispatchers.io)
+                .collect { icon.value = it }
         }
     }
 
-    private fun proceedWithClosingWidgetObject(widgetObject: Id) {
-        viewModelScope.launch {
-            saveWidgetSession.async(
-                SaveWidgetSession.Params(
-                    WidgetSession(
-                        collapsed = collapsedWidgetStateHolder.get(),
-                        widgetsToActiveViews = emptyMap()
-                    )
+    private suspend fun proceedWithClosingWidgetObject(widgetObject: Id) {
+        saveWidgetSession.async(
+            SaveWidgetSession.Params(
+                WidgetSession(
+                    collapsed = collapsedWidgetStateHolder.get(),
+                    widgetsToActiveViews = emptyMap()
                 )
             )
-            val subscriptions = widgets.value.orEmpty().map { widget ->
-                if (widget.source is Widget.Source.Bundled)
-                    widget.source.id
-                else
-                    widget.id
-            }
-            if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
-            closeObject.stream(widgetObject).collect { status ->
-                status.fold(
-                    onFailure = {
-                        Timber.e(it, "Error while closing widget object")
-                    },
-                    onSuccess = {
-                        onSessionStopped().also {
-                            Timber.d("Widget object closed successfully")
-                        }
+        )
+        val subscriptions = buildList {
+            addAll(
+                widgets.value.orEmpty().map { widget ->
+                    if (widget.source is Widget.Source.Bundled)
+                        widget.source.id
+                    else
+                        widget.id
+                }
+            )
+            add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
+        }
+        if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
+
+        closeObject.stream(widgetObject).collect { status ->
+            status.fold(
+                onFailure = {
+                    Timber.e(it, "Error while closing widget object")
+                },
+                onSuccess = {
+                    onSessionStopped().also {
+                        Timber.d("Widget object closed successfully")
                     }
-                )
-            }
+                }
+            )
         }
     }
 
-    private fun proceedWithObservingDispatches(config: Config) {
+    private fun proceedWithObservingDispatches() {
         viewModelScope.launch {
-            widgetEventDispatcher.flow().collect { dispatch ->
-                Timber.d("New dispatch: $dispatch")
-                when (dispatch) {
-                    is WidgetDispatchEvent.SourcePicked.Default -> {
-                        commands.emit(
-                            Command.SelectWidgetType(
+            widgetEventDispatcher
+                .flow()
+                .withLatestFrom(spaceManager.observe()) { dispatch, config ->
+                    when (dispatch) {
+                        is WidgetDispatchEvent.SourcePicked.Default -> {
+                            commands.emit(
+                                Command.SelectWidgetType(
+                                    ctx = config.widgets,
+                                    source = dispatch.source,
+                                    layout = dispatch.sourceLayout,
+                                    target = dispatch.target,
+                                    isInEditMode = isInEditMode()
+                                )
+                            )
+                        }
+                        is WidgetDispatchEvent.SourcePicked.Bundled -> {
+                            commands.emit(
+                                Command.SelectWidgetType(
+                                    ctx = config.widgets,
+                                    source = dispatch.source,
+                                    layout = ObjectType.Layout.SET.code,
+                                    target = dispatch.target,
+                                    isInEditMode = isInEditMode()
+                                )
+                            )
+                        }
+                        is WidgetDispatchEvent.SourceChanged -> {
+                            proceedWithUpdatingWidget(
+                                ctx = config.widgets,
+                                widget = dispatch.widget,
+                                source = dispatch.source,
+                                type = dispatch.type
+                            )
+                        }
+
+                        is WidgetDispatchEvent.TypePicked -> {
+                            proceedWithCreatingWidget(
                                 ctx = config.widgets,
                                 source = dispatch.source,
-                                layout = dispatch.sourceLayout,
-                                target = dispatch.target,
-                                isInEditMode = isInEditMode()
+                                type = dispatch.widgetType,
+                                target = dispatch.target
                             )
-                        )
+                        }
                     }
-                    is WidgetDispatchEvent.SourcePicked.Bundled -> {
-                        commands.emit(
-                            Command.SelectWidgetType(
-                                ctx = config.widgets,
-                                source = dispatch.source,
-                                layout = ObjectType.Layout.SET.code,
-                                target = dispatch.target,
-                                isInEditMode = isInEditMode()
-                            )
-                        )
-                    }
-                    is WidgetDispatchEvent.SourceChanged -> {
-                        proceedWithUpdatingWidget(
-                            widget = dispatch.widget,
-                            source = dispatch.source,
-                            type = dispatch.type
-                        )
-                    }
-                    is WidgetDispatchEvent.TypePicked -> {
-                        proceedWithCreatingWidget(
-                            source = dispatch.source,
-                            type = dispatch.widgetType,
-                            target = dispatch.target
-                        )
-                    }
-                }
-            }
+                }.collect()
         }
     }
 
     private fun proceedWithCreatingWidget(
+        ctx: Id,
         source: Id,
         type: Int,
         target: Id?
     ) {
         viewModelScope.launch {
-            val config = configStorage.getOrNull()
-            if (config != null) {
-                createWidget(
-                    CreateWidget.Params(
-                        ctx = config.widgets,
-                        source = source,
-                        type = when (type) {
-                            Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
-                            Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
-                            Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
-                            Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
-                            else -> WidgetLayout.LINK
-                        },
-                        target = target,
-                        position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
-                    )
-                ).flowOn(appCoroutineDispatchers.io).collect { status ->
-                    Timber.d("Status while creating widget: $status")
-                    when (status) {
-                        is Resultat.Failure -> {
-                            sendToast("Error while creating widget: ${status.exception}")
-                            Timber.e(status.exception, "Error while creating widget")
-                        }
+            createWidget(
+                CreateWidget.Params(
+                    ctx = ctx,
+                    source = source,
+                    type = when (type) {
+                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
+                        else -> WidgetLayout.LINK
+                    },
+                    target = target,
+                    position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
+                )
+            ).flowOn(appCoroutineDispatchers.io).collect { status ->
+                Timber.d("Status while creating widget: $status")
+                when (status) {
+                    is Resultat.Failure -> {
+                        sendToast("Error while creating widget: ${status.exception}")
+                        Timber.e(status.exception, "Error while creating widget")
+                    }
 
-                        is Resultat.Loading -> {
-                            // Do nothing?
-                        }
+                    is Resultat.Loading -> {
+                        // Do nothing?
+                    }
 
-                        is Resultat.Success -> {
-                            objectPayloadDispatcher.send(status.value)
-                        }
+                    is Resultat.Success -> {
+                        objectPayloadDispatcher.send(status.value)
                     }
                 }
-            } else {
-                Timber.e("Failed to get config to create widgets")
             }
         }
     }
@@ -465,54 +526,50 @@ class HomeScreenViewModel(
      * @param [type] type code from [Command.ChangeWidgetType]
      */
     private fun proceedWithUpdatingWidget(
+        ctx: Id,
         widget: Id,
         source: Id,
         type: Int
     ) {
         viewModelScope.launch {
-            val config = configStorage.getOrNull()
-            if (config != null) {
-                updateWidget(
-                    UpdateWidget.Params(
-                        ctx = config.widgets,
-                        source = source,
-                        widget = widget,
-                        type = when (type) {
-                            Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
-                            Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
-                            Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
-                            Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
-                            else -> throw IllegalStateException("Unexpected type: $type")
-                        }
-                    )
-                ).flowOn(appCoroutineDispatchers.io).collect { status ->
-                    Timber.d("Status while creating widget: $status")
-                    when (status) {
-                        is Resultat.Failure -> {
-                            sendToast("Error while creating widget: ${status.exception}")
-                            Timber.e(status.exception, "Error while creating widget")
-                        }
+            updateWidget(
+                UpdateWidget.Params(
+                    ctx = ctx,
+                    source = source,
+                    widget = widget,
+                    type = when (type) {
+                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
+                        else -> throw IllegalStateException("Unexpected type: $type")
+                    }
+                )
+            ).flowOn(appCoroutineDispatchers.io).collect { status ->
+                Timber.d("Status while creating widget: $status")
+                when (status) {
+                    is Resultat.Failure -> {
+                        sendToast("Error while creating widget: ${status.exception}")
+                        Timber.e(status.exception, "Error while creating widget")
+                    }
 
-                        is Resultat.Loading -> {
-                            // Do nothing?
-                        }
+                    is Resultat.Loading -> {
+                        // Do nothing?
+                    }
 
-                        is Resultat.Success -> {
-                            launch {
-                                objectPayloadDispatcher.send(status.value)
-                            }
+                    is Resultat.Success -> {
+                        launch {
+                            objectPayloadDispatcher.send(status.value)
                         }
                     }
                 }
-            } else {
-                Timber.e("Failed to get config to update widgets")
             }
         }
     }
 
     private fun proceedWithDeletingWidget(widget: Id) {
         viewModelScope.launch {
-            val config = configStorage.getOrNull()
+            val config = spaceManager.getConfig()
             if (config != null) {
                 val target = widgets.value.orEmpty().find { it.id == widget }
                 deleteWidget.stream(
@@ -749,7 +806,7 @@ class HomeScreenViewModel(
         val curr = widgets.value.orEmpty().find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
-                val config = configStorage.getOrNull()
+                val config = spaceManager.getConfig()
                 if (config != null) {
                     commands.emit(
                         Command.ChangeWidgetType(
@@ -779,7 +836,7 @@ class HomeScreenViewModel(
         val curr = widgets.value.orEmpty().find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
-                val config = configStorage.getOrNull()
+                val config = spaceManager.getConfig()
                 if (config != null) {
                     commands.emit(
                         Command.ChangeWidgetSource(
@@ -913,26 +970,18 @@ class HomeScreenViewModel(
 
     fun onStart() {
         Timber.d("onStart")
-        if (!isWidgetSessionRestored) {
-            viewModelScope.launch {
+        widgetObjectPipelineJobs += viewModelScope.launch {
+            if (!isWidgetSessionRestored) {
                 val session = withContext(appCoroutineDispatchers.io) {
                     getWidgetSession.async(Unit).getOrNull()
                 }
                 if (session != null) {
                     collapsedWidgetStateHolder.set(session.collapsed)
                 }
-                val config = configStorage.getOrNull()
-                if (config != null)
-                    proceedWithOpeningWidgetObject(widgetObject = config.widgets)
-                else
-                    Timber.d("Failed to get config to open widget object")
             }
-        } else {
-            val config = configStorage.getOrNull()
-            if (config != null)
-                proceedWithOpeningWidgetObject(widgetObject = config.widgets)
-            else
-                Timber.d("Failed to get config to open widget object")
+            widgetObjectPipeline.collect {
+                objectViewState.value = it
+            }
         }
     }
 
@@ -940,10 +989,16 @@ class HomeScreenViewModel(
         Timber.d("onStop")
         // Temporary workaround for app crash when user is logged out and config storage is not initialized.
         try {
-            proceedWithClosingWidgetObject(widgetObject = configStorage.get().widgets)
+            viewModelScope.launch {
+                val config = spaceManager.getConfig()
+                if (config != null) {
+                    proceedWithClosingWidgetObject(widgetObject = config.widgets)
+                }
+            }
         } catch (e: Exception) {
             Timber.e(e, "Error while closing widget object")
         }
+        jobs.cancel()
     }
 
     private fun proceedWithExitingEditMode() {
@@ -974,9 +1029,10 @@ class HomeScreenViewModel(
             createObject.stream(CreateObject.Param(null)).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
+                        // TODO Multispaces - Check analytics events
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = result.type,
+                            type = result.objectId,
                             storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.navigation,
                             startTime = startTime,
@@ -994,9 +1050,9 @@ class HomeScreenViewModel(
     }
 
     fun onMove(views: List<WidgetView>, from: Int, to: Int) {
-        val config = configStorage.getOrNull()
-        if (config != null)
-            viewModelScope.launch {
+        viewModelScope.launch {
+            val config = spaceManager.getConfig()
+            if (config != null) {
                 val direction = if (from < to) Position.BOTTOM else Position.TOP
                 val subject = views[to]
                 val target = if (direction == Position.TOP) views[to.inc()].id else views[to.dec()].id
@@ -1019,8 +1075,9 @@ class HomeScreenViewModel(
                     )
                 }
             }
-        else
-            Timber.e("Failed to get config for move operation")
+            else
+                Timber.e("Failed to get config for move operation")
+        }
     }
 
     private fun proceedWithSettingUpShortcuts() {
@@ -1147,7 +1204,7 @@ class HomeScreenViewModel(
             view = view
         ).also {
             viewModelScope.launch {
-                val config = configStorage.getOrNull()
+                val config = spaceManager.getConfig()
                 if (config != null)
                     setWidgetActiveView.stream(
                         SetWidgetActiveView.Params(
@@ -1181,7 +1238,6 @@ class HomeScreenViewModel(
     }
 
     class Factory @Inject constructor(
-        private val configStorage: ConfigStorage,
         private val openObject: OpenObject,
         private val closeObject: CloseBlock,
         private val createObject: CreateObject,
@@ -1210,11 +1266,12 @@ class HomeScreenViewModel(
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val objectWatcher: ObjectWatcher,
         private val setWidgetActiveView: SetWidgetActiveView,
+        private val spaceManager: SpaceManager,
+        private val spaceWidgetContainer: SpaceWidgetContainer,
         private val setObjectDetails: SetObjectDetails
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
-            configStorage = configStorage,
             openObject = openObject,
             closeObject = closeObject,
             createObject = createObject,
@@ -1243,6 +1300,8 @@ class HomeScreenViewModel(
             storeOfObjectTypes = storeOfObjectTypes,
             objectWatcher = objectWatcher,
             setWidgetActiveView = setWidgetActiveView,
+            spaceManager = spaceManager,
+            spaceWidgetContainer = spaceWidgetContainer,
             setObjectDetails = setObjectDetails
         ) as T
     }

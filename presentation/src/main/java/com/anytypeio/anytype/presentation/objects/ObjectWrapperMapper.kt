@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
+import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
@@ -17,7 +17,6 @@ import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
-import timber.log.Timber
 
 @Deprecated("To be deleted")
 fun List<ObjectWrapper.Basic>.toView(
@@ -77,36 +76,54 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
     urlBuilder: UrlBuilder,
     gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
 ): List<LibraryView> = map { obj ->
-    when (val type = obj.getProperType()) {
-        MarketplaceObjectTypeIds.OBJECT_TYPE -> {
-            LibraryView.LibraryTypeView(
-                id = obj.id,
-                name = obj.name.orEmpty(),
-                icon = ObjectIcon.from(
-                    obj = obj,
-                    layout = obj.getProperLayout(),
-                    builder = urlBuilder,
+    val space = obj.getValue<Id?>(Relations.SPACE_ID)
+    when (val type = obj.layout) {
+        ObjectType.Layout.OBJECT_TYPE -> {
+            if (space == Marketplace.MARKETPLACE_SPACE_ID) {
+                LibraryView.LibraryTypeView(
+                    id = obj.id,
+                    name = obj.name.orEmpty(),
+                    icon = ObjectIcon.from(
+                        obj = obj,
+                        layout = obj.getProperLayout(),
+                        builder = urlBuilder,
                     gradientProvider = gradientProvider
-                ),
-            )
-        }
-        ObjectTypeIds.OBJECT_TYPE -> {
-            LibraryView.MyTypeView(
-                id = obj.id,
-                name = obj.name.orEmpty(),
-                icon = ObjectIcon.from(
-                    obj = obj,
-                    layout = obj.getProperLayout(),
-                    builder = urlBuilder,
+                    ),
+                )
+            } else {
+                LibraryView.MyTypeView(
+                    id = obj.id,
+                    name = obj.name.orEmpty(),
+                    icon = ObjectIcon.from(
+                        obj = obj,
+                        layout = obj.getProperLayout(),
+                        builder = urlBuilder,
                     gradientProvider = gradientProvider
-                ),
-                sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-                readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
-                editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
-            )
+                    ),
+                    sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+                    readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+                    editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
+                )
+            }
         }
-        ObjectTypeIds.RELATION -> {
+        ObjectType.Layout.RELATION -> {
             val relation = ObjectWrapper.Relation(obj.map)
+            if (space == Marketplace.MARKETPLACE_SPACE_ID) {
+                LibraryView.LibraryRelationView(
+                    id = obj.id,
+                    name = obj.name.orEmpty(),
+                    format = relation.format
+                )
+            } else {
+                LibraryView.MyRelationView(
+                    id = obj.id,
+                    name = obj.name.orEmpty(),
+                    format = relation.format,
+                    sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+                    readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
+                    editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
+                )
+            }
             LibraryView.MyRelationView(
                 id = obj.id,
                 name = obj.name.orEmpty(),
@@ -116,19 +133,10 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                 editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
             )
         }
-        MarketplaceObjectTypeIds.RELATION -> {
-            val relation = ObjectWrapper.Relation(obj.map)
-            LibraryView.LibraryRelationView(
-                id = obj.id,
-                name = obj.name.orEmpty(),
-                format = relation.format
-            )
-        }
-        else -> {
-            LibraryView.UnknownView(id = obj.id).also {
-                Timber.e("Unknown type: $type")
-            }
-        }
+        else -> LibraryView.UnknownView(
+            id = obj.id,
+            name = obj.name.orEmpty()
+        )
     }
 }
 

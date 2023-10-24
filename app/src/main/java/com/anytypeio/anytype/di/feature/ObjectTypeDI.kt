@@ -4,10 +4,11 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
@@ -43,16 +44,16 @@ object ObjectTypeChangeModule {
     @PerScreen
     fun provideObjectTypeViewModelFactory(
         getObjectTypes: GetObjectTypes,
-        addObjectToWorkspace: AddObjectToWorkspace,
+        addObjectTypeToSpace: AddObjectTypeToSpace,
         dispatchers: AppCoroutineDispatchers,
-        workspaceManager: WorkspaceManager,
+        spaceManager: SpaceManager,
         getDefaultPageType: GetDefaultPageType
     ): ObjectTypeChangeViewModelFactory {
         return ObjectTypeChangeViewModelFactory(
             getObjectTypes = getObjectTypes,
-            addObjectToWorkspace = addObjectToWorkspace,
+            addObjectTypeToSpace = addObjectTypeToSpace,
             dispatchers = dispatchers,
-            workspaceManager = workspaceManager,
+            spaceManager = spaceManager,
             getDefaultPageType = getDefaultPageType
         )
     }
@@ -68,10 +69,10 @@ object ObjectTypeChangeModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun addObjectToWorkspace(
+    fun provideAddObjectTypeToSpace(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ) : AddObjectToWorkspace = AddObjectToWorkspace(
+    ) : AddObjectTypeToSpace = AddObjectTypeToSpace(
         repo = repo,
         dispatchers = dispatchers
     )
@@ -82,13 +83,15 @@ object ObjectTypeChangeModule {
     fun provideGetDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        workspaceManager = workspaceManager,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
 }

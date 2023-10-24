@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
@@ -17,7 +18,6 @@ import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -29,12 +29,14 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
+import com.anytypeio.anytype.middleware.mappers.config
 import com.anytypeio.anytype.middleware.mappers.core
 import com.anytypeio.anytype.middleware.mappers.mw
 import com.anytypeio.anytype.middleware.mappers.parse
@@ -75,9 +77,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun accountDelete(): AccountStatus {
-        val request = Rpc.Account.Delete.Request(
-            revert = false
-        )
+        val request = Rpc.Account.Delete.Request()
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.accountDelete(request)
         if (BuildConfig.DEBUG) logResponse(response)
@@ -96,11 +96,9 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun accountRestore(): AccountStatus {
-        val request = Rpc.Account.Delete.Request(
-            revert = true
-        )
+        val request = Rpc.Account.RevertDeletion.Request()
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountDelete(request)
+        val response = service.accountRevertDeletion(request)
         if (BuildConfig.DEBUG) logResponse(response)
         val status = response.status
         checkNotNull(status) { "Account status was null" }
@@ -864,7 +862,9 @@ class Middleware @Inject constructor(
         val request = Rpc.Object.Create.Request(
             details = command.prefilled,
             templateId = command.template.orEmpty(),
-            internalFlags = command.internalFlags.toMiddlewareModel()
+            internalFlags = command.internalFlags.toMiddlewareModel(),
+            spaceId = command.space.id,
+            objectTypeUniqueKey = command.type.key
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreate(request)
@@ -879,6 +879,7 @@ class Middleware @Inject constructor(
 
         val request = Rpc.BlockLink.CreateWithObject.Request(
             contextId = command.context,
+            objectTypeUniqueKey = command.type.key,
             details = command.prefilled,
             templateId = command.template.orEmpty(),
             internalFlags = command.internalFlags.toMiddlewareModel(),
@@ -894,9 +895,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectCreateBookmark(url: Url): Id {
+    fun objectCreateBookmark(space: Id, url: Url): Id {
         val request = Rpc.Object.CreateBookmark.Request(
-            details = mapOf(Relations.SOURCE to url)
+            details = mapOf(Relations.SOURCE to url),
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateBookmark(request)
@@ -917,6 +919,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,
@@ -933,7 +936,8 @@ class Middleware @Inject constructor(
                 if (prefilled.isNotEmpty()) {
                     putAll(prefilled)
                 }
-            }
+            },
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateRelation(request)
@@ -945,17 +949,18 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateObjectType(
+        space: Id,
         name: String,
         emojiUnicode: String?
     ): ObjectWrapper.Type {
         val request = Rpc.Object.CreateObjectType.Request(
             details = buildMap {
-                put(Relations.TYPE, ObjectTypeIds.OBJECT_TYPE)
                 put(Relations.NAME, name)
                 emojiUnicode?.let {
                     put(Relations.ICON_EMOJI, it)
                 }
-            }
+            },
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateObjectType(request)
@@ -967,6 +972,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateRelationOption(
+        space: Id,
         relation: Key,
         name: String,
         color: String
@@ -976,7 +982,8 @@ class Middleware @Inject constructor(
                 put(Relations.RELATION_KEY, relation)
                 put(Relations.NAME, name)
                 put(Relations.RELATION_OPTION_COLOR, color)
-            }
+            },
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateRelationOption(request)
@@ -988,6 +995,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectCreateSet(
+        space: Id,
         objectType: String?
     ): Response.Set.Create {
         val source = if (objectType != null) {
@@ -997,7 +1005,8 @@ class Middleware @Inject constructor(
         }
 
         val request = Rpc.Object.CreateSet.Request(
-            source = source
+            source = source,
+            spaceId = space
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
@@ -1453,7 +1462,7 @@ class Middleware @Inject constructor(
     fun objectSetIsArchived(
         ctx: Id,
         isArchived: Boolean
-    ): Payload {
+    ) {
         val request = Rpc.Object.SetIsArchived.Request(
             contextId = ctx,
             isArchived = isArchived
@@ -1461,7 +1470,6 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSetIsArchived(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.event.toPayload()
     }
 
     @Deprecated(
@@ -1511,10 +1519,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectSetObjectType(ctx: Id, typeId: Id): Payload {
+    fun objectSetObjectType(ctx: Id, objectTypeKey: Key): Payload {
         val request = Rpc.Object.SetObjectType.Request(
             contextId = ctx,
-            objectTypeUrl = typeId
+            objectTypeUniqueKey = objectTypeKey
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectSetObjectType(request)
@@ -1566,9 +1574,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectImportUseCaseSkip() {
+    fun objectImportUseCaseSkip(space: Id) {
         val request = Rpc.Object.ImportUseCase.Request(
-            useCase = Rpc.Object.ImportUseCase.Request.UseCase.SKIP
+            useCase = Rpc.Object.ImportUseCase.Request.UseCase.SKIP,
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectImportUseCase(request)
@@ -1924,14 +1933,69 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceObjectListAdd(objects: List<Id>): List<Id> {
+    fun workspaceCreate(details: Struct): Id {
+        val request = Rpc.Workspace.Create.Request(
+            details = details,
+            useCase = Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.workspaceCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.spaceId
+    }
+
+    @Throws(Exception::class)
+    fun workspaceOpen(space: Id): Config {
+        val request = Rpc.Workspace.Open.Request(
+            spaceId = space
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.workspaceOpen(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        val info = response.info
+        if (info != null) {
+            return info.config()
+        } else {
+            throw IllegalStateException("Workspace info is empty")
+        }
+    }
+
+    @Throws(Exception::class)
+    fun workspaceSetInfo(
+        space: SpaceId,
+        struct: Struct
+    ) {
+        val request = Rpc.Workspace.SetInfo.Request(
+            spaceId = space.id,
+            details = struct
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.workspaceSetInfo(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun workspaceObjectListAdd(objects: List<Id>, space: Id): List<Id> {
         val request = Rpc.Workspace.Object.ListAdd.Request(
-            objectIds = objects
+            objectIds = objects,
+            spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.workspaceObjectListAdd(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.objectIds
+    }
+
+    @Throws(Exception::class)
+    fun workspaceObjectAdd(obj: Id, space: Id): Id {
+        val request = Rpc.Workspace.Object.Add.Request(
+            objectId = obj,
+            spaceId = space
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.workspaceObjectAdd(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.objectId
     }
 
     @Throws(Exception::class)
@@ -2223,8 +2287,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun fileSpaceUsage(): FileLimits {
-        val request = Rpc.File.SpaceUsage.Request()
+    fun fileSpaceUsage(space: SpaceId): FileLimits {
+        val request = Rpc.File.SpaceUsage.Request(spaceId = space.id)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.spaceUsage(request)
         if (BuildConfig.DEBUG) logResponse(response)

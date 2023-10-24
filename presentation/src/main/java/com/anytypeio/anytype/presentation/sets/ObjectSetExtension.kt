@@ -19,6 +19,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.title
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
@@ -36,7 +38,6 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.title
-import com.anytypeio.anytype.presentation.relations.type
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
@@ -410,7 +411,8 @@ fun ObjectState.DataView.filterOutDeletedAndMissingObjects(query: List<Id>): Lis
 fun ObjectState.DataView.Set.isSetByRelation(setOfValue: List<Id>): Boolean {
     if (setOfValue.isEmpty()) return false
     val objectDetails = details[setOfValue.first()]?.map.orEmpty()
-    return objectDetails.type == ObjectTypeIds.RELATION
+    val wrapper = ObjectWrapper.Basic(objectDetails)
+    return wrapper.layout == ObjectType.Layout.RELATION
 }
 
 private fun ObjectState.DataView.isValidObject(objectId: Id): Boolean {
@@ -445,6 +447,7 @@ fun ObjectWrapper.Basic.toTemplateView(
     urlBuilder: UrlBuilder,
     coverImageHashProvider: CoverImageHashProvider,
     viewerDefTemplateId: Id?,
+    viewerDefTypeKey: TypeKey
 ): TemplateView.Template {
     val coverContainer = if (coverType != CoverType.NONE) {
         BasicObjectCoverWrapper(this)
@@ -455,25 +458,15 @@ fun ObjectWrapper.Basic.toTemplateView(
     return TemplateView.Template(
         id = id,
         name = name.orEmpty(),
-        typeId = targetObjectType.orEmpty(),
+        targetTypeId = TypeId(targetObjectType.orEmpty()),
         emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
         image = if (!iconImage.isNullOrBlank()) urlBuilder.thumbnail(iconImage!!) else null,
         layout = layout ?: ObjectType.Layout.BASIC,
         coverColor = coverContainer?.coverColor,
         coverImage = coverContainer?.coverImage,
         coverGradient = coverContainer?.coverGradient,
-        isDefault = viewerDefTemplateId == id
-    )
-}
-
-fun ObjectWrapper.Type.toTemplateViewBlank(
-    viewerDefaultTemplate: Id?
-): TemplateView.Blank {
-    return TemplateView.Blank(
-        id = DEFAULT_TEMPLATE_ID_BLANK,
-        typeId = id,
-        layout = recommendedLayout?.code ?: ObjectType.Layout.BASIC.code,
-        isDefault = viewerDefaultTemplate.isNullOrEmpty() || viewerDefaultTemplate == DEFAULT_TEMPLATE_ID_BLANK
+        isDefault = viewerDefTemplateId == id,
+        targetTypeKey = viewerDefTypeKey
     )
 }
 
@@ -580,7 +573,7 @@ private suspend fun resolveTypeAndActiveViewTemplate(
     } else {
         VIEW_DEFAULT_OBJECT_TYPE
     }
-    val defaultSetObjectType = storeOfObjectTypes.get(defaultSetObjectTypId)
+    val defaultSetObjectType = storeOfObjectTypes.get(defaultSetObjectTypId) ?: storeOfObjectTypes.getByKey(defaultSetObjectTypId)
     return if (activeView.defaultTemplate.isNullOrEmpty()) {
         val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
         Pair(defaultSetObjectType, defaultTemplateId)

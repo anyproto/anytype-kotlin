@@ -10,7 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +26,7 @@ sealed interface ObjectTypeTemplatesContainer {
 
 class DefaultObjectTypeTemplatesContainer(
     private val storage: StorelessSubscriptionContainer,
-    private val workspaceManager: WorkspaceManager
+    private val spaceManager: SpaceManager
 ) : ObjectTypeTemplatesContainer {
 
     override suspend fun subscribeToTemplates(type: Id): Flow<List<ObjectWrapper.Basic>> {
@@ -53,7 +53,7 @@ class DefaultObjectTypeTemplatesContainer(
                         value = true
                     ),
                     DVFilter(
-                        relation = Relations.TYPE,
+                        relation = Relations.TYPE_UNIQUE_KEY,
                         condition = DVFilterCondition.EQUAL,
                         value = ObjectTypeIds.TEMPLATE
                     ),
@@ -63,9 +63,9 @@ class DefaultObjectTypeTemplatesContainer(
                         value = type
                     ),
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = workspaceManager.getCurrentWorkspace()
+                        value = spaceManager.get()
                     ),
                     DVFilter(
                         relation = Relations.ID,
@@ -74,6 +74,8 @@ class DefaultObjectTypeTemplatesContainer(
                 ),
                 keys = listOf(
                     Relations.ID,
+                    Relations.SPACE_ID,
+                    Relations.TYPE_UNIQUE_KEY,
                     Relations.NAME,
                     Relations.ICON_EMOJI,
                     Relations.ICON_IMAGE,
@@ -98,16 +100,9 @@ class DefaultObjectTypeTemplatesContainer(
                 addAll(ObjectSearchConstants.filterTypes())
                 add(
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = workspaceManager.getCurrentWorkspace()
-                    )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.TYPE,
-                        condition = DVFilterCondition.EQUAL,
-                        value = ObjectTypeIds.OBJECT_TYPE
+                        value = spaceManager.get()
                     )
                 )
                 add(
@@ -123,10 +118,12 @@ class DefaultObjectTypeTemplatesContainer(
             sorts = emptyList(),
             keys = listOf(
                 Relations.ID,
+                Relations.UNIQUE_KEY,
                 Relations.NAME,
                 Relations.ICON_EMOJI,
                 Relations.DEFAULT_TEMPLATE_ID,
-                Relations.RECOMMENDED_LAYOUT
+                Relations.RECOMMENDED_LAYOUT,
+                Relations.LAYOUT
             ),
         )
         return storage.subscribe(objTypeParams)

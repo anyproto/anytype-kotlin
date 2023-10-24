@@ -15,6 +15,10 @@ import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.test.advanceUntilIdle
+import kotlinx.coroutines.test.runTest
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.After
 import org.junit.Before
@@ -41,6 +45,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     @After
@@ -301,8 +306,9 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
         assertEquals(expected, actual)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should create object and add markup to text end remove all clicked marks in range`() {
+    fun `should create object and add markup to text end remove all clicked marks in range`()= runTest {
         val title = MockTypicalDocumentFactory.title
         val header = MockTypicalDocumentFactory.header
         val linkObject = MockDataFactory.randomUuid()
@@ -401,7 +407,6 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
         val newObjectName = MockDataFactory.randomString()
         stubCreateObjectAsMentionOrLink(
             name = newObjectName,
-            type = newObjectType,
             id = newObjectId
         )
         stubGetDefaultObjectType(type = newObjectType)
@@ -416,6 +421,7 @@ class EditorMarkupObjectTest : EditorPresentationTestSetup() {
                 selection = IntRange(6, 25)
             )
             proceedToCreateObjectAndAddToTextAsLink(name = newObjectName)
+            advanceUntilIdle()
         }
 
         val expected = ViewState.Success(

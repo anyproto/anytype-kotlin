@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetCreateBookmarkRecordViewModel
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateBookmarkRecordFragment
 import dagger.Module
@@ -30,10 +31,12 @@ object ObjectSetCreateBookmarkRecordModule {
     @PerDialog
     fun provideObjectSetRecordViewModelFactory(
         createBookmarkObject: CreateBookmarkObject,
-        urlValidator: UrlValidator
-    ): ObjectSetCreateBookmarkRecordViewModel.Factory = ObjectSetCreateBookmarkRecordViewModel.Factory(
-            createBookmarkObject = createBookmarkObject,
-            urlValidator = urlValidator
+        urlValidator: UrlValidator,
+        spaceManager: SpaceManager
+    ) = ObjectSetCreateBookmarkRecordViewModel.Factory(
+        createBookmarkObject = createBookmarkObject,
+        urlValidator = urlValidator,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

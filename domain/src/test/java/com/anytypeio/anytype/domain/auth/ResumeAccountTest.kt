@@ -60,50 +60,8 @@ class ResumeAccountTest {
             repository = repo,
             configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider,
-            workspaceManager = workspaceManager,
             pathProvider = pathProvider,
             metricsProvider = metricsProvider
         )
-    }
-
-    @Test
-    fun `should set workspace id after resuming account`() = runTest {
-
-        // SETUP
-
-        val givenAccount = StubAccount()
-        val givenAccountSetup = StubAccountSetup(account = givenAccount)
-        val givenPath = MockDataFactory.randomString()
-
-        repo.stub {
-            onBlocking {
-                selectAccount(
-                    id = givenAccount.id,
-                    path = givenPath
-                )
-            } doReturn givenAccountSetup
-        }
-
-        repo.stub {
-            onBlocking {
-                getCurrentAccountId()
-            } doReturn givenAccount.id
-        }
-
-        pathProvider.stub {
-            onBlocking {
-                providePath()
-            } doReturn givenPath
-        }
-
-        // TESTING
-
-        resumeAccount.run(BaseUseCase.None)
-
-        verifyBlocking(workspaceManager, times(1)) {
-            setCurrentWorkspace(
-                givenAccountSetup.config.workspace
-            )
-        }
     }
 }

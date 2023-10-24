@@ -92,6 +92,9 @@ import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
+import com.anytypeio.anytype.di.feature.spaces.DaggerCreateSpaceComponent
+import com.anytypeio.anytype.di.feature.spaces.DaggerSelectSpaceComponent
+import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateSelectComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeCreationComponent
@@ -957,6 +960,24 @@ class ComponentManager(
 
     val onboardingLoginSetupComponent = Component {
         DaggerOnboardingLoginSetupComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val selectSpaceComponent = Component {
+        DaggerSelectSpaceComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val createSpaceComponent = Component {
+        DaggerCreateSpaceComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val spaceSettingsComponent = Component {
+        DaggerSpaceSettingsComponent
             .factory()
             .create(findComponentDependencies())
     }

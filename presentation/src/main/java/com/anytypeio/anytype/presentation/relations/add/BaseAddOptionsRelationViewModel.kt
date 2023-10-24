@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.relations.RelationValueView
@@ -35,7 +36,8 @@ abstract class BaseAddOptionsRelationViewModel(
     protected val values: ObjectValueProvider,
     protected val relations: ObjectRelationProvider,
     protected val detailsProvider: ObjectDetailProvider,
-    private val getOptions: GetOptions
+    private val getOptions: GetOptions,
+    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -104,7 +106,11 @@ abstract class BaseAddOptionsRelationViewModel(
                     isAddButtonVisible.value = false
                     isMultiple.value = false
                 }
-                getOptions(GetOptions.Params(relationKey)).proceed(
+                val params = GetOptions.Params(
+                    space = spaceManager.get(),
+                    relation = relationKey
+                )
+                getOptions(params).proceed(
                     success = { options ->
                         buildViews(
                             relation = relation,

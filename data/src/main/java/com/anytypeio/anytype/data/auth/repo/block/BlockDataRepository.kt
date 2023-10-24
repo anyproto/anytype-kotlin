@@ -2,6 +2,7 @@ package com.anytypeio.anytype.data.auth.repo.block
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVFilter
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
@@ -204,7 +206,11 @@ class BlockDataRepository(
         command: Command.CreateBookmark
     ): Payload = remote.createAndFetchBookmarkBlock(command)
 
-    override suspend fun createBookmarkObject(url: Url): Id = remote.createBookmarkObject(
+    override suspend fun createBookmarkObject(
+        space: Id,
+        url: Url
+    ): Id = remote.createBookmarkObject(
+        space = space,
         url = url
     )
 
@@ -224,7 +230,7 @@ class BlockDataRepository(
         Undo.Result.Exhausted
     }
 
-    override suspend fun importUseCaseSkip() = remote.importUseCaseSkip()
+    override suspend fun importUseCaseSkip(space: Id) = remote.importUseCaseSkip(space = space)
 
     override suspend fun redo(
         command: Command.Redo
@@ -283,9 +289,10 @@ class BlockDataRepository(
     )
 
     override suspend fun createSet(
+        space: Id,
         objectType: String?
     ): CreateObjectSet.Response {
-        val result = remote.createSet(objectType = objectType)
+        val result = remote.createSet(space = space, objectType = objectType)
         return CreateObjectSet.Response(
             target = result.targetId,
             payload = result.payload
@@ -478,8 +485,9 @@ class BlockDataRepository(
     override suspend fun addRelationToBlock(command: Command.AddRelationToBlock): Payload =
         remote.addRelationToBlock(command)
 
-    override suspend fun setObjectTypeToObject(ctx: Id, typeId: Id): Payload =
-        remote.setObjectTypeToObject(ctx = ctx, typeId = typeId)
+    override suspend fun setObjectTypeToObject(
+        ctx: Id, objectTypeKey: Key
+    ): Payload = remote.setObjectTypeToObject(ctx = ctx, objectTypeKey = objectTypeKey)
 
     override suspend fun addToFeaturedRelations(
         ctx: Id,
@@ -504,7 +512,7 @@ class BlockDataRepository(
     override suspend fun setObjectIsArchived(
         ctx: Id,
         isArchived: Boolean
-    ): Payload = remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
+    ) = remote.setObjectIsArchived(ctx = ctx, isArchived = isArchived)
 
     override suspend fun setObjectListIsArchived(
         targets: List<Id>,
@@ -581,11 +589,13 @@ class BlockDataRepository(
     }
 
     override suspend fun createRelation(
+        space: Id,
         name: String,
         format: RelationFormat,
         formatObjectTypes: List<Id>,
         prefilled: Struct
     ): ObjectWrapper.Relation = remote.createRelation(
+        space = space,
         name = name,
         format = format,
         formatObjectTypes = formatObjectTypes,
@@ -593,18 +603,22 @@ class BlockDataRepository(
     )
 
     override suspend fun createType(
+        space: Id,
         name: String,
         emojiUnicode: String?,
     ): ObjectWrapper.Type = remote.createType(
+        space = space,
         name = name,
         emojiUnicode = emojiUnicode
     )
 
     override suspend fun createRelationOption(
+        space: Id,
         relation: Key,
         name: String,
         color: String
     ): ObjectWrapper.Option = remote.createRelationOption(
+        space = space,
         relation = relation,
         name = name,
         color = color
@@ -742,11 +756,35 @@ class BlockDataRepository(
         )
     }
 
-    override suspend fun addObjectToWorkspace(objects: List<Id>): List<Id> {
-        return remote.addObjectToWorkspace(
-            objects = objects
+    override suspend fun createWorkspace(details: Struct): Id = remote.createWorkspace(
+        details = details
+    )
+
+    override suspend fun setSpaceDetails(space: SpaceId, details: Struct) {
+        remote.setSpaceDetails(
+            space = space,
+            details = details
         )
     }
+
+    override suspend fun getSpaceConfig(space: Id): Config = remote.getSpaceConfig(
+        space = space
+    )
+
+    override suspend fun addObjectListToSpace(objects: List<Id>, space: Id): List<Id> {
+        return remote.addObjectListToSpace(
+            objects = objects,
+            space = space
+        )
+    }
+
+    override suspend fun addObjectToSpace(
+        obj: Id,
+        space: Id
+    ): Id = remote.addObjectToSpace(
+        obj = obj,
+        space = space
+    )
 
     override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
         return remote.removeObjectFromWorkspace(
@@ -838,8 +876,8 @@ class BlockDataRepository(
         return remote.setQueryToSet(command)
     }
 
-    override suspend fun fileSpaceUsage(): FileLimits {
-        return remote.fileSpaceUsage()
+    override suspend fun fileSpaceUsage(space: SpaceId): FileLimits {
+        return remote.fileSpaceUsage(space)
     }
 
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {

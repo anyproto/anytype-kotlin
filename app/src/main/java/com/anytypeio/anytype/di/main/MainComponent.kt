@@ -37,6 +37,9 @@ import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
+import com.anytypeio.anytype.di.feature.spaces.CreateSpaceDependencies
+import com.anytypeio.anytype.di.feature.spaces.SelectSpaceDependencies
+import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
@@ -97,7 +100,10 @@ interface MainComponent :
     AboutAppDependencies,
     OnboardingSoulCreationAnimDependencies,
     TemplateBlankDependencies,
-    TemplateSelectDependencies {
+    TemplateSelectDependencies,
+    SelectSpaceDependencies,
+    CreateSpaceDependencies,
+    SpaceSettingsDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -257,4 +263,19 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(TemplateSelectDependencies::class)
     abstract fun provideTemplateSelectDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SelectSpaceDependencies::class)
+    abstract fun provideSelectSpaceDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CreateSpaceDependencies::class)
+    abstract fun provideCreateSpaceDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SpaceSettingsDependencies::class)
+    abstract fun provideSpaceSettingsDependencies(component: MainComponent): ComponentDependencies
 }

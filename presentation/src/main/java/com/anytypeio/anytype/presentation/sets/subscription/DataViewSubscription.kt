@@ -2,8 +2,8 @@ package com.anytypeio.anytype.presentation.sets.subscription
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.DataViewState
+import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterOutDeletedAndMissingObjects
@@ -19,7 +19,7 @@ interface DataViewSubscription {
 
     suspend fun startObjectSetSubscription(
         context: Id,
-        workspaceId: Id,
+        space: Id,
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
@@ -29,7 +29,7 @@ interface DataViewSubscription {
     suspend fun startObjectCollectionSubscription(
         context: Id,
         collection: Id,
-        workspaceId: Id,
+        space: Id,
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
@@ -44,7 +44,7 @@ class DefaultDataViewSubscription(
     override suspend fun startObjectCollectionSubscription(
         context: Id,
         collection: Id,
-        workspaceId: Id,
+        space: Id,
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
@@ -61,7 +61,7 @@ class DefaultDataViewSubscription(
         }
         val filters =
             activeViewer.filters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                workspaceId = workspaceId
+                space = space
             )
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
@@ -81,7 +81,7 @@ class DefaultDataViewSubscription(
 
     override suspend fun startObjectSetSubscription(
         context: Id,
-        workspaceId: Id,
+        space: Id,
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
@@ -114,7 +114,7 @@ class DefaultDataViewSubscription(
 
         val filters =
             activeViewer.filters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                workspaceId = workspaceId
+                space = space
             )
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys

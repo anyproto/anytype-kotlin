@@ -8,11 +8,11 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 
 class EmptyBin(
     private val repo: BlockRepository,
-    private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Unit, List<Id>>(dispatchers.io) {
     override suspend fun doWork(params: Unit) : List<Id> {
@@ -34,9 +34,9 @@ class EmptyBin(
                     value = true
                 ),
                 DVFilter(
-                    relation = Relations.WORKSPACE_ID,
+                    relation = Relations.SPACE_ID,
                     condition = DVFilterCondition.EQUAL,
-                    value = workspaceManager.getCurrentWorkspace()
+                    value = spaceManager.get()
                 )
             ),
             sorts = emptyList(),

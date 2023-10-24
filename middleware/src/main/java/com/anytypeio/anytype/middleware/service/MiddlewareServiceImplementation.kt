@@ -45,6 +45,17 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun accountRevertDeletion(request: Rpc.Account.RevertDeletion.Request): Rpc.Account.RevertDeletion.Response {
+        val encoded = Service.accountRevertDeletion(Rpc.Account.RevertDeletion.Request.ADAPTER.encode(request))
+        val response = Rpc.Account.RevertDeletion.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Account.RevertDeletion.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun accountRecover(request: Rpc.Account.Recover.Request): Rpc.Account.Recover.Response {
         val encoded = Service.accountRecover(Rpc.Account.Recover.Request.ADAPTER.encode(request))
         val response = Rpc.Account.Recover.Response.ADAPTER.decode(encoded)
@@ -1407,6 +1418,45 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun workspaceCreate(request: Rpc.Workspace.Create.Request): Rpc.Workspace.Create.Response {
+        val encoded = Service.workspaceCreate(
+            Rpc.Workspace.Create.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Workspace.Create.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Workspace.Create.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun workspaceOpen(request: Rpc.Workspace.Open.Request): Rpc.Workspace.Open.Response {
+        val encoded = Service.workspaceOpen(
+            Rpc.Workspace.Open.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Workspace.Open.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Workspace.Open.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun workspaceSetInfo(request: Rpc.Workspace.SetInfo.Request): Rpc.Workspace.SetInfo.Response {
+        val encoded = Service.workspaceSetInfo(
+            Rpc.Workspace.SetInfo.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Workspace.SetInfo.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Workspace.SetInfo.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun workspaceObjectListAdd(request: Rpc.Workspace.Object.ListAdd.Request): Rpc.Workspace.Object.ListAdd.Response {
         val encoded = Service.workspaceObjectListAdd(
             Rpc.Workspace.Object.ListAdd.Request.ADAPTER.encode(request)
@@ -1414,6 +1464,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Workspace.Object.ListAdd.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Workspace.Object.ListAdd.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun workspaceObjectAdd(request: Rpc.Workspace.Object.Add.Request): Rpc.Workspace.Object.Add.Response {
+        val encoded = Service.workspaceObjectAdd(
+            Rpc.Workspace.Object.Add.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Workspace.Object.Add.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Workspace.Object.Add.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

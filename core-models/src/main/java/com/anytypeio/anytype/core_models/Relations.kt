@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_models
 
 /**
  * Keys for predefined, bundled relations.
+ * // TODO remove outdated or deprecated relations
  */
 object Relations {
 
@@ -29,7 +30,8 @@ object Relations {
     const val DONE = "done"
     const val FEATURED_RELATIONS = "featuredRelations"
     const val SNIPPET = "snippet"
-    const val WORKSPACE_ID = "workspaceId"
+    const val SPACE_ID = "spaceId"
+    const val TARGET_SPACE_ID = "targetSpaceId"
     const val SET_OF = "setOf"
     const val URL = "url"
     const val SOURCE = "source"
@@ -48,6 +50,7 @@ object Relations {
     const val SIZE_IN_BYTES = "sizeInBytes"
     const val FILE_SYNC_STATUS = "fileSyncStatus"
     const val CREATED_DATE = "createdDate"
+    const val CREATOR = "creator"
 
     const val PAGE_COVER = "pageCover"
 
@@ -60,6 +63,13 @@ object Relations {
     const val RECOMMENDED_LAYOUT = "recommendedLayout"
     const val RECOMMENDED_RELATIONS = "recommendedRelations"
     const val DEFAULT_TEMPLATE_ID = "defaultTemplateId"
+
+    const val UNIQUE_KEY = "uniqueKey"
+
+    /**
+     * Transitive relation key.
+     */
+    const val TYPE_UNIQUE_KEY = "type.uniqueKey"
 
     val systemRelationKeys = listOf(
         "id",

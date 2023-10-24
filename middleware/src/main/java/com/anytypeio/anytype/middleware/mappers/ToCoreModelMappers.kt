@@ -2,9 +2,11 @@ package com.anytypeio.anytype.middleware.mappers
 
 import anytype.ResponseEvent
 import anytype.Rpc
+import anytype.model.Account
 import anytype.model.Restrictions
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
 import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.DVDateFormat
@@ -535,6 +537,7 @@ fun MDVViewType.toCoreModels(): DVViewerType = when (this) {
     MDVViewType.List -> DVViewerType.LIST
     MDVViewType.Gallery -> DVViewerType.GALLERY
     MDVViewType.Kanban -> DVViewerType.BOARD
+    MDVViewType.Calendar -> DVViewerType.CALENDAR
 }
 
 fun MDVFilter.toCoreModels(): DVFilter = DVFilter(
@@ -632,9 +635,13 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.note -> ObjectType.Layout.NOTE
     MOTypeLayout.space -> ObjectType.Layout.SPACE
     MOTypeLayout.bookmark -> ObjectType.Layout.BOOKMARK
-    anytype.model.ObjectType.Layout.relationOptionsList -> TODO()
-    anytype.model.ObjectType.Layout.relationOption -> TODO()
+    MOTypeLayout.audio -> ObjectType.Layout.AUDIO
+    MOTypeLayout.video -> ObjectType.Layout.VIDEO
+    MOTypeLayout.date -> ObjectType.Layout.DATE
     MOTypeLayout.collection -> ObjectType.Layout.COLLECTION
+    MOTypeLayout.relationOption -> ObjectType.Layout.RELATION_OPTION
+    MOTypeLayout.relationOptionsList -> TODO()
+    MOTypeLayout.spaceView -> ObjectType.Layout.SPACE_VIEW
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {
@@ -741,3 +748,14 @@ fun Rpc.File.SpaceUsage.Response.toCoreModel(): FileLimits {
 fun List<Rpc.Debug.TreeInfo>.toCoreModel(): String {
     return GsonBuilder().setPrettyPrinting().create().toJson(this)
 }
+
+fun Account.Info.config() : Config = Config(
+    home = homeObjectId,
+    profile = profileObjectId,
+    gateway = gatewayUrl,
+    space = accountSpaceId,
+    spaceView = spaceViewId,
+    widgets = widgetsId,
+    analytics = analyticsId,
+    device = deviceId
+)

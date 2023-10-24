@@ -29,7 +29,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectSearchSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
@@ -42,9 +42,7 @@ import kotlinx.coroutines.Dispatchers
 
 @Component(
     dependencies = [CollectionDependencies::class],
-    modules = [
-        CollectionModule::class
-    ]
+    modules = [CollectionModule::class]
 )
 @PerScreen
 interface CollectionComponent {
@@ -153,14 +151,14 @@ object CollectionModule {
     @PerScreen
     fun getCreateObject(
         repo: BlockRepository,
-        getTemplates: GetTemplates,
         getDefaultPageType: GetDefaultPageType,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
-        getTemplates = getTemplates,
         getDefaultPageType = getDefaultPageType,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -169,13 +167,15 @@ object CollectionModule {
     fun provideGetDefaultPageType(
         userSettingsRepository: UserSettingsRepository,
         blockRepository: BlockRepository,
-        workspaceManager: WorkspaceManager,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager,
+        configStorage: ConfigStorage
     ): GetDefaultPageType = GetDefaultPageType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
-        workspaceManager = workspaceManager,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager,
+        configStorage = configStorage
     )
 
     @JvmStatic
@@ -209,11 +209,11 @@ interface CollectionDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun objectStore(): ObjectStore
     fun subscriptionEventChannel(): SubscriptionEventChannel
-    fun workspaceManager(): WorkspaceManager
     fun analytics(): Analytics
     fun eventChannel(): EventChannel
     fun userSettingsRepository(): UserSettingsRepository
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun dispatchers(): AppCoroutineDispatchers
+    fun spaceManager(): SpaceManager
     fun logger(): Logger
 }

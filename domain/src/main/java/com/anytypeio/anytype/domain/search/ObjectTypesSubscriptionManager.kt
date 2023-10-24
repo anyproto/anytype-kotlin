@@ -2,9 +2,9 @@ package com.anytypeio.anytype.domain.search
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 class ObjectTypesSubscriptionManager (
     private val scope: CoroutineScope = GlobalScope,
     private val subscription: ObjectTypesSubscriptionContainer,
-    private val workspaceManager: WorkspaceManager
+    private val spaceManager: SpaceManager
 ) {
 
     private var job: Job? = null
@@ -26,15 +26,20 @@ class ObjectTypesSubscriptionManager (
                 subscription = ObjectTypesSubscriptionContainer.SUBSCRIPTION_ID,
                 filters = listOf(
                     DVFilter(
-                        relation = Relations.TYPE,
+                        relation = Relations.LAYOUT,
                         condition = DVFilterCondition.EQUAL,
-                        value = ObjectTypeIds.OBJECT_TYPE
+                        value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
                     ),
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = workspaceManager.getCurrentWorkspace()
-                    )
+                        value = spaceManager.get()
+                    ),
+                    DVFilter(
+                        relation = Relations.IS_DELETED,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
                 ),
                 limit = 0,
                 offset = 0L,
@@ -53,7 +58,9 @@ class ObjectTypesSubscriptionManager (
                     Relations.SOURCE_OBJECT,
                     Relations.IS_READ_ONLY,
                     Relations.RECOMMENDED_LAYOUT,
-                    Relations.DEFAULT_TEMPLATE_ID
+                    Relations.DEFAULT_TEMPLATE_ID,
+                    Relations.SPACE_ID,
+                    Relations.UNIQUE_KEY
                 ),
                 ignoreWorkspace = true
             )

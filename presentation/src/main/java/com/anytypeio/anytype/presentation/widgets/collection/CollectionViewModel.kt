@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -35,7 +34,7 @@ import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
@@ -76,7 +75,6 @@ import com.anytypeio.anytype.core_models.ObjectView as CoreObjectView
 
 class CollectionViewModel(
     private val container: StorelessSubscriptionContainer,
-    private val workspaceManager: WorkspaceManager,
     private val urlBuilder: UrlBuilder,
     private val getObjectTypes: GetObjectTypes,
     private val dispatchers: AppCoroutineDispatchers,
@@ -87,24 +85,28 @@ class CollectionViewModel(
     private val resourceProvider: CollectionResourceProvider,
     private val openObject: OpenObject,
     private val createObject: CreateObject,
-    private val configstorage: ConfigStorage,
     interceptEvents: InterceptEvents,
     private val objectPayloadDispatcher: Dispatcher<Payload>,
     private val move: Move,
     private val analytics: Analytics,
     private val dateProvider: DateProvider,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val spaceManager: SpaceManager
 ) : ViewModel(), Reducer<CoreObjectView, Payload> {
 
     val payloads: Flow<Payload>
 
     init {
-        val externalChannelEvents =
-            interceptEvents.build(InterceptEvents.Params(configstorage.get().home)).map {
-                Payload(
-                    context = configstorage.get().home,
-                    events = it
-                )
+        val externalChannelEvents: Flow<Payload> = spaceManager
+            .observe()
+            .flatMapLatest { config ->
+                val params = InterceptEvents.Params(config.home)
+                interceptEvents.build(params).map {
+                    Payload(
+                        context = config.home,
+                        events = it
+                    )
+                }
             }
 
         val internalChannelEvents = objectPayloadDispatcher.flow()
@@ -158,7 +160,7 @@ class CollectionViewModel(
         val params = GetObjectTypes.Params(
             sorts = emptyList(),
             filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                workspaceId = workspaceManager.getCurrentWorkspace()
+                space = spaceManager.get()
             ),
             keys = ObjectSearchConstants.defaultKeysObjectType
         )
@@ -199,7 +201,7 @@ class CollectionViewModel(
         return StoreSearchParams(
             subscription = subscription.id,
             keys = subscription.keys,
-            filters = subscription.filters(workspaceManager.getCurrentWorkspace()),
+            filters = subscription.filters(spaceManager.get()),
             sorts = subscription.sorts,
             limit = subscription.limit
         )
@@ -304,8 +306,11 @@ class CollectionViewModel(
             container.subscribe(buildSearchParams()),
             queryFlow(),
             objectTypes(),
-            openObject.asFlow(OpenObject.Params(configstorage.get().home, false))
-                .flatMapLatest { payloads.scan(it) { s, p -> reduce(s, p) } },
+            spaceManager.observe().flatMapLatest { config ->
+                openObject
+                    .asFlow(OpenObject.Params(config.home, false))
+                    .flatMapLatest { obj -> payloads.scan(obj) { s, p -> reduce(s, p) } }
+            }
         ) { objs, query, types, favorotiesObj ->
             val result = prepareFavorites(favorotiesObj, objs, query, types)
             if (result.isEmpty() && query.isNotEmpty())
@@ -429,6 +434,9 @@ class CollectionViewModel(
         if (from == to) return
         Timber.d("## from:[$from], to:[$to]")
         launch {
+
+            val config = spaceManager.getConfig() ?: return@launch
+
             val currentViews = currentViews.filterIsInstance<FavoritesView>()
             val direction = if (from < to) Position.BOTTOM else Position.TOP
             val subject = currentViews[to].blockId
@@ -440,8 +448,8 @@ class CollectionViewModel(
                 }
 
             val param = Move.Params(
-                context = configstorage.get().home,
-                targetContext = configstorage.get().home,
+                context = config.home,
+                targetContext = config.home,
                 position = direction,
                 blockIds = listOf(subject),
                 targetId = target
@@ -757,7 +765,7 @@ class CollectionViewModel(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = result.type,
+                            type = result.objectId,
                             storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.objCreateHome,
                             startTime = startTime
@@ -803,7 +811,6 @@ class CollectionViewModel(
 
     class Factory @Inject constructor(
         private val container: StorelessSubscriptionContainer,
-        private val workspaceManager: WorkspaceManager,
         private val urlBuilder: UrlBuilder,
         private val getObjectTypes: GetObjectTypes,
         private val dispatchers: AppCoroutineDispatchers,
@@ -814,20 +821,19 @@ class CollectionViewModel(
         private val resourceProvider: CollectionResourceProvider,
         private val openObject: OpenObject,
         private val createObject: CreateObject,
-        private val configStorage: ConfigStorage,
         private val interceptEvents: InterceptEvents,
         private val objectPayloadDispatcher: Dispatcher<Payload>,
         private val move: Move,
         private val analytics: Analytics,
         private val dateProvider: DateProvider,
-        private val storeOfObjectTypes: StoreOfObjectTypes
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return CollectionViewModel(
                 container = container,
-                workspaceManager = workspaceManager,
                 urlBuilder = urlBuilder,
                 getObjectTypes = getObjectTypes,
                 dispatchers = dispatchers,
@@ -838,13 +844,13 @@ class CollectionViewModel(
                 resourceProvider = resourceProvider,
                 openObject = openObject,
                 createObject = createObject,
-                configstorage = configStorage,
                 interceptEvents = interceptEvents,
                 objectPayloadDispatcher = objectPayloadDispatcher,
                 move = move,
                 analytics = analytics,
                 dateProvider = dateProvider,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                spaceManager = spaceManager
             ) as T
         }
     }

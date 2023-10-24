@@ -3,13 +3,12 @@ package com.anytypeio.anytype.presentation.library.delegates
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.library.LibraryListDelegate
 import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.LibraryView
@@ -27,7 +26,7 @@ import kotlinx.coroutines.flow.flow
 
 class MyTypesDelegate @Inject constructor(
     private val container: StorelessSubscriptionContainer,
-    private val workspaceManager: WorkspaceManager,
+    private val spaceManager: SpaceManager,
     private val urlBuilder: UrlBuilder,
     private val dispatchers: AppCoroutineDispatchers
 ) : LibraryListDelegate, QueryListenerMyTypes {
@@ -52,13 +51,13 @@ class MyTypesDelegate @Inject constructor(
 
     @FlowPreview
     override fun itemsFlow() = flow {
-        emit(workspaceManager.getCurrentWorkspace())
-    }.flatMapMerge {
-        val searchParams = buildSearchParams(it)
+        emit(spaceManager.get())
+    }.flatMapMerge { space: Id ->
+        val searchParams = buildSearchParams(space = space)
         container.subscribe(searchParams)
     }
 
-    private fun buildSearchParams(workspaceId: Id): StoreSearchParams {
+    private fun buildSearchParams(space: Id): StoreSearchParams {
         return StoreSearchParams(
             subscription = SUB_LIBRARY_MY_TYPES,
             keys = ObjectSearchConstants.defaultKeys + listOf(
@@ -69,16 +68,9 @@ class MyTypesDelegate @Inject constructor(
                 addAll(ObjectSearchConstants.filterTypes())
                 add(
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = workspaceId
-                    )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.TYPE,
-                        condition = DVFilterCondition.EQUAL,
-                        value = ObjectTypeIds.OBJECT_TYPE
+                        value = space
                     )
                 )
             }

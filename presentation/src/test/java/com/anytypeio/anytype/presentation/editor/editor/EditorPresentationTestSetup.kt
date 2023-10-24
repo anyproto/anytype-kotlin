@@ -8,6 +8,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
@@ -88,7 +90,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.DocumentExternalEventReducer
@@ -111,9 +113,9 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
 import org.mockito.Mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
@@ -121,7 +123,6 @@ import org.mockito.kotlin.stub
 open class EditorPresentationTestSetup {
 
     val root: Id = MockDataFactory.randomString()
-    val workspaceId: Id = MockDataFactory.randomString()
 
     @Mock
     lateinit var openPage: OpenPage
@@ -331,8 +332,6 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var setTableRowHeader: SetTableRowHeader
 
-    lateinit var workspaceManager: WorkspaceManager
-
     open lateinit var orchestrator: Orchestrator
 
     private val delegator = Delegator.Default<Action>()
@@ -349,6 +348,9 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var setObjectInternalFlags: SetObjectInternalFlags
+
+    @Mock
+    lateinit var spaceManager: SpaceManager
 
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
 
@@ -423,11 +425,6 @@ open class EditorPresentationTestSetup {
             moveTableRow, moveTableColumn, setTableRowHeader
         )
 
-        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
-        runBlocking {
-            workspaceManager.setCurrentWorkspace(workspaceId)
-        }
-
         interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
         return EditorViewModel(
             openPage = openPage,
@@ -468,11 +465,11 @@ open class EditorPresentationTestSetup {
             storeOfObjectTypes = storeOfObjectTypes,
             featureToggles = mock(),
             tableDelegate = tableDelegate,
-            workspaceManager = workspaceManager,
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
-            setObjectInternalFlags = setObjectInternalFlags
+            setObjectInternalFlags = setObjectInternalFlags,
+            spaceManager = spaceManager
         )
     }
 
@@ -706,22 +703,26 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
+    fun stubGetDefaultObjectType(
+        id: String = MockDataFactory.randomString(),
+        type: String = MockDataFactory.randomString(),
+        name: String? = null
+    ) {
         getDefaultPageType.stub {
             onBlocking { async(Unit) } doReturn Resultat.success(
                 GetDefaultPageType.Response(
-                    type,
-                    name
+                    id = TypeId(id),
+                    type = TypeKey(type),
+                    name = name,
                 )
             )
         }
     }
 
-    fun stubCreateObjectAsMentionOrLink(name: String, type: String, id: String) {
-        val params = CreateObjectAsMentionOrLink.Params(name, type)
+    fun stubCreateObjectAsMentionOrLink(name: String, id: String) {
         val result = CreateObjectAsMentionOrLink.Result(id, name)
         createObjectAsMentionOrLink.stub {
-            onBlocking { async(params) } doReturn Resultat.success(result)
+            onBlocking { async(any()) } doReturn Resultat.success(result)
         }
     }
 
@@ -761,6 +762,12 @@ open class EditorPresentationTestSetup {
     fun stubSetInternalFlags() {
         setObjectInternalFlags.stub {
             onBlocking { async(any()) } doReturn Resultat.success(Payload(root, emptyList()))
+        }
+    }
+
+    fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking { get() } doReturn ""
         }
     }
 }

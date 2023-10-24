@@ -9,7 +9,7 @@ class BasicLogger @Inject constructor() : Logger {
         Timber.w(msg)
     }
 
-    override fun logException(e: Exception) {
+    override fun logException(e: Throwable) {
         Timber.e(e)
     }
 }

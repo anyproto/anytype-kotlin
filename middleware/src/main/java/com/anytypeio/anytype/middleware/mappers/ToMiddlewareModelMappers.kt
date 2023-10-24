@@ -338,6 +338,7 @@ fun Block.Content.DataView.Viewer.Type.toMiddlewareModel(): MDVViewType = when (
     Block.Content.DataView.Viewer.Type.LIST -> MDVViewType.List
     Block.Content.DataView.Viewer.Type.GALLERY -> MDVViewType.Gallery
     Block.Content.DataView.Viewer.Type.BOARD -> MDVViewType.Kanban
+    Block.Content.DataView.Viewer.Type.CALENDAR -> MDVViewType.Calendar
 }
 
 fun Block.Content.DataView.Sort.toMiddlewareModel(): MDVSort =
@@ -450,6 +451,12 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.SPACE -> MOTypeLayout.space
     ObjectType.Layout.BOOKMARK -> MOTypeLayout.bookmark
     ObjectType.Layout.COLLECTION -> MOTypeLayout.collection
+    ObjectType.Layout.DATE -> MOTypeLayout.date
+    ObjectType.Layout.AUDIO -> MOTypeLayout.audio
+    ObjectType.Layout.VIDEO -> MOTypeLayout.video
+    ObjectType.Layout.RELATION_OPTION -> MOTypeLayout.relationOption
+    ObjectType.Layout.RELATION_OPTION_LIST -> MOTypeLayout.relationOptionsList
+    ObjectType.Layout.SPACE_VIEW -> MOTypeLayout.spaceView
 }
 
 fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {

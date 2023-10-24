@@ -14,7 +14,7 @@ sealed class RelationView : RelationItemView() {
     data class Existing(
         val id: Id,
         val key: Key,
-        val workspace: Id?,
+        val space: Id?,
         val name: String,
         override val format: RelationFormat,
     ) : RelationView()

@@ -33,10 +33,11 @@
 
         <TextView
             android:id="@+id/doneBtn"
-            style="@style/DefaultCellInteractionTextButtonStyle"
+            style="@style/TextView.UXStyle.Body"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="end"
+            android:gravity="center"
+            android:textColor="@color/glyph_active"
             android:paddingStart="@dimen/dp_16"
             android:paddingEnd="16dp"
             android:text="@string/done"

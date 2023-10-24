@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.types
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
@@ -10,10 +11,12 @@ import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
+import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -21,8 +24,6 @@ import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -48,11 +49,16 @@ class ObjectTypeChangeViewModelTest {
     val coroutineTestRule = CoroutinesTestRule()
 
     private lateinit var getObjectTypes: GetObjectTypes
-    private lateinit var addObjectToWorkspace: AddObjectToWorkspace
+    private lateinit var addObjectToSpace: AddObjectTypeToSpace
     private lateinit var getDefaultPageType: GetDefaultPageType
 
-    lateinit var workspaceManager: WorkspaceManager
-    val workspaceId = MockDataFactory.randomString()
+    val spaceId = MockDataFactory.randomUuid()
+
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
+    @Mock
+    lateinit var configStorage: ConfigStorage
 
     private val dispatchers = AppCoroutineDispatchers(
         io = coroutineTestRule.testDispatcher,
@@ -64,19 +70,16 @@ class ObjectTypeChangeViewModelTest {
     fun before() {
         MockitoAnnotations.openMocks(this)
         getObjectTypes = GetObjectTypes(blockRepository, dispatchers)
-        addObjectToWorkspace = AddObjectToWorkspace(
+        addObjectToSpace = AddObjectToSpace(
             repo = blockRepository,
             dispatchers = dispatchers
         )
-        workspaceManager = WorkspaceManager.DefaultWorkspaceManager()
-        runBlocking {
-            workspaceManager.setCurrentWorkspace(workspaceId)
-        }
         getDefaultPageType = GetDefaultPageType(
-            userSettingsRepository,
-            blockRepository,
-            workspaceManager,
-            dispatchers
+            userSettingsRepository = userSettingsRepository,
+            blockRepository = blockRepository,
+            dispatchers = dispatchers,
+            spaceManager = spaceManager,
+            configStorage = configStorage
         )
     }
 
@@ -102,10 +105,11 @@ class ObjectTypeChangeViewModelTest {
 
         // SETUP
 
+        stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(workspaceId))
+            addAll(ObjectSearchConstants.filterObjectTypeLibrary(spaceId))
             add(
                 DVFilter(
                     relation = Relations.RECOMMENDED_LAYOUT,
@@ -151,10 +155,11 @@ class ObjectTypeChangeViewModelTest {
         val installedType1 = StubObjectType(sourceObject = marketplaceType1.id)
         val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
 
+        stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(workspaceId))
+            addAll(ObjectSearchConstants.filterObjectTypeLibrary(spaceId))
             add(
                 DVFilter(
                     relation = Relations.RECOMMENDED_LAYOUT,
@@ -256,10 +261,11 @@ class ObjectTypeChangeViewModelTest {
         val installedType1 = StubObjectType(sourceObject = marketplaceType1.id)
         val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
 
+        stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(workspaceId))
+            addAll(ObjectSearchConstants.filterObjectTypeLibrary(spaceId))
             add(
                 DVFilter(
                     relation = Relations.RECOMMENDED_LAYOUT,
@@ -427,20 +433,25 @@ class ObjectTypeChangeViewModelTest {
     }
 
     @Test
-    fun `should add marketplace object to workspace if marketplace type is selected, then dispatch selected type`() = runTest {
+    fun `should add marketplace object to space if marketplace type is selected, then dispatch selected type`() = runTest {
 
         // SETUP
 
+        val space = "space-id"
+        stubSpaceManager(space)
         val marketplaceType1 = StubObjectType()
         val marketplaceType2 = StubObjectType()
-        val marketplaceType3 = StubObjectType(id = MarketplaceObjectTypeIds.PAGE)
+        val marketplaceType3 = StubObjectType(
+            id = MarketplaceObjectTypeIds.PAGE,
+            uniqueKey = ObjectTypeIds.PAGE
+        )
         val installedType1 = StubObjectType(sourceObject = marketplaceType1.id)
         val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
 
-        val expectedInstalledTypeId = ObjectTypeIds.PAGE
+        val expectedInstalledTypeUniqueId = ObjectTypeIds.PAGE
 
         val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(workspaceId))
+            addAll(ObjectSearchConstants.filterObjectTypeLibrary(space))
             add(
                 DVFilter(
                     relation = Relations.RECOMMENDED_LAYOUT,
@@ -461,8 +472,8 @@ class ObjectTypeChangeViewModelTest {
                     relation = Relations.ID,
                     condition = DVFilterCondition.NOT_IN,
                     value = listOf(
-                        marketplaceType1.id,
-                        marketplaceType2.id,
+                        marketplaceType1.uniqueKey,
+                        marketplaceType2.uniqueKey,
                         MarketplaceObjectTypeIds.BOOKMARK
                     )
                 )
@@ -508,8 +519,11 @@ class ObjectTypeChangeViewModelTest {
 
         blockRepository.stub {
             onBlocking {
-                addObjectToWorkspace(objects = listOf(marketplaceType3.id))
-            } doReturn listOf(expectedInstalledTypeId)
+                addObjectToSpace(
+                    obj = marketplaceType3.id,
+                    space = space
+                )
+            } doReturn expectedInstalledTypeUniqueId
         }
 
         val vm = givenViewModel()
@@ -537,25 +551,12 @@ class ObjectTypeChangeViewModelTest {
             )
         }
 
-        // Checking search query for marketplace types
-
-        verifyBlocking(blockRepository, times(1)) {
-            searchObjects(
-                filters = expectedMarketplaceTypeFilters,
-                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
-                limit = 0,
-                offset = 0,
-                keys = expectedMarketplaceTypeKeys,
-                fulltext = ""
-            )
-        }
-
         vm.commands.test {
             vm.onItemClicked(
                 id = marketplaceType3.id,
+                key = marketplaceType3.uniqueKey.orEmpty(),
                 name = marketplaceType3.name.orEmpty()
             )
-            delay(100)
             assertEquals(
                 expected =
                 ObjectTypeChangeViewModel.Command.TypeAdded(type = marketplaceType3.name.orEmpty()),
@@ -563,13 +564,17 @@ class ObjectTypeChangeViewModelTest {
             )
             assertEquals(
                 expected = ObjectTypeChangeViewModel.Command.DispatchType(
-                    id = expectedInstalledTypeId,
+                    id = expectedInstalledTypeUniqueId,
+                    key = marketplaceType3.uniqueKey.orEmpty(),
                     name = marketplaceType3.name.orEmpty()
                 ),
                 actual = awaitItem()
             )
             verifyBlocking(blockRepository, times(1)) {
-                addObjectToWorkspace(objects = listOf(marketplaceType3.id))
+                addObjectToSpace(
+                    space = space,
+                    obj = marketplaceType3.id
+                )
             }
         }
     }
@@ -585,10 +590,11 @@ class ObjectTypeChangeViewModelTest {
         val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
 
 
+        stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(workspaceId))
+            addAll(ObjectSearchConstants.filterObjectTypeLibrary(spaceId))
             add(
                 DVFilter(
                     relation = Relations.RECOMMENDED_LAYOUT,
@@ -629,11 +635,13 @@ class ObjectTypeChangeViewModelTest {
         vm.commands.test {
             vm.onItemClicked(
                 id = installedType1.id,
+                key = installedType1.uniqueKey.orEmpty(),
                 name = installedType1.name.orEmpty()
             )
             assertEquals(
                 expected = ObjectTypeChangeViewModel.Command.DispatchType(
                     id = installedType1.id,
+                    key = installedType1.uniqueKey.orEmpty(),
                     name = installedType1.name.orEmpty()
                 ),
                 actual = awaitItem()
@@ -641,15 +649,24 @@ class ObjectTypeChangeViewModelTest {
         }
 
         verifyBlocking(blockRepository, times(0)) {
-            addObjectToWorkspace(objects = listOf(installedType1.id))
+            addObjectListToSpace(
+                objects = listOf(installedType1.id),
+                space = spaceId
+            )
         }
     }
 
     private fun givenViewModel() = ObjectTypeChangeViewModel(
         getObjectTypes = getObjectTypes,
-        addObjectToWorkspace = addObjectToWorkspace,
+        addObjectTypeToSpace = addObjectToSpace,
         dispatchers = dispatchers,
-        workspaceManager = workspaceManager,
+        spaceManager = spaceManager,
         getDefaultPageType = getDefaultPageType
     )
+
+    fun stubSpaceManager(spaceId: Id) {
+        spaceManager.stub {
+            onBlocking { get() } doReturn spaceId
+        }
+    }
 }

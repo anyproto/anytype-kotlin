@@ -2,8 +2,7 @@ package com.anytypeio.anytype.presentation.library.delegates
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_ID
-import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
+import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -55,16 +54,9 @@ class LibraryTypesDelegate @Inject constructor(
                 addAll(ObjectSearchConstants.filterTypes())
                 add(
                     DVFilter(
-                        relation = Relations.WORKSPACE_ID,
+                        relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
-                        value = MARKETPLACE_ID
-                    )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.TYPE,
-                        condition = DVFilterCondition.EQUAL,
-                        value = MarketplaceObjectTypeIds.OBJECT_TYPE
+                        value = MARKETPLACE_SPACE_ID
                     )
                 )
             }

@@ -193,7 +193,7 @@ class MockCollection(context: String) {
         objectOrder = listOf(objectOrderList, objectOrderGrid, objectOrderGallery),
         isCollection = true
     )
-    val workspaceId = "workspace-${RandomString.make()}"
+    val spaceId = "space-${RandomString.make()}"
 
     val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(context)
 

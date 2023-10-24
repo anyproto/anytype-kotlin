@@ -1,85 +1,105 @@
 package com.anytypeio.anytype.persistence.repo
 
 import android.content.SharedPreferences
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
+import com.anytypeio.anytype.persistence.common.JsonString
+import com.anytypeio.anytype.persistence.common.deserializeWallpaperSettings
+import com.anytypeio.anytype.persistence.common.serializeWallpaperSettings
 import com.anytypeio.anytype.persistence.common.toJsonString
 import com.anytypeio.anytype.persistence.common.toStringMap
+import com.anytypeio.anytype.persistence.model.asSettings
+import com.anytypeio.anytype.persistence.model.asWallpaper
 
 class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSettingsCache {
 
-    override suspend fun setDefaultObjectType(type: String, name: String) {
+    override suspend fun setCurrentSpace(space: SpaceId) {
         prefs.edit()
-            .putString(DEFAULT_OBJECT_TYPE_ID_KEY, type)
-            .putString(DEFAULT_OBJECT_TYPE_NAME_KEY, name)
+            .putString(CURRENT_SPACE_KEY, space.id)
             .apply()
     }
 
-    override suspend fun getDefaultObjectType(): Pair<String?, String?> {
-        val type = prefs.getString(DEFAULT_OBJECT_TYPE_ID_KEY, null)
-        val name = prefs.getString(DEFAULT_OBJECT_TYPE_NAME_KEY, null)
-        return Pair(type, name)
+    override suspend fun getCurrentSpace(): SpaceId? {
+        val value = prefs.getString(CURRENT_SPACE_KEY, "")
+        return if (value.isNullOrEmpty())
+            null
+        else
+            SpaceId(value)
     }
 
-    override suspend fun setWallpaper(wallpaper: Wallpaper) {
-        when (wallpaper) {
-            is Wallpaper.Default -> {
-                prefs.edit()
-                    .remove(WALLPAPER_VALUE_KEY)
-                    .remove(WALLPAPER_TYPE_KEY)
-                    .apply()
+    override suspend fun setDefaultObjectType(space: SpaceId, type: TypeId) {
+        val curr = prefs
+            .getString(DEFAULT_OBJECT_TYPES_KEY, NO_VALUE)
+            .orEmpty()
+            .toStringMap()
+        val updated = buildMap {
+            putAll(curr)
+            put(space.id, type.id)
+        }
+        prefs
+            .edit()
+            .putString(DEFAULT_OBJECT_TYPES_KEY, updated.toJsonString())
+            .apply()
+    }
+
+    override suspend fun getDefaultObjectType(space: SpaceId): TypeId? {
+        val curr = prefs
+            .getString(DEFAULT_OBJECT_TYPES_KEY, "")
+            .orEmpty()
+            .toStringMap()
+
+        val result = curr[space.id]
+        return if (result.isNullOrEmpty())
+            null
+        else
+            TypeId(result)
+    }
+
+    override suspend fun setWallpaper(space: Id, wallpaper: Wallpaper) {
+        if (space.isEmpty()) return
+
+        val curr = prefs.getString(WALLPAPER_SETTINGS_KEY, "")
+
+        val result: JsonString
+
+        val setting = wallpaper.asSettings()
+
+        if (!curr.isNullOrEmpty()) {
+            val map = curr.deserializeWallpaperSettings().toMutableMap()
+            if (setting != null) {
+                map[space] = setting
+            } else {
+                map.remove(space)
             }
-            is Wallpaper.Color -> {
-                prefs
-                    .edit()
-                    .putInt(WALLPAPER_TYPE_KEY, WALLPAPER_TYPE_COLOR)
-                    .putString(WALLPAPER_VALUE_KEY, wallpaper.code)
-                    .apply()
-            }
-            is Wallpaper.Gradient -> {
-                prefs
-                    .edit()
-                    .putInt(WALLPAPER_TYPE_KEY, WALLPAPER_TYPE_GRADIENT)
-                    .putString(WALLPAPER_VALUE_KEY, wallpaper.code)
-                    .apply()
-            }
-            is Wallpaper.Image -> {
-                prefs
-                    .edit()
-                    .putInt(WALLPAPER_TYPE_KEY, WALLPAPER_TYPE_IMAGE)
-                    .putString(WALLPAPER_VALUE_KEY, wallpaper.hash)
-                    .apply()
+            result = map.serializeWallpaperSettings()
+        } else {
+            result = if (setting != null) {
+                mapOf(space to setting).serializeWallpaperSettings()
+            } else {
+                ""
             }
         }
+
+        prefs
+            .edit()
+            .putString(WALLPAPER_SETTINGS_KEY, result)
+            .apply()
     }
 
-    override suspend fun getWallpaper(): Wallpaper {
-        val type = prefs.getInt(WALLPAPER_TYPE_KEY, -1)
-        if (type != -1) {
-            val value = prefs.getString(WALLPAPER_VALUE_KEY, null)
-            if (!value.isNullOrEmpty()) {
-                return when (type) {
-                    WALLPAPER_TYPE_COLOR -> {
-                        Wallpaper.Color(value)
-                    }
-                    WALLPAPER_TYPE_GRADIENT -> {
-                        Wallpaper.Gradient(value)
-                    }
-                    WALLPAPER_TYPE_IMAGE -> {
-                        Wallpaper.Image(value)
-                    }
-
-                    else -> {
-                        Wallpaper.Default
-                    }
-                }
-            } else {
-                return Wallpaper.Default
-            }
+    override suspend fun getWallpaper(space: Id): Wallpaper {
+        val rawSettings = prefs.getString(WALLPAPER_SETTINGS_KEY, "")
+        return if (rawSettings.isNullOrEmpty()) {
+            Wallpaper.Default
         } else {
-            return Wallpaper.Default
+            val deserialized = rawSettings.deserializeWallpaperSettings()
+            val setting = deserialized[space]
+            setting?.asWallpaper() ?: Wallpaper.Default
         }
     }
 
@@ -153,19 +173,18 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
             .remove(DEFAULT_OBJECT_TYPE_ID_KEY)
             .remove(DEFAULT_OBJECT_TYPE_NAME_KEY)
             .remove(COLLAPSED_WIDGETS_KEY)
+            .remove(ACTIVE_WIDGETS_VIEWS_KEY)
+            .remove(CURRENT_SPACE_KEY)
             .apply()
     }
 
     companion object {
+        const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"
         const val DEFAULT_OBJECT_TYPE_NAME_KEY = "prefs.user_settings.default_object_type.name"
 
-        const val WALLPAPER_TYPE_COLOR = 1
-        const val WALLPAPER_TYPE_GRADIENT = 2
-        const val WALLPAPER_TYPE_IMAGE = 3
-
-        const val WALLPAPER_TYPE_KEY = "prefs.user_settings.wallpaper_type"
-        const val WALLPAPER_VALUE_KEY = "prefs.user_settings.wallpaper_value"
+        const val DEFAULT_OBJECT_TYPES_KEY = "prefs.user_settings.default_object_types"
+        const val WALLPAPER_SETTINGS_KEY = "prefs.user_settings.wallpaper_settings"
 
         const val THEME_KEY = "prefs.user_settings.theme_mode"
         const val THEME_TYPE_SYSTEM = 1

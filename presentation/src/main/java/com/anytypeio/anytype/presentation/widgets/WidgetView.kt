@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 
 sealed class WidgetView {
@@ -86,6 +87,17 @@ sealed class WidgetView {
     }
 
     data class Bin(override val id: Id) : WidgetView()
+
+    @Deprecated("To be deleted")
+    data class Space(override val id: Id) : WidgetView()
+
+    sealed class SpaceWidget: WidgetView() {
+        override val id: Id get() = SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
+        data class View(
+            val space: ObjectWrapper.Basic,
+            val icon: SpaceIconView,
+        ) : SpaceWidget()
+    }
 
     object Library : WidgetView() {
         override val id: Id get() = "id.button.library"

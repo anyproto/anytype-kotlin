@@ -16,7 +16,7 @@ import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -41,7 +41,7 @@ open class ObjectSearchViewModel(
     private val searchObjects: SearchObjects,
     private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
-    private val workspaceManager: WorkspaceManager
+    private val spaceManager: SpaceManager
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     TextInputDialogBottomBehaviorApplier.OnDialogCancelListener {
@@ -117,7 +117,7 @@ open class ObjectSearchViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                    workspaceId = workspaceManager.getCurrentWorkspace()
+                    space = spaceManager.get()
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
@@ -190,7 +190,7 @@ open class ObjectSearchViewModel(
     open suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.filterSearchObjects(
-            workspaceId = workspaceManager.getCurrentWorkspace()
+            space = spaceManager.get()
         ),
         sorts = ObjectSearchConstants.sortsSearchObjects,
         fulltext = EMPTY_QUERY,

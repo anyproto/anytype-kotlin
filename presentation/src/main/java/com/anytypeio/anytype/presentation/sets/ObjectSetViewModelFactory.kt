@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
@@ -15,6 +14,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
+import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -28,7 +28,7 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -63,7 +63,6 @@ class ObjectSetViewModelFactory(
     private val storeOfRelations: StoreOfRelations,
     private val objectStateReducer: ObjectStateReducer,
     private val dataViewSubscription: DataViewSubscription,
-    private val workspaceManager: WorkspaceManager,
     private val objectStore: ObjectStore,
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
@@ -73,8 +72,9 @@ class ObjectSetViewModelFactory(
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val createTemplate: CreateTemplate,
     private val viewerDelegate: ViewerDelegate,
-    private val createTemplate: CreateTemplate
+    private val spaceManager: SpaceManager
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -103,7 +103,6 @@ class ObjectSetViewModelFactory(
             storeOfRelations = storeOfRelations,
             stateReducer = objectStateReducer,
             dataViewSubscription = dataViewSubscription,
-            workspaceManager = workspaceManager,
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
@@ -114,6 +113,7 @@ class ObjectSetViewModelFactory(
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             viewerDelegate = viewerDelegate,
+            spaceManager = spaceManager,
             createTemplate = createTemplate
         ) as T
     }

@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModelFactory
 import com.anytypeio.anytype.presentation.auth.account.SelectAccountViewModelFactory
 import com.anytypeio.anytype.presentation.auth.account.SetupNewAccountViewModelFactory
@@ -244,12 +243,10 @@ object SetupNewAccountModule {
     fun provideCreateAccountUseCase(
         repository: AuthRepository,
         configStorage: ConfigStorage,
-        workspaceManager: WorkspaceManager,
         metricsProvider: MetricsProvider
     ): CreateAccount = CreateAccount(
         repository = repository,
         configStorage = configStorage,
-        workspaceManager = workspaceManager,
         metricsProvider = metricsProvider
     )
 
@@ -299,14 +296,12 @@ object SetupSelectedAccountModule {
         repository: AuthRepository,
         configStorage: ConfigStorage,
         featuresConfigProvider: FeaturesConfigProvider,
-        workspaceManager: WorkspaceManager,
         metricsProvider: MetricsProvider
     ): SelectAccount {
         return SelectAccount(
             repository = repository,
             configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider,
-            workspaceManager = workspaceManager,
             metricsProvider = metricsProvider
         )
     }

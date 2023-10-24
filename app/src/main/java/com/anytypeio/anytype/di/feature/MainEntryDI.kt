@@ -19,7 +19,8 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
@@ -79,14 +80,12 @@ object MainEntryModule {
         pathProvider: PathProvider,
         configStorage: ConfigStorage,
         featuresConfigProvider: FeaturesConfigProvider,
-        workspaceManager: WorkspaceManager,
         metricsProvider: MetricsProvider
     ): ResumeAccount = ResumeAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         configStorage = configStorage,
         featuresConfigProvider = featuresConfigProvider,
-        workspaceManager = workspaceManager,
         metricsProvider = metricsProvider
     )
 
@@ -99,8 +98,15 @@ object MainEntryModule {
     @PerScreen
     @Provides
     fun provideRestoreWallpaperUseCase(
-        repo: UserSettingsRepository
-    ): RestoreWallpaper = RestoreWallpaper(repo)
+        repo: UserSettingsRepository,
+        spaceManager: SpaceManager,
+        dispatchers: AppCoroutineDispatchers
+    ): RestoreWallpaper = RestoreWallpaper(
+        repo = repo,
+        spaceManager = spaceManager,
+        store = WallpaperStore.Default,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @PerScreen
@@ -132,12 +138,14 @@ object MainEntryModule {
         repo: AuthRepository,
         provider: ConfigStorage,
         user: UserSettingsRepository,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
     ): Logout = Logout(
         repo = repo,
         user = user,
         config = provider,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

@@ -33,7 +33,7 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
         children = listOf(title.id),
         fields = Block.Fields(mapOf(Relations.ICON_EMOJI to emoji))
     )
-    val workspaceId = "workspace-${RandomString.make()}"
+    val spaceId = "space-${RandomString.make()}"
     val subscriptionId = DefaultDataViewSubscription.getSubscriptionId(context)
     val setOf get() = setOfValue
 
@@ -169,8 +169,8 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
     )
 
     // RECORDS
-    val obj1 = StubObject(id = "object-${RandomString.make()}")
-    val obj2 = StubObject(id = "object-${RandomString.make()}")
+    val obj1 = StubObject(id = "object-${RandomString.make()}", name = "object1-name-${RandomString.make()}")
+    val obj2 = StubObject(id = "object-${RandomString.make()}", name = "object2-name-${RandomString.make()}")
 
     // SET OBJECT DETAILS
     val details = Block.Details(
@@ -184,9 +184,10 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
             ),
             setOf to Block.Fields(
                 map = mapOf(
-                    Relations.ID to setOf,
+                    Relations.UNIQUE_KEY to setOf,
                     Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
                     Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+                    Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
                 )
             )
         )
@@ -217,7 +218,7 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
                 mapOf(
                     Relations.ID to relationObject3.id,
                     Relations.RELATION_KEY to relationObject3.key,
-                    Relations.TYPE to ObjectTypeIds.RELATION
+                    Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble()
                 )
             )
         )
@@ -229,14 +230,15 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
                 mapOf(
                     Relations.ID to root,
                     Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
-                    Relations.SET_OF to relationSetBy.key
+                    Relations.SET_OF to relationSetBy.id
                 )
             ),
-            relationSetBy.key to Block.Fields(
+            relationSetBy.id to Block.Fields(
                 mapOf(
                     Relations.ID to relationSetBy.id,
                     Relations.RELATION_KEY to relationSetBy.key,
-                    Relations.TYPE to ObjectTypeIds.RELATION
+                    Relations.UNIQUE_KEY to relationSetBy.uniqueKey,
+                    Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble(),
                 )
             )
         )

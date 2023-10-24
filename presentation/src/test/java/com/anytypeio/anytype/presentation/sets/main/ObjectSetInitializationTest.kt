@@ -8,6 +8,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.verifyNoInteractions
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -32,7 +34,7 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
     @Test
     fun `should not start creating new record if dv is not initialized yet`() = runTest {
         // SETUP
-        stubWorkspaceManager(mockObjectSet.workspaceId)
+        stubSpaceManager(mockObjectSet.spaceId)
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenObject(
@@ -47,23 +49,4 @@ class ObjectSetInitializationTest : ObjectSetViewModelTestSetup() {
         // ASSERT
         verifyNoInteractions(createObject)
     }
-
-    @Test
-    fun `when open object set and setOf has empty value, should not start subscription to the records`() =
-        runTest {
-            // SETUP
-            stubWorkspaceManager(mockObjectSet.workspaceId)
-            stubInterceptEvents()
-            stubInterceptThreadStatus()
-            stubOpenObject(
-                doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
-                details = mockObjectSet.detailsEmptySetOf
-            )
-
-            // TESTING
-            viewModel.onStart(ctx = root)
-
-            // ASSERT SUBSCRIPTION START
-            verifyNoInteractions(repo)
-        }
 }

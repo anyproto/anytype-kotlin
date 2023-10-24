@@ -42,6 +42,9 @@ interface MiddlewareService {
     fun accountDelete(request: Rpc.Account.Delete.Request): Rpc.Account.Delete.Response
 
     @Throws(Exception::class)
+    fun accountRevertDeletion(request: Rpc.Account.RevertDeletion.Request): Rpc.Account.RevertDeletion.Response
+
+    @Throws(Exception::class)
     fun accountSelect(request: Rpc.Account.Select.Request): Rpc.Account.Select.Response
 
     @Throws(Exception::class)
@@ -448,7 +451,18 @@ interface MiddlewareService {
     //region WORKSPACE
 
     @Throws(Exception::class)
+    fun workspaceCreate(request: Rpc.Workspace.Create.Request): Rpc.Workspace.Create.Response
+
+    @Throws(Exception::class)
+    fun workspaceOpen(request: Rpc.Workspace.Open.Request): Rpc.Workspace.Open.Response
+
+    fun workspaceSetInfo(request: Rpc.Workspace.SetInfo.Request): Rpc.Workspace.SetInfo.Response
+
+    @Throws(Exception::class)
     fun workspaceObjectListAdd(request: Rpc.Workspace.Object.ListAdd.Request): Rpc.Workspace.Object.ListAdd.Response
+
+    @Throws(Exception::class)
+    fun workspaceObjectAdd(request: Rpc.Workspace.Object.Add.Request): Rpc.Workspace.Object.Add.Response
 
     @Throws(Exception::class)
     fun workspaceObjectListRemove(request: Rpc.Workspace.Object.ListRemove.Request): Rpc.Workspace.Object.ListRemove.Response

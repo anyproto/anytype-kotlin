@@ -12,7 +12,7 @@ class ObjectTypeExtensionsTest {
     @Test
     fun `isTemplateAllowed returns true when type is not in getNoTemplates and recommendedLayout is in editorLayouts`() {
         val objectType = StubObjectType(
-            id = ObjectTypeIds.PAGE,
+            uniqueKey = ObjectTypeIds.PAGE,
             recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()
@@ -22,7 +22,7 @@ class ObjectTypeExtensionsTest {
     @Test
     fun `isTemplateAllowed returns false when type is not in getNoTemplates and recommendedLayout is not in editorLayouts`() {
         val objectType = StubObjectType(
-            id = ObjectTypeIds.PAGE,
+            uniqueKey = ObjectTypeIds.PAGE,
             recommendedLayout = ObjectType.Layout.DASHBOARD.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()
@@ -32,7 +32,7 @@ class ObjectTypeExtensionsTest {
     @Test
     fun `isTemplateAllowed returns false when type is BOOKMARK`() {
         val objectType = StubObjectType(
-            id = ObjectTypeIds.BOOKMARK,
+            uniqueKey = ObjectTypeIds.BOOKMARK,
             recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()
@@ -42,7 +42,7 @@ class ObjectTypeExtensionsTest {
     @Test
     fun `isTemplateAllowed returns false when type is FILE`() {
         val objectType = StubObjectType(
-            id = ObjectTypeIds.FILE,
+            uniqueKey = ObjectTypeIds.FILE,
             recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()
@@ -52,7 +52,7 @@ class ObjectTypeExtensionsTest {
     @Test
     fun `isTemplateAllowed returns false when type is NOTE`() {
         val objectType = StubObjectType(
-            id = ObjectTypeIds.NOTE,
+            uniqueKey = ObjectTypeIds.NOTE,
             recommendedLayout = ObjectType.Layout.NOTE.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()
@@ -62,7 +62,7 @@ class ObjectTypeExtensionsTest {
     @Test
     fun `isTemplateAllowed returns false when type is SET`() {
         val objectType = StubObjectType(
-            id = ObjectTypeIds.SET,
+            uniqueKey = ObjectTypeIds.SET,
             recommendedLayout = ObjectType.Layout.SET.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()
@@ -72,7 +72,7 @@ class ObjectTypeExtensionsTest {
     @Test
     fun `isTemplateAllowed returns false when type is COLLECTION`() {
         val objectType = StubObjectType(
-            id = ObjectTypeIds.COLLECTION,
+            uniqueKey = ObjectTypeIds.COLLECTION,
             recommendedLayout = ObjectType.Layout.COLLECTION.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()

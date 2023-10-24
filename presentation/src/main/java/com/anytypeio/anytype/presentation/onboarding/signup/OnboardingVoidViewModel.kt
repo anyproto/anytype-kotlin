@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
@@ -109,18 +110,18 @@ class OnboardingVoidViewModel @Inject constructor(
                     val config = configStorage.getOrNull()
                     if (config != null) {
                         crashReporter.setUser(config.analytics)
+                        relationsSubscriptionManager.onStart()
+                        objectTypesSubscriptionManager.onStart()
+                        proceedWithSettingUpMobileUseCase(config.space)
                     }
-                    relationsSubscriptionManager.onStart()
-                    objectTypesSubscriptionManager.onStart()
-                    proceedWithSettingUpMobileUseCase()
                 }
             )
         }
     }
 
-    private fun proceedWithSettingUpMobileUseCase() {
+    private fun proceedWithSettingUpMobileUseCase(space: Id) {
         viewModelScope.launch {
-            setupMobileUseCaseSkip.async(Unit).fold(
+            setupMobileUseCaseSkip.async(SetupMobileUseCaseSkip.Params(space)).fold(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
                     navigation.emit(Navigation.NavigateToMnemonic)

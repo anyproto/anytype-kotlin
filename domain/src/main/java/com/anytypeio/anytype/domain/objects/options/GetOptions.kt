@@ -2,8 +2,9 @@ package com.anytypeio.anytype.domain.objects.options
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -17,9 +18,9 @@ class GetOptions(
         val filters = buildList {
             add(
                 DVFilter(
-                    relation = Relations.TYPE,
+                    relation = Relations.LAYOUT,
                     condition = DVFilterCondition.EQUAL,
-                    value = ObjectTypeIds.RELATION_OPTION
+                    value = ObjectType.Layout.RELATION_OPTION.code.toDouble()
                 )
             )
             add(
@@ -43,6 +44,13 @@ class GetOptions(
                     value = params.relation
                 )
             )
+            add(
+                DVFilter(
+                    relation = Relations.SPACE_ID,
+                    condition = DVFilterCondition.EQUAL,
+                    value = params.space
+                )
+            )
         }
         repo.searchObjects(
             sorts = emptyList(),
@@ -51,6 +59,7 @@ class GetOptions(
             offset = 0,
             keys = listOf(
                 Relations.ID,
+                Relations.SPACE_ID,
                 Relations.NAME,
                 Relations.RELATION_OPTION_COLOR
             ),
@@ -60,5 +69,5 @@ class GetOptions(
         }
     }
 
-    data class Params(val relation: Key)
+    data class Params(val space: Id, val relation: Key)
 }

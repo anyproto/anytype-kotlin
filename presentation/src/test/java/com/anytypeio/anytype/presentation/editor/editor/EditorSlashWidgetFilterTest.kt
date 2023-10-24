@@ -23,6 +23,10 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
@@ -30,10 +34,6 @@ import org.junit.runner.RunWith
 import org.mockito.MockitoAnnotations
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.test.Test
-import kotlin.test.assertEquals
-import kotlin.test.assertFalse
-import kotlin.test.assertNotNull
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
@@ -48,6 +48,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     /**
@@ -70,6 +71,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
 
         val doc = MockTypicalDocumentFactory.page(root)
         val block = MockTypicalDocumentFactory.a
+
 
         stubInterceptEvents()
         stubUpdateText()
@@ -477,6 +479,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type1.id,
+                    key = type1.uniqueKey.orEmpty(),
                     name = type1.name.orEmpty(),
                     description = type1.description,
                     emoji = type1.iconEmoji
@@ -485,6 +488,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type2.id,
+                    key = type2.uniqueKey.orEmpty(),
                     name = type2.name.orEmpty(),
                     description = type2.description,
                     emoji = type2.iconEmoji
@@ -1558,6 +1562,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type1.id,
+                    key = type1.uniqueKey.orEmpty(),
                     name = type1.name.orEmpty(),
                     description = type1.description,
                     emoji = type1.iconEmoji
@@ -1566,6 +1571,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type2.id,
+                    key = type2.uniqueKey.orEmpty(),
                     name = type2.name.orEmpty(),
                     description = type2.description,
                     emoji = type2.iconEmoji
@@ -1574,6 +1580,7 @@ class EditorSlashWidgetFilterTest : EditorPresentationTestSetup() {
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type3.id,
+                    key = type3.uniqueKey.orEmpty(),
                     name = type3.name.orEmpty(),
                     description = type3.description,
                     emoji = type3.iconEmoji

@@ -51,7 +51,7 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                     onAddClicked = vm::onCreateSpaceClicked,
                     onSpaceSettingsClicked = {
                         findNavController().navigate(
-                            R.id.settingsScreen
+                            R.id.profileScreen
                         )
                     },
                     onProfileClicked = {

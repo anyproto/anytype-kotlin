@@ -50,6 +50,7 @@ object Relations {
     const val SIZE_IN_BYTES = "sizeInBytes"
     const val FILE_SYNC_STATUS = "fileSyncStatus"
     const val CREATED_DATE = "createdDate"
+    const val CREATOR = "creator"
 
     const val PAGE_COVER = "pageCover"
 

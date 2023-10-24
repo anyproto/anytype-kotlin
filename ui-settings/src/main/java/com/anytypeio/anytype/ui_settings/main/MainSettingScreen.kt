@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.R
 
 @Composable
@@ -131,7 +132,7 @@ private fun Settings(
 }
 
 @Composable
-private fun SpaceHeader(
+fun SpaceHeader(
     modifier: Modifier = Modifier,
     workspace: MainSettingsViewModel.WorkspaceAndAccount,
     onSpaceIconClick: () -> Unit,
@@ -154,13 +155,44 @@ private fun SpaceHeader(
                 }
             }
             workspace.space?.name?.let {
-                SpaceNameBlock(
-                    name = it,
-                    onNameSet = onNameSet
-                )
+//                SpaceNameBlock(
+//                    name = it,
+//                    onNameSet = onNameSet
+//                )
             }
         }
         is MainSettingsViewModel.WorkspaceAndAccount.Idle -> {}
+    }
+}
+
+@Composable
+fun SpaceHeader(
+    name: String?,
+    icon: SpaceIconView?,
+    modifier: Modifier = Modifier,
+    onSpaceIconClick: () -> Unit,
+    onNameSet: (String) -> Unit
+) {
+    Box(modifier = modifier.padding(vertical = 6.dp)) {
+        Dragger()
+    }
+    Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
+        SpaceNameBlock()
+    }
+    Box(modifier = modifier.padding(bottom = 16.dp)) {
+        if (icon != null) {
+            SpaceImageBlock(
+                icon = icon,
+                onSpaceIconClick = onSpaceIconClick
+            )
+        }
+    }
+    if (name != null) {
+        SpaceNameBlock(
+            modifier = Modifier,
+            name = name,
+            onNameSet = onNameSet
+        )
     }
 }
 

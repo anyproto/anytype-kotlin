@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.launch.GetDefaultPageType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
@@ -30,6 +31,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -86,13 +88,19 @@ class SelectSpaceViewModel(
                 Relations.NAME,
                 Relations.ICON_IMAGE,
                 Relations.ICON_EMOJI,
-                Relations.ICON_OPTION
+                Relations.ICON_OPTION,
+                Relations.SPACE_ACCOUNT_STATUS
             ),
             filters = listOf(
                 DVFilter(
                     relation = Relations.LAYOUT,
                     value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
                     condition = DVFilterCondition.EQUAL
+                ),
+                DVFilter(
+                    relation = Relations.SPACE_ACCOUNT_STATUS,
+                    value = SpaceStatus.DELETED.code,
+                    condition = DVFilterCondition.NOT_EQUAL
                 )
             ),
             sorts = listOf(
@@ -103,7 +111,10 @@ class SelectSpaceViewModel(
                 )
             )
         )
-    )
+    ).catch {
+        Timber.e(it, "Error in spaces subscriptions")
+        emit(emptyList())
+    }
 
     init {
         viewModelScope.launch {

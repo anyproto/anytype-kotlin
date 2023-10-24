@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.page
 
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -34,7 +35,7 @@ class CreateObjectAsMentionOrLink(
         val command = Command.CreateObject(
             template = params.defaultTemplate,
             prefilled = prefilled,
-            internalFlags = listOf(),
+            internalFlags = listOf(InternalFlags.ShouldSelectTemplate, InternalFlags.ShouldSelectType),
             space = space,
             typeKey = typeKey
         )

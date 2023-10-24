@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.settings.FilesStorageFragment
@@ -79,8 +80,9 @@ object FilesStorageModule {
     @PerScreen
     fun provideSpaceUsage(
         repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): FileSpaceUsage = FileSpaceUsage(repo, dispatchers)
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
+    ): FileSpaceUsage = FileSpaceUsage(repo, spaceManager, dispatchers)
 
     @JvmStatic
     @Provides
@@ -118,4 +120,5 @@ interface FilesStorageDependencies : ComponentDependencies {
     fun buildProvider(): BuildProvider
     fun authRepo(): AuthRepository
     fun logger(): Logger
+    fun spaceManager(): SpaceManager
 }

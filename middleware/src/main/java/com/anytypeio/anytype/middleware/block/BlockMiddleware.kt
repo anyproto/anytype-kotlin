@@ -836,8 +836,8 @@ class BlockMiddleware(
         return middleware.setQueryToSet(command)
     }
 
-    override suspend fun fileSpaceUsage(): FileLimits {
-        return middleware.fileSpaceUsage()
+    override suspend fun fileSpaceUsage(space: SpaceId): FileLimits {
+        return middleware.fileSpaceUsage(space)
     }
 
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {

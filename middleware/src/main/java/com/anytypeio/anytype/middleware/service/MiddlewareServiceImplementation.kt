@@ -1418,6 +1418,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun spaceDelete(request: Rpc.Space.Delete.Request): Rpc.Space.Delete.Response {
+        val encoded = Service.spaceDelete(
+            Rpc.Space.Delete.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.Delete.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.Delete.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun workspaceCreate(request: Rpc.Workspace.Create.Request): Rpc.Workspace.Create.Response {
         val encoded = Service.workspaceCreate(
             Rpc.Workspace.Create.Request.ADAPTER.encode(request)

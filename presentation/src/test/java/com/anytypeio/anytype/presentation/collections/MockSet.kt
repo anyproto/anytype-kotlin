@@ -243,23 +243,4 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
             )
         )
     )
-
-    fun detailsSetByRelation(relationSetBy: ObjectWrapper.Relation) = Block.Details(
-        details = mapOf(
-            root to Block.Fields(
-                mapOf(
-                    Relations.ID to root,
-                    Relations.LAYOUT to ObjectType.Layout.SET.code.toDouble(),
-                    Relations.SET_OF to relationSetBy.key
-                )
-            ),
-            relationSetBy.key to Block.Fields(
-                mapOf(
-                    Relations.ID to relationSetBy.id,
-                    Relations.RELATION_KEY to relationSetBy.key,
-                    Relations.TYPE to ObjectTypeIds.RELATION
-                )
-            )
-        )
-    )
 }

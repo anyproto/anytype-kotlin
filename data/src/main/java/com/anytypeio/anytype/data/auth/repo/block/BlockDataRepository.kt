@@ -876,8 +876,8 @@ class BlockDataRepository(
         return remote.setQueryToSet(command)
     }
 
-    override suspend fun fileSpaceUsage(): FileLimits {
-        return remote.fileSpaceUsage()
+    override suspend fun fileSpaceUsage(space: SpaceId): FileLimits {
+        return remote.fileSpaceUsage(space)
     }
 
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {

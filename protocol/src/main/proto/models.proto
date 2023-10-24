@@ -861,6 +861,8 @@ enum SpaceStatus {
   RemoteWaitingDeletion = 5;
   // RemoteDeleted - the space is deleted in the current network
   RemoteDeleted = 6;
+  // SpaceDeleted - the space should be deleted in the network
+  SpaceDeleted = 7;
 }
 
 message Metadata {

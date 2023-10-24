@@ -77,9 +77,7 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun accountDelete(): AccountStatus {
-        val request = Rpc.Account.Delete.Request(
-            revert = false
-        )
+        val request = Rpc.Account.Delete.Request()
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.accountDelete(request)
         if (BuildConfig.DEBUG) logResponse(response)
@@ -98,11 +96,9 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun accountRestore(): AccountStatus {
-        val request = Rpc.Account.Delete.Request(
-            revert = true
-        )
+        val request = Rpc.Account.RevertDeletion.Request()
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountDelete(request)
+        val response = service.accountRevertDeletion(request)
         if (BuildConfig.DEBUG) logResponse(response)
         val status = response.status
         checkNotNull(status) { "Account status was null" }
@@ -2291,8 +2287,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun fileSpaceUsage(): FileLimits {
-        val request = Rpc.File.SpaceUsage.Request()
+    fun fileSpaceUsage(space: SpaceId): FileLimits {
+        val request = Rpc.File.SpaceUsage.Request(spaceId = space.id)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.spaceUsage(request)
         if (BuildConfig.DEBUG) logResponse(response)

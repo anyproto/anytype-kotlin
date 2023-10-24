@@ -91,6 +91,33 @@ message Rpc {
         }
     }
 
+    message Space {
+        message Delete {
+            message Request {
+                string spaceId = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                int64 timestamp = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error; mnemonic should be non-empty
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2; // Root path is wrong
+
+                        NO_SUCH_SPACE = 101;
+                        SPACE_IS_DELETED = 102;
+                    }
+                }
+            }
+        }
+    }
+
     message Wallet {
         message Create {
             /**
@@ -308,7 +335,6 @@ message Rpc {
 
         message Delete {
             message Request {
-                bool revert = 1;
             }
 
             message Response {
@@ -325,7 +351,29 @@ message Rpc {
                         BAD_INPUT = 2;
 
                         ACCOUNT_IS_ALREADY_DELETED = 101;
-                        ACCOUNT_IS_ACTIVE = 102;
+                    }
+                }
+            }
+        }
+
+        message RevertDeletion {
+            message Request {
+            }
+
+            message Response {
+                Error error = 1; // Error while trying to recover an account
+                anytype.model.Account.Status status = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0; // No error;
+                        UNKNOWN_ERROR = 1; // Any other errors
+                        BAD_INPUT = 2;
+
+                        ACCOUNT_IS_ACTIVE = 101;
                     }
                 }
             }
@@ -508,6 +556,7 @@ message Rpc {
 
             message Response {
                 string accountId = 1;
+                string personalSpaceId = 3;
                 Error error = 2;
 
                 message Error {
@@ -786,6 +835,7 @@ message Rpc {
                 string contextId = 1; // id of the context blo1k
                 string objectId = 2;
                 string traceId = 3;
+                string spaceId = 5; // Required only for date objects
 
                 bool includeRelationsAsDependentObjects = 4; // some clients may set this option instead if having the single subscription to all relations
             }
@@ -815,6 +865,7 @@ message Rpc {
             message Request {
                 string contextId = 1; // deprecated, GO-1926
                 string objectId = 2;
+                string spaceId = 3; // Required only for date objects
             }
 
             message Response {
@@ -839,6 +890,7 @@ message Rpc {
                 string contextId = 1; // deprecated, GO-1926
                 string objectId = 2;
                 string traceId = 3;
+                string spaceId = 5; // Required only for date objects
 
                 bool includeRelationsAsDependentObjects = 4; // some clients may set this option instead if having the single subscription to all relations
             }

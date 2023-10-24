@@ -42,6 +42,9 @@ interface MiddlewareService {
     fun accountDelete(request: Rpc.Account.Delete.Request): Rpc.Account.Delete.Response
 
     @Throws(Exception::class)
+    fun accountRevertDeletion(request: Rpc.Account.RevertDeletion.Request): Rpc.Account.RevertDeletion.Response
+
+    @Throws(Exception::class)
     fun accountSelect(request: Rpc.Account.Select.Request): Rpc.Account.Select.Response
 
     @Throws(Exception::class)

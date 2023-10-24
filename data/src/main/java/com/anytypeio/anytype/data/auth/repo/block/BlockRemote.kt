@@ -372,7 +372,7 @@ interface BlockRemote {
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
-    suspend fun fileSpaceUsage(): FileLimits
+    suspend fun fileSpaceUsage(space: SpaceId): FileLimits
 
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
 

@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -63,9 +64,7 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                 SpaceSettingsScreen(onSpaceIconClick = {},
                     onNameSet = vm::onNameSet,
                     spaceData = vm.spaceViewState.collectAsStateWithLifecycle().value,
-                    onDeleteSpaceClicked = {
-                        toast("Coming soon...")
-                    },
+                    onDeleteSpaceClicked = vm::onDeleteSpaceClicked,
                     onFileStorageClick = {
                         findNavController().navigate(R.id.filesStorageScreen)
                     },
@@ -73,6 +72,12 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                        findNavController().navigate(R.id.personalizationScreen)
                     }
                 )
+                LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
+                LaunchedEffect(Unit) {
+                    vm.isDismissed.collect { isDismissed ->
+                        if (isDismissed) dismiss()
+                    }
+                }
             }
         }
     }
@@ -224,17 +229,19 @@ fun SpaceSettingsScreen(
                 }
             }
         }
-        item {
-            Box(modifier = Modifier.height(78.dp)) {
-                ButtonWarning(
-                    onClick = { onDeleteSpaceClicked() },
-                    text = "Delete space",
-                    modifier = Modifier
-                        .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter),
-                    size = ButtonSize.Large
-                )
+        if (spaceData is ViewState.Success && spaceData.data.isDeletable) {
+            item {
+                Box(modifier = Modifier.height(78.dp)) {
+                    ButtonWarning(
+                        onClick = { onDeleteSpaceClicked() },
+                        text = "Delete space",
+                        modifier = Modifier
+                            .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+                            .fillMaxWidth()
+                            .align(Alignment.BottomCenter),
+                        size = ButtonSize.Large
+                    )
+                }
             }
         }
         item {

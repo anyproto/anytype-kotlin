@@ -231,6 +231,8 @@ import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.templates.TemplateView
+import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -5708,17 +5710,13 @@ class EditorViewModel(
             getDefaultPageType.async(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
-                    proceedWithCreateNewObject(
-                        typeKey = null,
-                        typeId = null,
-                        mentionText = mentionText
-                    )
+                    sendToast("Error while getting default object type, couldn't create a new mention")
                 },
                 onSuccess = { result ->
                     proceedWithCreateNewObject(
                         typeKey = result.type,
-                        typeId = result.id,
-                        mentionText = mentionText
+                        mentionText = mentionText,
+                        templateId = result.defaultTemplate
                     )
                 }
             )
@@ -5726,15 +5724,15 @@ class EditorViewModel(
     }
 
     private fun proceedWithCreateNewObject(
-        typeId: TypeId?,
-        typeKey: TypeKey?,
-        mentionText: String
+        typeKey: TypeKey,
+        mentionText: String,
+        templateId: Id?
     ) {
 
         val params = CreateObjectAsMentionOrLink.Params(
             name = mentionText.removePrefix(MENTION_PREFIX),
             typeKey = typeKey,
-            typeId = typeId
+            defaultTemplate = if (templateId == DEFAULT_TEMPLATE_ID_BLANK) null else templateId
         )
 
         val startTime = System.currentTimeMillis()
@@ -5754,7 +5752,7 @@ class EditorViewModel(
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = typeId?.id,
+                        type = typeKey.key,
                         storeOfObjectTypes = storeOfObjectTypes,
                         route = EventsDictionary.Routes.objCreateMention,
                         startTime = startTime
@@ -6057,7 +6055,8 @@ class EditorViewModel(
                     createObjectAddProceedToAddToTextAsLink(
                         name = name,
                         typeKey = response.type,
-                        typeId = response.id
+                        typeId = response.id,
+                        templateId = response.defaultTemplate
                     )
                 }
             )
@@ -6087,14 +6086,15 @@ class EditorViewModel(
 
     private suspend fun createObjectAddProceedToAddToTextAsLink(
         name: String,
-        typeKey: TypeKey?,
-        typeId: TypeId?
+        typeKey: TypeKey,
+        typeId: TypeId?,
+        templateId: Id?
     ) {
         val startTime = System.currentTimeMillis()
         val params = CreateObjectAsMentionOrLink.Params(
             name = name,
             typeKey = typeKey,
-            typeId = typeId
+            defaultTemplate = if (templateId == DEFAULT_TEMPLATE_ID_BLANK) null else templateId
         )
         createObjectAsMentionOrLink.async(params).fold(
             onFailure = { Timber.e(it, "Error while creating new page with params: $params") },

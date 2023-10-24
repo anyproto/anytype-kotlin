@@ -3,13 +3,10 @@ package com.anytypeio.anytype.domain.page
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 
 /**
@@ -18,8 +15,6 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 
 class CreateObjectAsMentionOrLink(
     private val repo: BlockRepository,
-    private val getDefaultPageType: GetDefaultPageType,
-    private val getTemplates: GetTemplates,
     private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateObjectAsMentionOrLink.Params, CreateObjectAsMentionOrLink.Result>(
@@ -30,23 +25,14 @@ class CreateObjectAsMentionOrLink(
 
         val space = SpaceId(spaceManager.get())
 
-        val typeKey = params.typeKey ?: getDefaultPageType.run(Unit).type
-        val typeId = params.typeId ?: getDefaultPageType.run(Unit).id
-
-        requireNotNull(typeKey) { "Undefined object type" }
+        val typeKey = params.typeKey
 
         val prefilled = buildMap {
             put(Relations.NAME, params.name)
         }
 
-        val template = if (typeId != null) {
-            getTemplates.run(GetTemplates.Params(type = typeId)).firstOrNull()?.id
-        } else {
-            null
-        }
-
         val command = Command.CreateObject(
-            template = template,
+            template = params.defaultTemplate,
             prefilled = prefilled,
             internalFlags = listOf(),
             space = space,
@@ -66,8 +52,8 @@ class CreateObjectAsMentionOrLink(
      */
     data class Params(
         val name: String,
-        val typeKey: TypeKey? = null,
-        val typeId: TypeId? = null
+        val typeKey: TypeKey,
+        val defaultTemplate: String? = null
     )
 
     data class Result(

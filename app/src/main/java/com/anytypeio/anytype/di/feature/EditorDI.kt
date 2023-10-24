@@ -735,8 +735,6 @@ object EditorUseCaseModule {
         spaceManager: SpaceManager
     ): CreateObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
         repo = repo,
-        getDefaultPageType = getDefaultPageType,
-        getTemplates = getTemplates,
         dispatchers = dispatchers,
         spaceManager = spaceManager
     )

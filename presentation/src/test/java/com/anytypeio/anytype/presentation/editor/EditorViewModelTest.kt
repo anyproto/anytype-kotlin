@@ -3787,16 +3787,6 @@ open class EditorViewModelTest {
         }
     }
 
-    private fun stubGetDefaultObjectType(type: String? = null, name: String? = null) {
-        getDefaultPageType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
-                type = type?.let { TypeKey((it)) },
-                name = name,
-                id = null
-            )
-        }
-    }
-
     lateinit var getObjectTypes: GetObjectTypes
 
     lateinit var addRelationToObject: AddRelationToObject

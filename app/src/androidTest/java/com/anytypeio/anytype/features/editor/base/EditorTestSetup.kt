@@ -255,9 +255,6 @@ open class EditorTestSetup {
     lateinit var threadStatusChannel: ThreadStatusChannel
 
     @Mock
-    lateinit var documentEmojiIconProvider: DocumentEmojiIconProvider
-
-    @Mock
     lateinit var createTable: CreateTable
 
     @Mock
@@ -329,8 +326,6 @@ open class EditorTestSetup {
         setObjectType = SetObjectType(repo)
         createObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
             repo = repo,
-            getDefaultPageType = getDefaultPageType,
-            getTemplates = getTemplates,
             dispatchers = dispatchers,
             spaceManager = spaceManager
         )

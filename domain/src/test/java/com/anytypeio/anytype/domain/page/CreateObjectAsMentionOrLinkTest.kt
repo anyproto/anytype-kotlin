@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.page
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.CreateObjectResult
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
@@ -58,9 +59,7 @@ class CreateObjectAsMentionOrLinkTest {
     fun setup() {
         createObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
             repo = repo,
-            getDefaultPageType = getDefaultPageType,
             dispatchers = dispatchers,
-            getTemplates = getTemplates,
             spaceManager = spaceManager
         )
         stubSpaceManager()
@@ -74,15 +73,19 @@ class CreateObjectAsMentionOrLinkTest {
         val name = MockDataFactory.randomString()
 
         val defaultTypeKey = MockDataFactory.randomString()
+        val defaultTemplate = MockDataFactory.randomString()
         givenGetDefaultObjectType(
             type = TypeKey(defaultTypeKey),
+            name = name,
+            defaultTemplate = defaultTemplate
         )
         stubCreateObject()
 
         //TESTING
         val params = CreateObjectAsMentionOrLink.Params(
             name = name,
-            typeKey = type
+            typeKey = TypeKey(defaultTypeKey),
+            defaultTemplate = defaultTemplate
         )
         createObjectAsMentionOrLink.run(params)
 
@@ -92,8 +95,8 @@ class CreateObjectAsMentionOrLinkTest {
             prefilled = buildMap {
                 put(Relations.NAME, name)
             },
-            template = null,
-            internalFlags = listOf(),
+            template = defaultTemplate,
+            internalFlags = listOf(InternalFlags.ShouldSelectTemplate, InternalFlags.ShouldSelectType),
             space = SpaceId(spaceId),
             typeKey = TypeKey(defaultTypeKey)
         )
@@ -119,7 +122,7 @@ class CreateObjectAsMentionOrLinkTest {
             //TESTING
             val params = CreateObjectAsMentionOrLink.Params(
                 name = name,
-                typeKey = type
+                typeKey = TypeKey(typeDefault)
             )
             createObjectAsMentionOrLink.run(params)
 
@@ -129,7 +132,7 @@ class CreateObjectAsMentionOrLinkTest {
                     put(Relations.NAME, name)
                 },
                 template = null,
-                internalFlags = listOf(),
+                internalFlags = listOf(InternalFlags.ShouldSelectTemplate, InternalFlags.ShouldSelectType),
                 space = SpaceId(spaceId),
                 typeKey = TypeKey(typeDefault)
             )
@@ -144,13 +147,12 @@ class CreateObjectAsMentionOrLinkTest {
             val type = null
             val name = MockDataFactory.randomString()
             val typeDefault = MockDataFactory.randomString()
-            val typeDefaultId = MockDataFactory.randomString()
             val typeDefaultName = MockDataFactory.randomString()
             val template = MockDataFactory.randomString()
             givenGetDefaultObjectType(
                 type = TypeKey(typeDefault),
                 name = typeDefaultName,
-                id = TypeId(typeDefaultId)
+                defaultTemplate = template
             )
             givenGetTemplates(listOf(ObjectWrapper.Basic(buildMap {
                 put(Relations.ID, template)
@@ -160,7 +162,8 @@ class CreateObjectAsMentionOrLinkTest {
             //TESTING
             val params = CreateObjectAsMentionOrLink.Params(
                 name = name,
-                typeKey = type
+                typeKey = TypeKey(typeDefault),
+                defaultTemplate = template
             )
             createObjectAsMentionOrLink.run(params)
 
@@ -170,7 +173,7 @@ class CreateObjectAsMentionOrLinkTest {
                     put(Relations.NAME, name)
                 },
                 template = template,
-                internalFlags = listOf(),
+                internalFlags = listOf(InternalFlags.ShouldSelectTemplate, InternalFlags.ShouldSelectType),
                 space = SpaceId(spaceId),
                 typeKey = TypeKey(typeDefault)
             )
@@ -207,7 +210,7 @@ class CreateObjectAsMentionOrLinkTest {
             //TESTING
             val params = CreateObjectAsMentionOrLink.Params(
                 name = name,
-                typeKey = type,
+                typeKey = TypeKey(typeDefault),
 
             )
             createObjectAsMentionOrLink.run(params)
@@ -218,7 +221,7 @@ class CreateObjectAsMentionOrLinkTest {
                     put(Relations.NAME, name)
                 },
                 template = null,
-                internalFlags = listOf(),
+                internalFlags = listOf(InternalFlags.ShouldSelectTemplate, InternalFlags.ShouldSelectType),
                 space = SpaceId(spaceId),
                 typeKey = TypeKey(typeDefault)
             )
@@ -226,15 +229,16 @@ class CreateObjectAsMentionOrLinkTest {
         }
 
     private fun givenGetDefaultObjectType(
-        type: TypeKey? = null,
+        type: TypeKey,
         name: String? = null,
-        id: TypeId? = null
+        defaultTemplate: String? = null
     ) {
         getDefaultPageType.stub {
             onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
                 type = type,
                 name = name,
-                id = id
+                id = TypeId(MockDataFactory.randomString()),
+                defaultTemplate = defaultTemplate
             )
         }
     }

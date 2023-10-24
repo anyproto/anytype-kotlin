@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -405,12 +406,18 @@ open class ObjectSetViewModelTestSetup {
         storeOfObjectTypes.set(id, map)
     }
 
-    fun stubGetDefaultPageType(type: TypeKey = defaultObjectPageType, name: String = defaultObjectPageTypeName) {
+    fun stubGetDefaultPageType(
+        type: TypeKey = defaultObjectPageType,
+        name: String = defaultObjectPageTypeName,
+        id: TypeId = TypeId(MockDataFactory.randomString()),
+        template: Id? = null
+        ) {
         getDefaultPageType.stub {
             onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
                 type = type,
                 name = name,
-                id = null
+                id = id,
+                defaultTemplate = template
             )
         }
     }

@@ -706,7 +706,8 @@ open class EditorPresentationTestSetup {
     fun stubGetDefaultObjectType(
         id: String = MockDataFactory.randomString(),
         type: String = MockDataFactory.randomString(),
-        name: String? = null
+        name: String? = null,
+        template: String? = null
     ) {
         getDefaultPageType.stub {
             onBlocking { async(Unit) } doReturn Resultat.success(
@@ -714,6 +715,7 @@ open class EditorPresentationTestSetup {
                     id = TypeId(id),
                     type = TypeKey(type),
                     name = name,
+                    defaultTemplate = template
                 )
             )
         }
@@ -765,9 +767,9 @@ open class EditorPresentationTestSetup {
         }
     }
 
-    fun stubSpaceManager() {
+    fun stubSpaceManager(space: String = "") {
         spaceManager.stub {
-            onBlocking { get() } doReturn ""
+            onBlocking { get() } doReturn space
         }
     }
 }

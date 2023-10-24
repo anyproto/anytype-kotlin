@@ -24,6 +24,8 @@ import com.anytypeio.anytype.core_models.StubObjectView
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.bin.EmptyBin
@@ -2686,15 +2688,21 @@ class HomeScreenViewModelTest {
         }
     }
 
-    private fun stubGetDefaultPageType() {
+    private fun stubGetDefaultPageType(
+        id: TypeId = TypeId(MockDataFactory.randomUuid()),
+        type: TypeKey = TypeKey(MockDataFactory.randomUuid()),
+        name: String = MockDataFactory.randomString(),
+        template: String? = null
+    ) {
         getDefaultPageType.stub {
             onBlocking {
                 execute(any())
             } doReturn Resultat.Success(
                 GetDefaultPageType.Response(
-                    id = null,
-                    type = null,
-                    name = null
+                    id = id,
+                    type = type,
+                    name = name,
+                    defaultTemplate = template
                 )
             )
         }

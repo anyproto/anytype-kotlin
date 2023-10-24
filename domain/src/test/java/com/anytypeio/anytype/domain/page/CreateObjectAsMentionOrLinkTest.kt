@@ -95,7 +95,7 @@ class CreateObjectAsMentionOrLinkTest {
             template = null,
             internalFlags = listOf(),
             space = SpaceId(spaceId),
-            type = TypeKey(defaultTypeKey)
+            typeKey = TypeKey(defaultTypeKey)
         )
         verifyBlocking(repo, times(1)) { createObject(commands) }
     }
@@ -131,7 +131,7 @@ class CreateObjectAsMentionOrLinkTest {
                 template = null,
                 internalFlags = listOf(),
                 space = SpaceId(spaceId),
-                type = TypeKey(typeDefault)
+                typeKey = TypeKey(typeDefault)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -172,7 +172,7 @@ class CreateObjectAsMentionOrLinkTest {
                 template = template,
                 internalFlags = listOf(),
                 space = SpaceId(spaceId),
-                type = TypeKey(typeDefault)
+                typeKey = TypeKey(typeDefault)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -220,7 +220,7 @@ class CreateObjectAsMentionOrLinkTest {
                 template = null,
                 internalFlags = listOf(),
                 space = SpaceId(spaceId),
-                type = TypeKey(typeDefault)
+                typeKey = TypeKey(typeDefault)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }

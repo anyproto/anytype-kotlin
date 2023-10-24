@@ -27,7 +27,7 @@ class CreateTemplate @Inject constructor(
             internalFlags = emptyList(),
             space = SpaceId(spaceManager.get()),
             //todo After Space Merge, check this condition!!!
-            type = TypeKey(ObjectTypeUniqueKeys.TEMPLATE)
+            typeKey = TypeKey(ObjectTypeUniqueKeys.TEMPLATE)
         )
         val result = repo.createObject(command)
         return result.id

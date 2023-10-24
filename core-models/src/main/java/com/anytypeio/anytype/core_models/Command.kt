@@ -188,7 +188,7 @@ sealed class Command {
         val template: Id?,
         val internalFlags: List<InternalFlags>,
         val space: SpaceId,
-        val type: TypeKey
+        val typeKey: TypeKey
     )
 
     class Move(

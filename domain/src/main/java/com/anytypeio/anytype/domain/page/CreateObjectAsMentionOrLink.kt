@@ -36,7 +36,7 @@ class CreateObjectAsMentionOrLink(
             prefilled = prefilled,
             internalFlags = listOf(),
             space = space,
-            type = typeKey
+            typeKey = typeKey
         )
         val result = repo.createObject(command)
 

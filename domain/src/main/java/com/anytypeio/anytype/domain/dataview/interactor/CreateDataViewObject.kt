@@ -39,7 +39,7 @@ class CreateDataViewObject @Inject constructor(
                     ),
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
-                    type = params.type
+                    typeKey = params.type
                 )
                 val result = repo.createObject(command)
                 Result(
@@ -57,7 +57,7 @@ class CreateDataViewObject @Inject constructor(
                     ),
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
-                    type = params.type
+                    typeKey = params.type
                 )
                 val result = repo.createObject(command)
                 Result(
@@ -75,7 +75,7 @@ class CreateDataViewObject @Inject constructor(
                     ),
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
-                    type = params.type
+                    typeKey = params.type
                 )
                 val result = repo.createObject(command)
                 Result(

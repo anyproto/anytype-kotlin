@@ -1372,7 +1372,7 @@ class ObjectSetViewModel(
                         analytics = analytics,
                         startTime = startTime,
                         storeOfObjectTypes = storeOfObjectTypes,
-                        type = result.type.key,
+                        type = result.typeKey.key,
                         route = EventsDictionary.Routes.navigation,
                         view = EventsDictionary.View.viewNavbar
                     )

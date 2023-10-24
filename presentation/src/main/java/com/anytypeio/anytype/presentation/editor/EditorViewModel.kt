@@ -231,7 +231,6 @@ import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -3159,30 +3158,49 @@ class EditorViewModel(
 
 
     fun onAddNewDocumentClicked() {
-
         Timber.d("onAddNewDocumentClicked, ")
-        proceedWithCreatingNewObject(type = null, template = null)
+        proceedWithCreatingNewObject(
+            typeKey = null,
+            template = null,
+            internalFlags = listOf(
+                InternalFlags.ShouldSelectTemplate,
+                InternalFlags.ShouldSelectType,
+                InternalFlags.ShouldEmptyDelete
+            )
+        )
     }
 
     fun onCreateObjectWithTemplateClicked(template: Id) {
         Timber.d("onCreateObjectWithTemplateClicked, template:[$template]")
-        val objType = getObjectTypeFromDetails() ?: return
-        proceedWithCreatingNewObject(type = objType, template = template)
+        val typeKey = getObjectTypeFromDetails() ?: return
+        proceedWithCreatingNewObject(
+            typeKey = TypeKey(typeKey),
+            template = template,
+            internalFlags = listOf(
+                InternalFlags.ShouldSelectTemplate,
+                InternalFlags.ShouldEmptyDelete
+            )
+        )
     }
 
-    private fun proceedWithCreatingNewObject(type: Id?, template: Id?) {
+    private fun proceedWithCreatingNewObject(
+        typeKey: TypeKey?,
+        template: Id?,
+        internalFlags: List<InternalFlags> = emptyList()
+    ) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateObject.Param(
-                type = TODO("You need to pass unique key"),
-                template = template
+                type = typeKey,
+                template = template,
+                internalFlags = internalFlags,
             )
             createObject.async(params = params)
                 .fold(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = result.objectId,
+                            type = result.typeKey.key,
                             storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.objPowerTool,
                             startTime = startTime
@@ -6255,8 +6273,10 @@ class EditorViewModel(
 
     private fun getObjectTypeFromDetails(): Id? {
         val details = orchestrator.stores.details.current()
-        val wrapper = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
-        return wrapper.getProperType()
+        val currentObject = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+        val currentObjectTypeId = currentObject.getProperType() ?: return null
+        val currentObjectType = ObjectWrapper.Basic(details.details[currentObjectTypeId]?.map ?: emptyMap())
+        return currentObjectType.uniqueKey
     }
 
     fun isObjectTemplate(): Boolean {

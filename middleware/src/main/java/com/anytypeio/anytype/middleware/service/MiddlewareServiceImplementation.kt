@@ -45,6 +45,17 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun accountRevertDeletion(request: Rpc.Account.RevertDeletion.Request): Rpc.Account.RevertDeletion.Response {
+        val encoded = Service.accountRevertDeletion(Rpc.Account.RevertDeletion.Request.ADAPTER.encode(request))
+        val response = Rpc.Account.RevertDeletion.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Account.RevertDeletion.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun accountRecover(request: Rpc.Account.Recover.Request): Rpc.Account.Recover.Response {
         val encoded = Service.accountRecover(Rpc.Account.Recover.Request.ADAPTER.encode(request))
         val response = Rpc.Account.Recover.Response.ADAPTER.decode(encoded)

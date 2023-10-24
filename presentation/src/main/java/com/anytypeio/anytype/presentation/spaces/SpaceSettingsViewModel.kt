@@ -118,8 +118,6 @@ class SpaceSettingsViewModel(
                     },
                     onSuccess = {
                         Timber.d("Name successfully set for current space: ${config.space}")
-                        sendToast("Space deleted")
-                        isDismissed.value = true
                     }
                 )
             } else {

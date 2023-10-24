@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -44,6 +45,7 @@ class SpaceSettingsViewModel(
         viewModelScope.launch {
             spaceManager
                 .observe()
+                .take(1)
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
@@ -103,6 +105,7 @@ class SpaceSettingsViewModel(
     fun onNameSet(name: String) {
         Timber.d("onNameSet")
         if (name.isEmpty()) return
+        if (isDismissed.value) return
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null) {
@@ -159,7 +162,7 @@ class SpaceSettingsViewModel(
 
     private suspend fun fallbackToPersonalSpaceAfterDeletion(personalSpaceId: Id) {
         spaceManager.set(personalSpaceId)
-        isDismissed.value
+        isDismissed.value = true
     }
 
     data class SpaceData(

@@ -20,7 +20,8 @@ import timber.log.Timber
 
 class EditorTemplateFragment : EditorFragment() {
 
-    private val targetObjectType get() = arg<Id>(ARG_TARGET_OBJECT_TYPE)
+    private val targetTypeId get() = arg<Id>(ARG_TARGET_TYPE_ID)
+    private val targetTypeKey get() = arg<Id>(ARG_TARGET_TYPE_KEY)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -72,7 +73,8 @@ class EditorTemplateFragment : EditorFragment() {
                 findNavController().apply {
                     previousBackStackEntry?.savedStateHandle?.apply {
                         set(ARG_TEMPLATE_ID, ctx)
-                        set(ARG_TARGET_OBJECT_TYPE, targetObjectType)
+                        set(ARG_TARGET_TYPE_ID, targetTypeId)
+                        set(ARG_TARGET_TYPE_KEY, targetTypeKey)
                     }
                     popBackStack(R.id.editorModalScreen, true)
                 }
@@ -85,15 +87,17 @@ class EditorTemplateFragment : EditorFragment() {
     }
 
     companion object {
-        fun newInstance(id: String, targetObjectType: Id): EditorTemplateFragment =
+        fun newInstance(id: String, targetTypeId: Id, targetTypeKey: Id): EditorTemplateFragment =
             EditorTemplateFragment().apply {
                 arguments = bundleOf(
                     ID_KEY to id,
-                    ARG_TARGET_OBJECT_TYPE to targetObjectType
+                    ARG_TARGET_TYPE_ID to targetTypeId,
+                    ARG_TARGET_TYPE_KEY to targetTypeKey
                 )
             }
 
         const val ARG_TEMPLATE_ID = "template_id"
-        const val ARG_TARGET_OBJECT_TYPE = "target_object_type"
+        const val ARG_TARGET_TYPE_ID = "target_type_id"
+        const val ARG_TARGET_TYPE_KEY = "target_type_key"
     }
 }

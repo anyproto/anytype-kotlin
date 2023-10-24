@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -1365,7 +1366,12 @@ class ObjectSetViewModel(
 
         val startTime = System.currentTimeMillis()
         jobs += viewModelScope.launch {
-            createObject.async(CreateObject.Param(type = null)).fold(
+            createObject.async(
+                CreateObject.Param(
+                    type = null,
+                    internalFlags = listOf(InternalFlags.ShouldSelectType, InternalFlags.ShouldSelectTemplate)
+                )
+            ).fold(
                 onSuccess = { result ->
                     proceedWithOpeningObject(result.objectId)
                     sendAnalyticsObjectCreateEvent(

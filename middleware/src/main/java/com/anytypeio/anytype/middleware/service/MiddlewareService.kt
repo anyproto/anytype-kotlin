@@ -450,6 +450,8 @@ interface MiddlewareService {
 
     //region WORKSPACE
 
+    fun spaceDelete(request: Rpc.Space.Delete.Request): Rpc.Space.Delete.Response
+
     @Throws(Exception::class)
     fun workspaceCreate(request: Rpc.Workspace.Create.Request): Rpc.Workspace.Create.Response
 

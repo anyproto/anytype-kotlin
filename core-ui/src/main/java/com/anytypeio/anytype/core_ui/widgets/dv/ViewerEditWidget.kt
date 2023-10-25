@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -70,7 +71,6 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
-import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -91,6 +91,9 @@ fun ViewerEditWidget(
     scope: CoroutineScope
 ) {
 
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.BottomStart,
@@ -98,7 +101,7 @@ fun ViewerEditWidget(
 
         val currentState by rememberUpdatedState(state)
         val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
-        val kc = LocalSoftwareKeyboardController.current
+        val keyboardController = LocalSoftwareKeyboardController.current
 
         AnimatedVisibility(
             visible = currentState.isVisible(),
@@ -118,7 +121,8 @@ fun ViewerEditWidget(
         if (swipeableState.isAnimationRunning && swipeableState.targetValue == DragStates.DISMISSED) {
             DisposableEffect(Unit) {
                 onDispose {
-                    kc?.hide()
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
                     action(ViewEditAction.Dismiss)
                 }
             }
@@ -150,16 +154,23 @@ fun ViewerEditWidget(
                 .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
         ) {
             if (state is ViewerEditWidgetUi.Data) {
-                ViewerEditWidgetContent(state, action)
+                ViewerEditWidgetContent(state, focusRequester, keyboardController) {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                    action.invoke(it)
+                }
             }
         }
     }
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun ViewerEditWidgetContent(
     state: ViewerEditWidgetUi.Data,
-    action: (ViewEditAction) -> Unit
+    focusRequester: FocusRequester,
+    keyboardController: SoftwareKeyboardController?,
+    action: (ViewEditAction) -> Unit,
 ) {
 
     val currentState by rememberUpdatedState(state)
@@ -236,7 +247,12 @@ fun ViewerEditWidgetContent(
                     )
                 }
             }
-            NameTextField(state = currentState, action = action)
+            NameTextField(
+                state = currentState,
+                action = action,
+                keyboardController = keyboardController,
+                focusRequester = focusRequester
+            )
             Spacer(modifier = Modifier.height(12.dp))
 
             val layoutValue = when (state.layout) {
@@ -299,12 +315,12 @@ fun ViewerEditWidgetContent(
 @Composable
 fun NameTextField(
     state: ViewerEditWidgetUi.Data,
+    focusRequester: FocusRequester,
+    keyboardController: SoftwareKeyboardController?,
     action: (ViewEditAction) -> Unit
 ) {
     var innerValue by remember(state.name) { mutableStateOf(state.name) }
-    val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
-    val focusRequester = remember { FocusRequester() }
 
     if (state.name.isEmpty()) {
         LaunchedEffect(Unit) {
@@ -407,7 +423,7 @@ fun ColumnItem(
                     width = Dimension.fillToConstraints
                 },
             text = value,
-            style = BodyCalloutRegular,
+            style = UXBody,
             color = colorResource(id = R.color.text_secondary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

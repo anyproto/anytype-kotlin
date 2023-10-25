@@ -180,9 +180,11 @@ object HomeScreenModule {
     @PerScreen
     fun getTemplates(
         repo: BlockRepository,
+        spaceManager: SpaceManager,
         dispatchers: AppCoroutineDispatchers,
     ) : GetTemplates = GetTemplates(
         repo = repo,
+        spaceManager = spaceManager,
         dispatchers = dispatchers
     )
 

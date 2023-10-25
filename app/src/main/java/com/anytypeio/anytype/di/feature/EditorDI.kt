@@ -1040,9 +1040,14 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun getTemplates(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): GetTemplates =
+    fun getTemplates(
+        repo: BlockRepository,
+        spaceManager: SpaceManager,
+        dispatchers: AppCoroutineDispatchers
+    ): GetTemplates =
         GetTemplates(
             repo = repo,
+            spaceManager = spaceManager,
             dispatchers = dispatchers
         )
 

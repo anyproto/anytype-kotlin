@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -34,6 +35,8 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
@@ -254,6 +257,13 @@ fun NameTextField(
     var innerValue by remember(state.name) { mutableStateOf(state.name) }
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusManager = LocalFocusManager.current
+    val focusRequester = remember { FocusRequester() }
+
+    if (state.name.isEmpty()) {
+        LaunchedEffect(Unit) {
+            focusRequester.requestFocus()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -280,7 +290,8 @@ fun NameTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(start = 0.dp, top = 2.dp),
+                .padding(start = 0.dp, top = 2.dp)
+                .focusRequester(focusRequester),
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
             ),

@@ -106,7 +106,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should remove type flag on show object event with type flag in details`() = runTest {
+    fun `should not remove type flag on show object event with type flag in details`() = runTest {
         val title = StubTitle()
         val header = StubHeader(children = listOf(title.id))
         val page = StubSmartBlock(id = root, children = listOf(header.id))
@@ -141,17 +141,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
 
         advanceUntilIdle()
 
-        verifyBlocking(setObjectInternalFlags, times(1)) {
-            async(
-                params = SetObjectInternalFlags.Params(
-                    ctx = root,
-                    flags = listOf(
-                        InternalFlags.ShouldSelectTemplate,
-                        InternalFlags.ShouldEmptyDelete
-                    )
-                )
-            )
-        }
+        verifyNoInteractions(setObjectInternalFlags)
 
         coroutineTestRule.advanceTime(100)
     }

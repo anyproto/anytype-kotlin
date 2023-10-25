@@ -276,16 +276,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
 
         advanceUntilIdle()
 
-        verifyBlocking(setObjectInternalFlags, times(1)) {
-            async(
-                params = SetObjectInternalFlags.Params(
-                    ctx = root,
-                    flags = listOf(
-                        InternalFlags.ShouldEmptyDelete
-                    )
-                )
-            )
-        }
+        verifyNoInteractions(setObjectInternalFlags)
 
         advanceUntilIdle()
 

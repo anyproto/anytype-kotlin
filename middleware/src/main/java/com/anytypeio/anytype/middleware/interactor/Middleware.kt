@@ -1934,6 +1934,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun spaceDelete(space: SpaceId) {
+        val request = Rpc.Space.Delete.Request(spaceId = space.id)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
     fun workspaceCreate(details: Struct): Id {
         val request = Rpc.Workspace.Create.Request(
             details = details,

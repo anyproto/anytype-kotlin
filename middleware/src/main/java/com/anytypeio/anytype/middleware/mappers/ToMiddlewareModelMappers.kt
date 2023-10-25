@@ -363,9 +363,16 @@ fun Block.Content.DataView.Filter.toMiddlewareModel(): MDVFilter =
         operator_ = operator.toMiddlewareModel(),
         condition = condition.toMiddlewareModel(),
         quickOption = quickOption.toMiddlewareModel(),
-        value_ = value,
+        value_ = value.validate(),
         format = relationFormat?.toMiddlewareModel() ?: RelationFormat.longtext
     )
+
+fun Any?.validate() : Any? {
+    return if (this is Int)
+        this.toDouble()
+    else
+        this
+}
 
 fun Block.Content.DataView.Filter.Operator.toMiddlewareModel(): MDVFilterOperator = when (this) {
     Block.Content.DataView.Filter.Operator.AND -> MDVFilterOperator.And

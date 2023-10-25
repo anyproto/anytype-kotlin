@@ -381,6 +381,7 @@ interface BlockRepository {
         position: Position
     ): Payload
 
+    suspend fun deleteSpace(space: SpaceId)
     suspend fun createWorkspace(details: Struct): Id
     suspend fun getSpaceConfig(space: Id): Config
     suspend fun addObjectListToSpace(objects: List<Id>, space: Id) : List<Id>

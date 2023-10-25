@@ -71,6 +71,8 @@ object Relations {
      */
     const val TYPE_UNIQUE_KEY = "type.uniqueKey"
 
+    const val SPACE_ACCOUNT_STATUS = "spaceAccountStatus"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

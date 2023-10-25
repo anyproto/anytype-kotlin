@@ -717,6 +717,10 @@ class BlockMiddleware(
         )
     }
 
+    override suspend fun deleteSpace(space: SpaceId) {
+        middleware.spaceDelete(space)
+    }
+
     override suspend fun createWorkspace(details: Struct): Id = middleware.workspaceCreate(
         details = details
     )

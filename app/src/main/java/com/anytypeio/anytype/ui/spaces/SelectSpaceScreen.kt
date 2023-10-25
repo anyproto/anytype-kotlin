@@ -158,7 +158,7 @@ private fun SelectSpaceSpaceItem(
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             modifier = Modifier.fillMaxSize(),
-            text = item.view.name.orEmpty(),
+            text = item.view.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
             textAlign = TextAlign.Center,
             style = Caption1Medium,
             color = Color.White,

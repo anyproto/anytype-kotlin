@@ -44,7 +44,6 @@ import com.anytypeio.anytype.ui.spaces.Section
 import com.anytypeio.anytype.ui.spaces.TypeOfSpace
 import com.anytypeio.anytype.ui_settings.main.SpaceHeader
 import javax.inject.Inject
-import timber.log.Timber
 
 class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
 
@@ -116,8 +115,8 @@ fun SpaceSettingsScreen(
             SpaceHeader(
                 modifier = Modifier,
                 name = when (spaceData) {
-                    is ViewState.Success -> spaceData.data.name.also {
-                        Timber.d("Setting name: $it")
+                    is ViewState.Success -> spaceData.data.name.ifEmpty { 
+                        stringResource(id = R.string.untitled)
                     }
                     else -> null
                 },

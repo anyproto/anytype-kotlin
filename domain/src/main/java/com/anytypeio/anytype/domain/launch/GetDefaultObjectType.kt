@@ -19,13 +19,13 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
-class GetDefaultPageType @Inject constructor(
+class GetDefaultObjectType @Inject constructor(
     private val userSettingsRepository: UserSettingsRepository,
     private val blockRepository: BlockRepository,
     private val spaceManager: SpaceManager,
     private val configStorage: ConfigStorage,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Unit, GetDefaultPageType.Response>(dispatchers.io) {
+) : ResultInteractor<Unit, GetDefaultObjectType.Response>(dispatchers.io) {
 
     override suspend fun doWork(params: Unit): Response {
         val space = SpaceId(spaceManager.get())

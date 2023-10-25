@@ -10,7 +10,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
@@ -19,14 +19,14 @@ import javax.inject.Inject
  */
 class CreateObject @Inject constructor(
     private val repo: BlockRepository,
-    private val getDefaultPageType: GetDefaultPageType,
+    private val getDefaultObjectType: GetDefaultObjectType,
     private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateObject.Param, CreateObject.Result>(dispatchers.io) {
 
     override suspend fun doWork(params: Param): Result {
         if (params.type == null) {
-            val defType = getDefaultPageType.run(Unit)
+            val defType = getDefaultObjectType.run(Unit)
             return createObject(
                 typeKey = defType.type,
                 template = defType.defaultTemplate,

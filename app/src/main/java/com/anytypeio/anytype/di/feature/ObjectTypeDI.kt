@@ -6,7 +6,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
@@ -47,14 +47,14 @@ object ObjectTypeChangeModule {
         addObjectTypeToSpace: AddObjectTypeToSpace,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
-        getDefaultPageType: GetDefaultPageType
+        getDefaultObjectType: GetDefaultObjectType
     ): ObjectTypeChangeViewModelFactory {
         return ObjectTypeChangeViewModelFactory(
             getObjectTypes = getObjectTypes,
             addObjectTypeToSpace = addObjectTypeToSpace,
             dispatchers = dispatchers,
             spaceManager = spaceManager,
-            getDefaultPageType = getDefaultPageType
+            getDefaultObjectType = getDefaultObjectType
         )
     }
 
@@ -86,7 +86,7 @@ object ObjectTypeChangeModule {
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
-    ): GetDefaultPageType = GetDefaultPageType(
+    ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
         dispatchers = dispatchers,

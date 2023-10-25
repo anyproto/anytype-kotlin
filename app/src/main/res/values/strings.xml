@@ -397,7 +397,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="create_space">Create a space</string>
 
     <string name="generic_error">Something went wrong. Please try again.</string>
-    <string name="type">Type\n</string>
+    <string name="type">Type</string>
     <string name="space_info">Space info</string>
     <string name="creation_date">Creation date</string>
     <string name="created_by">Created by</string>

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
@@ -131,7 +132,7 @@ fun SpaceSettingsScreen(
         }
         item { Divider() }
         item {
-            Section(title = "Type")
+            Section(title = stringResource(id = R.string.type))
         }
         item {
             TypeOfSpace()
@@ -167,7 +168,8 @@ fun SpaceSettingsScreen(
                 Text(
                     text = stringResource(id = R.string.space_id),
                     style = Title1,
-                    modifier = Modifier.padding(top = 12.dp)
+                    modifier = Modifier.padding(top = 12.dp),
+                    color = colorResource(id = R.color.text_primary)
                 )
                 if (spaceData is ViewState.Success) {
                     Text(
@@ -176,7 +178,8 @@ fun SpaceSettingsScreen(
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp),
-                        maxLines = 2
+                        maxLines = 2,
+                        color = colorResource(id = R.color.text_primary)
                     )
                 }
             }
@@ -191,7 +194,8 @@ fun SpaceSettingsScreen(
                 Text(
                     text = stringResource(id = R.string.created_by),
                     style = Title1,
-                    modifier = Modifier.padding(top = 12.dp)
+                    modifier = Modifier.padding(top = 12.dp),
+                    color = colorResource(id = R.color.text_primary)
                 )
                 if (spaceData is ViewState.Success) {
                     Text(
@@ -200,7 +204,8 @@ fun SpaceSettingsScreen(
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp),
-                        maxLines = 1
+                        maxLines = 1,
+                        color = colorResource(id = R.color.text_primary)
                     )
                 }
             }
@@ -215,7 +220,8 @@ fun SpaceSettingsScreen(
                 Text(
                     text = stringResource(id = R.string.creation_date),
                     style = Title1,
-                    modifier = Modifier.padding(top = 12.dp)
+                    modifier = Modifier.padding(top = 12.dp),
+                    color = colorResource(id = R.color.text_primary)
                 )
                 if (spaceData is ViewState.Success) {
                     Text(
@@ -224,7 +230,8 @@ fun SpaceSettingsScreen(
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp),
-                        maxLines = 1
+                        maxLines = 1,
+                        color = colorResource(id = R.color.text_primary)
                     )
                 }
             }

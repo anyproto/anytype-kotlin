@@ -154,7 +154,10 @@ class SelectSpaceViewModel(
                             }
                         }
                     )
-                    add(SelectSpaceView.Create)
+                    val numberOfSpaces = count { view -> view is SelectSpaceView.Space }
+                    if (numberOfSpaces < MAX_SPACE_COUNT) {
+                        add(SelectSpaceView.Create)
+                    }
                 }
             }.collect { results ->
                 views.value = results

@@ -374,7 +374,8 @@ open class EditorTestSetup {
         )
         getTemplates = GetTemplates(
             repo = repo,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            spaceManager = spaceManager
         )
 
         editorTemplateDelegate = DefaultEditorTemplateDelegate(

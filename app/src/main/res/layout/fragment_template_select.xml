@@ -8,34 +8,40 @@
     android:orientation="vertical"
     tools:context="com.anytypeio.anytype.ui.templates.TemplateSelectFragment">
 
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tabs"
-        android:layout_width="match_parent"
-        android:layout_height="8dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:tabIndicatorColor="@color/glyph_selected" />
-
     <TextView
         android:id="@+id/tvTemplateCountOrTutorial"
         style="@style/TextView.UXStyle.Captions.1.Medium"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="11dp"
+        android:layout_marginTop="31dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="11dp"
         android:gravity="center"
         android:maxLines="1"
         android:singleLine="true"
         android:textAlignment="center"
         tools:text="Type Task has 2 templates" />
 
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabs"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginTop="21dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:tabMaxWidth="0dp"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
+        app:tabMinWidth="@dimen/dp_20"
+        app:tabIndicatorHeight="@dimen/dp_4"
+        app:tabIndicatorColor="@color/glyph_selected" />
+
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/templateViewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:layout_marginTop="4dp"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -52,14 +58,15 @@
             android:layout_marginStart="20dp"
             android:layout_marginEnd="4dp"
             android:layout_weight="1"
+            android:visibility="gone"
             android:text="@string/skip" />
 
         <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
             android:id="@+id/btnUseTemplate"
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="@dimen/dp_48"
             android:layout_gravity="center_vertical"
-            android:layout_marginStart="4dp"
+            android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_weight="1"
             android:text="@string/use_template" />

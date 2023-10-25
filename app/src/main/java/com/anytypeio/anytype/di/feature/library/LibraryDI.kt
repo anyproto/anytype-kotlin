@@ -173,9 +173,11 @@ object LibraryModule {
     @PerScreen
     fun provideGetTemplates(
         repo: BlockRepository,
+        spaceManager: SpaceManager,
         dispatchers: AppCoroutineDispatchers
     ): GetTemplates = GetTemplates(
         repo = repo,
+        spaceManager = spaceManager,
         dispatchers = dispatchers
     )
 

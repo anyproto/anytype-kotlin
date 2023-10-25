@@ -228,7 +228,8 @@ abstract class TestObjectSetSetup {
         setDocCoverImage = SetDocCoverImage(repo)
         getTemplates = GetTemplates(
             repo = repo,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            spaceManager = spaceManager
         )
         database = ObjectSetDatabase(store)
         dataViewSubscriptionContainer = DataViewSubscriptionContainer(

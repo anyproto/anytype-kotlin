@@ -5,13 +5,13 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.withContext
 
 /**
@@ -19,6 +19,7 @@ import kotlinx.coroutines.withContext
  */
 class GetTemplates(
     private val repo: BlockRepository,
+    private val spaceManager: SpaceManager,
     private val dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<GetTemplates.Params, List<ObjectWrapper.Basic>>(dispatchers.io) {
 
@@ -38,14 +39,19 @@ class GetTemplates(
                             value = true
                         ),
                         DVFilter(
-                            relation = Relations.TYPE_UNIQUE_KEY,
-                            condition = DVFilterCondition.EQUAL,
-                            value = ObjectTypeUniqueKeys.TEMPLATE
+                            relation = Relations.IS_HIDDEN,
+                            condition = DVFilterCondition.NOT_EQUAL,
+                            value = true
                         ),
                         DVFilter(
                             relation = Relations.TARGET_OBJECT_TYPE,
                             condition = DVFilterCondition.EQUAL,
                             value = params.type.id
+                        ),
+                        DVFilter(
+                            relation = Relations.SPACE_ID,
+                            condition = DVFilterCondition.EQUAL,
+                            value = spaceManager.get()
                         )
                     ),
                     keys = listOf(

@@ -48,7 +48,8 @@
             android:id="@+id/titleContainer"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="center">
+            android:layout_gravity="center"
+            tools:visibility="gone">
 
             <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
                 android:id="@+id/ivTopToolbarIcon"
@@ -76,6 +77,19 @@
                 tools:text="Your favorite movies" />
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvTemplates"
+            style="@style/TextView.UXStyle.Captions.1.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center_vertical"
+            android:drawableEnd="@drawable/ic_templates_expand"
+            android:drawablePadding="@dimen/dp_2"
+            tools:text="This type has 2 templates">
+
+        </TextView>
 
     </FrameLayout>
 

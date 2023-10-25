@@ -319,7 +319,6 @@ class EditorViewModel(
             is SelectTemplateState.Available -> {
                 SelectTemplateViewState.Active(
                     count = state.templates.size + 1,
-                    typeName = state.typeName
                 )
             }
             else -> SelectTemplateViewState.Idle
@@ -548,8 +547,6 @@ class EditorViewModel(
                     orchestrator.stores.details.update(event.details)
                     orchestrator.stores.relationLinks.update(event.relationLinks)
                     orchestrator.stores.objectRestrictions.update(event.objectRestrictions)
-
-                    proceedWithShowingObjectTypesWidget()
                 }
                 is Event.Command.Details -> {
                     orchestrator.stores.details.apply { update(current().process(event)) }
@@ -745,7 +742,11 @@ class EditorViewModel(
                 orchestrator.stores.views.update(views)
                 renderCommand.send(Unit)
             }
-            .onEach { refreshTableToolbar() }
+            .onEach {
+                refreshTableToolbar()
+                proceedWithCheckingInternalFlagShouldSelectTemplate()
+                proceedWithCheckingInternalFlagShouldSelectType()
+            }
             .launchIn(viewModelScope)
     }
 
@@ -4346,9 +4347,6 @@ class EditorViewModel(
                         objType = storeOfObjectTypes.get(type)
                     )
                     sendHideObjectTypeWidgetEvent()
-                    if (applyTemplate) {
-                        proceedWithCheckingInternalFlagShouldSelectTemplate(objTypeId = type)
-                    }
                 }
             }
         }
@@ -5947,21 +5945,11 @@ class EditorViewModel(
     fun onObjectTypesWidgetDoneClicked() {
         Timber.d("onObjectTypesWidgetDoneClicked, ")
         sendHideObjectTypeWidgetEvent()
-        proceedWithCheckingInternalFlagShouldSelectTemplate()
-    }
-
-    private fun proceedWithShowingObjectTypesWidget() {
-        val restrictions = orchestrator.stores.objectRestrictions.current()
-        if (restrictions.contains(ObjectRestriction.TYPE_CHANGE)) {
-            Timber.d("proceedWithShowingObjectTypesWidget, type change is restricted")
-            return
-        }
-        proceedWithCheckingInternalFlagShouldSelectType()
     }
 
     private fun proceedWithGettingObjectTypesForObjectTypeWidget() {
         viewModelScope.launch {
-            val excludeTypes = orchestrator.stores.details.current().details[context]?.type
+            val excludeTypes = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = buildList {
@@ -5989,26 +5977,13 @@ class EditorViewModel(
                         isWithCollection = true,
                         isWithBookmark = false,
                         selectedTypes = emptyList(),
-                        excludeTypes = excludeTypes ?: emptyList()
+                        excludeTypes = excludeTypes
                     )
-                    proceedWithSortingObjectTypesForObjectTypeWidget(views = views)
+                    val filtered = views.filter { !excludeTypes.contains(it.key) }
+                    controlPanelInteractor.onEvent(ObjectTypesWidgetEvent.Show(filtered))
                 }
             )
         }
-    }
-
-    private suspend fun proceedWithSortingObjectTypesForObjectTypeWidget(views: List<ObjectTypeView>) {
-        getDefaultPageType.async(Unit).fold(
-            onFailure = {
-                Timber.e(it, "Error while getting default object type")
-            },
-            onSuccess = { response ->
-                val filtered = views.filter { it.key != response.type?.key }
-                controlPanelInteractor.onEvent(
-                    ObjectTypesWidgetEvent.Show(filtered)
-                )
-            }
-        )
     }
 
     private fun proceedWithOpeningSelectingObjectTypeScreen() {
@@ -6250,18 +6225,14 @@ class EditorViewModel(
         viewModelScope.launch { onEvent(SelectTemplateEvent.OnAccepted) }
     }
 
-    fun onTypeHasTemplateToolbarHidden() {
-        viewModelScope.launch { onEvent(SelectTemplateEvent.OnSkipped) }
-    }
-
     private fun proceedWithStartTemplateEvent(objTypeId: Id) {
         viewModelScope.launch {
-            val objType = storeOfObjectTypes.get(objTypeId)
-            if (objType != null) {
+            val objType = storeOfObjectTypes.getByKey(objTypeId)
+            if (objType?.uniqueKey != null) {
                 onEvent(
                     SelectTemplateEvent.OnStart(
                         ctx = context,
-                        type = objTypeId,
+                        type = objType.id,
                         typeName = objType.name.orEmpty()
                     )
                 )
@@ -6975,13 +6946,19 @@ class EditorViewModel(
 
     //region INTERNAL FLAGS
     private fun proceedWithCheckingInternalFlagShouldSelectType() {
-        val internalFlags = getInternalFlagsFromDetails()
-        if (internalFlags.contains(InternalFlags.ShouldSelectType)) {
-            //We use this flag to show object type widget and then we don't need it anymore
-            proceedWithGettingObjectTypesForObjectTypeWidget()
-            proceedWithOptOutTypeInternalFlag()
-        } else {
-            Timber.d("Object doesn't have internal flag: ShouldSelectType")
+        val containsFlag = getInternalFlagsFromDetails().any { it == InternalFlags.ShouldSelectType }
+        when {
+            isObjectTypesWidgetVisible -> {
+                if (!containsFlag) {
+                    sendHideObjectTypeWidgetEvent()
+                }
+            }
+            containsFlag -> {
+                val restrictions = orchestrator.stores.objectRestrictions.current()
+                if (restrictions.none { it == ObjectRestriction.TYPE_CHANGE }) {
+                    proceedWithGettingObjectTypesForObjectTypeWidget()
+                }
+            }
         }
     }
 
@@ -6991,8 +6968,8 @@ class EditorViewModel(
             //We use this flag to show template widget and then we don't need it anymore
             val properObjTypeId = objTypeId ?: getObjectTypeFromDetails() ?: return
             proceedWithStartTemplateEvent(objTypeId = properObjTypeId)
-            proceedWithOptOutTemplateInternalFlag()
         } else {
+            viewModelScope.launch { onEvent(SelectTemplateEvent.OnSkipped) }
             Timber.d("Object doesn't have internal flag: ShouldSelectTemplate")
         }
     }

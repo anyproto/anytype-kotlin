@@ -215,9 +215,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     binding.styleToolbarBackground.id -> {
                         vm.onCloseBlockStyleBackgroundToolbarClicked()
                     }
-                    binding.typeHasTemplateToolbar.id -> {
-                        vm.onTypeHasTemplateToolbarHidden()
-                    }
                     binding.simpleTableWidget.id -> {
                         vm.onHideSimpleTableWidget()
                     }
@@ -457,16 +454,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 pickerDelegate.onCopyFileCommand(command)
             }
             jobs += subscribe(vm.selectTemplateViewState) { state ->
-                val behavior = BottomSheetBehavior.from(binding.typeHasTemplateToolbar)
                 when (state) {
                     is SelectTemplateViewState.Active -> {
-                        binding.typeHasTemplateToolbar.setText(state.count, state.typeName)
-                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                        behavior.addBottomSheetCallback(onHideBottomSheetCallback)
+                        binding.topToolbar.showTemplates()
+                        binding.topToolbar.setTemplates(count = state.count)
                     }
                     SelectTemplateViewState.Idle -> {
-                        behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
-                        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                        binding.topToolbar.hideTemplates()
                     }
                 }
             }
@@ -682,7 +676,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
-        binding.typeHasTemplateToolbar.binding.btnShow.clicks()
+        binding.topToolbar.templates.clicks()
             .throttleFirst()
             .onEach { vm.onShowTemplateClicked() }
             .launchIn(lifecycleScope)
@@ -704,8 +698,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarBackground).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.typeHasTemplateToolbar).state =
             BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.simpleTableWidget).state =
             BottomSheetBehavior.STATE_HIDDEN

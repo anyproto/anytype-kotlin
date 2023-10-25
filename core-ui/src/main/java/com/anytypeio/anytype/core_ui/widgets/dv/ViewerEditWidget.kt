@@ -1,15 +1,22 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -18,10 +25,10 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.ModalBottomSheetLayout
-import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Text
-import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +49,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -51,6 +60,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
@@ -58,55 +68,92 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.presentation.sets.ViewEditAction
 import com.anytypeio.anytype.presentation.sets.ViewerEditWidgetUi
+import com.anytypeio.anytype.presentation.sets.isVisible
+import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun ViewerEditWidget(
     state: ViewerEditWidgetUi,
-    action: (ViewEditAction) -> Unit
+    action: (ViewEditAction) -> Unit,
+    scope: CoroutineScope
 ) {
 
-    val sheetState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden)
-
-    LaunchedEffect(key1 = state, block = {
-        if (state is ViewerEditWidgetUi.Data && state.showWidget) sheetState.show() else sheetState.hide()
-    })
-
-    DisposableEffect(
-        key1 = (sheetState.targetValue == ModalBottomSheetValue.Hidden
-                && sheetState.isVisible)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomStart,
     ) {
-        onDispose {
-            if (sheetState.currentValue == ModalBottomSheetValue.Hidden) {
-                action(ViewEditAction.Dismiss)
+
+        val currentState by rememberUpdatedState(state)
+        val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
+        val kc = LocalSoftwareKeyboardController.current
+
+        AnimatedVisibility(
+            visible = currentState.isVisible(),
+            enter = fadeIn(),
+            exit = fadeOut(
+                tween(200)
+            )
+        ) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))
+                    .noRippleClickable { action(ViewEditAction.Dismiss) }
+            )
+        }
+
+        if (swipeableState.isAnimationRunning && swipeableState.targetValue == DragStates.DISMISSED) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    kc?.hide()
+                    action(ViewEditAction.Dismiss)
+                }
             }
         }
-    }
 
-    ModalBottomSheetLayout(
-        sheetState = sheetState,
-        sheetBackgroundColor = Color.Transparent,
-        sheetShape = RoundedCornerShape(16.dp),
-        sheetContent = {
+        if (!currentState.isVisible()) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    scope.launch { swipeableState.snapTo(DragStates.VISIBLE) }
+                }
+            }
+        }
+
+        val sizePx =
+            with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+
+
+        AnimatedVisibility(
+            visible = currentState.isVisible(),
+            enter = slideInVertically { it },
+            exit = slideOutVertically { it },
+            modifier = Modifier
+                .swipeable(state = swipeableState,
+                    orientation = Orientation.Vertical,
+                    anchors = mapOf(
+                        0f to DragStates.VISIBLE, sizePx to DragStates.DISMISSED
+                    ),
+                    thresholds = { _, _ -> FractionalThreshold(0.3f) })
+                .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
+        ) {
             if (state is ViewerEditWidgetUi.Data) {
                 ViewerEditWidgetContent(state, action)
             }
-        },
-        content = {
-            Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f))
-                .noRippleThrottledClickable { action.invoke(ViewEditAction.Dismiss) }
         }
-    )
-
+    }
 }
 
 @Composable
@@ -384,5 +431,5 @@ fun PreviewViewerEditWidget() {
         id = "1",
         isActive = false
     )
-    ViewerEditWidget(state = state, action = {})
+    ViewerEditWidget(state = state, action = {}, scope = CoroutineScope(Dispatchers.Main))
 }

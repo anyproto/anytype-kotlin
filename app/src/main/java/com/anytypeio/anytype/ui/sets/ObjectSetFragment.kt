@@ -368,7 +368,8 @@ open class ObjectSetFragment :
             setContent {
                 ViewerEditWidget(
                     state = vm.viewerEditWidgetState.collectAsStateWithLifecycle().value,
-                    action = vm::onViewerEditWidgetAction
+                    action = vm::onViewerEditWidgetAction,
+                    scope = lifecycleScope
                 )
             }
         }
@@ -391,6 +392,12 @@ open class ObjectSetFragment :
                 dispatchMode = DISPATCH_MODE_STOP
             )
             title.syncFocusWithImeVisibility()
+            binding.viewerEditWidget.syncTranslationWithImeVisibility(
+                dispatchMode = DISPATCH_MODE_STOP
+            )
+            binding.templatesWidget.syncTranslationWithImeVisibility(
+                dispatchMode = DISPATCH_MODE_STOP
+            )
         }
     }
 

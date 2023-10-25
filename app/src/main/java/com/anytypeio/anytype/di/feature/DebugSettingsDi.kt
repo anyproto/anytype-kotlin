@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.config.UseCustomContextMenu
 import com.anytypeio.anytype.domain.debugging.DebugLocalStore
 import com.anytypeio.anytype.domain.debugging.DebugSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.ui.settings.DebugSettingsFragment
 import dagger.Module
 import dagger.Provides
@@ -46,8 +47,13 @@ class DebugSettingsModule {
     @PerScreen
     fun provideDebugSync(
         repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): DebugSpace = DebugSpace(repo = repo, dispatchers = dispatchers)
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
+    ): DebugSpace = DebugSpace(
+        repo = repo,
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
+    )
 
     @Provides
     @PerScreen

@@ -52,7 +52,7 @@ import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -264,7 +264,7 @@ object EditorSessionModule {
         delegator: Delegator<Action>,
         updateDetail: UpdateDetail,
         searchObjects: SearchObjects,
-        getDefaultPageType: GetDefaultPageType,
+        getDefaultObjectType: GetDefaultObjectType,
         findObjectSetForType: FindObjectSetForType,
         copyFileToCacheDirectory: CopyFileToCacheDirectory,
         downloadUnsplashImage: DownloadUnsplashImage,
@@ -301,7 +301,7 @@ object EditorSessionModule {
         delegator = delegator,
         updateDetail = updateDetail,
         searchObjects = searchObjects,
-        getDefaultPageType = getDefaultPageType,
+        getDefaultObjectType = getDefaultObjectType,
         findObjectSetForType = findObjectSetForType,
         createObjectSet = createObjectSet,
         copyFileToCacheDirectory = copyFileToCacheDirectory,
@@ -729,7 +729,7 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideCreateObjectAsMentionOrLink(
         repo: BlockRepository,
-        getDefaultPageType: GetDefaultPageType,
+        getDefaultObjectType: GetDefaultObjectType,
         getTemplates: GetTemplates,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager
@@ -987,7 +987,7 @@ object EditorUseCaseModule {
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
-    ): GetDefaultPageType = GetDefaultPageType(
+    ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = repo,
         blockRepository = blockRepository,
         spaceManager = spaceManager,
@@ -1189,12 +1189,12 @@ object EditorUseCaseModule {
     @PerScreen
     fun getCreateObject(
         repo: BlockRepository,
-        getDefaultPageType: GetDefaultPageType,
+        getDefaultObjectType: GetDefaultObjectType,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
-        getDefaultPageType = getDefaultPageType,
+        getDefaultObjectType = getDefaultObjectType,
         dispatchers = dispatchers,
         spaceManager = spaceManager
     )

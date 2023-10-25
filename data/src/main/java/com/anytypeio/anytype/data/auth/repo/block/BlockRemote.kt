@@ -178,7 +178,7 @@ interface BlockRemote {
     suspend fun addRelationToObject(ctx: Id, relation: Key): Payload
     suspend fun deleteRelationFromObject(ctx: Id, relation: Key): Payload
 
-    suspend fun debugSpace(): String
+    suspend fun debugSpace(space: SpaceId): String
 
     suspend fun debugObject(objectId: Id, path: String): String
 

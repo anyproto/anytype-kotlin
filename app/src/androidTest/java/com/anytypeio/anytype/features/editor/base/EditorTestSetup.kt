@@ -55,9 +55,8 @@ import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -211,7 +210,7 @@ open class EditorTestSetup {
     lateinit var clearBlockContent: ClearBlockContent
     lateinit var clearBlockStyle: ClearBlockStyle
 
-    lateinit var getDefaultPageType: GetDefaultPageType
+    lateinit var getDefaultObjectType: GetDefaultObjectType
 
     private lateinit var findObjectSetForType: FindObjectSetForType
     private lateinit var createObjectSet: CreateObjectSet
@@ -358,7 +357,7 @@ open class EditorTestSetup {
         removeDocCover = RemoveDocCover(repo)
         turnIntoStyle = TurnIntoStyle(repo)
         updateDetail = UpdateDetail(repo)
-        getDefaultPageType = GetDefaultPageType(
+        getDefaultObjectType = GetDefaultObjectType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = repo,
             dispatchers = dispatchers,
@@ -461,7 +460,7 @@ open class EditorTestSetup {
             dispatcher = Dispatcher.Default(),
             updateDetail = updateDetail,
             searchObjects = getSearchObjects,
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             createObjectSet = createObjectSet,
             findObjectSetForType = findObjectSetForType,
             copyFileToCacheDirectory = copyFileToCacheDirectory,

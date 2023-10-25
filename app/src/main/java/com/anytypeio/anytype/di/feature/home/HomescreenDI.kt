@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -149,12 +149,12 @@ object HomeScreenModule {
     fun createObject(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
-        getDefaultEditorType: GetDefaultPageType,
+        getDefaultEditorType: GetDefaultObjectType,
         spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
         dispatchers = dispatchers,
-        getDefaultPageType = getDefaultEditorType,
+        getDefaultObjectType = getDefaultEditorType,
         spaceManager = spaceManager
     )
 
@@ -167,7 +167,7 @@ object HomeScreenModule {
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
-    ) : GetDefaultPageType = GetDefaultPageType(
+    ) : GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
         dispatchers = dispatchers,

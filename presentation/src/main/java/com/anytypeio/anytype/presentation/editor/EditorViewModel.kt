@@ -5945,7 +5945,6 @@ class EditorViewModel(
     fun onObjectTypesWidgetDoneClicked() {
         Timber.d("onObjectTypesWidgetDoneClicked, ")
         proceedWithOptOutTypeInternalFlag()
-        sendHideObjectTypeWidgetEvent()
     }
 
     private fun proceedWithGettingObjectTypesForObjectTypeWidget() {

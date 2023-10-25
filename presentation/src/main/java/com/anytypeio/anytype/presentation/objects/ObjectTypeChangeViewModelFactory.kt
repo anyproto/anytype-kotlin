@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 
@@ -13,7 +13,7 @@ class ObjectTypeChangeViewModelFactory(
     private val addObjectTypeToSpace: AddObjectTypeToSpace,
     private val dispatchers: AppCoroutineDispatchers,
     private val spaceManager: SpaceManager,
-    private val getDefaultPageType: GetDefaultPageType
+    private val getDefaultObjectType: GetDefaultObjectType
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -23,7 +23,7 @@ class ObjectTypeChangeViewModelFactory(
             addObjectTypeToSpace = addObjectTypeToSpace,
             dispatchers = dispatchers,
             spaceManager = spaceManager,
-            getDefaultPageType = getDefaultPageType
+            getDefaultObjectType = getDefaultObjectType
         ) as T
     }
 }

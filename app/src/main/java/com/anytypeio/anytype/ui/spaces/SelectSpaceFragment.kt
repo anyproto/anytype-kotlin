@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -48,17 +49,15 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                 SelectSpaceScreen(
                     spaces = vm.views.collectAsState().value,
                     onSpaceClicked = vm::onSpaceClicked,
-                    onAddClicked = vm::onCreateSpaceClicked,
-                    onSpaceSettingsClicked = {
-                        findNavController().navigate(
-                            R.id.profileScreen
-                        )
-                    },
-                    onProfileClicked = {
-                        findNavController().navigate(
-                            R.id.profileScreen
-                        )
-                    }
+                    onAddClicked = throttledClick(
+                        onClick = { vm.onCreateSpaceClicked() }
+                    ),
+                    onSpaceSettingsClicked = throttledClick(
+                        onClick = { findNavController().navigate(R.id.profileScreen) }
+                    ),
+                    onProfileClicked = throttledClick(
+                        onClick = { findNavController().navigate(R.id.profileScreen) }
+                    )
                 )
             }
             LaunchedEffect(Unit) {

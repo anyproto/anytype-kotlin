@@ -45,10 +45,6 @@ class CreateSpaceViewModel(
             sendToast("Please wait...")
             return
         }
-        if (name.isEmpty()) {
-            sendToast("Name should not be empty")
-            return
-        }
         viewModelScope.launch {
             createSpace.stream(
                 CreateSpace.Params(

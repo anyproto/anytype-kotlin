@@ -11,7 +11,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.util.dispatchers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -43,7 +43,7 @@ class CreateObjectAsMentionOrLinkTest {
     lateinit var repo: BlockRepository
 
     @Mock
-    lateinit var getDefaultPageType: GetDefaultPageType
+    lateinit var getDefaultObjectType: GetDefaultObjectType
 
     @Mock
     lateinit var getTemplates: GetTemplates
@@ -233,8 +233,8 @@ class CreateObjectAsMentionOrLinkTest {
         name: String? = null,
         defaultTemplate: String? = null
     ) {
-        getDefaultPageType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
+        getDefaultObjectType.stub {
+            onBlocking { run(Unit) } doReturn GetDefaultObjectType.Response(
                 type = type,
                 name = name,
                 id = TypeId(MockDataFactory.randomString()),

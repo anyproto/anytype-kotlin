@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.ClearFileCache
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -27,7 +27,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class OtherSettingsViewModel(
-    private val getDefaultPageType: GetDefaultPageType,
+    private val getDefaultObjectType: GetDefaultObjectType,
     private val setDefaultObjectType: SetDefaultObjectType,
     private val clearFileCache: ClearFileCache,
     private val appActionManager: AppActionManager,
@@ -42,7 +42,7 @@ class OtherSettingsViewModel(
 
     init {
         viewModelScope.launch {
-            getDefaultPageType.execute(Unit).fold(
+            getDefaultObjectType.execute(Unit).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while getting user settings")
                 },
@@ -127,7 +127,7 @@ class OtherSettingsViewModel(
     }
 
     class Factory(
-        private val getDefaultPageType: GetDefaultPageType,
+        private val getDefaultObjectType: GetDefaultObjectType,
         private val setDefaultObjectType: SetDefaultObjectType,
         private val clearFileCache: ClearFileCache,
         private val appActionManager: AppActionManager,
@@ -138,7 +138,7 @@ class OtherSettingsViewModel(
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ): T = OtherSettingsViewModel(
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             setDefaultObjectType = setDefaultObjectType,
             clearFileCache = clearFileCache,
             appActionManager = appActionManager,

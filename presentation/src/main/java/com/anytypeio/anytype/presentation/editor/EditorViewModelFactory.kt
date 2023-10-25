@@ -14,7 +14,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -63,7 +63,7 @@ open class  EditorViewModelFactory(
     private val delegator: Delegator<Action>,
     private val updateDetail: UpdateDetail,
     private val searchObjects: SearchObjects,
-    private val getDefaultPageType: GetDefaultPageType,
+    private val getDefaultObjectType: GetDefaultObjectType,
     private val findObjectSetForType: FindObjectSetForType,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val downloadUnsplashImage: DownloadUnsplashImage,
@@ -104,7 +104,7 @@ open class  EditorViewModelFactory(
             delegator = delegator,
             updateDetail = updateDetail,
             searchObjects = searchObjects,
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             findObjectSetForType = findObjectSetForType,
             createObjectSet = createObjectSet,
             copyFileToCache = copyFileToCacheDirectory,

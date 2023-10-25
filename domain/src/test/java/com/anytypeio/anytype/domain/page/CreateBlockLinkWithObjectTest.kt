@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.page
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.CreateBlockLinkWithObjectResult
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
@@ -54,6 +55,7 @@ class CreateBlockLinkWithObjectTest {
         //SETUP
         val context = MockDataFactory.randomString()
         val target = MockDataFactory.randomString()
+        val spaceId = MockDataFactory.randomUuid()
         val position = Position.LEFT
         val typeId = MockDataFactory.randomString()
         val type = MockDataFactory.randomString()
@@ -66,7 +68,9 @@ class CreateBlockLinkWithObjectTest {
             target = target,
             position = position,
             typeKey = TypeKey(type),
-            typeId = TypeId(typeId)
+            typeId = TypeId(typeId),
+            space = spaceId,
+            template = null
         )
         createBlockLinkWithObject.run(params)
 
@@ -77,8 +81,9 @@ class CreateBlockLinkWithObjectTest {
             position = position,
             prefilled = emptyMap(),
             template = null,
-            internalFlags = listOf(),
-            type = TypeKey(type)
+            internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
+            type = TypeKey(type),
+            space = spaceId
         )
         verifyBlocking(repo, times(1)) { createBlockLinkWithObject(commands) }
     }
@@ -90,13 +95,11 @@ class CreateBlockLinkWithObjectTest {
         val context = MockDataFactory.randomString()
         val target = MockDataFactory.randomString()
         val position = Position.LEFT
+        val spaceId = MockDataFactory.randomUuid()
         val type = MockDataFactory.randomString()
         val typeId = MockDataFactory.randomString()
         val template = MockDataFactory.randomString()
         stubCreateBlockLinkWithObject()
-        givenGetTemplates(listOf(ObjectWrapper.Basic(buildMap {
-            put(Relations.ID, template)
-        })))
 
         //TESTING
         val params = CreateBlockLinkWithObject.Params(
@@ -104,7 +107,9 @@ class CreateBlockLinkWithObjectTest {
             target = target,
             position = position,
             typeKey = TypeKey(type),
-            typeId = TypeId(typeId)
+            typeId = TypeId(typeId),
+            space = spaceId,
+            template = template
         )
         createBlockLinkWithObject.run(params)
 
@@ -115,8 +120,9 @@ class CreateBlockLinkWithObjectTest {
             position = position,
             prefilled = emptyMap(),
             template = template,
-            internalFlags = listOf(),
-            type = TypeKey(type)
+            internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
+            type = TypeKey(type),
+            space = spaceId
         )
         verifyBlocking(repo, times(1)) { createBlockLinkWithObject(commands) }
     }
@@ -128,21 +134,11 @@ class CreateBlockLinkWithObjectTest {
         val context = MockDataFactory.randomString()
         val target = MockDataFactory.randomString()
         val position = Position.LEFT
+        val spaceId = MockDataFactory.randomUuid()
         val type = MockDataFactory.randomString()
         val typeId = MockDataFactory.randomString()
         val templateOne = MockDataFactory.randomString()
-        val templateTwo = MockDataFactory.randomString()
         stubCreateBlockLinkWithObject()
-        givenGetTemplates(
-            listOf(
-                ObjectWrapper.Basic(buildMap {
-                    put(Relations.ID, templateOne)
-                }),
-                ObjectWrapper.Basic(buildMap {
-                    put(Relations.ID, templateTwo)
-                })
-            )
-        )
 
         //TESTING
         val params = CreateBlockLinkWithObject.Params(
@@ -150,7 +146,9 @@ class CreateBlockLinkWithObjectTest {
             target = target,
             position = position,
             typeKey = TypeKey(type),
-            typeId = TypeId(typeId)
+            typeId = TypeId(typeId),
+            space = spaceId,
+            template = templateOne
         )
         createBlockLinkWithObject.run(params)
 
@@ -160,9 +158,10 @@ class CreateBlockLinkWithObjectTest {
             target = target,
             position = position,
             template = templateOne,
-            internalFlags = listOf(),
+            internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
             type = TypeKey(type),
-            prefilled = emptyMap()
+            prefilled = emptyMap(),
+            space = spaceId
         )
         verifyBlocking(repo, times(1)) { createBlockLinkWithObject(commands) }
     }

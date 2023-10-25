@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.launch
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
@@ -37,12 +38,13 @@ class GetDefaultPageType @Inject constructor(
             return if (item != null) {
                 val key = item.uniqueKey?.let {
                     TypeKey(it)
-                }
+                } ?: TypeKey(ObjectTypeUniqueKeys.NOTE)
                 val id = TypeId(item.id)
                 Response(
                     type = key,
                     name = item.name,
-                    id = id
+                    id = id,
+                    defaultTemplate = item.defaultTemplateId
                 )
             } else {
                 fetchDefaultType()
@@ -84,25 +86,23 @@ class GetDefaultPageType @Inject constructor(
                 Relations.ID,
                 Relations.NAME,
                 Relations.UNIQUE_KEY,
-                Relations.SPACE_ID
+                Relations.SPACE_ID,
+                Relations.DEFAULT_TEMPLATE_ID
             )
         )
-        val note = if (items.isNotEmpty()) {
-            ObjectWrapper.Type(items.first())
+        if (items.isNotEmpty()) {
+            val note = ObjectWrapper.Type(items.first())
+            val key = TypeKey(note.uniqueKey ?: throw IllegalStateException("Default type has empty key"))
+            val id = TypeId(note.id)
+            return Response(
+                type = key,
+                name = note.name,
+                id = id,
+                defaultTemplate = note.defaultTemplateId
+            )
         } else {
-            null
+            throw IllegalStateException("Default type not found")
         }
-        val key = note?.uniqueKey?.let {
-            TypeKey(it)
-        }
-        val id = note?.id?.let {
-            TypeId(it)
-        }
-        return Response(
-            type = key,
-            name = note?.name,
-            id = id
-        )
     }
 
     private suspend fun searchObjectByIdAndSpaceId(
@@ -128,7 +128,8 @@ class GetDefaultPageType @Inject constructor(
                 Relations.ID,
                 Relations.NAME,
                 Relations.UNIQUE_KEY,
-                Relations.SPACE_ID
+                Relations.SPACE_ID,
+                Relations.DEFAULT_TEMPLATE_ID
             )
         )
         return if (items.isNotEmpty()) {
@@ -166,9 +167,10 @@ class GetDefaultPageType @Inject constructor(
         )
     )
 
-    class Response(
-        val id: TypeId?,
-        val type: TypeKey?,
-        val name: String?
+    data class Response(
+        val id: TypeId,
+        val type: TypeKey,
+        val name: String?,
+        val defaultTemplate: Id?
     )
 }

@@ -18,6 +18,7 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import net.bytebuddy.utility.RandomString
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -45,6 +46,8 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
     }
 
+    val space = "spaceId-${RandomString.make(10)}"
+
     @Test
     fun `should invoke CreateBlockLinkWithObject UseCase on clicked on object type item with bottom position when text block is not empty`() {
         // SETUP
@@ -60,6 +63,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         stubSearchObjects(listOf(type1, type2, type3))
         stubCreateBlockLinkWithObject(root, a.id)
         stubOpenDocument(doc)
+        stubSpaceManager(space = space)
 
         val vm = buildViewModel()
         vm.onStart(root)
@@ -93,7 +97,9 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             target = a.id,
             position = Position.BOTTOM,
             typeId = TypeId(type2.id),
-            typeKey = TypeKey(type2.getValue<Key>(Relations.UNIQUE_KEY)!!)
+            typeKey = TypeKey(type2.getValue<Key>(Relations.UNIQUE_KEY)!!),
+            space = space,
+            template = null
         )
 
         verifyBlocking(createBlockLinkWithObject, times(1)) { async(params) }
@@ -117,6 +123,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         stubSearchObjects(listOf(type1, type2, type3))
         stubCreateBlockLinkWithObject(root, paragraph.id)
         stubOpenDocument(doc)
+        stubSpaceManager(space = space)
 
         val vm = buildViewModel()
         vm.onStart(root)
@@ -150,7 +157,9 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
             target = paragraph.id,
             position = Position.REPLACE,
             typeId = TypeId(type2.id),
-            typeKey = TypeKey(type2.getValue(Relations.UNIQUE_KEY)!!)
+            typeKey = TypeKey(type2.getValue(Relations.UNIQUE_KEY)!!),
+            space = space,
+            template = null
         )
 
         verifyBlocking(createBlockLinkWithObject, times(1)) { async(params) }

@@ -27,7 +27,6 @@ import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoMoreInteractions
 
-typealias CBlock = com.anytypeio.anytype.core_models.Block
 typealias CFields = com.anytypeio.anytype.core_models.Block.Fields
 typealias CBlockFileType = com.anytypeio.anytype.core_models.Block.Content.File.Type
 typealias CBlockPrototypeText = com.anytypeio.anytype.core_models.Block.Prototype.Text
@@ -79,6 +78,7 @@ class MiddlewareTest {
         // SETUP
 
         val templateId = MockDataFactory.randomUuid()
+        val spaceId = MockDataFactory.randomUuid()
 
         val typeKey = TypeKey(MockDataFactory.randomUuid())
 
@@ -89,7 +89,8 @@ class MiddlewareTest {
             template = templateId,
             prefilled = emptyMap(),
             internalFlags = listOf(),
-            type = typeKey
+            type = typeKey,
+            space = spaceId
         )
 
         val response = Rpc.BlockLink.CreateWithObject.Response(
@@ -104,7 +105,8 @@ class MiddlewareTest {
             position = Block.Position.Inner,
             details = mapOf<String, Any?>(),
             templateId = templateId,
-            objectTypeUniqueKey = typeKey.key
+            objectTypeUniqueKey = typeKey.key,
+            spaceId = spaceId
         )
 
         service.stub {
@@ -136,6 +138,7 @@ class MiddlewareTest {
         val name = MockDataFactory.randomString()
 
         val typeKey = TypeKey(MockDataFactory.randomUuid())
+        val spaceId = MockDataFactory.randomUuid()
 
         val command = Command.CreateBlockLinkWithObject(
             context = MockDataFactory.randomUuid(),
@@ -144,7 +147,8 @@ class MiddlewareTest {
             template = null,
             prefilled = buildMap { put(Relations.NAME, name) },
             internalFlags = listOf(),
-            type = typeKey
+            type = typeKey,
+            space = spaceId
         )
 
         val response = Rpc.BlockLink.CreateWithObject.Response(
@@ -158,7 +162,8 @@ class MiddlewareTest {
             targetId = command.target,
             position = Block.Position.Inner,
             details = buildMap { put(Relations.NAME, name) },
-            objectTypeUniqueKey = typeKey.key
+            objectTypeUniqueKey = typeKey.key,
+            spaceId = spaceId
         )
 
         service.stub {

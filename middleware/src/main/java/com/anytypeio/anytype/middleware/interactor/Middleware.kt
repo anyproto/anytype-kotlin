@@ -864,7 +864,7 @@ class Middleware @Inject constructor(
             templateId = command.template.orEmpty(),
             internalFlags = command.internalFlags.toMiddlewareModel(),
             spaceId = command.space.id,
-            objectTypeUniqueKey = command.type.key
+            objectTypeUniqueKey = command.typeKey.key
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreate(request)
@@ -885,7 +885,8 @@ class Middleware @Inject constructor(
             internalFlags = command.internalFlags.toMiddlewareModel(),
             targetId = command.target,
             position = command.position.toMiddlewareModel(),
-            fields = null
+            fields = null,
+            spaceId = command.space
         )
 
         if (BuildConfig.DEBUG) logRequest(request)

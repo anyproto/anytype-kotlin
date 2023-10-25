@@ -2127,7 +2127,7 @@ class ObjectSetViewModel(
                 val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                 val newView = activeView.copy(
                     id = "",
-                    name = DVViewerType.GRID.formattedName,
+                    name = "",
                     type = DVViewerType.GRID
                 )
                 viewModelScope.launch {

@@ -108,10 +108,10 @@ class TemplateSelectViewModel(
             is ViewState.Success -> {
                 when (val template = state.templates[currentItem]) {
                     is TemplateSelectView.Blank -> {
-                        isDismissed.value = true
+                        proceedWithApplyingTemplate(ctx, "")
                     }
                     is TemplateSelectView.Template -> {
-                        proceedWithApplyingTemplate(ctx, template)
+                        proceedWithApplyingTemplate(ctx, template.id)
                     }
                 }
                 viewModelScope.launch {
@@ -125,13 +125,13 @@ class TemplateSelectViewModel(
         }
     }
 
-    private fun proceedWithApplyingTemplate(ctx: Id, template: TemplateSelectView.Template) {
-        val params = ApplyTemplate.Params(ctx = ctx, template = template.id)
+    private fun proceedWithApplyingTemplate(ctx: Id, id: Id) {
+        val params = ApplyTemplate.Params(ctx = ctx, template = id)
         viewModelScope.launch {
             applyTemplate.async(params).fold(
                 onSuccess = {
                     isDismissed.value = true
-                    Timber.d("Template ${template.id} applied successfully")
+                    Timber.d("Template ${id} applied successfully")
                 },
                 onFailure = {
                     isDismissed.value = true

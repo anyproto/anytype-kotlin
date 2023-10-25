@@ -84,7 +84,7 @@ class ObjectTopToolbar @JvmOverloads constructor(
         binding.tvTemplates.visibility = View.INVISIBLE
     }
 
-    fun setTemplates(count: Int, typeName: String) {
+    fun setTemplates(count: Int) {
         binding.tvTemplates.text = context.getString(
             R.string.this_type_has_templates,
             count

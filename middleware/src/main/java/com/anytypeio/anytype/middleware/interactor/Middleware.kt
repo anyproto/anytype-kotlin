@@ -771,8 +771,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun debugSpace(): String {
-        val request = Rpc.Debug.SpaceSummary.Request()
+    fun debugSpace(space: SpaceId): String {
+        val request = Rpc.Debug.SpaceSummary.Request(spaceId = space.id)
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.debugSpace(request)
         if (BuildConfig.DEBUG) logResponse(response)

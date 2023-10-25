@@ -451,7 +451,7 @@ class BlockDataRepository(
         return remote.deleteRelationFromObject(ctx = ctx, relation = relation)
     }
 
-    override suspend fun debugSpace(): String = remote.debugSpace()
+    override suspend fun debugSpace(space: SpaceId): String = remote.debugSpace(space)
 
     override suspend fun debugObject(objectId: Id, path: String): String =
         remote.debugObject(objectId = objectId, path = path)

@@ -139,7 +139,6 @@ fun ViewerEditWidget(
         val sizePx =
             with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
 
-
         AnimatedVisibility(
             visible = currentState.isVisible(),
             enter = slideInVertically { it },

@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -1026,7 +1027,13 @@ class HomeScreenViewModel(
     fun onCreateNewObjectClicked() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            createObject.stream(CreateObject.Param(null)).collect { createObjectResponse ->
+            val params = CreateObject.Param(
+                internalFlags  = listOf(
+                    InternalFlags.ShouldSelectTemplate,
+                    InternalFlags.ShouldSelectType,
+                )
+            )
+            createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
                         // TODO Multispaces - Check analytics events

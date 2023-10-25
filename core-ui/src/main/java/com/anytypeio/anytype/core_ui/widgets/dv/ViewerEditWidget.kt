@@ -366,6 +366,20 @@ fun NameTextField(
                         name = innerValue
                     )
                 )
+            },
+            decorationBox = { innerTextField ->
+                if (innerValue.isEmpty()) {
+                    Text(
+                        text = stringResource(id = R.string.new_view),
+                        style = Title1,
+                        color = colorResource(id = R.color.text_tertiary),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            //.padding(start = 0.dp, top = 2.dp)
+                    )
+                }
+                innerTextField()
             }
         )
     }

@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.ClearFileCache
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -42,7 +42,7 @@ object OtherSettingsModule {
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
-    ): GetDefaultPageType = GetDefaultPageType(
+    ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
         dispatchers = dispatchers,
@@ -70,14 +70,14 @@ object OtherSettingsModule {
     @Provides
     @PerScreen
     fun provideOtherSettingsFactory(
-        getDefaultPageType: GetDefaultPageType,
+        getDefaultObjectType: GetDefaultObjectType,
         setDefaultObjectType: SetDefaultObjectType,
         clearFileCache: ClearFileCache,
         appActionManager: AppActionManager,
         analytics: Analytics,
         spaceManager: SpaceManager
     ): OtherSettingsViewModel.Factory = OtherSettingsViewModel.Factory(
-        getDefaultPageType = getDefaultPageType,
+        getDefaultObjectType = getDefaultObjectType,
         setDefaultObjectType = setDefaultObjectType,
         clearFileCache = clearFileCache,
         appActionManager = appActionManager,

@@ -6,12 +6,11 @@ import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.util.dispatchers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -43,7 +42,7 @@ class CreateObjectTest {
     lateinit var repo: BlockRepository
 
     @Mock
-    lateinit var getDefaultPageType: GetDefaultPageType
+    lateinit var getDefaultObjectType: GetDefaultObjectType
 
     @Mock
     lateinit var getTemplates: GetTemplates
@@ -57,7 +56,7 @@ class CreateObjectTest {
     fun setup() {
         createObject = CreateObject(
             repo = repo,
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             spaceManager = spaceManager,
             dispatchers = dispatchers
         )
@@ -200,7 +199,7 @@ class CreateObjectTest {
             createObject.run(params)
 
             //ASSERT
-            verifyNoInteractions(getDefaultPageType)
+            verifyNoInteractions(getDefaultObjectType)
             val commands = Command.CreateObject(
                 prefilled = emptyMap(),
                 template = null,
@@ -236,7 +235,7 @@ class CreateObjectTest {
             createObject.run(params)
 
             //ASSERT
-            verifyNoInteractions(getDefaultPageType)
+            verifyNoInteractions(getDefaultObjectType)
             val commands = Command.CreateObject(
                 prefilled = emptyMap(),
                 template = null,
@@ -274,7 +273,7 @@ class CreateObjectTest {
             createObject.run(params)
 
             //ASSERT
-            verifyNoInteractions(getDefaultPageType)
+            verifyNoInteractions(getDefaultObjectType)
             val commands = Command.CreateObject(
                 prefilled = emptyMap(),
                 template = templateTwo,
@@ -294,8 +293,8 @@ class CreateObjectTest {
         name: String? = null,
         template: String? = null,
     ) {
-        getDefaultPageType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
+        getDefaultObjectType.stub {
+            onBlocking { run(Unit) } doReturn GetDefaultObjectType.Response(
                 type = type,
                 name = name,
                 id = TypeId(MockDataFactory.randomString()),

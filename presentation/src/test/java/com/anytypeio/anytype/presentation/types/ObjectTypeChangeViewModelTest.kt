@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -50,7 +50,7 @@ class ObjectTypeChangeViewModelTest {
 
     private lateinit var getObjectTypes: GetObjectTypes
     private lateinit var addObjectToSpace: AddObjectTypeToSpace
-    private lateinit var getDefaultPageType: GetDefaultPageType
+    private lateinit var getDefaultObjectType: GetDefaultObjectType
 
     val spaceId = MockDataFactory.randomUuid()
 
@@ -74,7 +74,7 @@ class ObjectTypeChangeViewModelTest {
             repo = blockRepository,
             dispatchers = dispatchers
         )
-        getDefaultPageType = GetDefaultPageType(
+        getDefaultObjectType = GetDefaultObjectType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = blockRepository,
             dispatchers = dispatchers,
@@ -661,7 +661,7 @@ class ObjectTypeChangeViewModelTest {
         addObjectTypeToSpace = addObjectToSpace,
         dispatchers = dispatchers,
         spaceManager = spaceManager,
-        getDefaultPageType = getDefaultPageType
+        getDefaultObjectType = getDefaultObjectType
     )
 
     fun stubSpaceManager(spaceId: Id) {

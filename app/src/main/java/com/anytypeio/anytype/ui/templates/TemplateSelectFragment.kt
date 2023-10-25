@@ -74,7 +74,6 @@ class TemplateSelectFragment :
             is TemplateSelectViewModel.ViewState.Success -> {
                 binding.tvTemplateCountOrTutorial.text = getString(
                     R.string.this_type_has_templates,
-                    viewState.objectTypeName,
                     viewState.templates.size
                 )
                 binding.btnUseTemplate.isEnabled = true

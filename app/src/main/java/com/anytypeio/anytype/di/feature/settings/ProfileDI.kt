@@ -69,8 +69,13 @@ object ProfileModule {
     @PerScreen
     fun provideDebugSync(
         repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): DebugSpace = DebugSpace(repo = repo, dispatchers = dispatchers)
+        dispatchers: AppCoroutineDispatchers,
+        spaceManager: SpaceManager
+    ): DebugSpace = DebugSpace(
+        repo = repo,
+        dispatchers = dispatchers,
+        spaceManager = spaceManager
+    )
 
     @JvmStatic
     @PerScreen

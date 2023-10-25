@@ -16,7 +16,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -45,7 +45,7 @@ class SelectSpaceViewModel(
     private val urlBuilder: UrlBuilder,
     private val saveCurrentSpace: SaveCurrentSpace,
     private val appActionManager: AppActionManager,
-    private val getDefaultPageType: GetDefaultPageType
+    private val getDefaultObjectType: GetDefaultObjectType
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
@@ -187,7 +187,7 @@ class SelectSpaceViewModel(
     }
 
     private suspend fun resetDefaultObjectTypeForAppActions(onExit: suspend () -> Unit) {
-        getDefaultPageType.async(Unit).fold(
+        getDefaultObjectType.async(Unit).fold(
             onSuccess = { result ->
                 val type = result.type
                 if (type != null) {
@@ -241,7 +241,7 @@ class SelectSpaceViewModel(
         private val urlBuilder: UrlBuilder,
         private val saveCurrentSpace: SaveCurrentSpace,
         private val appActionManager: AppActionManager,
-        private val getDefaultPageType: GetDefaultPageType
+        private val getDefaultObjectType: GetDefaultObjectType
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -253,7 +253,7 @@ class SelectSpaceViewModel(
             urlBuilder = urlBuilder,
             saveCurrentSpace = saveCurrentSpace,
             appActionManager = appActionManager,
-            getDefaultPageType = getDefaultPageType
+            getDefaultObjectType = getDefaultObjectType
         ) as T
     }
 

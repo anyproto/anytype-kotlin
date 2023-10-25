@@ -33,7 +33,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -149,7 +149,7 @@ class HomeScreenViewModelTest {
     lateinit var unsubscriber: Unsubscriber
 
     @Mock
-    lateinit var getDefaultPageType: GetDefaultPageType
+    lateinit var getDefaultObjectType: GetDefaultObjectType
 
     @Mock
     lateinit var appActionManager: AppActionManager
@@ -2694,11 +2694,11 @@ class HomeScreenViewModelTest {
         name: String = MockDataFactory.randomString(),
         template: String? = null
     ) {
-        getDefaultPageType.stub {
+        getDefaultObjectType.stub {
             onBlocking {
                 execute(any())
             } doReturn Resultat.Success(
-                GetDefaultPageType.Response(
+                GetDefaultObjectType.Response(
                     id = id,
                     type = type,
                     name = name,
@@ -2770,7 +2770,7 @@ class HomeScreenViewModelTest {
         move = move,
         emptyBin = emptyBin,
         unsubscriber = unsubscriber,
-        getDefaultPageType = getDefaultPageType,
+        getDefaultObjectType = getDefaultObjectType,
         appActionManager = appActionManager,
         analytics = analytics,
         getWidgetSession = getWidgetSession,

@@ -299,7 +299,7 @@ fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder): ObjectView = when 
             objectTypeNoIcon = true
         ),
         types = type,
-        isRelation = type.contains(ObjectTypeIds.RELATION)
+        isRelation = layout == ObjectType.Layout.RELATION
     )
 }
 

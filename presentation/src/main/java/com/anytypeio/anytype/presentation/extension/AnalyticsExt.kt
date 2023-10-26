@@ -12,6 +12,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.changeViewType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.clickNewOption
 import com.anytypeio.anytype.analytics.base.EventsDictionary.collectionScreenShow
 import com.anytypeio.anytype.analytics.base.EventsDictionary.createTemplate
+import com.anytypeio.anytype.analytics.base.EventsDictionary.defaultTypeChanged
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.editTemplate
@@ -1314,6 +1315,23 @@ fun CoroutineScope.logEvent(
                 )
             )
         }
+
+        ObjectStateAnalyticsEvent.SET_AS_DEFAULT_TYPE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = defaultTypeChanged,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(
+                    route = route,
+                    objectType = type ?: OBJ_TYPE_CUSTOM
+                )
+            )
+        }
     }
 }
 
@@ -1361,7 +1379,8 @@ enum class ObjectStateAnalyticsEvent {
     CREATE_TEMPLATE,
     EDIT_TEMPLATE,
     DUPLICATE_TEMPLATE,
-    DELETE_TEMPLATE
+    DELETE_TEMPLATE,
+    SET_AS_DEFAULT_TYPE
 }
 
 fun CoroutineScope.sendEditWidgetsEvent(

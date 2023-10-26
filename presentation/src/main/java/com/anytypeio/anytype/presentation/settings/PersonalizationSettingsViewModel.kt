@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class OtherSettingsViewModel(
+class PersonalizationSettingsViewModel(
     private val getDefaultObjectType: GetDefaultObjectType,
     private val setDefaultObjectType: SetDefaultObjectType,
     private val clearFileCache: ClearFileCache,
@@ -61,6 +61,12 @@ class OtherSettingsViewModel(
                     excludeTypes = listOf(defaultObjectTypeKey.value?.key.orEmpty())
                 )
             )
+        }
+    }
+
+    fun onWallpaperClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.NavigateToWallpaperScreen)
         }
     }
 
@@ -126,7 +132,7 @@ class OtherSettingsViewModel(
         data class NavigateToObjectTypesScreen(
             val excludeTypes: List<Id>
         ) : Command()
-
+        object NavigateToWallpaperScreen: Command()
         object ShowClearCacheAlert : Command()
         object Exit : Command()
     }
@@ -142,7 +148,7 @@ class OtherSettingsViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
-        ): T = OtherSettingsViewModel(
+        ): T = PersonalizationSettingsViewModel(
             getDefaultObjectType = getDefaultObjectType,
             setDefaultObjectType = setDefaultObjectType,
             clearFileCache = clearFileCache,

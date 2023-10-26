@@ -9,7 +9,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui_settings.appearance.AppearanceScreen
@@ -23,10 +22,6 @@ class AppearanceFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<AppearanceViewModel> { factory }
 
-    private val onWallpaperClicked = {
-        safeNavigate(R.id.wallpaperSetScreen)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,7 +32,6 @@ class AppearanceFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     AppearanceScreen(
-                        onWallpaperClicked = onWallpaperClicked,
                         light = { throttle { vm.onLight() } },
                         dark = { throttle { vm.onDark() } },
                         system = { throttle { vm.onSystem() } },

@@ -16,7 +16,7 @@ import com.anytypeio.anytype.di.feature.MoveToSubComponent
 import com.anytypeio.anytype.di.feature.ObjectSearchSubComponent
 import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
-import com.anytypeio.anytype.di.feature.OtherSettingsSubComponent
+import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
@@ -129,7 +129,7 @@ interface MainComponent :
     fun profileComponent(): ProfileSubComponent.Builder
     fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
-    fun otherSettingsComponentBuilder(): OtherSettingsSubComponent.Builder
+    fun personalizationSettingsComponentBuilder(): PersonalizationSettingsSubComponent.Builder
     fun logoutWarningComponent(): LogoutWarningSubComponent.Builder
     fun mainSettingsComponent(): MainSettingsSubComponent.Builder
 

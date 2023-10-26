@@ -89,7 +89,11 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
                         ),
                         onDataManagementClicked = throttledClick(
                             onClick = {
-                                findNavController().navigate(R.id.filesStorageScreen)
+                                findNavController()
+                                    .navigate(
+                                        R.id.filesStorageScreen,
+                                        FilesStorageFragment.args(isRemote = false)
+                                    )
                             }
                         ),
                         onAboutClicked = throttledClick(

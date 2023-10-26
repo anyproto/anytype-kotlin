@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
+import com.anytypeio.anytype.ui.settings.FilesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.spaces.Section
@@ -81,12 +82,20 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                             dialog.show(childFragmentManager, null)
                         }
                     ),
-                    onFileStorageClick = {
-                        findNavController().navigate(R.id.filesStorageScreen)
-                    },
-                    onPersonalizationClicked = {
-                       findNavController().navigate(R.id.personalizationScreen)
-                    },
+                    onFileStorageClick = throttledClick(
+                        onClick = {
+                            findNavController()
+                                .navigate(
+                                    R.id.filesStorageScreen,
+                                    FilesStorageFragment.args(isRemote = true)
+                                )
+                        }
+                    ),
+                    onPersonalizationClicked = throttledClick(
+                        onClick = {
+                            findNavController().navigate(R.id.personalizationScreen)
+                        }
+                    ),
                     onSpaceIdClicked = {
                         context.copyPlainTextToClipboard(
                             plainText = it,

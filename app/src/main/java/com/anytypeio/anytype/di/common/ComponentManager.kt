@@ -97,7 +97,7 @@ import com.anytypeio.anytype.di.feature.spaces.DaggerSelectSpaceComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateSelectComponent
-import com.anytypeio.anytype.di.feature.types.DaggerTypeCreationComponent
+import com.anytypeio.anytype.di.feature.types.DaggerCreateObjectTypeComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeEditComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
 import com.anytypeio.anytype.di.feature.update.DaggerMigrationErrorComponent
@@ -868,8 +868,8 @@ class ComponentManager(
             .build()
     }
 
-    val typeCreationComponent = Component {
-        DaggerTypeCreationComponent
+    val createObjectTypeComponent = Component {
+        DaggerCreateObjectTypeComponent
             .factory()
             .create(findComponentDependencies())
     }

@@ -15,5 +15,6 @@ data class Config(
     val spaceView: Id,
     val widgets: Id,
     val analytics: Id,
-    val device: Id
+    val device: Id,
+    val network: Id
 )

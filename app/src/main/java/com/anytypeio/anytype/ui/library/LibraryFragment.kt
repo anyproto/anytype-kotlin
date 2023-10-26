@@ -31,13 +31,13 @@ import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_NAME
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
 import com.anytypeio.anytype.ui.relations.RelationEditFragment
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment
 import com.anytypeio.anytype.ui.types.create.REQUEST_CREATE_OBJECT
-import com.anytypeio.anytype.ui.types.create.TypeCreationFragment
 import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_MODIFY_TYPE
-import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_ID
-import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_NAME
 import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_UNINSTALL_TYPE
 import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_ICON
+import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_ID
+import com.anytypeio.anytype.ui.types.edit.REQUEST_UNINSTALL_TYPE_ARG_NAME
 import com.anytypeio.anytype.ui.types.edit.TypeEditFragment
 import com.google.accompanist.pager.ExperimentalPagerApi
 import javax.inject.Inject
@@ -82,7 +82,7 @@ class LibraryFragment : BaseComposeFragment() {
                     findNavController().safeNavigate(
                         R.id.libraryFragment,
                         R.id.openTypeCreationScreen,
-                        TypeCreationFragment.args(it.name)
+                        CreateObjectTypeFragment.args(it.name)
                     )
                 }
                 is LibraryViewModel.Navigation.OpenTypeEditing -> {

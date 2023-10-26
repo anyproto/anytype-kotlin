@@ -27,13 +27,13 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class TypeCreationViewModel(
+class CreateObjectTypeViewModel(
     private val createTypeInteractor: CreateType,
     private val urlBuilder: UrlBuilder,
     private val emojiProvider: EmojiProvider,
     private val analytics: Analytics,
     private val spaceManager: SpaceManager
-) : NavigationViewModel<TypeCreationViewModel.Navigation>() {
+) : NavigationViewModel<CreateObjectTypeViewModel.Navigation>() {
 
     private val unicodeIconFlow = MutableStateFlow("")
 
@@ -113,7 +113,7 @@ class TypeCreationViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return TypeCreationViewModel(
+            return CreateObjectTypeViewModel(
                 createTypeInteractor = createType,
                 urlBuilder = urlBuilder,
                 emojiProvider = emojiProvider,

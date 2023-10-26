@@ -34,7 +34,8 @@ fun StubConfig(
     widgets: Id = MockDataFactory.randomUuid(),
     analytics: Id = MockDataFactory.randomUuid(),
     device: Id = MockDataFactory.randomUuid(),
-    space: Id = MockDataFactory.randomUuid()
+    space: Id = MockDataFactory.randomUuid(),
+    network: Id = MockDataFactory.randomUuid()
 ) : Config = Config(
     home = home,
     profile = profile,
@@ -43,7 +44,8 @@ fun StubConfig(
     space = space,
     widgets = widgets,
     analytics = analytics,
-    device = device
+    device = device,
+    network = network
 )
 
 fun StubFeatureConfig(

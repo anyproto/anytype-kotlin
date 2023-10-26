@@ -43,7 +43,7 @@ import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
-import com.anytypeio.anytype.di.feature.types.TypeCreationDependencies
+import com.anytypeio.anytype.di.feature.types.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
 import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
 import com.anytypeio.anytype.di.feature.update.MigrationErrorDependencies
@@ -80,7 +80,7 @@ interface MainComponent :
     LibraryDependencies,
     HomeScreenDependencies,
     CollectionDependencies,
-    TypeCreationDependencies,
+    CreateObjectTypeDependencies,
     TypeIconPickDependencies,
     TypeEditDependencies,
     RelationCreateFromLibraryDependencies,
@@ -161,7 +161,7 @@ private abstract class ComponentDependenciesModule private constructor() {
 
     @Binds
     @IntoMap
-    @ComponentDependenciesKey(TypeCreationDependencies::class)
+    @ComponentDependenciesKey(CreateObjectTypeDependencies::class)
     abstract fun provideTypeCreationDependencies(component: MainComponent): ComponentDependencies
 
     @Binds

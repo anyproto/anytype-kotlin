@@ -6251,8 +6251,7 @@ class EditorViewModel(
     }
 
     fun isObjectTemplate(): Boolean {
-        val details = orchestrator.stores.details.current().details[context]
-        return details?.type?.firstOrNull() == ObjectTypeIds.TEMPLATE
+        return getObjectTypeFromDetails() == ObjectTypeIds.TEMPLATE
     }
     //endregion
 

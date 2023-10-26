@@ -46,6 +46,7 @@ import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.spaces.Section
 import com.anytypeio.anytype.ui.spaces.TypeOfSpace
 import com.anytypeio.anytype.ui_settings.main.SpaceHeader
@@ -66,10 +67,20 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(typography = typography) {
-                SpaceSettingsScreen(onSpaceIconClick = {},
+                SpaceSettingsScreen(
+                    onSpaceIconClick = {},
                     onNameSet = vm::onNameSet,
                     spaceData = vm.spaceViewState.collectAsStateWithLifecycle().value,
-                    onDeleteSpaceClicked = vm::onDeleteSpaceClicked,
+                    onDeleteSpaceClicked = throttledClick(
+                        onClick = {
+                            val dialog = DeleteSpaceWarning.new()
+                            dialog.onDeletionAccepted = {
+                                dialog.dismiss()
+                                vm.onDeleteSpaceClicked()
+                            }
+                            dialog.show(childFragmentManager, null)
+                        }
+                    ),
                     onFileStorageClick = {
                         findNavController().navigate(R.id.filesStorageScreen)
                     },

@@ -91,21 +91,21 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                         context.copyPlainTextToClipboard(
                             plainText = it,
                             label = "Space ID",
-                            successToast = "Space ID copied"
+                            successToast = context.getString(R.string.space_id_copied_toast_msg)
                         )
                     },
                     onNetworkIdClicked = {
                         context.copyPlainTextToClipboard(
                             plainText = it,
                             label = "Network ID",
-                            successToast = "Network ID copied"
+                            successToast = context.getString(R.string.network_id_copied_toast_msg)
                         )
                     },
                     onCreatedByClicked = {
                         context.copyPlainTextToClipboard(
                             plainText = it,
                             label = "Created-by ID",
-                            successToast = "Created-by ID copied"
+                            successToast = context.getString(R.string.created_by_id_copied_toast_msg)
                         )
                     }
                 )

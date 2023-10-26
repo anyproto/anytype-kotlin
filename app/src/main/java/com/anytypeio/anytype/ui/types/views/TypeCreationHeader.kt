@@ -21,16 +21,16 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.presentation.types.CreateObjectTypeViewModel
 import com.anytypeio.anytype.ui.types.views.HeaderDefaults.ColorTextActive
 import com.anytypeio.anytype.ui.types.views.HeaderDefaults.ColorTextDisabled
 
 @Composable
 fun TypeCreationHeader(
-    vm: TypeCreationViewModel,
+    vm: CreateObjectTypeViewModel,
     nameValid: MutableState<Boolean>,
     inputValue: MutableState<Id>,
 ) {

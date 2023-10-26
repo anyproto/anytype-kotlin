@@ -868,7 +868,7 @@ class ComponentManager(
             .build()
     }
 
-    val typeCreationComponent = Component {
+    val createObjectTypeComponent = Component {
         DaggerTypeCreationComponent
             .factory()
             .create(findComponentDependencies())

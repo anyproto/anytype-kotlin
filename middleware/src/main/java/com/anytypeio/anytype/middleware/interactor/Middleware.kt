@@ -771,10 +771,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun debugSpace(space: SpaceId): String {
+    fun debugSpaceSummary(space: SpaceId): String {
         val request = Rpc.Debug.SpaceSummary.Request(spaceId = space.id)
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugSpace(request)
+        val response = service.debugSpaceSummary(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.infos.toCoreModel()
     }

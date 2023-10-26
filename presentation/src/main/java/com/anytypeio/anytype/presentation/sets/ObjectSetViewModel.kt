@@ -1659,6 +1659,10 @@ class ObjectSetViewModel(
         when (templateView) {
             is TemplateView.Blank -> {
                 logEvent(ObjectStateAnalyticsEvent.SELECT_TEMPLATE)
+                logEvent(
+                    event = ObjectStateAnalyticsEvent.SET_AS_DEFAULT_TYPE,
+                    type = templateView.targetTypeKey.key
+                )
                 proceedWithUpdateViewer(
                     viewerId = getWidgetViewerId()
                 ) {
@@ -1671,9 +1675,14 @@ class ObjectSetViewModel(
                     typeChosenBy = templateView.targetTypeKey,
                     templateId = templateView.id
                 )
+
             }
             is TemplateView.Template -> {
                 logEvent(ObjectStateAnalyticsEvent.SELECT_TEMPLATE)
+                logEvent(
+                    event = ObjectStateAnalyticsEvent.SET_AS_DEFAULT_TYPE,
+                    type = templateView.targetTypeKey.key
+                )
                 proceedWithUpdateViewer(
                     viewerId = getWidgetViewerId()
                 ) {
@@ -1696,12 +1705,13 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun logEvent(event: ObjectStateAnalyticsEvent) {
+    private fun logEvent(event: ObjectStateAnalyticsEvent, type: Id? = null) {
         viewModelScope.launch {
             logEvent(
                 state = stateReducer.state.value,
                 analytics = analytics,
-                event = event
+                event = event,
+                type = type
             )
         }
     }

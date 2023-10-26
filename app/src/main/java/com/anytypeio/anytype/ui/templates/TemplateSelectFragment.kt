@@ -37,17 +37,17 @@ class TemplateSelectFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupViewPagerAndTabs()
-        with(lifecycleScope) {
-            subscribe(binding.btnSkip.clicks()) {
-                vm.onSkipButtonClicked()
-            }
-            subscribe(binding.btnUseTemplate.clicks()) {
-                vm.onUseTemplateButtonPressed(
-                    currentItem = binding.templateViewPager.currentItem,
-                    ctx = ctx
-                )
-            }
-        }
+//        with(lifecycleScope) {
+//            subscribe(binding.btnSkip.clicks()) {
+//                vm.onSkipButtonClicked()
+//            }
+//            subscribe(binding.btnUseTemplate.clicks()) {
+//                vm.onUseTemplateButtonPressed(
+//                    currentItem = binding.templateViewPager.currentItem,
+//                    ctx = ctx
+//                )
+//            }
+//        }
     }
 
     private fun setupViewPagerAndTabs() {
@@ -67,8 +67,8 @@ class TemplateSelectFragment :
         when (viewState) {
             TemplateSelectViewModel.ViewState.Init -> {
                 binding.tvTemplateCountOrTutorial.text = null
-                binding.btnSkip.isEnabled = true
-                binding.btnUseTemplate.isEnabled = false
+//                binding.btnSkip.isEnabled = true
+//                binding.btnUseTemplate.isEnabled = false
             }
 
             is TemplateSelectViewModel.ViewState.Success -> {
@@ -76,7 +76,7 @@ class TemplateSelectFragment :
                     R.string.this_type_has_templates,
                     viewState.templates.size
                 )
-                binding.btnUseTemplate.isEnabled = true
+                //binding.btnUseTemplate.isEnabled = true
                 templatesAdapter.update(viewState.templates)
             }
         }

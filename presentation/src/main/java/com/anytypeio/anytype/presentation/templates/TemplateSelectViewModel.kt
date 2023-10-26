@@ -61,12 +61,13 @@ class TemplateSelectViewModel(
     private fun proceedWithGettingTemplates(
         objType: ObjectWrapper.Type, withoutBlankTemplate: Boolean
     ) {
-        val params = GetTemplates.Params(TypeId(objType.id))
+        val params = GetTemplates.Params(
+            type = TypeId(objType.id)
+        )
         viewModelScope.launch {
-            getTemplates.async(params)
-                    .fold(
-                            onSuccess = { buildTemplateViews(objType, it, withoutBlankTemplate) },
-                            onFailure = { Timber.e(it, "Error while getting templates") })
+            getTemplates.async(params).fold(
+                onSuccess = { buildTemplateViews(objType, it, withoutBlankTemplate) },
+                onFailure = { Timber.e(it, "Error while getting templates") })
         }
     }
 
@@ -83,16 +84,16 @@ class TemplateSelectViewModel(
                     layout = objType.recommendedLayout?.code ?: 0
                 )
             )
-            addAll(templates.map {
-                val coverContainer = if (it.coverType != CoverType.NONE) {
-                    BasicObjectCoverWrapper(it)
-                        .getCover(urlBuilder, coverImageHashProvider)
+            addAll(templates.mapNotNull {
+                val typeKey = objType.key
+                if (typeKey != null) {
+                    TemplateSelectView.Template(
+                        id = it.id,
+                        layout = it.layout ?: ObjectType.Layout.BASIC,
+                        typeId = objType.id,
+                        typeKey = typeKey
+                    )
                 } else null
-                TemplateSelectView.Template(
-                    id = it.id,
-                    layout = it.layout ?: ObjectType.Layout.BASIC,
-                    typeId = objType.id
-                )
             })
         }
         _viewState.emit(

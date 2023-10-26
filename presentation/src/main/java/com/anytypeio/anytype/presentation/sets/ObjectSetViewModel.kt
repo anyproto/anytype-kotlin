@@ -2127,7 +2127,7 @@ class ObjectSetViewModel(
                 val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                 val newView = activeView.copy(
                     id = "",
-                    name = DVViewerType.GRID.formattedName,
+                    name = "",
                     type = DVViewerType.GRID
                 )
                 viewModelScope.launch {
@@ -2198,8 +2198,6 @@ class ObjectSetViewModel(
         when (action) {
             ViewEditAction.Dismiss -> { hideViewerEditWidget() }
             is ViewEditAction.Filters -> {
-                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                hideViewerEditWidget()
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     openViewerFilters(viewerId = action.id)
@@ -2209,25 +2207,18 @@ class ObjectSetViewModel(
                 viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.copy(showWidget = true)
             }
             is ViewEditAction.Relations -> {
-                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                hideViewerEditWidget()
-                if (action.id == null) return
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     onViewerSettingsClicked(action.id)
                 }
             }
             is ViewEditAction.Sorts -> {
-                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                hideViewerEditWidget()
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     openViewerSorts(viewerId = action.id)
                 }
             }
             is ViewEditAction.UpdateName -> {
-                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                hideViewerEditWidget()
                 val state = stateReducer.state.value.dataViewState() ?: return
                 val viewer = state.viewerById(action.id) ?: return
                 viewModelScope.launch {

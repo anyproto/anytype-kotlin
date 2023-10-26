@@ -64,6 +64,12 @@ class OtherSettingsViewModel(
         }
     }
 
+    fun onWallpaperClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.NavigateToWallpaperScreen)
+        }
+    }
+
     fun proceedWithClearCache() {
         viewModelScope.launch {
             clearFileCache(BaseUseCase.None).collect { status ->
@@ -126,7 +132,7 @@ class OtherSettingsViewModel(
         data class NavigateToObjectTypesScreen(
             val excludeTypes: List<Id>
         ) : Command()
-
+        object NavigateToWallpaperScreen: Command()
         object ShowClearCacheAlert : Command()
         object Exit : Command()
     }

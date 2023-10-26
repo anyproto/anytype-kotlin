@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -34,6 +36,7 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
         binding.tvDefaultObjectTypeTitle.setOnClickListener { vm.onObjectTypeClicked() }
         binding.btnDefaultObjectType.setOnClickListener { vm.onObjectTypeClicked() }
         binding.ivArrowForward.setOnClickListener { vm.onObjectTypeClicked() }
+        binding.btnWallpaper.setOnClickListener { vm.onWallpaperClicked() }
     }
 
     override fun onStart() {
@@ -49,6 +52,9 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
                 AppDefaultObjectTypeFragment.newInstance(
                     excludeTypes = command.excludeTypes
                 ).showChildFragment()
+            }
+            is OtherSettingsViewModel.Command.NavigateToWallpaperScreen -> {
+                findNavController().navigate(R.id.wallpaperSetScreen)
             }
             is OtherSettingsViewModel.Command.Toast -> toast(command.msg)
             is OtherSettingsViewModel.Command.ShowClearCacheAlert -> {

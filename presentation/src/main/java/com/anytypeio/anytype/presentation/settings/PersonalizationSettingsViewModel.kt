@@ -26,7 +26,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class OtherSettingsViewModel(
+class PersonalizationSettingsViewModel(
     private val getDefaultObjectType: GetDefaultObjectType,
     private val setDefaultObjectType: SetDefaultObjectType,
     private val clearFileCache: ClearFileCache,
@@ -148,7 +148,7 @@ class OtherSettingsViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
-        ): T = OtherSettingsViewModel(
+        ): T = PersonalizationSettingsViewModel(
             getDefaultObjectType = getDefaultObjectType,
             setDefaultObjectType = setDefaultObjectType,
             clearFileCache = clearFileCache,

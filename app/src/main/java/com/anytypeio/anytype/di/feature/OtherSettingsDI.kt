@@ -11,27 +11,27 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.settings.OtherSettingsViewModel
-import com.anytypeio.anytype.ui.settings.OtherSettingsFragment
+import com.anytypeio.anytype.presentation.settings.PersonalizationSettingsViewModel
+import com.anytypeio.anytype.ui.settings.PersonalizationSettingsFragment
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
 
 @PerScreen
-@Subcomponent(modules = [OtherSettingsModule::class])
-interface OtherSettingsSubComponent {
+@Subcomponent(modules = [PersonalizationSettingsModule::class])
+interface PersonalizationSettingsSubComponent {
 
     @Subcomponent.Builder
     interface Builder {
-        fun module(module: OtherSettingsModule): Builder
-        fun build(): OtherSettingsSubComponent
+        fun module(module: PersonalizationSettingsModule): Builder
+        fun build(): PersonalizationSettingsSubComponent
     }
 
-    fun inject(fragment: OtherSettingsFragment)
+    fun inject(fragment: PersonalizationSettingsFragment)
 }
 
 @Module
-object OtherSettingsModule {
+object PersonalizationSettingsModule {
 
     @JvmStatic
     @PerScreen
@@ -76,7 +76,7 @@ object OtherSettingsModule {
         appActionManager: AppActionManager,
         analytics: Analytics,
         spaceManager: SpaceManager
-    ): OtherSettingsViewModel.Factory = OtherSettingsViewModel.Factory(
+    ): PersonalizationSettingsViewModel.Factory = PersonalizationSettingsViewModel.Factory(
         getDefaultObjectType = getDefaultObjectType,
         setDefaultObjectType = setDefaultObjectType,
         clearFileCache = clearFileCache,

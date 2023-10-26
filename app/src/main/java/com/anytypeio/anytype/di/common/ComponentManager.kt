@@ -44,7 +44,7 @@ import com.anytypeio.anytype.di.feature.ObjectSetModule
 import com.anytypeio.anytype.di.feature.ObjectSetRecordModule
 import com.anytypeio.anytype.di.feature.ObjectSetSettingsModule
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeModule
-import com.anytypeio.anytype.di.feature.OtherSettingsModule
+import com.anytypeio.anytype.di.feature.PersonalizationSettingsModule
 import com.anytypeio.anytype.di.feature.RelationDataViewDateValueModule
 import com.anytypeio.anytype.di.feature.RelationDataViewTextValueModule
 import com.anytypeio.anytype.di.feature.RelationDateValueModule
@@ -328,9 +328,9 @@ class ComponentManager(
             .build()
     }
 
-    val otherSettingsComponent = Component {
-        main.otherSettingsComponentBuilder()
-            .module(OtherSettingsModule)
+    val personalizationSettingsComponent = Component {
+        main.personalizationSettingsComponentBuilder()
+            .module(PersonalizationSettingsModule)
             .build()
     }
 

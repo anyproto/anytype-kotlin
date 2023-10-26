@@ -200,14 +200,15 @@ private fun SelectSpaceProfileHeader(
                     start = 74.dp,
                     end = 74.dp
                 )
-                .clickable { onProfileClicked() }
+                .fillMaxWidth()
+                .noRippleClickable { onProfileClicked() }
         )
         Box(
             modifier = Modifier
                 .padding(end = 30.dp)
                 .size(32.dp)
                 .align(Alignment.CenterEnd)
-                .clickable { onSpaceSettingsClicked() }
+                .noRippleClickable { onSpaceSettingsClicked() }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_space_settings),

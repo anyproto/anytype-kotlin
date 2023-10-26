@@ -15,9 +15,11 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.const.FileConstants.getPermissionToRequestForImages
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
@@ -80,6 +82,21 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
                         onNameChange = { vm.onNameChange(it) },
                         onProfileIconClick = { proceedWithIconClick() },
                         account = vm.profileData.collectAsStateWithLifecycle().value,
+                        onAppearanceClicked = throttledClick(
+                            onClick = {
+                                findNavController().navigate(R.id.appearanceScreen)
+                            }
+                        ),
+                        onDataManagementClicked = throttledClick(
+                            onClick = {
+                                findNavController().navigate(R.id.filesStorageScreen)
+                            }
+                        ),
+                        onAboutClicked = throttledClick(
+                            onClick = {
+                                findNavController().navigate(R.id.aboutAppScreen)
+                            }
+                        )
                     )
                 }
             }

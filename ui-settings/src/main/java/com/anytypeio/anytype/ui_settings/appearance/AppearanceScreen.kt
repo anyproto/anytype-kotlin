@@ -43,7 +43,6 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ThemeMode
-import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -100,8 +99,7 @@ fun AppearanceScreen(
                 selectedMode == ThemeMode.System
             )
         }
-        Divider(paddingStart = 20.dp)
-        Box(Modifier.height(48.dp))
+        Box(Modifier.height(16.dp))
     }
 }
 

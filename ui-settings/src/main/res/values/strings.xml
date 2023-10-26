@@ -68,4 +68,5 @@
     <string name="get_more_space">Get more space</string>
     <string name="account_name">Account name</string>
     <string name="space_settings">Space settings</string>
+    <string name="data_management">Data management</string>
 </resources>

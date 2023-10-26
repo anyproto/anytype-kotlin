@@ -27,14 +27,19 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Option
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
+import com.anytypeio.anytype.core_utils.const.DateConst
+import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
@@ -70,6 +75,27 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     },
                     onPersonalizationClicked = {
                        findNavController().navigate(R.id.personalizationScreen)
+                    },
+                    onSpaceIdClicked = {
+                        context.copyPlainTextToClipboard(
+                            plainText = it,
+                            label = "Space ID",
+                            successToast = "Space ID copied"
+                        )
+                    },
+                    onNetworkIdClicked = {
+                        context.copyPlainTextToClipboard(
+                            plainText = it,
+                            label = "Network ID",
+                            successToast = "Network ID copied"
+                        )
+                    },
+                    onCreatedByClicked = {
+                        context.copyPlainTextToClipboard(
+                            plainText = it,
+                            label = "Created-by ID",
+                            successToast = "Created-by ID copied"
+                        )
                     }
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
@@ -105,6 +131,9 @@ fun SpaceSettingsScreen(
     onDeleteSpaceClicked: () -> Unit,
     onFileStorageClick: () -> Unit,
     onPersonalizationClicked: () -> Unit,
+    onSpaceIdClicked: (Id) -> Unit,
+    onNetworkIdClicked: (Id) -> Unit,
+    onCreatedByClicked: (Id) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -149,9 +178,17 @@ fun SpaceSettingsScreen(
             )
         }
         item {
+            Divider(paddingStart = 60.dp)
+        }
+        item {
             Option(image = R.drawable.ic_personalization,
                 text = stringResource(R.string.personalization),
                 onClick = throttledClick(onPersonalizationClicked)
+            )
+        }
+        item {
+            Divider(
+                paddingStart = 60.dp
             )
         }
         item {
@@ -174,11 +211,14 @@ fun SpaceSettingsScreen(
                     Text(
                         text = spaceData.data.spaceId ?: stringResource(id = R.string.unknown),
                         style = PreviewTitle2Regular,
+                        maxLines = 2,
+                        color = colorResource(id = R.color.text_primary),
                         modifier = Modifier
                             .align(Alignment.BottomStart)
-                            .padding(bottom = 12.dp, end = 50.dp),
-                        maxLines = 2,
-                        color = colorResource(id = R.color.text_primary)
+                            .padding(bottom = 12.dp)
+                            .noRippleClickable {
+                                onSpaceIdClicked(spaceData.data.spaceId.orEmpty())
+                            }
                     )
                 }
             }
@@ -200,11 +240,14 @@ fun SpaceSettingsScreen(
                     Text(
                         text = spaceData.data.createdBy ?: stringResource(id = R.string.unknown),
                         style = PreviewTitle2Regular,
+                        maxLines = 1,
+                        color = colorResource(id = R.color.text_primary),
                         modifier = Modifier
                             .align(Alignment.BottomStart)
-                            .padding(bottom = 12.dp, end = 50.dp),
-                        maxLines = 1,
-                        color = colorResource(id = R.color.text_primary)
+                            .padding(bottom = 12.dp, end = 50.dp)
+                            .noRippleClickable {
+                                onCreatedByClicked(spaceData.data.createdBy.orEmpty())
+                            }
                     )
                 }
             }
@@ -223,14 +266,46 @@ fun SpaceSettingsScreen(
                     color = colorResource(id = R.color.text_primary)
                 )
                 if (spaceData is ViewState.Success) {
+                    val formattedDate = spaceData.data.createdDateInMillis?.formatTimeInMillis(
+                        DateConst.DEFAULT_DATE_FORMAT
+                    ) ?: stringResource(id = R.string.unknown)
                     Text(
-                        text = spaceData.data.createdDate ?: stringResource(id = R.string.unknown),
+                        text = formattedDate,
                         style = PreviewTitle2Regular,
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp),
                         maxLines = 1,
                         color = colorResource(id = R.color.text_primary)
+                    )
+                }
+            }
+        }
+        item {
+            Box(
+                modifier = Modifier
+                    .height(92.dp)
+                    .padding(horizontal = 20.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(id = R.string.network_id),
+                    style = Title1,
+                    modifier = Modifier.padding(top = 12.dp),
+                    color = colorResource(id = R.color.text_primary)
+                )
+                if (spaceData is ViewState.Success) {
+                    Text(
+                        text = spaceData.data.network ?: stringResource(id = R.string.unknown),
+                        style = PreviewTitle2Regular,
+                        maxLines = 2,
+                        color = colorResource(id = R.color.text_primary),
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(bottom = 12.dp, end = 50.dp)
+                            .noRippleClickable {
+                                onNetworkIdClicked(spaceData.data.network.orEmpty())
+                            }
                     )
                 }
             }

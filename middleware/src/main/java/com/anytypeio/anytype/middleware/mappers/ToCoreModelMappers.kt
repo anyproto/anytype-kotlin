@@ -757,5 +757,6 @@ fun Account.Info.config() : Config = Config(
     spaceView = spaceViewId,
     widgets = widgetsId,
     analytics = analyticsId,
-    device = deviceId
+    device = deviceId,
+    network = networkId
 )

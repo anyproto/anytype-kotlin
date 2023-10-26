@@ -107,7 +107,12 @@ class OtherSettingsViewModel(
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
                             name = defaultTypeChanged,
-                            props = Props(mapOf(EventsPropertiesKey.objectType to type)),
+                            props = Props(
+                                mapOf(
+                                    EventsPropertiesKey.objectType to key,
+                                    EventsPropertiesKey.route to "Settings"
+                                )
+                            ),
                             duration = null
                         )
                     )

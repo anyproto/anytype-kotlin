@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -21,8 +20,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
-import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
-import com.anytypeio.anytype.presentation.relations.getCover
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,14 +43,14 @@ class TemplateSelectViewModel(
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
         MutableLiveData()
 
-    fun onStart(type: Id, withoutBlankTemplate: Boolean) {
+    fun onStart(typeKey: Id, withoutBlankTemplate: Boolean) {
         viewModelScope.launch {
-            val objType = storeOfObjectTypes.get(type)
+            val objType = storeOfObjectTypes.getByKey(typeKey)
             if (objType != null) {
                 Timber.d("onStart, Object type $objType")
                 proceedWithGettingTemplates(objType, withoutBlankTemplate)
             } else {
-                Timber.e("onStart, Object type $type not found")
+                Timber.e("onStart, Object type $typeKey not found")
             }
         }
     }

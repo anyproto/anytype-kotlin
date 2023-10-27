@@ -10,8 +10,10 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.hide
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
@@ -22,6 +24,7 @@ class EditorTemplateFragment : EditorFragment() {
 
     private val targetTypeId get() = arg<Id>(ARG_TARGET_TYPE_ID)
     private val targetTypeKey get() = arg<Id>(ARG_TARGET_TYPE_KEY)
+    private val fragmentType get() = argInt(ARG_TEMPLATE_TYPE)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -35,7 +38,12 @@ class EditorTemplateFragment : EditorFragment() {
 
     override fun onStart() {
         super.onStart()
-        binding.topToolbar.title.text = getString(R.string.templates_menu_edit)
+        if (fragmentType == TYPE_SINGLE) {
+            binding.topToolbar.title.text = getString(R.string.templates_menu_edit)
+            binding.topToolbar.statusContainer.hide()
+        } else {
+            binding.topToolbar.hide()
+        }
         jobs.clear()
     }
 
@@ -46,6 +54,7 @@ class EditorTemplateFragment : EditorFragment() {
 
     override fun render(state: ControlPanelState) {
         super.render(state)
+        binding.bottomToolbar.hide()
         if (state.navigationToolbar.isVisible) {
             binding.btnSelectTemplate.visible()
         } else {
@@ -56,8 +65,10 @@ class EditorTemplateFragment : EditorFragment() {
     private fun initializeBinding() {
         with(binding) {
             root.background = null
-            recycler.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                topMargin = dimen(R.dimen.default_toolbar_height)
+            if (fragmentType == TYPE_SINGLE) {
+                recycler.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    topMargin = dimen(R.dimen.default_toolbar_height)
+                }
             }
             topToolbar.apply {
                 container.alpha = 1f
@@ -69,14 +80,17 @@ class EditorTemplateFragment : EditorFragment() {
             }
             topToolbar.title.setTextAppearance(R.style.TextView_UXStyle_Titles_2_Medium)
             btnSelectTemplate.setOnClickListener {
-                Timber.d("Select template clicked, get back to Set")
+                Timber.d("Select template clicked, get back to Set or Editor")
                 findNavController().apply {
                     previousBackStackEntry?.savedStateHandle?.apply {
                         set(ARG_TEMPLATE_ID, ctx)
                         set(ARG_TARGET_TYPE_ID, targetTypeId)
                         set(ARG_TARGET_TYPE_KEY, targetTypeKey)
                     }
-                    popBackStack(R.id.editorModalScreen, true)
+                    when (fragmentType) {
+                        TYPE_SINGLE -> popBackStack(R.id.editorModalScreen, true)
+                        TYPE_MULTIPLE -> popBackStack(R.id.templatesModalScreen, true)
+                    }
                 }
             }
         }
@@ -87,17 +101,26 @@ class EditorTemplateFragment : EditorFragment() {
     }
 
     companion object {
-        fun newInstance(id: String, targetTypeId: Id, targetTypeKey: Id): EditorTemplateFragment =
+        fun newInstance(
+            id: String,
+            targetTypeId: Id,
+            targetTypeKey: Id,
+            type: Int
+        ): EditorTemplateFragment =
             EditorTemplateFragment().apply {
                 arguments = bundleOf(
                     ID_KEY to id,
                     ARG_TARGET_TYPE_ID to targetTypeId,
-                    ARG_TARGET_TYPE_KEY to targetTypeKey
+                    ARG_TARGET_TYPE_KEY to targetTypeKey,
+                    ARG_TEMPLATE_TYPE to type
                 )
             }
 
         const val ARG_TEMPLATE_ID = "template_id"
         const val ARG_TARGET_TYPE_ID = "target_type_id"
         const val ARG_TARGET_TYPE_KEY = "target_type_key"
+        const val ARG_TEMPLATE_TYPE = "template_type"
+        const val TYPE_SINGLE = 1
+        const val TYPE_MULTIPLE = 2
     }
 }

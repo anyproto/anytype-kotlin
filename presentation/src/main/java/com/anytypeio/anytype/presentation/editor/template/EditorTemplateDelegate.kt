@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor.template
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -26,14 +27,21 @@ class DefaultEditorTemplateDelegate(
         when (event) {
             is SelectTemplateEvent.OnStart -> {
                 try {
-                    val templates = getTemplates.run(
-                        GetTemplates.Params(TypeId(event.type)))
-                    if (templates.isNotEmpty()) {
-                        SelectTemplateState.Available(
-                            templates = templates.map { it.id },
-                            type = event.type,
-                            typeName = event.typeName
+                    val typeKey = event.objType.uniqueKey
+                    if (typeKey != null) {
+                        val templates = getTemplates.run(
+                            GetTemplates.Params(TypeId(event.objType.id))
                         )
+                        if (templates.isNotEmpty()) {
+                            SelectTemplateState.Available(
+                                templates = templates.map { it.id },
+                                typeId = event.objType.id,
+                                typeKey = typeKey,
+                                typeName = event.objType.name.orEmpty()
+                            )
+                        } else {
+                            SelectTemplateState.Idle
+                        }
                     } else {
                         SelectTemplateState.Idle
                     }
@@ -45,7 +53,8 @@ class DefaultEditorTemplateDelegate(
             is SelectTemplateEvent.OnAccepted -> {
                 if (state is SelectTemplateState.Available)
                     SelectTemplateState.Accepted(
-                        type = state.type,
+                        typeId = state.typeId,
+                        typeKey = state.typeKey,
                         templates = state.templates
                     )
                 else
@@ -68,7 +77,8 @@ sealed class SelectTemplateState {
      * State where templates are available for given object type.
      */
     data class Available(
-        val type: Id,
+        val typeId: Id,
+        val typeKey: Id,
         val templates: List<Id>,
         val typeName: String
     ) : SelectTemplateState()
@@ -77,8 +87,9 @@ sealed class SelectTemplateState {
      * State where user accepted choosing a template for this object.
      */
     data class Accepted(
-        val type: Id,
-        val templates: List<Id>
+        val typeId: Id,
+        val typeKey: Id,
+        val templates: List<Id>,
     ) : SelectTemplateState()
 
     companion object {
@@ -87,7 +98,11 @@ sealed class SelectTemplateState {
 }
 
 sealed class SelectTemplateEvent {
-    data class OnStart(val ctx: Id, val type: Id, val typeName: String) : SelectTemplateEvent()
+    data class OnStart(
+        val ctx: Id,
+        val objType: ObjectWrapper.Type
+    ) : SelectTemplateEvent()
+
     object OnSkipped : SelectTemplateEvent()
     object OnAccepted : SelectTemplateEvent()
 }

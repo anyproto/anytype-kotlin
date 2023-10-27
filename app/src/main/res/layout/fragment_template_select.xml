@@ -4,44 +4,69 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/defaultCanvasColor"
+    android:background="@color/background_primary"
     android:orientation="vertical"
     tools:context="com.anytypeio.anytype.ui.templates.TemplateSelectFragment">
 
-    <TextView
-        android:id="@+id/tvTemplateCountOrTutorial"
-        style="@style/TextView.UXStyle.Captions.1.Medium"
+    <View
+        android:id="@+id/dragger"
+        android:layout_width="48dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/dragger" />
+
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="31dp"
-        android:layout_marginEnd="16dp"
-        android:gravity="center"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:textAlignment="center"
-        tools:text="Type Task has 2 templates" />
+        android:layout_height="48dp">
+
+        <TextView
+            android:id="@+id/tvTemplateCountOrTutorial"
+            style="@style/TextView.UXStyle.Captions.1.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:maxLines="1"
+            android:singleLine="true"
+            tools:text="Type Task has 2 templates" />
+
+        <ImageView
+            android:id="@+id/ivThreeDots"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:paddingEnd="@dimen/dp_12"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="8dp"
+            android:src="@drawable/ic_action_more" />
+
+    </FrameLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="4dp"
-        android:layout_marginTop="21dp"
+        android:layout_marginTop="6dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        app:tabMaxWidth="0dp"
-        app:tabGravity="fill"
-        app:tabMode="fixed"
-        app:tabMinWidth="@dimen/dp_20"
-        app:tabIndicatorHeight="@dimen/dp_4"
-        app:tabIndicatorColor="@color/glyph_selected" />
+        android:useLevel="false"
+        app:tabMaxWidth="@dimen/dp_20"
+        app:tabGravity="center"
+        app:tabPaddingStart="16dp"
+        app:tabPaddingEnd="16dp"
+        app:tabIndicator="@null"
+        app:tabBackground="@drawable/tab_templates" />
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/templateViewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:layout_marginTop="4dp"/>
+        android:layout_marginTop="6dp"/>
 
 <!--    <LinearLayout-->
 <!--        android:layout_width="match_parent"-->

@@ -9,11 +9,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ui.BaseFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentTemplateSelectBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.templates.TemplateSelectViewModel
@@ -21,21 +20,29 @@ import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
 
 class TemplateSelectFragment :
-    BaseFragment<FragmentTemplateSelectBinding>(R.layout.fragment_template_select) {
+    BaseBottomSheetFragment<FragmentTemplateSelectBinding>() {
 
     private val vm by viewModels<TemplateSelectViewModel> { factory }
 
     @Inject
     lateinit var factory: TemplateSelectViewModel.Factory
 
-    private val type: Id get() = arg(OBJECT_TYPE_KEY)
-    private val ctx: Id get() = arg(CTX_KEY)
+    private val ctx get() = arg<Id>(ARG_CTX)
+    private val targetTypeId get() = arg<Id>(ARG_TARGET_TYPE_ID)
+    private val targetTypeKey get() = arg<Id>(ARG_TARGET_TYPE_KEY)
     private val withoutBlankTemplate: Boolean get() = argBoolean(WITH_BLANK_TEMPLATE_KEY)
 
     private lateinit var templatesAdapter: TemplateSelectAdapter
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setStyle(STYLE_NORMAL, R.style.AppBottomSecondarySheetDialogTheme)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        setFullHeightSheet()
         setupViewPagerAndTabs()
 //        with(lifecycleScope) {
 //            subscribe(binding.btnSkip.clicks()) {
@@ -60,7 +67,11 @@ class TemplateSelectFragment :
         jobs += lifecycleScope.subscribe(vm.viewState) { render(it) }
         jobs += lifecycleScope.subscribe(vm.isDismissed) { if (it) exit() }
         super.onStart()
-        vm.onStart(type = type, withoutBlankTemplate = withoutBlankTemplate)
+        expand()
+        vm.onStart(
+            typeKey = targetTypeKey,
+            withoutBlankTemplate = withoutBlankTemplate
+        )
     }
 
     private fun render(viewState: TemplateSelectViewModel.ViewState) {
@@ -105,5 +116,9 @@ class TemplateSelectFragment :
         const val WITH_BLANK_TEMPLATE_KEY = "arg.template.with_empty_template"
         const val OBJECT_TYPE_KEY = "arg.template.object_type"
         const val CTX_KEY = "arg.template.ctx"
+
+        const val ARG_CTX = "arg.template.arg_ctx"
+        const val ARG_TARGET_TYPE_ID = "arg.template.arg_target_object_type_id"
+        const val ARG_TARGET_TYPE_KEY = "arg.template.arg_target_object_type_key"
     }
 }

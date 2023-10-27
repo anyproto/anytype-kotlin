@@ -23,7 +23,8 @@ class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>(
         val editorFragment = EditorTemplateFragment.newInstance(
             id = ctx,
             targetTypeId = targetTypeId,
-            targetTypeKey = targetTypeKey
+            targetTypeKey = targetTypeKey,
+            type = EditorTemplateFragment.TYPE_SINGLE
         )
         childFragmentManager.beginTransaction()
             .add(R.id.fragment_container_view, editorFragment)

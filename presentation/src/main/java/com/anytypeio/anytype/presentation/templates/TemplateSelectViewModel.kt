@@ -43,12 +43,12 @@ class TemplateSelectViewModel(
     override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
         MutableLiveData()
 
-    fun onStart(typeKey: Id, withoutBlankTemplate: Boolean) {
+    fun onStart(typeKey: Id) {
         viewModelScope.launch {
             val objType = storeOfObjectTypes.getByKey(typeKey)
             if (objType != null) {
                 Timber.d("onStart, Object type $objType")
-                proceedWithGettingTemplates(objType, withoutBlankTemplate)
+                proceedWithGettingTemplates(objType)
             } else {
                 Timber.e("onStart, Object type $typeKey not found")
             }
@@ -56,25 +56,24 @@ class TemplateSelectViewModel(
     }
 
     private fun proceedWithGettingTemplates(
-        objType: ObjectWrapper.Type, withoutBlankTemplate: Boolean
+        objType: ObjectWrapper.Type
     ) {
         val params = GetTemplates.Params(
             type = TypeId(objType.id)
         )
         viewModelScope.launch {
             getTemplates.async(params).fold(
-                onSuccess = { buildTemplateViews(objType, it, withoutBlankTemplate) },
+                onSuccess = { buildTemplateViews(objType, it) },
                 onFailure = { Timber.e(it, "Error while getting templates") })
         }
     }
 
     private suspend fun buildTemplateViews(
         objType: ObjectWrapper.Type,
-        templates: List<ObjectWrapper.Basic>,
-        withoutBlankTemplate: Boolean
+        templates: List<ObjectWrapper.Basic>
     ) {
         val templateViews = buildList {
-            if (!withoutBlankTemplate) add(
+            add(
                 TemplateSelectView.Blank(
                     typeId = objType.id,
                     typeName = objType.name.orEmpty(),

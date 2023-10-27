@@ -100,6 +100,10 @@ class EditorTemplateFragment : EditorFragment() {
         // Do nothing
     }
 
+    fun onDocumentMenuClicked() {
+        vm.onDocumentMenuClicked()
+    }
+
     companion object {
         fun newInstance(
             id: String,

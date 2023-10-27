@@ -54,10 +54,10 @@
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:useLevel="false"
-        app:tabMaxWidth="@dimen/dp_20"
+        app:tabMaxWidth="0dp"
         app:tabGravity="center"
-        app:tabPaddingStart="16dp"
-        app:tabPaddingEnd="16dp"
+        app:tabPaddingStart="2dp"
+        app:tabPaddingEnd="2dp"
         app:tabIndicator="@null"
         app:tabBackground="@drawable/tab_templates" />
 
@@ -67,35 +67,5 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginTop="6dp"/>
-
-<!--    <LinearLayout-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="68dp"-->
-<!--        android:layout_gravity="bottom"-->
-<!--        android:background="@color/background_primary"-->
-<!--        android:orientation="horizontal">-->
-
-<!--        <com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge-->
-<!--            android:id="@+id/btnSkip"-->
-<!--            android:layout_width="0dp"-->
-<!--            android:layout_height="@dimen/dp_48"-->
-<!--            android:layout_gravity="center_vertical"-->
-<!--            android:layout_marginStart="20dp"-->
-<!--            android:layout_marginEnd="4dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:visibility="gone"-->
-<!--            android:text="@string/skip" />-->
-
-<!--        <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge-->
-<!--            android:id="@+id/btnUseTemplate"-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="@dimen/dp_48"-->
-<!--            android:layout_gravity="center_vertical"-->
-<!--            android:layout_marginStart="20dp"-->
-<!--            android:layout_marginEnd="20dp"-->
-<!--            android:layout_weight="1"-->
-<!--            android:text="@string/use_template" />-->
-
-<!--    </LinearLayout>-->
 
 </LinearLayout>

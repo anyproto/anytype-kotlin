@@ -38,12 +38,6 @@ class EditorTemplateFragment : EditorFragment() {
 
     override fun onStart() {
         super.onStart()
-        if (fragmentType == TYPE_SINGLE) {
-            binding.topToolbar.title.text = getString(R.string.templates_menu_edit)
-            binding.topToolbar.statusContainer.hide()
-        } else {
-            binding.topToolbar.hide()
-        }
         jobs.clear()
     }
 
@@ -69,6 +63,10 @@ class EditorTemplateFragment : EditorFragment() {
                 recycler.updateLayoutParams<ConstraintLayout.LayoutParams> {
                     topMargin = dimen(R.dimen.default_toolbar_height)
                 }
+                binding.topToolbar.title.text = getString(R.string.templates_menu_edit)
+                binding.topToolbar.statusContainer.hide()
+            } else {
+                binding.topToolbar.hide()
             }
             topToolbar.apply {
                 container.alpha = 1f

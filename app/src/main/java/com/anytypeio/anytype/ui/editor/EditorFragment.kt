@@ -147,8 +147,6 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
-import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_ID
-import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_KEY
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -2103,13 +2101,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)
             ) {
                 val resultTemplateId = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
-                val resultTypeId = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_ID)
-                val resultTypeKey = navBackStackEntry.savedStateHandle.get<String>(ARG_TARGET_TYPE_KEY)
-                if (!resultTemplateId.isNullOrBlank() && !resultTypeId.isNullOrBlank() && !resultTypeKey.isNullOrBlank()) {
+                if (resultTemplateId != null) {
                     navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
-                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_ID)
-                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TARGET_TYPE_KEY)
-                    vm.onProceedWithApplyingTemplate(template = resultTemplateId)
+                    vm.onProceedWithApplyingTemplateByObjectId(template = resultTemplateId)
                 }
             }
         }

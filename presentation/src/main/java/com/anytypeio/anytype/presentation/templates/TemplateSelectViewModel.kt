@@ -11,12 +11,10 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
@@ -31,8 +29,6 @@ class TemplateSelectViewModel(
     private val getTemplates: GetTemplates,
     private val applyTemplate: ApplyTemplate,
     private val analytics: Analytics,
-    private val coverImageHashProvider: CoverImageHashProvider,
-    private val urlBuilder: UrlBuilder
 ) : BaseViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
 
     val isDismissed = MutableStateFlow(false)
@@ -139,17 +135,11 @@ class TemplateSelectViewModel(
         }
     }
 
-    fun onSkipButtonClicked() {
-        isDismissed.value = true
-    }
-
     class Factory @Inject constructor(
         private val applyTemplate: ApplyTemplate,
         private val getTemplates: GetTemplates,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val analytics: Analytics,
-        private val coverImageHashProvider: CoverImageHashProvider,
-        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -159,8 +149,6 @@ class TemplateSelectViewModel(
                 getTemplates = getTemplates,
                 storeOfObjectTypes = storeOfObjectTypes,
                 analytics = analytics,
-                coverImageHashProvider = coverImageHashProvider,
-                urlBuilder = urlBuilder
             ) as T
         }
     }

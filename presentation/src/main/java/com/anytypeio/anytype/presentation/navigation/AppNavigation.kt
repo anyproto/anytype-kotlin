@@ -57,7 +57,7 @@ interface AppNavigation {
 
     fun migrationErrorScreen()
 
-    fun openTemplatesModal(ctx: Id, targetTypeId: Id, targetTypeKey: Id)
+    fun openTemplatesModal(targetTypeKey: Id)
 
     sealed class Command {
 
@@ -114,8 +114,6 @@ interface AppNavigation {
         data class DeletedAccountScreen(val deadline: Long) : Command()
 
         data class OpenTemplates(
-            val ctx: Id,
-            val typeId: Id,
             val typeKey: Id
         ) : Command()
 

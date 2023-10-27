@@ -53,9 +53,7 @@ class DefaultEditorTemplateDelegate(
             is SelectTemplateEvent.OnAccepted -> {
                 if (state is SelectTemplateState.Available)
                     SelectTemplateState.Accepted(
-                        typeId = state.typeId,
                         typeKey = state.typeKey,
-                        templates = state.templates
                     )
                 else
                     SelectTemplateState.Idle
@@ -86,11 +84,7 @@ sealed class SelectTemplateState {
     /**
      * State where user accepted choosing a template for this object.
      */
-    data class Accepted(
-        val typeId: Id,
-        val typeKey: Id,
-        val templates: List<Id>,
-    ) : SelectTemplateState()
+    data class Accepted(val typeKey: Id) : SelectTemplateState()
 
     companion object {
         fun init(): SelectTemplateState = Idle

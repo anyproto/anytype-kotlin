@@ -73,8 +73,6 @@ class NavigationRouter(
                 )
 
                 is AppNavigation.Command.OpenTemplates -> navigation.openTemplatesModal(
-                    ctx = command.ctx,
-                    targetTypeId = command.typeId,
                     targetTypeKey = command.typeKey
                 )
 

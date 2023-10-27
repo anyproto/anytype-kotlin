@@ -286,12 +286,10 @@ class Navigator : AppNavigation {
             bundleOf(RemoteStorageFragment.SUBSCRIPTION_KEY to subscription))
     }
 
-    override fun openTemplatesModal(ctx: Id, targetTypeId: Id, targetTypeKey: Id) {
+    override fun openTemplatesModal(targetTypeKey: Id) {
         navController?.navigate(
             R.id.nav_templates_modal,
             bundleOf(
-                TemplateSelectFragment.ARG_CTX to ctx,
-                TemplateSelectFragment.ARG_TARGET_TYPE_ID to targetTypeId,
                 TemplateSelectFragment.ARG_TARGET_TYPE_KEY to targetTypeKey
             )
         )

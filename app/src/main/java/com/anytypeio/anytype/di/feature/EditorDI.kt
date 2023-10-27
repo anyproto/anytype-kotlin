@@ -282,7 +282,8 @@ object EditorSessionModule {
         objectToCollection: ConvertObjectToCollection,
         interceptFileLimitEvents: InterceptFileLimitEvents,
         addRelationToObject: AddRelationToObject,
-        setObjectInternalFlags: SetObjectInternalFlags
+        setObjectInternalFlags: SetObjectInternalFlags,
+        applyTemplate: ApplyTemplate
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -320,7 +321,8 @@ object EditorSessionModule {
         objectToCollection = objectToCollection,
         interceptFileLimitEvents = interceptFileLimitEvents,
         addRelationToObject = addRelationToObject,
-        setObjectInternalFlags = setObjectInternalFlags
+        setObjectInternalFlags = setObjectInternalFlags,
+        applyTemplate = applyTemplate
     )
 
 

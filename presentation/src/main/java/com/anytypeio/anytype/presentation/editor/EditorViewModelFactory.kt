@@ -31,6 +31,7 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -81,7 +82,8 @@ open class  EditorViewModelFactory(
     private val objectToCollection: ConvertObjectToCollection,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val addRelationToObject: AddRelationToObject,
-    private val setObjectInternalFlags: SetObjectInternalFlags
+    private val setObjectInternalFlags: SetObjectInternalFlags,
+    private val applyTemplate: ApplyTemplate
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -123,7 +125,8 @@ open class  EditorViewModelFactory(
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
-            setObjectInternalFlags = setObjectInternalFlags
+            setObjectInternalFlags = setObjectInternalFlags,
+            applyTemplate = applyTemplate
         ) as T
     }
 }

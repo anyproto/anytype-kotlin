@@ -88,6 +88,7 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -293,7 +294,8 @@ class EditorViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val addRelationToObject: AddRelationToObject,
-    private val setObjectInternalFlags: SetObjectInternalFlags
+    private val setObjectInternalFlags: SetObjectInternalFlags,
+    private val applyTemplate: ApplyTemplate
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,

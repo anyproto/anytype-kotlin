@@ -26,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -44,7 +43,6 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
@@ -159,8 +157,6 @@ fun SetProfileNameInput(
         val focus = LocalFocusManager.current
         val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
         val focusRequester = FocusRequester()
-        val context = LocalContext.current
-        val emptyNameError = stringResource(R.string.name_is_required)
 
         OnboardingInput(
             modifier = Modifier
@@ -172,13 +168,8 @@ fun SetProfileNameInput(
             placeholder = stringResource(id = R.string.untitled),
             keyboardActions = KeyboardActions(
                 onDone = {
-                    val input = text.value
-                    if (input.isNotEmpty()) {
-                        focus.clearFocus()
-                        onKeyboardActionDoneClicked()
-                    } else {
-                        context.toast(emptyNameError)
-                    }
+                    focus.clearFocus()
+                    onKeyboardActionDoneClicked()
                 }
             )
         )
@@ -219,6 +210,7 @@ fun SetProfileNameNextButton(
     text: MutableState<String>,
     isLoading: Boolean
 ) {
+    val focus = LocalFocusManager.current
     Box(modifier = modifier) {
         OnBoardingButtonPrimary(
             text = if (isLoading)
@@ -226,7 +218,9 @@ fun SetProfileNameNextButton(
             else
                 stringResource(id = R.string.next),
             onClick = {
-                onNextClicked(text.value)
+                onNextClicked(text.value).also {
+                    focus.clearFocus(force = true)
+                }
             },
             size = ButtonSize.Large,
             modifier = modifier

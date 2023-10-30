@@ -19,19 +19,19 @@ import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
+import com.anytypeio.anytype.presentation.types.CreateObjectTypeViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_PICK_EMOJI
 import com.anytypeio.anytype.ui.types.picker.REQUEST_KEY_REMOVE_EMOJI
 import com.anytypeio.anytype.ui.types.picker.RESULT_EMOJI_UNICODE
 import javax.inject.Inject
 
-class TypeCreationFragment : BaseBottomSheetComposeFragment() {
+class CreateObjectTypeFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
-    lateinit var factory: TypeCreationViewModel.Factory
+    lateinit var factory: CreateObjectTypeViewModel.Factory
 
-    private val vm by viewModels<TypeCreationViewModel> { factory }
+    private val vm by viewModels<CreateObjectTypeViewModel> { factory }
 
     private val preparedName get() = argString(ARG_TYPE_NAME)
 
@@ -68,11 +68,11 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
         vm.onPreparedString(preparedName)
         subscribe(vm.navigation) {
             when (it) {
-                is TypeCreationViewModel.Navigation.BackWithCreatedType -> {
+                is CreateObjectTypeViewModel.Navigation.BackWithCreatedType -> {
                     setFragmentResult(REQUEST_CREATE_OBJECT, bundleOf())
                     findNavController().popBackStack()
                 }
-                is TypeCreationViewModel.Navigation.SelectEmoji -> {
+                is CreateObjectTypeViewModel.Navigation.SelectEmoji -> {
                     findNavController().navigate(
                         R.id.openEmojiPicker, bundleOf(ARG_SHOW_REMOVE_BUTTON to it.showRemove)
                     )
@@ -83,11 +83,11 @@ class TypeCreationFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().typeCreationComponent.get().inject(this)
+        componentManager().createObjectTypeComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().typeCreationComponent.release()
+        componentManager().createObjectTypeComponent.release()
     }
 
     companion object {

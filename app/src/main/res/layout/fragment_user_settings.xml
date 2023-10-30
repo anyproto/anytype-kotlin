@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    tools:context="com.anytypeio.anytype.ui.settings.OtherSettingsFragment">
+    tools:context="com.anytypeio.anytype.ui.settings.PersonalizationSettingsFragment">
 
     <ImageView
         android:id="@+id/sheet_top"
@@ -88,6 +88,35 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnDefaultObjectType" />
 
+    <FrameLayout
+        android:id="@+id/btnWallpaper"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginTop="12dp"
+        android:background="@drawable/default_ripple"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider">
+
+        <TextView
+            android:id="@+id/tvWallpeper"
+            style="@style/TextView.UXStyle.Body"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginStart="20dp"
+            android:text="@string/wallpaper" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            android:layout_marginEnd="20dp"
+            android:src="@drawable/ic_arrow_forward" />
+
+    </FrameLayout>
+
     <View
         android:id="@+id/divider2"
         android:layout_width="0dp"
@@ -99,6 +128,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnDefaultObjectType" />
+        app:layout_constraintTop_toBottomOf="@+id/btnWallpaper" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

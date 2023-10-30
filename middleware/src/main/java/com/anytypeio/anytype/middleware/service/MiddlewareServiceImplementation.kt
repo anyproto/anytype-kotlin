@@ -593,7 +593,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun debugSpace(request: Rpc.Debug.SpaceSummary.Request): Rpc.Debug.SpaceSummary.Response {
+    override fun debugSpaceSummary(request: Rpc.Debug.SpaceSummary.Request): Rpc.Debug.SpaceSummary.Response {
         val encoded = Service.debugSpaceSummary(Rpc.Debug.SpaceSummary.Request.ADAPTER.encode(request))
         val response = Rpc.Debug.SpaceSummary.Response.ADAPTER.decode(encoded)
         val error = response.error

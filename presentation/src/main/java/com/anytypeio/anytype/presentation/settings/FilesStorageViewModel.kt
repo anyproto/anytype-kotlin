@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -31,6 +30,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.sendGetMoreSpaceEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsOffloadEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageEvent
@@ -57,7 +57,7 @@ import timber.log.Timber
 class FilesStorageViewModel(
     private val analytics: Analytics,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val configStorage: ConfigStorage,
+    private val spaceManager: SpaceManager,
     private val clearFileCache: ClearFileCache,
     private val urlBuilder: UrlBuilder,
     private val spaceGradientProvider: SpaceGradientProvider,
@@ -205,12 +205,14 @@ class FilesStorageViewModel(
     }
 
     private fun subscribeToSpace() {
-        val workspaceId = configStorage.get().spaceView
-        val profileId = configStorage.get().profile
         jobs += viewModelScope.launch {
+            val config = spaceManager.getConfig() ?: return@launch
+            val spaceId = config.space
+            val profileId = config.profile
+            spaceManager.observe()
             val subscribeParams = StoreSearchByIdsParams(
                 subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
-                targets = listOf(workspaceId, profileId),
+                targets = listOf(spaceId, profileId),
                 keys = listOf(
                     Relations.ID,
                     Relations.NAME,
@@ -223,7 +225,7 @@ class FilesStorageViewModel(
                 _fileLimitsState,
                 storelessSubscriptionContainer.subscribe(subscribeParams)
             ) { spaceUsage, result ->
-                val workspace = result.find { it.id == workspaceId }
+                val workspace = result.find { it.id == spaceId }
                 val bytesUsage = spaceUsage.bytesUsage
                 val bytesLimit = spaceUsage.bytesLimit
                 val localeUsage = spaceUsage.localBytesUsage
@@ -244,7 +246,8 @@ class FilesStorageViewModel(
                 ScreenState(
                     spaceName = workspace?.name.orEmpty(),
                     spaceIcon = workspace?.spaceIcon(urlBuilder, spaceGradientProvider),
-                    spaceUsage = bytesUsage?.let { bytesToHumanReadableSizeFloatingPoint(it) }.orEmpty(),
+                    spaceUsage = bytesUsage?.let { bytesToHumanReadableSizeFloatingPoint(it) }
+                        .orEmpty(),
                     percentUsage = percentUsage,
                     device = getDeviceName(),
                     localUsage = spaceUsage.localBytesUsage?.let { bytesToHumanReadableSizeLocal(it) }
@@ -292,10 +295,11 @@ class FilesStorageViewModel(
 
     private fun onGetMoreSpaceClicked() {
         viewModelScope.launch {
+            val config = spaceManager.getConfig() ?: return@launch
             val params = StoreSearchByIdsParams(
                 subscription = PROFILE_SUBSCRIPTION_ID,
                 keys = listOf(Relations.ID, Relations.NAME),
-                targets = listOf(configStorage.get().profile)
+                targets = listOf(config.profile)
             )
             combine(
                 getAccount.asFlow(Unit),
@@ -328,7 +332,7 @@ class FilesStorageViewModel(
     class Factory @Inject constructor(
         private val analytics: Analytics,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-        private val configStorage: ConfigStorage,
+        private val spaceManager: SpaceManager,
         private val clearFileCache: ClearFileCache,
         private val urlBuilder: UrlBuilder,
         private val spaceGradientProvider: SpaceGradientProvider,
@@ -344,7 +348,7 @@ class FilesStorageViewModel(
         ): T = FilesStorageViewModel(
             analytics = analytics,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            configStorage = configStorage,
+            spaceManager = spaceManager,
             clearFileCache = clearFileCache,
             urlBuilder = urlBuilder,
             spaceGradientProvider = spaceGradientProvider,

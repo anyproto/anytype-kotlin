@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class OnboardingSoulCreationViewModel @Inject constructor(
+class OnboardingSetProfileNameViewModel @Inject constructor(
     private val setObjectDetails: SetObjectDetails,
     private val setSpaceDetails: SetSpaceDetails,
     private val configStorage: ConfigStorage,
@@ -232,7 +232,7 @@ class OnboardingSoulCreationViewModel @Inject constructor(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return OnboardingSoulCreationViewModel(
+            return OnboardingSetProfileNameViewModel(
                 setObjectDetails = setObjectDetails,
                 setSpaceDetails = setSpaceDetails,
                 configStorage = configStorage,

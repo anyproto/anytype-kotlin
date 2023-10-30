@@ -45,23 +45,23 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 
 @Composable
-fun CreateSoulWrapper(viewModel: OnboardingSoulCreationViewModel, contentPaddingTop: Int) {
-    CreateSoulScreen(
+fun SetProfileNameWrapper(viewModel: OnboardingSetProfileNameViewModel, contentPaddingTop: Int) {
+    SetProfileNameScreen(
         contentPaddingTop = contentPaddingTop,
         onNextClicked = viewModel::onNextClicked,
         isLoading = viewModel.state
             .collectAsStateWithLifecycle()
-            .value is OnboardingSoulCreationViewModel.ScreenState.Loading
+            .value is OnboardingSetProfileNameViewModel.ScreenState.Loading
     )
 }
 
 @Composable
-private fun CreateSoulScreen(
+private fun SetProfileNameScreen(
     contentPaddingTop: Int,
     onNextClicked: (Name) -> Unit,
     isLoading: Boolean
@@ -88,16 +88,16 @@ private fun CreateSoulScreen(
                 )
             }
             item {
-                CreateSoulTitle(modifier = Modifier.padding(bottom = 12.dp))
+                SetProfileNameTitle(modifier = Modifier.padding(bottom = 12.dp))
             }
             item {
-                CreateSoulDescription()
+                SetProfileNameDescription()
             }
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
-                CreateSoulInput(
+                SetProfileNameInput(
                     text = text,
                     onKeyboardActionDoneClicked = { onNextClicked(text.value) }
                 )
@@ -106,7 +106,7 @@ private fun CreateSoulScreen(
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-        CreateSoulNextButton(
+        SetProfileNameNextButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
@@ -127,7 +127,7 @@ private fun CreateSoulScreen(
 }
 
 @Composable
-fun CreateSoulTitle(modifier: Modifier) {
+fun SetProfileNameTitle(modifier: Modifier) {
     Box(
         modifier = modifier.then(
             Modifier
@@ -146,7 +146,7 @@ fun CreateSoulTitle(modifier: Modifier) {
 }
 
 @Composable
-fun CreateSoulInput(
+fun SetProfileNameInput(
     text: MutableState<String>,
     onKeyboardActionDoneClicked: () -> Unit
 ) {
@@ -194,7 +194,7 @@ fun CreateSoulInput(
 }
 
 @Composable
-fun CreateSoulDescription() {
+fun SetProfileNameDescription() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -213,7 +213,7 @@ fun CreateSoulDescription() {
 }
 
 @Composable
-fun CreateSoulNextButton(
+fun SetProfileNameNextButton(
     modifier: Modifier,
     onNextClicked: (Name) -> Unit,
     text: MutableState<String>,

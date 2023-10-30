@@ -18,7 +18,7 @@ import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
-import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import dagger.Binds
 import dagger.Component
@@ -41,7 +41,7 @@ interface OnboardingSoulCreationComponent {
         fun create(dependencies: OnboardingSoulCreationDependencies): OnboardingSoulCreationComponent
     }
 
-    fun getViewModel(): OnboardingSoulCreationViewModel
+    fun getViewModel(): OnboardingSetProfileNameViewModel
 }
 
 @Module
@@ -89,7 +89,7 @@ object OnboardingSoulCreationModule {
     interface Declarations {
         @Binds
         @SoulCreationScreenScope
-        fun bindViewModelFactory(factory: OnboardingSoulCreationViewModel.Factory): ViewModelProvider.Factory
+        fun bindViewModelFactory(factory: OnboardingSetProfileNameViewModel.Factory): ViewModelProvider.Factory
     }
 }
 

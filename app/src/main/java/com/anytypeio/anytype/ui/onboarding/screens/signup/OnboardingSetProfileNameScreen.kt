@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.onboarding.screens.signup
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,43 +18,53 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
+import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
+import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 
 @Composable
-fun CreateSoulWrapper(viewModel: OnboardingSoulCreationViewModel, contentPaddingTop: Int) {
-    CreateSoulScreen(
+fun SetProfileNameWrapper(viewModel: OnboardingSetProfileNameViewModel, contentPaddingTop: Int) {
+    SetProfileNameScreen(
         contentPaddingTop = contentPaddingTop,
-        onGoToTheAppClicked = viewModel::onGoToTheAppClicked
+        onNextClicked = viewModel::onNextClicked,
+        isLoading = viewModel.state
+            .collectAsStateWithLifecycle()
+            .value is OnboardingSetProfileNameViewModel.ScreenState.Loading
     )
 }
 
 @Composable
-private fun CreateSoulScreen(
+private fun SetProfileNameScreen(
     contentPaddingTop: Int,
-    onGoToTheAppClicked: (Name) -> Unit
+    onNextClicked: (Name) -> Unit,
+    isLoading: Boolean
 ) {
     val text = remember { mutableStateOf("") }
     val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
@@ -77,22 +88,25 @@ private fun CreateSoulScreen(
                 )
             }
             item {
-                CreateSoulTitle(modifier = Modifier.padding(bottom = 16.dp))
+                SetProfileNameTitle(modifier = Modifier.padding(bottom = 12.dp))
             }
             item {
-                CreateSoulInput(
-                    text = text,
-                    onKeyboardActionDoneClicked = { onGoToTheAppClicked(text.value) }
-                )
+                SetProfileNameDescription()
             }
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
             item {
-                CreateSoulDescription()
+                SetProfileNameInput(
+                    text = text,
+                    onKeyboardActionDoneClicked = { onNextClicked(text.value) }
+                )
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
         }
-        CreateSoulNextButton(
+        SetProfileNameNextButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
@@ -105,14 +119,15 @@ private fun CreateSoulScreen(
                         Modifier.padding(bottom = 13.dp)
                 )
             ,
-            onGoToTheAppClicked = onGoToTheAppClicked,
-            text = text
+            onNextClicked = onNextClicked,
+            text = text,
+            isLoading = isLoading
         )
     }
 }
 
 @Composable
-fun CreateSoulTitle(modifier: Modifier) {
+fun SetProfileNameTitle(modifier: Modifier) {
     Box(
         modifier = modifier.then(
             Modifier
@@ -122,7 +137,7 @@ fun CreateSoulTitle(modifier: Modifier) {
     ) {
         Text(
             modifier = Modifier,
-            text = stringResource(R.string.onboarding_soul_creation_title),
+            text = stringResource(R.string.onboarding_set_your_name_title),
             style = Title1.copy(
                 color = OnBoardingTextPrimaryColor
             )
@@ -131,7 +146,7 @@ fun CreateSoulTitle(modifier: Modifier) {
 }
 
 @Composable
-fun CreateSoulInput(
+fun SetProfileNameInput(
     text: MutableState<String>,
     onKeyboardActionDoneClicked: () -> Unit
 ) {
@@ -154,7 +169,7 @@ fun CreateSoulInput(
                 .focusRequester(focusRequester)
             ,
             text = text,
-            placeholder = stringResource(id = R.string.name),
+            placeholder = stringResource(id = R.string.untitled),
             keyboardActions = KeyboardActions(
                 onDone = {
                     val input = text.value
@@ -179,7 +194,7 @@ fun CreateSoulInput(
 }
 
 @Composable
-fun CreateSoulDescription() {
+fun SetProfileNameDescription() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -198,18 +213,36 @@ fun CreateSoulDescription() {
 }
 
 @Composable
-fun CreateSoulNextButton(
+fun SetProfileNameNextButton(
     modifier: Modifier,
-    onGoToTheAppClicked: (Name) -> Unit,
-    text: MutableState<String>
+    onNextClicked: (Name) -> Unit,
+    text: MutableState<String>,
+    isLoading: Boolean
 ) {
-    OnBoardingButtonPrimary(
-        text = stringResource(id = R.string.go_to_the_app),
-        onClick = {
-            onGoToTheAppClicked(text.value)
-        },
-        size = ButtonSize.Large,
-        enabled = text.value.trim().isNotEmpty(),
-        modifier = modifier
-    )
+    Box(modifier = modifier) {
+        OnBoardingButtonPrimary(
+            text = if (isLoading)
+                ""
+            else
+                stringResource(id = R.string.next),
+            onClick = {
+                onNextClicked(text.value)
+            },
+            size = ButtonSize.Large,
+            modifier = modifier
+        )
+        if (isLoading) {
+            val loadingAlpha by animateFloatAsState(targetValue = 1f)
+            DotsLoadingIndicator(
+                animating = true,
+                modifier = Modifier
+                    .graphicsLayer { alpha = loadingAlpha }
+                    .align(Alignment.Center)
+                ,
+                animationSpecs = FadeAnimationSpecs(itemCount = 3),
+                size = ButtonSize.XSmall,
+                color = ColorButtonRegular
+            )
+        }
+    }
 }

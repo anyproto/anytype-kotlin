@@ -2,6 +2,8 @@ package com.anytypeio.anytype.core_ui
 
 import androidx.compose.ui.graphics.Color
 
+val OnboardingSubtitleColor = Color(0xFF505050)
+
 val OnBoardingTextPrimaryColor = Color(0xFFF3F2EC)
 val OnBoardingTextSecondaryColor = Color(0x80F3F2EC)
 

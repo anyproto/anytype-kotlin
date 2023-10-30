@@ -5,7 +5,7 @@ object OnboardingNavigation {
     const val recovery = "recovery"
     const val void = "void"
     const val mnemonic = "mnemonic"
-    const val createSoul = "createSoul"
+    const val setProfileName = "createSoul"
     const val createSoulAnim = "createSoulAnim"
     const val enterTheVoid = "enterTheVoid"
 }

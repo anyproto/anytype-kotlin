@@ -4,7 +4,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -140,31 +139,35 @@ class ObjectTypeChangeViewModel(
         userInput.value = input
     }
 
-    fun onItemClicked(id: Id, key: Key, name: String) {
+    fun onItemClicked(item: ObjectTypeView) {
         viewModelScope.launch {
-            if (id.contains(MARKETPLACE_OBJECT_TYPE_PREFIX)) {
+            if (item.id.contains(MARKETPLACE_OBJECT_TYPE_PREFIX)) {
                 val params = AddObjectToSpace.Params(
-                    obj = id,
+                    obj = item.id,
                     space = spaceManager.get()
                 )
                 addObjectTypeToSpace.async(params = params).fold(
-                    onSuccess = { obj ->
-                        commands.emit(Command.TypeAdded(type = name))
+                    onSuccess = { result ->
+                        commands.emit(Command.TypeAdded(type = result.type.name.orEmpty()))
                         proceedWithDispatchingType(
-                            id = obj,
-                            key = key,
-                            name = name
+                            item = ObjectTypeView(
+                                id = result.id,
+                                key = result.type.uniqueKey.orEmpty(),
+                                name = result.type.name.orEmpty(),
+                                description = result.type.description.orEmpty(),
+                                emoji = result.type.iconEmoji,
+                                defaultTemplate = result.type.defaultTemplateId
+                            )
                         )
                     },
                     onFailure = {
-                        sendToast("Something went wrong. Please, try again later.")
+                        Timber.e(it, "Error while adding object by id:${item.id} to space")
+                        sendToast("Error while adding object by id:${item.id} to space")
                     }
                 )
             } else {
                 proceedWithDispatchingType(
-                    id = id,
-                    key = key,
-                    name = name
+                    item = item
                 )
             }
         }

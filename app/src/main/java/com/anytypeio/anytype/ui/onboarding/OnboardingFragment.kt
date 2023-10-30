@@ -315,12 +315,17 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.MNEMONIC
-                backButtonCallback.value = { navController.popBackStack() }
+                backButtonCallback.value = {
+                    // Do nothing
+                }
                 Mnemonic(
                     navController = navController,
                     contentPaddingTop = ContentPaddingTop(),
                     mnemonicColorPalette = mnemonicColorPalette
                 )
+                BackHandler {
+                    toast("You're only one step ahead before completing this registration")
+                }
             }
             composable(
                 route = OnboardingNavigation.setProfileName,
@@ -336,8 +341,12 @@ class OnboardingFragment : Fragment() {
                     }
                 }
             ) {
+                val focus = LocalFocusManager.current
                 currentPage.value = OnboardingPage.SET_PROFILE_NAME
-                backButtonCallback.value = { navController.popBackStack() }
+                backButtonCallback.value = {
+                    focus.clearFocus(true)
+                    navController.popBackStack()
+                }
                 SetProfileName(
                     navController = navController,
                     contentPaddingTop = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
@@ -345,6 +354,10 @@ class OnboardingFragment : Fragment() {
                     else
                         ContentPaddingTop()
                 )
+                BackHandler {
+                    focus.clearFocus(true)
+                    navController.popBackStack()
+                }
             }
             composable(
                 route = OnboardingNavigation.createSoulAnim,

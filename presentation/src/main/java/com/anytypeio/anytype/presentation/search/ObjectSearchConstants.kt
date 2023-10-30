@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
@@ -36,11 +35,6 @@ object ObjectSearchConstants {
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
-        ),
-        DVFilter(
-            relation = Relations.TYPE_UNIQUE_KEY,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = ObjectTypeUniqueKeys.TEMPLATE
         ),
         DVFilter(
             relation = Relations.LAYOUT,

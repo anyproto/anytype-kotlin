@@ -72,9 +72,8 @@ class NavigationRouter(
                     command.deadline
                 )
 
-                is AppNavigation.Command.OpenTemplates -> navigation.openTemplates(
-                    ctx = command.ctx,
-                    type = command.type
+                is AppNavigation.Command.OpenTemplates -> navigation.openTemplatesModal(
+                    targetTypeKey = command.typeKey
                 )
 
                 is AppNavigation.Command.OpenLibrary -> navigation.openLibrary()

@@ -34,7 +34,6 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -148,7 +147,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
-import com.anytypeio.anytype.ui.templates.EditorTemplateFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
@@ -2099,13 +2098,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         val navBackStackEntry = navController.getBackStackEntry(R.id.pageScreen)
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME
-                && navBackStackEntry.savedStateHandle.contains(EditorTemplateFragment.ARG_TEMPLATE_ID)
+                && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)
             ) {
-                val result =
-                    navBackStackEntry.savedStateHandle.get<String>(EditorTemplateFragment.ARG_TEMPLATE_ID);
-                if (!result.isNullOrBlank()) {
-                    navBackStackEntry.savedStateHandle.remove<String>(EditorTemplateFragment.ARG_TEMPLATE_ID)
-                    vm.onCreateObjectWithTemplateClicked(template = result)
+                val resultTemplateId = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
+                if (resultTemplateId != null) {
+                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
+                    vm.onProceedWithApplyingTemplateByObjectId(template = resultTemplateId)
                 }
             }
         }

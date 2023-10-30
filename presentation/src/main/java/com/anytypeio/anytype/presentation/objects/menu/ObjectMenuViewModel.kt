@@ -286,7 +286,7 @@ class ObjectMenuViewModel(
             setObjectDetails.async(params).fold(
                 onSuccess = {
                     sendAnalyticsDefaultTemplateEvent(analytics, objType, startTime)
-                    _toasts.emit("Template is set as default")
+                    _toasts.emit("The template was set as default")
                     isDismissed.value = true
                 },
                 onFailure = {

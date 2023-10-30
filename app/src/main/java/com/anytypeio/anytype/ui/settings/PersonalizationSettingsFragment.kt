@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -12,18 +14,18 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.databinding.FragmentUserSettingsBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.settings.OtherSettingsViewModel
+import com.anytypeio.anytype.presentation.settings.PersonalizationSettingsViewModel
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import javax.inject.Inject
 
-class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBinding>(),
+class PersonalizationSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBinding>(),
     AppDefaultObjectTypeFragment.OnObjectTypeAction {
 
     @Inject
-    lateinit var factory: OtherSettingsViewModel.Factory
+    lateinit var factory: PersonalizationSettingsViewModel.Factory
 
-    private val vm by viewModels<OtherSettingsViewModel> { factory }
+    private val vm by viewModels<PersonalizationSettingsViewModel> { factory }
 
     override fun onProceedWithUpdateType(id: Id, key: Key, name: String) {
         vm.proceedWithUpdateType(type = id, key = key, name = name)
@@ -34,6 +36,7 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
         binding.tvDefaultObjectTypeTitle.setOnClickListener { vm.onObjectTypeClicked() }
         binding.btnDefaultObjectType.setOnClickListener { vm.onObjectTypeClicked() }
         binding.ivArrowForward.setOnClickListener { vm.onObjectTypeClicked() }
+        binding.btnWallpaper.setOnClickListener { vm.onWallpaperClicked() }
     }
 
     override fun onStart() {
@@ -42,16 +45,19 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
         proceed(vm.defaultObjectTypeName) { binding.objectType.text = it }
     }
 
-    private fun observe(command: OtherSettingsViewModel.Command) {
+    private fun observe(command: PersonalizationSettingsViewModel.Command) {
         when (command) {
-            is OtherSettingsViewModel.Command.Exit -> throttle { dismiss() }
-            is OtherSettingsViewModel.Command.NavigateToObjectTypesScreen -> {
+            is PersonalizationSettingsViewModel.Command.Exit -> throttle { dismiss() }
+            is PersonalizationSettingsViewModel.Command.NavigateToObjectTypesScreen -> {
                 AppDefaultObjectTypeFragment.newInstance(
                     excludeTypes = command.excludeTypes
                 ).showChildFragment()
             }
-            is OtherSettingsViewModel.Command.Toast -> toast(command.msg)
-            is OtherSettingsViewModel.Command.ShowClearCacheAlert -> {
+            is PersonalizationSettingsViewModel.Command.NavigateToWallpaperScreen -> {
+                findNavController().navigate(R.id.wallpaperSetScreen)
+            }
+            is PersonalizationSettingsViewModel.Command.Toast -> toast(command.msg)
+            is PersonalizationSettingsViewModel.Command.ShowClearCacheAlert -> {
                 val dialog = ClearCacheAlertFragment.new()
                 dialog.onClearAccepted = { vm.proceedWithClearCache() }
                 dialog.showChildFragment()
@@ -67,10 +73,10 @@ class OtherSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBindin
     )
 
     override fun injectDependencies() {
-        componentManager().otherSettingsComponent.get().inject(this)
+        componentManager().personalizationSettingsComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().otherSettingsComponent.release()
+        componentManager().personalizationSettingsComponent.release()
     }
 }

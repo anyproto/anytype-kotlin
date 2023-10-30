@@ -214,7 +214,8 @@ open class ObjectSetViewModelTestSetup {
             spaceView = "etiam",
             widgets = "eloquentiam",
             analytics = "quem",
-            device = "elaboraret"
+            device = "elaboraret",
+            network = "network"
         )
         spaceManager = SpaceManager.Impl(
             repo = repo,
@@ -327,7 +328,8 @@ open class ObjectSetViewModelTestSetup {
                 spaceView = "etiam",
                 widgets = "eloquentiam",
                 analytics = "quem",
-                device = "elaboraret"
+                device = "elaboraret",
+                network = "network"
             )
         }
         spaceManager.set(space)

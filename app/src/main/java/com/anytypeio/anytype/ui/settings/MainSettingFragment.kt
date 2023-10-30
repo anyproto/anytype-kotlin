@@ -35,6 +35,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Deprecated("To be deleted")
 class MainSettingFragment : BaseBottomSheetComposeFragment() {
 
     @Inject

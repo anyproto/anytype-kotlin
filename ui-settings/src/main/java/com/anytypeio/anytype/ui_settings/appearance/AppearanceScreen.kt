@@ -43,9 +43,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ThemeMode
-import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
@@ -58,7 +56,6 @@ private const val thirdQuartersFactor = 1.5f
 
 @Composable
 fun AppearanceScreen(
-    onWallpaperClicked: () -> Unit,
     light: () -> Unit,
     dark: () -> Unit,
     system: () -> Unit,
@@ -73,12 +70,6 @@ fun AppearanceScreen(
             Dragger()
         }
         Toolbar(stringResource(R.string.appearance))
-        Option(
-            image = R.drawable.ic_wallpaper,
-            text = stringResource(R.string.wallpaper),
-            onClick = onWallpaperClicked
-        )
-        Divider(paddingStart = 60.dp)
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -108,8 +99,7 @@ fun AppearanceScreen(
                 selectedMode == ThemeMode.System
             )
         }
-        Divider(paddingStart = 20.dp)
-        Box(Modifier.height(48.dp))
+        Box(Modifier.height(16.dp))
     }
 }
 
@@ -262,7 +252,7 @@ fun ModeNameText(
 @Preview()
 @Composable
 fun ComposablePreview() {
-    AppearanceScreen({}, {}, {}, {}, ThemeMode.Light)
+    AppearanceScreen({}, {}, {}, ThemeMode.Light)
 }
 
 fun drawThirdQuarterBlackRectangle(

@@ -46,9 +46,94 @@ import com.anytypeio.anytype.ui_settings.fstorage.MockFileStorage.mockData
 import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 
 @Composable
-fun FilesStorageScreen(
+fun LocalStorageScreen(
     data: ScreenState,
-    onOffloadFilesClicked: () -> Unit,
+    onOffloadFilesClicked: () -> Unit
+) {
+    Card(
+        modifier = Modifier.fillMaxSize(),
+        shape = RoundedCornerShape(16.dp),
+        backgroundColor = colorResource(id = R.color.background_secondary)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(start = 20.dp, end = 20.dp),
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(vertical = 6.dp)
+                    .fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Dragger()
+            }
+            Header(stringResource(id = R.string.local_storage))
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = stringResource(id = R.string.in_order_to_save),
+                style = BodyCalloutRegular,
+                color = colorResource(id = R.color.text_primary),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(28.dp))
+            Row(
+                modifier = Modifier
+                    .wrapContentHeight(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(
+                            color = colorResource(id = R.color.shape_tertiary),
+                            shape = RoundedCornerShape(4.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = "\uD83D\uDCF1",
+                        style = TextStyle(fontSize = 28.sp)
+                    )
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 12.dp),
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        text = data.device.orEmpty(),
+                        style = PreviewTitle2Medium,
+                        color = colorResource(id = R.color.text_primary),
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                    Text(
+                        text = stringResource(
+                            id = R.string.local_storage_used,
+                            data.localUsage
+                        ),
+                        style = Relations3,
+                        color = colorResource(id = R.color.text_secondary),
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(18.dp))
+            ButtonSecondary(
+                text = stringResource(id = R.string.offload_files),
+                onClick = onOffloadFilesClicked,
+                size = ButtonSize.SmallSecondary.apply {
+                    contentPadding = PaddingValues(12.dp, 7.dp, 12.dp, 7.dp)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun RemoteStorageScreen(
+    data: ScreenState,
     onManageFilesClicked: () -> Unit,
     onGetMoreSpaceClicked: () -> Unit
 ) {
@@ -70,21 +155,11 @@ fun FilesStorageScreen(
             ) {
                 Dragger()
             }
-            Header()
-            Spacer(
-                modifier = Modifier.height(36.dp)
-            )
-            Text(
-                text = stringResource(id = R.string.remote_storage),
-                style = Title1,
-                color = colorResource(id = R.color.text_primary),
-                modifier = Modifier.fillMaxWidth(),
-            )
+            Header(text = stringResource(id = R.string.remote_storage))
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(id = R.string.you_can_store, data.spaceLimit),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
+                modifier = Modifier.fillMaxWidth(),
                 color = colorResource(R.color.text_primary),
                 style = BodyCalloutRegular
             )
@@ -153,71 +228,6 @@ fun FilesStorageScreen(
                 }
             )
             Spacer(modifier = Modifier.height(44.dp))
-            Text(
-                text = stringResource(id = R.string.local_storage),
-                style = Title1,
-                color = colorResource(id = R.color.text_primary),
-                modifier = Modifier.fillMaxWidth(),
-            )
-            Text(
-                text = stringResource(id = R.string.in_order_to_save),
-                style = BodyCalloutRegular,
-                color = colorResource(id = R.color.text_primary),
-                modifier = Modifier
-                    .padding(top = 4.dp)
-                    .fillMaxWidth(),
-            )
-            Spacer(modifier = Modifier.height(28.dp))
-            Row(
-                modifier = Modifier
-                    .wrapContentHeight(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(48.dp)
-                        .background(
-                            color = colorResource(id = R.color.shape_tertiary),
-                            shape = RoundedCornerShape(4.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "\uD83D\uDCF1",
-                        style = TextStyle(fontSize = 28.sp)
-                    )
-                }
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 12.dp),
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Text(
-                        text = data.device.orEmpty(),
-                        style = PreviewTitle2Medium,
-                        color = colorResource(id = R.color.text_primary),
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Text(
-                        text = stringResource(
-                            id = R.string.local_storage_used,
-                            data.localUsage
-                        ),
-                        style = Relations3,
-                        color = colorResource(id = R.color.text_secondary),
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(18.dp))
-            ButtonSecondary(
-                text = stringResource(id = R.string.offload_files),
-                onClick = onOffloadFilesClicked,
-                size = ButtonSize.SmallSecondary.apply {
-                    contentPadding = PaddingValues(12.dp, 7.dp, 12.dp, 7.dp)
-                }
-            )
         }
     }
 }
@@ -241,6 +251,7 @@ fun DefaultLinearProgressIndicator(progress: Float) {
 
 @Composable
 private fun Header(
+    text: String,
     modifier: Modifier = Modifier
 ) {
     Box(
@@ -250,7 +261,7 @@ private fun Header(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = stringResource(R.string.file_storage),
+            text = text,
             style = Title1,
             color = colorResource(id = R.color.text_primary)
         )
@@ -280,13 +291,22 @@ object MockFileStorage {
 
 @Composable
 @Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
-fun PreviewFilesStorageScreen() {
-    FilesStorageScreen(
+fun PreviewRemoteStorageScreen() {
+    RemoteStorageScreen(
         data = mockData,
-        onOffloadFilesClicked = { },
         onManageFilesClicked = { },
         onGetMoreSpaceClicked = { }
     )
 }
+
+@Composable
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
+fun PreviewLocalStorageScreen() {
+    LocalStorageScreen(
+        data = mockData,
+        onOffloadFilesClicked = {}
+    )
+}
+
 
 

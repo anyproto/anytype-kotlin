@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -27,11 +28,14 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel.Event
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
-import com.anytypeio.anytype.ui_settings.fstorage.FilesStorageScreen
+import com.anytypeio.anytype.ui_settings.fstorage.LocalStorageScreen
+import com.anytypeio.anytype.ui_settings.fstorage.RemoteStorageScreen
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
 class FilesStorageFragment : BaseBottomSheetComposeFragment() {
+
+    private val isRemote get() = arg<Boolean>(ARG_STORAGE_TYPE)
 
     @Inject
     lateinit var factory: FilesStorageViewModel.Factory
@@ -50,12 +54,18 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    FilesStorageScreen(
-                        data = vm.state.collectAsStateWithLifecycle().value,
-                        onOffloadFilesClicked = { throttle { vm.event(Event.OnOffloadFilesClicked) } },
-                        onManageFilesClicked = { throttle { vm.event(Event.OnManageFilesClicked) } },
-                        onGetMoreSpaceClicked = { throttle { vm.event(Event.OnGetMoreSpaceClicked) } },
-                    )
+                    if (isRemote) {
+                        RemoteStorageScreen(
+                            data = vm.state.collectAsStateWithLifecycle().value,
+                            onManageFilesClicked = { throttle { vm.event(Event.OnManageFilesClicked) } },
+                            onGetMoreSpaceClicked = { throttle { vm.event(Event.OnGetMoreSpaceClicked) } },
+                        )
+                    } else {
+                        LocalStorageScreen(
+                            data = vm.state.collectAsStateWithLifecycle().value,
+                            onOffloadFilesClicked = { throttle { vm.event(Event.OnOffloadFilesClicked) } }
+                        )
+                    }
                 }
             }
         }
@@ -138,6 +148,13 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().filesStorageComponent.release()
+    }
+
+    companion object {
+        fun args(isRemote: Boolean) : Bundle = Bundle(
+            bundleOf(ARG_STORAGE_TYPE to isRemote)
+        )
+        private const val ARG_STORAGE_TYPE = "arg.storage.type.is-remote"
     }
 }
 

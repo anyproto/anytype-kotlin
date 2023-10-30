@@ -66,24 +66,21 @@ class SpaceSettingsViewModel(
                     ).mapNotNull { results ->
                         results.firstOrNull()
                     }.map { wrapper ->
-                        val spaceId = wrapper.getValue<Id>(Relations.TARGET_SPACE_ID)
                         SpaceData(
                             name = wrapper.name.orEmpty(),
                             icon = wrapper.spaceIcon(
                                 builder = urlBuilder,
                                 spaceGradientProvider = gradientProvider
                             ),
-                            createdDate = wrapper
+                            createdDateInMillis = wrapper
                                 .getValue<Double?>(Relations.CREATED_DATE)
-                                .toString(),
+                                ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
                             createdBy = wrapper
                                 .getValue<Id?>(Relations.CREATOR)
                                 .toString(),
-                            spaceId = spaceId,
-                            isDeletable = if (spaceId == null)
-                                false
-                            else
-                                isSpaceDeletable(spaceId)
+                            spaceId = config.space,
+                            network = config.network,
+                            isDeletable = isSpaceDeletable(config.space)
                         )
                     }
                 }.collect { spaceViewState.value = ViewState.Success(it) }
@@ -167,8 +164,9 @@ class SpaceSettingsViewModel(
 
     data class SpaceData(
         val spaceId: Id?,
-        val createdDate: String?,
+        val createdDateInMillis: Long?,
         val createdBy: Id?,
+        val network: Id?,
         val name: String,
         val icon: SpaceIconView,
         val isDeletable: Boolean = false

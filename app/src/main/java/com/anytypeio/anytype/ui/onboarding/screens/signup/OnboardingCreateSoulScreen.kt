@@ -52,14 +52,14 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 fun CreateSoulWrapper(viewModel: OnboardingSoulCreationViewModel, contentPaddingTop: Int) {
     CreateSoulScreen(
         contentPaddingTop = contentPaddingTop,
-        onGoToTheAppClicked = viewModel::onGoToTheAppClicked
+        onNextClicked = viewModel::onNextClicked
     )
 }
 
 @Composable
 private fun CreateSoulScreen(
     contentPaddingTop: Int,
-    onGoToTheAppClicked: (Name) -> Unit
+    onNextClicked: (Name) -> Unit
 ) {
     val text = remember { mutableStateOf("") }
     val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
@@ -94,7 +94,7 @@ private fun CreateSoulScreen(
             item {
                 CreateSoulInput(
                     text = text,
-                    onKeyboardActionDoneClicked = { onGoToTheAppClicked(text.value) }
+                    onKeyboardActionDoneClicked = { onNextClicked(text.value) }
                 )
             }
             item {
@@ -114,7 +114,7 @@ private fun CreateSoulScreen(
                         Modifier.padding(bottom = 13.dp)
                 )
             ,
-            onNextClicked = onGoToTheAppClicked,
+            onNextClicked = onNextClicked,
             text = text
         )
     }

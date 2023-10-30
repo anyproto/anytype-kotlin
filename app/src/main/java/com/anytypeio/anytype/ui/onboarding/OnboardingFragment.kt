@@ -295,10 +295,9 @@ class OnboardingFragment : Fragment() {
                 route = OnboardingNavigation.mnemonic,
                 enterTransition = {
                     when (initialState.destination.route) {
-                        OnboardingNavigation.void -> {
+                        OnboardingNavigation.createSoul -> {
                             slideIntoContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }
-
                         else -> {
                             slideIntoContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
                         }
@@ -306,10 +305,9 @@ class OnboardingFragment : Fragment() {
                 },
                 exitTransition = {
                     when (targetState.destination.route) {
-                        OnboardingNavigation.void -> {
+                        OnboardingNavigation.createSoul -> {
                             slideOutOfContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
                         }
-
                         else -> {
                             slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }
@@ -523,16 +521,19 @@ class OnboardingFragment : Fragment() {
         CreateSoulWrapper(vm, contentPaddingTop)
 
         LaunchedEffect(Unit) {
-            vm.navigationFlow.collect { command ->
+            vm.navigation.collect { command ->
                 when (command) {
-                    is OnboardingSoulCreationViewModel.Navigation.OpenSoulCreationAnim -> {
+                    is OnboardingSoulCreationViewModel.Navigation.NavigateToMnemonic -> {
                         if (keyboardInsets.getBottom(density) > 0) {
                             focusManager.clearFocus(force = true)
                             delay(KEYBOARD_HIDE_DELAY)
                         }
                         navController.navigate(
-                            route = OnboardingNavigation.createSoulAnim
+                            route = OnboardingNavigation.mnemonic
                         )
+                    }
+                    is OnboardingSoulCreationViewModel.Navigation.GoBack -> {
+                        TODO()
                     }
                 }
             }
@@ -558,8 +559,8 @@ class OnboardingFragment : Fragment() {
         MnemonicPhraseScreenWrapper(
             contentPaddingTop = contentPaddingTop,
             viewModel = vm,
-            openSoulCreation = {
-                navController.navigate(OnboardingNavigation.createSoul)
+            onCheckLaterClicked = {
+                findNavController().navigate(R.id.action_openHome)
                 vm.sendAnalyticsOnboardingScreen()
             },
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,

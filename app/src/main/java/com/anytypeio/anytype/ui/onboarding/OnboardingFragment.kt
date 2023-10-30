@@ -324,7 +324,7 @@ class OnboardingFragment : Fragment() {
                     mnemonicColorPalette = mnemonicColorPalette
                 )
                 BackHandler {
-                    toast("You're only one step ahead before completing this registration")
+                    toast("You're just one step away from finishing this registration.")
                 }
             }
             composable(

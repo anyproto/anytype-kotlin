@@ -51,16 +51,13 @@ interface AppNavigation {
 
     fun deletedAccountScreen(deadline: Long)
 
-    fun openTemplates(
-        ctx: Id,
-        type: String
-    )
-
     fun openLibrary()
 
     fun logout()
 
     fun migrationErrorScreen()
+
+    fun openTemplatesModal(targetTypeKey: Id)
 
     sealed class Command {
 
@@ -117,8 +114,7 @@ interface AppNavigation {
         data class DeletedAccountScreen(val deadline: Long) : Command()
 
         data class OpenTemplates(
-            val ctx: Id,
-            val type: String
+            val typeKey: Id
         ) : Command()
 
         object OpenLibrary: Command()

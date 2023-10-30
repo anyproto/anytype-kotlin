@@ -88,6 +88,7 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -206,6 +207,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetDescriptionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
@@ -293,7 +295,8 @@ class EditorViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val addRelationToObject: AddRelationToObject,
-    private val setObjectInternalFlags: SetObjectInternalFlags
+    private val setObjectInternalFlags: SetObjectInternalFlags,
+    private val applyTemplate: ApplyTemplate
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -421,8 +424,7 @@ class EditorViewModel(
                         navigate(
                             EventWrapper(
                                 AppNavigation.Command.OpenTemplates(
-                                    type = state.type,
-                                    ctx = context
+                                    typeKey = state.typeKey
                                 )
                             )
                         )
@@ -3171,17 +3173,19 @@ class EditorViewModel(
         )
     }
 
-    fun onCreateObjectWithTemplateClicked(template: Id) {
+    fun onProceedWithApplyingTemplateByObjectId(template: Id) {
         Timber.d("onCreateObjectWithTemplateClicked, template:[$template]")
-        val typeKey = getObjectTypeFromDetails() ?: return
-        proceedWithCreatingNewObject(
-            typeKey = TypeKey(typeKey),
-            template = template,
-            internalFlags = listOf(
-                InternalFlags.ShouldSelectTemplate,
-                InternalFlags.ShouldEmptyDelete
+        val ctx = context
+        viewModelScope.launch {
+            val params = ApplyTemplate.Params(
+                ctx = ctx,
+                template = template,
             )
-        )
+            applyTemplate.async(params = params).fold(
+                onSuccess = { Timber.d("Template applied successfully") },
+                onFailure = { e -> Timber.e(e, "Error while applying template") }
+            )
+        }
     }
 
     private fun proceedWithCreatingNewObject(
@@ -6225,24 +6229,23 @@ class EditorViewModel(
         viewModelScope.launch { onEvent(SelectTemplateEvent.OnAccepted) }
     }
 
-    private fun proceedWithStartTemplateEvent(objTypeId: Id) {
+    private fun proceedWithStartTemplateEvent(typeKey: Id) {
         viewModelScope.launch {
-            val objType = storeOfObjectTypes.getByKey(objTypeId)
+            val objType = storeOfObjectTypes.getByKey(typeKey)
             if (objType?.uniqueKey != null) {
                 onEvent(
                     SelectTemplateEvent.OnStart(
                         ctx = context,
-                        type = objType.id,
-                        typeName = objType.name.orEmpty()
+                        objType = objType
                     )
                 )
             } else {
-                Timber.e("Error while getting object type from storeOfObjectTypes by id: $objTypeId")
+                Timber.e("Error while getting object type from storeOfObjectTypes by ley: $typeKey")
             }
         }
     }
 
-    private fun getObjectTypeFromDetails(): Id? {
+    private fun getObjectTypeUniqueKeyFromDetails(): Id? {
         val details = orchestrator.stores.details.current()
         val currentObject = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
         val currentObjectTypeId = currentObject.getProperType() ?: return null
@@ -6251,8 +6254,13 @@ class EditorViewModel(
     }
 
     fun isObjectTemplate(): Boolean {
-        val details = orchestrator.stores.details.current().details[context]
-        return details?.type?.firstOrNull() == ObjectTypeIds.TEMPLATE
+        return getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.TEMPLATE
+    }
+
+    fun onSelectTemplateClicked() {
+        viewModelScope.launch {
+            sendAnalyticsSelectTemplateEvent(analytics)
+        }
     }
     //endregion
 
@@ -6962,12 +6970,12 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithCheckingInternalFlagShouldSelectTemplate(objTypeId: Id? = null) {
+    private fun proceedWithCheckingInternalFlagShouldSelectTemplate() {
         val internalFlags = getInternalFlagsFromDetails()
         if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
             //We use this flag to show template widget and then we don't need it anymore
-            val properObjTypeId = objTypeId ?: getObjectTypeFromDetails() ?: return
-            proceedWithStartTemplateEvent(objTypeId = properObjTypeId)
+            val typeKey = getObjectTypeUniqueKeyFromDetails() ?: return
+            proceedWithStartTemplateEvent(typeKey = typeKey)
         } else {
             viewModelScope.launch { onEvent(SelectTemplateEvent.OnSkipped) }
             Timber.d("Object doesn't have internal flag: ShouldSelectTemplate")

@@ -3896,7 +3896,8 @@ open class EditorViewModelTest {
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
             setObjectInternalFlags = setObjectInternalFlags,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            applyTemplate = applyTemplate
         )
     }
 

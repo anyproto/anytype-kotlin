@@ -277,19 +277,6 @@ class Navigator : AppNavigation {
         })
     }
 
-    override fun openTemplates(
-        ctx: Id,
-        type: String,
-    ) {
-        navController?.navigate(
-            resId = R.id.templateSelectScreen,
-            args = bundleOf(
-                TemplateSelectFragment.CTX_KEY to ctx,
-                TemplateSelectFragment.OBJECT_TYPE_KEY to type
-            )
-        )
-    }
-
     override fun openLibrary() {
         navController?.navigate(R.id.libraryFragment)
     }
@@ -297,5 +284,14 @@ class Navigator : AppNavigation {
     override fun openRemoteStorageScreen(subscription: Id) {
         navController?.navigate(R.id.remoteStorageFragment,
             bundleOf(RemoteStorageFragment.SUBSCRIPTION_KEY to subscription))
+    }
+
+    override fun openTemplatesModal(targetTypeKey: Id) {
+        navController?.navigate(
+            R.id.nav_templates_modal,
+            bundleOf(
+                TemplateSelectFragment.ARG_TARGET_TYPE_KEY to targetTypeKey
+            )
+        )
     }
 }

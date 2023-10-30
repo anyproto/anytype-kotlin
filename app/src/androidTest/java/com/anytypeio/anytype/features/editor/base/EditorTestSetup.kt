@@ -480,7 +480,8 @@ open class EditorTestSetup {
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
             setObjectInternalFlags = setObjectInternalFlags,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            applyTemplate = applyTemplate
         )
     }
 

@@ -1332,6 +1332,20 @@ fun CoroutineScope.logEvent(
                 )
             )
         }
+
+        ObjectStateAnalyticsEvent.CHANGE_DEFAULT_TEMPLATE -> {
+            val route = when (state) {
+                is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
+                is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
+            }
+            scope.sendEvent(
+                analytics = analytics,
+                eventName = changeDefaultTemplate,
+                startTime = startTime,
+                middleTime = middleTime,
+                props = buildProps(route = route)
+            )
+        }
     }
 }
 
@@ -1380,7 +1394,8 @@ enum class ObjectStateAnalyticsEvent {
     EDIT_TEMPLATE,
     DUPLICATE_TEMPLATE,
     DELETE_TEMPLATE,
-    SET_AS_DEFAULT_TYPE
+    SET_AS_DEFAULT_TYPE,
+    CHANGE_DEFAULT_TEMPLATE
 }
 
 fun CoroutineScope.sendEditWidgetsEvent(

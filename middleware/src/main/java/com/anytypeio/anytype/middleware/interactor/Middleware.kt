@@ -835,12 +835,11 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectApplyTemplate(
-        ctx: Id,
-        template: Id
+        command: Command.ApplyTemplate
     ) {
         val request = Rpc.Object.ApplyTemplate.Request(
-            contextId = ctx,
-            templateId = template
+            contextId = command.objectId,
+            templateId = command.template.orEmpty()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectApplyTemplate(request)

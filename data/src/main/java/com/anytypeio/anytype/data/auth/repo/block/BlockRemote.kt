@@ -220,7 +220,7 @@ interface BlockRemote {
 
     suspend fun duplicateObject(id: Id): Id
 
-    suspend fun applyTemplate(ctx: Id, template: Id)
+    suspend fun applyTemplate(command: Command.ApplyTemplate)
 
     suspend fun createTable(
         ctx: String,

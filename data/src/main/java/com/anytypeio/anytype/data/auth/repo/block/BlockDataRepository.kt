@@ -530,10 +530,7 @@ class BlockDataRepository(
 
     override suspend fun clearFileCache() = remote.clearFileCache()
 
-    override suspend fun applyTemplate(ctx: Id, template: Id) = remote.applyTemplate(
-        ctx = ctx,
-        template = template
-    )
+    override suspend fun applyTemplate(command: Command.ApplyTemplate) = remote.applyTemplate(command)
 
     override suspend fun duplicateObject(id: Id): Id {
         return remote.duplicateObject(id)

@@ -4,13 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.viewpager2.widget.ViewPager2
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentTemplateSelectBinding
@@ -27,10 +29,7 @@ class TemplateSelectFragment :
     @Inject
     lateinit var factory: TemplateSelectViewModel.Factory
 
-    private val ctx get() = arg<Id>(ARG_CTX)
-    private val targetTypeId get() = arg<Id>(ARG_TARGET_TYPE_ID)
     private val targetTypeKey get() = arg<Id>(ARG_TARGET_TYPE_KEY)
-    private val withoutBlankTemplate: Boolean get() = argBoolean(WITH_BLANK_TEMPLATE_KEY)
 
     private lateinit var templatesAdapter: TemplateSelectAdapter
 
@@ -44,17 +43,13 @@ class TemplateSelectFragment :
         skipCollapsed()
         setFullHeightSheet()
         setupViewPagerAndTabs()
-//        with(lifecycleScope) {
-//            subscribe(binding.btnSkip.clicks()) {
-//                vm.onSkipButtonClicked()
-//            }
-//            subscribe(binding.btnUseTemplate.clicks()) {
-//                vm.onUseTemplateButtonPressed(
-//                    currentItem = binding.templateViewPager.currentItem,
-//                    ctx = ctx
-//                )
-//            }
-//        }
+        binding.ivThreeDots.setOnClickListener {
+            val currentTemplate =
+                binding.templateViewPager.findCurrentFragment(childFragmentManager)
+            if (currentTemplate is EditorTemplateFragment) {
+                currentTemplate.onDocumentMenuClicked()
+            }
+        }
     }
 
     private fun setupViewPagerAndTabs() {
@@ -70,7 +65,6 @@ class TemplateSelectFragment :
         expand()
         vm.onStart(
             typeKey = targetTypeKey,
-            withoutBlankTemplate = withoutBlankTemplate
         )
     }
 
@@ -78,8 +72,6 @@ class TemplateSelectFragment :
         when (viewState) {
             TemplateSelectViewModel.ViewState.Init -> {
                 binding.tvTemplateCountOrTutorial.text = null
-//                binding.btnSkip.isEnabled = true
-//                binding.btnUseTemplate.isEnabled = false
             }
 
             is TemplateSelectViewModel.ViewState.Success -> {
@@ -87,7 +79,6 @@ class TemplateSelectFragment :
                     R.string.this_type_has_templates,
                     viewState.templates.size
                 )
-                //binding.btnUseTemplate.isEnabled = true
                 templatesAdapter.update(viewState.templates)
             }
         }
@@ -113,12 +104,10 @@ class TemplateSelectFragment :
     )
 
     companion object {
-        const val WITH_BLANK_TEMPLATE_KEY = "arg.template.with_empty_template"
-        const val OBJECT_TYPE_KEY = "arg.template.object_type"
-        const val CTX_KEY = "arg.template.ctx"
-
-        const val ARG_CTX = "arg.template.arg_ctx"
-        const val ARG_TARGET_TYPE_ID = "arg.template.arg_target_object_type_id"
         const val ARG_TARGET_TYPE_KEY = "arg.template.arg_target_object_type_key"
     }
+}
+
+fun ViewPager2.findCurrentFragment(fragmentManager: FragmentManager): Fragment? {
+    return fragmentManager.findFragmentByTag("f$currentItem")
 }

@@ -171,17 +171,9 @@ class ObjectTypeChangeViewModel(
     }
 
     private suspend fun proceedWithDispatchingType(
-        id: Id,
-        key: Key,
-        name: String
+        item: ObjectTypeView
     ) {
-        commands.emit(
-            Command.DispatchType(
-                id = id,
-                key = key,
-                name = name
-            )
-        )
+        commands.emit(Command.DispatchType(item))
     }
 
     private fun proceedWithBuildingViews(
@@ -307,9 +299,7 @@ class ObjectTypeChangeViewModel(
 
     sealed class Command {
         data class DispatchType(
-            val id: Id,
-            val key: Key,
-            val name: String
+            val item: ObjectTypeView
         ) : Command()
 
         data class TypeAdded(val type: String) : Command()

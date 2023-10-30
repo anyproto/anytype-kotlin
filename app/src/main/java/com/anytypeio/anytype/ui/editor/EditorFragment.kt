@@ -119,6 +119,7 @@ import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
@@ -2062,18 +2063,18 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedToCreateObjectAndAddToTextAsLink(name)
     }
 
-    override fun onProceedWithUpdateType(id: Id, key: Key) {
+    override fun onProceedWithUpdateType(item: ObjectTypeView) {
         vm.onObjectTypeChanged(
-            type = id,
-            key = key,
+            type = item.id,
+            key = item.key,
             applyTemplate = false
         )
     }
 
-    override fun onProceedWithDraftUpdateType(id: Id, key: Key) {
+    override fun onProceedWithDraftUpdateType(item: ObjectTypeView) {
         vm.onObjectTypeChanged(
-            type = id,
-            key = key,
+            type = item.id,
+            key = item.key,
             applyTemplate = true
         )
     }

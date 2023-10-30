@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
 /**
@@ -22,13 +23,9 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
         )
     }
 
-    override fun onItemClicked(id: Id, key: Key, name: String) {
+    override fun onItemClicked(item: ObjectTypeView) {
         withParent<OnObjectTypeAction> {
-            onProceedWithUpdateType(
-                id = id,
-                key = key,
-                name = name
-            )
+            onProceedWithUpdateType(item)
         }
         hideSoftInput()
         dismiss()
@@ -53,6 +50,6 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     interface OnObjectTypeAction {
-        fun onProceedWithUpdateType(id: Id, key: Key, name: String)
+        fun onProceedWithUpdateType(item: ObjectTypeView)
     }
 }

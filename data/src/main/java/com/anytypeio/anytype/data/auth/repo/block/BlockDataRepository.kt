@@ -783,12 +783,8 @@ class BlockDataRepository(
     }
 
     override suspend fun addObjectToSpace(
-        obj: Id,
-        space: Id
-    ): Id = remote.addObjectToSpace(
-        obj = obj,
-        space = space
-    )
+        command: Command.AddObjectToSpace
+    ): Pair<Id, ObjectWrapper.Type> = remote.addObjectToSpace(command)
 
     override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
         return remote.removeObjectFromWorkspace(

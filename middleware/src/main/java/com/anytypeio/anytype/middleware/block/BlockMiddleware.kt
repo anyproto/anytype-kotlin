@@ -737,12 +737,8 @@ class BlockMiddleware(
     }
 
     override suspend fun addObjectToSpace(
-        obj: Id,
-        space: Id
-    ): Id = middleware.workspaceObjectAdd(
-        obj = obj,
-        space = space
-    )
+        command: Command.AddObjectToSpace
+    ): Pair<Id, ObjectWrapper.Type> = middleware.workspaceObjectAdd(command)
 
     override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
         return middleware.workspaceObjectListRemove(objects)

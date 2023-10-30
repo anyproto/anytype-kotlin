@@ -76,25 +76,33 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onChangeWidgetView = vm::onChangeCurrentWidgetView,
                     onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
                     onSearchClicked = {
-                        navigation().openPageSearch()
+                        runCatching { navigation().openPageSearch() }
                     },
                     onLibraryClicked = {
-                        navigation().openLibrary()
+                        runCatching { navigation().openLibrary() }
                     },
-                    onCreateNewObjectClicked = {
-                        vm.onCreateNewObjectClicked()
-                    },
-                    onSpaceClicked = {
-                        findNavController().navigate(R.id.action_open_spaces)
-                    },
+                    onCreateNewObjectClicked = throttledClick(
+                        onClick = { vm.onCreateNewObjectClicked() }
+                    ),
+                    onSpaceClicked = throttledClick(
+                        onClick = {
+                            runCatching {
+                                findNavController().navigate(R.id.action_open_spaces)
+                            }
+                        }
+                    ),
                     onSpaceWidgetClicked = throttledClick(
                         onClick = {
-                            findNavController().navigate(R.id.action_open_space_settings)
+                            runCatching {
+                                findNavController().navigate(R.id.action_open_space_settings)
+                            }
                         }
                     ),
                     onOpenSpacesClicked = throttledClick(
                         onClick = {
-                            findNavController().navigate(R.id.action_open_spaces)
+                            runCatching {
+                                findNavController().navigate(R.id.action_open_spaces)
+                            }
                         }
                     ),
                     onBundledWidgetClicked = vm::onBundledWidgetClicked,

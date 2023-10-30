@@ -4,12 +4,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -19,6 +21,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.settings.SPACE_STORAGE_SUBSCRIPTION_ID
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -35,9 +38,11 @@ class SpaceSettingsViewModel(
     private val gradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
     private val deleteSpace: DeleteSpace,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val debugSpaceShareDownloader: DebugSpaceShareDownloader
 ): BaseViewModel() {
 
+    val commands = MutableSharedFlow<Command>()
     val isDismissed = MutableStateFlow(false)
     val spaceViewState = MutableStateFlow<ViewState<SpaceData>>(ViewState.Init)
 
@@ -130,6 +135,10 @@ class SpaceSettingsViewModel(
         // TODO unsubscribe
     }
 
+    fun onSpaceDebugClicked() {
+        proceedWithSpaceDebug()
+    }
+
     fun onDeleteSpaceClicked() {
         val state = spaceViewState.value
         if (state is ViewState.Success) {
@@ -162,6 +171,19 @@ class SpaceSettingsViewModel(
         isDismissed.value = true
     }
 
+    private fun proceedWithSpaceDebug() {
+        viewModelScope.launch {
+            debugSpaceShareDownloader
+                .stream(Unit)
+                .collect { result ->
+                    result.fold(
+                        onLoading = { sendToast(SPACE_DEBUG_MSG) },
+                        onSuccess = { path -> commands.emit(Command.ShareSpaceDebug(path)) }
+                    )
+                }
+        }
+    }
+
     data class SpaceData(
         val spaceId: Id?,
         val createdDateInMillis: Long?,
@@ -172,6 +194,10 @@ class SpaceSettingsViewModel(
         val isDeletable: Boolean = false
     )
 
+    sealed class Command {
+        data class ShareSpaceDebug(val filepath: Filepath) : Command()
+    }
+
     class Factory @Inject constructor(
         private val analytics: Analytics,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
@@ -180,7 +206,8 @@ class SpaceSettingsViewModel(
         private val gradientProvider: SpaceGradientProvider,
         private val spaceManager: SpaceManager,
         private val deleteSpace: DeleteSpace,
-        private val configStorage: ConfigStorage
+        private val configStorage: ConfigStorage,
+        private val debugFileShareDownloader: DebugSpaceShareDownloader
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -193,7 +220,12 @@ class SpaceSettingsViewModel(
             gradientProvider = gradientProvider,
             analytics = analytics,
             deleteSpace = deleteSpace,
-            configStorage = configStorage
+            configStorage = configStorage,
+            debugSpaceShareDownloader = debugFileShareDownloader
         ) as T
+    }
+
+    companion object {
+        const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."
     }
 }

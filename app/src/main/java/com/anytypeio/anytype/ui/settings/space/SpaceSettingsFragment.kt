@@ -40,23 +40,31 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
+import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.settings.FilesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.spaces.Section
 import com.anytypeio.anytype.ui.spaces.TypeOfSpace
 import com.anytypeio.anytype.ui_settings.main.SpaceHeader
+import java.io.File
 import javax.inject.Inject
+import timber.log.Timber
 
 class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var factory: SpaceSettingsViewModel.Factory
+
+    @Inject
+    lateinit var uriFileProvider: UriFileProvider
 
     private val vm by viewModels<SpaceSettingsViewModel> { factory }
 
@@ -116,12 +124,34 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                             label = "Created-by ID",
                             successToast = context.getString(R.string.created_by_id_copied_toast_msg)
                         )
-                    }
+                    },
+                    onDebugClicked = vm::onSpaceDebugClicked
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {
                     vm.isDismissed.collect { isDismissed ->
                         if (isDismissed) dismiss()
+                    }
+                }
+                LaunchedEffect(Unit) {
+                    observeCommands()
+                }
+            }
+        }
+    }
+
+    private suspend fun observeCommands() {
+        vm.commands.collect { command ->
+            when (command) {
+                is Command.ShareSpaceDebug -> {
+                    try {
+                        shareFile(
+                            uriFileProvider.getUriForFile(File(command.filepath))
+                        )
+                    } catch (e: Exception) {
+                        Timber.e(e, "Error while sharing space debug").also {
+                            toast("Error while sharing space debug. Please try again later.")
+                        }
                     }
                 }
             }
@@ -153,7 +183,8 @@ fun SpaceSettingsScreen(
     onPersonalizationClicked: () -> Unit,
     onSpaceIdClicked: (Id) -> Unit,
     onNetworkIdClicked: (Id) -> Unit,
-    onCreatedByClicked: (Id) -> Unit
+    onCreatedByClicked: (Id) -> Unit,
+    onDebugClicked: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -204,6 +235,15 @@ fun SpaceSettingsScreen(
             Option(image = R.drawable.ic_personalization,
                 text = stringResource(R.string.personalization),
                 onClick = throttledClick(onPersonalizationClicked)
+            )
+        }
+        item {
+            Divider(paddingStart = 60.dp)
+        }
+        item {
+            Option(image = R.drawable.ic_debug,
+                text = stringResource(R.string.debug),
+                onClick = throttledClick(onDebugClicked)
             )
         }
         item {

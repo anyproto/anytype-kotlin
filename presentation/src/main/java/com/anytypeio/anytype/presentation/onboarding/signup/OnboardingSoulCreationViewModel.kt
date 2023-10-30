@@ -7,12 +7,17 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
+import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -23,7 +28,12 @@ class OnboardingSoulCreationViewModel @Inject constructor(
     private val setObjectDetails: SetObjectDetails,
     private val setSpaceDetails: SetSpaceDetails,
     private val configStorage: ConfigStorage,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val createAccount: CreateAccount,
+    private val setupWallet: SetupWallet,
+    private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip,
+    private val pathProvider: PathProvider,
+    private val spaceGradientProvider: SpaceGradientProvider,
 ) : ViewModel() {
 
     val toasts = MutableSharedFlow<String>()
@@ -104,7 +114,12 @@ class OnboardingSoulCreationViewModel @Inject constructor(
         private val setObjectDetails: SetObjectDetails,
         private val setSpaceDetails: SetSpaceDetails,
         private val configStorage: ConfigStorage,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val pathProvider: PathProvider,
+        private val spaceGradientProvider: SpaceGradientProvider,
+        private val createAccount: CreateAccount,
+        private val setupWallet: SetupWallet,
+        private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -112,7 +127,12 @@ class OnboardingSoulCreationViewModel @Inject constructor(
                 setObjectDetails = setObjectDetails,
                 setSpaceDetails = setSpaceDetails,
                 configStorage = configStorage,
-                analytics = analytics
+                analytics = analytics,
+                createAccount = createAccount,
+                setupWallet = setupWallet,
+                setupMobileUseCaseSkip = setupMobileUseCaseSkip,
+                pathProvider = pathProvider,
+                spaceGradientProvider = spaceGradientProvider,
             ) as T
         }
     }

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.onboarding.screens.signup
 
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,12 +18,14 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -31,12 +34,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
+import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
+import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
 import com.anytypeio.anytype.ui.onboarding.OnboardingInput
@@ -108,7 +114,7 @@ private fun CreateSoulScreen(
                         Modifier.padding(bottom = 13.dp)
                 )
             ,
-            onGoToTheAppClicked = onGoToTheAppClicked,
+            onNextClicked = onGoToTheAppClicked,
             text = text
         )
     }
@@ -203,16 +209,34 @@ fun CreateSoulDescription() {
 @Composable
 fun CreateSoulNextButton(
     modifier: Modifier,
-    onGoToTheAppClicked: (Name) -> Unit,
+    onNextClicked: (Name) -> Unit,
     text: MutableState<String>
 ) {
-    OnBoardingButtonPrimary(
-        text = stringResource(id = R.string.next),
-        onClick = {
-            onGoToTheAppClicked(text.value)
-        },
-        size = ButtonSize.Large,
-        enabled = text.value.trim().isNotEmpty(),
-        modifier = modifier
-    )
+    val isLoading = true
+    Box(modifier = modifier) {
+        OnBoardingButtonPrimary(
+            text = if (isLoading)
+                ""
+            else
+                stringResource(id = R.string.next),
+            onClick = {
+                onNextClicked(text.value)
+            },
+            size = ButtonSize.Large,
+            modifier = modifier
+        )
+        if (isLoading) {
+            val loadingAlpha by animateFloatAsState(targetValue = 1f)
+            DotsLoadingIndicator(
+                animating = true,
+                modifier = Modifier
+                    .graphicsLayer { alpha = loadingAlpha }
+                    .align(Alignment.Center)
+                ,
+                animationSpecs = FadeAnimationSpecs(itemCount = 3),
+                size = ButtonSize.XSmall,
+                color = ColorButtonRegular
+            )
+        }
+    }
 }

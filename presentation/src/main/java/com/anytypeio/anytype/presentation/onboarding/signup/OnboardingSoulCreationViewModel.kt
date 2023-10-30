@@ -114,7 +114,7 @@ class OnboardingSoulCreationViewModel @Inject constructor(
                         crashReporter.setUser(config.analytics)
                         relationsSubscriptionManager.onStart()
                         objectTypesSubscriptionManager.onStart()
-                        proceedWithSettingUpMobileUseCase(config.space)
+                        proceedWithSettingUpMobileUseCase(config.space, name)
                     }
                 }
             )
@@ -134,10 +134,19 @@ class OnboardingSoulCreationViewModel @Inject constructor(
                     )
                 ).fold(
                     onFailure = {
-                        Timber.e(it, "Error while updating object details")
+                        Timber.e(it, "Error while setting profile name details")
+                        navigation.emit(Navigation.NavigateToMnemonic)
+                        sendAnalyticsOnboardingScreen()
+                        // Workaround for leaving screen in loading state to wait screen transition
+                        delay(OnboardingVoidViewModel.LOADING_AFTER_SUCCESS_DELAY)
+                        state.value = ScreenState.Success
                     },
                     onSuccess = {
-                        proceedWithSettingWorkspaceName(name)
+                        navigation.emit(Navigation.NavigateToMnemonic)
+                        sendAnalyticsOnboardingScreen()
+                        // Workaround for leaving screen in loading state to wait screen transition
+                        delay(OnboardingVoidViewModel.LOADING_AFTER_SUCCESS_DELAY)
+                        state.value = ScreenState.Success
                     }
                 )
             }
@@ -188,23 +197,14 @@ class OnboardingSoulCreationViewModel @Inject constructor(
         }
     }
 
-    private fun proceedWithSettingUpMobileUseCase(space: Id) {
+    private fun proceedWithSettingUpMobileUseCase(space: Id, name: String) {
         viewModelScope.launch {
             setupMobileUseCaseSkip.async(SetupMobileUseCaseSkip.Params(space)).fold(
                 onFailure = {
-                    Timber.e(it, "Error while importing use case")
-                    navigation.emit(Navigation.NavigateToMnemonic)
-                    sendAnalyticsOnboardingScreen()
-                    // Workaround for leaving screen in loading state to wait screen transition
-                    delay(OnboardingVoidViewModel.LOADING_AFTER_SUCCESS_DELAY)
-                    state.value = ScreenState.Success
+                    proceedWithSettingAccountName(name)
                 },
                 onSuccess = {
-                    navigation.emit(Navigation.NavigateToMnemonic)
-                    sendAnalyticsOnboardingScreen()
-                    // Workaround for leaving screen in loading state to wait screen transition
-                    delay(OnboardingVoidViewModel.LOADING_AFTER_SUCCESS_DELAY)
-                    state.value = ScreenState.Success
+                    proceedWithSettingAccountName(name)
                 }
             )
         }

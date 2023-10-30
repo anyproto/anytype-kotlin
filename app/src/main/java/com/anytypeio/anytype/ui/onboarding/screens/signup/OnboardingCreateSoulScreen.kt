@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
@@ -52,14 +53,18 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 fun CreateSoulWrapper(viewModel: OnboardingSoulCreationViewModel, contentPaddingTop: Int) {
     CreateSoulScreen(
         contentPaddingTop = contentPaddingTop,
-        onNextClicked = viewModel::onNextClicked
+        onNextClicked = viewModel::onNextClicked,
+        isLoading = viewModel.state
+            .collectAsStateWithLifecycle()
+            .value is OnboardingSoulCreationViewModel.ScreenState.Loading
     )
 }
 
 @Composable
 private fun CreateSoulScreen(
     contentPaddingTop: Int,
-    onNextClicked: (Name) -> Unit
+    onNextClicked: (Name) -> Unit,
+    isLoading: Boolean
 ) {
     val text = remember { mutableStateOf("") }
     val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
@@ -115,7 +120,8 @@ private fun CreateSoulScreen(
                 )
             ,
             onNextClicked = onNextClicked,
-            text = text
+            text = text,
+            isLoading = isLoading
         )
     }
 }
@@ -210,9 +216,9 @@ fun CreateSoulDescription() {
 fun CreateSoulNextButton(
     modifier: Modifier,
     onNextClicked: (Name) -> Unit,
-    text: MutableState<String>
+    text: MutableState<String>,
+    isLoading: Boolean
 ) {
-    val isLoading = true
     Box(modifier = modifier) {
         OnBoardingButtonPrimary(
             text = if (isLoading)

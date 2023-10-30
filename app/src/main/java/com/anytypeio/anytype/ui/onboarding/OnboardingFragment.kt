@@ -327,12 +327,11 @@ class OnboardingFragment : Fragment() {
                 enterTransition = { slideIntoContainer(Left, tween(ANIMATION_LENGTH_SLIDE)) },
                 exitTransition = {
                     when (targetState.destination.route) {
-                        OnboardingNavigation.mnemonic -> {
-                            slideOutOfContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
-                        }
-
-                        else -> {
+                        OnboardingNavigation.auth -> {
                             fadeOut(tween(ANIMATION_LENGTH_FADE))
+                        }
+                        else -> {
+                            slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }
                     }
                 }

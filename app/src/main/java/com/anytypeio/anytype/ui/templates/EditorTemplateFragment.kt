@@ -87,7 +87,10 @@ class EditorTemplateFragment : EditorFragment() {
                     }
                     when (fragmentType) {
                         TYPE_SINGLE -> popBackStack(R.id.editorModalScreen, true)
-                        TYPE_MULTIPLE -> popBackStack(R.id.templatesModalScreen, true)
+                        TYPE_MULTIPLE -> {
+                            vm.onSelectTemplateClicked()
+                            popBackStack(R.id.templatesModalScreen, true)
+                        }
                     }
                 }
             }

@@ -176,7 +176,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                     },
                     onSuccess = {
                         analytics.sendOpenAccountEvent(analytics = config.analytics)
-//                        _navigationFlow.emit(Navigation.OpenSoulCreationAnim(name))
                     }
                 )
             }

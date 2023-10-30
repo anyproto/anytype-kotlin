@@ -56,10 +56,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
-import androidx.navigation.compose.composable
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
@@ -622,7 +622,7 @@ class OnboardingFragment : Fragment() {
             vm.navigation.collect { navigation ->
                 when (navigation) {
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
-                        navController.navigate(OnboardingNavigation.void)
+                        navController.navigate(OnboardingNavigation.createSoul)
                         vm.sendAnalyticsOnboardingScreen()
                     }
 

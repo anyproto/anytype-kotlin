@@ -77,7 +77,13 @@ private fun CreateSoulScreen(
                 )
             }
             item {
-                CreateSoulTitle(modifier = Modifier.padding(bottom = 16.dp))
+                CreateSoulTitle(modifier = Modifier.padding(bottom = 12.dp))
+            }
+            item {
+                CreateSoulDescription()
+            }
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
             item {
                 CreateSoulInput(
@@ -87,9 +93,6 @@ private fun CreateSoulScreen(
             }
             item {
                 Spacer(modifier = Modifier.height(16.dp))
-            }
-            item {
-                CreateSoulDescription()
             }
         }
         CreateSoulNextButton(
@@ -122,7 +125,7 @@ fun CreateSoulTitle(modifier: Modifier) {
     ) {
         Text(
             modifier = Modifier,
-            text = stringResource(R.string.onboarding_soul_creation_title),
+            text = stringResource(R.string.onboarding_set_your_name_title),
             style = Title1.copy(
                 color = OnBoardingTextPrimaryColor
             )
@@ -154,7 +157,7 @@ fun CreateSoulInput(
                 .focusRequester(focusRequester)
             ,
             text = text,
-            placeholder = stringResource(id = R.string.name),
+            placeholder = stringResource(id = R.string.untitled),
             keyboardActions = KeyboardActions(
                 onDone = {
                     val input = text.value
@@ -204,7 +207,7 @@ fun CreateSoulNextButton(
     text: MutableState<String>
 ) {
     OnBoardingButtonPrimary(
-        text = stringResource(id = R.string.go_to_the_app),
+        text = stringResource(id = R.string.next),
         onClick = {
             onGoToTheAppClicked(text.value)
         },

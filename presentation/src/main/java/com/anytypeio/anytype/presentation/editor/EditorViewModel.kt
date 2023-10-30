@@ -71,7 +71,7 @@ import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -274,7 +274,7 @@ class EditorViewModel(
     private val delegator: Delegator<Action>,
     private val updateDetail: UpdateDetail,
     private val searchObjects: SearchObjects,
-    private val getDefaultPageType: GetDefaultPageType,
+    private val getDefaultObjectType: GetDefaultObjectType,
     private val findObjectSetForType: FindObjectSetForType,
     private val createObjectSet: CreateObjectSet,
     private val copyFileToCache: CopyFileToCacheDirectory,
@@ -5723,7 +5723,7 @@ class EditorViewModel(
     fun onAddMentionNewPageClicked(mentionText: String) {
         Timber.d("onAddMentionNewPageClicked, mentionText:[$mentionText]")
         viewModelScope.launch {
-            getDefaultPageType.async(Unit).fold(
+            getDefaultObjectType.async(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
                     sendToast("Error while getting default object type, couldn't create a new mention")
@@ -6040,7 +6040,7 @@ class EditorViewModel(
     fun proceedToCreateObjectAndAddToTextAsLink(name: String) {
         Timber.d("proceedToCreateObjectAndAddToTextAsLink, name:[$name]")
         viewModelScope.launch {
-            getDefaultPageType.async(Unit).fold(
+            getDefaultObjectType.async(Unit).fold(
                 onFailure = {
                     Timber.e(it, "Error while getting default object type")
                 },

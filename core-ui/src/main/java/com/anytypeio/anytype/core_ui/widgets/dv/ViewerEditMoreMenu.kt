@@ -37,7 +37,7 @@ fun ViewerEditMoreMenu(
     if (show) {
         Column(
             modifier = Modifier
-                .offset(x = offsetX - 220.dp, y = 48.dp)
+                .offset(x = offsetX - 220.dp, y = 60.dp)
                 .width(220.dp)
                 .wrapContentHeight()
                 .shadow(

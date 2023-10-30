@@ -328,7 +328,7 @@ private fun ViewersWidgetContent(
                                         )
                                         width = Dimension.fillToConstraints
                                     },
-                                text = view.name,
+                                text = view.name.ifBlank { stringResource(id = R.string.untitled) },
                                 color = colorResource(id = if (view.isActive) R.color.text_primary else R.color.glyph_active),
                                 style = HeadlineSubheading,
                                 textAlign = TextAlign.Left,

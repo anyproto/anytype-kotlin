@@ -403,7 +403,7 @@ class BlockMiddleware(
         relation = relation
     )
 
-    override suspend fun debugSpace(space: SpaceId): String = middleware.debugSpace(space)
+    override suspend fun debugSpace(space: SpaceId): String = middleware.debugSpaceSummary(space)
 
     override suspend fun debugObject(objectId: Id, path: String): String =
         middleware.debugObject(objectId = objectId, path = path)

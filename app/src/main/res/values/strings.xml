@@ -402,5 +402,12 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="creation_date">Creation date</string>
     <string name="created_by">Created by</string>
     <string name="space_id">Space ID</string>
+    <string name="network_id">Network ID</string>
+    <string name="delete_space_subtitle">This space will be deleted irrevocably. You can’t undo this action.</string>
+    <string name="delete_space_title_with_param">Delete \'%1$s\' space</string>
+    <string name="delete_space_title">Are you sure to delete this space?</string>
+    <string name="space_id_copied_toast_msg">Space ID copied</string>
+    <string name="network_id_copied_toast_msg">Network ID copied</string>
+    <string name="created_by_id_copied_toast_msg">Created-by ID copied</string>
 
 </resources>

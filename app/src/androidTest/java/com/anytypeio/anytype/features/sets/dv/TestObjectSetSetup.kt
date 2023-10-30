@@ -26,7 +26,7 @@ import com.anytypeio.anytype.domain.dataview.SetDataViewQuery
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -51,7 +51,6 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -68,7 +67,6 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.StandardTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
@@ -156,7 +154,7 @@ abstract class TestObjectSetSetup {
     lateinit var createTemplate: CreateTemplate
 
     private lateinit var getTemplates: GetTemplates
-    private lateinit var getDefaultPageType: GetDefaultPageType
+    private lateinit var getDefaultObjectType: GetDefaultObjectType
 
     private val session = ObjectSetSession()
     private val dispatcher: Dispatcher<Payload> = Dispatcher.Default()
@@ -206,7 +204,7 @@ abstract class TestObjectSetSetup {
         setDataViewQuery = SetDataViewQuery(repo)
         updateText = UpdateText(repo)
         openObjectSet = OpenObjectSet(repo, auth)
-        getDefaultPageType = GetDefaultPageType(
+        getDefaultObjectType = GetDefaultObjectType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = repo,
             spaceManager = spaceManager,
@@ -267,7 +265,7 @@ abstract class TestObjectSetSetup {
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,

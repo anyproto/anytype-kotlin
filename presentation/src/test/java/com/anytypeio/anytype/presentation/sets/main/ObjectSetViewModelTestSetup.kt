@@ -27,7 +27,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -48,7 +48,6 @@ import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
-import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.collections.MockCollection
@@ -155,7 +154,7 @@ open class ObjectSetViewModelTestSetup {
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     @Mock
-    lateinit var getDefaultPageType: GetDefaultPageType
+    lateinit var getDefaultObjectType: GetDefaultObjectType
 
     @Mock
     lateinit var duplicateObjects: DuplicateObjects
@@ -215,7 +214,8 @@ open class ObjectSetViewModelTestSetup {
             spaceView = "etiam",
             widgets = "eloquentiam",
             analytics = "quem",
-            device = "elaboraret"
+            device = "elaboraret",
+            network = "network"
         )
         spaceManager = SpaceManager.Impl(
             repo = repo,
@@ -260,7 +260,7 @@ open class ObjectSetViewModelTestSetup {
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             storeOfObjectTypes = storeOfObjectTypes,
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
@@ -328,7 +328,8 @@ open class ObjectSetViewModelTestSetup {
                 spaceView = "etiam",
                 widgets = "eloquentiam",
                 analytics = "quem",
-                device = "elaboraret"
+                device = "elaboraret",
+                network = "network"
             )
         }
         spaceManager.set(space)
@@ -412,8 +413,8 @@ open class ObjectSetViewModelTestSetup {
         id: TypeId = TypeId(MockDataFactory.randomString()),
         template: Id? = null
         ) {
-        getDefaultPageType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
+        getDefaultObjectType.stub {
+            onBlocking { run(Unit) } doReturn GetDefaultObjectType.Response(
                 type = type,
                 name = name,
                 id = id,

@@ -48,7 +48,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -115,7 +115,6 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flowOf
 import org.mockito.Mock
 import org.mockito.kotlin.any
-import org.mockito.kotlin.anyOrNull
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
@@ -257,7 +256,7 @@ open class EditorPresentationTestSetup {
     lateinit var applyTemplate: ApplyTemplate
 
     @Mock
-    lateinit var getDefaultPageType: GetDefaultPageType
+    lateinit var getDefaultObjectType: GetDefaultObjectType
 
     @Mock
     lateinit var findObjectSetForType: FindObjectSetForType
@@ -450,7 +449,7 @@ open class EditorPresentationTestSetup {
             delegator = delegator,
             updateDetail = updateDetail,
             searchObjects = searchObjects,
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             findObjectSetForType = findObjectSetForType,
             createObjectSet = createObjectSet,
             copyFileToCache = copyFileToCacheDirectory,
@@ -709,9 +708,9 @@ open class EditorPresentationTestSetup {
         name: String? = null,
         template: String? = null
     ) {
-        getDefaultPageType.stub {
+        getDefaultObjectType.stub {
             onBlocking { async(Unit) } doReturn Resultat.success(
-                GetDefaultPageType.Response(
+                GetDefaultObjectType.Response(
                     id = TypeId(id),
                     type = TypeKey(type),
                     name = name,

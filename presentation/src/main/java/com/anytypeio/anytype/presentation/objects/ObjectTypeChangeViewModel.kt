@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -37,7 +37,7 @@ class ObjectTypeChangeViewModel(
     private val addObjectTypeToSpace: AddObjectTypeToSpace,
     private val dispatchers: AppCoroutineDispatchers,
     private val spaceManager: SpaceManager,
-    private val getDefaultPageType: GetDefaultPageType,
+    private val getDefaultObjectType: GetDefaultObjectType,
 ) : BaseViewModel() {
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
@@ -116,7 +116,7 @@ class ObjectTypeChangeViewModel(
         isSetSource: Boolean
     ) {
         viewModelScope.launch {
-            getDefaultPageType.execute(Unit).fold(
+            getDefaultObjectType.execute(Unit).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while getting user settings")
                 },

@@ -3,8 +3,6 @@ package com.anytypeio.anytype.core_ui.features.objects
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultSectionViewHolder
 import com.anytypeio.anytype.core_ui.databinding.ItemDefaultListSectionBinding
@@ -13,10 +11,11 @@ import com.anytypeio.anytype.core_ui.databinding.ItemObjectTypeItemBinding
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeHolder
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeHorizontalHolder
 import com.anytypeio.anytype.presentation.objects.ObjectTypeItemView
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
 class ObjectTypeVerticalAdapter(
     private var data: ArrayList<ObjectTypeItemView>,
-    private val onItemClick: (Id, Key, String) -> Unit
+    private val onItemClick: (ObjectTypeView) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     fun update(data: List<ObjectTypeItemView>) {
@@ -37,11 +36,7 @@ class ObjectTypeVerticalAdapter(
                     itemView.setOnClickListener {
                         if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
                             val item = data[bindingAdapterPosition] as ObjectTypeItemView.Type
-                            onItemClick(
-                                item.view.id,
-                                item.view.key,
-                                item.view.name
-                            )
+                            onItemClick(item.view)
                         }
                     }
                 }

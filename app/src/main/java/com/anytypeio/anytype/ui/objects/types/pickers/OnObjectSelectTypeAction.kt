@@ -1,9 +1,8 @@
 package com.anytypeio.anytype.ui.objects.types.pickers
 
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
 interface OnObjectSelectTypeAction {
-    fun onProceedWithUpdateType(id: Id, key: Key)
-    fun onProceedWithDraftUpdateType(id: Id, key: Key)
+    fun onProceedWithUpdateType(item: ObjectTypeView)
+    fun onProceedWithDraftUpdateType(item: ObjectTypeView)
 }

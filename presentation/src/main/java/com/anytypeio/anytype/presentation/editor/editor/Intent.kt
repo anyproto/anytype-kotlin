@@ -43,13 +43,6 @@ sealed class Intent {
             val blockId: Id,
             val key: Id
         ) : Document()
-
-        class SetObjectType(
-            val context: Id,
-            val typeId: Id,
-            val key: Key,
-            val effects: List<SideEffect>
-        ) : Document()
     }
 
     sealed class CRUD : Intent() {

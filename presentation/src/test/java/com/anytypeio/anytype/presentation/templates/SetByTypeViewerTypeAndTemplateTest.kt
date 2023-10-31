@@ -238,7 +238,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             val params = CreateDataViewObject.Params.SetByType(
                 filters = listOf(),
                 type = customType1Key,
-                template = null,
+                template = DEFAULT_TEMPLATE_ID_BLANK,
             )
             async(params)
         }
@@ -604,7 +604,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             val params = CreateDataViewObject.Params.SetByType(
                 filters = listOf(),
                 type = customType1Key,
-                template = null
+                template = DEFAULT_TEMPLATE_ID_BLANK
             )
             async(params)
         }

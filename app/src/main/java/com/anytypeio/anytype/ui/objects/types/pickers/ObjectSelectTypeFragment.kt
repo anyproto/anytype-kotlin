@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
 /**
@@ -24,9 +25,9 @@ class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
         )
     }
 
-    override fun onItemClicked(id: Id, key: Key, name: String) {
+    override fun onItemClicked(item: ObjectTypeView) {
         withParent<OnObjectSelectTypeAction> {
-            onProceedWithUpdateType(id = id, key = key)
+            onProceedWithUpdateType(item)
         }
         hideSoftInput()
         dismiss()

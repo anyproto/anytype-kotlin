@@ -1,36 +1,32 @@
 package com.anytypeio.anytype.ui.editor.modals
 
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.widget.doAfterTextChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_utils.const.FileConstants.getPermissionToRequestForImages
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
-import com.anytypeio.anytype.core_utils.ext.showSnackbar
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
 import com.anytypeio.anytype.databinding.FragmentPageIconPickerBinding
 import com.anytypeio.anytype.library_page_icon_picker_widget.ui.DocumentEmojiIconPickerAdapter
+import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_CATEGORY_HEADER
 import com.anytypeio.anytype.presentation.editor.picker.EmojiPickerView.Companion.HOLDER_EMOJI_ITEM
 import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
 import com.anytypeio.anytype.presentation.picker.IconPickerViewModel.ViewState
-import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 
 abstract class IconPickerFragmentBase<T> :
@@ -59,6 +55,17 @@ abstract class IconPickerFragmentBase<T> :
         )
     }
 
+    private lateinit var permissionHelper: MediaPermissionHelper
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        permissionHelper = MediaPermissionHelper(
+            fragment = this,
+            onPermissionDenied = { toast(R.string.permission_read_denied) },
+            onPermissionSuccess = { _, _ -> openGallery() }
+        )
+    }
+
     override val textInput: EditText get() = binding.filterInputField
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -72,7 +79,7 @@ abstract class IconPickerFragmentBase<T> :
             filterInputField.doAfterTextChanged { vm.onQueryChanged(it.toString()) }
             btnRemoveIcon.setOnClickListener { vm.onRemoveClicked(target) }
             tvTabRandom.setOnClickListener { vm.onRandomEmoji(target) }
-            tvTabUpload.setOnClickListener { proceedWithImagePick() }
+            tvTabUpload.setOnClickListener { permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, 0) }
         }
         skipCollapsed()
         expand()
@@ -131,29 +138,6 @@ abstract class IconPickerFragmentBase<T> :
         dialog?.setOnShowListener(null)
         super.onDestroyView()
     }
-
-    private fun proceedWithImagePick() {
-        if (!hasExternalStoragePermission()) {
-            permissionReadStorage.launch(arrayOf(getPermissionToRequestForImages()))
-        } else {
-            openGallery()
-        }
-    }
-
-    private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
-        requireActivity(),
-        getPermissionToRequestForImages()
-    ).let { result -> result == PackageManager.PERMISSION_GRANTED }
-
-    private val permissionReadStorage =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            val readResult = grantResults[getPermissionToRequestForImages()]
-            if (readResult == true) {
-                openGallery()
-            } else {
-                binding.root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
-            }
-        }
 
     private val getContent = registerForActivityResult(GetImageContract()) { uri: Uri? ->
         if (uri != null) {

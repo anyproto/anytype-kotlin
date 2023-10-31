@@ -56,7 +56,7 @@ class TemplateSelectFragment :
         templatesAdapter = TemplateSelectAdapter(mutableListOf(), this)
         binding.templateViewPager.adapter = templatesAdapter
         TabLayoutMediator(binding.tabs, binding.templateViewPager) { tab, _ ->
-            tab.text = "   "
+            tab.text = TAB_SPACE
         }.attach()
     }
 
@@ -107,6 +107,7 @@ class TemplateSelectFragment :
 
     companion object {
         const val ARG_TARGET_TYPE_KEY = "arg.template.arg_target_object_type_key"
+        const val TAB_SPACE = "   "
     }
 }
 

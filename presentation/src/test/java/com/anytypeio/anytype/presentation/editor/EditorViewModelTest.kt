@@ -3866,7 +3866,6 @@ open class EditorViewModelTest {
                 setRelationKey = setRelationKey,
                 turnIntoStyle = turnIntoStyle,
                 updateBlocksMark = updateBlocksMark,
-                setObjectType = setObjectType,
                 createTable = createTable,
                 fillTableRow = fillTableRow,
                 clearBlockContent = clearBlockContent,
@@ -3897,7 +3896,8 @@ open class EditorViewModelTest {
             addRelationToObject = addRelationToObject,
             setObjectInternalFlags = setObjectInternalFlags,
             spaceManager = spaceManager,
-            applyTemplate = applyTemplate
+            applyTemplate = applyTemplate,
+            setObjectType = setObjectType
         )
     }
 

@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -12,10 +13,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
-import com.anytypeio.anytype.presentation.templates.TemplateConstants.BLANK_ROOT_ID
-import com.anytypeio.anytype.presentation.templates.TemplateConstants.BLANK_TITLE
-import com.anytypeio.anytype.presentation.templates.TemplateConstants.HEADER_ID
-import com.anytypeio.anytype.presentation.templates.TemplateConstants.TITLE_ID
+import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -25,11 +23,12 @@ class TemplateBlankViewModel(
 ) : BaseViewModel(), BlockViewRenderer by renderer {
 
     val state = MutableStateFlow<List<BlockView>>(emptyList())
+    private val TEMPLATE_TYPE_NAME = "Template"
 
     fun onStart(typeId: Id, typeName: String, layout: Int) {
         Timber.d("onStart, typeId: $typeId, typeName: $typeName, layout: $layout")
         val blockTitle = Block(
-            id = TITLE_ID,
+            id = "blockTitle",
             content = Block.Content.Text(
                 text = "",
                 style = Block.Content.Text.Style.TITLE,
@@ -46,7 +45,7 @@ class TemplateBlankViewModel(
         )
         val headerBlock = if (layout != ObjectType.Layout.NOTE.code) {
             Block(
-                id = HEADER_ID,
+                id = "header",
                 content = Block.Content.Layout(
                     type = Block.Content.Layout.Type.HEADER
                 ),
@@ -55,7 +54,7 @@ class TemplateBlankViewModel(
             )
         } else {
             Block(
-                id = HEADER_ID,
+                id = "header",
                 content = Block.Content.Layout(
                     type = Block.Content.Layout.Type.HEADER
                 ),
@@ -64,7 +63,7 @@ class TemplateBlankViewModel(
             )
         }
         val rootBlock = Block(
-            id = BLANK_ROOT_ID,
+            id = DEFAULT_TEMPLATE_ID_BLANK,
             content = Block.Content.Smart,
             children = listOf(headerBlock.id),
             fields = Block.Fields.empty(),
@@ -73,24 +72,27 @@ class TemplateBlankViewModel(
         val page = listOf(rootBlock, headerBlock, blockTitle, featuredRelationsBlock)
         val objectDetails = Block.Fields(
             mapOf(
+                Relations.ID to DEFAULT_TEMPLATE_ID_BLANK,
                 Relations.LAYOUT to layout,
                 Relations.TYPE to typeId,
-                Relations.FEATURED_RELATIONS to featuredRelations
+                Relations.FEATURED_RELATIONS to featuredRelations,
+                Relations.IS_DELETED to false
             )
         )
 
         val typeDetails = Block.Fields(
             mapOf(
                 Relations.ID to typeId,
-                Relations.NAME to typeName
+                Relations.NAME to TEMPLATE_TYPE_NAME,
+                Relations.TYPE_UNIQUE_KEY to ObjectTypeIds.TEMPLATE
             )
         )
 
         val customDetails =
-            Block.Details(mapOf(BLANK_ROOT_ID to objectDetails, typeId to typeDetails))
+            Block.Details(mapOf(DEFAULT_TEMPLATE_ID_BLANK to objectDetails, typeId to typeDetails))
 
         viewModelScope.launch {
-            val blockViews = page.asMap().render(
+            state.value = page.asMap().render(
                 mode = Editor.Mode.Read,
                 root = page.first(),
                 focus = com.anytypeio.anytype.domain.editor.Editor.Focus.empty(),
@@ -101,14 +103,6 @@ class TemplateBlankViewModel(
                 restrictions = emptyList(),
                 selection = emptySet()
             )
-            state.value = blockViews.map {
-                when (it) {
-                    is BlockView.Title.Basic -> it.copy(hint = BLANK_TITLE)
-                    is BlockView.Title.Profile -> it.copy(hint = BLANK_TITLE)
-                    is BlockView.Title.Todo -> it.copy(hint = BLANK_TITLE)
-                    else -> it
-                }
-            }
         }
     }
 }

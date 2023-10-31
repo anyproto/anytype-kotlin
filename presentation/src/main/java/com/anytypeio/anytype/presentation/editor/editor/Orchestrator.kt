@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.block.interactor.DuplicateBlock
 import com.anytypeio.anytype.domain.block.interactor.MergeBlocks
 import com.anytypeio.anytype.domain.block.interactor.MoveOld
 import com.anytypeio.anytype.domain.block.interactor.ReplaceBlock
-import com.anytypeio.anytype.domain.block.interactor.SetObjectType
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.TurnIntoDocument
 import com.anytypeio.anytype.domain.block.interactor.TurnIntoStyle
@@ -86,7 +85,6 @@ class Orchestrator(
     private val redo: Redo,
     private val setRelationKey: SetRelationKey,
     private val updateBlocksMark: UpdateBlocksMark,
-    private val setObjectType: SetObjectType,
     val memory: Editor.Memory,
     val stores: Editor.Storage,
     val proxies: Editor.Proxer,
@@ -590,22 +588,6 @@ class Orchestrator(
                     ).process(
                         failure = defaultOnError,
                         success = { payload -> proxies.payloads.send(payload) }
-                    )
-                }
-                is Intent.Document.SetObjectType -> {
-                    setObjectType(
-                        params = SetObjectType.Params(
-                            context = intent.context,
-                            objectTypeKey = intent.key
-                        )
-                    ).process(
-                        failure = defaultOnError,
-                        success = { payload ->
-                            if (intent.effects.isNotEmpty()) {
-                                processSideEffects(intent.effects)
-                            }
-                            proxies.payloads.send(payload)
-                        }
                     )
                 }
                 is Intent.Table.CreateTable -> {

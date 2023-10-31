@@ -283,7 +283,8 @@ object EditorSessionModule {
         interceptFileLimitEvents: InterceptFileLimitEvents,
         addRelationToObject: AddRelationToObject,
         setObjectInternalFlags: SetObjectInternalFlags,
-        applyTemplate: ApplyTemplate
+        applyTemplate: ApplyTemplate,
+        setObjectType: SetObjectType
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -322,7 +323,8 @@ object EditorSessionModule {
         interceptFileLimitEvents = interceptFileLimitEvents,
         addRelationToObject = addRelationToObject,
         setObjectInternalFlags = setObjectInternalFlags,
-        applyTemplate = applyTemplate
+        applyTemplate = applyTemplate,
+        setObjectType = setObjectType
     )
 
 
@@ -438,7 +440,6 @@ object EditorSessionModule {
         turnIntoDocument: TurnIntoDocument,
         createTable: CreateTable,
         fillTableRow: FillTableRow,
-        setObjectType: SetObjectType,
         matcher: DefaultPatternMatcher,
         move: MoveOld,
         copy: Copy,
@@ -489,7 +490,6 @@ object EditorSessionModule {
         updateFields = updateFields,
         turnIntoStyle = turnInto,
         updateBlocksMark = updateBlocksMark,
-        setObjectType = setObjectType,
         createTable = createTable,
         fillTableRow = fillTableRow,
         clearBlockContent = clearBlockContent,
@@ -970,8 +970,9 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun provideSetObjectType(
-        repo: BlockRepository
-    ): SetObjectType = SetObjectType(repo)
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectType = SetObjectType(repo, dispatchers)
 
     @JvmStatic
     @Provides

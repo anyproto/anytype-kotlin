@@ -3,8 +3,6 @@ package com.anytypeio.anytype.core_ui.features.objects
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemObjectTypeHorizontalItemBinding
 import com.anytypeio.anytype.core_ui.features.objects.holders.ObjectTypeHorizontalHolder
@@ -13,7 +11,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
 class ObjectTypeHorizontalListAdapter(
     private var data: ArrayList<ObjectTypeView>,
-    private val onItemClick: (Id, Key, String) -> Unit,
+    private val onItemClick: (ObjectTypeView) -> Unit,
     private val onSearchClick: (() -> Unit)? = null
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -34,8 +32,8 @@ class ObjectTypeHorizontalListAdapter(
                 ).apply {
                     itemView.setOnClickListener {
                         if (bindingAdapterPosition != RecyclerView.NO_POSITION) {
-                            val item = data[bindingAdapterPosition - 1] as ObjectTypeView
-                            onItemClick(item.id, item.key, item.name)
+                            val item = data[bindingAdapterPosition - 1]
+                            onItemClick(item)
                         }
                     }
                 }
@@ -55,7 +53,7 @@ class ObjectTypeHorizontalListAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when (holder) {
             is ObjectTypeHorizontalHolder -> {
-                holder.bind(data[position - 1] as ObjectTypeView)
+                holder.bind(data[position - 1])
             }
         }
     }

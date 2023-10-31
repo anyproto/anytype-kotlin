@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.types
 
 import app.cash.turbine.test
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -441,14 +443,12 @@ class ObjectTypeChangeViewModelTest {
         stubSpaceManager(space)
         val marketplaceType1 = StubObjectType()
         val marketplaceType2 = StubObjectType()
-        val marketplaceType3 = StubObjectType(
-            id = MarketplaceObjectTypeIds.PAGE,
-            uniqueKey = ObjectTypeIds.PAGE
-        )
+        val marketplaceType3 = StubObjectType(id = MarketplaceObjectTypeIds.PAGE)
         val installedType1 = StubObjectType(sourceObject = marketplaceType1.id)
         val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
 
-        val expectedInstalledTypeUniqueId = ObjectTypeIds.PAGE
+        val expectedInstalledTypeId = MockDataFactory.randomUuid()
+        val expectedInstalledTypeUniqueKey = ObjectTypeIds.PAGE
 
         val expectedMyTypesFilters = buildList {
             addAll(ObjectSearchConstants.filterObjectTypeLibrary(space))
@@ -517,13 +517,22 @@ class ObjectTypeChangeViewModelTest {
             } doReturn listOf(marketplaceType3.map)
         }
 
+        val expectedType = StubObjectType(
+            id = expectedInstalledTypeId,
+            uniqueKey = expectedInstalledTypeUniqueKey,
+            name = "added type name",
+        )
         blockRepository.stub {
             onBlocking {
-                addObjectToSpace(
-                    obj = marketplaceType3.id,
+                val command = Command.AddObjectToSpace(
+                    objectId = marketplaceType3.id,
                     space = space
                 )
-            } doReturn expectedInstalledTypeUniqueId
+                addObjectToSpace(command)
+            } doReturn Pair(
+                expectedInstalledTypeId,
+                expectedType
+            )
         }
 
         val vm = givenViewModel()
@@ -552,28 +561,37 @@ class ObjectTypeChangeViewModelTest {
         }
 
         vm.commands.test {
-            vm.onItemClicked(
+            val item = ObjectTypeView(
                 id = marketplaceType3.id,
                 key = marketplaceType3.uniqueKey.orEmpty(),
-                name = marketplaceType3.name.orEmpty()
+                name = marketplaceType3.name.orEmpty(),
+                description = marketplaceType3.description.orEmpty(),
+                emoji = marketplaceType3.iconEmoji.orEmpty(),
             )
+            vm.onItemClicked(item)
             assertEquals(
                 expected =
-                ObjectTypeChangeViewModel.Command.TypeAdded(type = marketplaceType3.name.orEmpty()),
+                ObjectTypeChangeViewModel.Command.TypeAdded(type = expectedType.name!!),
                 actual = awaitItem()
             )
             assertEquals(
                 expected = ObjectTypeChangeViewModel.Command.DispatchType(
-                    id = expectedInstalledTypeUniqueId,
-                    key = marketplaceType3.uniqueKey.orEmpty(),
-                    name = marketplaceType3.name.orEmpty()
+                    ObjectTypeView(
+                        id = expectedType.id,
+                        key = expectedType.key!!,
+                        name = expectedType.name.orEmpty(),
+                        description = expectedType.description.orEmpty(),
+                        emoji = null
+                    )
                 ),
                 actual = awaitItem()
             )
             verifyBlocking(blockRepository, times(1)) {
                 addObjectToSpace(
-                    space = space,
-                    obj = marketplaceType3.id
+                    Command.AddObjectToSpace(
+                        objectId = marketplaceType3.id,
+                        space = space
+                    )
                 )
             }
         }
@@ -633,17 +651,16 @@ class ObjectTypeChangeViewModelTest {
         )
 
         vm.commands.test {
-            vm.onItemClicked(
+            val item = ObjectTypeView(
                 id = installedType1.id,
                 key = installedType1.uniqueKey.orEmpty(),
-                name = installedType1.name.orEmpty()
+                name = installedType1.name.orEmpty(),
+                description = installedType1.description.orEmpty(),
+                emoji = installedType1.iconEmoji.orEmpty(),
             )
+            vm.onItemClicked(item)
             assertEquals(
-                expected = ObjectTypeChangeViewModel.Command.DispatchType(
-                    id = installedType1.id,
-                    key = installedType1.uniqueKey.orEmpty(),
-                    name = installedType1.name.orEmpty()
-                ),
+                expected = ObjectTypeChangeViewModel.Command.DispatchType(item),
                 actual = awaitItem()
             )
         }

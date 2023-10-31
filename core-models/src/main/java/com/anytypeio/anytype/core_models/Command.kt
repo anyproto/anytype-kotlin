@@ -430,4 +430,7 @@ sealed class Command {
     data class SetQueryToSet(val ctx: Id, val query: String)
 
     data class SetInternalFlags(val ctx: Id, val flags: List<InternalFlags>)
+
+    data class AddObjectToSpace(val space: Id, val objectId: Id)
+    data class ApplyTemplate(val objectId: Id, val template: Id?)
 }

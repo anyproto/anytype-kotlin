@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -109,23 +110,7 @@ fun MnemonicPhraseScreen(
             Spacer(modifier = Modifier.height(contentPaddingTop.dp))
             MnemonicTitle()
             MnemonicDescription()
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp, bottom = 16.dp)
-                    .height(24.dp)
-                    .noRippleClickable {
-                        showWhatIsRecoveryPhraseDialog.value = true
-                    }
-            ) {
-                Text(
-                    text = stringResource(id = R.string.onboarding_mnemonic_read_more),
-                    style = BodyRegular.copy(
-                        color = Color.White
-                    ),
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
+            ReadMoreButton(showWhatIsRecoveryPhraseDialog)
             MnemonicPhrase(
                 state = state,
                 copyMnemonicToClipboard = copyMnemonicToClipboard,
@@ -150,6 +135,27 @@ fun MnemonicPhraseScreen(
                 // Do nothing
             },
             sheetState = SheetState(skipPartiallyExpanded = true)
+        )
+    }
+}
+
+@Composable
+private fun ReadMoreButton(showWhatIsRecoveryPhraseDialog: MutableState<Boolean>) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 16.dp)
+            .height(24.dp)
+            .noRippleClickable {
+                showWhatIsRecoveryPhraseDialog.value = true
+            }
+    ) {
+        Text(
+            text = stringResource(id = R.string.onboarding_mnemonic_read_more),
+            style = BodyRegular.copy(
+                color = Color.White
+            ),
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }

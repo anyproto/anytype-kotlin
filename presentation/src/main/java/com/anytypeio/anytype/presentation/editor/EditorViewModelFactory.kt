@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
+import com.anytypeio.anytype.domain.block.interactor.SetObjectType
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -83,7 +84,8 @@ open class  EditorViewModelFactory(
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val addRelationToObject: AddRelationToObject,
     private val setObjectInternalFlags: SetObjectInternalFlags,
-    private val applyTemplate: ApplyTemplate
+    private val applyTemplate: ApplyTemplate,
+    private val setObjectType: SetObjectType
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -126,7 +128,8 @@ open class  EditorViewModelFactory(
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
             setObjectInternalFlags = setObjectInternalFlags,
-            applyTemplate = applyTemplate
+            applyTemplate = applyTemplate,
+            setObjectType = setObjectType
         ) as T
     }
 }

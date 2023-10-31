@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -62,7 +63,7 @@ fun WhatIsRecoveryPhraseScreen() {
         ) {
             Text(
                 modifier = Modifier,
-                text = "What is Recovery Phrase?",
+                text = stringResource(R.string.onboqrding_what_is_recovery_phrase),
                 style = HeadlineHeading.copy(color = OnBoardingTextPrimaryColor)
             )
         }
@@ -77,7 +78,7 @@ fun WhatIsRecoveryPhraseScreen() {
             }
             Spacer(modifier = Modifier.width(18.dp))
             Text(
-                text = "Recovery Phrase is 12 random words from which your account is magically generated on this device.",
+                text = stringResource(R.string.onboarding_recovery_phrase_description),
                 color = Color.White,
                 style = BodyRegular
             )
@@ -94,11 +95,11 @@ fun WhatIsRecoveryPhraseScreen() {
             Spacer(modifier = Modifier.width(18.dp))
             Text(
                 text = buildAnnotatedString {
-                    append("Who knows combination of these words – owns the account. ")
+                    append(stringResource(R.string.onboarding_recovery_phrase_description_2))
                     withStyle(
                         style = SpanStyle(fontWeight = FontWeight.Bold)
                     ) {
-                        append("Now, you are the only person in the world who can access it.")
+                        append(stringResource(R.string.onboarding_recovery_phrase_description_3))
                     }
                 },
                 color = Color.White,
@@ -116,7 +117,7 @@ fun WhatIsRecoveryPhraseScreen() {
             }
             Spacer(modifier = Modifier.width(18.dp))
             Text(
-                text = "That is why it is essential to keep Recovery Phrase secure! You own - you responsible!",
+                text = stringResource(R.string.onboarding_recovery_phrase_description_4),
                 color = Color.White,
                 style = BodyRegular
             )
@@ -140,7 +141,7 @@ fun WhatIsRecoveryPhraseScreen() {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "How to save my phrase?",
+                    text = stringResource(R.string.onboarding_how_to_save_my_phrase),
                     color = Color.White,
                     style = Title1.copy(
                         fontSize = 17.sp
@@ -152,14 +153,14 @@ fun WhatIsRecoveryPhraseScreen() {
                 )
                 Spacer(modifier = Modifier.height(15.dp))
                 Text(
-                    text = "The easiest way to store your Recovery Phrase is to save it in your password manager.",
+                    text = stringResource(R.string.onboarding_how_to_save_my_phrase_2),
                     color = Color.White,
                     style = BodyCalloutRegular,
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    text = "The most secure way is to write it down on paper and keep it offline, in a safe and secure place.",
+                    text = stringResource(R.string.onboarding_how_to_save_my_phrase_3),
                     color = Color.White,
                     style = BodyCalloutRegular,
                     modifier = Modifier.padding(horizontal = 16.dp)

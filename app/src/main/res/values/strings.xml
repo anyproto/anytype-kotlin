@@ -412,5 +412,13 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="created_by_id_copied_toast_msg">Created-by ID copied</string>
     <string name="onboarding_mnemonic_read_more">Read more</string>
     <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
+    <string name="onboqrding_what_is_recovery_phrase">What is Recovery Phrase?</string>
+    <string name="onboarding_recovery_phrase_description">Recovery Phrase is 12 random words from which your account is magically generated on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2">"Who knows combination of these words – owns the account. "</string>
+    <string name="onboarding_recovery_phrase_description_3">Now, you are the only person in the world who can access it.</string>
+    <string name="onboarding_recovery_phrase_description_4">That is why it is essential to keep Recovery Phrase secure! You own - you responsible!</string>
+    <string name="onboarding_how_to_save_my_phrase">How to save my phrase?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Recovery Phrase is to save it in your password manager.</string>
+    <string name="onboarding_how_to_save_my_phrase_3">The most secure way is to write it down on paper and keep it offline, in a safe and secure place.</string>
 
 </resources>

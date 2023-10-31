@@ -1,27 +1,23 @@
 package com.anytypeio.anytype.ui.editor
 
-import android.Manifest.permission.READ_EXTERNAL_STORAGE
 import android.app.ProgressDialog
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.view.LayoutInflater
 import android.widget.Button
 import android.widget.ProgressBar
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import androidx.viewbinding.ViewBinding
+import androidx.fragment.app.Fragment
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.const.FileConstants
 import com.anytypeio.anytype.core_utils.ext.Mimetype
-import com.anytypeio.anytype.core_utils.ext.isPermissionGranted
-import com.anytypeio.anytype.core_utils.ext.shouldShowRequestPermissionRationaleCompat
 import com.anytypeio.anytype.core_utils.ext.showSnackbar
 import com.anytypeio.anytype.core_utils.ext.startFilePicker
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ui.BaseFragment
-import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.google.android.material.snackbar.Snackbar
 import com.hbisoft.pickit.PickiT
@@ -30,7 +26,7 @@ import timber.log.Timber
 
 interface PickerDelegate : PickiTCallbacks {
 
-    fun initPicker(vm: EditorViewModel, ctx: Id)
+    fun initPicker(ctx: Id)
 
     fun resolveActivityResult(requestCode: Int, resultCode: Int, data: Intent?)
 
@@ -44,20 +40,27 @@ interface PickerDelegate : PickiTCallbacks {
 
     fun clearOnCopyFile()
 
+    sealed class Actions {
+        data class OnStartCopyFileToCacheDir(val uri: Uri) : Actions()
+        object OnCancelCopyFileToCacheDir : Actions()
+        data class OnProceedWithFilePath(val filePath: String) : Actions()
+        data class OnPickedDocImageFromDevice(val ctx: String, val filePath: String) : Actions()
+    }
+
     class Impl(
-        private val fragment: BaseFragment<ViewBinding>
+        private val fragment: Fragment,
+        private val actions: (Actions) -> Unit
     ) : PickerDelegate {
 
-        private lateinit var vm: EditorViewModel
         private lateinit var ctx: Id
         private lateinit var pickiT: PickiT
+        private lateinit var permissionHelper: MediaPermissionHelper
 
         private var pickitProgressDialog: ProgressDialog? = null
         private var pickitProgressBar: ProgressBar? = null
         private var pickitAlertDialog: AlertDialog? = null
         private var snackbar: Snackbar? = null
 
-        private var mimeType: Mimetype? = null
         private var requestCode: Int? = null
 
         override fun resolveActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -70,7 +73,7 @@ interface PickerDelegate : PickiTCallbacks {
                 }
                 FileConstants.REQUEST_FILE_SAF_CODE -> {
                     data?.data?.let { uri ->
-                        vm.onStartCopyFileToCacheDir(uri)
+                        actions(Actions.OnStartCopyFileToCacheDir(uri))
                     } ?: run {
                         Timber.e("onActivityResult error, data is null")
                         fragment.toast("Error while getting file")
@@ -89,19 +92,17 @@ interface PickerDelegate : PickiTCallbacks {
         }
 
         override fun openFilePicker(mimeType: Mimetype, requestCode: Int?) {
-            this.mimeType = mimeType
-            this.requestCode = requestCode
-            if (fragment.requireContext().isPermissionGranted(mimeType)) {
-                fragment.startFilePicker(mimeType, requestCode)
-            } else {
-                takeReadStoragePermission()
-            }
+            permissionHelper.openFilePicker(mimeType, requestCode)
         }
 
-        override fun initPicker(vm: EditorViewModel, ctx: Id) {
-            this.vm = vm
+        override fun initPicker(ctx: Id) {
             this.ctx = ctx
             pickiT = PickiT(fragment.requireContext(), this, fragment.requireActivity())
+            permissionHelper = MediaPermissionHelper(
+                fragment = fragment,
+                onPermissionDenied = { fragment.toast(R.string.permission_read_denied) },
+                onPermissionSuccess = { mimetype, code -> fragment.startFilePicker(mimetype, code) }
+            )
         }
 
         override fun clearPickit() {
@@ -138,59 +139,24 @@ interface PickerDelegate : PickiTCallbacks {
                     onFilePathReady(command.result)
                 }
                 CopyFileStatus.Started -> {
-                    snackbar = fragment.binding.root.showSnackbar(
-                        R.string.loading_file,
-                        Snackbar.LENGTH_INDEFINITE,
-                        R.string.cancel
-                    ) {
-                        vm.onCancelCopyFileToCacheDir()
+                    fragment.view?.rootView?.let {
+                        it.showSnackbar(
+                            R.string.loading_file,
+                            Snackbar.LENGTH_INDEFINITE,
+                            R.string.cancel
+                        ) {
+                            actions(Actions.OnCancelCopyFileToCacheDir)
+                        }
                     }
                 }
             }
         }
 
         override fun clearOnCopyFile() {
-            vm.onCancelCopyFileToCacheDir()
+            actions(Actions.OnCancelCopyFileToCacheDir)
             snackbar?.dismiss()
             snackbar = null
         }
-
-        private fun takeReadStoragePermission() {
-            try {
-                if (fragment.requireActivity()
-                        .shouldShowRequestPermissionRationaleCompat(READ_EXTERNAL_STORAGE)
-                ) {
-                    snackbar = fragment.binding.root.showSnackbar(
-                        R.string.permission_read_rationale,
-                        Snackbar.LENGTH_INDEFINITE,
-                        R.string.button_ok
-                    ) {
-                        permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
-                    }
-                } else {
-                    permissionReadStorage.launch(arrayOf(READ_EXTERNAL_STORAGE))
-                }
-            } catch (e: Exception) {
-                Timber.e(e, "Error while requesting permission")
-            }
-        }
-
-        private val permissionReadStorage =
-            fragment.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions())
-            { grantResults ->
-                val readResult = grantResults[READ_EXTERNAL_STORAGE]
-                if (readResult == true) {
-                    val type = requireNotNull(mimeType) {
-                        "mimeType should be initialized"
-                    }
-                    fragment.startFilePicker(type, requestCode)
-                } else {
-                    snackbar = fragment.binding.root.showSnackbar(
-                        R.string.permission_read_denied,
-                        Snackbar.LENGTH_SHORT
-                    )
-                }
-            }
 
         override fun PickiTonUriReturned() {
             Timber.d("PickiTonUriReturned")
@@ -269,9 +235,9 @@ interface PickerDelegate : PickiTCallbacks {
         private fun onFilePathReady(filePath: String?) {
             if (filePath != null) {
                 if (requestCode == FileConstants.REQUEST_PROFILE_IMAGE_CODE) {
-                    vm.onPickedDocImageFromDevice(ctx, filePath)
+                    actions(Actions.OnPickedDocImageFromDevice(ctx, filePath))
                 } else {
-                    vm.onProceedWithFilePath(filePath = filePath)
+                    actions(Actions.OnProceedWithFilePath(filePath))
                 }
             } else {
                 Timber.e("onFilePathReady, filePath is null")

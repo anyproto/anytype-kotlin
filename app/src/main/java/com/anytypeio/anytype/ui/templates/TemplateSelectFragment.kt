@@ -55,7 +55,9 @@ class TemplateSelectFragment :
     private fun setupViewPagerAndTabs() {
         templatesAdapter = TemplateSelectAdapter(mutableListOf(), this)
         binding.templateViewPager.adapter = templatesAdapter
-        TabLayoutMediator(binding.tabs, binding.templateViewPager) { _, _ -> }.attach()
+        TabLayoutMediator(binding.tabs, binding.templateViewPager) { tab, _ ->
+            tab.text = "   "
+        }.attach()
     }
 
     override fun onStart() {

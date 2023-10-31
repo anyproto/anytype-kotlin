@@ -979,10 +979,7 @@ class ObjectSetViewModel(
                                     ObjectSetCommand.Modal.CreateBookmark(ctx = context)
                                 )
                             } else {
-                                val validTemplateId = getValidTemplateId(
-                                    templateChosenBy = templateChosenBy,
-                                    viewDefaultTemplate = defaultTemplate
-                                )
+                                val validTemplateId = templateChosenBy ?: defaultTemplate
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = TypeKey(uniqueKey),
@@ -993,10 +990,7 @@ class ObjectSetViewModel(
                             }
                         }
                         ObjectType.Layout.RELATION -> {
-                            val validTemplateId = getValidTemplateId(
-                                templateChosenBy = templateChosenBy,
-                                viewDefaultTemplate = defaultTemplate
-                            )
+                            val validTemplateId = templateChosenBy ?: defaultTemplate
                             proceedWithCreatingDataViewObject(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
@@ -1012,14 +1006,6 @@ class ObjectSetViewModel(
                     toast("Unable to define a source for a new object.")
                 }
             }
-        }
-    }
-
-    private fun getValidTemplateId(templateChosenBy: Id?, viewDefaultTemplate: Id?): Id? {
-        return when (templateChosenBy) {
-            null -> if (viewDefaultTemplate != TemplateView.DEFAULT_TEMPLATE_ID_BLANK) viewDefaultTemplate else null
-            TemplateView.DEFAULT_TEMPLATE_ID_BLANK -> null
-            else -> templateChosenBy
         }
     }
 
@@ -1049,10 +1035,7 @@ class ObjectSetViewModel(
             return
         }
 
-        val validTemplateId = getValidTemplateId(
-            templateChosenBy = templateChosenBy,
-            viewDefaultTemplate = defaultTemplate
-        )
+        val validTemplateId = templateChosenBy ?: defaultTemplate
         val createObjectParams = CreateDataViewObject.Params.Collection(
             templateId = validTemplateId,
             type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!

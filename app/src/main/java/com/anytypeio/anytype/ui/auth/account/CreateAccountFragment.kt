@@ -11,22 +11,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.toast
-import com.anytypeio.anytype.core_utils.const.FileConstants.getPermissionToRequestForImages
 import com.anytypeio.anytype.core_utils.ext.*
 import com.anytypeio.anytype.databinding.FragmentCreateAccountBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModel
 import com.anytypeio.anytype.presentation.auth.account.CreateAccountViewModelFactory
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.bumptech.glide.Glide
-import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -38,6 +35,17 @@ class CreateAccountFragment : NavigationFragment<FragmentCreateAccountBinding>(R
 
     private val vm : CreateAccountViewModel by viewModels { factory }
 
+    private lateinit var permissionHelper: MediaPermissionHelper
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        permissionHelper = MediaPermissionHelper(
+            fragment = this,
+            onPermissionDenied = { toast(R.string.permission_read_denied) },
+            onPermissionSuccess = { _, _ -> openGallery() }
+        )
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.createProfileButton.setOnClickListener {
@@ -46,7 +54,9 @@ class CreateAccountFragment : NavigationFragment<FragmentCreateAccountBinding>(R
                 invitationCode = getCode()
             )
         }
-        binding.profileIconPlaceholder.setOnClickListener { proceedWithImagePick() }
+        binding.profileIconPlaceholder.setOnClickListener {
+            permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
+        }
         binding.backButton.setOnClickListener { vm.onBackButtonClicked() }
         setupNavigation()
         vm.error.observe(viewLifecycleOwner, Observer(this::showError))
@@ -122,28 +132,6 @@ class CreateAccountFragment : NavigationFragment<FragmentCreateAccountBinding>(R
     private fun openGallery() {
         getContent.launch(SELECT_IMAGE_CODE)
     }
-
-    private fun proceedWithImagePick() {
-        if (!hasExternalStoragePermission())
-            permissionReadStorage.launch(arrayOf(getPermissionToRequestForImages()))
-        else
-            openGallery()
-    }
-
-    private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
-        requireActivity(),
-        getPermissionToRequestForImages()
-    ).let { result -> result == PackageManager.PERMISSION_GRANTED }
-
-    private val permissionReadStorage =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            val readResult = grantResults[getPermissionToRequestForImages()]
-            if (readResult == true) {
-                openGallery()
-            } else {
-                binding.root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
-            }
-        }
 
     val getContent = registerForActivityResult(GetImageContract()) { uri: Uri? ->
         if (uri != null) {

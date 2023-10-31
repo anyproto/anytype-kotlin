@@ -68,7 +68,7 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
             focus(item.isFocused)
         }
         content.pauseTextWatchers {
-            if (item.hint != null) {
+            if (!item.hint.isNullOrBlank()) {
                 content.hint = item.hint
             }
             content.setText(item.text, TextView.BufferType.EDITABLE)

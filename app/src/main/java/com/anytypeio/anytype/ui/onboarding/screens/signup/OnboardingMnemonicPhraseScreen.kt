@@ -55,8 +55,7 @@ fun MnemonicPhraseScreenWrapper(
     copyMnemonicToClipboard: (String) -> Unit,
     contentPaddingTop: Int,
     vm: OnboardingMnemonicViewModel,
-    mnemonicColorPalette: List<Color>,
-    onReadMoreClicked: () -> Unit
+    mnemonicColorPalette: List<Color>
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     MnemonicPhraseScreen(
@@ -69,8 +68,7 @@ fun MnemonicPhraseScreenWrapper(
         },
         copyMnemonicToClipboard = copyMnemonicToClipboard,
         contentPaddingTop = contentPaddingTop,
-        mnemonicColorPalette = mnemonicColorPalette,
-        onReadMoreClicked = onReadMoreClicked
+        mnemonicColorPalette = mnemonicColorPalette
     )
 }
 
@@ -86,8 +84,7 @@ fun PreviewMnemonicPhraseScreen() {
         onCheckLaterClicked = { /*TODO*/ },
         copyMnemonicToClipboard = {},
         contentPaddingTop = 0,
-        mnemonicColorPalette = emptyList(),
-        onReadMoreClicked = {}
+        mnemonicColorPalette = emptyList()
     )
 }
 
@@ -99,8 +96,7 @@ fun MnemonicPhraseScreen(
     onCheckLaterClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     contentPaddingTop: Int,
-    mnemonicColorPalette: List<Color>,
-    onReadMoreClicked: () -> Unit
+    mnemonicColorPalette: List<Color>
 ) {
     val showWhatIsRecoveryPhraseDialog = remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxSize()) {
@@ -149,13 +145,11 @@ fun MnemonicPhraseScreen(
             onDismissRequest = {
                 showWhatIsRecoveryPhraseDialog.value = false
             },
-            content = {
-                WhatIsRecoveryPhraseScreen()
+            content = { WhatIsRecoveryPhraseScreen() },
+            dragHandle = {
+                // Do nothing
             },
-            dragHandle = {},
-            sheetState = SheetState(
-                skipPartiallyExpanded = true
-            )
+            sheetState = SheetState(skipPartiallyExpanded = true)
         )
     }
 }

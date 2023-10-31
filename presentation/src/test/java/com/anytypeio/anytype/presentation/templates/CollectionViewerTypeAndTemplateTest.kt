@@ -18,6 +18,7 @@ import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
+import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -460,7 +461,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         val viewer = StubDataViewView(
             viewerRelations = listOf(dvViewerRelation1),
             defaultObjectType = customType1Id,
-            defaultTemplateId = TemplateView.DEFAULT_TEMPLATE_ID_BLANK
+            defaultTemplateId = DEFAULT_TEMPLATE_ID_BLANK
         )
         val dv = StubDataView(
             views = listOf(viewer),
@@ -527,7 +528,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.Collection(
                 type = TypeKey(customType1Key.key),
-                templateId = null
+                templateId = DEFAULT_TEMPLATE_ID_BLANK
             )
             async(params)
         }

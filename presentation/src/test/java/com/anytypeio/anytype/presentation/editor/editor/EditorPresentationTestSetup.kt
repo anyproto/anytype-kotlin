@@ -408,7 +408,6 @@ open class EditorPresentationTestSetup {
             setRelationKey = setRelationKey,
             turnIntoStyle = turnIntoStyle,
             updateBlocksMark = updateBlocksMark,
-            setObjectType = setObjectType,
             createTable = createTable,
             fillTableRow = fillTableRow,
             clearBlockContent = clearBlockContent,
@@ -469,7 +468,8 @@ open class EditorPresentationTestSetup {
             addRelationToObject = addRelationToObject,
             setObjectInternalFlags = setObjectInternalFlags,
             spaceManager = spaceManager,
-            applyTemplate = applyTemplate
+            applyTemplate = applyTemplate,
+            setObjectType = setObjectType
         )
     }
 

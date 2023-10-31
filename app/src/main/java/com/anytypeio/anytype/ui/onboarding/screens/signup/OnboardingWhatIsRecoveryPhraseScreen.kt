@@ -33,6 +33,7 @@ import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
 
 
@@ -50,7 +51,8 @@ fun WhatIsRecoveryPhraseScreen() {
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
-                .align(Alignment.CenterHorizontally)
+                .align(Alignment.CenterHorizontally),
+            color = Color(0xff3A3935)
         )
         Spacer(modifier = Modifier.height(46.dp))
         Box(
@@ -61,7 +63,7 @@ fun WhatIsRecoveryPhraseScreen() {
             Text(
                 modifier = Modifier,
                 text = "What is Recovery Phrase?",
-                style = Title1.copy(color = OnBoardingTextPrimaryColor)
+                style = HeadlineHeading.copy(color = OnBoardingTextPrimaryColor)
             )
         }
         Spacer(modifier = Modifier.height(24.dp))

@@ -14,7 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -86,6 +91,7 @@ fun PreviewMnemonicPhraseScreen() {
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MnemonicPhraseScreen(
     state: OnboardingMnemonicViewModel.State,
@@ -96,6 +102,7 @@ fun MnemonicPhraseScreen(
     mnemonicColorPalette: List<Color>,
     onReadMoreClicked: () -> Unit
 ) {
+    val showWhatIsRecoveryPhraseDialog = remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -112,7 +119,7 @@ fun MnemonicPhraseScreen(
                     .padding(top = 8.dp, bottom = 16.dp)
                     .height(24.dp)
                     .noRippleClickable {
-                        onReadMoreClicked()
+                        showWhatIsRecoveryPhraseDialog.value = true
                     }
             ) {
                 Text(
@@ -134,6 +141,21 @@ fun MnemonicPhraseScreen(
             openMnemonic = reviewMnemonic,
             onCheckLaterClicked = onCheckLaterClicked,
             state = state
+        )
+    }
+    if (showWhatIsRecoveryPhraseDialog.value) {
+        ModalBottomSheet(
+            containerColor = Color(0xFF1F1E1D),
+            onDismissRequest = {
+                showWhatIsRecoveryPhraseDialog.value = false
+            },
+            content = {
+                WhatIsRecoveryPhraseScreen()
+            },
+            dragHandle = {},
+            sheetState = SheetState(
+                skipPartiallyExpanded = true
+            )
         )
     }
 }
@@ -162,7 +184,9 @@ fun MnemonicButtons(
                     style = Caption1Regular,
                     color = Color(0xff797976),
                     text = stringResource(id = R.string.onboarding_mnemonic_additional_info),
-                    modifier = Modifier.padding(bottom = 19.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(bottom = 19.dp)
+                        .fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
                 OnBoardingButtonPrimary(

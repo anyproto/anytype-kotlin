@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -46,9 +47,12 @@ fun WhatIsRecoveryPhraseScreen() {
     Column(
         modifier = Modifier.padding(horizontal = 24.dp)
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        // TODO icon
-        Spacer(modifier = Modifier.height(8.dp))
+        Dragger(
+            modifier = Modifier
+                .padding(vertical = 6.dp)
+                .align(Alignment.CenterHorizontally)
+        )
+        Spacer(modifier = Modifier.height(46.dp))
         Box(
             modifier = Modifier
                 .fillMaxWidth()

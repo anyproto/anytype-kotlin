@@ -38,9 +38,9 @@ import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
-import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
@@ -136,7 +136,7 @@ fun SetProfileNameTitle(modifier: Modifier) {
         Text(
             modifier = Modifier,
             text = stringResource(R.string.onboarding_set_your_name_title),
-            style = Title1.copy(
+            style = HeadlineHeading.copy(
                 color = OnBoardingTextPrimaryColor
             )
         )

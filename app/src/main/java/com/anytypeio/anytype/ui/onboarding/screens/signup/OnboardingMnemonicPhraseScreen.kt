@@ -40,10 +40,10 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
-import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.ui.onboarding.MnemonicPhraseWidget
 import com.anytypeio.anytype.ui.onboarding.MnemonicStub
@@ -231,7 +231,7 @@ fun MnemonicTitle() {
         Text(
             modifier = Modifier,
             text = stringResource(R.string.onboarding_mnemonic_title),
-            style = Title1.copy(
+            style = HeadlineHeading.copy(
                 color = OnBoardingTextPrimaryColor
             )
         )

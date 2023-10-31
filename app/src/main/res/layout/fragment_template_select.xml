@@ -67,7 +67,6 @@
         app:tabIndicatorHeight="0dp"
         app:tabIndicatorGravity="center"
         app:tabIndicatorFullWidth="false"
-        android:text="TabLayout"
         android:background="@null"/>
 
     <androidx.viewpager2.widget.ViewPager2

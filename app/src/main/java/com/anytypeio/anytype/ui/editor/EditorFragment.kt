@@ -34,7 +34,6 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -45,7 +44,6 @@ import androidx.transition.Fade
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
-import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -99,7 +97,6 @@ import com.anytypeio.anytype.core_utils.ext.syncTranslationWithImeVisibility
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentEditorBinding
 import com.anytypeio.anytype.di.common.componentManager
@@ -414,7 +411,22 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private val pickerDelegate = PickerDelegate.Impl(this as BaseFragment<ViewBinding>)
+    private val pickerDelegate = PickerDelegate.Impl(this) { actions ->
+        when (actions) {
+            PickerDelegate.Actions.OnCancelCopyFileToCacheDir -> {
+                vm.onCancelCopyFileToCacheDir()
+            }
+            is PickerDelegate.Actions.OnPickedDocImageFromDevice -> {
+                vm.onPickedDocImageFromDevice(actions.ctx, actions.filePath)
+            }
+            is PickerDelegate.Actions.OnProceedWithFilePath -> {
+                vm.onProceedWithFilePath(filePath = actions.filePath)
+            }
+            is PickerDelegate.Actions.OnStartCopyFileToCacheDir -> {
+                vm.onStartCopyFileToCacheDir(actions.uri)
+            }
+        }
+    }
     private val dndDelegate = DragAndDropDelegate()
 
     @Inject
@@ -422,7 +434,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        pickerDelegate.initPicker(vm, ctx)
+        pickerDelegate.initPicker(ctx)
         setupOnBackPressedDispatcher()
         getEditorSettings()
     }

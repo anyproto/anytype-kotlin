@@ -3164,8 +3164,6 @@ class EditorViewModel(
     fun onAddNewDocumentClicked() {
         Timber.d("onAddNewDocumentClicked, ")
         proceedWithCreatingNewObject(
-            typeKey = null,
-            template = null,
             internalFlags = listOf(
                 InternalFlags.ShouldSelectTemplate,
                 InternalFlags.ShouldSelectType,
@@ -3174,8 +3172,8 @@ class EditorViewModel(
         )
     }
 
-    fun onProceedWithApplyingTemplateByObjectId(template: Id) {
-        Timber.d("onCreateObjectWithTemplateClicked, template:[$template]")
+    fun onProceedWithApplyingTemplateByObjectId(template: Id?) {
+        Timber.d("onProceedWithApplyingTemplateByObjectId, template:[$template]")
         val ctx = context
         viewModelScope.launch {
             val params = ApplyTemplate.Params(
@@ -3190,15 +3188,11 @@ class EditorViewModel(
     }
 
     private fun proceedWithCreatingNewObject(
-        typeKey: TypeKey?,
-        template: Id?,
         internalFlags: List<InternalFlags> = emptyList()
     ) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateObject.Param(
-                type = typeKey,
-                template = template,
                 internalFlags = internalFlags,
             )
             createObject.async(params = params)
@@ -4320,25 +4314,11 @@ class EditorViewModel(
     }
 
     fun onObjectTypeChanged(
-        type: Id,
-        key: Key,
-        applyTemplate: Boolean
+        item: ObjectTypeView
     ) {
-        Timber.d("onObjectTypeChanged, type:[$type], applyTemplate:[$applyTemplate]")
-        proceedWithObjectTypeChange(
-            type = type,
-            key = key,
-            applyTemplate = applyTemplate
-        )
-    }
-
-    private fun proceedWithObjectTypeChange(
-        type: Id,
-        key: Key,
-        applyTemplate: Boolean
-    ) {
+        Timber.d("onObjectTypeChanged, item:[$item]")
         viewModelScope.launch {
-            when (key) {
+            when (item.key) {
                 ObjectTypeIds.SET -> {
                     proceedWithConvertingToSet()
                 }
@@ -4346,12 +4326,7 @@ class EditorViewModel(
                     proceedWithConvertingToCollection()
                 }
                 else -> {
-                    proceedWithUpdateObjectType(type = type, key = key)
-                    sendAnalyticsObjectTypeChangeEvent(
-                        analytics = analytics,
-                        objType = storeOfObjectTypes.get(type)
-                    )
-                    sendHideObjectTypeWidgetEvent()
+                    proceedWithObjectTypeChangeAndApplyTemplate(item)
                 }
             }
         }
@@ -4377,23 +4352,6 @@ class EditorViewModel(
             onSuccess = {
                 proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
             }
-        )
-    }
-
-    private suspend fun proceedWithUpdateObjectType(type: Id, key: Key) {
-        val focus = orchestrator.stores.focus.current()
-        val effects = buildList<SideEffect> {
-            if (focus.targetOrNull() != null) {
-                add(SideEffect.ResetFocusToFirstTextBlock)
-            }
-        }
-        orchestrator.proxies.intents.send(
-            Intent.Document.SetObjectType(
-                context = context,
-                typeId = type,
-                key = key,
-                effects = effects
-            )
         )
     }
 
@@ -5933,13 +5891,9 @@ class EditorViewModel(
         get() =
             controlPanelViewState.value?.objectTypesToolbar?.isVisible ?: false
 
-    fun onObjectTypesWidgetItemClicked(typeId: Id, key: Key) {
-        Timber.d("onObjectTypesWidgetItemClicked, type:[$typeId]")
-        proceedWithObjectTypeChange(
-            type = typeId,
-            key = key,
-            applyTemplate = true
-        )
+    fun onObjectTypesWidgetItemClicked(item: ObjectTypeView) {
+        Timber.d("onObjectTypesWidgetItemClicked, item:[$item]")
+        proceedWithObjectTypeChangeAndApplyTemplate(item)
     }
 
     fun onObjectTypesWidgetSearchClicked() {
@@ -6007,6 +5961,40 @@ class EditorViewModel(
 
     private fun sendHideObjectTypeWidgetEvent() {
         if (isObjectTypesWidgetVisible) controlPanelInteractor.onEvent(ObjectTypesWidgetEvent.Hide)
+    }
+
+    private fun proceedWithObjectTypeChange(item: ObjectTypeView, onSuccess: (() -> Unit)? = null) {
+        val startTime = System.currentTimeMillis()
+        viewModelScope.launch {
+            val params = SetObjectType.Params(
+                context = context,
+                objectTypeKey = item.key
+            )
+            setObjectType.async(params).fold(
+                onFailure = { Timber.e(it, "Error while updating object type: [${item.key}]") },
+                onSuccess = { response ->
+                    Timber.d("proceedWithObjectTypeChange success, key:[${item.key}]")
+                    dispatcher.send(response)
+                    sendAnalyticsObjectTypeChangeEvent(
+                        analytics = analytics,
+                        objType = storeOfObjectTypes.getByKey(item.key),
+                        startTime = startTime
+                    )
+                    onSuccess?.invoke()
+                }
+            )
+        }
+    }
+
+    private fun proceedWithObjectTypeChangeAndApplyTemplate(item: ObjectTypeView) {
+        proceedWithObjectTypeChange(item) {
+            val internalFlags = getInternalFlagsFromDetails()
+            if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
+                onProceedWithApplyingTemplateByObjectId(
+                    template = item.defaultTemplate
+                )
+            }
+        }
     }
     //endregion
 
@@ -6231,6 +6219,7 @@ class EditorViewModel(
     }
 
     private fun proceedWithStartTemplateEvent(typeKey: Id) {
+        Timber.d("proceedWithStartTemplateEvent, typeKey:[$typeKey]")
         viewModelScope.launch {
             val objType = storeOfObjectTypes.getByKey(typeKey)
             if (objType?.uniqueKey != null) {

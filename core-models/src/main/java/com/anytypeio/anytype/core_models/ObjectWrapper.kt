@@ -129,11 +129,7 @@ sealed class ObjectWrapper {
             }
 
         val targetObjectType: Id?
-            get() = when (val value = map[Relations.TARGET_OBJECT_TYPE]) {
-                is String -> value
-                is List<*> -> value.typeOf<String>().first()
-                else -> null
-            }
+            get() = getValues<Id>(Relations.TARGET_OBJECT_TYPE).firstOrNull()
 
         val isValid get() = map.containsKey(Relations.ID)
 

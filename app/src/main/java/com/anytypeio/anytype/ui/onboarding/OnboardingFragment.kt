@@ -325,7 +325,6 @@ class OnboardingFragment : Fragment() {
                     // Do nothing
                 }
                 Mnemonic(
-                    navController = navController,
                     contentPaddingTop = ContentPaddingTop(),
                     mnemonicColorPalette = mnemonicColorPalette
                 )
@@ -568,7 +567,6 @@ class OnboardingFragment : Fragment() {
 
     @Composable
     private fun Mnemonic(
-        navController: NavHostController,
         contentPaddingTop: Int,
         mnemonicColorPalette: List<Color>
     ) {

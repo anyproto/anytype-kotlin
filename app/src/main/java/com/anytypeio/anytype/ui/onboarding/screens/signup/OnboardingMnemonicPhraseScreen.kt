@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
@@ -30,7 +31,10 @@ import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.extensions.conditional
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
@@ -46,17 +50,36 @@ fun MnemonicPhraseScreenWrapper(
     copyMnemonicToClipboard: (String) -> Unit,
     contentPaddingTop: Int,
     vm: OnboardingMnemonicViewModel,
-    mnemonicColorPalette: List<Color>
+    mnemonicColorPalette: List<Color>,
+    onReadMoreClicked: () -> Unit
 ) {
     val state = viewModel.state.collectAsStateWithLifecycle().value
     MnemonicPhraseScreen(
         state = state,
         reviewMnemonic = { viewModel.openMnemonic() },
-        onCheckLaterClicked = onCheckLaterClicked,
+        onCheckLaterClicked = {
+            onCheckLaterClicked().also {
+                vm.onCheckLaterClicked()
+            }
+        },
         copyMnemonicToClipboard = copyMnemonicToClipboard,
         contentPaddingTop = contentPaddingTop,
-        vm = vm,
-        mnemonicColorPalette = mnemonicColorPalette
+        mnemonicColorPalette = mnemonicColorPalette,
+        onReadMoreClicked = onReadMoreClicked
+    )
+}
+
+@Preview
+@Composable
+fun PreviewMnemonicPhraseScreen() {
+    MnemonicPhraseScreen(
+        state = OnboardingMnemonicViewModel.State.Mnemonic("Test"),
+        reviewMnemonic = { /*TODO*/ },
+        onCheckLaterClicked = { /*TODO*/ },
+        copyMnemonicToClipboard = {},
+        contentPaddingTop = 0,
+        mnemonicColorPalette = emptyList(),
+        onReadMoreClicked = {}
     )
 }
 
@@ -67,8 +90,8 @@ fun MnemonicPhraseScreen(
     onCheckLaterClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     contentPaddingTop: Int,
-    vm: OnboardingMnemonicViewModel,
-    mnemonicColorPalette: List<Color>
+    mnemonicColorPalette: List<Color>,
+    onReadMoreClicked: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -79,19 +102,33 @@ fun MnemonicPhraseScreen(
         ) {
             Spacer(modifier = Modifier.height(contentPaddingTop.dp))
             MnemonicTitle()
+            MnemonicDescription()
+            Box(
+                modifier = Modifier
+                    .height(24.dp)
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, bottom = 16.dp)
+                    .noRippleClickable { }
+            ) {
+                Text(
+                    text = stringResource(id = R.string.onboarding_mnemonic_read_more),
+                    style = BodyRegular.copy(
+                        color = Color.White
+                    ),
+                    modifier = Modifier.align(Alignment.Center)
+                )
+            }
             MnemonicPhrase(
                 state = state,
                 copyMnemonicToClipboard = copyMnemonicToClipboard,
                 mnemonicColorPalette = mnemonicColorPalette
             )
-            MnemonicDescription()
         }
         MnemonicButtons(
             modifier = Modifier.align(Alignment.BottomCenter),
             openMnemonic = reviewMnemonic,
             onCheckLaterClicked = onCheckLaterClicked,
-            state = state,
-            vm = vm
+            state = state
         )
     }
 }
@@ -101,8 +138,7 @@ fun MnemonicButtons(
     modifier: Modifier = Modifier,
     openMnemonic: () -> Unit,
     onCheckLaterClicked: () -> Unit,
-    state: OnboardingMnemonicViewModel.State,
-    vm: OnboardingMnemonicViewModel
+    state: OnboardingMnemonicViewModel.State
 ) {
     Column(modifier.wrapContentHeight()) {
         when (state) {
@@ -112,12 +148,18 @@ fun MnemonicButtons(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
-                    onClick = {
-                        onCheckLaterClicked.invoke()
-                    }, size = ButtonSize.Large
+                    onClick = { onCheckLaterClicked.invoke() },
+                    size = ButtonSize.Large
                 )
             }
             else -> {
+                Text(
+                    style = Caption1Regular,
+                    color = Color(0xff797976),
+                    text = stringResource(id = R.string.onboarding_mnemonic_additional_info),
+                    modifier = Modifier.padding(bottom = 19.dp).fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
                 OnBoardingButtonPrimary(
                     text = stringResource(id = R.string.onboarding_mnemonic_show_key),
                     modifier = Modifier
@@ -128,7 +170,7 @@ fun MnemonicButtons(
                     }, size = ButtonSize.Large
                 )
                 OnBoardingButtonSecondary(
-                    text = stringResource(id = R.string.onboarding_mnemonic_check_later),
+                    text = stringResource(id = R.string.onboarding_mnemonic_skip),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -139,7 +181,6 @@ fun MnemonicButtons(
                         ),
                     onClick = {
                         onCheckLaterClicked.invoke()
-                        vm.onCheckLaterClicked()
                     },
                     size = ButtonSize.Large,
                     textColor = ColorButtonRegular

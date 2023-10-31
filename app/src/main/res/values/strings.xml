@@ -369,11 +369,11 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">End-to-end Encryption</string>
-    <string name="onboarding_mnemonic_description">Your data is encrypted by the Key above - your secret Recovery phrase. Store it securely. This is the only way to login and access your Void.</string>
-    <string name="onboarding_mnemonic_show_key">Show me the Key</string>
-    <string name="onboarding_mnemonic_key_saved">I saved my key</string>
-    <string name="onboarding_mnemonic_check_later">Check later</string>
+    <string name="onboarding_mnemonic_title">Save your recovery phrase</string>
+    <string name="onboarding_mnemonic_description">It’s a novel way of authentication that gives you full ownership over your account and data.</string>
+    <string name="onboarding_mnemonic_show_key">Show Recovery Phrase</string>
+    <string name="onboarding_mnemonic_key_saved">Go to the app</string>
+    <string name="onboarding_mnemonic_skip">Check later</string>
     <string name="onboarding_mnemonic_copy">Copy to clipboard</string>
     <string name="onboarding_set_your_name_title">Set your name</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
@@ -410,5 +410,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="space_id_copied_toast_msg">Space ID copied</string>
     <string name="network_id_copied_toast_msg">Network ID copied</string>
     <string name="created_by_id_copied_toast_msg">Created-by ID copied</string>
+    <string name="onboarding_mnemonic_read_more">Read more</string>
+    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
 
 </resources>

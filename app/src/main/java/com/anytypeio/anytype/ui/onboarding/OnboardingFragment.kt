@@ -577,7 +577,10 @@ class OnboardingFragment : Fragment() {
             },
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
-            mnemonicColorPalette = mnemonicColorPalette
+            mnemonicColorPalette = mnemonicColorPalette,
+            onReadMoreClicked = {
+                toast("TODO")
+            }
         )
         DisposableEffect(Unit) {
             onDispose { component.release() }

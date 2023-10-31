@@ -140,7 +140,7 @@ interface PickerDelegate : PickiTCallbacks {
                 }
                 CopyFileStatus.Started -> {
                     fragment.view?.rootView?.let {
-                        it.showSnackbar(
+                        snackbar = it.showSnackbar(
                             R.string.loading_file,
                             Snackbar.LENGTH_INDEFINITE,
                             R.string.cancel

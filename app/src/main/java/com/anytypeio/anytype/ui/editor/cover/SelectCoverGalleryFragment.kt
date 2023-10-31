@@ -1,15 +1,11 @@
 package com.anytypeio.anytype.ui.editor.cover
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -21,23 +17,23 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.editor.modal.DocCoverGalleryAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.dimen
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
-import com.anytypeio.anytype.core_utils.ext.showSnackbar
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentDocCoverGalleryBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectSetViewModel
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectViewModel
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverViewModel
-import com.google.android.material.snackbar.Snackbar
+import javax.inject.Inject
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
-import javax.inject.Inject
 
 abstract class SelectCoverGalleryFragment :
     BaseBottomSheetFragment<FragmentDocCoverGalleryBinding>() {
@@ -57,6 +53,8 @@ abstract class SelectCoverGalleryFragment :
         null
     }
 
+    private lateinit var permissionHelper: MediaPermissionHelper
+
     private fun getContentLauncher() = registerForActivityResult(GetImageContract()) { uri: Uri? ->
             if (uri != null) {
                 try {
@@ -71,14 +69,14 @@ abstract class SelectCoverGalleryFragment :
             }
     }
 
-    private val permissionReadStorage = registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            val readResult = grantResults[Manifest.permission.READ_EXTERNAL_STORAGE]
-            if (readResult == true) {
-                openGallery()
-            } else {
-                binding.root.showSnackbar(R.string.permission_read_denied, Snackbar.LENGTH_SHORT)
-            }
-        }
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        permissionHelper = MediaPermissionHelper(
+            fragment = this,
+            onPermissionDenied = { toast(R.string.permission_read_denied) },
+            onPermissionSuccess = { _, _ -> openGallery() }
+        )
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -99,7 +97,7 @@ abstract class SelectCoverGalleryFragment :
             .launchIn(lifecycleScope)
 
         binding.btnUpload.clicks()
-            .onEach { proceedWithImagePick() }
+            .onEach { permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null) }
             .launchIn(lifecycleScope)
 
         val spacing = requireContext().dimen(R.dimen.cover_gallery_item_spacing).toInt()
@@ -153,13 +151,6 @@ abstract class SelectCoverGalleryFragment :
         expand()
     }
 
-    private fun proceedWithImagePick() {
-        if (!hasReadStoragePermission())
-            permissionReadStorage.launch(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
-        else
-            openGallery()
-    }
-
     private fun openGallery() {
         try {
             getContent?.launch(SELECT_IMAGE_CODE)
@@ -167,13 +158,6 @@ abstract class SelectCoverGalleryFragment :
             Timber.e(e, "Error while opening gallery")
             toast("Error while opening gallery: ${e.message}")
         }
-    }
-
-    private fun hasReadStoragePermission(): Boolean = ContextCompat.checkSelfPermission(
-        requireActivity(),
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    ).let { result ->
-        result == PackageManager.PERMISSION_GRANTED
     }
 
     override fun inflateBinding(
@@ -187,7 +171,6 @@ abstract class SelectCoverGalleryFragment :
 
     companion object {
         private const val SELECT_IMAGE_CODE = 1
-        private const val REQUEST_PERMISSION_CODE = 2
     }
 }
 

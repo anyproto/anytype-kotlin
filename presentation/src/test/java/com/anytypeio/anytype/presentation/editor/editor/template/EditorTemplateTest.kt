@@ -15,6 +15,7 @@ import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
+import net.bytebuddy.utility.RandomString
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -42,12 +43,20 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
         val document = listOf(page, header, title)
         stubInterceptEvents()
 
+        val typeObjectId = RandomString.make()
+
         val detailsList = Block.Details(
             details = mapOf(
                 root to Block.Fields(
                     mapOf(
-                        Relations.TYPE to ObjectTypeIds.TEMPLATE,
+                        Relations.TYPE to listOf<String>(typeObjectId),
                         Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble()
+                    )
+                ),
+                typeObjectId to Block.Fields(
+                    mapOf(
+                        Relations.ID to typeObjectId,
+                        Relations.UNIQUE_KEY to ObjectTypeIds.TEMPLATE
                     )
                 )
             )

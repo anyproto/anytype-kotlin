@@ -42,7 +42,7 @@ import com.anytypeio.anytype.ui.onboarding.MnemonicStub
 @Composable
 fun MnemonicPhraseScreenWrapper(
     viewModel: OnboardingMnemonicViewModel,
-    openSoulCreation: () -> Unit,
+    onCheckLaterClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     contentPaddingTop: Int,
     vm: OnboardingMnemonicViewModel,
@@ -52,7 +52,7 @@ fun MnemonicPhraseScreenWrapper(
     MnemonicPhraseScreen(
         state = state,
         reviewMnemonic = { viewModel.openMnemonic() },
-        openSoulCreation = openSoulCreation,
+        onCheckLaterClicked = onCheckLaterClicked,
         copyMnemonicToClipboard = copyMnemonicToClipboard,
         contentPaddingTop = contentPaddingTop,
         vm = vm,
@@ -64,7 +64,7 @@ fun MnemonicPhraseScreenWrapper(
 fun MnemonicPhraseScreen(
     state: OnboardingMnemonicViewModel.State,
     reviewMnemonic: () -> Unit,
-    openSoulCreation: () -> Unit,
+    onCheckLaterClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     contentPaddingTop: Int,
     vm: OnboardingMnemonicViewModel,
@@ -89,7 +89,7 @@ fun MnemonicPhraseScreen(
         MnemonicButtons(
             modifier = Modifier.align(Alignment.BottomCenter),
             openMnemonic = reviewMnemonic,
-            openSoulCreation = openSoulCreation,
+            onCheckLaterClicked = onCheckLaterClicked,
             state = state,
             vm = vm
         )
@@ -100,7 +100,7 @@ fun MnemonicPhraseScreen(
 fun MnemonicButtons(
     modifier: Modifier = Modifier,
     openMnemonic: () -> Unit,
-    openSoulCreation: () -> Unit,
+    onCheckLaterClicked: () -> Unit,
     state: OnboardingMnemonicViewModel.State,
     vm: OnboardingMnemonicViewModel
 ) {
@@ -113,7 +113,7 @@ fun MnemonicButtons(
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
                     onClick = {
-                        openSoulCreation.invoke()
+                        onCheckLaterClicked.invoke()
                     }, size = ButtonSize.Large
                 )
             }
@@ -138,7 +138,7 @@ fun MnemonicButtons(
                             bottom = 24.dp
                         ),
                     onClick = {
-                        openSoulCreation.invoke()
+                        onCheckLaterClicked.invoke()
                         vm.onCheckLaterClicked()
                     },
                     size = ButtonSize.Large,

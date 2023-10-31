@@ -13,6 +13,7 @@ sealed interface TemplateSelectView {
     data class Template(
         val id: Id,
         val typeId: Id,
+        val typeKey: Id,
         val layout: ObjectType.Layout,
     ) : TemplateSelectView
 }

@@ -10,7 +10,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -21,6 +20,7 @@ import com.anytypeio.anytype.databinding.FragmentObjectTypeChangeBinding
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel.Command
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import javax.inject.Inject
 
 abstract class BaseObjectTypeChangeFragment :
@@ -28,7 +28,7 @@ abstract class BaseObjectTypeChangeFragment :
 
     abstract fun setTitle()
     abstract fun startWithParams()
-    abstract fun onItemClicked(id: Id, key: Key, name: String)
+    abstract fun onItemClicked(item: ObjectTypeView)
 
     @Inject
     lateinit var factory: ObjectTypeChangeViewModelFactory
@@ -71,11 +71,7 @@ abstract class BaseObjectTypeChangeFragment :
             jobs += subscribe(vm.commands) { command ->
                 when (command) {
                     is Command.DispatchType -> {
-                        onItemClicked(
-                            id = command.id,
-                            key = command.key,
-                            name = command.name
-                        )
+                        onItemClicked(command.item)
                     }
                     is Command.TypeAdded -> {
                         toast(getString(R.string.type_added, command.type))

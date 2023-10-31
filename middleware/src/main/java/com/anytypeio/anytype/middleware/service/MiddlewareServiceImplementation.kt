@@ -593,7 +593,7 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
-    override fun debugSpace(request: Rpc.Debug.SpaceSummary.Request): Rpc.Debug.SpaceSummary.Response {
+    override fun debugSpaceSummary(request: Rpc.Debug.SpaceSummary.Request): Rpc.Debug.SpaceSummary.Response {
         val encoded = Service.debugSpaceSummary(Rpc.Debug.SpaceSummary.Request.ADAPTER.encode(request))
         val response = Rpc.Debug.SpaceSummary.Response.ADAPTER.decode(encoded)
         val error = response.error
@@ -1412,6 +1412,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.BlockTable.ColumnMove.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.BlockTable.ColumnMove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceDelete(request: Rpc.Space.Delete.Request): Rpc.Space.Delete.Response {
+        val encoded = Service.spaceDelete(
+            Rpc.Space.Delete.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.Delete.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.Delete.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

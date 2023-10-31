@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -28,7 +29,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.bin.EmptyBin
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
@@ -132,7 +133,7 @@ class HomeScreenViewModel(
     private val move: Move,
     private val emptyBin: EmptyBin,
     private val unsubscriber: Unsubscriber,
-    private val getDefaultPageType: GetDefaultPageType,
+    private val getDefaultObjectType: GetDefaultObjectType,
     private val appActionManager: AppActionManager,
     private val analytics: Analytics,
     private val getWidgetSession: GetWidgetSession,
@@ -1026,7 +1027,13 @@ class HomeScreenViewModel(
     fun onCreateNewObjectClicked() {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            createObject.stream(CreateObject.Param(null)).collect { createObjectResponse ->
+            val params = CreateObject.Param(
+                internalFlags  = listOf(
+                    InternalFlags.ShouldSelectTemplate,
+                    InternalFlags.ShouldSelectType,
+                )
+            )
+            createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
                         // TODO Multispaces - Check analytics events
@@ -1082,7 +1089,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithSettingUpShortcuts() {
         viewModelScope.launch {
-            getDefaultPageType.async(Unit).fold(
+            getDefaultObjectType.async(Unit).fold(
                 onSuccess = {
                     Pair(it.name, it.type).letNotNull { name, type ->
                         appActionManager.setup(
@@ -1257,7 +1264,7 @@ class HomeScreenViewModel(
         private val move: Move,
         private val emptyBin: EmptyBin,
         private val unsubscriber: Unsubscriber,
-        private val getDefaultPageType: GetDefaultPageType,
+        private val getDefaultObjectType: GetDefaultObjectType,
         private val appActionManager: AppActionManager,
         private val analytics: Analytics,
         private val getWidgetSession: GetWidgetSession,
@@ -1291,7 +1298,7 @@ class HomeScreenViewModel(
             move = move,
             emptyBin = emptyBin,
             unsubscriber = unsubscriber,
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             appActionManager = appActionManager,
             analytics = analytics,
             getWidgetSession = getWidgetSession,

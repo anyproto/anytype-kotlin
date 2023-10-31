@@ -451,7 +451,7 @@ class BlockDataRepository(
         return remote.deleteRelationFromObject(ctx = ctx, relation = relation)
     }
 
-    override suspend fun debugSpace(): String = remote.debugSpace()
+    override suspend fun debugSpace(space: SpaceId): String = remote.debugSpace(space)
 
     override suspend fun debugObject(objectId: Id, path: String): String =
         remote.debugObject(objectId = objectId, path = path)
@@ -530,10 +530,7 @@ class BlockDataRepository(
 
     override suspend fun clearFileCache() = remote.clearFileCache()
 
-    override suspend fun applyTemplate(ctx: Id, template: Id) = remote.applyTemplate(
-        ctx = ctx,
-        template = template
-    )
+    override suspend fun applyTemplate(command: Command.ApplyTemplate) = remote.applyTemplate(command)
 
     override suspend fun duplicateObject(id: Id): Id {
         return remote.duplicateObject(id)
@@ -756,6 +753,10 @@ class BlockDataRepository(
         )
     }
 
+    override suspend fun deleteSpace(space: SpaceId) {
+        remote.deleteSpace(space)
+    }
+
     override suspend fun createWorkspace(details: Struct): Id = remote.createWorkspace(
         details = details
     )
@@ -779,12 +780,8 @@ class BlockDataRepository(
     }
 
     override suspend fun addObjectToSpace(
-        obj: Id,
-        space: Id
-    ): Id = remote.addObjectToSpace(
-        obj = obj,
-        space = space
-    )
+        command: Command.AddObjectToSpace
+    ): Pair<Id, ObjectWrapper.Type> = remote.addObjectToSpace(command)
 
     override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
         return remote.removeObjectFromWorkspace(

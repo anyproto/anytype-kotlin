@@ -8,13 +8,14 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
+import com.anytypeio.anytype.domain.block.interactor.SetObjectType
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -31,6 +32,7 @@ import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.sets.FindObjectSetForType
 import com.anytypeio.anytype.domain.status.InterceptThreadStatus
+import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -63,7 +65,7 @@ open class  EditorViewModelFactory(
     private val delegator: Delegator<Action>,
     private val updateDetail: UpdateDetail,
     private val searchObjects: SearchObjects,
-    private val getDefaultPageType: GetDefaultPageType,
+    private val getDefaultObjectType: GetDefaultObjectType,
     private val findObjectSetForType: FindObjectSetForType,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val downloadUnsplashImage: DownloadUnsplashImage,
@@ -81,7 +83,9 @@ open class  EditorViewModelFactory(
     private val objectToCollection: ConvertObjectToCollection,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val addRelationToObject: AddRelationToObject,
-    private val setObjectInternalFlags: SetObjectInternalFlags
+    private val setObjectInternalFlags: SetObjectInternalFlags,
+    private val applyTemplate: ApplyTemplate,
+    private val setObjectType: SetObjectType
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -104,7 +108,7 @@ open class  EditorViewModelFactory(
             delegator = delegator,
             updateDetail = updateDetail,
             searchObjects = searchObjects,
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             findObjectSetForType = findObjectSetForType,
             createObjectSet = createObjectSet,
             copyFileToCache = copyFileToCacheDirectory,
@@ -123,7 +127,9 @@ open class  EditorViewModelFactory(
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
-            setObjectInternalFlags = setObjectInternalFlags
+            setObjectInternalFlags = setObjectInternalFlags,
+            applyTemplate = applyTemplate,
+            setObjectType = setObjectType
         ) as T
     }
 }

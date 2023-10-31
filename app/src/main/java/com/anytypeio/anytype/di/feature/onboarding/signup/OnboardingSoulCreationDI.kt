@@ -1,15 +1,29 @@
 package com.anytypeio.anytype.di.feature.onboarding.signup
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
+import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
+import com.anytypeio.anytype.domain.platform.MetricsProvider
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import dagger.Binds
 import dagger.Component
 import dagger.Module
+import dagger.Provides
 import javax.inject.Scope
 
 @Component(
@@ -27,16 +41,55 @@ interface OnboardingSoulCreationComponent {
         fun create(dependencies: OnboardingSoulCreationDependencies): OnboardingSoulCreationComponent
     }
 
-    fun getViewModel(): OnboardingSoulCreationViewModel
+    fun getViewModel(): OnboardingSetProfileNameViewModel
 }
 
 @Module
 object OnboardingSoulCreationModule {
+
+    @JvmStatic
+    @Provides
+    @SoulCreationScreenScope
+    fun gradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
+
+    @JvmStatic
+    @Provides
+    @SoulCreationScreenScope
+    fun provideCreateAccountUseCase(
+        authRepository: AuthRepository,
+        configStorage: ConfigStorage,
+        metricsProvider: MetricsProvider
+    ): CreateAccount = CreateAccount(
+        repository = authRepository,
+        configStorage = configStorage,
+        metricsProvider = metricsProvider
+    )
+
+    @JvmStatic
+    @Provides
+    @SoulCreationScreenScope
+    fun provideSetupWalletUseCase(
+        authRepository: AuthRepository
+    ): SetupWallet = SetupWallet(
+        repository = authRepository
+    )
+
+    @JvmStatic
+    @Provides
+    @SoulCreationScreenScope
+    fun provideSetupSkipUseCase(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ) = SetupMobileUseCaseSkip(
+        repo = repository,
+        dispatchers = dispatchers
+    )
+
     @Module
     interface Declarations {
         @Binds
         @SoulCreationScreenScope
-        fun bindViewModelFactory(factory: OnboardingSoulCreationViewModel.Factory): ViewModelProvider.Factory
+        fun bindViewModelFactory(factory: OnboardingSetProfileNameViewModel.Factory): ViewModelProvider.Factory
     }
 }
 
@@ -45,6 +98,15 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun configStorage(): ConfigStorage
     fun analytics(): Analytics
+    fun authRepository(): AuthRepository
+    fun userSettings(): UserSettingsRepository
+    fun workspaceManager(): WorkspaceManager
+    fun relationsSubscriptionManager(): RelationsSubscriptionManager
+    fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
+    fun pathProvider(): PathProvider
+    fun metricsProvider(): MetricsProvider
+    fun crashReporter(): CrashReporter
+    fun spaceManager(): SpaceManager
 }
 
 @Scope

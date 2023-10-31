@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
@@ -50,9 +51,14 @@ object TemplateSelectModule {
     @JvmStatic
     @Provides
     @TemplateSelectScope
-    fun getTemplates(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): GetTemplates =
+    fun getTemplates(
+        repo: BlockRepository,
+        spaceManager: SpaceManager,
+        dispatchers: AppCoroutineDispatchers
+    ): GetTemplates =
         GetTemplates(
             repo = repo,
+            spaceManager = spaceManager,
             dispatchers = dispatchers
         )
 
@@ -76,6 +82,7 @@ interface TemplateSelectDependencies : ComponentDependencies {
     fun analytics() : Analytics
     fun blockRepository(): BlockRepository
     fun dispatchers(): AppCoroutineDispatchers
+    fun spaceManager(): SpaceManager
 }
 
 @Scope

@@ -5,7 +5,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -36,12 +36,12 @@ object CreateObjectModule {
     @PerScreen
     fun getCreateObject(
         repo: BlockRepository,
-        getDefaultPageType: GetDefaultPageType,
+        getDefaultObjectType: GetDefaultObjectType,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
-        getDefaultPageType = getDefaultPageType,
+        getDefaultObjectType = getDefaultObjectType,
         dispatchers = dispatchers,
         spaceManager = spaceManager
     )
@@ -55,7 +55,7 @@ object CreateObjectModule {
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
-    ): GetDefaultPageType = GetDefaultPageType(
+    ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
         dispatchers = dispatchers,
@@ -68,9 +68,11 @@ object CreateObjectModule {
     @PerScreen
     fun provideGetTemplates(
         repo: BlockRepository,
+        spaceManager: SpaceManager,
         dispatchers: AppCoroutineDispatchers
     ): GetTemplates = GetTemplates(
         repo = repo,
+        spaceManager = spaceManager,
         dispatchers = dispatchers
     )
 

@@ -30,7 +30,7 @@ import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingVoidViewModel
 
-
+@Deprecated("To be deleted")
 @Composable
 fun VoidScreenWrapper(
     screenState: OnboardingVoidViewModel.ScreenState,
@@ -44,6 +44,7 @@ fun VoidScreenWrapper(
     )
 }
 
+@Deprecated("To be deleted")
 @Composable
 fun VoidScreen(
     screenState: OnboardingVoidViewModel.ScreenState,

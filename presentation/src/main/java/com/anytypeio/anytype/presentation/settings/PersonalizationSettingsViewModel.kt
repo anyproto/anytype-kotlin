@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.ClearFileCache
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -26,8 +26,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class OtherSettingsViewModel(
-    private val getDefaultPageType: GetDefaultPageType,
+class PersonalizationSettingsViewModel(
+    private val getDefaultObjectType: GetDefaultObjectType,
     private val setDefaultObjectType: SetDefaultObjectType,
     private val clearFileCache: ClearFileCache,
     private val appActionManager: AppActionManager,
@@ -42,7 +42,7 @@ class OtherSettingsViewModel(
 
     init {
         viewModelScope.launch {
-            getDefaultPageType.execute(Unit).fold(
+            getDefaultObjectType.execute(Unit).fold(
                 onFailure = { e ->
                     Timber.e(e, "Error while getting user settings")
                 },
@@ -61,6 +61,12 @@ class OtherSettingsViewModel(
                     excludeTypes = listOf(defaultObjectTypeKey.value?.key.orEmpty())
                 )
             )
+        }
+    }
+
+    fun onWallpaperClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.NavigateToWallpaperScreen)
         }
     }
 
@@ -107,7 +113,12 @@ class OtherSettingsViewModel(
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
                             name = defaultTypeChanged,
-                            props = Props(mapOf(EventsPropertiesKey.objectType to type)),
+                            props = Props(
+                                mapOf(
+                                    EventsPropertiesKey.objectType to key,
+                                    EventsPropertiesKey.route to "Settings"
+                                )
+                            ),
                             duration = null
                         )
                     )
@@ -121,13 +132,13 @@ class OtherSettingsViewModel(
         data class NavigateToObjectTypesScreen(
             val excludeTypes: List<Id>
         ) : Command()
-
+        object NavigateToWallpaperScreen: Command()
         object ShowClearCacheAlert : Command()
         object Exit : Command()
     }
 
     class Factory(
-        private val getDefaultPageType: GetDefaultPageType,
+        private val getDefaultObjectType: GetDefaultObjectType,
         private val setDefaultObjectType: SetDefaultObjectType,
         private val clearFileCache: ClearFileCache,
         private val appActionManager: AppActionManager,
@@ -137,8 +148,8 @@ class OtherSettingsViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
-        ): T = OtherSettingsViewModel(
-            getDefaultPageType = getDefaultPageType,
+        ): T = PersonalizationSettingsViewModel(
+            getDefaultObjectType = getDefaultObjectType,
             setDefaultObjectType = setDefaultObjectType,
             clearFileCache = clearFileCache,
             appActionManager = appActionManager,

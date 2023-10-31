@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Url
@@ -86,6 +87,15 @@ class TemplateBlankFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fra
         binding.templateRecycler.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = templateAdapter
+        }
+        binding.btnSelectTemplate.setOnClickListener {
+            Timber.d("Select Blank template clicked, get back to Editor")
+            findNavController().apply {
+                previousBackStackEntry?.savedStateHandle?.apply {
+                    set(EditorTemplateFragment.ARG_TEMPLATE_ID, "")
+                }
+                popBackStack(R.id.templatesModalScreen, true)
+            }
         }
     }
 

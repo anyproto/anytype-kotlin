@@ -78,6 +78,7 @@ import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -368,7 +369,8 @@ open class ObjectSetFragment :
             setContent {
                 ViewerEditWidget(
                     state = vm.viewerEditWidgetState.collectAsStateWithLifecycle().value,
-                    action = vm::onViewerEditWidgetAction
+                    action = vm::onViewerEditWidgetAction,
+                    scope = lifecycleScope
                 )
             }
         }
@@ -391,6 +393,12 @@ open class ObjectSetFragment :
                 dispatchMode = DISPATCH_MODE_STOP
             )
             title.syncFocusWithImeVisibility()
+            binding.viewerEditWidget.syncTranslationWithImeVisibility(
+                dispatchMode = DISPATCH_MODE_STOP
+            )
+            binding.templatesWidget.syncTranslationWithImeVisibility(
+                dispatchMode = DISPATCH_MODE_STOP
+            )
         }
     }
 
@@ -1221,11 +1229,11 @@ open class ObjectSetFragment :
         inflater, container, false
     )
 
-    override fun onProceedWithUpdateType(id: Id, key: Key) {
-        vm.onNewTypeForViewerClicked(id)
+    override fun onProceedWithUpdateType(item: ObjectTypeView) {
+        vm.onNewTypeForViewerClicked(item.id)
     }
 
-    override fun onProceedWithDraftUpdateType(id: Id, key: Key) {
+    override fun onProceedWithDraftUpdateType(item: ObjectTypeView) {
         // Do nothing.
     }
 

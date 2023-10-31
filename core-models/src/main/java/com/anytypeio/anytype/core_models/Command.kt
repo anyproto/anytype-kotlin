@@ -173,7 +173,8 @@ sealed class Command {
         val position: Position,
         val template: Id?,
         val prefilled: Struct,
-        val internalFlags: List<InternalFlags>
+        val internalFlags: List<InternalFlags>,
+        val space: Id
     )
 
     /**
@@ -187,7 +188,7 @@ sealed class Command {
         val template: Id?,
         val internalFlags: List<InternalFlags>,
         val space: SpaceId,
-        val type: TypeKey
+        val typeKey: TypeKey
     )
 
     class Move(
@@ -429,4 +430,7 @@ sealed class Command {
     data class SetQueryToSet(val ctx: Id, val query: String)
 
     data class SetInternalFlags(val ctx: Id, val flags: List<InternalFlags>)
+
+    data class AddObjectToSpace(val space: Id, val objectId: Id)
+    data class ApplyTemplate(val objectId: Id, val template: Id?)
 }

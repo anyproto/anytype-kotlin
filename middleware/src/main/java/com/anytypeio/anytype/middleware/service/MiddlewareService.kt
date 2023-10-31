@@ -425,7 +425,7 @@ interface MiddlewareService {
 
     //region DEBUG commands
     @Throws(Exception::class)
-    fun debugSpace(request: Rpc.Debug.SpaceSummary.Request): Rpc.Debug.SpaceSummary.Response
+    fun debugSpaceSummary(request: Rpc.Debug.SpaceSummary.Request): Rpc.Debug.SpaceSummary.Response
 
     @Throws(Exception::class)
     fun debugObject(request: Rpc.Debug.Tree.Request): Rpc.Debug.Tree.Response
@@ -449,6 +449,8 @@ interface MiddlewareService {
     //endregion
 
     //region WORKSPACE
+
+    fun spaceDelete(request: Rpc.Space.Delete.Request): Rpc.Space.Delete.Response
 
     @Throws(Exception::class)
     fun workspaceCreate(request: Rpc.Workspace.Create.Request): Rpc.Workspace.Create.Response

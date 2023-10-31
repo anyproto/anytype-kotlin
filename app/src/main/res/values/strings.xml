@@ -274,7 +274,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="planned_for_deletion_unknown">This account is planned for deletion in ? days</string>
     <string name="are_you_sure_to_delete_account">Are you sure to delete account?</string>
     <string name="deleted_account_warning_msg">You will be logged out on all other devices. You will have 30 days to recover it. Afterwards it will be deleted permanently.</string>
-    <string name="use_template">Use template</string>
+    <string name="use_template">Select template</string>
     <string name="swipe_to_choose">Use swipe to choose</string>
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
@@ -356,14 +356,15 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="visit_forum">Visit forum</string>
     <string name="migration_error_msg">Something might have gone wrong. Please visit our forum, read the migration instructions, and ask questions to our team.</string>
 
-    <string name="onboarding_auth_title">the\neverything\napp</string>
-    <string name="onboarding_auth_description">For those who celebrate trust &amp; autonomy. Anytype is your safe space to write, plan, think and organise everything that matters to you.</string>
+    <string name="onboarding_auth_title">the everything app</string>
+    <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
+    <string name="onboarding_auth_description">Anytype is your safe space to write, plan, think and organise everything that matters to you.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join">Join</string>
-    <string name="onboarding_log_in">Log in</string>
+    <string name="onboarding_join_button_text">Create new account</string>
+    <string name="onboarding_log_in_button_text">Login</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
@@ -374,8 +375,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_mnemonic_key_saved">I saved my key</string>
     <string name="onboarding_mnemonic_check_later">Check later</string>
     <string name="onboarding_mnemonic_copy">Copy to clipboard</string>
-    <string name="onboarding_soul_creation_title">Anytype Identity</string>
-    <string name="onboarding_soul_creation_description">Great! As a last step, let\'s create your Identity and enter your name. Don\'t worry – you can always change the name later.</string>
+    <string name="onboarding_set_your_name_title">Set your name</string>
+    <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
@@ -397,10 +398,17 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="create_space">Create a space</string>
 
     <string name="generic_error">Something went wrong. Please try again.</string>
-    <string name="type">Type\n</string>
+    <string name="type">Type</string>
     <string name="space_info">Space info</string>
     <string name="creation_date">Creation date</string>
     <string name="created_by">Created by</string>
     <string name="space_id">Space ID</string>
+    <string name="network_id">Network ID</string>
+    <string name="delete_space_subtitle">This space will be deleted irrevocably. You can’t undo this action.</string>
+    <string name="delete_space_title_with_param">Delete \'%1$s\' space</string>
+    <string name="delete_space_title">Are you sure to delete this space?</string>
+    <string name="space_id_copied_toast_msg">Space ID copied</string>
+    <string name="network_id_copied_toast_msg">Network ID copied</string>
+    <string name="created_by_id_copied_toast_msg">Created-by ID copied</string>
 
 </resources>

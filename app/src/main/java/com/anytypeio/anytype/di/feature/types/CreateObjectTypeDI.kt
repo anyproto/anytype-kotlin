@@ -11,33 +11,33 @@ import com.anytypeio.anytype.domain.types.CreateType
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
-import com.anytypeio.anytype.presentation.types.TypeCreationViewModel
-import com.anytypeio.anytype.ui.types.create.TypeCreationFragment
+import com.anytypeio.anytype.presentation.types.CreateObjectTypeViewModel
+import com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment
 import dagger.Binds
 import dagger.Component
 import dagger.Module
 import dagger.Provides
 
 @Component(
-    dependencies = [TypeCreationDependencies::class],
+    dependencies = [CreateObjectTypeDependencies::class],
     modules = [
-        TypeCreationModule::class,
-        TypeCreationModule.Declarations::class
+        CreateObjectTypeModule::class,
+        CreateObjectTypeModule.Declarations::class
     ]
 )
 @PerScreen
-interface TypeCreationComponent {
+interface CreateObjectTypeComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(dependencies: TypeCreationDependencies): TypeCreationComponent
+        fun create(dependencies: CreateObjectTypeDependencies): CreateObjectTypeComponent
     }
 
-    fun inject(fragment: TypeCreationFragment)
+    fun inject(fragment: CreateObjectTypeFragment)
 }
 
 @Module
-object TypeCreationModule {
+object CreateObjectTypeModule {
 
     @Provides
     @PerScreen
@@ -57,13 +57,13 @@ object TypeCreationModule {
 
         @PerScreen
         @Binds
-        fun bindViewModelFactory(factory: TypeCreationViewModel.Factory): ViewModelProvider.Factory
+        fun bindViewModelFactory(factory: CreateObjectTypeViewModel.Factory): ViewModelProvider.Factory
 
     }
 
 }
 
-interface TypeCreationDependencies : ComponentDependencies {
+interface CreateObjectTypeDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun dispatchers(): AppCoroutineDispatchers
     fun urlBuilder(): UrlBuilder

@@ -44,7 +44,7 @@ import com.anytypeio.anytype.di.feature.ObjectSetModule
 import com.anytypeio.anytype.di.feature.ObjectSetRecordModule
 import com.anytypeio.anytype.di.feature.ObjectSetSettingsModule
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeModule
-import com.anytypeio.anytype.di.feature.OtherSettingsModule
+import com.anytypeio.anytype.di.feature.PersonalizationSettingsModule
 import com.anytypeio.anytype.di.feature.RelationDataViewDateValueModule
 import com.anytypeio.anytype.di.feature.RelationDataViewTextValueModule
 import com.anytypeio.anytype.di.feature.RelationDateValueModule
@@ -97,7 +97,7 @@ import com.anytypeio.anytype.di.feature.spaces.DaggerSelectSpaceComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateSelectComponent
-import com.anytypeio.anytype.di.feature.types.DaggerTypeCreationComponent
+import com.anytypeio.anytype.di.feature.types.DaggerCreateObjectTypeComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeEditComponent
 import com.anytypeio.anytype.di.feature.types.DaggerTypeIconPickComponent
 import com.anytypeio.anytype.di.feature.update.DaggerMigrationErrorComponent
@@ -328,9 +328,9 @@ class ComponentManager(
             .build()
     }
 
-    val otherSettingsComponent = Component {
-        main.otherSettingsComponentBuilder()
-            .module(OtherSettingsModule)
+    val personalizationSettingsComponent = Component {
+        main.personalizationSettingsComponentBuilder()
+            .module(PersonalizationSettingsModule)
             .build()
     }
 
@@ -868,8 +868,8 @@ class ComponentManager(
             .build()
     }
 
-    val typeCreationComponent = Component {
-        DaggerTypeCreationComponent
+    val createObjectTypeComponent = Component {
+        DaggerCreateObjectTypeComponent
             .factory()
             .create(findComponentDependencies())
     }

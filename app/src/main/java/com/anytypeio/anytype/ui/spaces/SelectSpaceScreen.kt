@@ -158,7 +158,7 @@ private fun SelectSpaceSpaceItem(
         Spacer(modifier = Modifier.height(10.dp))
         Text(
             modifier = Modifier.fillMaxSize(),
-            text = item.view.name.orEmpty(),
+            text = item.view.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
             textAlign = TextAlign.Center,
             style = Caption1Medium,
             color = Color.White,
@@ -200,14 +200,15 @@ private fun SelectSpaceProfileHeader(
                     start = 74.dp,
                     end = 74.dp
                 )
-                .clickable { onProfileClicked() }
+                .fillMaxWidth()
+                .noRippleClickable { onProfileClicked() }
         )
         Box(
             modifier = Modifier
                 .padding(end = 30.dp)
                 .size(32.dp)
                 .align(Alignment.CenterEnd)
-                .clickable { onSpaceSettingsClicked() }
+                .noRippleClickable { onSpaceSettingsClicked() }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_space_settings),

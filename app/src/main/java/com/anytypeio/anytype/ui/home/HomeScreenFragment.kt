@@ -18,6 +18,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
@@ -75,23 +76,35 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onChangeWidgetView = vm::onChangeCurrentWidgetView,
                     onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
                     onSearchClicked = {
-                        navigation().openPageSearch()
+                        runCatching { navigation().openPageSearch() }
                     },
                     onLibraryClicked = {
-                        navigation().openLibrary()
+                        runCatching { navigation().openLibrary() }
                     },
-                    onCreateNewObjectClicked = {
-                        vm.onCreateNewObjectClicked()
-                    },
-                    onSpaceClicked = {
-                        findNavController().navigate(R.id.action_open_spaces)
-                    },
-                    onSpaceWidgetClicked = {
-                        findNavController().navigate(R.id.action_open_space_settings)
-                    },
-                    onOpenSpacesClicked = {
-                        findNavController().navigate(R.id.action_open_spaces)
-                    },
+                    onCreateNewObjectClicked = throttledClick(
+                        onClick = { vm.onCreateNewObjectClicked() }
+                    ),
+                    onSpaceClicked = throttledClick(
+                        onClick = {
+                            runCatching {
+                                findNavController().navigate(R.id.action_open_spaces)
+                            }
+                        }
+                    ),
+                    onSpaceWidgetClicked = throttledClick(
+                        onClick = {
+                            runCatching {
+                                findNavController().navigate(R.id.action_open_space_settings)
+                            }
+                        }
+                    ),
+                    onOpenSpacesClicked = throttledClick(
+                        onClick = {
+                            runCatching {
+                                findNavController().navigate(R.id.action_open_spaces)
+                            }
+                        }
+                    ),
                     onBundledWidgetClicked = vm::onBundledWidgetClicked,
                     onMove = vm::onMove,
                     onObjectCheckboxClicked = vm::onObjectCheckboxClicked

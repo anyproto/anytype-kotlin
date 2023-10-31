@@ -24,6 +24,8 @@ import com.anytypeio.anytype.core_models.StubObjectView
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.bin.EmptyBin
@@ -31,7 +33,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -147,7 +149,7 @@ class HomeScreenViewModelTest {
     lateinit var unsubscriber: Unsubscriber
 
     @Mock
-    lateinit var getDefaultPageType: GetDefaultPageType
+    lateinit var getDefaultObjectType: GetDefaultObjectType
 
     @Mock
     lateinit var appActionManager: AppActionManager
@@ -2686,15 +2688,21 @@ class HomeScreenViewModelTest {
         }
     }
 
-    private fun stubGetDefaultPageType() {
-        getDefaultPageType.stub {
+    private fun stubGetDefaultPageType(
+        id: TypeId = TypeId(MockDataFactory.randomUuid()),
+        type: TypeKey = TypeKey(MockDataFactory.randomUuid()),
+        name: String = MockDataFactory.randomString(),
+        template: String? = null
+    ) {
+        getDefaultObjectType.stub {
             onBlocking {
                 execute(any())
             } doReturn Resultat.Success(
-                GetDefaultPageType.Response(
-                    id = null,
-                    type = null,
-                    name = null
+                GetDefaultObjectType.Response(
+                    id = id,
+                    type = type,
+                    name = name,
+                    defaultTemplate = template
                 )
             )
         }
@@ -2762,7 +2770,7 @@ class HomeScreenViewModelTest {
         move = move,
         emptyBin = emptyBin,
         unsubscriber = unsubscriber,
-        getDefaultPageType = getDefaultPageType,
+        getDefaultObjectType = getDefaultObjectType,
         appActionManager = appActionManager,
         analytics = analytics,
         getWidgetSession = getWidgetSession,

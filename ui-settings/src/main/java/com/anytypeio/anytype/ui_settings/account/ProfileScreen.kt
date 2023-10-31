@@ -70,7 +70,10 @@ fun ProfileScreen(
     isLogoutInProgress: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
-    account: ProfileViewModel.AccountProfile
+    account: ProfileViewModel.AccountProfile,
+    onAppearanceClicked: () -> Unit,
+    onDataManagementClicked: () -> Unit,
+    onAboutClicked: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxHeight()) {
         Header(
@@ -85,6 +88,24 @@ fun ProfileScreen(
                 .padding(top = 4.dp)
         )
         Divider()
+        Section(stringResource(R.string.settings))
+        Option(
+            image = R.drawable.ic_appearance,
+            text = stringResource(R.string.appearance),
+            onClick = onAppearanceClicked
+        )
+        Divider(paddingStart = 60.dp)
+        Option(
+            image = R.drawable.ic_file_storage,
+            text = stringResource(R.string.data_management),
+            onClick = onDataManagementClicked
+        )
+        Divider(paddingStart = 60.dp)
+        Option(
+            image = R.drawable.ic_about,
+            text = stringResource(R.string.about),
+            onClick = onAboutClicked
+        )
         Section(stringResource(R.string.access))
         Option(
             image = R.drawable.ic_keychain_phrase,

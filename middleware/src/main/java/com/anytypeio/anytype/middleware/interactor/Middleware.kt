@@ -771,10 +771,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun debugSpace(): String {
-        val request = Rpc.Debug.SpaceSummary.Request()
+    fun debugSpaceSummary(space: SpaceId): String {
+        val request = Rpc.Debug.SpaceSummary.Request(spaceId = space.id)
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.debugSpace(request)
+        val response = service.debugSpaceSummary(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.infos.toCoreModel()
     }
@@ -835,12 +835,11 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectApplyTemplate(
-        ctx: Id,
-        template: Id
+        command: Command.ApplyTemplate
     ) {
         val request = Rpc.Object.ApplyTemplate.Request(
-            contextId = ctx,
-            templateId = template
+            contextId = command.objectId,
+            templateId = command.template.orEmpty()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectApplyTemplate(request)
@@ -864,7 +863,7 @@ class Middleware @Inject constructor(
             templateId = command.template.orEmpty(),
             internalFlags = command.internalFlags.toMiddlewareModel(),
             spaceId = command.space.id,
-            objectTypeUniqueKey = command.type.key
+            objectTypeUniqueKey = command.typeKey.key
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreate(request)
@@ -885,7 +884,8 @@ class Middleware @Inject constructor(
             internalFlags = command.internalFlags.toMiddlewareModel(),
             targetId = command.target,
             position = command.position.toMiddlewareModel(),
-            fields = null
+            fields = null,
+            spaceId = command.space
         )
 
         if (BuildConfig.DEBUG) logRequest(request)
@@ -1933,6 +1933,14 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun spaceDelete(space: SpaceId) {
+        val request = Rpc.Space.Delete.Request(spaceId = space.id)
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceDelete(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
     fun workspaceCreate(details: Struct): Id {
         val request = Rpc.Workspace.Create.Request(
             details = details,
@@ -1987,15 +1995,15 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceObjectAdd(obj: Id, space: Id): Id {
+    fun workspaceObjectAdd(command: Command.AddObjectToSpace): Pair<Id, ObjectWrapper.Type> {
         val request = Rpc.Workspace.Object.Add.Request(
-            objectId = obj,
-            spaceId = space
+            objectId = command.objectId,
+            spaceId = command.space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.workspaceObjectAdd(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.objectId
+        return Pair(response.objectId, ObjectWrapper.Type(response.details ?: emptyMap()))
     }
 
     @Throws(Exception::class)

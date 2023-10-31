@@ -34,7 +34,6 @@ import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.distinctUntilChanged
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -120,6 +119,7 @@ import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
@@ -148,7 +148,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
-import com.anytypeio.anytype.ui.templates.EditorTemplateFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
@@ -214,9 +214,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                     binding.styleToolbarBackground.id -> {
                         vm.onCloseBlockStyleBackgroundToolbarClicked()
-                    }
-                    binding.typeHasTemplateToolbar.id -> {
-                        vm.onTypeHasTemplateToolbarHidden()
                     }
                     binding.simpleTableWidget.id -> {
                         vm.onHideSimpleTableWidget()
@@ -457,16 +454,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 pickerDelegate.onCopyFileCommand(command)
             }
             jobs += subscribe(vm.selectTemplateViewState) { state ->
-                val behavior = BottomSheetBehavior.from(binding.typeHasTemplateToolbar)
                 when (state) {
                     is SelectTemplateViewState.Active -> {
-                        binding.typeHasTemplateToolbar.setText(state.count, state.typeName)
-                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                        behavior.addBottomSheetCallback(onHideBottomSheetCallback)
+                        binding.topToolbar.showTemplates()
+                        binding.topToolbar.setTemplates(count = state.count)
                     }
                     SelectTemplateViewState.Idle -> {
-                        behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
-                        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                        binding.topToolbar.hideTemplates()
                     }
                 }
             }
@@ -682,7 +676,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
-        binding.typeHasTemplateToolbar.binding.btnShow.clicks()
+        binding.topToolbar.templates.clicks()
             .throttleFirst()
             .onEach { vm.onShowTemplateClicked() }
             .launchIn(lifecycleScope)
@@ -704,8 +698,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.undoRedoToolbar).state = BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.styleToolbarBackground).state =
-            BottomSheetBehavior.STATE_HIDDEN
-        BottomSheetBehavior.from(binding.typeHasTemplateToolbar).state =
             BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.simpleTableWidget).state =
             BottomSheetBehavior.STATE_HIDDEN
@@ -2071,20 +2063,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedToCreateObjectAndAddToTextAsLink(name)
     }
 
-    override fun onProceedWithUpdateType(id: Id, key: Key) {
-        vm.onObjectTypeChanged(
-            type = id,
-            key = key,
-            applyTemplate = false
-        )
+    override fun onProceedWithUpdateType(item: ObjectTypeView) {
+        vm.onObjectTypeChanged(item)
     }
 
-    override fun onProceedWithDraftUpdateType(id: Id, key: Key) {
-        vm.onObjectTypeChanged(
-            type = id,
-            key = key,
-            applyTemplate = true
-        )
+    override fun onProceedWithDraftUpdateType(item: ObjectTypeView) {
+        vm.onObjectTypeChanged(item)
     }
 
     override fun onAddRelationToTarget(target: Id, relationKey: Key) {
@@ -2107,13 +2091,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         val navBackStackEntry = navController.getBackStackEntry(R.id.pageScreen)
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME
-                && navBackStackEntry.savedStateHandle.contains(EditorTemplateFragment.ARG_TEMPLATE_ID)
+                && navBackStackEntry.savedStateHandle.contains(ARG_TEMPLATE_ID)
             ) {
-                val result =
-                    navBackStackEntry.savedStateHandle.get<String>(EditorTemplateFragment.ARG_TEMPLATE_ID);
-                if (!result.isNullOrBlank()) {
-                    navBackStackEntry.savedStateHandle.remove<String>(EditorTemplateFragment.ARG_TEMPLATE_ID)
-                    vm.onCreateObjectWithTemplateClicked(template = result)
+                val resultTemplateId = navBackStackEntry.savedStateHandle.get<String>(ARG_TEMPLATE_ID)
+                if (resultTemplateId != null) {
+                    navBackStackEntry.savedStateHandle.remove<String>(ARG_TEMPLATE_ID)
+                    vm.onProceedWithApplyingTemplateByObjectId(template = resultTemplateId)
                 }
             }
         }

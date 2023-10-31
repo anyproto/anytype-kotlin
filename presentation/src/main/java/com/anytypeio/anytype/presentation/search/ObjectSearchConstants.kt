@@ -10,11 +10,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds.AUDIO
-import com.anytypeio.anytype.core_models.ObjectTypeIds.FILE
-import com.anytypeio.anytype.core_models.ObjectTypeIds.IMAGE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
-import com.anytypeio.anytype.core_models.ObjectTypeIds.VIDEO
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
@@ -39,6 +36,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE_UNIQUE_KEY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectTypeUniqueKeys.TEMPLATE
         ),
         DVFilter(
             relation = Relations.LAYOUT,
@@ -654,7 +656,8 @@ object ObjectSearchConstants {
         Relations.IS_DELETED,
         Relations.SMARTBLOCKTYPES,
         Relations.SOURCE_OBJECT,
-        Relations.RECOMMENDED_LAYOUT
+        Relations.RECOMMENDED_LAYOUT,
+        Relations.DEFAULT_TEMPLATE_ID
     )
 
     //endregion
@@ -783,13 +786,18 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
-            relation = Relations.TYPE,
+            relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
             value = listOf(
-                IMAGE,
-                FILE,
-                VIDEO,
-                AUDIO
+                ObjectType.Layout.IMAGE.code.toDouble(),
+                ObjectType.Layout.FILE.code.toDouble(),
+                ObjectType.Layout.VIDEO.code.toDouble(),
+                ObjectType.Layout.AUDIO.code.toDouble()
             )
         ),
         DVFilter(

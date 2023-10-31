@@ -52,7 +52,7 @@ import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -264,7 +264,7 @@ object EditorSessionModule {
         delegator: Delegator<Action>,
         updateDetail: UpdateDetail,
         searchObjects: SearchObjects,
-        getDefaultPageType: GetDefaultPageType,
+        getDefaultObjectType: GetDefaultObjectType,
         findObjectSetForType: FindObjectSetForType,
         copyFileToCacheDirectory: CopyFileToCacheDirectory,
         downloadUnsplashImage: DownloadUnsplashImage,
@@ -282,7 +282,9 @@ object EditorSessionModule {
         objectToCollection: ConvertObjectToCollection,
         interceptFileLimitEvents: InterceptFileLimitEvents,
         addRelationToObject: AddRelationToObject,
-        setObjectInternalFlags: SetObjectInternalFlags
+        setObjectInternalFlags: SetObjectInternalFlags,
+        applyTemplate: ApplyTemplate,
+        setObjectType: SetObjectType
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -301,7 +303,7 @@ object EditorSessionModule {
         delegator = delegator,
         updateDetail = updateDetail,
         searchObjects = searchObjects,
-        getDefaultPageType = getDefaultPageType,
+        getDefaultObjectType = getDefaultObjectType,
         findObjectSetForType = findObjectSetForType,
         createObjectSet = createObjectSet,
         copyFileToCacheDirectory = copyFileToCacheDirectory,
@@ -320,7 +322,9 @@ object EditorSessionModule {
         objectToCollection = objectToCollection,
         interceptFileLimitEvents = interceptFileLimitEvents,
         addRelationToObject = addRelationToObject,
-        setObjectInternalFlags = setObjectInternalFlags
+        setObjectInternalFlags = setObjectInternalFlags,
+        applyTemplate = applyTemplate,
+        setObjectType = setObjectType
     )
 
 
@@ -436,7 +440,6 @@ object EditorSessionModule {
         turnIntoDocument: TurnIntoDocument,
         createTable: CreateTable,
         fillTableRow: FillTableRow,
-        setObjectType: SetObjectType,
         matcher: DefaultPatternMatcher,
         move: MoveOld,
         copy: Copy,
@@ -487,7 +490,6 @@ object EditorSessionModule {
         updateFields = updateFields,
         turnIntoStyle = turnInto,
         updateBlocksMark = updateBlocksMark,
-        setObjectType = setObjectType,
         createTable = createTable,
         fillTableRow = fillTableRow,
         clearBlockContent = clearBlockContent,
@@ -729,14 +731,12 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideCreateObjectAsMentionOrLink(
         repo: BlockRepository,
-        getDefaultPageType: GetDefaultPageType,
+        getDefaultObjectType: GetDefaultObjectType,
         getTemplates: GetTemplates,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager
     ): CreateObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
         repo = repo,
-        getDefaultPageType = getDefaultPageType,
-        getTemplates = getTemplates,
         dispatchers = dispatchers,
         spaceManager = spaceManager
     )
@@ -970,8 +970,9 @@ object EditorUseCaseModule {
     @Provides
     @PerScreen
     fun provideSetObjectType(
-        repo: BlockRepository
-    ): SetObjectType = SetObjectType(repo)
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectType = SetObjectType(repo, dispatchers)
 
     @JvmStatic
     @Provides
@@ -989,7 +990,7 @@ object EditorUseCaseModule {
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
-    ): GetDefaultPageType = GetDefaultPageType(
+    ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = repo,
         blockRepository = blockRepository,
         spaceManager = spaceManager,
@@ -1042,9 +1043,14 @@ object EditorUseCaseModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun getTemplates(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): GetTemplates =
+    fun getTemplates(
+        repo: BlockRepository,
+        spaceManager: SpaceManager,
+        dispatchers: AppCoroutineDispatchers
+    ): GetTemplates =
         GetTemplates(
             repo = repo,
+            spaceManager = spaceManager,
             dispatchers = dispatchers
         )
 
@@ -1186,12 +1192,12 @@ object EditorUseCaseModule {
     @PerScreen
     fun getCreateObject(
         repo: BlockRepository,
-        getDefaultPageType: GetDefaultPageType,
+        getDefaultObjectType: GetDefaultObjectType,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
-        getDefaultPageType = getDefaultPageType,
+        getDefaultObjectType = getDefaultObjectType,
         dispatchers = dispatchers,
         spaceManager = spaceManager
     )

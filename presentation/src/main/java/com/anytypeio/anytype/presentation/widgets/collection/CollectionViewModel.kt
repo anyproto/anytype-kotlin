@@ -213,11 +213,9 @@ class CollectionViewModel(
                 Subscription.Favorites -> {
                     favoritesSubscriptionFlow().map { it.map { it as CollectionView } }
                 }
-
                 Subscription.Files -> {
                     filesSubscriptionFlow()
                 }
-
                 else -> {
                     subscriptionFlow()
                 }

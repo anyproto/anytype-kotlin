@@ -14,8 +14,9 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -30,6 +31,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -43,7 +45,7 @@ class SelectSpaceViewModel(
     private val urlBuilder: UrlBuilder,
     private val saveCurrentSpace: SaveCurrentSpace,
     private val appActionManager: AppActionManager,
-    private val getDefaultPageType: GetDefaultPageType
+    private val getDefaultObjectType: GetDefaultObjectType
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
@@ -86,13 +88,19 @@ class SelectSpaceViewModel(
                 Relations.NAME,
                 Relations.ICON_IMAGE,
                 Relations.ICON_EMOJI,
-                Relations.ICON_OPTION
+                Relations.ICON_OPTION,
+                Relations.SPACE_ACCOUNT_STATUS
             ),
             filters = listOf(
                 DVFilter(
                     relation = Relations.LAYOUT,
                     value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
                     condition = DVFilterCondition.EQUAL
+                ),
+                DVFilter(
+                    relation = Relations.SPACE_ACCOUNT_STATUS,
+                    value = SpaceStatus.DELETED.code,
+                    condition = DVFilterCondition.NOT_EQUAL
                 )
             ),
             sorts = listOf(
@@ -103,7 +111,10 @@ class SelectSpaceViewModel(
                 )
             )
         )
-    )
+    ).catch {
+        Timber.e(it, "Error in spaces subscriptions")
+        emit(emptyList())
+    }
 
     init {
         viewModelScope.launch {
@@ -143,7 +154,10 @@ class SelectSpaceViewModel(
                             }
                         }
                     )
-                    add(SelectSpaceView.Create)
+                    val numberOfSpaces = count { view -> view is SelectSpaceView.Space }
+                    if (numberOfSpaces < MAX_SPACE_COUNT) {
+                        add(SelectSpaceView.Create)
+                    }
                 }
             }.collect { results ->
                 views.value = results
@@ -173,7 +187,7 @@ class SelectSpaceViewModel(
     }
 
     private suspend fun resetDefaultObjectTypeForAppActions(onExit: suspend () -> Unit) {
-        getDefaultPageType.async(Unit).fold(
+        getDefaultObjectType.async(Unit).fold(
             onSuccess = { result ->
                 val type = result.type
                 if (type != null) {
@@ -227,7 +241,7 @@ class SelectSpaceViewModel(
         private val urlBuilder: UrlBuilder,
         private val saveCurrentSpace: SaveCurrentSpace,
         private val appActionManager: AppActionManager,
-        private val getDefaultPageType: GetDefaultPageType
+        private val getDefaultObjectType: GetDefaultObjectType
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -239,7 +253,7 @@ class SelectSpaceViewModel(
             urlBuilder = urlBuilder,
             saveCurrentSpace = saveCurrentSpace,
             appActionManager = appActionManager,
-            getDefaultPageType = getDefaultPageType
+            getDefaultObjectType = getDefaultObjectType
         ) as T
     }
 

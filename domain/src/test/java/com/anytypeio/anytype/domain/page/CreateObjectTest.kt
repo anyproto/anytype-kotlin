@@ -6,12 +6,11 @@ import com.anytypeio.anytype.core_models.CreateObjectResult
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.util.dispatchers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -43,7 +42,7 @@ class CreateObjectTest {
     lateinit var repo: BlockRepository
 
     @Mock
-    lateinit var getDefaultPageType: GetDefaultPageType
+    lateinit var getDefaultObjectType: GetDefaultObjectType
 
     @Mock
     lateinit var getTemplates: GetTemplates
@@ -57,7 +56,7 @@ class CreateObjectTest {
     fun setup() {
         createObject = CreateObject(
             repo = repo,
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             spaceManager = spaceManager,
             dispatchers = dispatchers
         )
@@ -65,7 +64,7 @@ class CreateObjectTest {
     }
 
     @Test
-    fun `when type is null and default type is null - should send proper params`() = runBlocking {
+    fun `when type is null and default type not null - should send proper params`() = runBlocking {
 
         //SETUP
         val type = null
@@ -74,7 +73,14 @@ class CreateObjectTest {
         stubCreateObject()
 
         //TESTING
-        val params = CreateObject.Param(type)
+        val params = CreateObject.Param(
+            type = type,
+            internalFlags = listOf(
+                InternalFlags.ShouldSelectType,
+                InternalFlags.ShouldSelectTemplate,
+                InternalFlags.ShouldEmptyDelete
+            )
+        )
         createObject.run(params)
 
         //ASSERT
@@ -88,7 +94,7 @@ class CreateObjectTest {
                 InternalFlags.ShouldEmptyDelete
             ),
             space = SpaceId(""),
-            type = appDefaultTypeKey
+            typeKey = appDefaultTypeKey
         )
         verifyBlocking(repo, times(1)) { createObject(commands) }
     }
@@ -107,7 +113,14 @@ class CreateObjectTest {
             stubCreateObject()
 
             //TESTING
-            val params = CreateObject.Param(type)
+            val params = CreateObject.Param(
+                type = type,
+                internalFlags = listOf(
+                    InternalFlags.ShouldSelectType,
+                    InternalFlags.ShouldSelectTemplate,
+                    InternalFlags.ShouldEmptyDelete
+                )
+            )
             createObject.run(params)
 
             //ASSERT
@@ -120,7 +133,7 @@ class CreateObjectTest {
                     InternalFlags.ShouldEmptyDelete
                 ),
                 space = SpaceId(""),
-                type = TypeKey(defaultType)
+                typeKey = TypeKey(defaultType)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -137,13 +150,17 @@ class CreateObjectTest {
             givenGetDefaultObjectType(
                 type = TypeKey(defaultType)
             )
-            givenGetTemplates(listOf(ObjectWrapper.Basic(buildMap {
-                put(Relations.ID, templateBook)
-            })))
             stubCreateObject()
 
             //TESTING
-            val params = CreateObject.Param(type)
+            val params = CreateObject.Param(
+                type = type,
+                internalFlags = listOf(
+                    InternalFlags.ShouldSelectType,
+                    InternalFlags.ShouldSelectTemplate,
+                    InternalFlags.ShouldEmptyDelete
+                )
+            )
             createObject.run(params)
 
             //ASSERT
@@ -156,7 +173,7 @@ class CreateObjectTest {
                     InternalFlags.ShouldEmptyDelete
                 ),
                 space = SpaceId(""),
-                type = TypeKey(defaultType)
+                typeKey = TypeKey(defaultType)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -171,11 +188,18 @@ class CreateObjectTest {
             stubCreateObject()
 
             //TESTING
-            val params = CreateObject.Param(TypeKey(type))
+            val params = CreateObject.Param(
+                type = TypeKey(type),
+                internalFlags = listOf(
+                    InternalFlags.ShouldSelectType,
+                    InternalFlags.ShouldSelectTemplate,
+                    InternalFlags.ShouldEmptyDelete
+                )
+            )
             createObject.run(params)
 
             //ASSERT
-            verifyNoInteractions(getDefaultPageType)
+            verifyNoInteractions(getDefaultObjectType)
             val commands = Command.CreateObject(
                 prefilled = emptyMap(),
                 template = null,
@@ -185,7 +209,7 @@ class CreateObjectTest {
                     InternalFlags.ShouldEmptyDelete
                 ),
                 space = SpaceId(""),
-                type = TypeKey(type)
+                typeKey = TypeKey(type)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -197,17 +221,21 @@ class CreateObjectTest {
             //SETUP
             val type = MockDataFactory.randomString()
             val template = MockDataFactory.randomString()
-            givenGetTemplates(listOf(ObjectWrapper.Basic(buildMap {
-                put(Relations.ID, template)
-            })))
             stubCreateObject()
 
             //TESTING
-            val params = CreateObject.Param(TypeKey(type))
+            val params = CreateObject.Param(
+                type = TypeKey(type),
+                internalFlags = listOf(
+                    InternalFlags.ShouldSelectType,
+                    InternalFlags.ShouldSelectTemplate,
+                    InternalFlags.ShouldEmptyDelete
+                )
+            )
             createObject.run(params)
 
             //ASSERT
-            verifyNoInteractions(getDefaultPageType)
+            verifyNoInteractions(getDefaultObjectType)
             val commands = Command.CreateObject(
                 prefilled = emptyMap(),
                 template = null,
@@ -217,7 +245,7 @@ class CreateObjectTest {
                     InternalFlags.ShouldEmptyDelete
                 ),
                 space = SpaceId(""),
-                type = TypeKey(type)
+                typeKey = TypeKey(type)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
@@ -230,48 +258,47 @@ class CreateObjectTest {
             val type = MockDataFactory.randomString()
             val templateOne = MockDataFactory.randomString()
             val templateTwo = MockDataFactory.randomString()
-            givenGetTemplates(
-                listOf(
-                    ObjectWrapper.Basic(buildMap {
-                        put(Relations.ID, templateOne)
-                    }),
-                    ObjectWrapper.Basic(buildMap {
-                        put(Relations.ID, templateTwo)
-                    })
-                )
-            )
             stubCreateObject()
 
             //TESTING
-            val params = CreateObject.Param(TypeKey(type))
+            val params = CreateObject.Param(
+                type = TypeKey(type),
+                internalFlags = listOf(
+                    InternalFlags.ShouldSelectType,
+                    InternalFlags.ShouldSelectTemplate,
+                    InternalFlags.ShouldEmptyDelete
+                ),
+                template = templateTwo
+            )
             createObject.run(params)
 
             //ASSERT
-            verifyNoInteractions(getDefaultPageType)
+            verifyNoInteractions(getDefaultObjectType)
             val commands = Command.CreateObject(
                 prefilled = emptyMap(),
-                template = null,
+                template = templateTwo,
                 internalFlags = listOf(
                     InternalFlags.ShouldSelectType,
                     InternalFlags.ShouldSelectTemplate,
                     InternalFlags.ShouldEmptyDelete
                 ),
                 space = SpaceId(""),
-                type = TypeKey(type)
+                typeKey = TypeKey(type)
             )
             verifyBlocking(repo, times(1)) { createObject(commands) }
         }
 
     private fun givenGetDefaultObjectType(
-        type: TypeKey? = null,
+        type: TypeKey,
         name: String? = null,
-        id: TypeId? = null
+        template: String? = null,
     ) {
-        getDefaultPageType.stub {
-            onBlocking { run(Unit) } doReturn GetDefaultPageType.Response(
+        getDefaultObjectType.stub {
+            onBlocking { run(Unit) } doReturn GetDefaultObjectType.Response(
                 type = type,
                 name = name,
-                id = id
+                id = TypeId(MockDataFactory.randomString()),
+                defaultTemplate = template
             )
         }
     }

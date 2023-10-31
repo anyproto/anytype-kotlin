@@ -30,6 +30,7 @@ class ObjectTopToolbar @JvmOverloads constructor(
     val container: ViewGroup get() = binding.titleContainer
     val title: TextView get() = binding.tvTopToolbarTitle
     val icon: ObjectIconWidget get() = binding.ivTopToolbarIcon
+    val templates: TextView get() = binding.tvTemplates
 
     init {
         container.alpha = 0f
@@ -71,6 +72,23 @@ class ObjectTopToolbar @JvmOverloads constructor(
                 title.setCompoundDrawablesRelativeWithIntrinsicBounds(0, 0, 0, 0)
             }
         }
+    }
+
+    fun showTemplates() {
+        binding.titleContainer.visibility = View.INVISIBLE
+        binding.tvTemplates.visibility = View.VISIBLE
+    }
+
+    fun hideTemplates() {
+        binding.titleContainer.visibility = View.VISIBLE
+        binding.tvTemplates.visibility = View.INVISIBLE
+    }
+
+    fun setTemplates(count: Int) {
+        binding.tvTemplates.text = context.getString(
+            R.string.this_type_has_templates,
+            count
+        )
     }
 
     companion object {

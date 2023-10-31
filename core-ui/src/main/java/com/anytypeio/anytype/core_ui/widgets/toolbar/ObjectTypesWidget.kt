@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectTypesListBinding
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeHorizontalListAdapter
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -19,7 +17,7 @@ class ObjectTypesWidget @JvmOverloads constructor(
 ) : ConstraintLayout(context, attrs, defStyleAttr) {
 
     private var isOpenState = false
-    private var onItemClick: ((Id, Key) -> Unit)? = null
+    private var onItemClick: ((ObjectTypeView) -> Unit)? = null
     private var onSearchClick: (() -> Unit)? = null
     private var onDoneClick: (() -> Unit)? = null
 
@@ -62,7 +60,11 @@ class ObjectTypesWidget @JvmOverloads constructor(
         }
     }
 
-    fun setupClicks(onItemClick: (Id, Key) -> Unit, onSearchClick: () -> Unit, onDoneClick: () -> Unit) {
+    fun setupClicks(
+        onItemClick: (ObjectTypeView) -> Unit,
+        onSearchClick: () -> Unit,
+        onDoneClick: () -> Unit
+    ) {
         this.onItemClick = onItemClick
         this.onSearchClick = onSearchClick
         this.onDoneClick = onDoneClick
@@ -90,7 +92,7 @@ class ObjectTypesWidget @JvmOverloads constructor(
         iconArrowDown.gone()
     }
 
-    private fun onItemClicked(id: Id, key: Key, name: String) {
-        onItemClick?.invoke(id, key)
+    private fun onItemClicked(item: ObjectTypeView) {
+        onItemClick?.invoke(item)
     }
 }

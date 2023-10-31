@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -151,12 +151,12 @@ object CollectionModule {
     @PerScreen
     fun getCreateObject(
         repo: BlockRepository,
-        getDefaultPageType: GetDefaultPageType,
+        getDefaultObjectType: GetDefaultObjectType,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager
     ): CreateObject = CreateObject(
         repo = repo,
-        getDefaultPageType = getDefaultPageType,
+        getDefaultObjectType = getDefaultObjectType,
         dispatchers = dispatchers,
         spaceManager = spaceManager
     )
@@ -170,7 +170,7 @@ object CollectionModule {
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         configStorage: ConfigStorage
-    ): GetDefaultPageType = GetDefaultPageType(
+    ): GetDefaultObjectType = GetDefaultObjectType(
         userSettingsRepository = userSettingsRepository,
         blockRepository = blockRepository,
         dispatchers = dispatchers,
@@ -183,9 +183,11 @@ object CollectionModule {
     @PerScreen
     fun provideGetTemplates(
         repo: BlockRepository,
+        spaceManager: SpaceManager,
         dispatchers: AppCoroutineDispatchers
     ): GetTemplates = GetTemplates(
         repo = repo,
+        spaceManager = spaceManager,
         dispatchers = dispatchers
     )
 

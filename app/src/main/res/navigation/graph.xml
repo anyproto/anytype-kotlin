@@ -71,6 +71,7 @@
     </navigation>
 
     <include app:graph="@navigation/nav_editor_modal" />
+    <include app:graph="@navigation/nav_templates_modal" />
 
     <navigation
         android:id="@+id/dataViewNavigation"
@@ -536,7 +537,7 @@
     </fragment>
     <dialog
         android:id="@+id/typeCreationFragment"
-        android:name="com.anytypeio.anytype.ui.types.create.TypeCreationFragment"
+        android:name="com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment"
         android:label="TypeCreationFragment">
         <action
             android:id="@+id/openEmojiPicker"
@@ -618,7 +619,7 @@
         android:label="FullScreenImageFragment" />
     <dialog
         android:id="@+id/personalizationScreen"
-        android:name="com.anytypeio.anytype.ui.settings.OtherSettingsFragment"
+        android:name="com.anytypeio.anytype.ui.settings.PersonalizationSettingsFragment"
         android:label="fragment_user_settings"
         tools:layout="@layout/fragment_user_settings" />
     <dialog

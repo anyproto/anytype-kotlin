@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.domain.spaces
 
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -12,16 +14,28 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 class AddObjectToSpace(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-): ResultInteractor<AddObjectToSpace.Params, Id>(dispatchers.io) {
+) : ResultInteractor<AddObjectToSpace.Params, AddObjectToSpace.Result>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params): Id = repo.addObjectToSpace(
-        obj = params.obj,
-        space = params.space
-    )
+    override suspend fun doWork(params: Params): Result {
+        val command = Command.AddObjectToSpace(
+            objectId = params.obj,
+            space = params.space
+        )
+        val result = repo.addObjectToSpace(command)
+        return Result(
+            id = result.first,
+            type = result.second
+        )
+    }
 
     data class Params(
         val obj: Id,
         val space: Id
+    )
+
+    data class Result(
+        val id: Id,
+        val type: ObjectWrapper.Type
     )
 }
 

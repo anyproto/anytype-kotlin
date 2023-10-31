@@ -106,7 +106,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should remove type flag on show object event with type flag in details`() = runTest {
+    fun `should not remove type flag on show object event with type flag in details`() = runTest {
         val title = StubTitle()
         val header = StubHeader(children = listOf(title.id))
         val page = StubSmartBlock(id = root, children = listOf(header.id))
@@ -141,17 +141,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
 
         advanceUntilIdle()
 
-        verifyBlocking(setObjectInternalFlags, times(1)) {
-            async(
-                params = SetObjectInternalFlags.Params(
-                    ctx = root,
-                    flags = listOf(
-                        InternalFlags.ShouldSelectTemplate,
-                        InternalFlags.ShouldEmptyDelete
-                    )
-                )
-            )
-        }
+        verifyNoInteractions(setObjectInternalFlags)
 
         coroutineTestRule.advanceTime(100)
     }
@@ -196,57 +186,57 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         coroutineTestRule.advanceTime(100)
     }
 
-    @Test
-    fun `should remove template flag on start template selection widget`() = runTest {
-        val title = StubTitle()
-        val header = StubHeader(children = listOf(title.id))
-        val page = StubSmartBlock(id = root, children = listOf(header.id))
-        val document = listOf(page, header, title)
-        stubInterceptEvents()
-
-        val detailsList = Block.Details(
-            details = mapOf(
-                root to Block.Fields(
-                    mapOf(
-                        Relations.TYPE to ObjectTypeIds.PAGE,
-                        Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
-                        Relations.INTERNAL_FLAGS to listOf(
-                            InternalFlags.ShouldSelectTemplate.code.toDouble(),
-                            InternalFlags.ShouldEmptyDelete.code.toDouble(),
-                        )
-                    )
-                )
-            )
-        )
-        stubOpenDocument(document = document, details = detailsList)
-        stubGetObjectTypes(types = emptyList())
-        stubGetDefaultObjectType()
-
-        val vm = buildViewModel()
-
-        stubFileLimitEvents()
-        stubSetInternalFlags()
-
-        vm.onStart(root)
-
-        advanceUntilIdle()
-        vm.onObjectTypesWidgetDoneClicked()
-
-        advanceUntilIdle()
-
-        verifyBlocking(setObjectInternalFlags, times(1)) {
-            async(
-                params = SetObjectInternalFlags.Params(
-                    ctx = root,
-                    flags = listOf(
-                        InternalFlags.ShouldEmptyDelete
-                    )
-                )
-            )
-        }
-
-        coroutineTestRule.advanceTime(100)
-    }
+//    @Test
+//    fun `should remove template flag on start template selection widget`() = runTest {
+//        val title = StubTitle()
+//        val header = StubHeader(children = listOf(title.id))
+//        val page = StubSmartBlock(id = root, children = listOf(header.id))
+//        val document = listOf(page, header, title)
+//        stubInterceptEvents()
+//
+//        val detailsList = Block.Details(
+//            details = mapOf(
+//                root to Block.Fields(
+//                    mapOf(
+//                        Relations.TYPE to ObjectTypeIds.PAGE,
+//                        Relations.LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
+//                        Relations.INTERNAL_FLAGS to listOf(
+//                            InternalFlags.ShouldSelectTemplate.code.toDouble(),
+//                            InternalFlags.ShouldEmptyDelete.code.toDouble(),
+//                        )
+//                    )
+//                )
+//            )
+//        )
+//        stubOpenDocument(document = document, details = detailsList)
+//        stubGetObjectTypes(types = emptyList())
+//        stubGetDefaultObjectType()
+//
+//        val vm = buildViewModel()
+//
+//        stubFileLimitEvents()
+//        stubSetInternalFlags()
+//
+//        vm.onStart(root)
+//
+//        advanceUntilIdle()
+//        vm.onObjectTypesWidgetDoneClicked()
+//
+//        advanceUntilIdle()
+//
+//        verifyBlocking(setObjectInternalFlags, times(1)) {
+//            async(
+//                params = SetObjectInternalFlags.Params(
+//                    ctx = root,
+//                    flags = listOf(
+//                        InternalFlags.ShouldEmptyDelete
+//                    )
+//                )
+//            )
+//        }
+//
+//        coroutineTestRule.advanceTime(100)
+//    }
 
     @Test
     fun `should not remove template flag on start template selection widget when flag isn't present`() = runTest {
@@ -286,16 +276,7 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
 
         advanceUntilIdle()
 
-        verifyBlocking(setObjectInternalFlags, times(1)) {
-            async(
-                params = SetObjectInternalFlags.Params(
-                    ctx = root,
-                    flags = listOf(
-                        InternalFlags.ShouldEmptyDelete
-                    )
-                )
-            )
-        }
+        verifyNoInteractions(setObjectInternalFlags)
 
         advanceUntilIdle()
 

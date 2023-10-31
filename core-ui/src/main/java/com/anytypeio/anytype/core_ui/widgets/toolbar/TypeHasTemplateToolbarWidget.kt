@@ -17,10 +17,5 @@ class TypeHasTemplateToolbarWidget @JvmOverloads constructor(
     )
 
     fun setText(count: Int, typeName: String) {
-        binding.tvTitle.text = context.getString(
-            R.string.this_type_has_templates,
-            typeName,
-            count
-        )
     }
 }

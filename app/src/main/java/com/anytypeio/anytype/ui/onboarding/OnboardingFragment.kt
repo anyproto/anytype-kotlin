@@ -56,10 +56,10 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
-import androidx.navigation.compose.composable
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
@@ -74,14 +74,14 @@ import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.Si
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingLoginSetupViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
-import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSoulCreationViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingVoidViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.EnteringTheVoidScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.CreateSoulAnimWrapper
-import com.anytypeio.anytype.ui.onboarding.screens.signup.CreateSoulWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.VoidScreenWrapper
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
@@ -295,10 +295,9 @@ class OnboardingFragment : Fragment() {
                 route = OnboardingNavigation.mnemonic,
                 enterTransition = {
                     when (initialState.destination.route) {
-                        OnboardingNavigation.void -> {
+                        OnboardingNavigation.setProfileName -> {
                             slideIntoContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }
-
                         else -> {
                             slideIntoContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
                         }
@@ -306,10 +305,9 @@ class OnboardingFragment : Fragment() {
                 },
                 exitTransition = {
                     when (targetState.destination.route) {
-                        OnboardingNavigation.void -> {
+                        OnboardingNavigation.setProfileName -> {
                             slideOutOfContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
                         }
-
                         else -> {
                             slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }
@@ -317,37 +315,49 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 currentPage.value = OnboardingPage.MNEMONIC
-                backButtonCallback.value = { navController.popBackStack() }
+                backButtonCallback.value = {
+                    // Do nothing
+                }
                 Mnemonic(
                     navController = navController,
                     contentPaddingTop = ContentPaddingTop(),
                     mnemonicColorPalette = mnemonicColorPalette
                 )
+                BackHandler {
+                    toast("You're just one step away from finishing this registration.")
+                }
             }
             composable(
-                route = OnboardingNavigation.createSoul,
+                route = OnboardingNavigation.setProfileName,
                 enterTransition = { slideIntoContainer(Left, tween(ANIMATION_LENGTH_SLIDE)) },
                 exitTransition = {
                     when (targetState.destination.route) {
-                        OnboardingNavigation.mnemonic -> {
-                            slideOutOfContainer(Right, tween(ANIMATION_LENGTH_SLIDE))
-                        }
-
-                        else -> {
+                        OnboardingNavigation.auth -> {
                             fadeOut(tween(ANIMATION_LENGTH_FADE))
+                        }
+                        else -> {
+                            slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
                         }
                     }
                 }
             ) {
-                currentPage.value = OnboardingPage.SOUL_CREATION
-                backButtonCallback.value = { navController.popBackStack() }
-                CreateSoul(
+                val focus = LocalFocusManager.current
+                currentPage.value = OnboardingPage.SET_PROFILE_NAME
+                backButtonCallback.value = {
+                    focus.clearFocus(true)
+                    navController.popBackStack()
+                }
+                SetProfileName(
                     navController = navController,
                     contentPaddingTop = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
                         LocalConfiguration.current.screenHeightDp / 6
                     else
                         ContentPaddingTop()
                 )
+                BackHandler {
+                    focus.clearFocus(true)
+                    navController.popBackStack()
+                }
             }
             composable(
                 route = OnboardingNavigation.createSoulAnim,
@@ -512,7 +522,7 @@ class OnboardingFragment : Fragment() {
 
 
     @Composable
-    private fun CreateSoul(navController: NavHostController, contentPaddingTop: Int) {
+    private fun SetProfileName(navController: NavHostController, contentPaddingTop: Int) {
         val component = componentManager().onboardingSoulCreationComponent
         val vm = daggerViewModel { component.get().getViewModel() }
 
@@ -520,19 +530,22 @@ class OnboardingFragment : Fragment() {
         val keyboardInsets = WindowInsets.ime
         val density = LocalDensity.current
 
-        CreateSoulWrapper(vm, contentPaddingTop)
+        SetProfileNameWrapper(vm, contentPaddingTop)
 
         LaunchedEffect(Unit) {
-            vm.navigationFlow.collect { command ->
+            vm.navigation.collect { command ->
                 when (command) {
-                    is OnboardingSoulCreationViewModel.Navigation.OpenSoulCreationAnim -> {
+                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToMnemonic -> {
                         if (keyboardInsets.getBottom(density) > 0) {
                             focusManager.clearFocus(force = true)
                             delay(KEYBOARD_HIDE_DELAY)
                         }
                         navController.navigate(
-                            route = OnboardingNavigation.createSoulAnim
+                            route = OnboardingNavigation.mnemonic
                         )
+                    }
+                    is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
+                        TODO()
                     }
                 }
             }
@@ -558,8 +571,8 @@ class OnboardingFragment : Fragment() {
         MnemonicPhraseScreenWrapper(
             contentPaddingTop = contentPaddingTop,
             viewModel = vm,
-            openSoulCreation = {
-                navController.navigate(OnboardingNavigation.createSoul)
+            onCheckLaterClicked = {
+                findNavController().navigate(R.id.action_openHome)
                 vm.sendAnalyticsOnboardingScreen()
             },
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
@@ -622,7 +635,7 @@ class OnboardingFragment : Fragment() {
             vm.navigation.collect { navigation ->
                 when (navigation) {
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
-                        navController.navigate(OnboardingNavigation.void)
+                        navController.navigate(OnboardingNavigation.setProfileName)
                         vm.sendAnalyticsOnboardingScreen()
                     }
 

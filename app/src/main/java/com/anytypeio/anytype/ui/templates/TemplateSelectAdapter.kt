@@ -23,8 +23,11 @@ class TemplateSelectAdapter(
                 typeName = templateView.typeName,
                 layout = templateView.layout
             )
-            is TemplateSelectView.Template -> TemplateFragment.new(
-                templateView.id
+            is TemplateSelectView.Template -> EditorTemplateFragment.newInstance(
+                id = templateView.id,
+                targetTypeId = templateView.typeId,
+                targetTypeKey = templateView.typeKey,
+                type = EditorTemplateFragment.TYPE_MULTIPLE
             )
         }
     }

@@ -4,66 +4,76 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/defaultCanvasColor"
+    android:background="@drawable/rounded_dialog_primary"
     android:orientation="vertical"
     tools:context="com.anytypeio.anytype.ui.templates.TemplateSelectFragment">
+
+    <View
+        android:id="@+id/dragger"
+        android:layout_width="48dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/dragger" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="48dp">
+
+        <TextView
+            android:id="@+id/tvTemplateCountOrTutorial"
+            style="@style/TextView.UXStyle.Captions.1.Medium"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:maxLines="1"
+            android:singleLine="true"
+            tools:text="Type Task has 2 templates" />
+
+        <ImageView
+            android:id="@+id/ivThreeDots"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|center_vertical"
+            android:paddingEnd="@dimen/dp_12"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:paddingStart="8dp"
+            android:src="@drawable/ic_action_more" />
+
+    </FrameLayout>
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
-        android:layout_height="8dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="6dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        app:tabIndicatorColor="@color/glyph_selected" />
-
-    <TextView
-        android:id="@+id/tvTemplateCountOrTutorial"
-        style="@style/TextView.UXStyle.Captions.1.Medium"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="11dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="11dp"
-        android:gravity="center"
-        android:maxLines="1"
-        android:singleLine="true"
-        android:textAlignment="center"
-        tools:text="Type Task has 2 templates" />
+        android:layout_gravity="center_horizontal"
+        app:tabBackground="@drawable/tab_templates"
+        app:tabMode="fixed"
+        app:tabGravity="center"
+        app:tabMaxWidth="@dimen/dp_20"
+        app:tabMinWidth="@dimen/dp_10"
+        app:tabPaddingTop="6dp"
+        app:tabPaddingBottom="6dp"
+        app:tabPaddingStart="@dimen/dp_2"
+        app:tabPaddingEnd="@dimen/dp_2"
+        app:tabIndicatorColor="@null"
+        app:tabIndicatorHeight="0dp"
+        app:tabIndicatorGravity="center"
+        app:tabIndicatorFullWidth="false"
+        android:background="@null"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/templateViewPager"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="68dp"
-        android:layout_gravity="bottom"
-        android:background="@color/background_primary"
-        android:orientation="horizontal">
-
-        <com.anytypeio.anytype.core_ui.views.ButtonSecondaryLarge
-            android:id="@+id/btnSkip"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/dp_48"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="4dp"
-            android:layout_weight="1"
-            android:text="@string/skip" />
-
-        <com.anytypeio.anytype.core_ui.views.ButtonPrimaryLarge
-            android:id="@+id/btnUseTemplate"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/dp_48"
-            android:layout_gravity="center_vertical"
-            android:layout_marginStart="4dp"
-            android:layout_marginEnd="20dp"
-            android:layout_weight="1"
-            android:text="@string/use_template" />
-
-    </LinearLayout>
+        android:layout_weight="1"
+        android:layout_marginTop="6dp"/>
 
 </LinearLayout>

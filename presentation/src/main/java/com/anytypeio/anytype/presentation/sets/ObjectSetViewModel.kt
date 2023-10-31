@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -33,7 +34,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -143,7 +144,7 @@ class ObjectSetViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val getDefaultPageType: GetDefaultPageType,
+    private val getDefaultObjectType: GetDefaultObjectType,
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
@@ -978,10 +979,7 @@ class ObjectSetViewModel(
                                     ObjectSetCommand.Modal.CreateBookmark(ctx = context)
                                 )
                             } else {
-                                val validTemplateId = getValidTemplateId(
-                                    templateChosenBy = templateChosenBy,
-                                    viewDefaultTemplate = defaultTemplate
-                                )
+                                val validTemplateId = templateChosenBy ?: defaultTemplate
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = TypeKey(uniqueKey),
@@ -992,10 +990,7 @@ class ObjectSetViewModel(
                             }
                         }
                         ObjectType.Layout.RELATION -> {
-                            val validTemplateId = getValidTemplateId(
-                                templateChosenBy = templateChosenBy,
-                                viewDefaultTemplate = defaultTemplate
-                            )
+                            val validTemplateId = templateChosenBy ?: defaultTemplate
                             proceedWithCreatingDataViewObject(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
@@ -1011,14 +1006,6 @@ class ObjectSetViewModel(
                     toast("Unable to define a source for a new object.")
                 }
             }
-        }
-    }
-
-    private fun getValidTemplateId(templateChosenBy: Id?, viewDefaultTemplate: Id?): Id? {
-        return when (templateChosenBy) {
-            null -> if (viewDefaultTemplate != TemplateView.DEFAULT_TEMPLATE_ID_BLANK) viewDefaultTemplate else null
-            TemplateView.DEFAULT_TEMPLATE_ID_BLANK -> null
-            else -> templateChosenBy
         }
     }
 
@@ -1048,10 +1035,7 @@ class ObjectSetViewModel(
             return
         }
 
-        val validTemplateId = getValidTemplateId(
-            templateChosenBy = templateChosenBy,
-            viewDefaultTemplate = defaultTemplate
-        )
+        val validTemplateId = templateChosenBy ?: defaultTemplate
         val createObjectParams = CreateDataViewObject.Params.Collection(
             templateId = validTemplateId,
             type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
@@ -1365,14 +1349,19 @@ class ObjectSetViewModel(
 
         val startTime = System.currentTimeMillis()
         jobs += viewModelScope.launch {
-            createObject.async(CreateObject.Param(type = null)).fold(
+            createObject.async(
+                CreateObject.Param(
+                    type = null,
+                    internalFlags = listOf(InternalFlags.ShouldSelectType, InternalFlags.ShouldSelectTemplate)
+                )
+            ).fold(
                 onSuccess = { result ->
                     proceedWithOpeningObject(result.objectId)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         startTime = startTime,
                         storeOfObjectTypes = storeOfObjectTypes,
-                        type = result.type.key,
+                        type = result.typeKey.key,
                         route = EventsDictionary.Routes.navigation,
                         view = EventsDictionary.View.viewNavbar
                     )
@@ -1652,7 +1641,11 @@ class ObjectSetViewModel(
         delay(DELAY_BEFORE_CREATING_TEMPLATE)
         when (templateView) {
             is TemplateView.Blank -> {
-                logEvent(ObjectStateAnalyticsEvent.SELECT_TEMPLATE)
+                logEvent(ObjectStateAnalyticsEvent.CHANGE_DEFAULT_TEMPLATE)
+                logEvent(
+                    event = ObjectStateAnalyticsEvent.SET_AS_DEFAULT_TYPE,
+                    type = templateView.targetTypeKey.key
+                )
                 proceedWithUpdateViewer(
                     viewerId = getWidgetViewerId()
                 ) {
@@ -1665,9 +1658,14 @@ class ObjectSetViewModel(
                     typeChosenBy = templateView.targetTypeKey,
                     templateId = templateView.id
                 )
+
             }
             is TemplateView.Template -> {
-                logEvent(ObjectStateAnalyticsEvent.SELECT_TEMPLATE)
+                logEvent(ObjectStateAnalyticsEvent.CHANGE_DEFAULT_TEMPLATE)
+                logEvent(
+                    event = ObjectStateAnalyticsEvent.SET_AS_DEFAULT_TYPE,
+                    type = templateView.targetTypeKey.key
+                )
                 proceedWithUpdateViewer(
                     viewerId = getWidgetViewerId()
                 ) {
@@ -1690,12 +1688,13 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun logEvent(event: ObjectStateAnalyticsEvent) {
+    private fun logEvent(event: ObjectStateAnalyticsEvent, type: Id? = null) {
         viewModelScope.launch {
             logEvent(
                 state = stateReducer.state.value,
                 analytics = analytics,
-                event = event
+                event = event,
+                type = type
             )
         }
     }
@@ -2121,7 +2120,7 @@ class ObjectSetViewModel(
                 val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                 val newView = activeView.copy(
                     id = "",
-                    name = DVViewerType.GRID.formattedName,
+                    name = "",
                     type = DVViewerType.GRID
                 )
                 viewModelScope.launch {
@@ -2192,8 +2191,6 @@ class ObjectSetViewModel(
         when (action) {
             ViewEditAction.Dismiss -> { hideViewerEditWidget() }
             is ViewEditAction.Filters -> {
-                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                hideViewerEditWidget()
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     openViewerFilters(viewerId = action.id)
@@ -2203,25 +2200,18 @@ class ObjectSetViewModel(
                 viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.copy(showWidget = true)
             }
             is ViewEditAction.Relations -> {
-                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                hideViewerEditWidget()
-                if (action.id == null) return
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     onViewerSettingsClicked(action.id)
                 }
             }
             is ViewEditAction.Sorts -> {
-                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                hideViewerEditWidget()
                 viewModelScope.launch {
                     delay(DELAY_BEFORE_CREATING_TEMPLATE)
                     openViewerSorts(viewerId = action.id)
                 }
             }
             is ViewEditAction.UpdateName -> {
-                viewersWidgetState.value = viewersWidgetState.value.copy(showWidget = false)
-                hideViewerEditWidget()
                 val state = stateReducer.state.value.dataViewState() ?: return
                 val viewer = state.viewerById(action.id) ?: return
                 viewModelScope.launch {

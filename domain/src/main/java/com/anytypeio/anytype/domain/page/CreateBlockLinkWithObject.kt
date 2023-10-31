@@ -20,18 +20,15 @@ class CreateBlockLinkWithObject(
 
     override suspend fun doWork(params: Params): Result {
 
-        val template = getTemplates.run(
-            GetTemplates.Params(params.typeId)
-        ).firstOrNull()?.id
-
         val command = Command.CreateBlockLinkWithObject(
             context = params.context,
             target = params.target,
             position = params.position,
             prefilled = emptyMap(),
-            template = template,
-            internalFlags = listOf(),
-            type = params.typeKey
+            template = params.template,
+            internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
+            type = params.typeKey,
+            space = params.space
         )
 
         val result = repo.createBlockLinkWithObject(command)
@@ -55,7 +52,9 @@ class CreateBlockLinkWithObject(
         val target: Id,
         val position: Position,
         val typeId: TypeId,
-        val typeKey: TypeKey
+        val typeKey: TypeKey,
+        val template: Id?,
+        val space: Id
     )
 
     /**

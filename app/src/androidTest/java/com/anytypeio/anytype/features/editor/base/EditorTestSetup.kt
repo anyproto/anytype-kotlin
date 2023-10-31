@@ -55,9 +55,8 @@ import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.icon.DocumentEmojiIconProvider
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
-import com.anytypeio.anytype.domain.launch.GetDefaultPageType
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -211,7 +210,7 @@ open class EditorTestSetup {
     lateinit var clearBlockContent: ClearBlockContent
     lateinit var clearBlockStyle: ClearBlockStyle
 
-    lateinit var getDefaultPageType: GetDefaultPageType
+    lateinit var getDefaultObjectType: GetDefaultObjectType
 
     private lateinit var findObjectSetForType: FindObjectSetForType
     private lateinit var createObjectSet: CreateObjectSet
@@ -253,9 +252,6 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var threadStatusChannel: ThreadStatusChannel
-
-    @Mock
-    lateinit var documentEmojiIconProvider: DocumentEmojiIconProvider
 
     @Mock
     lateinit var createTable: CreateTable
@@ -326,11 +322,9 @@ open class EditorTestSetup {
         setRelationKey = SetRelationKey(repo)
         turnIntoDocument = TurnIntoDocument(repo)
         updateFields = UpdateFields(repo)
-        setObjectType = SetObjectType(repo)
+        setObjectType = SetObjectType(repo, dispatchers)
         createObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
             repo = repo,
-            getDefaultPageType = getDefaultPageType,
-            getTemplates = getTemplates,
             dispatchers = dispatchers,
             spaceManager = spaceManager
         )
@@ -363,7 +357,7 @@ open class EditorTestSetup {
         removeDocCover = RemoveDocCover(repo)
         turnIntoStyle = TurnIntoStyle(repo)
         updateDetail = UpdateDetail(repo)
-        getDefaultPageType = GetDefaultPageType(
+        getDefaultObjectType = GetDefaultObjectType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = repo,
             dispatchers = dispatchers,
@@ -379,7 +373,8 @@ open class EditorTestSetup {
         )
         getTemplates = GetTemplates(
             repo = repo,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            spaceManager = spaceManager
         )
 
         editorTemplateDelegate = DefaultEditorTemplateDelegate(
@@ -452,7 +447,6 @@ open class EditorTestSetup {
                 turnIntoDocument = turnIntoDocument,
                 turnIntoStyle = turnIntoStyle,
                 updateBlocksMark = updateBlocksMark,
-                setObjectType = setObjectType,
                 createBookmarkBlock = createBookmarkBlock,
                 createTable = createTable,
                 fillTableRow = fillTableRow,
@@ -465,7 +459,7 @@ open class EditorTestSetup {
             dispatcher = Dispatcher.Default(),
             updateDetail = updateDetail,
             searchObjects = getSearchObjects,
-            getDefaultPageType = getDefaultPageType,
+            getDefaultObjectType = getDefaultObjectType,
             createObjectSet = createObjectSet,
             findObjectSetForType = findObjectSetForType,
             copyFileToCacheDirectory = copyFileToCacheDirectory,
@@ -485,7 +479,9 @@ open class EditorTestSetup {
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
             setObjectInternalFlags = setObjectInternalFlags,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            applyTemplate = applyTemplate,
+            setObjectType = setObjectType
         )
     }
 

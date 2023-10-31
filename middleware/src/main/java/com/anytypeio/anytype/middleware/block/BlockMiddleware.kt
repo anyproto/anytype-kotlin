@@ -497,9 +497,8 @@ class BlockMiddleware(
 
     override suspend fun clearFileCache() = middleware.fileListOffload()
 
-    override suspend fun applyTemplate(ctx: Id, template: Id) = middleware.objectApplyTemplate(
-        ctx = ctx,
-        template = template
+    override suspend fun applyTemplate(command: Command.ApplyTemplate) = middleware.objectApplyTemplate(
+        command
     )
 
     override suspend fun createTable(
@@ -737,12 +736,8 @@ class BlockMiddleware(
     }
 
     override suspend fun addObjectToSpace(
-        obj: Id,
-        space: Id
-    ): Id = middleware.workspaceObjectAdd(
-        obj = obj,
-        space = space
-    )
+        command: Command.AddObjectToSpace
+    ): Pair<Id, ObjectWrapper.Type> = middleware.workspaceObjectAdd(command)
 
     override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
         return middleware.workspaceObjectListRemove(objects)

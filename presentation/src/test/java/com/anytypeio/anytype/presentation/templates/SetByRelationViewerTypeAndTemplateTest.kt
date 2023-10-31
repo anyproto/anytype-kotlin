@@ -265,7 +265,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             val params = CreateDataViewObject.Params.SetByRelation(
                 filters = listOf(),
                 type = pageTypeKey,
-                template = null,
+                template = DEFAULT_TEMPLATE_ID_BLANK,
                 relations = listOf(setByRelationId),
             )
             async(params)
@@ -658,7 +658,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 val params = CreateDataViewObject.Params.SetByRelation(
                     filters = listOf(),
                     type = customType1Key,
-                    template = null,
+                    template = DEFAULT_TEMPLATE_ID_BLANK,
                     relations = listOf(setByRelationId),
                 )
                 async(params)
@@ -759,7 +759,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 val params = CreateDataViewObject.Params.SetByRelation(
                     filters = listOf(),
                     type = customType1Key,
-                    template = null,
+                    template = DEFAULT_TEMPLATE_ID_BLANK,
                     relations = listOf(setByRelationId),
                 )
                 async(params)

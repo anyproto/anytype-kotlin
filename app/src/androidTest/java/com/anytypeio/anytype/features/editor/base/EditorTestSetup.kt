@@ -322,7 +322,7 @@ open class EditorTestSetup {
         setRelationKey = SetRelationKey(repo)
         turnIntoDocument = TurnIntoDocument(repo)
         updateFields = UpdateFields(repo)
-        setObjectType = SetObjectType(repo)
+        setObjectType = SetObjectType(repo, dispatchers)
         createObjectAsMentionOrLink = CreateObjectAsMentionOrLink(
             repo = repo,
             dispatchers = dispatchers,
@@ -447,7 +447,6 @@ open class EditorTestSetup {
                 turnIntoDocument = turnIntoDocument,
                 turnIntoStyle = turnIntoStyle,
                 updateBlocksMark = updateBlocksMark,
-                setObjectType = setObjectType,
                 createBookmarkBlock = createBookmarkBlock,
                 createTable = createTable,
                 fillTableRow = fillTableRow,
@@ -481,7 +480,8 @@ open class EditorTestSetup {
             addRelationToObject = addRelationToObject,
             setObjectInternalFlags = setObjectInternalFlags,
             spaceManager = spaceManager,
-            applyTemplate = applyTemplate
+            applyTemplate = applyTemplate,
+            setObjectType = setObjectType
         )
     }
 

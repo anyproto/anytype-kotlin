@@ -835,12 +835,11 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun objectApplyTemplate(
-        ctx: Id,
-        template: Id
+        command: Command.ApplyTemplate
     ) {
         val request = Rpc.Object.ApplyTemplate.Request(
-            contextId = ctx,
-            templateId = template
+            contextId = command.objectId,
+            templateId = command.template.orEmpty()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectApplyTemplate(request)
@@ -1996,15 +1995,15 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceObjectAdd(obj: Id, space: Id): Id {
+    fun workspaceObjectAdd(command: Command.AddObjectToSpace): Pair<Id, ObjectWrapper.Type> {
         val request = Rpc.Workspace.Object.Add.Request(
-            objectId = obj,
-            spaceId = space
+            objectId = command.objectId,
+            spaceId = command.space
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.workspaceObjectAdd(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.objectId
+        return Pair(response.objectId, ObjectWrapper.Type(response.details ?: emptyMap()))
     }
 
     @Throws(Exception::class)

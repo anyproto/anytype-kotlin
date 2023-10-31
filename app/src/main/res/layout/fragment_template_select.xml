@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/rounded_dialog_secondary"
+    android:background="@drawable/rounded_dialog_primary"
     android:orientation="vertical"
     tools:context="com.anytypeio.anytype.ui.templates.TemplateSelectFragment">
 
@@ -48,24 +48,26 @@
 
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tabs"
-        style="@style/Widget.MaterialComponents.TabLayout"
         android:layout_width="match_parent"
         android:layout_height="4dp"
         android:layout_marginTop="6dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:useLevel="false"
-        app:tabContentStart="0dp"
-        app:tabIndicatorColor="@color/glyph_button"
-        app:tabIndicatorHeight="4dp"
+        android:layout_gravity="center_horizontal"
+        app:tabBackground="@drawable/tab_templates"
         app:tabMode="fixed"
-        app:tabGravity="fill"
-        app:tabIndicatorFullWidth="true"
-        app:tabPaddingStart="@dimen/dp_10"
-        app:tabPaddingEnd="@dimen/dp_10"
+        app:tabGravity="center"
         app:tabMaxWidth="@dimen/dp_20"
-        app:tabMinWidth="10dp"
-        app:tabBackground="@color/shape_primary" />
+        app:tabMinWidth="@dimen/dp_10"
+        app:tabPaddingTop="6dp"
+        app:tabPaddingBottom="6dp"
+        app:tabPaddingStart="@dimen/dp_2"
+        app:tabPaddingEnd="@dimen/dp_2"
+        app:tabIndicatorColor="@null"
+        app:tabIndicatorHeight="0dp"
+        app:tabIndicatorGravity="center"
+        app:tabIndicatorFullWidth="false"
+        android:background="@null"/>
 
     <androidx.viewpager2.widget.ViewPager2
         android:id="@+id/templateViewPager"

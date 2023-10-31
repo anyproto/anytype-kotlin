@@ -220,7 +220,7 @@ interface BlockRemote {
 
     suspend fun duplicateObject(id: Id): Id
 
-    suspend fun applyTemplate(ctx: Id, template: Id)
+    suspend fun applyTemplate(command: Command.ApplyTemplate)
 
     suspend fun createTable(
         ctx: String,
@@ -333,7 +333,7 @@ interface BlockRemote {
     suspend fun getSpaceConfig(space: Id): Config
 
     suspend fun addObjectListToSpace(objects: List<Id>, space: Id): List<Id>
-    suspend fun addObjectToSpace(obj: Id, space: Id) : Id
+    suspend fun addObjectToSpace(command: Command.AddObjectToSpace) : Pair<Id, ObjectWrapper.Type>
     suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id>
 
     suspend fun createObject(command: Command.CreateObject): CreateObjectResult

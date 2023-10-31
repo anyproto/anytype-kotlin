@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.databinding.FragmentUserSettingsBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.settings.PersonalizationSettingsViewModel
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
@@ -27,8 +28,8 @@ class PersonalizationSettingsFragment : BaseBottomSheetFragment<FragmentUserSett
 
     private val vm by viewModels<PersonalizationSettingsViewModel> { factory }
 
-    override fun onProceedWithUpdateType(id: Id, key: Key, name: String) {
-        vm.proceedWithUpdateType(type = id, key = key, name = name)
+    override fun onProceedWithUpdateType(item: ObjectTypeView) {
+        vm.proceedWithUpdateType(type = item.id, key = item.key, name = item.name)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

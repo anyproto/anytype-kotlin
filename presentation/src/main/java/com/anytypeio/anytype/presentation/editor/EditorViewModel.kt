@@ -5753,7 +5753,7 @@ class EditorViewModel(
         val params = CreateObjectAsMentionOrLink.Params(
             name = mentionText.removePrefix(MENTION_PREFIX),
             typeKey = typeKey,
-            defaultTemplate = if (templateId == DEFAULT_TEMPLATE_ID_BLANK) null else templateId
+            defaultTemplate = templateId
         )
 
         val startTime = System.currentTimeMillis()
@@ -6092,7 +6092,7 @@ class EditorViewModel(
         val params = CreateObjectAsMentionOrLink.Params(
             name = name,
             typeKey = typeKey,
-            defaultTemplate = if (templateId == DEFAULT_TEMPLATE_ID_BLANK) null else templateId
+            defaultTemplate = templateId
         )
         createObjectAsMentionOrLink.async(params).fold(
             onFailure = { Timber.e(it, "Error while creating new page with params: $params") },

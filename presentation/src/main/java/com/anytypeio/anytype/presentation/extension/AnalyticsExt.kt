@@ -612,7 +612,8 @@ fun CoroutineScope.sendAnalyticsBlockAlignEvent(
 
 fun CoroutineScope.sendAnalyticsObjectTypeChangeEvent(
     analytics: Analytics,
-    objType: ObjectWrapper.Type?
+    objType: ObjectWrapper.Type?,
+    startTime: Long
 ) {
     sendEvent(
         analytics = analytics,
@@ -622,6 +623,7 @@ fun CoroutineScope.sendAnalyticsObjectTypeChangeEvent(
             originalId = analytics.getOriginalId(),
             sourceObject = objType?.sourceObject
         ),
+        startTime = startTime
     )
 }
 

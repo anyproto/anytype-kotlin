@@ -748,8 +748,7 @@ class EditorViewModel(
             }
             .onEach {
                 refreshTableToolbar()
-                proceedWithCheckingInternalFlagShouldSelectTemplate()
-                proceedWithCheckingInternalFlagShouldSelectType()
+                proceedWithCheckingInternalFlags()
             }
             .launchIn(viewModelScope)
     }
@@ -6944,8 +6943,14 @@ class EditorViewModel(
     //endregion
 
     //region INTERNAL FLAGS
-    private fun proceedWithCheckingInternalFlagShouldSelectType() {
-        val containsFlag = getInternalFlagsFromDetails().any { it == InternalFlags.ShouldSelectType }
+    private fun proceedWithCheckingInternalFlags() {
+        val internalFlags = getInternalFlagsFromDetails()
+        proceedWithCheckingInternalFlagShouldSelectTemplate(internalFlags)
+        proceedWithCheckingInternalFlagShouldSelectType(internalFlags)
+    }
+
+    private fun proceedWithCheckingInternalFlagShouldSelectType(flags: List<InternalFlags>) {
+        val containsFlag = flags.any { it == InternalFlags.ShouldSelectType }
         when {
             isObjectTypesWidgetVisible -> {
                 if (!containsFlag) {
@@ -6961,9 +6966,8 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithCheckingInternalFlagShouldSelectTemplate() {
-        val internalFlags = getInternalFlagsFromDetails()
-        if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
+    private fun proceedWithCheckingInternalFlagShouldSelectTemplate(flags: List<InternalFlags>) {
+        if (flags.contains(InternalFlags.ShouldSelectTemplate)) {
             //We use this flag to show template widget and then we don't need it anymore
             val typeKey = getObjectTypeUniqueKeyFromDetails() ?: return
             proceedWithStartTemplateEvent(typeKey = typeKey)
@@ -6973,57 +6977,10 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOptOutTypeInternalFlag() {
-        val internalFlags = getInternalFlagsFromDetails()
-        if (!internalFlags.contains(InternalFlags.ShouldSelectType)) return
-        val flagsWithoutType = filterOutInternalFlags(
-                flags = internalFlags,
-                out = InternalFlags.ShouldSelectType
-        )
-        updateFlagsAndProceed(
-                flags = flagsWithoutType,
-                action = this::sendHideObjectTypeWidgetEvent
-        )
-    }
-
-    private fun proceedWithOptOutTemplateInternalFlag() {
-        val internalFlags = getInternalFlagsFromDetails()
-        if (!internalFlags.contains(InternalFlags.ShouldSelectTemplate)) return
-        val flagsWithoutTemplate = filterOutInternalFlags(
-            flags = internalFlags,
-            out = InternalFlags.ShouldSelectTemplate
-        )
-        updateFlagsAndProceed(flags = flagsWithoutTemplate)
-    }
-
     private fun getInternalFlagsFromDetails(): List<InternalFlags> {
         val details = orchestrator.stores.details.current()
-        val obj = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+        val obj = ObjectWrapper.ObjectInternalFlags(details.details[context]?.map ?: emptyMap())
         return obj.internalFlags
-    }
-
-    private fun filterOutInternalFlags(flags: List<InternalFlags>, out: InternalFlags): List<InternalFlags> {
-        return flags.filter { it != out }
-    }
-
-    private fun updateFlagsAndProceed(flags: List<InternalFlags>, action: () -> Unit = {}) {
-        viewModelScope.launch {
-            val params = SetObjectInternalFlags.Params(
-                    ctx = context,
-                    flags = flags
-            )
-            setObjectInternalFlags.async(params).fold(
-                    onSuccess = {
-                        dispatcher.send(it)
-                        Timber.d("Internal flags updated")
-                        action.invoke()
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while updating internal flags")
-                        action.invoke()
-                    }
-            )
-        }
     }
     //endregion
 }

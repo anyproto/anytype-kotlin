@@ -260,4 +260,19 @@ sealed class ObjectWrapper {
             else -> emptyList()
         }
     }
+
+    data class ObjectInternalFlags(override val map: Struct) : ObjectWrapper() {
+        val internalFlags: List<InternalFlags>
+            get() = when (val value = map[Relations.INTERNAL_FLAGS]) {
+                is List<*> -> value.typeOf<Double>().mapNotNull { code ->
+                    when (code.toInt()) {
+                        InternalFlags.ShouldSelectType.code -> InternalFlags.ShouldSelectType
+                        InternalFlags.ShouldSelectTemplate.code -> InternalFlags.ShouldSelectTemplate
+                        InternalFlags.ShouldEmptyDelete.code -> InternalFlags.ShouldEmptyDelete
+                        else -> null
+                    }
+                }
+                else -> emptyList()
+            }
+    }
 }

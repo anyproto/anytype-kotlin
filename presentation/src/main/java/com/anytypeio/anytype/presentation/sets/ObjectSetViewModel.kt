@@ -1641,7 +1641,7 @@ class ObjectSetViewModel(
         delay(DELAY_BEFORE_CREATING_TEMPLATE)
         when (templateView) {
             is TemplateView.Blank -> {
-                logEvent(ObjectStateAnalyticsEvent.SELECT_TEMPLATE)
+                logEvent(ObjectStateAnalyticsEvent.CHANGE_DEFAULT_TEMPLATE)
                 logEvent(
                     event = ObjectStateAnalyticsEvent.SET_AS_DEFAULT_TYPE,
                     type = templateView.targetTypeKey.key
@@ -1661,7 +1661,7 @@ class ObjectSetViewModel(
 
             }
             is TemplateView.Template -> {
-                logEvent(ObjectStateAnalyticsEvent.SELECT_TEMPLATE)
+                logEvent(ObjectStateAnalyticsEvent.CHANGE_DEFAULT_TEMPLATE)
                 logEvent(
                     event = ObjectStateAnalyticsEvent.SET_AS_DEFAULT_TYPE,
                     type = templateView.targetTypeKey.key

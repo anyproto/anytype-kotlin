@@ -208,6 +208,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetDescriptionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
@@ -6245,6 +6246,12 @@ class EditorViewModel(
 
     fun isObjectTemplate(): Boolean {
         return getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.TEMPLATE
+    }
+
+    fun onSelectTemplateClicked() {
+        viewModelScope.launch {
+            sendAnalyticsSelectTemplateEvent(analytics)
+        }
     }
     //endregion
 

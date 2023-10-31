@@ -2064,19 +2064,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onProceedWithUpdateType(item: ObjectTypeView) {
-        vm.onObjectTypeChanged(
-            type = item.id,
-            key = item.key,
-            applyTemplate = false
-        )
+        vm.onObjectTypeChanged(item)
     }
 
     override fun onProceedWithDraftUpdateType(item: ObjectTypeView) {
-        vm.onObjectTypeChanged(
-            type = item.id,
-            key = item.key,
-            applyTemplate = true
-        )
+        vm.onObjectTypeChanged(item)
     }
 
     override fun onAddRelationToTarget(target: Id, relationKey: Key) {

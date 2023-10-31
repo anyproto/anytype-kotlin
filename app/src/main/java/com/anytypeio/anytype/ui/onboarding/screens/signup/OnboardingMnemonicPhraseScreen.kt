@@ -73,7 +73,7 @@ fun MnemonicPhraseScreenWrapper(
 @Composable
 fun PreviewMnemonicPhraseScreen() {
     MnemonicPhraseScreen(
-        state = OnboardingMnemonicViewModel.State.Mnemonic("Test"),
+        state = OnboardingMnemonicViewModel.State.MnemonicOpened("Test"),
         reviewMnemonic = { /*TODO*/ },
         onCheckLaterClicked = { /*TODO*/ },
         copyMnemonicToClipboard = {},

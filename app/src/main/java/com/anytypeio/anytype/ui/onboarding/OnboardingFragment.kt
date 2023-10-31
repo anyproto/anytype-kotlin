@@ -106,8 +106,14 @@ class OnboardingFragment : Fragment() {
 
     private val mnemonicColorPalette by lazy {
         buildList {
+            var idx = 0
             repeat(MNEMONIC_WORD_COUNT) {
-                add(MnemonicPhrasePaletteColors.random())
+                if (idx > MnemonicPhrasePaletteColors.lastIndex) {
+                    idx = 0
+                }
+                val color = MnemonicPhrasePaletteColors[idx]
+                add(color)
+                idx += 1
             }
         }
     }

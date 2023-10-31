@@ -69,11 +69,14 @@ fun MnemonicPhraseScreenWrapper(
     )
 }
 
+
+
 @Preview
 @Composable
 fun PreviewMnemonicPhraseScreen() {
+    val fakeMnemonic = "One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve"
     MnemonicPhraseScreen(
-        state = OnboardingMnemonicViewModel.State.MnemonicOpened("Test"),
+        state = OnboardingMnemonicViewModel.State.MnemonicOpened(fakeMnemonic),
         reviewMnemonic = { /*TODO*/ },
         onCheckLaterClicked = { /*TODO*/ },
         copyMnemonicToClipboard = {},
@@ -105,10 +108,12 @@ fun MnemonicPhraseScreen(
             MnemonicDescription()
             Box(
                 modifier = Modifier
-                    .height(24.dp)
                     .fillMaxWidth()
                     .padding(top = 8.dp, bottom = 16.dp)
-                    .noRippleClickable { }
+                    .height(24.dp)
+                    .noRippleClickable {
+                        onReadMoreClicked()
+                    }
             ) {
                 Text(
                     text = stringResource(id = R.string.onboarding_mnemonic_read_more),

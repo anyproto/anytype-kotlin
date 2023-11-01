@@ -14,7 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -22,6 +28,7 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
@@ -30,11 +37,14 @@ import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.extensions.conditional
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
-import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.ui.onboarding.MnemonicPhraseWidget
 import com.anytypeio.anytype.ui.onboarding.MnemonicStub
@@ -52,14 +62,34 @@ fun MnemonicPhraseScreenWrapper(
     MnemonicPhraseScreen(
         state = state,
         reviewMnemonic = { viewModel.openMnemonic() },
-        onCheckLaterClicked = onCheckLaterClicked,
+        onCheckLaterClicked = {
+            onCheckLaterClicked().also {
+                vm.onCheckLaterClicked()
+            }
+        },
         copyMnemonicToClipboard = copyMnemonicToClipboard,
         contentPaddingTop = contentPaddingTop,
-        vm = vm,
         mnemonicColorPalette = mnemonicColorPalette
     )
 }
 
+
+
+@Preview
+@Composable
+fun PreviewMnemonicPhraseScreen() {
+    val fakeMnemonic = "One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve"
+    MnemonicPhraseScreen(
+        state = OnboardingMnemonicViewModel.State.MnemonicOpened(fakeMnemonic),
+        reviewMnemonic = { /*TODO*/ },
+        onCheckLaterClicked = { /*TODO*/ },
+        copyMnemonicToClipboard = {},
+        contentPaddingTop = 0,
+        mnemonicColorPalette = emptyList()
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MnemonicPhraseScreen(
     state: OnboardingMnemonicViewModel.State,
@@ -67,9 +97,9 @@ fun MnemonicPhraseScreen(
     onCheckLaterClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     contentPaddingTop: Int,
-    vm: OnboardingMnemonicViewModel,
     mnemonicColorPalette: List<Color>
 ) {
+    val showWhatIsRecoveryPhraseDialog = remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -79,19 +109,53 @@ fun MnemonicPhraseScreen(
         ) {
             Spacer(modifier = Modifier.height(contentPaddingTop.dp))
             MnemonicTitle()
+            MnemonicDescription()
+            ReadMoreButton(showWhatIsRecoveryPhraseDialog)
             MnemonicPhrase(
                 state = state,
                 copyMnemonicToClipboard = copyMnemonicToClipboard,
                 mnemonicColorPalette = mnemonicColorPalette
             )
-            MnemonicDescription()
         }
         MnemonicButtons(
             modifier = Modifier.align(Alignment.BottomCenter),
             openMnemonic = reviewMnemonic,
             onCheckLaterClicked = onCheckLaterClicked,
-            state = state,
-            vm = vm
+            state = state
+        )
+    }
+    if (showWhatIsRecoveryPhraseDialog.value) {
+        ModalBottomSheet(
+            containerColor = Color(0xFF1F1E1D),
+            onDismissRequest = {
+                showWhatIsRecoveryPhraseDialog.value = false
+            },
+            content = { WhatIsRecoveryPhraseScreen() },
+            dragHandle = {
+                // Do nothing
+            },
+            sheetState = SheetState(skipPartiallyExpanded = true)
+        )
+    }
+}
+
+@Composable
+private fun ReadMoreButton(showWhatIsRecoveryPhraseDialog: MutableState<Boolean>) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp, bottom = 16.dp)
+            .height(24.dp)
+            .noRippleClickable {
+                showWhatIsRecoveryPhraseDialog.value = true
+            }
+    ) {
+        Text(
+            text = stringResource(id = R.string.onboarding_mnemonic_read_more),
+            style = BodyRegular.copy(
+                color = Color.White
+            ),
+            modifier = Modifier.align(Alignment.Center)
         )
     }
 }
@@ -101,8 +165,7 @@ fun MnemonicButtons(
     modifier: Modifier = Modifier,
     openMnemonic: () -> Unit,
     onCheckLaterClicked: () -> Unit,
-    state: OnboardingMnemonicViewModel.State,
-    vm: OnboardingMnemonicViewModel
+    state: OnboardingMnemonicViewModel.State
 ) {
     Column(modifier.wrapContentHeight()) {
         when (state) {
@@ -112,12 +175,20 @@ fun MnemonicButtons(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
-                    onClick = {
-                        onCheckLaterClicked.invoke()
-                    }, size = ButtonSize.Large
+                    onClick = { onCheckLaterClicked.invoke() },
+                    size = ButtonSize.Large
                 )
             }
             else -> {
+                Text(
+                    style = Caption1Regular,
+                    color = Color(0xff797976),
+                    text = stringResource(id = R.string.onboarding_mnemonic_additional_info),
+                    modifier = Modifier
+                        .padding(bottom = 19.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
                 OnBoardingButtonPrimary(
                     text = stringResource(id = R.string.onboarding_mnemonic_show_key),
                     modifier = Modifier
@@ -128,7 +199,7 @@ fun MnemonicButtons(
                     }, size = ButtonSize.Large
                 )
                 OnBoardingButtonSecondary(
-                    text = stringResource(id = R.string.onboarding_mnemonic_check_later),
+                    text = stringResource(id = R.string.onboarding_mnemonic_skip),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -139,7 +210,6 @@ fun MnemonicButtons(
                         ),
                     onClick = {
                         onCheckLaterClicked.invoke()
-                        vm.onCheckLaterClicked()
                     },
                     size = ButtonSize.Large,
                     textColor = ColorButtonRegular
@@ -161,7 +231,7 @@ fun MnemonicTitle() {
         Text(
             modifier = Modifier,
             text = stringResource(R.string.onboarding_mnemonic_title),
-            style = Title1.copy(
+            style = HeadlineHeading.copy(
                 color = OnBoardingTextPrimaryColor
             )
         )

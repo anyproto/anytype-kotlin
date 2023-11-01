@@ -106,8 +106,14 @@ class OnboardingFragment : Fragment() {
 
     private val mnemonicColorPalette by lazy {
         buildList {
+            var idx = 0
             repeat(MNEMONIC_WORD_COUNT) {
-                add(MnemonicPhrasePaletteColors.random())
+                if (idx > MnemonicPhrasePaletteColors.lastIndex) {
+                    idx = 0
+                }
+                val color = MnemonicPhrasePaletteColors[idx]
+                add(color)
+                idx += 1
             }
         }
     }
@@ -319,7 +325,6 @@ class OnboardingFragment : Fragment() {
                     // Do nothing
                 }
                 Mnemonic(
-                    navController = navController,
                     contentPaddingTop = ContentPaddingTop(),
                     mnemonicColorPalette = mnemonicColorPalette
                 )
@@ -562,7 +567,6 @@ class OnboardingFragment : Fragment() {
 
     @Composable
     private fun Mnemonic(
-        navController: NavHostController,
         contentPaddingTop: Int,
         mnemonicColorPalette: List<Color>
     ) {

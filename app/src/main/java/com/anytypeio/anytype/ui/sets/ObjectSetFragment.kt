@@ -359,7 +359,8 @@ open class ObjectSetFragment :
             setContent {
                 ViewersWidget(
                     state = vm.viewersWidgetState.collectAsStateWithLifecycle().value,
-                    action = vm::onViewersWidgetAction
+                    action = vm::onViewersWidgetAction,
+                    scope = lifecycleScope
                 )
             }
         }

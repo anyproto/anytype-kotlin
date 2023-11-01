@@ -69,7 +69,7 @@ fun ProfileSettingsScreen(
     isLogoutInProgress: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
-    account: ProfileViewModel.AccountProfile,
+    account: ProfileSettingsViewModel.AccountProfile,
     onAppearanceClicked: () -> Unit,
     onDataManagementClicked: () -> Unit,
     onAboutClicked: () -> Unit
@@ -245,12 +245,12 @@ fun ActionWithProgressBar(
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
-    account: ProfileViewModel.AccountProfile,
+    account: ProfileSettingsViewModel.AccountProfile,
     onProfileIconClick: () -> Unit,
     onNameSet: (String) -> Unit
 ) {
     when (account) {
-        is ProfileViewModel.AccountProfile.Data -> {
+        is ProfileSettingsViewModel.AccountProfile.Data -> {
             Box(modifier = modifier.padding(vertical = 6.dp)) {
                 Dragger()
             }
@@ -266,7 +266,7 @@ private fun Header(
             }
             ProfileNameBlock(name = account.name, onNameSet = onNameSet)
         }
-        is ProfileViewModel.AccountProfile.Idle -> {}
+        is ProfileSettingsViewModel.AccountProfile.Idle -> {}
     }
 }
 

@@ -228,7 +228,7 @@
 
     <dialog
         android:id="@+id/profileScreen"
-        android:name="com.anytypeio.anytype.ui.settings.ProfileFragment">
+        android:name="com.anytypeio.anytype.ui.settings.ProfileSettingsFragment">
     </dialog>
 
     <dialog

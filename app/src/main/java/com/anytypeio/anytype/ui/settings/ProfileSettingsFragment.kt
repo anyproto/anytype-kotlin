@@ -33,19 +33,19 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
-import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
+import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
 import javax.inject.Inject
 import timber.log.Timber
 
-class ProfileFragment : BaseBottomSheetComposeFragment() {
+class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
-    lateinit var factory: ProfileViewModel.Factory
+    lateinit var factory: ProfileSettingsViewModel.Factory
 
     @Inject
     lateinit var toggles: FeatureToggles
 
-    private val vm by viewModels<ProfileViewModel> { factory }
+    private val vm by viewModels<ProfileSettingsViewModel> { factory }
 
     private val onKeychainPhraseClicked = {
         val bundle =

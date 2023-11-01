@@ -1867,16 +1867,18 @@ fun CoroutineScope.sendAnalyticsSelectTemplateEvent(
 
 fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
     analytics: Analytics,
-    objectType: String?,
+    details: Map<Id, Block.Fields>,
+    ctx: Id,
     startTime: Long
 ) {
+    val objType = getAnalyticsObjectType(details, ctx)
     sendEvent(
         analytics = analytics,
         eventName = createTemplate,
         props = Props(
             buildMap {
                 put(EventsPropertiesKey.route, "MenuObject")
-                put(EventsPropertiesKey.objectType, objectType)
+                put(EventsPropertiesKey.objectType, objType)
             }
         ),
         startTime = startTime,
@@ -1903,4 +1905,15 @@ fun CoroutineScope.sendAnalyticsDefaultTemplateEvent(
         startTime = startTime,
         middleTime = System.currentTimeMillis()
     )
+}
+
+private fun getAnalyticsObjectType(
+    details: Map<Id, Block.Fields>,
+    ctx: Id
+): String {
+    val objTypeId = details.getValue(ctx).type.firstOrNull()
+    val sourceObject = if (objTypeId != null) {
+        ObjectWrapper.Type(details.getValue(objTypeId).map).sourceObject
+    } else null
+    return sourceObject ?: OBJ_TYPE_CUSTOM
 }

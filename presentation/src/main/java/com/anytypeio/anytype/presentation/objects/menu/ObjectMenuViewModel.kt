@@ -310,7 +310,6 @@ class ObjectMenuViewModel(
                         startTime = startTime
                     )
                     buildOpenTemplateCommand(ctx, template)
-                    Log.d("Test1983", "isDismissed.value = true")
                     isDismissed.value = true
                 },
                 onFailure = {

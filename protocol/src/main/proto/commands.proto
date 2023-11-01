@@ -351,6 +351,7 @@ message Rpc {
                         BAD_INPUT = 2;
 
                         ACCOUNT_IS_ALREADY_DELETED = 101;
+                        UNABLE_TO_CONNECT = 102;
                     }
                 }
             }
@@ -374,6 +375,7 @@ message Rpc {
                         BAD_INPUT = 2;
 
                         ACCOUNT_IS_ACTIVE = 101;
+                        UNABLE_TO_CONNECT = 102;
                     }
                 }
             }
@@ -5144,7 +5146,7 @@ message Rpc {
                 }
             }
 
-            message SSort {
+            message Sort {
                 message Request {
                     string contextId = 1;
                     string blockId = 2; // id of dataview block to update

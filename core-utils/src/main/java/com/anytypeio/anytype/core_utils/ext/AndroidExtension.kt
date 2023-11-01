@@ -276,21 +276,6 @@ fun View.focusAndShowKeyboard() {
 fun String.normalizeUrl(): String =
     if (!startsWith("http://") && !startsWith("https://")) "https://$this" else this
 
-fun Context.isPermissionGranted(mimeType: Mimetype): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && mimeType == Mimetype.MIME_FILE_ALL) {
-        true
-    } else {
-        val readExternalStorage: Int = ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-        readExternalStorage == PackageManager.PERMISSION_GRANTED
-    }
-}
-
-fun Activity.shouldShowRequestPermissionRationaleCompat(permission: String) =
-    ActivityCompat.shouldShowRequestPermissionRationale(this, permission)
-
 /**
  * [requestCode] is used only for picking media.
  * Should be refactored here:

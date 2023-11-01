@@ -56,7 +56,7 @@ coroutineTestingVersion = '1.6.4'
 liveDataTestingVersion = '1.2.0'
 espressoVersion = '3.5.1'
 disableAnimationVersion = '2.0.0'
-leakCanaryVersion = '1.5'
+leakCanaryVersion = '2.12'
 timberVersion = '5.0.1'
 protobufJavaVersion = '3.9.2'
 protocVersion = '3.9.0'
@@ -134,7 +134,6 @@ liveDataTesting = { module = "com.jraska.livedata:testing-ktx", version.ref = "l
 androidXTestCore = { module = "androidx.test:core", version.ref = "androidxTestCoreVersion" }
 androidxSecurityCrypto = { module = "androidx.security:security-crypto", version.ref = "androidxSecurityCryptoVersion" }
 preference = { module = "androidx.preference:preference", version.ref = "androidxPreferenceVersion" }
-leakCanaryAndroid = { module = "com.squareup.leakcanary:leakcanary-android", version.ref = "leakCanaryVersion" }
 robolectric = { module = "org.robolectric:robolectric", version.ref = "robolectricLatestVersion" }
 kluent = { module = "org.amshove.kluent:kluent-android", version.ref = "kluentVersion" }
 timberJUnit = { module = "net.lachlanmckee:timber-junit-rule", version.ref = "timberJunitVersion" }

@@ -18,7 +18,6 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.DefaultDividerItemDecoration
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.databinding.FragmentRelationStatusValueBinding
@@ -102,14 +101,6 @@ class RelationStatusValueFragment :
             relationKey = relationKey,
             ids = ids
         )
-    }
-
-    override fun PickiTonMultipleCompleteListener(
-        paths: ArrayList<String>?,
-        wasSuccessful: Boolean,
-        Reason: String?
-    ) {
-        toast("Not implemented yet")
     }
 
     override fun observeCommands(command: RelationValueBaseViewModel.ObjectRelationValueCommand) {

@@ -105,7 +105,7 @@ fun SpaceNameBlock(
 @Composable
 fun SpaceNameBlock() {
     Text(
-        text = stringResource(id = R.string.personal_space),
+        text = stringResource(id = R.string.space_settings),
         style = Title1,
         color = colorResource(id = R.color.text_primary)
     )

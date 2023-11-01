@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel.Event
+import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui_settings.fstorage.LocalStorageScreen
 import com.anytypeio.anytype.ui_settings.fstorage.RemoteStorageScreen
@@ -63,7 +64,8 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
                     } else {
                         LocalStorageScreen(
                             data = vm.state.collectAsStateWithLifecycle().value,
-                            onOffloadFilesClicked = { throttle { vm.event(Event.OnOffloadFilesClicked) } }
+                            onOffloadFilesClicked = { throttle { vm.event(Event.OnOffloadFilesClicked) } },
+                            onDeleteAccountClicked = { proceedWithAccountDeletion() }
                         )
                     }
                 }
@@ -128,6 +130,16 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
             R.id.remoteStorageFragment,
             bundleOf(RemoteStorageFragment.SUBSCRIPTION_KEY to subscription)
         )
+    }
+
+    private fun proceedWithAccountDeletion() {
+        vm.proceedWithAccountDeletion()
+        val dialog = DeleteAccountWarning()
+        dialog.onDeletionAccepted = {
+            dialog.dismiss()
+            vm.onDeleteAccountClicked()
+        }
+        dialog.show(childFragmentManager, null)
     }
 
     private fun generateSupportMail(

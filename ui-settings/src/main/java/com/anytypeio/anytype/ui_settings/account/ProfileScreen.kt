@@ -63,9 +63,8 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
 @Composable
-fun ProfileScreen(
+fun ProfileSettingsScreen(
     onKeychainPhraseClicked: () -> Unit,
-    onDeleteAccountClicked: () -> Unit,
     onLogoutClicked: () -> Unit,
     isLogoutInProgress: Boolean,
     onNameChange: (String) -> Unit,
@@ -106,6 +105,7 @@ fun ProfileScreen(
             text = stringResource(R.string.about),
             onClick = onAboutClicked
         )
+        Divider(paddingStart = 60.dp)
         Section(stringResource(R.string.access))
         Option(
             image = R.drawable.ic_keychain_phrase,
@@ -113,13 +113,6 @@ fun ProfileScreen(
             onClick = onKeychainPhraseClicked
         )
         Divider(paddingStart = 60.dp)
-        Section(stringResource(R.string.account))
-        Action(
-            name = stringResource(R.string.delete_account),
-            color = colorResource(R.color.text_primary),
-            onClick = onDeleteAccountClicked
-        )
-        Divider()
         ActionWithProgressBar(
             name = stringResource(R.string.log_out),
             color = colorResource(R.color.palette_dark_red),

@@ -32,7 +32,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
-import com.anytypeio.anytype.ui_settings.account.ProfileScreen
+import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
 import javax.inject.Inject
 import timber.log.Timber
@@ -74,9 +74,8 @@ class ProfileFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    ProfileScreen(
+                    ProfileSettingsScreen(
                         onKeychainPhraseClicked = onKeychainPhraseClicked,
-                        onDeleteAccountClicked = { throttle { proceedWithAccountDeletion() } },
                         onLogoutClicked = onLogoutClicked,
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
                         onNameChange = { vm.onNameChange(it) },

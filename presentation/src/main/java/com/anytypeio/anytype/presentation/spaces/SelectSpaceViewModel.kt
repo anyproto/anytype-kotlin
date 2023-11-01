@@ -99,7 +99,12 @@ class SelectSpaceViewModel(
                 ),
                 DVFilter(
                     relation = Relations.SPACE_ACCOUNT_STATUS,
-                    value = SpaceStatus.OK.code,
+                    value = SpaceStatus.DELETED.code.toDouble(),
+                    condition = DVFilterCondition.NOT_EQUAL
+                ),
+                DVFilter(
+                    relation = Relations.SPACE_LOCAL_STATUS,
+                    value = SpaceStatus.OK.code.toDouble(),
                     condition = DVFilterCondition.EQUAL
                 )
             ),

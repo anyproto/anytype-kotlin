@@ -1002,6 +1002,7 @@ message Event {
 
         message SpaceUsage {
             uint64 bytesUsage = 1;
+            string spaceId = 2;
         }
 
         message LocalUsage {

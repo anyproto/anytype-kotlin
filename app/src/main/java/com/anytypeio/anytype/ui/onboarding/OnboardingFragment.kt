@@ -470,6 +470,7 @@ class OnboardingFragment : Fragment() {
         }
     }
 
+    @Deprecated("To be deleted")
     @Composable
     private fun enterTheVoid(
         navController: NavHostController
@@ -510,6 +511,7 @@ class OnboardingFragment : Fragment() {
         }
     }
 
+    @Deprecated("To be deleted")
     @Composable
     private fun CreateSoulAnimation(contentPaddingTop: Int) {
         val component = componentManager().onboardingSoulCreationAnimComponent

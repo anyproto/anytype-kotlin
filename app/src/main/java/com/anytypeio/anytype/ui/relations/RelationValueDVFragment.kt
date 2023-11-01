@@ -113,8 +113,6 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
                 showAddFileScreen()
             }
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
-                //turn off for now https://app.clickup.com/t/h59z1j
-                //FileActionsFragment().showChildFragment()
                 openFilePicker()
             }
         }
@@ -162,14 +160,6 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
     override fun onFileValueActionUploadFromStorage() {
         toast("Not implemented")
         vm.onFileValueActionUploadFromStorageClicked()
-    }
-
-    override fun PickiTonMultipleCompleteListener(
-        paths: ArrayList<String>?,
-        wasSuccessful: Boolean,
-        Reason: String?
-    ) {
-        toast("Not implemented yet")
     }
 
     override fun inflateBinding(

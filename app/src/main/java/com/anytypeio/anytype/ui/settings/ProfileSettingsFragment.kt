@@ -1,16 +1,13 @@
 package com.anytypeio.anytype.ui.settings
 
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -20,8 +17,8 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
-import com.anytypeio.anytype.core_utils.const.FileConstants.getPermissionToRequestForImages
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.shareFile
@@ -30,6 +27,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
@@ -55,6 +53,17 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
     private val onLogoutClicked = {
         safeNavigate(R.id.logoutWarningScreen)
+    }
+
+    private lateinit var permissionHelper: MediaPermissionHelper
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        permissionHelper = MediaPermissionHelper(
+            fragment = this,
+            onPermissionDenied = { toast(R.string.permission_read_denied) },
+            onPermissionSuccess = { _, _ -> openGallery() }
+        )
     }
 
     override fun onCreateView(
@@ -129,27 +138,8 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
     }
 
     private fun proceedWithIconClick() {
-        if (!hasExternalStoragePermission()) {
-            permissionReadStorage.launch(arrayOf(getPermissionToRequestForImages()))
-        } else {
-            openGallery()
-        }
+        permissionHelper.openFilePicker(Mimetype.MIME_IMAGE_ALL, null)
     }
-
-    private fun hasExternalStoragePermission() = ContextCompat.checkSelfPermission(
-        requireActivity(),
-        getPermissionToRequestForImages()
-    ).let { result -> result == PackageManager.PERMISSION_GRANTED }
-
-    private val permissionReadStorage =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            val readResult = grantResults[getPermissionToRequestForImages()]
-            if (readResult == true) {
-                openGallery()
-            } else {
-                toast(R.string.permission_read_denied)
-            }
-        }
 
     private fun openGallery() {
         getContent.launch(SELECT_IMAGE_CODE)

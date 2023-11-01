@@ -3184,7 +3184,7 @@ class EditorViewModel(
                 onSuccess = { Timber.d("Template applied successfully") },
                 onFailure = { e ->
                     Timber.e(e, "Error while applying template")
-                    sendToast("Error while applying template, :${e.message}")
+                    sendToast("Error while applying template :${e.message}")
                 }
             )
         }

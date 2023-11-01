@@ -375,7 +375,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_mnemonic_key_saved">Go to the app</string>
     <string name="onboarding_mnemonic_skip">Check later</string>
     <string name="onboarding_mnemonic_copy">Copy to clipboard</string>
-    <string name="onboarding_set_your_name_title">Set your name</string>
+    <string name="onboarding_set_your_name_title">Choose your name</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>

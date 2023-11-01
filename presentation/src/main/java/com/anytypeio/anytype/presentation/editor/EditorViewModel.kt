@@ -3182,7 +3182,10 @@ class EditorViewModel(
             )
             applyTemplate.async(params = params).fold(
                 onSuccess = { Timber.d("Template applied successfully") },
-                onFailure = { e -> Timber.e(e, "Error while applying template") }
+                onFailure = { e ->
+                    Timber.e(e, "Error while applying template")
+                    sendToast("Error while applying template :${e.message}")
+                }
             )
         }
     }

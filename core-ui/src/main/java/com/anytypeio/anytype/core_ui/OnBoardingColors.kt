@@ -40,10 +40,10 @@ val ColorSpaceBackground = Color(0xFFDBDAD4)
 val MnemonicPhrasePaletteColors = listOf(
     Color(0xFFF1A91A),
     Color(0xFFF55522),
-    Color(0xFF5871FF),
-    Color(0xFF18A3F1),
     Color(0xFFDD2EA1),
     Color(0xFFB354D7),
+    Color(0xFF5871FF),
+    Color(0xFF18A3F1),
     Color(0xFF5DD400),
 )
 

@@ -3,8 +3,8 @@ package com.anytypeio.anytype.presentation.objects.menu
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -341,9 +341,10 @@ abstract class ObjectMenuViewModelBase(
             val isCollection: Boolean = false
         ) : Command()
         data class OpenTemplate(
-            val template: Id,
-            val typeName: String,
-            val icon: ObjectIcon
+            val templateId: Id,
+            val typeId: Id,
+            val typeKey: Key,
+            val typeName: String
         ) : Command()
     }
 

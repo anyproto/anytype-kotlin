@@ -303,9 +303,14 @@ class ObjectMenuViewModel(
             val params = CreateTemplateFromObject.Params(obj = ctx)
             createTemplateFromObject.async(params).fold(
                 onSuccess = { template ->
-                    val objTypeId = storage.details.current().details[ctx]?.type?.firstOrNull()
-                    sendAnalyticsCreateTemplateEvent(analytics, objTypeId, startTime)
-                    commands.emit(buildOpenTemplateCommand(ctx, template))
+                    sendAnalyticsCreateTemplateEvent(
+                        analytics = analytics,
+                        details = storage.details.current().details,
+                        ctx = ctx,
+                        startTime = startTime
+                    )
+                    buildOpenTemplateCommand(ctx, template)
+                    Log.d("Test1983", "isDismissed.value = true")
                     isDismissed.value = true
                 },
                 onFailure = {
@@ -316,19 +321,23 @@ class ObjectMenuViewModel(
         }
     }
 
-    private fun buildOpenTemplateCommand(ctx: Id, template: Id): Command.OpenTemplate {
-        val type = storage.details.current().details[ctx]?.type?.firstOrNull()
-        val objType =
-            ObjectWrapper.Basic(storage.details.current().details[type]?.map ?: emptyMap())
-        return Command.OpenTemplate(
-            template = template,
-            icon = ObjectIcon.from(
-                objType,
-                objType.layout,
-                urlBuilder
-            ),
-            typeName = objType.getProperName()
-        )
+    private suspend fun buildOpenTemplateCommand(ctx: Id, template: Id) {
+        val details = storage.details.current().details
+        val type = details[ctx]?.type?.firstOrNull()
+        val objType = ObjectWrapper.Type(details[type]?.map ?: emptyMap())
+        val objTypeKey = objType.key
+        if (objTypeKey != null) {
+            val command = Command.OpenTemplate(
+                templateId = template,
+                typeId = objType.id,
+                typeKey = objTypeKey,
+                typeName = objType.name.orEmpty()
+            )
+            commands.emit(command)
+        } else {
+            Timber.e("Error while opening template from object, type $type has no key)}")
+            sendToast("Couldn't open template from object")
+        }
     }
 
     private fun proceedWithUpdatingLockStatus(

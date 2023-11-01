@@ -139,7 +139,11 @@ abstract class ObjectMenuBaseFragment :
         toast(getString(R.string.snackbar_template_add) + command.typeName)
         findNavController().navigate(
             R.id.nav_editor_modal,
-            bundleOf(EditorModalFragment.ARG_ID to command.template)
+            bundleOf(
+                EditorModalFragment.ARG_ID to command.templateId,
+                EditorModalFragment.ARG_TARGET_TYPE_ID to command.typeId,
+                EditorModalFragment.ARG_TARGET_TYPE_KEY to command.typeKey
+            )
         )
     }
 

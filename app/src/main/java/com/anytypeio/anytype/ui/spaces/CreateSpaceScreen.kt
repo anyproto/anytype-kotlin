@@ -17,12 +17,15 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -151,6 +154,7 @@ fun SpaceNameInput(
     input: MutableState<String>
 ) {
     val focusManager = LocalFocusManager.current
+    val focusRequester = FocusRequester()
     Box(
         modifier = Modifier
             .height(72.dp)
@@ -168,6 +172,7 @@ fun SpaceNameInput(
                 .fillMaxWidth()
                 .padding(start = 20.dp, bottom = 12.dp)
                 .align(Alignment.BottomStart)
+                .focusRequester(focusRequester)
             ,
             maxLines = 1,
             singleLine = true,
@@ -218,6 +223,9 @@ fun SpaceNameInput(
             ),
             text = stringResource(id = R.string.space_name)
         )
+    }
+    LaunchedEffect(Unit) {
+        focusRequester.requestFocus()
     }
 }
 

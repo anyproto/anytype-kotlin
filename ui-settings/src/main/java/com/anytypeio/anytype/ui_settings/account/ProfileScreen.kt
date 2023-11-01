@@ -63,14 +63,13 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 
 @Composable
-fun ProfileScreen(
+fun ProfileSettingsScreen(
     onKeychainPhraseClicked: () -> Unit,
-    onDeleteAccountClicked: () -> Unit,
     onLogoutClicked: () -> Unit,
     isLogoutInProgress: Boolean,
     onNameChange: (String) -> Unit,
     onProfileIconClick: () -> Unit,
-    account: ProfileViewModel.AccountProfile,
+    account: ProfileSettingsViewModel.AccountProfile,
     onAppearanceClicked: () -> Unit,
     onDataManagementClicked: () -> Unit,
     onAboutClicked: () -> Unit
@@ -106,6 +105,7 @@ fun ProfileScreen(
             text = stringResource(R.string.about),
             onClick = onAboutClicked
         )
+        Divider(paddingStart = 60.dp)
         Section(stringResource(R.string.access))
         Option(
             image = R.drawable.ic_keychain_phrase,
@@ -113,13 +113,6 @@ fun ProfileScreen(
             onClick = onKeychainPhraseClicked
         )
         Divider(paddingStart = 60.dp)
-        Section(stringResource(R.string.account))
-        Action(
-            name = stringResource(R.string.delete_account),
-            color = colorResource(R.color.text_primary),
-            onClick = onDeleteAccountClicked
-        )
-        Divider()
         ActionWithProgressBar(
             name = stringResource(R.string.log_out),
             color = colorResource(R.color.palette_dark_red),
@@ -252,12 +245,12 @@ fun ActionWithProgressBar(
 @Composable
 private fun Header(
     modifier: Modifier = Modifier,
-    account: ProfileViewModel.AccountProfile,
+    account: ProfileSettingsViewModel.AccountProfile,
     onProfileIconClick: () -> Unit,
     onNameSet: (String) -> Unit
 ) {
     when (account) {
-        is ProfileViewModel.AccountProfile.Data -> {
+        is ProfileSettingsViewModel.AccountProfile.Data -> {
             Box(modifier = modifier.padding(vertical = 6.dp)) {
                 Dragger()
             }
@@ -273,7 +266,7 @@ private fun Header(
             }
             ProfileNameBlock(name = account.name, onNameSet = onNameSet)
         }
-        is ProfileViewModel.AccountProfile.Idle -> {}
+        is ProfileSettingsViewModel.AccountProfile.Idle -> {}
     }
 }
 

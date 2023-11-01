@@ -40,6 +40,7 @@ import com.anytypeio.anytype.presentation.settings.MainSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.R
 
+@Deprecated("To be deleted")
 @Composable
 fun MainSettingScreen(
     workspace: MainSettingsViewModel.WorkspaceAndAccount,

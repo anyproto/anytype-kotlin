@@ -16,8 +16,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.ui.settings.ProfileFragment
-import com.anytypeio.anytype.ui_settings.account.ProfileViewModel
+import com.anytypeio.anytype.ui.settings.ProfileSettingsFragment
+import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
@@ -32,7 +32,7 @@ interface ProfileSubComponent {
         fun build(): ProfileSubComponent
     }
 
-    fun inject(fragment: ProfileFragment)
+    fun inject(fragment: ProfileSettingsFragment)
 }
 
 @Module(includes = [ProfileModule.Bindings::class])
@@ -50,7 +50,7 @@ object ProfileModule {
         urlBuilder: UrlBuilder,
         setDocumentImageIcon: SetDocumentImageIcon,
         spaceGradientProvider: SpaceGradientProvider
-    ): ProfileViewModel.Factory = ProfileViewModel.Factory(
+    ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
         deleteAccount = deleteAccount,
         analytics = analytics,
         storelessSubscriptionContainer = storelessSubscriptionContainer,

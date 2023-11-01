@@ -36,6 +36,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -48,7 +49,8 @@ import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 @Composable
 fun LocalStorageScreen(
     data: ScreenState,
-    onOffloadFilesClicked: () -> Unit
+    onOffloadFilesClicked: () -> Unit,
+    onDeleteAccountClicked: () -> Unit
 ) {
     Card(
         modifier = Modifier.fillMaxSize(),
@@ -68,7 +70,13 @@ fun LocalStorageScreen(
             ) {
                 Dragger()
             }
-            Header(stringResource(id = R.string.local_storage))
+            Header(stringResource(id = R.string.data_management))
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = stringResource(id = R.string.local_storage),
+                style = Title1,
+                color = colorResource(id = R.color.text_primary)
+            )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = stringResource(id = R.string.in_order_to_save),
@@ -127,6 +135,28 @@ fun LocalStorageScreen(
                     contentPadding = PaddingValues(12.dp, 7.dp, 12.dp, 7.dp)
                 }
             )
+            Spacer(modifier = Modifier.height(24.dp))
+            Text(
+                text = stringResource(id = R.string.danger_zone),
+                style = Title1,
+                color = colorResource(id = R.color.text_primary)
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = stringResource(id = R.string.deleted_account_danger_zone_msg),
+                style = BodyCalloutRegular,
+                color = colorResource(id = R.color.text_primary),
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            ButtonWarning(
+                text = stringResource(id = R.string.delete_account),
+                onClick = onDeleteAccountClicked,
+                size = ButtonSize.SmallSecondary.apply {
+                    contentPadding = PaddingValues(12.dp, 7.dp, 12.dp, 7.dp)
+                }
+            )
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -304,7 +334,8 @@ fun PreviewRemoteStorageScreen() {
 fun PreviewLocalStorageScreen() {
     LocalStorageScreen(
         data = mockData,
-        onOffloadFilesClicked = {}
+        onOffloadFilesClicked = {},
+        onDeleteAccountClicked = {}
     )
 }
 

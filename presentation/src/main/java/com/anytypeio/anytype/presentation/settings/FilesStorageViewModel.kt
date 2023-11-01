@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.device.BuildProvider
+import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -31,7 +32,9 @@ import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendGetMoreSpaceEvent
+import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsOffloadEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageManageEvent
@@ -65,8 +68,9 @@ class FilesStorageViewModel(
     private val fileSpaceUsage: FileSpaceUsage,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val buildProvider: BuildProvider,
-    private val getAccount: GetAccount
-) : ViewModel() {
+    private val getAccount: GetAccount,
+    private val deleteAccount: DeleteAccount
+) : BaseViewModel() {
 
     val events = MutableSharedFlow<Event>(replay = 0)
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -76,7 +80,6 @@ class FilesStorageViewModel(
 
     private val _state = MutableStateFlow(ScreenState.empty())
     val state: StateFlow<ScreenState> = _state
-    val toasts = MutableSharedFlow<String>(replay = 0)
 
     private val jobs = mutableListOf<Job>()
 
@@ -168,7 +171,7 @@ class FilesStorageViewModel(
                     is Interactor.Status.Error -> {
                         isClearFileCacheInProgress.value = false
                         Timber.e(status.throwable, "Error while clearing file cache")
-                        toasts.emit("Error while clearing the file cache")
+                        sendToast("Error while clearing the file cache")
                     }
                     Interactor.Status.Success -> {
                         viewModelScope.sendEvent(
@@ -317,6 +320,32 @@ class FilesStorageViewModel(
         }
     }
 
+    fun proceedWithAccountDeletion() {
+        viewModelScope.launch {
+            analytics.sendScreenSettingsDeleteEvent()
+        }
+    }
+
+    fun onDeleteAccountClicked() {
+        Timber.d("onDeleteAccountClicked, ")
+        jobs += viewModelScope.launch {
+            deleteAccount(BaseUseCase.None).process(
+                success = {
+                    sendEvent(
+                        analytics = analytics,
+                        eventName = EventsDictionary.deleteAccount
+                    )
+                    Timber.d("Successfully deleted account, status")
+                },
+                failure = {
+                    Timber.e(it, "Error while deleting account").also {
+                        sendToast("Error while deleting account")
+                    }
+                }
+            )
+        }
+    }
+
     sealed class Event {
         object OnManageFilesClicked : Event()
         object OnOffloadFilesClicked : Event()
@@ -340,7 +369,8 @@ class FilesStorageViewModel(
         private val fileSpaceUsage: FileSpaceUsage,
         private val interceptFileLimitEvents: InterceptFileLimitEvents,
         private val buildProvider: BuildProvider,
-        private val getAccount: GetAccount
+        private val getAccount: GetAccount,
+        private val deleteAccount: DeleteAccount
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -356,7 +386,8 @@ class FilesStorageViewModel(
             fileSpaceUsage = fileSpaceUsage,
             interceptFileLimitEvents = interceptFileLimitEvents,
             buildProvider = buildProvider,
-            getAccount = getAccount
+            getAccount = getAccount,
+            deleteAccount = deleteAccount
         ) as T
     }
 

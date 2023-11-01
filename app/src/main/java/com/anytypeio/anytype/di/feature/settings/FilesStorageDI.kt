@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -99,6 +100,14 @@ object FilesStorageModule {
         repo: AuthRepository,
         dispatchers: AppCoroutineDispatchers
     ): GetAccount = GetAccount(repo = repo, dispatcher = dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDeleteAccountUseCase(
+        repo: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DeleteAccount = DeleteAccount(repo = repo)
 
     @Module
     interface Declarations {

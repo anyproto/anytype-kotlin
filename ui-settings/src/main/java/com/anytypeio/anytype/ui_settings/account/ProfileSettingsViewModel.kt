@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class ProfileViewModel(
+class ProfileSettingsViewModel(
     private val analytics: Analytics,
     private val deleteAccount: DeleteAccount,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
@@ -168,7 +168,7 @@ class ProfileViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return ProfileViewModel(
+            return ProfileSettingsViewModel(
                 deleteAccount = deleteAccount,
                 analytics = analytics,
                 storelessSubscriptionContainer = storelessSubscriptionContainer,

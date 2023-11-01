@@ -99,8 +99,8 @@ class SelectSpaceViewModel(
                 ),
                 DVFilter(
                     relation = Relations.SPACE_ACCOUNT_STATUS,
-                    value = SpaceStatus.DELETED.code,
-                    condition = DVFilterCondition.NOT_EQUAL
+                    value = SpaceStatus.OK.code,
+                    condition = DVFilterCondition.EQUAL
                 )
             ),
             sorts = listOf(

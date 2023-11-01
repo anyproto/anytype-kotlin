@@ -106,9 +106,7 @@ fun ViewerEditWidget(
         AnimatedVisibility(
             visible = currentState.isVisible(),
             enter = fadeIn(),
-            exit = fadeOut(
-                tween(200)
-            )
+            exit = fadeOut(tween(100))
         ) {
             Box(
                 Modifier
@@ -180,12 +178,7 @@ fun ViewerEditWidgetContent(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .shadow(
-                elevation = 40.dp,
-                spotColor = Color(0x40000000),
-                ambientColor = Color(0x40000000)
-            )
-            .padding(start = 8.dp, end = 8.dp, bottom = 31.dp)
+            .padding(start = 8.dp, end = 8.dp, bottom = 15.dp)
             .background(
                 color = colorResource(id = R.color.background_secondary),
                 shape = RoundedCornerShape(size = 16.dp)
@@ -346,7 +339,7 @@ fun NameTextField(
         BasicTextField(
             value = innerValue,
             onValueChange = { innerValue = it },
-            textStyle = Title1,
+            textStyle = Title1.copy(color = colorResource(id = R.color.text_primary)),
             singleLine = true,
             enabled = true,
             modifier = Modifier

@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
+import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import javax.inject.Inject
@@ -884,9 +884,12 @@ class MiddlewareServiceImplementation @Inject constructor(
         val error = response.error
         if (error != null && error.code != Rpc.Object.Open.Response.Error.Code.NULL) {
             when (error.code) {
-                Rpc.Object.Open.Response.Error.Code.NOT_FOUND -> throw NotFoundObjectException()
-                Rpc.Object.Open.Response.Error.Code.ANYTYPE_NEEDS_UPGRADE ->
-                    throw BackwardCompatilityNotSupportedException()
+                Rpc.Object.Open.Response.Error.Code.NOT_FOUND ->{
+                    throw NotFoundObjectException()
+                }
+                Rpc.Object.Open.Response.Error.Code.ANYTYPE_NEEDS_UPGRADE -> {
+                    throw AnytypeNeedsUpgradeException()
+                }
                 else -> throw Exception(error.description)
             }
         } else {
@@ -1108,7 +1111,7 @@ class MiddlewareServiceImplementation @Inject constructor(
             when (error.code) {
                 Rpc.Object.Show.Response.Error.Code.NOT_FOUND -> throw NotFoundObjectException()
                 Rpc.Object.Show.Response.Error.Code.ANYTYPE_NEEDS_UPGRADE ->
-                    throw BackwardCompatilityNotSupportedException()
+                    throw AnytypeNeedsUpgradeException()
                 else -> throw Exception(error.description)
             }
         } else {

@@ -66,7 +66,7 @@ class ProfileSettingsViewModel(
         val obj = result.firstOrNull()
         AccountProfile.Data(
             name = obj?.name.orEmpty(),
-            icon = obj?.profileIcon(urlBuilder, spaceGradientProvider) ?: ProfileIconView.Placeholder
+            icon = obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
         )
     }.stateIn(
         viewModelScope,

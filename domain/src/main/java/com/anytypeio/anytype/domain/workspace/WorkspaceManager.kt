@@ -2,6 +2,10 @@ package com.anytypeio.anytype.domain.workspace
 
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
+import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
+import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -31,6 +35,7 @@ interface SpaceManager {
     suspend fun get(): Id
     suspend fun set(space: Id)
     fun getConfig(): Config?
+    fun getType(space: Id): SpaceType
     fun observe() : Flow<Config>
     fun clear()
 
@@ -57,6 +62,18 @@ interface SpaceManager {
                 info[curr]
             } else {
                 configStorage.getOrNull()
+            }
+        }
+
+        override fun getType(space: Id): SpaceType {
+            val accountConfig = configStorage.getOrNull()
+            return if (accountConfig != null) {
+                if (space == accountConfig.space)
+                    PERSONAL_SPACE_TYPE
+                else
+                    PRIVATE_SPACE_TYPE
+            } else {
+                UNKNOWN_SPACE_TYPE
             }
         }
 

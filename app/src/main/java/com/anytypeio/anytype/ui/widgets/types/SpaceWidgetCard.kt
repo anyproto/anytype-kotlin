@@ -14,6 +14,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
+import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
+import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
@@ -24,7 +27,8 @@ import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 fun SpaceWidgetCard(
     onClick: () -> Unit,
     name: String,
-    icon: SpaceIconView
+    icon: SpaceIconView,
+    spaceType: SpaceType
 ) {
     Box(
         modifier = Modifier
@@ -61,13 +65,18 @@ fun SpaceWidgetCard(
             color = colorResource(id = R.color.text_primary),
             maxLines = 1
         )
+        val spaceTypeName = when(spaceType) {
+            PERSONAL_SPACE_TYPE -> stringResource(id = R.string.space_type_personal)
+            PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private)
+            else -> stringResource(id = R.string.space_type_unknown)
+        }
         Text(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomStart)
                 .padding(start = 71.dp, bottom = 16.dp)
             ,
-            text = stringResource(id = R.string.personal),
+            text = spaceTypeName,
             style = Relations3,
             color = colorResource(id = R.color.text_secondary),
             maxLines = 1

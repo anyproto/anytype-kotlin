@@ -57,10 +57,10 @@ import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendSelectHomeTabEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
@@ -173,7 +173,7 @@ class HomeScreenViewModel(
 
     private val spaceWidgetView = spaceWidgetContainer.view
 
-    val icon = MutableStateFlow<SpaceIconView>(SpaceIconView.Loading)
+    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
@@ -216,7 +216,7 @@ class HomeScreenViewModel(
         }
 
     init {
-        proceedWithObservingSpaceIcon()
+        proceedWithObservingProfileIcon()
         proceedWithLaunchingUnsubscriber()
         proceedWithObjectViewStatePipeline()
         proceedWithWidgetContainerPipeline()
@@ -368,7 +368,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithObservingSpaceIcon() {
+    private fun proceedWithObservingProfileIcon() {
         viewModelScope.launch {
             spaceManager
                 .observe()
@@ -376,9 +376,10 @@ class HomeScreenViewModel(
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
                             subscription = HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
-                            targets = listOf(config.spaceView),
+                            targets = listOf(config.profile),
                             keys = listOf(
                                 Relations.ID,
+                                Relations.NAME,
                                 Relations.ICON_EMOJI,
                                 Relations.ICON_IMAGE,
                                 Relations.ICON_OPTION
@@ -386,8 +387,7 @@ class HomeScreenViewModel(
                         )
                     ).map { result ->
                         val obj = result.firstOrNull()
-                        obj?.spaceIcon(urlBuilder, spaceGradientProvider)
-                            ?: SpaceIconView.Placeholder
+                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
                     }
                 }
                 .catch { Timber.e(it, "Error while observing space icon") }

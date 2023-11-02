@@ -959,10 +959,6 @@ class EditorViewModel(
     fun onStart(id: Id) {
         Timber.d("onStart, id:[$id]")
 
-        viewModelScope.launch {
-            dispatch(Command.AlertDialog)
-        }
-
         context = id
 
         stateData.postValue(ViewState.Loading)

@@ -419,12 +419,16 @@ fun CoroutineScope.sendAnalyticsMoveToBinEvent(
 
 fun CoroutineScope.sendAnalyticsDuplicateEvent(
     analytics: Analytics,
+    details: Map<Id, Block.Fields>?,
+    ctx: Id,
     startTime: Long,
     count: Int = 1
 ) {
+    val objType = if (details != null) getAnalyticsObjectType(details, ctx) else null
     val props = Props(
         mapOf(
-            EventsPropertiesKey.count to count
+            EventsPropertiesKey.count to count,
+            EventsPropertiesKey.objectType to objType
         )
     )
     sendEvent(

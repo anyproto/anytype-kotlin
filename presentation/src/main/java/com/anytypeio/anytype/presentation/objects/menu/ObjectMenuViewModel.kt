@@ -223,7 +223,7 @@ class ObjectMenuViewModel(
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = true)
             }
             ObjectAction.DUPLICATE -> {
-                proceedWithDuplication(ctx = ctx)
+                proceedWithDuplication(ctx = ctx, details = storage.details.current().details)
             }
             ObjectAction.RESTORE -> {
                 proceedWithUpdatingArchivedStatus(ctx = ctx, isArchived = false)

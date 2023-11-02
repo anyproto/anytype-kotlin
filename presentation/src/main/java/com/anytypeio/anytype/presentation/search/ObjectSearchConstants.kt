@@ -89,6 +89,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relation = Relations.TYPE_UNIQUE_KEY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectTypeUniqueKeys.TEMPLATE
+        ),
+        DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
             value = SupportedLayouts.layouts.map { it.code.toDouble() }
@@ -130,6 +135,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE_UNIQUE_KEY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectTypeUniqueKeys.TEMPLATE
         ),
         DVFilter(
             relation = Relations.IS_READ_ONLY,
@@ -180,6 +190,11 @@ object ObjectSearchConstants {
             value = true
         ),
         DVFilter(
+            relation = Relations.TYPE_UNIQUE_KEY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectTypeUniqueKeys.TEMPLATE
+        ),
+        DVFilter(
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = space
@@ -218,6 +233,13 @@ object ObjectSearchConstants {
                 relation = Relations.IS_DELETED,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.TYPE_UNIQUE_KEY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = ObjectTypeUniqueKeys.TEMPLATE
             )
         )
         add(
@@ -278,6 +300,11 @@ object ObjectSearchConstants {
             value = SupportedLayouts.layouts.map { it.code.toDouble() }
         ),
         DVFilter(
+            relation = Relations.TYPE_UNIQUE_KEY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectTypeUniqueKeys.TEMPLATE
+        ),
+        DVFilter(
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = space
@@ -309,6 +336,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE_UNIQUE_KEY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectTypeUniqueKeys.TEMPLATE
         ),
         DVFilter(
             relation = Relations.LAYOUT,
@@ -350,6 +382,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE_UNIQUE_KEY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectTypeUniqueKeys.TEMPLATE
         ),
         DVFilter(
             relation = Relations.LAYOUT,
@@ -466,6 +503,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE_UNIQUE_KEY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectTypeUniqueKeys.TEMPLATE
         ),
         DVFilter(
             relation = Relations.LAYOUT,

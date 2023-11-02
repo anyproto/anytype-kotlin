@@ -249,13 +249,13 @@ class FilesStorageViewModel(
                 ScreenState(
                     spaceName = workspace?.name.orEmpty(),
                     spaceIcon = workspace?.spaceIcon(urlBuilder, spaceGradientProvider),
-                    spaceUsage = bytesUsage?.let { bytesToHumanReadableSizeFloatingPoint(it) }
+                    spaceUsage = bytesUsage?.readableFileSize()
                         .orEmpty(),
                     percentUsage = percentUsage,
                     device = getDeviceName(),
                     localUsage = spaceUsage.localBytesUsage?.let { bytesToHumanReadableSizeLocal(it) }
                         .orEmpty(),
-                    spaceLimit = bytesLimit?.let { bytesToHumanReadableSize(it) }.orEmpty(),
+                    spaceLimit = bytesLimit?.readableFileSize().orEmpty(),
                     isShowGetMoreSpace = isShowGetMoreSpace,
                     isShowSpaceUsedWarning = isShowSpaceUsedWarning
                 )

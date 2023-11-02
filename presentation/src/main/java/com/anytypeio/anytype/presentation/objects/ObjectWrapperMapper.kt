@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
+import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
@@ -295,7 +296,7 @@ fun ObjectWrapper.Basic.mapFileObjectToView(): CollectionView.ObjectView {
     val defaultObjectView = DefaultObjectView(
         id = id,
         name = getProperName(),
-        description = bytesToHumanReadableSize(bytes = sizeInBytes?.toLong() ?: 0L),
+        description = sizeInBytes?.toLong()?.readableFileSize().orEmpty(),
         layout = layout,
         icon = fileIcon
     )

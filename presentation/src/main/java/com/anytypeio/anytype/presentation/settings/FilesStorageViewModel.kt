@@ -12,10 +12,9 @@ import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
-import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeFloatingPoint
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.domain.account.DeleteAccount
@@ -249,13 +248,13 @@ class FilesStorageViewModel(
                 ScreenState(
                     spaceName = workspace?.name.orEmpty(),
                     spaceIcon = workspace?.spaceIcon(urlBuilder, spaceGradientProvider),
-                    spaceUsage = bytesUsage?.let { bytesToHumanReadableSizeFloatingPoint(it) }
+                    spaceUsage = bytesUsage?.readableFileSize()
                         .orEmpty(),
                     percentUsage = percentUsage,
                     device = getDeviceName(),
                     localUsage = spaceUsage.localBytesUsage?.let { bytesToHumanReadableSizeLocal(it) }
                         .orEmpty(),
-                    spaceLimit = bytesLimit?.let { bytesToHumanReadableSize(it) }.orEmpty(),
+                    spaceLimit = bytesLimit?.readableFileSize().orEmpty(),
                     isShowGetMoreSpace = isShowGetMoreSpace,
                     isShowSpaceUsedWarning = isShowSpaceUsedWarning
                 )

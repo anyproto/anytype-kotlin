@@ -35,6 +35,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
+import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
+import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
+import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -73,7 +76,7 @@ fun CreateSpaceScreen(
         SpaceNameInput(input = input)
         Divider()
         Section(title = "Type")
-        TypeOfSpace()
+        TypeOfSpace(spaceType = PERSONAL_SPACE_TYPE)
         Divider()
         Section(title = "Start with")
         UseCase()
@@ -233,7 +236,9 @@ fun SpaceNameInput(
 fun Section(
     title: String
 ) {
-    Box(modifier = Modifier.height(52.dp).fillMaxWidth()) {
+    Box(modifier = Modifier
+        .height(52.dp)
+        .fillMaxWidth()) {
         Text(
             modifier = Modifier
                 .padding(
@@ -248,7 +253,7 @@ fun Section(
 }
 
 @Composable
-fun TypeOfSpace() {
+fun TypeOfSpace(spaceType: SpaceType?) {
     Box(
         modifier = Modifier
             .height(52.dp)
@@ -261,14 +266,21 @@ fun TypeOfSpace() {
             painter = painterResource(id = R.drawable.ic_space_type_private), 
             contentDescription = "Private space icon"
         )
-        Text(
-            modifier = Modifier
-                .padding(start = 42.dp)
-                .align(Alignment.CenterStart),
-            text = "Private",
-            color = colorResource(id = R.color.text_primary),
-            style = BodyRegular
-        )
+        if (spaceType != null) {
+            val spaceTypeName = when (spaceType) {
+                PERSONAL_SPACE_TYPE -> stringResource(id = R.string.space_type_personal)
+                PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private)
+                else -> stringResource(id = R.string.space_type_unknown)
+            }
+            Text(
+                modifier = Modifier
+                    .padding(start = 42.dp)
+                    .align(Alignment.CenterStart),
+                text = spaceTypeName,
+                color = colorResource(id = R.color.text_primary),
+                style = BodyRegular
+            )
+        }
     }
 }
 

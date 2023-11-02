@@ -6,7 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
+import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.base.fold
@@ -85,7 +89,8 @@ class SpaceSettingsViewModel(
                                 .toString(),
                             spaceId = config.space,
                             network = config.network,
-                            isDeletable = isSpaceDeletable(config.space)
+                            isDeletable = isSpaceDeletable(config.space),
+                            spaceType = resolveSpaceType(config.space)
                         )
                     }
                 }.collect { spaceViewState.value = ViewState.Success(it) }
@@ -98,6 +103,15 @@ class SpaceSettingsViewModel(
             false
         else
             personalSpace != space
+    }
+
+    private fun resolveSpaceType(space: Id) : SpaceType {
+        val personalSpace = resolvePersonalSpace()
+        return when {
+            personalSpace == space -> PERSONAL_SPACE_TYPE
+            personalSpace != null && personalSpace != space -> PRIVATE_SPACE_TYPE
+            else -> UNKNOWN_SPACE_TYPE
+        }
     }
 
     private fun resolvePersonalSpace() : Id? {
@@ -191,7 +205,8 @@ class SpaceSettingsViewModel(
         val network: Id?,
         val name: String,
         val icon: SpaceIconView,
-        val isDeletable: Boolean = false
+        val isDeletable: Boolean = false,
+        val spaceType: SpaceType
     )
 
     sealed class Command {

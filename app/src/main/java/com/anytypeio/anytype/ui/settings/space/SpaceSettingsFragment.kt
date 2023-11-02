@@ -214,7 +214,12 @@ fun SpaceSettingsScreen(
             Section(title = stringResource(id = R.string.type))
         }
         item {
-            TypeOfSpace()
+            TypeOfSpace(
+                if (spaceData is ViewState.Success)
+                    spaceData.data.spaceType
+                else
+                    null
+            )
         }
         item {
             Divider()

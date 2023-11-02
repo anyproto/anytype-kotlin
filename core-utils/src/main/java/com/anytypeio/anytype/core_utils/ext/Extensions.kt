@@ -5,6 +5,9 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import java.text.DecimalFormat
+import kotlin.math.log10
+import kotlin.math.pow
 
 fun <T> MutableList<T>.swap(index1: Int, index2: Int) {
     val tmp = this[index1]
@@ -141,4 +144,11 @@ fun <T> MutableList<T>.moveOnTop(
 inline fun <T, R> Iterable<T>.allUniqueBy(transform: (T) -> R): Boolean {
     val hashset = hashSetOf<R>()
     return this.all { hashset.add(transform(it)) }
+}
+
+fun Long.readableFileSize(): String {
+    if (this <= 0) return "0"
+    val units = arrayOf("B", "kB", "MB", "GB", "TB")
+    val digitGroups = (log10(this.toDouble()) / log10(1024.0)).toInt()
+    return DecimalFormat("#,##0.#").format(this / 1024.0.pow(digitGroups.toDouble())) + " " + units[digitGroups]
 }

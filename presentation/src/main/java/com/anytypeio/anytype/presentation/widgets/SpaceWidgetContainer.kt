@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 
 class SpaceWidgetContainer @Inject constructor(
@@ -34,8 +35,10 @@ class SpaceWidgetContainer @Inject constructor(
                         add(Relations.ICON_OPTION)
                     }
                 )
-            )
-        }.mapNotNull { results ->
+            ).map { results ->
+                config to results
+            }
+        }.mapNotNull { (config, results) ->
             val spaceObject = results.firstOrNull()
             if (spaceObject != null) {
                 WidgetView.SpaceWidget.View(
@@ -43,7 +46,8 @@ class SpaceWidgetContainer @Inject constructor(
                     icon = spaceObject.spaceIcon(
                         builder = urlBuilder,
                         spaceGradientProvider = spaceGradientProvider
-                    )
+                    ),
+                    type = spaceManager.getType(space = config.space)
                 )
             } else {
                 null

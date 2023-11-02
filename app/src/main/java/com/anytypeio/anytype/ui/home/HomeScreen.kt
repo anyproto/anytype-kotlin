@@ -219,7 +219,8 @@ private fun WidgetList(
                     SpaceWidgetCard(
                         onClick = onSpaceWidgetClicked,
                         name = item.space.name.orEmpty(),
-                        icon = item.icon
+                        icon = item.icon,
+                        spaceType = item.type
                     )
                 }
                 is WidgetView.Tree -> {
@@ -448,25 +449,6 @@ private fun WidgetList(
                         onClick = { onBundledWidgetHeaderClicked(item.id) },
                         mode = mode
                     )
-                }
-                is WidgetView.Space -> {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 12.dp)
-                            .animateItemPlacement(
-                                spring(
-                                    stiffness = Spring.StiffnessHigh,
-                                    visibilityThreshold = IntOffset.Zero
-                                )
-                            )
-                    ) {
-                        WidgetActionButton(
-                            label = "Open spaces",
-                            onClick = onOpenSpacesClicked,
-                            modifier = Modifier.align(Alignment.TopCenter)
-                        )
-                    }
                 }
                 is WidgetView.Library -> {
                     LibraryWidgetCard(

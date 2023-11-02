@@ -2,14 +2,12 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.media
 
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.format.Formatter
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.core.view.updateLayoutParams
-import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.SearchHighlightSpan
 import com.anytypeio.anytype.core_ui.common.SearchTargetHighlightSpan
@@ -20,6 +18,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_utils.ext.dimen
+import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -45,7 +44,7 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
         super.bind(item, clicked)
         name.enableReadMode()
         if (item.size != null && item.name != null) {
-            val size = Formatter.formatFileSize(itemView.context, item.size!!)
+            val size = item.size!!.readableFileSize()
             val spannable = SpannableString("${item.name}  $size")
             val start = item.name!!.length + 2
             val end = item.name!!.length + 2 + size.length

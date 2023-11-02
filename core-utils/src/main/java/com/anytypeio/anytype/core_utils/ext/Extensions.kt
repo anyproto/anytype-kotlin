@@ -146,7 +146,6 @@ inline fun <T, R> Iterable<T>.allUniqueBy(transform: (T) -> R): Boolean {
     return this.all { hashset.add(transform(it)) }
 }
 
-
 fun Long.readableFileSize(): String {
     if (this <= 0) return "0"
     val units = arrayOf("B", "kB", "MB", "GB", "TB")

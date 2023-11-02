@@ -169,7 +169,7 @@ class ObjectSetMenuViewModel(
                 proceedWithLinkTo()
             }
             ObjectAction.DUPLICATE -> {
-                proceedWithDuplication(ctx = ctx)
+                proceedWithDuplication(ctx = ctx, details = objectState.value.dataViewState()?.details)
             }
             ObjectAction.MOVE_TO,
             ObjectAction.SEARCH_ON_PAGE,

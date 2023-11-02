@@ -25,7 +25,7 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.data.auth.exception.BackwardCompatilityNotSupportedException
+import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
 import com.anytypeio.anytype.data.auth.exception.UndoRedoExhaustedException
 import com.anytypeio.anytype.domain.base.Result
@@ -53,7 +53,7 @@ class BlockDataRepository(
 
     override suspend fun openObjectPreview(id: Id): Result<Payload> = try {
         Result.Success(remote.openObjectPreview(id))
-    } catch (e: BackwardCompatilityNotSupportedException) {
+    } catch (e: AnytypeNeedsUpgradeException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)
@@ -61,7 +61,7 @@ class BlockDataRepository(
 
     override suspend fun openPage(id: String): Result<Payload> = try {
         Result.Success(remote.openPage(id))
-    } catch (e: BackwardCompatilityNotSupportedException) {
+    } catch (e: AnytypeNeedsUpgradeException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)
@@ -72,7 +72,7 @@ class BlockDataRepository(
 
     override suspend fun openObjectSet(id: String): Result<Payload> = try {
         Result.Success(remote.openObjectSet(id))
-    } catch (e: BackwardCompatilityNotSupportedException) {
+    } catch (e: AnytypeNeedsUpgradeException) {
         Result.Failure(Error.BackwardCompatibility)
     } catch (e: NotFoundObjectException) {
         Result.Failure(Error.NotFoundObject)

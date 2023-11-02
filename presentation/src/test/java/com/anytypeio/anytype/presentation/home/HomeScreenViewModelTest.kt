@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubObjectView
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubWidgetBlock
+import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -203,7 +204,8 @@ class HomeScreenViewModelTest {
 
     private val defaultSpaceWidgetView = WidgetView.SpaceWidget.View(
         space = StubObject(),
-        icon = SpaceIconView.Placeholder
+        icon = SpaceIconView.Placeholder,
+        type = UNKNOWN_SPACE_TYPE
     )
 
     private lateinit var urlBuilder: UrlBuilder
@@ -2511,9 +2513,10 @@ class HomeScreenViewModelTest {
             verify(storelessSubscriptionContainer, times(1)).subscribe(
                 StoreSearchByIdsParams(
                     subscription = HomeScreenViewModel.HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
-                    targets = listOf(defaultSpaceConfig.spaceView),
+                    targets = listOf(defaultSpaceConfig.profile),
                     keys = listOf(
                         Relations.ID,
+                        Relations.NAME,
                         Relations.ICON_EMOJI,
                         Relations.ICON_IMAGE,
                         Relations.ICON_OPTION

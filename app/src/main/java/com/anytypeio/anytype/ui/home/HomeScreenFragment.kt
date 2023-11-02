@@ -61,7 +61,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                 )
             ) {
                 HomeScreen(
-                    spaceIconView = vm.icon.collectAsState().value,
+                    profileIcon = vm.icon.collectAsState().value,
                     widgets = vm.views.collectAsState().value,
                     mode = vm.mode.collectAsState().value,
                     onExpand = { path -> vm.onExpand(path) },
@@ -84,7 +84,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                     onCreateNewObjectClicked = throttledClick(
                         onClick = { vm.onCreateNewObjectClicked() }
                     ),
-                    onSpaceClicked = throttledClick(
+                    onProfileClicked = throttledClick(
                         onClick = {
                             runCatching {
                                 findNavController().navigate(R.id.action_open_spaces)

@@ -79,7 +79,7 @@ class MainSettingsViewModel(
                     profile = profile?.let {
                         WorkspaceAndAccount.ProfileData(
                             name = profile.name.orEmpty(),
-                            icon = profile.profileIcon(urlBuilder, spaceGradientProvider)
+                            icon = profile.profileIcon(urlBuilder)
                         )
                     }
                 )

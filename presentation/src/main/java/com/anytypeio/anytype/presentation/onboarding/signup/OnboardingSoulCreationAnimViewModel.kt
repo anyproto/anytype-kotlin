@@ -10,7 +10,6 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharingStarted
@@ -43,11 +42,7 @@ class OnboardingSoulCreationAnimViewModel @Inject constructor(
         Resultat.Success(
             AccountData(
                 name = obj?.name.orEmpty(),
-                icon = (obj?.profileIcon(urlBuilder, gradientProvider, true) as? ProfileIconView.Gradient)
-                    ?: ProfileIconView.Gradient(
-                        gradientProvider.get(0.0).from,
-                        gradientProvider.get(0.0).to
-                    )
+                icon = ProfileIconView.Placeholder(null)
             )
         )
     }.catch {
@@ -58,7 +53,7 @@ class OnboardingSoulCreationAnimViewModel @Inject constructor(
         Resultat.loading()
     )
 
-    data class AccountData(val name: String, val icon: ProfileIconView.Gradient)
+    data class AccountData(val name: String, val icon: ProfileIconView)
 
     override fun onCleared() {
         super.onCleared()

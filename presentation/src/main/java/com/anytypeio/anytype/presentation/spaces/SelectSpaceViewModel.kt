@@ -132,10 +132,7 @@ class SelectSpaceViewModel(
                     add(
                         SelectSpaceView.Profile(
                             name = profile.name.orEmpty(),
-                            icon = profile.profileIcon(
-                                builder = urlBuilder,
-                                gradientProvider = spaceGradientProvider
-                            )
+                            icon = profile.profileIcon(builder = urlBuilder)
                         )
                     )
                     addAll(

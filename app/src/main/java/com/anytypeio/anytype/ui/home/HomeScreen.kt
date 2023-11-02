@@ -26,7 +26,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -35,15 +37,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.toColorInt
+import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -53,7 +53,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
 import com.anytypeio.anytype.presentation.widgets.ToIndex
@@ -78,7 +78,7 @@ import timber.log.Timber
 
 @Composable
 fun HomeScreen(
-    spaceIconView: SpaceIconView,
+    profileIcon: ProfileIconView,
     mode: InteractionMode,
     widgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
@@ -95,7 +95,7 @@ fun HomeScreen(
     onLibraryClicked: () -> Unit,
     onOpenSpacesClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
-    onSpaceClicked: () -> Unit,
+    onProfileClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
@@ -154,10 +154,10 @@ fun HomeScreen(
             exit = fadeOut() + slideOutVertically { it }
         ) {
             HomeScreenBottomToolbar(
-                spaceIconView = spaceIconView,
+                profileIcon = profileIcon,
                 onSearchClicked = throttledClick(onSearchClicked),
                 onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
-                onSpaceClicked = throttledClick(onSpaceClicked),
+                onProfileClicked = throttledClick(onProfileClicked),
                 modifier = Modifier
             )
         }
@@ -517,11 +517,11 @@ fun HomeScreenButton(
 
 @Composable
 fun HomeScreenBottomToolbar(
-    spaceIconView: SpaceIconView,
+    profileIcon: ProfileIconView,
     modifier: Modifier,
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
-    onSpaceClicked: () -> Unit
+    onProfileClicked: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -560,14 +560,14 @@ fun HomeScreenBottomToolbar(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-                .noRippleClickable { onSpaceClicked() }
+                .noRippleClickable { onProfileClicked() }
         ) {
-            Timber.d("Binding icon: $spaceIconView")
-            when(spaceIconView) {
-                is SpaceIconView.Emoji -> {
+            Timber.d("Binding icon: $profileIcon")
+            when(profileIcon) {
+                is ProfileIconView.Emoji -> {
                     Image(
                         painter = rememberAsyncImagePainter(
-                            model = Emojifier.safeUri(spaceIconView.unicode),
+                            model = Emojifier.safeUri(profileIcon.unicode),
                             error = painterResource(id = R.drawable.ic_home_widget_space)
                         ),
                         contentDescription = "Emoji space icon",
@@ -576,10 +576,10 @@ fun HomeScreenBottomToolbar(
                             .align(Alignment.Center)
                     )
                 }
-                is SpaceIconView.Image -> {
+                is ProfileIconView.Image -> {
                     Image(
                         painter = rememberAsyncImagePainter(
-                            model = spaceIconView.url,
+                            model = profileIcon.url,
                             error = painterResource(id = R.drawable.ic_home_widget_space)
                         ),
                         contentDescription = "Custom image space icon",
@@ -590,27 +590,33 @@ fun HomeScreenBottomToolbar(
                         contentScale = ContentScale.Crop
                     )
                 }
-                is SpaceIconView.Gradient -> {
-                    val gradient = Brush.radialGradient(
-                        colors = listOf(
-                            Color(spaceIconView.from.toColorInt()),
-                            Color(spaceIconView.to.toColorInt())
-                        )
-                    )
+                is ProfileIconView.Placeholder -> {
+                    val name = profileIcon.name
+                    val nameFirstChar = if (name.isNullOrBlank()) {
+                        stringResource(id = R.string.account_default_name)
+                    } else {
+                        name.first().uppercaseChar().toString()
+                    }
                     Box(
                         modifier = Modifier
                             .size(24.dp)
-                            .clip(RoundedCornerShape(3.dp))
+                            .clip(CircleShape)
+                            .background(colorResource(id = R.color.shape_primary))
+                            .noRippleClickable { onProfileClicked() }
                             .align(Alignment.Center)
-                            .background(gradient)
-                    )
+                    ) {
+                        Text(
+                            text = nameFirstChar,
+                            style = MaterialTheme.typography.h3.copy(
+                                color = colorResource(id = R.color.text_white),
+                                fontSize = 10.sp
+                            ),
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
                 }
                 else -> {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_home_widget_space),
-                        contentDescription = "Placeholder space icon",
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                    // Draw nothing.
                 }
             }
         }

@@ -226,21 +226,6 @@ fun ProfileOption(
                             .clip(RoundedCornerShape(14.dp))
                     )
                 }
-                is ProfileIconView.Gradient -> {
-                    val gradient = Brush.radialGradient(
-                        colors = listOf(
-                            Color(icon.from.toColorInt()),
-                            Color(icon.to.toColorInt())
-                        )
-                    )
-                    Box(
-                        modifier = Modifier
-                            .padding(start = 20.dp)
-                            .size(28.dp)
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(gradient)
-                    )
-                }
                 else -> {
                     val nameFirstChar = if (data.name.isEmpty()) {
                         stringResource(id = R.string.account_default_name)

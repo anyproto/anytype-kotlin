@@ -120,6 +120,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
@@ -961,7 +962,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.AlertDialog -> {
                     if (childFragmentManager.findFragmentByTag(TAG_ALERT) == null) {
-                        AlertUpdateAppFragment().showChildFragment(TAG_ALERT)
+                        AlertUpdateAppFragment().apply {
+                            onCancel = { navigation().exit() }
+                        }.showChildFragment(TAG_ALERT)
                     } else {
                         // Do nothing
                     }

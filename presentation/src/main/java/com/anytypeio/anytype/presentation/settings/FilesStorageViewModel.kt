@@ -12,10 +12,9 @@ import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
-import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeFloatingPoint
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.domain.account.DeleteAccount

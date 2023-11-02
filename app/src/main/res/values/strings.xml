@@ -420,5 +420,8 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_how_to_save_my_phrase">How to save my phrase?</string>
     <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Recovery Phrase is to save it in your password manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">The most secure way is to write it down on paper and keep it offline, in a safe and secure place.</string>
+    <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
+    <string name="anytype_update_alert_title">It’s time to update</string>
+    <string name="download_anytype_url">https://download.anytype.io</string>
 
 </resources>

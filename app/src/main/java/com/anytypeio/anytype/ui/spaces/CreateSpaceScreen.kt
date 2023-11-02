@@ -75,10 +75,10 @@ fun CreateSpaceScreen(
         Spacer(modifier = Modifier.height(10.dp))
         SpaceNameInput(input = input)
         Divider()
-        Section(title = "Type")
+        Section(title = stringResource(id = R.string.type))
         TypeOfSpace(spaceType = PERSONAL_SPACE_TYPE)
         Divider()
-        Section(title = "Start with")
+        Section(title = stringResource(id = R.string.create_space_start_with))
         UseCase()
         Divider()
         Box(modifier = Modifier.weight(1.0f)) {

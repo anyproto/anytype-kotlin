@@ -5894,11 +5894,6 @@ class EditorViewModel(
         get() =
             controlPanelViewState.value?.objectTypesToolbar?.isVisible ?: false
 
-    fun onObjectTypesWidgetItemClicked(item: ObjectTypeView) {
-        Timber.d("onObjectTypesWidgetItemClicked, item:[$item]")
-        proceedWithObjectTypeChangeAndApplyTemplate(item)
-    }
-
     fun onObjectTypesWidgetSearchClicked() {
         Timber.d("onObjectTypesWidgetSearchClicked, ")
         proceedWithOpeningSelectingObjectTypeScreen()

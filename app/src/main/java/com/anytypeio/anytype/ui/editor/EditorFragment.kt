@@ -479,7 +479,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
         }
-        vm.onStart(id = extractDocumentId())
+        vm.onStart(id = extractDocumentId(), saveAsLastOpened = saveAsLastOpened())
         super.onStart()
     }
 
@@ -692,7 +692,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         binding.topToolbar.templates.clicks()
             .throttleFirst()
-            .onEach { vm.onShowTemplateClicked() }
+            .onEach { vm.onTemplatesToolbarClicked() }
             .launchIn(lifecycleScope)
 
         lifecycleScope.launch {
@@ -1917,6 +1917,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         return requireArguments()
             .getString(ID_KEY)
             ?: throw IllegalStateException("Document id missing")
+    }
+
+    open fun saveAsLastOpened(): Boolean {
+        return true
     }
 
     private fun processScrollAndMoveStateChanges() {

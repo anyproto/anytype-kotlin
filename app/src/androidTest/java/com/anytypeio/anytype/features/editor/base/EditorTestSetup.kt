@@ -103,10 +103,9 @@ import com.anytypeio.anytype.presentation.editor.editor.pattern.DefaultPatternMa
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
-import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
@@ -191,7 +190,6 @@ open class EditorTestSetup {
     @Mock
     lateinit var createObject: CreateObject
 
-    lateinit var editorTemplateDelegate: EditorTemplateDelegate
     lateinit var getTemplates: GetTemplates
     lateinit var applyTemplate: ApplyTemplate
 
@@ -276,6 +274,9 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var configStorage: ConfigStorage
+
+    @Mock
+    lateinit var templatesContainer: ObjectTypeTemplatesContainer
 
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
@@ -377,11 +378,6 @@ open class EditorTestSetup {
             spaceManager = spaceManager
         )
 
-        editorTemplateDelegate = DefaultEditorTemplateDelegate(
-            getTemplates = getTemplates,
-            applyTemplate = applyTemplate
-        )
-
         featureToggles = mock<DefaultFeatureToggles>()
         addRelationToObject = AddRelationToObject(repo)
 
@@ -467,7 +463,6 @@ open class EditorTestSetup {
             delegator = Delegator.Default(),
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
-            editorTemplateDelegate = editorTemplateDelegate,
             createObject = createObject,
             objectToSet = objectToSet,
             storeOfRelations = storeOfRelations,
@@ -478,10 +473,10 @@ open class EditorTestSetup {
             objectToCollection = objectToCollection,
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
-            setObjectInternalFlags = setObjectInternalFlags,
             spaceManager = spaceManager,
             applyTemplate = applyTemplate,
-            setObjectType = setObjectType
+            setObjectType = setObjectType,
+            templatesContainer = templatesContainer
         )
     }
 

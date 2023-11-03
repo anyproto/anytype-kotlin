@@ -41,6 +41,10 @@ class EditorTemplateFragment : EditorFragment() {
         jobs.clear()
     }
 
+    override fun saveAsLastOpened(): Boolean {
+        return false
+    }
+
     override fun onApplyWindowRootInsets() {}
     override fun setupWindowInsetAnimation() {}
 
@@ -48,18 +52,27 @@ class EditorTemplateFragment : EditorFragment() {
 
     override fun render(state: ControlPanelState) {
         super.render(state)
-        binding.bottomToolbar.hide()
-        if (state.navigationToolbar.isVisible) {
-            binding.btnSelectTemplate.visible()
-        } else {
-            binding.btnSelectTemplate.gone()
+        when (fragmentType) {
+            TYPE_TEMPLATE_SELECT, TYPE_TEMPLATE_MULTIPLE -> {
+                binding.bottomToolbar.hide()
+                if (state.navigationToolbar.isVisible) {
+                    binding.btnSelectTemplate.visible()
+                } else {
+                    binding.btnSelectTemplate.gone()
+                }
+            }
+            TYPE_TEMPLATE_EDIT -> {
+                binding.bottomToolbar.hide()
+                binding.btnSelectTemplate.gone()
+            }
         }
+
     }
 
     private fun initializeBinding() {
         with(binding) {
             root.background = null
-            if (fragmentType == TYPE_SINGLE) {
+            if (fragmentType == TYPE_TEMPLATE_SELECT || fragmentType == TYPE_TEMPLATE_EDIT) {
                 recycler.updateLayoutParams<ConstraintLayout.LayoutParams> {
                     topMargin = dimen(R.dimen.default_toolbar_height)
                 }
@@ -86,8 +99,8 @@ class EditorTemplateFragment : EditorFragment() {
                         set(ARG_TARGET_TYPE_KEY, targetTypeKey)
                     }
                     when (fragmentType) {
-                        TYPE_SINGLE -> popBackStack(R.id.editorModalScreen, true)
-                        TYPE_MULTIPLE -> {
+                        TYPE_TEMPLATE_SELECT -> popBackStack(R.id.editorModalScreen, true)
+                        TYPE_TEMPLATE_MULTIPLE -> {
                             vm.onSelectTemplateClicked()
                             popBackStack(R.id.templatesModalScreen, true)
                         }
@@ -125,7 +138,8 @@ class EditorTemplateFragment : EditorFragment() {
         const val ARG_TARGET_TYPE_ID = "target_type_id"
         const val ARG_TARGET_TYPE_KEY = "target_type_key"
         const val ARG_TEMPLATE_TYPE = "template_type"
-        const val TYPE_SINGLE = 1
-        const val TYPE_MULTIPLE = 2
+        const val TYPE_TEMPLATE_EDIT = 1
+        const val TYPE_TEMPLATE_SELECT = 2
+        const val TYPE_TEMPLATE_MULTIPLE = 3
     }
 }

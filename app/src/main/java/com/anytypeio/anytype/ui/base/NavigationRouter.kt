@@ -32,10 +32,10 @@ class NavigationRouter(
                 is AppNavigation.Command.ConfirmPinCodeScreen -> navigation.confirmPinCode(command.code)
                 is AppNavigation.Command.OpenSettings -> navigation.openSpaceSettings()
                 is AppNavigation.Command.OpenObject -> navigation.openDocument(command.id)
-                is AppNavigation.Command.OpenModalEditor -> navigation.openModalEditor(
-                    id = command.id,
-                    targetTypeId = command.targetTypeId,
-                    targetTypeKey = command.targetTypeKey
+                is AppNavigation.Command.OpenModalTemplateSelect -> navigation.openModalTemplateSelect(
+                    template = command.template,
+                    templateTypeId = command.templateTypeId,
+                    templateTypeKey = command.templateTypeKey
                 )
                 is AppNavigation.Command.OpenSetOrCollection -> navigation.openObjectSet(
                     command.target,
@@ -73,7 +73,7 @@ class NavigationRouter(
                 )
 
                 is AppNavigation.Command.OpenTemplates -> navigation.openTemplatesModal(
-                    targetTypeKey = command.typeKey
+                    typeId = command.typeId
                 )
 
                 is AppNavigation.Command.OpenLibrary -> navigation.openLibrary()

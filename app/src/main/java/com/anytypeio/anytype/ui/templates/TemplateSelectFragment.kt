@@ -29,7 +29,7 @@ class TemplateSelectFragment :
     @Inject
     lateinit var factory: TemplateSelectViewModel.Factory
 
-    private val targetTypeKey get() = arg<Id>(ARG_TARGET_TYPE_KEY)
+    private val typeId get() = arg<Id>(ARG_TYPE_ID)
 
     private lateinit var templatesAdapter: TemplateSelectAdapter
 
@@ -65,9 +65,7 @@ class TemplateSelectFragment :
         jobs += lifecycleScope.subscribe(vm.isDismissed) { if (it) exit() }
         super.onStart()
         expand()
-        vm.onStart(
-            typeKey = targetTypeKey,
-        )
+        vm.onStart(typeId = typeId)
     }
 
     private fun render(viewState: TemplateSelectViewModel.ViewState) {
@@ -106,7 +104,7 @@ class TemplateSelectFragment :
     )
 
     companion object {
-        const val ARG_TARGET_TYPE_KEY = "arg.template.arg_target_object_type_key"
+        const val ARG_TYPE_ID = "arg.template.arg_target_object_type_id"
         const val TAB_SPACE = "   "
     }
 }

@@ -7,17 +7,25 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.ResultInteractor
-import kotlinx.coroutines.Dispatchers
 
 open class OpenPage(
     private val repo: BlockRepository,
     private val auth: AuthRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<Id, Result<Payload>>(dispatchers.io) {
+) : ResultInteractor<OpenPage.Params, Result<Payload>>(dispatchers.io) {
 
-    override suspend fun doWork(params: Id): Result<Payload> {
-        return repo.openPage(params).also {
-            auth.saveLastOpenedObjectId(params)
+    override suspend fun doWork(params: Params): Result<Payload> {
+        return repo.openPage(params.obj).also {
+            if (params.saveAsLastOpened) {
+                auth.saveLastOpenedObjectId(params.obj)
+            } else {
+                auth.clearLastOpenedObject()
+            }
         }
     }
+
+    data class Params(
+        val obj: Id,
+        val saveAsLastOpened: Boolean
+    )
 }

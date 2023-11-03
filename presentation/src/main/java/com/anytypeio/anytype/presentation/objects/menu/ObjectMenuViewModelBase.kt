@@ -89,7 +89,7 @@ abstract class ObjectMenuViewModelBase(
         isLocked: Boolean,
         isTemplate: Boolean
     ) {
-        Timber.d("onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isProfile:[$isProfile], isLocked:[$isLocked]")
+        Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isProfile:[$isProfile], isLocked:[$isLocked]")
         actions.value = buildActions(
             ctx = ctx,
             isArchived = isArchived,
@@ -255,7 +255,11 @@ abstract class ObjectMenuViewModelBase(
         jobs += viewModelScope.launch {
             val startTime = System.currentTimeMillis()
             addBackLinkToObject.execute(
-                AddBackLinkToObject.Params(objectToLink = myself, objectToPlaceLink = addTo)
+                AddBackLinkToObject.Params(
+                    objectToLink = myself,
+                    objectToPlaceLink = addTo,
+                    saveAsLastOpened = true
+                )
             ).fold(
                 onSuccess = { obj ->
                     sendAnalyticsBackLinkAddEvent(

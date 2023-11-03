@@ -19,7 +19,6 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -42,7 +41,7 @@ import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 
@@ -71,7 +70,6 @@ open class  EditorViewModelFactory(
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val setDocImageIcon: SetDocumentImageIcon,
-    private val editorTemplateDelegate: EditorTemplateDelegate,
     private val createObject: CreateObject,
     private val objectToSet: ConvertObjectToSet,
     private val storeOfRelations: StoreOfRelations,
@@ -83,9 +81,9 @@ open class  EditorViewModelFactory(
     private val objectToCollection: ConvertObjectToCollection,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val addRelationToObject: AddRelationToObject,
-    private val setObjectInternalFlags: SetObjectInternalFlags,
     private val applyTemplate: ApplyTemplate,
-    private val setObjectType: SetObjectType
+    private val setObjectType: SetObjectType,
+    private val templatesContainer: ObjectTypeTemplatesContainer
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -115,7 +113,6 @@ open class  EditorViewModelFactory(
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
-            templateDelegate = editorTemplateDelegate,
             createObject = createObject,
             objectToSet = objectToSet,
             objectToCollection = objectToCollection,
@@ -127,9 +124,9 @@ open class  EditorViewModelFactory(
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
-            setObjectInternalFlags = setObjectInternalFlags,
             applyTemplate = applyTemplate,
-            setObjectType = setObjectType
+            setObjectType = setObjectType,
+            templatesContainer = templatesContainer
         ) as T
     }
 }

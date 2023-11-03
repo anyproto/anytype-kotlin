@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.templates
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -9,15 +8,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.TypeId
-import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
-import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -29,24 +25,21 @@ class TemplateSelectViewModel(
     private val getTemplates: GetTemplates,
     private val applyTemplate: ApplyTemplate,
     private val analytics: Analytics,
-) : BaseViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>> {
+) : BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
 
     private val _viewState = MutableStateFlow<ViewState>(ViewState.Init)
     val viewState: StateFlow<ViewState> = _viewState
 
-    override val navigation: MutableLiveData<EventWrapper<AppNavigation.Command>> =
-        MutableLiveData()
-
-    fun onStart(typeKey: Id) {
+    fun onStart(typeId: Id) {
         viewModelScope.launch {
-            val objType = storeOfObjectTypes.getByKey(typeKey)
+            val objType = storeOfObjectTypes.get(typeId)
             if (objType != null) {
                 Timber.d("onStart, Object type $objType")
                 proceedWithGettingTemplates(objType)
             } else {
-                Timber.e("onStart, Object type $typeKey not found")
+                Timber.e("onStart, Object type $typeId not found")
             }
         }
     }

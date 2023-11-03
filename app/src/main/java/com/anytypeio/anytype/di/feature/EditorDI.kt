@@ -57,7 +57,6 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
-import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -112,8 +111,6 @@ import com.anytypeio.anytype.presentation.editor.editor.table.DefaultEditorTable
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
-import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectRelationProvider
@@ -123,6 +120,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.RelationListProvider
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -237,14 +235,6 @@ object EditorSessionModule {
 
     @JvmStatic
     @Provides
-    @PerScreen
-    fun provideSetObjectInternalFlags(
-            repo: BlockRepository,
-            dispatchers: AppCoroutineDispatchers
-    ) : SetObjectInternalFlags = SetObjectInternalFlags(repo, dispatchers)
-
-    @JvmStatic
-    @Provides
     fun providePageViewModelFactory(
         openPage: OpenPage,
         closePage: CloseBlock,
@@ -270,7 +260,6 @@ object EditorSessionModule {
         downloadUnsplashImage: DownloadUnsplashImage,
         setDocCoverImage: SetDocCoverImage,
         setDocImageIcon: SetDocumentImageIcon,
-        editorTemplateDelegate: EditorTemplateDelegate,
         createObject: CreateObject,
         storeOfRelations: StoreOfRelations,
         storeOfObjectTypes: StoreOfObjectTypes,
@@ -282,9 +271,9 @@ object EditorSessionModule {
         objectToCollection: ConvertObjectToCollection,
         interceptFileLimitEvents: InterceptFileLimitEvents,
         addRelationToObject: AddRelationToObject,
-        setObjectInternalFlags: SetObjectInternalFlags,
         applyTemplate: ApplyTemplate,
-        setObjectType: SetObjectType
+        setObjectType: SetObjectType,
+        templatesContainer: ObjectTypeTemplatesContainer
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -310,7 +299,6 @@ object EditorSessionModule {
         downloadUnsplashImage = downloadUnsplashImage,
         setDocCoverImage = setDocCoverImage,
         setDocImageIcon = setDocImageIcon,
-        editorTemplateDelegate = editorTemplateDelegate,
         createObject = createObject,
         storeOfRelations = storeOfRelations,
         storeOfObjectTypes = storeOfObjectTypes,
@@ -322,22 +310,9 @@ object EditorSessionModule {
         objectToCollection = objectToCollection,
         interceptFileLimitEvents = interceptFileLimitEvents,
         addRelationToObject = addRelationToObject,
-        setObjectInternalFlags = setObjectInternalFlags,
         applyTemplate = applyTemplate,
-        setObjectType = setObjectType
-    )
-
-
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideTemplateDelegate(
-        getTemplates: GetTemplates,
-        applyTemplate: ApplyTemplate
-    ): EditorTemplateDelegate = DefaultEditorTemplateDelegate(
-        getTemplates = getTemplates,
-        applyTemplate = applyTemplate
+        setObjectType = setObjectType,
+        templatesContainer = templatesContainer
     )
 
     @JvmStatic

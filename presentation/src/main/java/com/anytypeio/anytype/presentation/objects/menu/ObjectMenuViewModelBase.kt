@@ -89,7 +89,7 @@ abstract class ObjectMenuViewModelBase(
         isLocked: Boolean,
         isTemplate: Boolean
     ) {
-        Timber.d("onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isProfile:[$isProfile], isLocked:[$isLocked]")
+        Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isProfile:[$isProfile], isLocked:[$isLocked]")
         actions.value = buildActions(
             ctx = ctx,
             isArchived = isArchived,

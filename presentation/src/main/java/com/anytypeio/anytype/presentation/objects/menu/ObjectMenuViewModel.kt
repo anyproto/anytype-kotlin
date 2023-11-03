@@ -98,7 +98,7 @@ class ObjectMenuViewModel(
             add(ObjectAction.SET_AS_DEFAULT)
         }
 
-        if (!isProfile && !objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
+        if (!isProfile && !objectRestrictions.contains(ObjectRestriction.DUPLICATE) && !isTemplate) {
             add(ObjectAction.DUPLICATE)
         }
 

@@ -657,7 +657,7 @@
     <string name="templates_menu_duplicate">Duplicate</string>
     <string name="templates_menu_delete">Delete</string>
     <string name="unsupported">Unsupported</string>
-    <string name="set_as_default">Set as default</string>
+    <string name="set_as_default">Make default</string>
     <string name="edit_view">Edit view</string>
     <string name="new_view">New view</string>
     <string name="create">create</string>

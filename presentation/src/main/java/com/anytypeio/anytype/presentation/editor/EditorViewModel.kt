@@ -51,6 +51,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.isEndLineClick
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
@@ -76,7 +77,6 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -187,9 +187,6 @@ import com.anytypeio.anytype.presentation.editor.selection.getTableRowsById
 import com.anytypeio.anytype.presentation.editor.selection.toggleTableMode
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelection
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
-import com.anytypeio.anytype.presentation.editor.template.SelectTemplateEvent
-import com.anytypeio.anytype.presentation.editor.template.SelectTemplateState
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
@@ -234,6 +231,7 @@ import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -283,7 +281,6 @@ class EditorViewModel(
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val setDocImageIcon: SetDocumentImageIcon,
-    private val templateDelegate: EditorTemplateDelegate,
     private val createObject: CreateObject,
     private val objectToSet: ConvertObjectToSet,
     private val objectToCollection: ConvertObjectToCollection,
@@ -295,9 +292,9 @@ class EditorViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val addRelationToObject: AddRelationToObject,
-    private val setObjectInternalFlags: SetObjectInternalFlags,
     private val applyTemplate: ApplyTemplate,
-    private val setObjectType: SetObjectType
+    private val setObjectType: SetObjectType,
+    private val templatesContainer: ObjectTypeTemplatesContainer
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -305,7 +302,6 @@ class EditorViewModel(
     BlockViewRenderer by renderer,
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
-    EditorTemplateDelegate by templateDelegate,
     EditorTableDelegate by tableDelegate,
     StateReducer<List<Block>, Event> by reducer {
 
@@ -318,16 +314,7 @@ class EditorViewModel(
     val isRedoEnabled = MutableStateFlow(false)
     val isUndoRedoToolbarIsVisible = MutableStateFlow(false)
 
-    val selectTemplateViewState = templateDelegateState.map { state ->
-        when (state) {
-            is SelectTemplateState.Available -> {
-                SelectTemplateViewState.Active(
-                    count = state.templates.size + 1,
-                )
-            }
-            else -> SelectTemplateViewState.Idle
-        }
-    }
+    val selectTemplateViewState = MutableStateFlow<SelectTemplateViewState>(SelectTemplateViewState.Idle)
 
     val searchResultScrollPosition = MutableStateFlow(NO_SEARCH_RESULT_POSITION)
 
@@ -412,26 +399,6 @@ class EditorViewModel(
                     Action.UndoRedo -> onUndoRedoActionClicked()
                     is Action.OpenObject -> proceedWithOpeningObject(action.id)
                     is Action.OpenCollection -> proceedWithOpeningDataViewObject(action.id)
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            templateDelegateState.collect { state ->
-                Timber.v("Template delegate state: $state")
-                when (state) {
-                    is SelectTemplateState.Accepted -> {
-                        commands.postValue(EventWrapper(Command.CloseKeyboard))
-                        navigate(
-                            EventWrapper(
-                                AppNavigation.Command.OpenTemplates(
-                                    typeKey = state.typeKey
-                                )
-                            )
-                        )
-                    }
-                    is SelectTemplateState.Available -> {}
-                    SelectTemplateState.Idle -> {}
                 }
             }
         }
@@ -4421,6 +4388,7 @@ class EditorViewModel(
         if (copyFileToCache.isActive()) {
             copyFileToCache.cancel()
         }
+        stopTemplatesSubscription()
     }
 
     enum class Session { IDLE, OPEN, ERROR }
@@ -6214,26 +6182,32 @@ class EditorViewModel(
     //endregion
 
     //region TEMPLATING
+    private val templatesJob = mutableListOf<Job>()
 
-    fun onShowTemplateClicked() {
-        viewModelScope.launch { onEvent(SelectTemplateEvent.OnAccepted) }
+    fun onTemplatesToolbarClicked() {
+        Timber.d("onTemplatesToolbarClicked, ")
+        commands.postValue(EventWrapper(Command.CloseKeyboard))
+        val state = selectTemplateViewState.value
+        if (state is SelectTemplateViewState.Active) {
+            navigate(
+                EventWrapper(
+                    AppNavigation.Command.OpenTemplates(typeId = state.typeId)
+                )
+            )
+        } else {
+            Timber.e("State of templates widget is invalid when clicked, should be SelectTemplateViewState.Activ")
+        }
     }
 
-    private fun proceedWithStartTemplateEvent(typeKey: Id) {
-        Timber.d("proceedWithStartTemplateEvent, typeKey:[$typeKey]")
-        viewModelScope.launch {
-            val objType = storeOfObjectTypes.getByKey(typeKey)
-            if (objType?.uniqueKey != null) {
-                onEvent(
-                    SelectTemplateEvent.OnStart(
-                        ctx = context,
-                        objType = objType
-                    )
-                )
-            } else {
-                Timber.e("Error while getting object type from storeOfObjectTypes by ley: $typeKey")
-            }
-        }
+    private fun proceedWithShowTemplatesToolbar() {
+        val objType = getObjectTypeFromDetails() ?: return
+        Timber.d("proceedWithShowTemplatesToolbar, typeId:[${objType.id}]")
+        startTemplatesSubscription(objType = objType)
+    }
+
+    private fun proceedWithHideTemplatesToolbar() {
+        Timber.d("proceedWithHideTemplatesToolbar, ")
+        stopTemplatesSubscription()
     }
 
     private fun getObjectTypeUniqueKeyFromDetails(): Id? {
@@ -6244,6 +6218,13 @@ class EditorViewModel(
         return currentObjectType.uniqueKey
     }
 
+    private fun getObjectTypeFromDetails(): ObjectWrapper.Type? {
+        val details = orchestrator.stores.details.current()
+        val currentObject = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+        val currentObjectTypeId = currentObject.getProperType() ?: return null
+        return ObjectWrapper.Type(details.details[currentObjectTypeId]?.map ?: emptyMap())
+    }
+
     fun isObjectTemplate(): Boolean {
         return getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.TEMPLATE
     }
@@ -6251,6 +6232,32 @@ class EditorViewModel(
     fun onSelectTemplateClicked() {
         viewModelScope.launch {
             sendAnalyticsSelectTemplateEvent(analytics)
+        }
+    }
+
+    private fun startTemplatesSubscription(objType: ObjectWrapper.Type) {
+        templatesJob += viewModelScope.launch {
+            templatesContainer
+                .subscribeToTemplates(type = objType.id)
+                .catch { Timber.e(it, "Error while subscribing to templates") }
+                .map { templates ->
+                    templates.size + 1
+                }.collect { count ->
+                    selectTemplateViewState.value = SelectTemplateViewState.Active(
+                        count = count,
+                        typeId = objType.id
+                    )
+                }
+        }
+    }
+
+    private fun stopTemplatesSubscription() {
+        if (templatesJob.isNotEmpty()) {
+            selectTemplateViewState.value = SelectTemplateViewState.Idle
+            templatesJob.cancel()
+            viewModelScope.launch {
+                templatesContainer.unsubscribeFromTemplates()
+            }
         }
     }
     //endregion
@@ -6969,12 +6976,11 @@ class EditorViewModel(
 
     private fun proceedWithCheckingInternalFlagShouldSelectTemplate(flags: List<InternalFlags>) {
         if (flags.contains(InternalFlags.ShouldSelectTemplate)) {
-            //We use this flag to show template widget and then we don't need it anymore
-            val typeKey = getObjectTypeUniqueKeyFromDetails() ?: return
-            proceedWithStartTemplateEvent(typeKey = typeKey)
+            Timber.d("Object has internal flag: ShouldSelectTemplate. Show templates toolbar")
+            proceedWithShowTemplatesToolbar()
         } else {
-            viewModelScope.launch { onEvent(SelectTemplateEvent.OnSkipped) }
-            Timber.d("Object doesn't have internal flag: ShouldSelectTemplate")
+            proceedWithHideTemplatesToolbar()
+            Timber.d("Object doesn't have internal flag: ShouldSelectTemplate. Hide templates toolbar")
         }
     }
 

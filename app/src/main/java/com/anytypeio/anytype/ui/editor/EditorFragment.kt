@@ -692,7 +692,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         binding.topToolbar.templates.clicks()
             .throttleFirst()
-            .onEach { vm.onShowTemplateClicked() }
+            .onEach { vm.onTemplatesToolbarClicked() }
             .launchIn(lifecycleScope)
 
         lifecycleScope.launch {

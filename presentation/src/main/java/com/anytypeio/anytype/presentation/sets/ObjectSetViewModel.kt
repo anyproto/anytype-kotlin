@@ -1254,10 +1254,10 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithOpeningTemplate(target: Id, targetTypeId: Id, targetTypeKey: Id) {
         isCustomizeViewPanelVisible.value = false
-        val event = AppNavigation.Command.OpenModalEditor(
-            id = target,
-            targetTypeId = targetTypeId,
-            targetTypeKey = targetTypeKey
+        val event = AppNavigation.Command.OpenModalTemplateSelect(
+            template = target,
+            templateTypeId = targetTypeId,
+            templateTypeKey = targetTypeKey
         )
         viewModelScope.launch {
             closeBlock.async(context).fold(

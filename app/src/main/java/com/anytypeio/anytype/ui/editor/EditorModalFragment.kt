@@ -7,24 +7,26 @@ import android.view.ViewGroup
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.MyFragmentContainerBinding
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment
 
 class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>() {
 
-    private val ctx get() = arg<Id>(ARG_ID)
-    private val targetTypeId get() = arg<Id>(ARG_TARGET_TYPE_ID)
-    private val targetTypeKey get() = arg<Id>(ARG_TARGET_TYPE_KEY)
+    private val template get() = arg<Id>(ARG_TEMPLATE_ID)
+    private val templateTypeId get() = arg<Id>(ARG_TEMPLATE_TYPE_ID)
+    private val templateTypeKey get() = arg<Id>(ARG_TEMPLATE_TYPE_KEY)
+    private val screenType get() = argInt(ARG_SCREEN_TYPE)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStyle(STYLE_NORMAL, R.style.AppBottomSecondarySheetDialogTheme)
         val editorFragment = EditorTemplateFragment.newInstance(
-            id = ctx,
-            targetTypeId = targetTypeId,
-            targetTypeKey = targetTypeKey,
-            type = EditorTemplateFragment.TYPE_SINGLE
+            id = template,
+            targetTypeId = templateTypeId,
+            targetTypeKey = templateTypeKey,
+            type = screenType
         )
         childFragmentManager.beginTransaction()
             .add(R.id.fragment_container_view, editorFragment)
@@ -54,8 +56,9 @@ class EditorModalFragment : BaseBottomSheetFragment<MyFragmentContainerBinding>(
     )
 
     companion object {
-        const val ARG_ID = "arg_id"
-        const val ARG_TARGET_TYPE_ID = "arg_target_object_type"
-        const val ARG_TARGET_TYPE_KEY = "arg_target_object_type_key"
+        const val ARG_TEMPLATE_ID = "arg_template_id"
+        const val ARG_TEMPLATE_TYPE_ID = "arg_template_object_type"
+        const val ARG_TEMPLATE_TYPE_KEY = "arg_template_object_type_key"
+        const val ARG_SCREEN_TYPE = "arg_screen_type"
     }
 }

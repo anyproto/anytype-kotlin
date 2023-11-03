@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.navigation
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 
 interface AppNavigation {
@@ -21,7 +22,16 @@ interface AppNavigation {
 
     fun openObjectSet(target: String, isPopUpToDashboard: Boolean = false)
     fun openDocument(id: String)
-    fun openModalEditor(id: String, targetTypeId: Id, targetTypeKey: Id)
+    fun openModalTemplateSelect(
+        template: Id,
+        templateTypeId: Id,
+        templateTypeKey: Key
+    )
+    fun openModalTemplateEdit(
+        template: Id,
+        templateTypeId: Id,
+        templateTypeKey: Key
+    )
 
     fun launchDocument(id: String)
     fun launchCollections(subscription: Subscription)
@@ -83,7 +93,11 @@ interface AppNavigation {
         data class LaunchDocument(val id: String) : Command()
         data class LaunchObjectFromSplash(val target: Id) : Command()
         data class LaunchObjectSetFromSplash(val target: Id) : Command()
-        data class OpenModalEditor(val id: String, val targetTypeId: Id, val targetTypeKey: Id) : Command()
+        data class OpenModalTemplateSelect(
+            val template: Id,
+            val templateTypeId: Id,
+            val templateTypeKey: Key
+        ) : Command()
 
         object OpenSettings : Command()
         object OpenKeychainScreen : Command()

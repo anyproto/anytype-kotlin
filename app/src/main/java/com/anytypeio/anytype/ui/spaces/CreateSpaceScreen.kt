@@ -27,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -182,6 +183,9 @@ fun SpaceNameInput(
             textStyle = HeadlineHeading.copy(
                 color = colorResource(id = R.color.text_primary)
             ),
+            cursorBrush = SolidColor(
+                colorResource(id = R.color.cursor_color)
+            ),
             decorationBox = @Composable { innerTextField ->
                 TextFieldDefaults.OutlinedTextFieldDecorationBox(
                     value = input.value,
@@ -196,14 +200,13 @@ fun SpaceNameInput(
                         )
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        textColor = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_primary),
+                        textColor = colorResource(id = R.color.text_primary),
                         backgroundColor = Color.Transparent,
                         disabledBorderColor = Color.Transparent,
                         errorBorderColor = Color.Transparent,
                         focusedBorderColor = Color.Transparent,
                         unfocusedBorderColor = Color.Transparent,
-                        placeholderColor = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_tertiary),
-                        cursorColor = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.orange)
+                        placeholderColor = colorResource(id = R.color.text_tertiary)
                     ),
                     contentPadding = PaddingValues(
                         start = 0.dp,

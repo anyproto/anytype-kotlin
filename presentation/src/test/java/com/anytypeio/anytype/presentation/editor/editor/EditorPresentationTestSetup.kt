@@ -102,9 +102,8 @@ import com.anytypeio.anytype.presentation.editor.editor.table.DefaultEditorTable
 import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegate
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
-import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.dispatchers
@@ -286,7 +285,8 @@ open class EditorPresentationTestSetup {
 
     lateinit var dispatcher: Dispatcher<Payload>
 
-    lateinit var editorTemplateDelegate: EditorTemplateDelegate
+    @Mock
+    lateinit var templatesContainer: ObjectTypeTemplatesContainer
 
     protected val builder: UrlBuilder get() = UrlBuilder(gateway)
 
@@ -363,10 +363,6 @@ open class EditorPresentationTestSetup {
         setDocCoverImage = SetDocCoverImage(repo)
         setDocImageIcon = SetDocumentImageIcon(repo)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
-        editorTemplateDelegate = DefaultEditorTemplateDelegate(
-            getTemplates = getTemplates,
-            applyTemplate = applyTemplate
-        )
         clearBlockContent = ClearBlockContent(repo)
         clearBlockStyle = ClearBlockStyle(repo)
 
@@ -455,7 +451,6 @@ open class EditorPresentationTestSetup {
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
-            templateDelegate = editorTemplateDelegate,
             createObject = createObject,
             objectToSet = objectToSet,
             objectToCollection = convertObjectToCollection,
@@ -466,10 +461,10 @@ open class EditorPresentationTestSetup {
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
-            setObjectInternalFlags = setObjectInternalFlags,
             spaceManager = spaceManager,
             applyTemplate = applyTemplate,
-            setObjectType = setObjectType
+            setObjectType = setObjectType,
+            templatesContainer = templatesContainer
         )
     }
 

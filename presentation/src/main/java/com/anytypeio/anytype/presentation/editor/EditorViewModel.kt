@@ -223,6 +223,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
@@ -6216,8 +6217,13 @@ class EditorViewModel(
 
     private fun proceedWithShowTemplatesToolbar() {
         val objType = getObjectTypeFromDetails() ?: return
-        Timber.d("proceedWithShowTemplatesToolbar, typeId:[${objType.id}]")
-        startTemplatesSubscription(objType = objType)
+        if (objType.isTemplatesAllowed()) {
+            Timber.d("proceedWithShowTemplatesToolbar, typeId:[${objType.id}]")
+            startTemplatesSubscription(objType = objType)
+        } else {
+            stopTemplatesSubscription()
+            Timber.e("proceedWithShowTemplatesToolbar, Templates are not allowed for typeId:[${objType.id}]")
+        }
     }
 
     private fun proceedWithHideTemplatesToolbar() {

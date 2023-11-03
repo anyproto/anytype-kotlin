@@ -1455,24 +1455,39 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
-        val isProfile = wrapper.type.firstOrNull() == ObjectTypeIds.PROFILE
-        if (isProfile) {
-            dispatch(
-                command = Command.OpenProfileMenu(
-                    isFavorite = details[context]?.isFavorite ?: false,
-                    isLocked = mode == EditorMode.Locked
+        val isProfile = getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.PROFILE
+        val isTemplate = isObjectTemplate()
+        when {
+            isProfile -> {
+                dispatch(
+                    command = Command.OpenProfileMenu(
+                        isFavorite = details[context]?.isFavorite ?: false,
+                        isLocked = mode == EditorMode.Locked
+                    )
                 )
-            )
-        } else {
-            dispatch(
-                command = Command.OpenDocumentMenu(
-                    isArchived = details[context]?.isArchived ?: false,
-                    isFavorite = details[context]?.isFavorite ?: false,
-                    isLocked = mode == EditorMode.Locked,
-                    fromName = wrapper.getProperObjectName().orEmpty(),
-                    isTemplate = isObjectTemplate()
+            }
+            isTemplate -> {
+                dispatch(
+                    command = Command.OpenDocumentMenu(
+                        isArchived = false,
+                        isFavorite = false,
+                        isLocked = false,
+                        fromName = wrapper.getProperObjectName().orEmpty(),
+                        isTemplate = true
+                    )
                 )
-            )
+            }
+            else -> {
+                dispatch(
+                    command = Command.OpenDocumentMenu(
+                        isArchived = details[context]?.isArchived ?: false,
+                        isFavorite = details[context]?.isFavorite ?: false,
+                        isLocked = mode == EditorMode.Locked,
+                        fromName = wrapper.getProperObjectName().orEmpty(),
+                        isTemplate = isObjectTemplate()
+                    )
+                )
+            }
         }
     }
 

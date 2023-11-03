@@ -24,7 +24,7 @@ class AddBackLinkToObject(
     override suspend fun doWork(params: Params): ObjectWrapper.Basic {
         val openPageParams = OpenPage.Params(
             obj = params.objectToPlaceLink,
-            saveAsLastOpened = true
+            saveAsLastOpened = params.saveAsLastOpened
         )
         when (val result = openPage.run(openPageParams)) {
             is Result.Success -> {
@@ -63,6 +63,7 @@ class AddBackLinkToObject(
 
     data class Params(
         val objectToLink: Id,
-        val objectToPlaceLink: Id
+        val objectToPlaceLink: Id,
+        val saveAsLastOpened: Boolean
     )
 }

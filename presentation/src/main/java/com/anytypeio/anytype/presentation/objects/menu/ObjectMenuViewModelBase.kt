@@ -255,7 +255,11 @@ abstract class ObjectMenuViewModelBase(
         jobs += viewModelScope.launch {
             val startTime = System.currentTimeMillis()
             addBackLinkToObject.execute(
-                AddBackLinkToObject.Params(objectToLink = myself, objectToPlaceLink = addTo)
+                AddBackLinkToObject.Params(
+                    objectToLink = myself,
+                    objectToPlaceLink = addTo,
+                    saveAsLastOpened = true
+                )
             ).fold(
                 onSuccess = { obj ->
                     sendAnalyticsBackLinkAddEvent(

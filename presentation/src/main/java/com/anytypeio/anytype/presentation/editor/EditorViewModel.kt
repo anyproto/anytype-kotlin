@@ -956,7 +956,7 @@ class EditorViewModel(
         }
     }
 
-    fun onStart(id: Id) {
+    fun onStart(id: Id, saveAsLastOpened: Boolean = true) {
         Timber.d("onStart, id:[$id]")
 
         context = id
@@ -993,7 +993,11 @@ class EditorViewModel(
 
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            openPage.async(id).fold(
+            val params = OpenPage.Params(
+                obj = id,
+                saveAsLastOpened = saveAsLastOpened
+            )
+            openPage.async(params).fold(
                 onSuccess = { result ->
                     when (result) {
                         is Result.Success -> {

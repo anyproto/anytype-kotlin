@@ -41,6 +41,10 @@ class EditorTemplateFragment : EditorFragment() {
         jobs.clear()
     }
 
+    override fun saveAsLastOpened(): Boolean {
+        return false
+    }
+
     override fun onApplyWindowRootInsets() {}
     override fun setupWindowInsetAnimation() {}
 
@@ -125,7 +129,8 @@ class EditorTemplateFragment : EditorFragment() {
         const val ARG_TARGET_TYPE_ID = "target_type_id"
         const val ARG_TARGET_TYPE_KEY = "target_type_key"
         const val ARG_TEMPLATE_TYPE = "template_type"
-        const val TYPE_SINGLE = 1
-        const val TYPE_MULTIPLE = 2
+        const val TYPE_TEMPLATE_EDIT = 1
+        const val TYPE_TEMPLATE_SELECT = 2
+        const val TYPE_TEMPLATE_MULTIPLE = 3
     }
 }

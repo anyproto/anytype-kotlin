@@ -22,9 +22,11 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
+import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
+import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
@@ -137,13 +139,10 @@ abstract class ObjectMenuBaseFragment :
 
     private fun openTemplate(command: ObjectMenuViewModelBase.Command.OpenTemplate) {
         toast(getString(R.string.snackbar_template_add) + command.typeName)
-        findNavController().navigate(
-            R.id.nav_editor_modal,
-            bundleOf(
-                EditorModalFragment.ARG_ID to command.templateId,
-                EditorModalFragment.ARG_TARGET_TYPE_ID to command.typeId,
-                EditorModalFragment.ARG_TARGET_TYPE_KEY to command.typeKey
-            )
+        navigation().openModalTemplateEdit(
+            template = command.templateId,
+            templateTypeId = command.typeId,
+            templateTypeKey = command.typeKey
         )
     }
 

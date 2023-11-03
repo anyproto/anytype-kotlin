@@ -52,18 +52,27 @@ class EditorTemplateFragment : EditorFragment() {
 
     override fun render(state: ControlPanelState) {
         super.render(state)
-        binding.bottomToolbar.hide()
-        if (state.navigationToolbar.isVisible) {
-            binding.btnSelectTemplate.visible()
-        } else {
-            binding.btnSelectTemplate.gone()
+        when (fragmentType) {
+            TYPE_TEMPLATE_SELECT, TYPE_TEMPLATE_MULTIPLE -> {
+                binding.bottomToolbar.hide()
+                if (state.navigationToolbar.isVisible) {
+                    binding.btnSelectTemplate.visible()
+                } else {
+                    binding.btnSelectTemplate.gone()
+                }
+            }
+            TYPE_TEMPLATE_EDIT -> {
+                binding.bottomToolbar.hide()
+                binding.btnSelectTemplate.gone()
+            }
         }
+
     }
 
     private fun initializeBinding() {
         with(binding) {
             root.background = null
-            if (fragmentType == TYPE_SINGLE) {
+            if (fragmentType == TYPE_TEMPLATE_SELECT || fragmentType == TYPE_TEMPLATE_EDIT) {
                 recycler.updateLayoutParams<ConstraintLayout.LayoutParams> {
                     topMargin = dimen(R.dimen.default_toolbar_height)
                 }
@@ -90,8 +99,8 @@ class EditorTemplateFragment : EditorFragment() {
                         set(ARG_TARGET_TYPE_KEY, targetTypeKey)
                     }
                     when (fragmentType) {
-                        TYPE_SINGLE -> popBackStack(R.id.editorModalScreen, true)
-                        TYPE_MULTIPLE -> {
+                        TYPE_TEMPLATE_SELECT -> popBackStack(R.id.editorModalScreen, true)
+                        TYPE_TEMPLATE_MULTIPLE -> {
                             vm.onSelectTemplateClicked()
                             popBackStack(R.id.templatesModalScreen, true)
                         }

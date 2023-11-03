@@ -76,7 +76,7 @@ fun CreateSpaceScreen(
         SpaceNameInput(input = input)
         Divider()
         Section(title = stringResource(id = R.string.type))
-        TypeOfSpace(spaceType = PERSONAL_SPACE_TYPE)
+        TypeOfSpace(spaceType = PRIVATE_SPACE_TYPE)
         Divider()
         Section(title = stringResource(id = R.string.create_space_start_with))
         UseCase()

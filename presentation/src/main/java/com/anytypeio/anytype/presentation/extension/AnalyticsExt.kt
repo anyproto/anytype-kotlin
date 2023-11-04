@@ -1895,11 +1895,11 @@ fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
 
 fun CoroutineScope.sendAnalyticsDefaultTemplateEvent(
     analytics: Analytics,
-    objType: ObjectWrapper.Type,
+    objType: ObjectWrapper.Type?,
     startTime: Long,
     route: String? = null
 ) {
-    val objectType = objType.sourceObject ?: OBJ_TYPE_CUSTOM
+    val objectType = objType?.sourceObject ?: OBJ_TYPE_CUSTOM
     sendEvent(
         analytics = analytics,
         eventName = changeDefaultTemplate,

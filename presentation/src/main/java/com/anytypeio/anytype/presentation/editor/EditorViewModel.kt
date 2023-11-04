@@ -223,6 +223,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
@@ -1455,24 +1456,39 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
-        val isProfile = wrapper.type.firstOrNull() == ObjectTypeIds.PROFILE
-        if (isProfile) {
-            dispatch(
-                command = Command.OpenProfileMenu(
-                    isFavorite = details[context]?.isFavorite ?: false,
-                    isLocked = mode == EditorMode.Locked
+        val isProfile = getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.PROFILE
+        val isTemplate = isObjectTemplate()
+        when {
+            isProfile -> {
+                dispatch(
+                    command = Command.OpenProfileMenu(
+                        isFavorite = details[context]?.isFavorite ?: false,
+                        isLocked = mode == EditorMode.Locked
+                    )
                 )
-            )
-        } else {
-            dispatch(
-                command = Command.OpenDocumentMenu(
-                    isArchived = details[context]?.isArchived ?: false,
-                    isFavorite = details[context]?.isFavorite ?: false,
-                    isLocked = mode == EditorMode.Locked,
-                    fromName = wrapper.getProperObjectName().orEmpty(),
-                    isTemplate = isObjectTemplate()
+            }
+            isTemplate -> {
+                dispatch(
+                    command = Command.OpenDocumentMenu(
+                        isArchived = false,
+                        isFavorite = false,
+                        isLocked = false,
+                        fromName = wrapper.getProperObjectName().orEmpty(),
+                        isTemplate = true
+                    )
                 )
-            )
+            }
+            else -> {
+                dispatch(
+                    command = Command.OpenDocumentMenu(
+                        isArchived = details[context]?.isArchived ?: false,
+                        isFavorite = details[context]?.isFavorite ?: false,
+                        isLocked = mode == EditorMode.Locked,
+                        fromName = wrapper.getProperObjectName().orEmpty(),
+                        isTemplate = isObjectTemplate()
+                    )
+                )
+            }
         }
     }
 
@@ -6201,8 +6217,13 @@ class EditorViewModel(
 
     private fun proceedWithShowTemplatesToolbar() {
         val objType = getObjectTypeFromDetails() ?: return
-        Timber.d("proceedWithShowTemplatesToolbar, typeId:[${objType.id}]")
-        startTemplatesSubscription(objType = objType)
+        if (objType.isTemplatesAllowed()) {
+            Timber.d("proceedWithShowTemplatesToolbar, typeId:[${objType.id}]")
+            startTemplatesSubscription(objType = objType)
+        } else {
+            stopTemplatesSubscription()
+            Timber.e("proceedWithShowTemplatesToolbar, Templates are not allowed for typeId:[${objType.id}]")
+        }
     }
 
     private fun proceedWithHideTemplatesToolbar() {

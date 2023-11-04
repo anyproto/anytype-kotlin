@@ -51,6 +51,7 @@ import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.sets.isChangingDefaultTypeAvailable
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
@@ -1327,16 +1328,18 @@ fun CoroutineScope.logEvent(
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
                 is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
             }
-            scope.sendEvent(
-                analytics = analytics,
-                eventName = defaultTypeChanged,
-                startTime = startTime,
-                middleTime = middleTime,
-                props = buildProps(
-                    route = route,
-                    objectType = type ?: OBJ_TYPE_CUSTOM
+            if (state.isChangingDefaultTypeAvailable()) {
+                scope.sendEvent(
+                    analytics = analytics,
+                    eventName = defaultTypeChanged,
+                    startTime = startTime,
+                    middleTime = middleTime,
+                    props = buildProps(
+                        route = route,
+                        objectType = type ?: OBJ_TYPE_CUSTOM
+                    )
                 )
-            )
+            }
         }
 
         ObjectStateAnalyticsEvent.CHANGE_DEFAULT_TEMPLATE -> {

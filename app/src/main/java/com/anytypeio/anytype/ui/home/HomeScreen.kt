@@ -37,7 +37,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -50,6 +52,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
@@ -517,6 +520,7 @@ fun HomeScreenButton(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreenBottomToolbar(
     profileIcon: ProfileIconView,
@@ -526,6 +530,7 @@ fun HomeScreenBottomToolbar(
     onCreateNewObjectLongClicked: () -> Unit,
     onProfileClicked: () -> Unit
 ) {
+    val haptic = LocalHapticFeedback.current
     Row(
         modifier = modifier
             .height(52.dp)
@@ -551,7 +556,16 @@ fun HomeScreenBottomToolbar(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-                .noRippleClickable { onCreateNewObjectLongClicked() }
+                .noRippleCombinedClickable(
+                    onLongClicked = {
+                        onCreateNewObjectLongClicked().also {
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        }
+                    },
+                    onClick = {
+                        onCreateNewObjectClicked()
+                    }
+                )
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_home_widget_plus),

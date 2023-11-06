@@ -226,9 +226,6 @@ fun ObjectTypeItem(
                 shape = RoundedCornerShape(12.dp)
             )
             .clip(RoundedCornerShape(12.dp))
-            .background(
-                color = colorResource(id = R.color.background_primary)
-            )
             .clickable { onItemClicked() }
         ,
         verticalAlignment = Alignment.CenterVertically

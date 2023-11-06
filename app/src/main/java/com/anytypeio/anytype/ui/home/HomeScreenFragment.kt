@@ -28,6 +28,7 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
@@ -83,6 +84,17 @@ class HomeScreenFragment : BaseComposeFragment() {
                     },
                     onCreateNewObjectClicked = throttledClick(
                         onClick = { vm.onCreateNewObjectClicked() }
+                    ),
+                    onCreateNewObjectLongClicked = throttledClick(
+                        onClick = {
+                            val dialog = CreateObjectOfTypeFragment().apply {
+                                onTypeSelected = {
+                                    vm.onCreateNewObjectClicked(it)
+                                    dismiss()
+                                }
+                            }
+                            dialog.show(childFragmentManager, "TEST")
+                        }
                     ),
                     onProfileClicked = throttledClick(
                         onClick = {

@@ -149,7 +149,7 @@ private fun ReadMoreButton(showWhatIsRecoveryPhraseDialog: MutableState<Boolean>
         Text(
             text = stringResource(id = R.string.onboarding_mnemonic_read_more),
             style = BodyRegular.copy(
-                color = Color.White
+                color = Color(0xFFDBDAD4)
             ),
             modifier = Modifier.align(Alignment.Center)
         )

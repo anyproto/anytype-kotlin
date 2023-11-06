@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.letNotNull
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -1024,14 +1026,17 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onCreateNewObjectClicked() {
+    fun onCreateNewObjectClicked(type: Key? = null) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateObject.Param(
-                internalFlags  = listOf(
-                    InternalFlags.ShouldSelectTemplate,
-                    InternalFlags.ShouldSelectType,
-                )
+                internalFlags  = buildList {
+                    add(InternalFlags.ShouldSelectTemplate)
+                    if (type.isNullOrBlank()) {
+                        add(InternalFlags.ShouldSelectType)
+                    }
+                },
+                type = if (type != null) TypeKey(key = type) else null
             )
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(

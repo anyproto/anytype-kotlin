@@ -21,6 +21,7 @@ import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
+import com.anytypeio.anytype.di.feature.objects.CreateObjectOfTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingLoginSetupDependencies
@@ -103,7 +104,9 @@ interface MainComponent :
     TemplateSelectDependencies,
     SelectSpaceDependencies,
     CreateSpaceDependencies,
-    SpaceSettingsDependencies {
+    SpaceSettingsDependencies,
+    CreateObjectOfTypeDependencies
+{
 
     fun inject(app: AndroidApplication)
 
@@ -278,4 +281,9 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(SpaceSettingsDependencies::class)
     abstract fun provideSpaceSettingsDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CreateObjectOfTypeDependencies::class)
+    abstract fun provideCreateObjectOfTypeDependencies(component: MainComponent): ComponentDependencies
 }

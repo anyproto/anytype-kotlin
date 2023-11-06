@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.objects.creation
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,6 +32,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -39,7 +43,9 @@ import com.anytypeio.anytype.emojifier.Emojifier
 @Preview
 @Composable
 fun PreviewScreen() {
-    CreateObjectOfTypeScreen()
+    CreateObjectOfTypeScreen(
+        onTypeClicked = {}
+    )
 }
 
 
@@ -50,38 +56,44 @@ sealed class SelectTypeView {
     }
     data class Type(
 //        val typeId: String,
-//        val typeKey: String,
+        val typeKey: String,
         val name: String,
         val icon: String,
     ): SelectTypeView()
 }
 
 @Composable
-fun CreateObjectOfTypeScreen() {
+fun CreateObjectOfTypeScreen(
+    onTypeClicked: (Key) -> Unit
+) {
     val types: List<SelectTypeView> = buildList {
         add(
             SelectTypeView.Section.Objects
         )
         add(
             SelectTypeView.Type(
+                typeKey = ObjectTypeUniqueKeys.NOTE,
                 name = "Note",
                 icon = ""
             )
         )
         add(
             SelectTypeView.Type(
+                typeKey = "ot-book",
                 name = "Book",
                 icon = ""
             )
         )
         add(
             SelectTypeView.Type(
+                typeKey = "ot-human",
                 name = "Human",
                 icon = ""
             )
         )
         add(
             SelectTypeView.Type(
+                typeKey = "ot-page",
                 name = "Page",
                 icon = ""
             )
@@ -89,6 +101,7 @@ fun CreateObjectOfTypeScreen() {
         add(
             SelectTypeView.Type(
                 name = "Task",
+                typeKey = "ot-task",
                 icon = ""
             )
         )
@@ -97,12 +110,14 @@ fun CreateObjectOfTypeScreen() {
         )
         add(
             SelectTypeView.Type(
+                typeKey = "ot-set",
                 name = "Set",
                 icon = ""
             )
         )
         add(
             SelectTypeView.Type(
+                typeKey = "ot-collection",
                 name = "Collection",
                 icon = ""
             )
@@ -152,7 +167,14 @@ fun CreateObjectOfTypeScreen() {
                         item(
                             key = view.name
                         ) {
-                            ObjectTypeItem(name = view.name)
+                            ObjectTypeItem(
+                                name = view.name,
+                                onItemClicked = throttledClick(
+                                    onClick = {
+                                        onTypeClicked(view.typeKey)
+                                    }
+                                )
+                            )
                         }
                     }
                 }
@@ -164,7 +186,8 @@ fun CreateObjectOfTypeScreen() {
 
 @Composable
 fun ObjectTypeItem(
-    name: String
+    name: String,
+    onItemClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -178,6 +201,7 @@ fun ObjectTypeItem(
             .background(
                 color = colorResource(id = R.color.background_primary)
             )
+            .clickable { onItemClicked() }
         ,
         verticalAlignment = Alignment.CenterVertically
     ) {

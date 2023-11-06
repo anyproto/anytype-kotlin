@@ -39,7 +39,8 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
                     views = vm.views.collectAsStateWithLifecycle().value,
                     onTypeClicked = {
                         onTypeSelected.invoke(it)
-                    }
+                    },
+                    onQueryChanged = vm::onQueryChanged
                 )
             }
         }

@@ -26,13 +26,11 @@ class CreateObjectOfTypeViewModel(
 
     val views = MutableStateFlow<List<SelectTypeView>>(emptyList())
 
-    private val query = MutableSharedFlow<String>().onStart {
-        emit("")
-    }
+    private val query = MutableSharedFlow<String>()
 
     init {
         viewModelScope.launch {
-            query.flatMapLatest { query ->
+            query.onStart { emit("") }.flatMapLatest { query ->
                 getObjectTypes.stream(
                     GetObjectTypes.Params(
                         sorts = emptyList(),
@@ -94,6 +92,12 @@ class CreateObjectOfTypeViewModel(
             }.collect {
                 views.value = it
             }
+        }
+    }
+
+    fun onQueryChanged(input: String) {
+        viewModelScope.launch {
+            query.emit(input)
         }
     }
 

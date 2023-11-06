@@ -60,13 +60,15 @@ import com.anytypeio.anytype.presentation.objects.SelectTypeView
 fun PreviewScreen() {
     CreateObjectOfTypeScreen(
         onTypeClicked = {},
-        views = emptyList()
+        views = emptyList(),
+        onQueryChanged = {}
     )
 }
 
 @Composable
 fun CreateObjectOfTypeScreen(
     onTypeClicked: (Key) -> Unit,
+    onQueryChanged: (String) -> Unit,
     views: List<SelectTypeView>
 ) {
     Column(
@@ -77,7 +79,7 @@ fun CreateObjectOfTypeScreen(
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = 6.dp)
         )
-        SearchField()
+        SearchField(onQueryChanged)
         LazyVerticalGrid(
             modifier = Modifier.fillMaxSize(),
             columns = GridCells.Fixed(3),
@@ -180,7 +182,9 @@ fun ObjectTypeItem(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-private fun SearchField() {
+private fun SearchField(
+    onQueryChanged: (String) -> Unit
+) {
     Box(
         modifier = Modifier
             .height(48.dp)
@@ -207,7 +211,10 @@ private fun SearchField() {
             )
             BasicTextField(
                 value = input.value,
-                onValueChange = { input.value = it },
+                onValueChange = {
+                    input.value = it
+                    onQueryChanged(it)
+                },
                 keyboardActions = KeyboardActions(
                     onDone = { focusManager.clearFocus() }
                 ),
@@ -231,7 +238,6 @@ private fun SearchField() {
                         innerTextField = innerTextField,
                         singleLine = true,
                         enabled = true,
-                        isError = false,
                         placeholder = {
                             Text(
                                 text = stringResource(R.string.search),
@@ -248,7 +254,14 @@ private fun SearchField() {
                             placeholderColor = colorResource(id = R.color.text_tertiary)
                         ),
                         interactionSource = remember { MutableInteractionSource() },
-                        visualTransformation = VisualTransformation.None
+                        visualTransformation = VisualTransformation.None,
+                        contentPadding = PaddingValues(
+                            start = 0.dp,
+                            top = 0.dp,
+                            end = 0.dp,
+                            bottom = 0.dp
+                        ),
+                        border = {},
                     )
                 }
             )

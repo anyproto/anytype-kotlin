@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.objects.creation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -67,6 +68,7 @@ fun PreviewScreen() {
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CreateObjectOfTypeScreen(
     onTypeClicked: (Key) -> Unit,
@@ -129,7 +131,8 @@ fun CreateObjectOfTypeScreen(
                                     onClick = {
                                         onTypeClicked(view.typeKey)
                                     }
-                                )
+                                ),
+                                modifier = Modifier.animateItemPlacement()
                             )
                         }
                     }
@@ -142,12 +145,13 @@ fun CreateObjectOfTypeScreen(
 
 @Composable
 fun ObjectTypeItem(
+    modifier: Modifier,
     name: String,
     emoji: String,
     onItemClicked: () -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .height(48.dp)
             .border(
                 width = 1.dp,

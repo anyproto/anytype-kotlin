@@ -9,6 +9,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -89,57 +91,121 @@ fun CreateObjectOfTypeScreen(
             onQueryChanged = onQueryChanged,
             onFocused = onFocused
         )
-        LazyVerticalGrid(
-            modifier = Modifier.fillMaxSize(),
-            columns = GridCells.Fixed(3),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            contentPadding = PaddingValues(
-                start = 20.dp,
-                end = 20.dp
-            )
-        ) {
-            views.forEach { view ->
-                when(view) {
-                    is SelectTypeView.Section.Groups -> {
-                        item(
-                            key = view.javaClass.name,
-                            span = { GridItemSpan(maxLineSpan) }
-                        ) {
-                            Section(
-                                title = stringResource(id = R.string.create_object_section_groups),
-                            )
-                        }
-                    }
-                    is SelectTypeView.Section.Objects -> {
-                        item(
-                            key = view.javaClass.name,
-                            span = { GridItemSpan(maxLineSpan) }
-                        ) {
-                            Section(
-                                title = stringResource(id = R.string.create_object_section_objects)
-                            )
-                        }
-                    }
-                    is SelectTypeView.Type -> {
-                        item(
-                            key = view.typeKey
-                        ) {
-                            ObjectTypeItem(
-                                name = view.name,
-                                emoji = view.icon,
-                                onItemClicked = throttledClick(
-                                    onClick = {
-                                        onTypeClicked(view.typeKey)
-                                    }
-                                ),
-                                modifier = Modifier.animateItemPlacement()
-                            )
-                        }
+        ScreenContent(views, onTypeClicked)
+    }
+}
+
+@Composable
+private fun ScreenContent(
+    views: List<SelectTypeView>,
+    onTypeClicked: (Key) -> Unit
+) {
+    FlowRowContent(views, onTypeClicked)
+}
+
+@Composable
+@OptIn(ExperimentalLayoutApi::class)
+private fun FlowRowContent(
+    views: List<SelectTypeView>,
+    onTypeClicked: (Key) -> Unit
+) {
+    FlowRow(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        views.forEach { view ->
+            when (view) {
+                is SelectTypeView.Section.Groups -> {
+                    Section(
+                        title = stringResource(id = R.string.create_object_section_groups),
+                    )
+                }
+
+                is SelectTypeView.Section.Objects -> {
+                    Section(
+                        title = stringResource(id = R.string.create_object_section_objects)
+                    )
+                }
+
+                is SelectTypeView.Type -> {
+                    ObjectTypeItem(
+                        name = view.name,
+                        emoji = view.icon,
+                        onItemClicked = throttledClick(
+                            onClick = {
+                                onTypeClicked(view.typeKey)
+                            }
+                        ),
+                        modifier = Modifier
+                    )
+                }
+            }
+
+        }
+    }
+}
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class)
+private fun LazyColumnContent(
+    views: List<SelectTypeView>,
+    onTypeClicked: (Key) -> Unit
+) {
+    LazyVerticalGrid(
+        modifier = Modifier.fillMaxSize(),
+        columns = GridCells.Fixed(3),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(
+            start = 20.dp,
+            end = 20.dp
+        )
+    ) {
+        views.forEach { view ->
+            when (view) {
+                is SelectTypeView.Section.Groups -> {
+                    item(
+                        key = view.javaClass.name,
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        Section(
+                            title = stringResource(id = R.string.create_object_section_groups),
+                        )
                     }
                 }
 
+                is SelectTypeView.Section.Objects -> {
+                    item(
+                        key = view.javaClass.name,
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        Section(
+                            title = stringResource(id = R.string.create_object_section_objects)
+                        )
+                    }
+                }
+
+                is SelectTypeView.Type -> {
+                    item(
+                        key = view.typeKey
+                    ) {
+                        ObjectTypeItem(
+                            name = view.name,
+                            emoji = view.icon,
+                            onItemClicked = throttledClick(
+                                onClick = {
+                                    onTypeClicked(view.typeKey)
+                                }
+                            ),
+                            modifier = Modifier.animateItemPlacement()
+                        )
+                    }
+                }
             }
+
         }
     }
 }

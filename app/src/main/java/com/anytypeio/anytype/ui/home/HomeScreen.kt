@@ -95,6 +95,7 @@ fun HomeScreen(
     onLibraryClicked: () -> Unit,
     onOpenSpacesClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
+    onCreateNewObjectLongClicked: () -> Unit,
     onProfileClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
@@ -158,6 +159,7 @@ fun HomeScreen(
                 onSearchClicked = throttledClick(onSearchClicked),
                 onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
                 onProfileClicked = throttledClick(onProfileClicked),
+                onCreateNewObjectLongClicked = onCreateNewObjectLongClicked,
                 modifier = Modifier
             )
         }
@@ -521,6 +523,7 @@ fun HomeScreenBottomToolbar(
     modifier: Modifier,
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
+    onCreateNewObjectLongClicked: () -> Unit,
     onProfileClicked: () -> Unit
 ) {
     Row(
@@ -548,7 +551,7 @@ fun HomeScreenBottomToolbar(
             modifier = Modifier
                 .weight(1f)
                 .fillMaxSize()
-                .noRippleClickable { onCreateNewObjectClicked() }
+                .noRippleClickable { onCreateNewObjectLongClicked() }
         ) {
             Image(
                 painter = painterResource(id = R.drawable.ic_home_widget_plus),

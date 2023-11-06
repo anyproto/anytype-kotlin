@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -30,7 +31,7 @@ class CreateObjectOfTypeViewModel(
 
     init {
         viewModelScope.launch {
-            query.onStart { emit("") }.flatMapLatest { query ->
+            query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 getObjectTypes.stream(
                     GetObjectTypes.Params(
                         sorts = emptyList(),

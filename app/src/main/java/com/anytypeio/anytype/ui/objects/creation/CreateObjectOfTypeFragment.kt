@@ -7,12 +7,21 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.ui.settings.typography
+import javax.inject.Inject
 
 class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
+
+    @Inject
+    lateinit var factory: CreateObjectOfTypeViewModel.Factory
+
+    private val vm by viewModels<CreateObjectOfTypeViewModel> { factory }
 
     lateinit var onTypeSelected: (Key) -> Unit
 
@@ -27,6 +36,7 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 CreateObjectOfTypeScreen(
+                    views = vm.views.collectAsStateWithLifecycle().value,
                     onTypeClicked = {
                         onTypeSelected.invoke(it)
                     }

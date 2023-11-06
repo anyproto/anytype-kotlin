@@ -33,96 +33,27 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.objects.SelectTypeView
 
 @Preview
 @Composable
 fun PreviewScreen() {
     CreateObjectOfTypeScreen(
-        onTypeClicked = {}
+        onTypeClicked = {},
+        views = emptyList()
     )
-}
-
-
-sealed class SelectTypeView {
-    sealed class Section : SelectTypeView() {
-        object Objects: Section()
-        object Groups: Section()
-    }
-    data class Type(
-//        val typeId: String,
-        val typeKey: String,
-        val name: String,
-        val icon: String,
-    ): SelectTypeView()
 }
 
 @Composable
 fun CreateObjectOfTypeScreen(
-    onTypeClicked: (Key) -> Unit
+    onTypeClicked: (Key) -> Unit,
+    views: List<SelectTypeView>
 ) {
-    val types: List<SelectTypeView> = buildList {
-        add(
-            SelectTypeView.Section.Objects
-        )
-        add(
-            SelectTypeView.Type(
-                typeKey = ObjectTypeUniqueKeys.NOTE,
-                name = "Note",
-                icon = ""
-            )
-        )
-        add(
-            SelectTypeView.Type(
-                typeKey = "ot-book",
-                name = "Book",
-                icon = ""
-            )
-        )
-        add(
-            SelectTypeView.Type(
-                typeKey = "ot-human",
-                name = "Human",
-                icon = ""
-            )
-        )
-        add(
-            SelectTypeView.Type(
-                typeKey = "ot-page",
-                name = "Page",
-                icon = ""
-            )
-        )
-        add(
-            SelectTypeView.Type(
-                name = "Task",
-                typeKey = "ot-task",
-                icon = ""
-            )
-        )
-        add(
-            SelectTypeView.Section.Groups
-        )
-        add(
-            SelectTypeView.Type(
-                typeKey = "ot-set",
-                name = "Set",
-                icon = ""
-            )
-        )
-        add(
-            SelectTypeView.Type(
-                typeKey = "ot-collection",
-                name = "Collection",
-                icon = ""
-            )
-        )
-    }
     Column(
         modifier = Modifier
     ) {
@@ -141,7 +72,7 @@ fun CreateObjectOfTypeScreen(
                 end = 20.dp
             )
         ) {
-            types.forEach { view ->
+            views.forEach { view ->
                 when(view) {
                     is SelectTypeView.Section.Groups -> {
                         item(
@@ -169,6 +100,7 @@ fun CreateObjectOfTypeScreen(
                         ) {
                             ObjectTypeItem(
                                 name = view.name,
+                                emoji = view.icon,
                                 onItemClicked = throttledClick(
                                     onClick = {
                                         onTypeClicked(view.typeKey)
@@ -187,6 +119,7 @@ fun CreateObjectOfTypeScreen(
 @Composable
 fun ObjectTypeItem(
     name: String,
+    emoji: String,
     onItemClicked: () -> Unit
 ) {
     Row(
@@ -205,12 +138,13 @@ fun ObjectTypeItem(
         ,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val uri = Emojifier.safeUri("✍")
         Spacer(
             modifier = Modifier.width(14.dp)
         )
         Image(
-            painter = rememberAsyncImagePainter(uri),
+            painter = rememberAsyncImagePainter(
+                Emojifier.safeUri(emoji)
+            ),
             contentDescription = "Icon from URI",
             modifier = Modifier
                 .size(18.dp)

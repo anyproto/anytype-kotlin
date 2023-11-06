@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -1050,7 +1051,11 @@ class HomeScreenViewModel(
                             startTime = startTime,
                             view = EventsDictionary.View.viewHome
                         )
-                        navigate(Navigation.OpenObject(result.objectId))
+                        if (type == ObjectTypeUniqueKeys.SET || type == ObjectTypeUniqueKeys.COLLECTION) {
+                            navigate(Navigation.OpenSet(result.objectId))
+                        } else {
+                            navigate(Navigation.OpenObject(result.objectId))
+                        }
                     },
                     onFailure = {
                         Timber.e(it, "Error while creating object")

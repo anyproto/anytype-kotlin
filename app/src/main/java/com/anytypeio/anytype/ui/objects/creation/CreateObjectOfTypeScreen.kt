@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
@@ -61,7 +62,8 @@ fun PreviewScreen() {
     CreateObjectOfTypeScreen(
         onTypeClicked = {},
         views = emptyList(),
-        onQueryChanged = {}
+        onQueryChanged = {},
+        onFocused = {}
     )
 }
 
@@ -69,6 +71,7 @@ fun PreviewScreen() {
 fun CreateObjectOfTypeScreen(
     onTypeClicked: (Key) -> Unit,
     onQueryChanged: (String) -> Unit,
+    onFocused: () -> Unit,
     views: List<SelectTypeView>
 ) {
     Column(
@@ -79,7 +82,10 @@ fun CreateObjectOfTypeScreen(
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = 6.dp)
         )
-        SearchField(onQueryChanged)
+        SearchField(
+            onQueryChanged = onQueryChanged,
+            onFocused = onFocused
+        )
         LazyVerticalGrid(
             modifier = Modifier.fillMaxSize(),
             columns = GridCells.Fixed(3),
@@ -183,7 +189,8 @@ fun ObjectTypeItem(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 private fun SearchField(
-    onQueryChanged: (String) -> Unit
+    onQueryChanged: (String) -> Unit,
+    onFocused: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -223,6 +230,10 @@ private fun SearchField(
                     .padding(start = 32.dp, end = 8.dp)
                     .align(Alignment.CenterStart)
                     .focusRequester(focusRequester)
+                    .onFocusChanged { state ->
+                        if (state.isFocused)
+                            onFocused()
+                    }
                 ,
                 maxLines = 1,
                 singleLine = true,

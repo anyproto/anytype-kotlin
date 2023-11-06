@@ -40,7 +40,8 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
                     onTypeClicked = {
                         onTypeSelected.invoke(it)
                     },
-                    onQueryChanged = vm::onQueryChanged
+                    onQueryChanged = vm::onQueryChanged,
+                    onFocused = { expand() }
                 )
             }
         }

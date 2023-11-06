@@ -20,6 +20,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -45,6 +47,7 @@ fun BinWidgetCard(
     val isHeaderMenuExpanded = remember {
         mutableStateOf(false)
     }
+    val haptic = LocalHapticFeedback.current
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -62,6 +65,7 @@ fun BinWidgetCard(
                         },
                         onLongClick = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                         },
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }

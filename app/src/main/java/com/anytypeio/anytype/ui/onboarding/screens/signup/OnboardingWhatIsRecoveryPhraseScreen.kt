@@ -152,19 +152,33 @@ fun WhatIsRecoveryPhraseScreen() {
                         .fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(15.dp))
-                Text(
-                    text = stringResource(R.string.onboarding_how_to_save_my_phrase_2),
-                    color = Color.White,
-                    style = BodyCalloutRegular,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+                Row(Modifier.padding(horizontal = 16.dp)) {
+                    Text(
+                        text = " • ",
+                        color = Color.White,
+                        style = BodyRegular
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = stringResource(R.string.onboarding_how_to_save_my_phrase_2),
+                        color = Color.White,
+                        style = BodyCalloutRegular
+                    )
+                }
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(R.string.onboarding_how_to_save_my_phrase_3),
-                    color = Color.White,
-                    style = BodyCalloutRegular,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+                Row(Modifier.padding(horizontal = 16.dp)) {
+                    Text(
+                        text = " • ",
+                        color = Color.White,
+                        style = BodyRegular
+                    )
+                    Spacer(Modifier.width(4.dp))
+                    Text(
+                        text = stringResource(R.string.onboarding_how_to_save_my_phrase_3),
+                        color = Color.White,
+                        style = BodyCalloutRegular
+                    )
+                }
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }

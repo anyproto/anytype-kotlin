@@ -6243,7 +6243,11 @@ class EditorViewModel(
         val details = orchestrator.stores.details.current()
         val currentObject = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
         val currentObjectTypeId = currentObject.getProperType() ?: return null
-        return ObjectWrapper.Type(details.details[currentObjectTypeId]?.map ?: emptyMap())
+        return if (details.details.containsKey(currentObjectTypeId)) {
+            ObjectWrapper.Type(details.details[currentObjectTypeId]?.map ?: emptyMap())
+        } else {
+            null
+        }
     }
 
     fun isObjectTemplate(): Boolean {

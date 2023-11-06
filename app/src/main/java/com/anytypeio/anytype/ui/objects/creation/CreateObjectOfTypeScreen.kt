@@ -23,9 +23,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -40,7 +42,9 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -71,7 +75,6 @@ fun PreviewScreen() {
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CreateObjectOfTypeScreen(
     onTypeClicked: (Key) -> Unit,
@@ -80,7 +83,8 @@ fun CreateObjectOfTypeScreen(
     views: List<SelectTypeView>
 ) {
     Column(
-        modifier = Modifier
+        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+
     ) {
         Dragger(
             Modifier
@@ -112,24 +116,14 @@ private fun FlowRowContent(
     FlowRow(
         modifier = Modifier
             .fillMaxSize()
-            .padding(20.dp),
+            .padding(horizontal = 20.dp)
+            .verticalScroll(rememberScrollState())
+        ,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         views.forEach { view ->
             when (view) {
-                is SelectTypeView.Section.Groups -> {
-                    Section(
-                        title = stringResource(id = R.string.create_object_section_groups),
-                    )
-                }
-
-                is SelectTypeView.Section.Objects -> {
-                    Section(
-                        title = stringResource(id = R.string.create_object_section_objects)
-                    )
-                }
-
                 is SelectTypeView.Type -> {
                     ObjectTypeItem(
                         name = view.name,
@@ -140,6 +134,16 @@ private fun FlowRowContent(
                             }
                         ),
                         modifier = Modifier
+                    )
+                }
+                is SelectTypeView.Section.Groups -> {
+                    Section(
+                        title = stringResource(id = R.string.create_object_section_groups),
+                    )
+                }
+                is SelectTypeView.Section.Objects -> {
+                    Section(
+                        title = stringResource(id = R.string.create_object_section_objects)
                     )
                 }
             }

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.onboarding.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,10 +15,10 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -26,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorButtonInversion
-import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
 import com.anytypeio.anytype.core_ui.OnboardingSubtitleColor
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -35,7 +35,6 @@ import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingTitle
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
-import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 
 @Preview
@@ -72,7 +71,7 @@ fun AuthScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-            Title(modifier = Modifier)
+            Title(modifier = Modifier.align(Alignment.CenterHorizontally))
             Subtitle(modifier = Modifier)
             Description()
             Spacer(modifier = Modifier.height(72.dp))
@@ -96,25 +95,11 @@ fun AuthScreen(
 
 @Composable
 fun Title(modifier: Modifier = Modifier) {
-    Box(
+    Image(
+        painter = painterResource(id = R.drawable.ic_the_everything_app) ,
+        contentDescription = "Everything app logo",
         modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(id = R.string.onboarding_auth_title),
-            textAlign = TextAlign.Center,
-            style = HeadlineOnBoardingTitle
-                .copy(
-                    color = OnBoardingTextPrimaryColor,
-                    fontFamily = fontInterRegular,
-                    fontSize = 40.sp,
-                    fontWeight = FontWeight.W300,
-                    lineHeight = 37.5.sp
-                )
-        )
-    }
+    )
 }
 
 @Composable

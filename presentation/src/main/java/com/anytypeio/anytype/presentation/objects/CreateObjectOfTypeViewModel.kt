@@ -121,7 +121,6 @@ sealed class SelectTypeView {
         object Groups: Section()
     }
     data class Type(
-//        val typeId: String,
         val typeKey: String,
         val name: String,
         val icon: String,

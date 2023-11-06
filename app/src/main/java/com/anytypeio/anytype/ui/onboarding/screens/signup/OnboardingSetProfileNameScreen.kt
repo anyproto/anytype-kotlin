@@ -76,7 +76,7 @@ private fun SetProfileNameScreen(
         ) {
             item {
                 Spacer(
-                    modifier = Modifier.height(animatedSpacerHeight.value)
+                    modifier = Modifier.height(148.dp)
                 )
             }
             item {

@@ -175,9 +175,7 @@ fun ObjectTypeItem(
                 Emojifier.safeUri(emoji)
             ),
             contentDescription = "Icon from URI",
-            modifier = Modifier
-                .size(18.dp)
-                .background(Color.Black)
+            modifier = Modifier.size(18.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(

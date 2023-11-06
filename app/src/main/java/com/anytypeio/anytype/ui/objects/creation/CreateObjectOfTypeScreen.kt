@@ -103,7 +103,7 @@ fun CreateObjectOfTypeScreen(
                 when(view) {
                     is SelectTypeView.Section.Groups -> {
                         item(
-                            key = "2",
+                            key = view.javaClass.name,
                             span = { GridItemSpan(maxLineSpan) }
                         ) {
                             Section(
@@ -113,7 +113,7 @@ fun CreateObjectOfTypeScreen(
                     }
                     is SelectTypeView.Section.Objects -> {
                         item(
-                            key = "1",
+                            key = view.javaClass.name,
                             span = { GridItemSpan(maxLineSpan) }
                         ) {
                             Section(
@@ -123,7 +123,7 @@ fun CreateObjectOfTypeScreen(
                     }
                     is SelectTypeView.Type -> {
                         item(
-                            key = view.name
+                            key = view.typeKey
                         ) {
                             ObjectTypeItem(
                                 name = view.name,

@@ -51,6 +51,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -106,7 +107,7 @@ fun CreateObjectOfTypeScreen(
                             span = { GridItemSpan(maxLineSpan) }
                         ) {
                             Section(
-                                title = "Groups",
+                                title = stringResource(id = R.string.create_object_section_groups),
                             )
                         }
                     }
@@ -116,7 +117,7 @@ fun CreateObjectOfTypeScreen(
                             span = { GridItemSpan(maxLineSpan) }
                         ) {
                             Section(
-                                title = "Objects"
+                                title = stringResource(id = R.string.create_object_section_objects)
                             )
                         }
                     }
@@ -220,6 +221,19 @@ private fun SearchField(
                     .align(Alignment.CenterStart)
                     .padding(start = 8.dp)
             )
+            if (input.value.isNotEmpty()) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_clear_18),
+                    contentDescription = "Search icon",
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 8.dp)
+                        .noRippleClickable {
+                            input.value = ""
+                            onQueryChanged("")
+                        }
+                )
+            }
             BasicTextField(
                 value = input.value,
                 onValueChange = {
@@ -231,7 +245,7 @@ private fun SearchField(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 32.dp, end = 8.dp)
+                    .padding(start = 32.dp, end = 32.dp)
                     .align(Alignment.CenterStart)
                     .focusRequester(focusRequester)
                     .onFocusChanged { state ->

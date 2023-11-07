@@ -23,6 +23,7 @@ mockitoKotlinVersion = "4.1.0"
 junitVersion = '4.13.2'
 androidJunitVersion = "1.1.5"
 runnerVersion = "1.5.2"
+androidXTestRulesVersion = "1.5.0"
 mockitoAndroidVersion = '4.10.0'
 kotlinCoroutinesVersion = '1.7.1'
 androidxTestCoreVersion = '1.5.0'
@@ -99,7 +100,7 @@ mockitoKotlin = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "m
 junit = { module = "junit:junit", version.ref = "junitVersion" }
 androidJUnit = { module = "androidx.test.ext:junit", version.ref = "androidJunitVersion" }
 testRunner = { module = "androidx.test:runner", version.ref = "runnerVersion" }
-testRules = { module = "androidx.test:rules", version.ref = "runnerVersion" }
+testRules = { module = "androidx.test:rules", version.ref = "androidXTestRulesVersion" }
 mockitoAndroid = { module = "org.mockito:mockito-android", version.ref = "mockitoAndroidVersion" }
 coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinCoroutinesVersion" }
 coroutineTesting = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutineTestingVersion" }

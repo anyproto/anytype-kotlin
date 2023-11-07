@@ -57,6 +57,7 @@ object EventsDictionary {
     const val searchResult = "SearchResult"
     const val searchWords = "SearchWords"
     const val objectTypeChanged = "ChangeObjectType"
+    const val selectObjectType = "SelectObjectType"
     const val objectLayoutChange = "ChangeLayout"
     const val objectSetIcon = "SetIcon"
     const val objectRemoveIcon = "RemoveIcon"

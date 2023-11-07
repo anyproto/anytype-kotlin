@@ -4835,8 +4835,8 @@ class EditorViewModel(
                 sorts = emptyList(),
                 filters = buildList {
                     addAll(
-                        ObjectSearchConstants.filterObjectTypeLibrary(
-                            space = spaceManager.get()
+                        ObjectSearchConstants.filterTypes(
+                            spaceId = spaceManager.get()
                         )
                     )
                     add(
@@ -5915,8 +5915,8 @@ class EditorViewModel(
                 sorts = emptyList(),
                 filters = buildList {
                     addAll(
-                        ObjectSearchConstants.filterObjectTypeLibrary(
-                            space = spaceManager.get()
+                        ObjectSearchConstants.filterTypes(
+                            spaceId = spaceManager.get()
                         )
                     )
                     add(

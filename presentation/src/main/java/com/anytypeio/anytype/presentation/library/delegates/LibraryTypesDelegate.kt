@@ -1,9 +1,6 @@
 package com.anytypeio.anytype.presentation.library.delegates
 
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -50,16 +47,7 @@ class LibraryTypesDelegate @Inject constructor(
         return StoreSearchParams(
             subscription = SUB_LIBRARY_TYPES,
             keys = ObjectSearchConstants.defaultKeys,
-            filters = buildList {
-                addAll(ObjectSearchConstants.filterTypes())
-                add(
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = MARKETPLACE_SPACE_ID
-                    )
-                )
-            }
+            filters = ObjectSearchConstants.filterTypes(spaceId = MARKETPLACE_SPACE_ID)
         )
     }
 

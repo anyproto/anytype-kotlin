@@ -65,14 +65,7 @@ class MyTypesDelegate @Inject constructor(
                 Relations.RESTRICTIONS
             ),
             filters = buildList {
-                addAll(ObjectSearchConstants.filterTypes())
-                add(
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = space
-                    )
-                )
+                addAll(ObjectSearchConstants.filterTypes(space))
             }
         )
     }

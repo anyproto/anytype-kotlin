@@ -127,8 +127,8 @@ class MoveToViewModel(
                 sorts = emptyList(),
                 filters = buildList {
                     addAll(
-                        ObjectSearchConstants.filterObjectTypeLibrary(
-                            space = spaceManager.get()
+                        ObjectSearchConstants.filterTypes(
+                            spaceId = spaceManager.get()
                         )
                     )
                     add(

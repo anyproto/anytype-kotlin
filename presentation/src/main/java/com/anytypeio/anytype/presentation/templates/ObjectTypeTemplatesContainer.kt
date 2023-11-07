@@ -97,14 +97,7 @@ class DefaultObjectTypeTemplatesContainer(
         val objTypeParams = StoreSearchParams(
             subscription = subId,
             filters = buildList {
-                addAll(ObjectSearchConstants.filterTypes())
-                add(
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = spaceManager.get()
-                    )
-                )
+                addAll(ObjectSearchConstants.filterTypes(spaceId = spaceManager.get()))
                 add(
                     DVFilter(
                         relation = Relations.RECOMMENDED_LAYOUT,

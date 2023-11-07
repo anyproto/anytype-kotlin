@@ -199,7 +199,6 @@ class ObjectSetViewModel(
     private var context: Id = ""
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
-    private val templatesJob = mutableListOf<Job>()
 
     init {
         Timber.d("ObjectSetViewModel, init")
@@ -655,6 +654,7 @@ class ObjectSetViewModel(
 
     fun onStop() {
         Timber.d("onStop, ")
+        hideTemplatesWidget()
         jobs.cancel()
     }
 
@@ -1320,8 +1320,6 @@ class ObjectSetViewModel(
 
     override fun onCleared() {
         Timber.d("onCleared, ")
-        viewModelScope.launch { templatesContainer.unsubscribeFromTemplates() }
-        viewModelScope.launch { templatesContainer.unsubscribeFromTypes() }
         super.onCleared()
         titleUpdateChannel.cancel()
         stateReducer.clear()
@@ -1553,6 +1551,22 @@ class ObjectSetViewModel(
     }
 
     //region TYPES AND TEMPLATES WIDGET
+    private var viewerTemplatesJob : Job? = null
+    private var viewerTypesJob : Job? = null
+
+    private fun unsubscribeFromTypesTemplates() {
+        if (viewerTemplatesJob != null) {
+            viewerTemplatesJob?.cancel()
+            viewerTemplatesJob = null
+            viewModelScope.launch { templatesContainer.unsubscribeFromTemplates(SET_TEMPLATES_SUBSCRIPTION) }
+        }
+        if (viewerTypesJob != null) {
+            viewerTypesJob?.cancel()
+            viewerTypesJob = null
+            viewModelScope.launch { templatesContainer.unsubscribeFromTypes(SET_TYPES_SUBSCRIPTION) }
+        }
+    }
+
     fun onNewTypeForViewerClicked(typeId: Id) {
         viewModelScope.launch {
             val type = storeOfObjectTypes.get(typeId)
@@ -1701,10 +1715,12 @@ class ObjectSetViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun subscribeToViewerObjectTypes() {
-        templatesJob += viewModelScope.launch {
+        viewerTypesJob = viewModelScope.launch {
             selectedTypeFlow.filterNotNull().distinctUntilChanged()
                 .flatMapLatest { selectedTypeId ->
-                    templatesContainer.subscribeToTypes().map { types ->
+                    templatesContainer.subscribeToTypes(
+                        subId = SET_TYPES_SUBSCRIPTION
+                    ).map { types ->
                         Pair(selectedTypeId, types)
                     }
                 }.map { (selectedTypeId, types) ->
@@ -1729,14 +1745,17 @@ class ObjectSetViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun subscribeToTemplates() {
-        templatesJob += viewModelScope.launch {
+        viewerTemplatesJob = viewModelScope.launch {
             combine(
                 selectedTypeFlow.filterNotNull().distinctUntilChanged(),
                 stateReducer.state,
             ) { selectedType, state ->
                 Pair(state, selectedType.id)
             }.flatMapLatest { (state, selectedType) ->
-                templatesContainer.subscribeToTemplates(selectedType).map {
+                templatesContainer.subscribeToTemplates(
+                    type = selectedType,
+                    subId = SET_TEMPLATES_SUBSCRIPTION
+                ).map {
                         templates -> Pair(state ,templates)
                 }
             }.map { (state, templates) ->
@@ -1900,9 +1919,7 @@ class ObjectSetViewModel(
                     state.moreMenuItem != null -> state.hideMoreMenu()
                     state.showWidget -> {
                         viewModelScope.launch {
-                            templatesJob.cancel()
-                            templatesContainer.unsubscribeFromTypes()
-                            templatesContainer.unsubscribeFromTemplates()
+                            unsubscribeFromTypesTemplates()
                         }
                         selectedTypeFlow.value = null
                         TypeTemplatesWidgetUI.Init()
@@ -1912,6 +1929,12 @@ class ObjectSetViewModel(
             }
             is TypeTemplatesWidgetUI.Init -> TypeTemplatesWidgetUI.Init()
         }
+    }
+
+    private fun hideTemplatesWidget() {
+        unsubscribeFromTypesTemplates()
+        selectedTypeFlow.value = null
+        typeTemplatesWidgetState.value = TypeTemplatesWidgetUI.Init()
     }
 
     fun onMoreMenuClicked(click: TemplateMenuClick) {
@@ -2458,5 +2481,8 @@ class ObjectSetViewModel(
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
         const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
+
+        private const val SET_TEMPLATES_SUBSCRIPTION = "set_templates_subscription"
+        private const val SET_TYPES_SUBSCRIPTION = "set_types_subscription"
     }
 }

@@ -4386,6 +4386,8 @@ class EditorViewModel(
         const val ERROR_UNSUPPORTED_BEHAVIOR = "Currently unsupported behavior."
         const val NOT_ALLOWED_FOR_OBJECT = "Not allowed for this object"
         const val NOT_ALLOWED_FOR_RELATION = "Not allowed for this relation"
+
+        private const val EDITOR_TEMPLATES_SUBSCRIPTION = "editor_templates_subscription"
     }
 
     data class MarkupAction(
@@ -6281,7 +6283,7 @@ class EditorViewModel(
     private fun startTemplatesSubscription(objType: ObjectWrapper.Type) {
         templatesJob += viewModelScope.launch {
             templatesContainer
-                .subscribeToTemplates(type = objType.id)
+                .subscribeToTemplates(type = objType.id, subId = EDITOR_TEMPLATES_SUBSCRIPTION)
                 .catch { Timber.e(it, "Error while subscribing to templates") }
                 .map { templates ->
                     templates.size + 1
@@ -6299,7 +6301,7 @@ class EditorViewModel(
             selectTemplateViewState.value = SelectTemplateViewState.Idle
             templatesJob.cancel()
             viewModelScope.launch {
-                templatesContainer.unsubscribeFromTemplates()
+                templatesContainer.unsubscribeFromTemplates(subId = EDITOR_TEMPLATES_SUBSCRIPTION)
             }
         }
     }

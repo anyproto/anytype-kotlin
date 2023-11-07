@@ -18,10 +18,10 @@ import kotlinx.coroutines.flow.emptyFlow
 
 sealed interface ObjectTypeTemplatesContainer {
 
-    suspend fun subscribeToTypes(): Flow<List<ObjectWrapper.Basic>>
-    suspend fun subscribeToTemplates(type: Id): Flow<List<ObjectWrapper.Basic>>
-    suspend fun unsubscribeFromTypes()
-    suspend fun unsubscribeFromTemplates()
+    suspend fun subscribeToTypes(subId: String): Flow<List<ObjectWrapper.Basic>>
+    suspend fun subscribeToTemplates(type: Id, subId: String): Flow<List<ObjectWrapper.Basic>>
+    suspend fun unsubscribeFromTypes(subId: String)
+    suspend fun unsubscribeFromTemplates(subId: String)
 }
 
 class DefaultObjectTypeTemplatesContainer(
@@ -29,12 +29,12 @@ class DefaultObjectTypeTemplatesContainer(
     private val spaceManager: SpaceManager
 ) : ObjectTypeTemplatesContainer {
 
-    override suspend fun subscribeToTemplates(type: Id): Flow<List<ObjectWrapper.Basic>> {
+    override suspend fun subscribeToTemplates(type: Id, subId: String): Flow<List<ObjectWrapper.Basic>> {
         return if (type.isBlank()) {
             emptyFlow()
         } else {
             val params = StoreSearchParams(
-                subscription = TYPE_TEMPLATES_TEMPLATES_SUBSCRIPTION_ID,
+                subscription = subId,
                 sorts = listOf(
                     DVSort(
                         relationKey = Relations.CREATED_DATE,
@@ -93,9 +93,9 @@ class DefaultObjectTypeTemplatesContainer(
         }
     }
 
-    override suspend fun subscribeToTypes(): Flow<List<ObjectWrapper.Basic>> {
+    override suspend fun subscribeToTypes(subId: String): Flow<List<ObjectWrapper.Basic>> {
         val objTypeParams = StoreSearchParams(
-            subscription = TYPE_TEMPLATES_TYPE_SUBSCRIPTION_ID,
+            subscription = subId,
             filters = buildList {
                 addAll(ObjectSearchConstants.filterTypes())
                 add(
@@ -129,16 +129,11 @@ class DefaultObjectTypeTemplatesContainer(
         return storage.subscribe(objTypeParams)
     }
 
-    override suspend fun unsubscribeFromTypes() {
-        storage.unsubscribe(listOf(TYPE_TEMPLATES_TYPE_SUBSCRIPTION_ID,))
+    override suspend fun unsubscribeFromTypes(subId: String) {
+        storage.unsubscribe(listOf(subId,))
     }
 
-    override suspend fun unsubscribeFromTemplates() {
-        storage.unsubscribe(listOf(TYPE_TEMPLATES_TEMPLATES_SUBSCRIPTION_ID,))
-    }
-
-    companion object {
-        const val TYPE_TEMPLATES_TYPE_SUBSCRIPTION_ID = "type-templates-type-subscription"
-        const val TYPE_TEMPLATES_TEMPLATES_SUBSCRIPTION_ID = "type-templates-templates-subscription"
+    override suspend fun unsubscribeFromTemplates(subId: String) {
+        storage.unsubscribe(listOf(subId))
     }
 }

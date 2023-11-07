@@ -58,6 +58,10 @@ class GetTemplates(
                             relation = Relations.TYPE_UNIQUE_KEY,
                             condition = DVFilterCondition.EQUAL,
                             value = ObjectTypeIds.TEMPLATE
+                        ),
+                        DVFilter(
+                            relation = Relations.ID,
+                            condition = DVFilterCondition.NOT_EMPTY
                         )
                     ),
                     keys = listOf(

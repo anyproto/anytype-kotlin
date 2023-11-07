@@ -41,6 +41,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
@@ -628,6 +629,31 @@ fun CoroutineScope.sendAnalyticsObjectTypeChangeEvent(
             originalId = analytics.getOriginalId(),
             sourceObject = objType?.sourceObject
         ),
+        startTime = startTime
+    )
+}
+
+fun CoroutineScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
+    analytics: Analytics,
+    startTime: Long,
+    sourceObject: Id? = null,
+    containsFlagType: Boolean
+) {
+    val objType = sourceObject ?: OBJ_TYPE_CUSTOM
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.objectType to objType
+        )
+    )
+    val event = if (containsFlagType) {
+        EventsDictionary.selectObjectType
+    } else {
+        EventsDictionary.objectTypeChanged
+    }
+    sendEvent(
+        analytics = analytics,
+        eventName = event,
+        props = props,
         startTime = startTime
     )
 }
@@ -1918,9 +1944,9 @@ private fun getAnalyticsObjectType(
     details: Map<Id, Block.Fields>,
     ctx: Id
 ): String {
-    val objTypeId = details.getValue(ctx).type.firstOrNull()
+    val objTypeId = details[ctx]?.type?.firstOrNull()
     val sourceObject = if (objTypeId != null) {
-        ObjectWrapper.Type(details.getValue(objTypeId).map).sourceObject
+        ObjectWrapper.Type(details[objTypeId]?.map ?: emptyMap()).sourceObject
     } else null
     return sourceObject ?: OBJ_TYPE_CUSTOM
 }

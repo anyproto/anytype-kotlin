@@ -201,6 +201,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsMentionMenuEven
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeChangeEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
@@ -4322,6 +4323,7 @@ class EditorViewModel(
     }
 
     private suspend fun proceedWithConvertingToSet() {
+        val startTime = System.currentTimeMillis()
         val params = ConvertObjectToSet.Params(
             ctx = context,
             sources = emptyList()
@@ -4330,16 +4332,29 @@ class EditorViewModel(
             onFailure = { error -> Timber.e(error, "Error convert object to set") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
+                viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
+                    analytics = analytics,
+                    startTime = startTime,
+                    sourceObject = ObjectTypeIds.SET,
+                    containsFlagType = true
+                )
             }
         )
     }
 
     private suspend fun proceedWithConvertingToCollection() {
+        val startTime = System.currentTimeMillis()
         val params = ConvertObjectToCollection.Params(ctx = context)
         objectToCollection.async(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
+                viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
+                    analytics = analytics,
+                    startTime = startTime,
+                    sourceObject = ObjectTypeIds.COLLECTION,
+                    containsFlagType = true
+                )
             }
         )
     }
@@ -5950,6 +5965,8 @@ class EditorViewModel(
 
     private fun proceedWithObjectTypeChange(item: ObjectTypeView, onSuccess: (() -> Unit)? = null) {
         val startTime = System.currentTimeMillis()
+        val internalFlags = getInternalFlagsFromDetails()
+        val containsTypeFlag = internalFlags.contains(InternalFlags.ShouldSelectType)
         viewModelScope.launch {
             val params = SetObjectType.Params(
                 context = context,
@@ -5960,10 +5977,11 @@ class EditorViewModel(
                 onSuccess = { response ->
                     Timber.d("proceedWithObjectTypeChange success, key:[${item.key}]")
                     dispatcher.send(response)
-                    sendAnalyticsObjectTypeChangeEvent(
+                    sendAnalyticsObjectTypeSelectOrChangeEvent(
                         analytics = analytics,
-                        objType = storeOfObjectTypes.getByKey(item.key),
-                        startTime = startTime
+                        startTime = startTime,
+                        sourceObject = item.sourceObject,
+                        containsFlagType = containsTypeFlag
                     )
                     onSuccess?.invoke()
                 }

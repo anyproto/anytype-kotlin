@@ -606,7 +606,8 @@ fun ObjectWrapper.Type.toObjectTypeView(selectedSources: List<Id> = emptyList())
         emoji = iconEmoji,
         description = description,
         isSelected = selectedSources.contains(id),
-        defaultTemplate = defaultTemplateId
+        defaultTemplate = defaultTemplateId,
+        sourceObject = sourceObject
     )
 
 fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = mapNotNull { layout ->

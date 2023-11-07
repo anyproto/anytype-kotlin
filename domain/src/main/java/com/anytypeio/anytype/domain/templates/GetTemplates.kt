@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -52,6 +53,11 @@ class GetTemplates(
                             relation = Relations.SPACE_ID,
                             condition = DVFilterCondition.EQUAL,
                             value = spaceManager.get()
+                        ),
+                        DVFilter(
+                            relation = Relations.TYPE_UNIQUE_KEY,
+                            condition = DVFilterCondition.EQUAL,
+                            value = ObjectTypeIds.TEMPLATE
                         )
                     ),
                     keys = listOf(

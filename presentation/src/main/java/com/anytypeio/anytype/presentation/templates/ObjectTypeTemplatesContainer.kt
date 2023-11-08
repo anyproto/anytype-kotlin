@@ -17,7 +17,7 @@ import kotlinx.coroutines.flow.emptyFlow
 sealed interface ObjectTypeTemplatesContainer {
 
     suspend fun subscribeToTemplates(type: Id, subId: String): Flow<List<ObjectWrapper.Basic>>
-    suspend fun unsubscribeFromTemplates(subId: String)
+    suspend fun unsubscribeFromTemplates(subId: Id)
 }
 
 class DefaultObjectTypeTemplatesContainer(
@@ -89,7 +89,7 @@ class DefaultObjectTypeTemplatesContainer(
         }
     }
 
-    override suspend fun unsubscribeFromTemplates(subId: String) {
+    override suspend fun unsubscribeFromTemplates(subId: Id) {
         storage.unsubscribe(listOf(subId))
     }
 }

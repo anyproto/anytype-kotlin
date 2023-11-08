@@ -61,6 +61,7 @@ import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMove
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
 import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.reactive.longClicks
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
 import com.anytypeio.anytype.core_ui.tools.LastItemBottomOffsetDecorator
@@ -139,6 +140,7 @@ import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
+import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DraftObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
@@ -589,6 +591,26 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         binding.bottomToolbar
             .addDocClicks()
             .onEach { vm.onAddNewDocumentClicked() }
+            .launchIn(lifecycleScope)
+
+        binding.bottomToolbar
+            .addDocClicks()
+            .onEach { vm.onAddNewDocumentClicked() }
+            .launchIn(lifecycleScope)
+
+        binding
+            .bottomToolbar
+            .binding
+            .btnAddDoc
+            .longClicks(withHaptic = true)
+            .onEach {
+                val dialog = CreateObjectOfTypeFragment().apply {
+                    onTypeSelected = {
+                        vm.onAddNewDocumentClicked(it)
+                    }
+                }
+                dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
+            }
             .launchIn(lifecycleScope)
 
         binding.topToolbar.menu

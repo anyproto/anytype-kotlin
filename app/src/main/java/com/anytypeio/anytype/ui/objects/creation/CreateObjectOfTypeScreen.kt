@@ -237,14 +237,17 @@ fun ObjectTypeItem(
         Spacer(
             modifier = Modifier.width(14.dp)
         )
-        Image(
-            painter = rememberAsyncImagePainter(
-                Emojifier.safeUri(emoji)
-            ),
-            contentDescription = "Icon from URI",
-            modifier = Modifier.size(18.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
+        val uri = Emojifier.safeUri(emoji)
+        if (uri.isNotEmpty()) {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    Emojifier.safeUri(emoji)
+                ),
+                contentDescription = "Icon from URI",
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        }
         Text(
             text = name,
             style = Title2,

@@ -125,22 +125,10 @@ class MoveToViewModel(
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = buildList {
-                    addAll(
-                        ObjectSearchConstants.filterTypes(
-                            spaceId = spaceManager.get()
-                        )
-                    )
-                    add(
-                        DVFilter(
-                            relation = Relations.RECOMMENDED_LAYOUT,
-                            condition = DVFilterCondition.IN,
-                            value = SupportedLayouts.editorLayouts.map {
-                                it.code.toDouble()
-                            }
-                        )
-                    )
-                },
+                filters = ObjectSearchConstants.filterTypes(
+                    spaceId = spaceManager.get(),
+                    recommendedLayouts = SupportedLayouts.editorLayouts
+                ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
             getObjectTypes.execute(params).fold(

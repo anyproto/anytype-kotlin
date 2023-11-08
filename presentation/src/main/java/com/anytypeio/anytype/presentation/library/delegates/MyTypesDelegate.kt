@@ -64,9 +64,9 @@ class MyTypesDelegate @Inject constructor(
                 Relations.SOURCE_OBJECT,
                 Relations.RESTRICTIONS
             ),
-            filters = buildList {
-                addAll(ObjectSearchConstants.filterTypes(space))
-            }
+            filters = ObjectSearchConstants.filterTypes(
+                spaceId = space
+            )
         )
     }
 

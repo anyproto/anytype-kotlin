@@ -10,6 +10,7 @@ import com.anytypeio.anytype.presentation.library.LibraryScreenState
 import com.anytypeio.anytype.presentation.library.LibraryView
 import com.anytypeio.anytype.presentation.library.QueryListenerLibTypes
 import com.anytypeio.anytype.presentation.library.filterByQuery
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.toLibraryViews
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
@@ -47,7 +48,9 @@ class LibraryTypesDelegate @Inject constructor(
         return StoreSearchParams(
             subscription = SUB_LIBRARY_TYPES,
             keys = ObjectSearchConstants.defaultKeys,
-            filters = ObjectSearchConstants.filterTypes(spaceId = MARKETPLACE_SPACE_ID)
+            filters = ObjectSearchConstants.filterTypes(
+                spaceId = MARKETPLACE_SPACE_ID
+            )
         )
     }
 

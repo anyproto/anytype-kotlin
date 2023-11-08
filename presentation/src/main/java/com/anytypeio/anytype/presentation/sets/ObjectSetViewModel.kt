@@ -73,6 +73,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMI
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.Subscriptions.SUBSCRIPTION_SET_TEMPLATES
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -1772,7 +1773,7 @@ class ObjectSetViewModel(
     private suspend fun subscribeToTemplates(selectedTypeId: Id) {
         unsubscribeFromTypesTemplates()
         viewerTemplatesJob += viewModelScope.launch {
-            val subId = "${selectedTypeId}-$SET_TEMPLATES_SUBSCRIPTION"
+            val subId = "${selectedTypeId}$SUBSCRIPTION_SET_TEMPLATES"
             templatesSubId = subId
             templatesContainer.subscribeToTemplates(
                 type = selectedTypeId,
@@ -2508,8 +2509,6 @@ class ObjectSetViewModel(
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
         const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
-
-        private const val SET_TEMPLATES_SUBSCRIPTION = "set_templates_subscription"
     }
 }
 

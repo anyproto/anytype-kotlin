@@ -1542,17 +1542,15 @@ class ObjectSetViewModel(
     }
 
     //region TYPES AND TEMPLATES WIDGET
-    private var viewerTemplatesJob : Job? = null
+    private var viewerTemplatesJob = mutableListOf<Job>()
     private var templatesSubId: Id? = null
 
     private fun unsubscribeFromTypesTemplates() {
-        if (viewerTemplatesJob != null) {
-            viewerTemplatesJob?.cancel()
-            viewerTemplatesJob = null
+        if (viewerTemplatesJob.isNotEmpty()) {
+            viewerTemplatesJob.cancel()
             templatesSubId?.let {
                 viewModelScope.launch { templatesContainer.unsubscribeFromTemplates(it) }
-                templatesSubId = null
-            }
+            }.also { templatesSubId = null }
         }
     }
 
@@ -1773,7 +1771,7 @@ class ObjectSetViewModel(
 
     private suspend fun subscribeToTemplates(selectedTypeId: Id) {
         unsubscribeFromTypesTemplates()
-        viewerTemplatesJob = viewModelScope.launch {
+        viewerTemplatesJob += viewModelScope.launch {
             val subId = "${selectedTypeId}-$SET_TEMPLATES_SUBSCRIPTION"
             templatesSubId = subId
             templatesContainer.subscribeToTemplates(
@@ -2512,7 +2510,6 @@ class ObjectSetViewModel(
         const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
 
         private const val SET_TEMPLATES_SUBSCRIPTION = "set_templates_subscription"
-        private const val SET_TYPES_SUBSCRIPTION = "set_types_subscription"
     }
 }
 

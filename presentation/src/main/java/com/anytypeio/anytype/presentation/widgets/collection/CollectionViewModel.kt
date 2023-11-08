@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -762,22 +763,28 @@ class CollectionViewModel(
         launch {
             createObject.execute(
                 CreateObject.Param(
-                    type = type?.let { TypeKey(it) }
+                    type = type?.let { TypeKey(it) },
+                    internalFlags = buildList {
+                        add(InternalFlags.ShouldSelectTemplate)
+                        add(InternalFlags.ShouldEmptyDelete)
+                        if (type.isNullOrEmpty()) {
+                            add(InternalFlags.ShouldSelectType)
+                        }
+                    }
                 )
+            ).fold(
+                onSuccess = { result ->
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        type = result.objectId,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        route = EventsDictionary.Routes.objCreateHome,
+                        startTime = startTime
+                    )
+                    commands.emit(Command.LaunchDocument(result.objectId))
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
             )
-                .fold(
-                    onSuccess = { result ->
-                        sendAnalyticsObjectCreateEvent(
-                            analytics = analytics,
-                            type = result.objectId,
-                            storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.objCreateHome,
-                            startTime = startTime
-                        )
-                        commands.emit(Command.LaunchDocument(result.objectId))
-                    },
-                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
-                )
         }
     }
 

@@ -1344,6 +1344,7 @@ class ObjectSetViewModel(
                     type = type?.let { TypeKey(it) },
                     internalFlags = buildList {
                         add(InternalFlags.ShouldSelectTemplate)
+                        add(InternalFlags.ShouldEmptyDelete)
                         if (type.isNullOrBlank()) {
                             add(InternalFlags.ShouldSelectType)
                         }

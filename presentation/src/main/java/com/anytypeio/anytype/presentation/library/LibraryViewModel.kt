@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryView
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -150,7 +151,16 @@ class LibraryViewModel(
     ) {
         viewModelScope.launch {
             createObject.async(
-                CreateObject.Param(type = typeKey)
+                CreateObject.Param(
+                    type = typeKey,
+                    internalFlags = buildList {
+                        add(InternalFlags.ShouldSelectTemplate)
+                        add(InternalFlags.ShouldEmptyDelete)
+                        if (typeKey == null) {
+                            add(InternalFlags.ShouldSelectType)
+                        }
+                    }
+                )
             ).fold(
                 onSuccess = { result ->
                     navigate(Navigation.CreateDoc(result.objectId))

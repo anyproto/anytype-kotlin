@@ -11,16 +11,12 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
 sealed interface ObjectTypeTemplatesContainer {
 
-    suspend fun subscribeToTypes(subId: String): Flow<List<ObjectWrapper.Basic>>
     suspend fun subscribeToTemplates(type: Id, subId: String): Flow<List<ObjectWrapper.Basic>>
-    suspend fun unsubscribeFromTypes(subId: String)
     suspend fun unsubscribeFromTemplates(subId: String)
 }
 
@@ -91,39 +87,6 @@ class DefaultObjectTypeTemplatesContainer(
             )
             storage.subscribe(params)
         }
-    }
-
-    override suspend fun subscribeToTypes(subId: String): Flow<List<ObjectWrapper.Basic>> {
-        val objTypeParams = StoreSearchParams(
-            subscription = subId,
-            filters = buildList {
-                addAll(ObjectSearchConstants.filterTypes(spaceId = spaceManager.get()))
-                add(
-                    DVFilter(
-                        relation = Relations.RECOMMENDED_LAYOUT,
-                        condition = DVFilterCondition.IN,
-                        value = SupportedLayouts.createObjectLayouts.map { layout ->
-                            layout.code.toDouble()
-                        }
-                    )
-                )
-            },
-            sorts = emptyList(),
-            keys = listOf(
-                Relations.ID,
-                Relations.UNIQUE_KEY,
-                Relations.NAME,
-                Relations.ICON_EMOJI,
-                Relations.DEFAULT_TEMPLATE_ID,
-                Relations.RECOMMENDED_LAYOUT,
-                Relations.LAYOUT
-            ),
-        )
-        return storage.subscribe(objTypeParams)
-    }
-
-    override suspend fun unsubscribeFromTypes(subId: String) {
-        storage.unsubscribe(listOf(subId,))
     }
 
     override suspend fun unsubscribeFromTemplates(subId: String) {

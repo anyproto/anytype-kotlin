@@ -850,4 +850,8 @@ class BlockMiddleware(
     override suspend fun createTemplateFromObject(ctx: Id): Id {
         return middleware.createTemplateFromObject(ctx)
     }
+
+    override suspend fun debugStackGoroutines(path: String) {
+        return middleware.debugStackGoroutines(path)
+    }
 }

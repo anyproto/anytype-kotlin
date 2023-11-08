@@ -888,4 +888,8 @@ class BlockDataRepository(
     override suspend fun createTemplateFromObject(ctx: Id): Id {
         return remote.createTemplateFromObject(ctx)
     }
+
+    override suspend fun debugStackGoroutines(path: String) {
+        return remote.debugStackGoroutines(path)
+    }
 }

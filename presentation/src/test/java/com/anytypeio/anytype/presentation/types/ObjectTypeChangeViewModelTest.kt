@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
@@ -110,18 +111,7 @@ class ObjectTypeChangeViewModelTest {
         stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(spaceId))
-            add(
-                DVFilter(
-                    relation = Relations.RECOMMENDED_LAYOUT,
-                    condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.editorLayouts.map {
-                        it.code.toDouble()
-                    }
-                )
-            )
-        }
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(spaceId, SupportedLayouts.editorLayouts)
 
         // TESTING
 
@@ -160,23 +150,17 @@ class ObjectTypeChangeViewModelTest {
         stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(spaceId))
-            add(
-                DVFilter(
-                    relation = Relations.RECOMMENDED_LAYOUT,
-                    condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.editorLayouts.map {
-                        it.code.toDouble()
-                    }
-                )
-            )
-        }
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(spaceId, SupportedLayouts.editorLayouts)
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         val expectedMarketplaceTypeKeys = ObjectSearchConstants.defaultKeysObjectType
         val expectedMarketplaceTypeFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeMarketplace)
+            addAll(
+                ObjectSearchConstants.filterTypes(
+                    spaceId = MARKETPLACE_SPACE_ID,
+                    recommendedLayouts = SupportedLayouts.editorLayouts
+                )
+            )
             add(
                 DVFilter(
                     relation = Relations.ID,
@@ -186,15 +170,6 @@ class ObjectTypeChangeViewModelTest {
                         marketplaceType2.id,
                         MarketplaceObjectTypeIds.BOOKMARK
                     )
-                )
-            )
-            add(
-                DVFilter(
-                    relation = Relations.RECOMMENDED_LAYOUT,
-                    condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.editorLayouts.map {
-                        it.code.toDouble()
-                    }
                 )
             )
         }
@@ -266,23 +241,17 @@ class ObjectTypeChangeViewModelTest {
         stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(spaceId))
-            add(
-                DVFilter(
-                    relation = Relations.RECOMMENDED_LAYOUT,
-                    condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.editorLayouts.map {
-                        it.code.toDouble()
-                    }
-                )
-            )
-        }
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(spaceId, SupportedLayouts.editorLayouts)
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         val expectedMarketplaceTypeKeys = ObjectSearchConstants.defaultKeysObjectType
         val expectedMarketplaceTypeFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeMarketplace)
+            addAll(
+                ObjectSearchConstants.filterTypes(
+                    spaceId = MARKETPLACE_SPACE_ID,
+                    recommendedLayouts = SupportedLayouts.editorLayouts
+                )
+            )
             add(
                 DVFilter(
                     relation = Relations.ID,
@@ -292,15 +261,6 @@ class ObjectTypeChangeViewModelTest {
                         marketplaceType2.id,
                         MarketplaceObjectTypeIds.BOOKMARK
                     )
-                )
-            )
-            add(
-                DVFilter(
-                    relation = Relations.RECOMMENDED_LAYOUT,
-                    condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.editorLayouts.map {
-                        it.code.toDouble()
-                    }
                 )
             )
         }
@@ -450,23 +410,17 @@ class ObjectTypeChangeViewModelTest {
         val expectedInstalledTypeId = MockDataFactory.randomUuid()
         val expectedInstalledTypeUniqueKey = ObjectTypeIds.PAGE
 
-        val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(space))
-            add(
-                DVFilter(
-                    relation = Relations.RECOMMENDED_LAYOUT,
-                    condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.editorLayouts.map {
-                        it.code.toDouble()
-                    }
-                )
-            )
-        }
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(space, SupportedLayouts.editorLayouts)
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         val expectedMarketplaceTypeKeys = ObjectSearchConstants.defaultKeysObjectType
         val expectedMarketplaceTypeFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeMarketplace)
+            addAll(
+                ObjectSearchConstants.filterTypes(
+                    spaceId = MARKETPLACE_SPACE_ID,
+                    recommendedLayouts = SupportedLayouts.editorLayouts
+                )
+            )
             add(
                 DVFilter(
                     relation = Relations.ID,
@@ -476,15 +430,6 @@ class ObjectTypeChangeViewModelTest {
                         marketplaceType2.uniqueKey,
                         MarketplaceObjectTypeIds.BOOKMARK
                     )
-                )
-            )
-            add(
-                DVFilter(
-                    relation = Relations.RECOMMENDED_LAYOUT,
-                    condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.editorLayouts.map {
-                        it.code.toDouble()
-                    }
                 )
             )
         }
@@ -611,18 +556,7 @@ class ObjectTypeChangeViewModelTest {
         stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = buildList {
-            addAll(ObjectSearchConstants.filterObjectTypeLibrary(spaceId))
-            add(
-                DVFilter(
-                    relation = Relations.RECOMMENDED_LAYOUT,
-                    condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.editorLayouts.map {
-                        it.code.toDouble()
-                    }
-                )
-            )
-        }
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(spaceId, SupportedLayouts.editorLayouts)
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         blockRepository.stub {

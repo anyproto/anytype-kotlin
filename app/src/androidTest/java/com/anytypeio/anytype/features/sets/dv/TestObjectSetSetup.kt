@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -151,6 +152,9 @@ abstract class TestObjectSetSetup {
     lateinit var configStorage: ConfigStorage
 
     @Mock
+    lateinit var getObjectTypes: GetObjectTypes
+
+    @Mock
     lateinit var createTemplate: CreateTemplate
 
     private lateinit var getTemplates: GetTemplates
@@ -265,14 +269,13 @@ abstract class TestObjectSetSetup {
             objectStore = objectStore,
             addObjectToCollection = addObjectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
-            getDefaultObjectType = getDefaultObjectType,
-            updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
-            createTemplate = createTemplate
+            createTemplate = createTemplate,
+            getObjectTypes = getObjectTypes
         )
     }
 

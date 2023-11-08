@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
+import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -35,22 +36,10 @@ class CreateObjectOfTypeViewModel(
                 getObjectTypes.stream(
                     GetObjectTypes.Params(
                         sorts = emptyList(),
-                        filters = buildList {
-                            addAll(
-                                ObjectSearchConstants.filterObjectTypeLibrary(
-                                    space = spaceManager.get()
-                                )
-                            )
-                            add(
-                                DVFilter(
-                                    relation = Relations.RECOMMENDED_LAYOUT,
-                                    condition = DVFilterCondition.IN,
-                                    value = SupportedLayouts.createObjectLayouts.map {
-                                        it.code.toDouble()
-                                    }
-                                )
-                            )
-                        },
+                        filters = ObjectSearchConstants.filterTypes(
+                            spaceId = spaceManager.get(),
+                            recommendedLayouts = SupportedLayouts.createObjectLayouts
+                        ),
                         keys = ObjectSearchConstants.defaultKeysObjectType,
                         query = query
                     )

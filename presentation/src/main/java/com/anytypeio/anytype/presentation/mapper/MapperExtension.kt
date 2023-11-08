@@ -9,8 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_models.primitives.TypeId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.config.DebugSettings
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -26,6 +24,7 @@ import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.settings.EditorSettings
+import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
 import timber.log.Timber
 
 fun Block.Content.File.toPictureView(
@@ -609,6 +608,15 @@ fun ObjectWrapper.Type.toObjectTypeView(selectedSources: List<Id> = emptyList())
         defaultTemplate = defaultTemplateId,
         sourceObject = sourceObject
     )
+
+fun List<ObjectWrapper.Type>.toTemplateObjectTypeViewItems(selectedType: Id): List<TemplateObjectTypeView.Item> {
+    return map {
+        TemplateObjectTypeView.Item(
+            type = it,
+            isSelected = it.id == selectedType
+        )
+    }
+}
 
 fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = mapNotNull { layout ->
     when (layout) {

@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -233,7 +234,12 @@ class ObjectTypeChangeViewModel(
         val marketplaceTypes = getObjectTypes.run(
             GetObjectTypes.Params(
                 filters = buildList {
-                    addAll(ObjectSearchConstants.filterObjectTypeMarketplace)
+                    addAll(
+                        ObjectSearchConstants.filterTypes(
+                            spaceId = Marketplace.MARKETPLACE_SPACE_ID,
+                            recommendedLayouts = SupportedLayouts.editorLayouts
+                        )
+                    )
                     if (excludedMarketplaceTypes.isNotEmpty()) {
                         add(
                             DVFilter(
@@ -243,15 +249,6 @@ class ObjectTypeChangeViewModel(
                             )
                         )
                     }
-                    add(
-                        DVFilter(
-                            relation = Relations.RECOMMENDED_LAYOUT,
-                            condition = DVFilterCondition.IN,
-                            value = SupportedLayouts.editorLayouts.map {
-                                it.code.toDouble()
-                            }
-                        )
-                    )
                 },
                 sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
                 query = query,
@@ -265,22 +262,10 @@ class ObjectTypeChangeViewModel(
         query: String
     ) = getObjectTypes.run(
         GetObjectTypes.Params(
-            filters = buildList {
-                addAll(
-                    ObjectSearchConstants.filterObjectTypeLibrary(
-                        space = spaceManager.get()
-                    )
-                )
-                add(
-                    DVFilter(
-                        relation = Relations.RECOMMENDED_LAYOUT,
-                        condition = DVFilterCondition.IN,
-                        value = SupportedLayouts.editorLayouts.map {
-                            it.code.toDouble()
-                        }
-                    )
-                )
-            },
+            filters = ObjectSearchConstants.filterTypes(
+                spaceId = spaceManager.get(),
+                recommendedLayouts = SupportedLayouts.editorLayouts
+            ),
             sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
             query = query,
             keys = ObjectSearchConstants.defaultKeysObjectType

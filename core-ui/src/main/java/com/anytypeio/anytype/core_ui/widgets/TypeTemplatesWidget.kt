@@ -94,7 +94,6 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
-import com.anytypeio.anytype.core_ui.views.ModalTitle
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -917,7 +916,7 @@ fun ObjectTypesList(
                     is TemplateObjectTypeView.Item -> {
                         val borderWidth: Dp
                         val borderColor: Color
-                        if (item.isDefault) {
+                        if (item.isSelected) {
                             borderWidth = 2.dp
                             borderColor = colorResource(id = R.color.palette_system_amber_50)
                         } else {

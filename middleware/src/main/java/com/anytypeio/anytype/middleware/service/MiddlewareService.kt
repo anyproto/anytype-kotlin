@@ -436,6 +436,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun debugSubscriptions(request: Rpc.Debug.Subscriptions.Request): Rpc.Debug.Subscriptions.Response
 
+    @Throws(Exception::class)
+    fun debugStackGoroutines(request: Rpc.Debug.StackGoroutines.Request): Rpc.Debug.StackGoroutines.Response
+
     //endregion
 
     //region WIDGETS commands

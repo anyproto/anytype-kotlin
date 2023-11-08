@@ -1551,6 +1551,7 @@ class ObjectSetViewModel(
             viewerTemplatesJob = null
             templatesSubId?.let {
                 viewModelScope.launch { templatesContainer.unsubscribeFromTemplates(it) }
+                templatesSubId = null
             }
         }
     }

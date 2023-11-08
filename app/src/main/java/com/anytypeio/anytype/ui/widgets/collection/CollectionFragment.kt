@@ -19,6 +19,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
+import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import javax.inject.Inject
 
 class CollectionFragment : BaseComposeFragment() {
@@ -48,7 +49,17 @@ class CollectionFragment : BaseComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 DefaultTheme {
-                    CollectionScreen(vm)
+                    CollectionScreen(
+                        vm = vm,
+                        onCreateObjectLongClicked = {
+                            val dialog = CreateObjectOfTypeFragment().apply {
+                                onTypeSelected = {
+                                    vm.onAddClicked(it)
+                                }
+                            }
+                            dialog.show(childFragmentManager, "fullscreen-widget-create-object-of-type-dialog")
+                        }
+                    )
                 }
             }
         }

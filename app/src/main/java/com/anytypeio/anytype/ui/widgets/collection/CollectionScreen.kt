@@ -109,7 +109,11 @@ import org.burnoutcrew.reorderable.reorderable
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun ScreenContent(vm: CollectionViewModel, uiState: CollectionUiState) {
+fun ScreenContent(
+    vm: CollectionViewModel,
+    uiState: CollectionUiState,
+    onCreateObjectLongClicked: () -> Unit
+) {
     Box(
         Modifier.background(color = colorResource(R.color.background_primary))
     )
@@ -130,6 +134,7 @@ fun ScreenContent(vm: CollectionViewModel, uiState: CollectionUiState) {
                     homeClick = { vm.onHomeClicked() },
                     searchClick = { vm.onSearchClicked() },
                     addDocClick = { vm.onAddClicked() },
+                    onCreateObjectLongClicked = onCreateObjectLongClicked
                 )
             }
         }
@@ -532,7 +537,10 @@ fun CollectionItem(
 
 @ExperimentalMaterialApi
 @Composable
-fun CollectionScreen(vm: CollectionViewModel) {
+fun CollectionScreen(
+    vm: CollectionViewModel,
+    onCreateObjectLongClicked: () -> Unit
+) {
 
     val uiState by vm.uiState.collectAsStateWithLifecycle()
 
@@ -550,7 +558,7 @@ fun CollectionScreen(vm: CollectionViewModel) {
                 sheetContent = { BlockWidget(localDensity, vm, state) },
                 sheetPeekHeight = 0.dp
             ) {
-                ScreenContent(vm, state)
+                ScreenContent(vm, state, onCreateObjectLongClicked)
 
                 LaunchedEffect(state) {
 

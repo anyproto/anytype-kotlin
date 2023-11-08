@@ -1344,15 +1344,21 @@ class ObjectSetViewModel(
         proceedWithExiting()
     }
 
-    fun onAddNewDocumentClicked() {
+    fun onAddNewDocumentClicked(type: Key? = null) {
         Timber.d("onAddNewDocumentClicked, ")
 
         val startTime = System.currentTimeMillis()
         jobs += viewModelScope.launch {
             createObject.async(
                 CreateObject.Param(
-                    type = null,
-                    internalFlags = listOf(InternalFlags.ShouldSelectType, InternalFlags.ShouldSelectTemplate)
+                    type = type?.let { TypeKey(it) },
+                    internalFlags = buildList {
+                        add(InternalFlags.ShouldSelectTemplate)
+                        add(InternalFlags.ShouldEmptyDelete)
+                        if (type.isNullOrBlank()) {
+                            add(InternalFlags.ShouldSelectType)
+                        }
+                    }
                 )
             ).fold(
                 onSuccess = { result ->

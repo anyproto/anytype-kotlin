@@ -10,11 +10,14 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -749,7 +752,7 @@ class CollectionViewModel(
         }
     }
 
-    fun onAddClicked() {
+    fun onAddClicked(type: Key? = null) {
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.createObjectCollectionsNavBar,
@@ -758,20 +761,30 @@ class CollectionViewModel(
 
         val startTime = System.currentTimeMillis()
         launch {
-            createObject.execute(CreateObject.Param(type = null))
-                .fold(
-                    onSuccess = { result ->
-                        sendAnalyticsObjectCreateEvent(
-                            analytics = analytics,
-                            type = result.objectId,
-                            storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.objCreateHome,
-                            startTime = startTime
-                        )
-                        commands.emit(Command.LaunchDocument(result.objectId))
-                    },
-                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            createObject.execute(
+                CreateObject.Param(
+                    type = type?.let { TypeKey(it) },
+                    internalFlags = buildList {
+                        add(InternalFlags.ShouldSelectTemplate)
+                        add(InternalFlags.ShouldEmptyDelete)
+                        if (type.isNullOrEmpty()) {
+                            add(InternalFlags.ShouldSelectType)
+                        }
+                    }
                 )
+            ).fold(
+                onSuccess = { result ->
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        type = result.objectId,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        route = EventsDictionary.Routes.objCreateHome,
+                        startTime = startTime
+                    )
+                    commands.emit(Command.LaunchDocument(result.objectId))
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            )
         }
     }
 

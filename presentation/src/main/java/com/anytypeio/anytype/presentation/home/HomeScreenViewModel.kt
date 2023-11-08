@@ -1033,6 +1033,7 @@ class HomeScreenViewModel(
             val params = CreateObject.Param(
                 internalFlags  = buildList {
                     add(InternalFlags.ShouldSelectTemplate)
+                    add(InternalFlags.ShouldEmptyDelete)
                     if (type.isNullOrBlank()) {
                         add(InternalFlags.ShouldSelectType)
                     }

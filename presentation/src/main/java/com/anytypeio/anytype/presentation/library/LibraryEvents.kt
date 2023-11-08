@@ -3,9 +3,9 @@ package com.anytypeio.anytype.presentation.library
 sealed class LibraryEvent {
 
     sealed class BottomMenu : LibraryEvent() {
-        class Back : BottomMenu()
-        class Search : BottomMenu()
-        class AddDoc : BottomMenu()
+        object Back : BottomMenu()
+        object Search : BottomMenu()
+        object CreateObject : BottomMenu()
     }
 
     sealed class Query(open val query: String) : LibraryEvent() {

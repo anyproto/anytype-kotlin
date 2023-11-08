@@ -13,8 +13,6 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.FileLimitsEvent
@@ -3150,11 +3148,13 @@ class EditorViewModel(
     fun onAddNewDocumentClicked(type: Key? = null) {
         Timber.d("onAddNewDocumentClicked, ")
         proceedWithCreatingNewObject(
-            internalFlags = listOf(
-                InternalFlags.ShouldSelectTemplate,
-                InternalFlags.ShouldSelectType,
-                InternalFlags.ShouldEmptyDelete
-            ),
+            internalFlags = buildList {
+                add(InternalFlags.ShouldSelectTemplate)
+                add(InternalFlags.ShouldEmptyDelete)
+                if (type.isNullOrEmpty()) {
+                    add(InternalFlags.ShouldSelectType)
+                }
+            },
             typeKey = type?.let { TypeKey(it) }
         )
     }

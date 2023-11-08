@@ -2329,6 +2329,16 @@ class Middleware @Inject constructor(
         return response.id
     }
 
+    @Throws(Exception::class)
+    fun debugStackGoroutines(path: String) {
+        val request = Rpc.Debug.StackGoroutines.Request(
+            path = path
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugStackGoroutines(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
     private fun logRequest(any: Any) {
         logger.logRequest(any).also {
             if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {

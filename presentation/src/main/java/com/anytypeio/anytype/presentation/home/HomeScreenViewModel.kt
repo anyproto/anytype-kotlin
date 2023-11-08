@@ -378,7 +378,7 @@ class HomeScreenViewModel(
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
-                            subscription = HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                             targets = listOf(config.profile),
                             keys = listOf(
                                 Relations.ID,
@@ -1245,7 +1245,7 @@ class HomeScreenViewModel(
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
-            unsubscriber.unsubscribe(listOf(HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION))
+            unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
         }
     }
 
@@ -1329,7 +1329,7 @@ class HomeScreenViewModel(
             WidgetView.Action.EditWidgets
         )
 
-        const val HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION = "subscription.home-screen.space-object"
+        const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
     }
 }
 

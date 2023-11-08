@@ -1117,7 +1117,7 @@ class HomeScreenViewModelTest {
             onBlocking {
                 subscribe(
                     StoreSearchByIdsParams(
-                        subscription = HomeScreenViewModel.HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                        subscription = HomeScreenViewModel.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                         targets = listOf(defaultSpaceConfig.spaceView),
                         keys = listOf(Relations.ID, Relations.ICON_EMOJI, Relations.ICON_IMAGE)
                     )
@@ -2512,7 +2512,7 @@ class HomeScreenViewModelTest {
             }
             verify(storelessSubscriptionContainer, times(1)).subscribe(
                 StoreSearchByIdsParams(
-                    subscription = HomeScreenViewModel.HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                    subscription = HomeScreenViewModel.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                     targets = listOf(defaultSpaceConfig.profile),
                     keys = listOf(
                         Relations.ID,
@@ -2672,7 +2672,7 @@ class HomeScreenViewModelTest {
             onBlocking {
                 subscribe(
                     StoreSearchByIdsParams(
-                        subscription = HomeScreenViewModel.HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                        subscription = HomeScreenViewModel.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                         targets = listOf(defaultSpaceConfig.spaceView),
                         keys = listOf(Relations.ID, Relations.ICON_EMOJI, Relations.ICON_IMAGE)
                     )

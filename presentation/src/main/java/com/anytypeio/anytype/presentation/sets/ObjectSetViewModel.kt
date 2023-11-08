@@ -54,6 +54,7 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -76,6 +77,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
+import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerEvent
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
@@ -113,6 +115,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class ObjectSetViewModel(
@@ -665,15 +668,24 @@ class ObjectSetViewModel(
 
     private fun proceedWithExiting() {
         viewModelScope.launch {
-            cancelSearchSubscription(CancelSearchSubscription.Params(listOf(context))).process(
-                failure = {
-                    Timber.e(it, "Failed to cancel subscription")
-                    proceedWithClosingAndExit()
-                },
-                success = {
-                    proceedWithClosingAndExit()
-                }
-            )
+            val timeout = if (BuildConfig.DEBUG) 3000 else Long.MAX_VALUE
+            withTimeout(timeout) {
+                cancelSearchSubscription(
+                    CancelSearchSubscription.Params(
+                        subscriptions = buildList {
+                            add(DefaultDataViewSubscription.getSubscriptionId(context))
+                        }
+                    )
+                ).process(
+                    failure = {
+                        Timber.e(it, "Failed to cancel subscription")
+                        proceedWithClosingAndExit()
+                    },
+                    success = {
+                        proceedWithClosingAndExit()
+                    }
+                )
+            }
         }
     }
 

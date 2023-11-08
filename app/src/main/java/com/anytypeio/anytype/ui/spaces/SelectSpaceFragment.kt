@@ -88,6 +88,16 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
         expand()
     }
 
+    override fun onStart() {
+        vm.onStart()
+        super.onStart()
+    }
+
+    override fun onStop() {
+        vm.onStop()
+        super.onStop()
+    }
+
     override fun injectDependencies() {
         componentManager().selectSpaceComponent.get().inject(this)
     }

@@ -369,7 +369,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Save your recovery phrase</string>
+    <string name="onboarding_mnemonic_title">Save your Recovery Phrase</string>
     <string name="onboarding_mnemonic_description">It’s a novel way of authentication that gives you full ownership over your account and data.</string>
     <string name="onboarding_mnemonic_show_key">Show Recovery Phrase</string>
     <string name="onboarding_mnemonic_key_saved">Go to the app</string>
@@ -417,7 +417,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_recovery_phrase_description_2">Whomever knows Recovery Phrase, owns the account. </string>
     <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
     <string name="onboarding_recovery_phrase_description_4">That\'s why it\'s essential to keep Recovery Phrase safe. As the sole owner, nobody can help you if it\'s lost.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my phrase?</string>
+    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
     <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Recovery Phrase is to save it in your password manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">The most secure way is to write it down on paper and keep it offline, in a safe and secure place.</string>
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>

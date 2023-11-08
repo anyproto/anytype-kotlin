@@ -15,12 +15,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -181,7 +181,11 @@ fun TermsAndPolicy(
         )
 
         pushStringAnnotation(tag = TermsOfUseTag, annotation = "")
-        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+        withStyle(
+            style = SpanStyle(
+                color = Color(0xFF797976)
+            )
+        ) {
             append(stringResource(id = R.string.onboarding_terms_and_policy_terms))
         }
         pop()
@@ -191,7 +195,11 @@ fun TermsAndPolicy(
         )
 
         pushStringAnnotation(tag = PrivacyPolicyTag, annotation = "")
-        withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+        withStyle(
+            style = SpanStyle(
+                color = Color(0xFF797976)
+            )
+        ) {
             append(stringResource(id = R.string.onboarding_terms_and_policy_privacy))
         }
         pop()
@@ -201,7 +209,7 @@ fun TermsAndPolicy(
         modifier = modifier.padding(vertical = 16.dp, horizontal = 58.dp),
         text = annotatedString,
         style = TextOnBoardingDescription
-            .copy(color = OnBoardingTextSecondaryColor, textAlign = TextAlign.Center),
+            .copy(color = Color(0xFF494843), textAlign = TextAlign.Center),
         onClick = {
             annotatedString.getStringAnnotations(TermsOfUseTag, it, it)
                 .firstOrNull()?.let {

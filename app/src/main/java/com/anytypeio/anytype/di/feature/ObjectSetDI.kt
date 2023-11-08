@@ -19,6 +19,7 @@ import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectSubc
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -189,6 +190,14 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideGetObjectTypesUseCase(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetObjectTypes = GetObjectTypes(repository, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideObjectSetViewModelFactory(
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
@@ -218,8 +227,7 @@ object ObjectSetModule {
         addObjectToCollection: AddObjectToCollection,
         convertObjectToCollection: ConvertObjectToCollection,
         storeOfObjectTypes: StoreOfObjectTypes,
-        getDefaultObjectType: GetDefaultObjectType,
-        updateDataViewViewer: UpdateDataViewViewer,
+        getObjectTypes: GetObjectTypes,
         duplicateObjects: DuplicateObjects,
         templatesContainer: ObjectTypeTemplatesContainer,
         setObjectListIsArchived: SetObjectListIsArchived,
@@ -255,8 +263,7 @@ object ObjectSetModule {
         addObjectToCollection = addObjectToCollection,
         objectToCollection = convertObjectToCollection,
         storeOfObjectTypes = storeOfObjectTypes,
-        getDefaultObjectType = getDefaultObjectType,
-        updateDataViewViewer = updateDataViewViewer,
+        getObjectTypes = getObjectTypes,
         duplicateObjects = duplicateObjects,
         templatesContainer = templatesContainer,
         setObjectListIsArchived = setObjectListIsArchived,

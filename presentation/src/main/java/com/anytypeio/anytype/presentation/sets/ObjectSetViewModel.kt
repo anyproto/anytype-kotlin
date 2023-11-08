@@ -1,13 +1,10 @@
 package com.anytypeio.anytype.presentation.sets
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -66,6 +63,7 @@ import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -1716,66 +1714,67 @@ class ObjectSetViewModel(
                 .filterNotNull()
                 .distinctUntilChanged()
                 .collect { selectedType ->
-                    getObjectTypesForTypeTemplatesWidget(selectedType = selectedType)
+                    updateTypesForTypeTemplatesWidget(selectedType)
                     subscribeToTemplates(selectedType)
                 }
         }
     }
 
-    private suspend fun getObjectTypesForTypeTemplatesWidget(selectedType: ObjectWrapper.Type) {
-        val widgetState = typeTemplatesWidgetState.value
-        if (widgetState is TypeTemplatesWidgetUI.Data && widgetState.isPossibleToChangeType) {
-            if (widgetState.objectTypes.isNotEmpty()) {
-                val types = widgetState.objectTypes.map { type ->
-                    when (type) {
-                        is TemplateObjectTypeView.Item -> {
-                            if (type.type.id == selectedType.id) {
-                                type.copy(isDefault = true)
-                            } else {
-                                type.copy(isDefault = false)
-                            }
-                        }
-                        is TemplateObjectTypeView.Search -> type
-                    }
+    private suspend fun updateTypesForTypeTemplatesWidget(selectedType: ObjectWrapper.Type) {
+        when (val widgetState = typeTemplatesWidgetState.value) {
+            is TypeTemplatesWidgetUI.Data -> {
+                if (widgetState.isPossibleToChangeType) {
+                    updateWidgetStateWithTypes(selectedType, widgetState)
                 }
-                typeTemplatesWidgetState.value = widgetState.copy(objectTypes = types)
-            } else {
-                val filters = buildList {
-                    addAll(ObjectSearchConstants.filterTypes(spaceId = spaceManager.get()))
-                    add(
-                        DVFilter(
-                            relation = Relations.RECOMMENDED_LAYOUT,
-                            condition = DVFilterCondition.IN,
-                            value = SupportedLayouts.createObjectLayouts.map {
-                                it.code.toDouble()
-                            }
-                        )
-                    )
-                }
-                val params = GetObjectTypes.Params(
-                    filters = filters,
-                    keys = ObjectSearchConstants.defaultKeysObjectType
-                )
-                getObjectTypes.async(params).fold(
-                    onSuccess = { types ->
-                        val list = buildList {
-                            add(TemplateObjectTypeView.Search)
-                            addAll(types.map { type ->
-                                TemplateObjectTypeView.Item(
-                                    type = type,
-                                    isDefault = type.id == selectedType.id
-                                )
-                            })
-                        }
-                        typeTemplatesWidgetState.value = widgetState.copy(objectTypes = list)
-                    },
-                    onFailure = { error ->
-                        Timber.e(error, "Error while fetching object types")
-                        typeTemplatesWidgetState.value = widgetState.copy(objectTypes = emptyList())
-                    }
-                )
+            }
+            else -> {
+                // Do nothing
             }
         }
+    }
+
+    private suspend fun updateWidgetStateWithTypes(selectedType: ObjectWrapper.Type, widgetState: TypeTemplatesWidgetUI.Data) {
+        if (widgetState.objectTypes.isNotEmpty()) {
+            updateExistingTypes(selectedType, widgetState)
+        } else {
+            fetchAndProcessObjectTypes(selectedType, widgetState)
+        }
+    }
+
+    private fun updateExistingTypes(selectedType: ObjectWrapper.Type, widgetState: TypeTemplatesWidgetUI.Data) {
+        val types = widgetState.objectTypes.map { it.updateSelectionState(selectedType) }
+        typeTemplatesWidgetState.value = widgetState.copy(objectTypes = types)
+    }
+
+    private fun TemplateObjectTypeView.updateSelectionState(selectedType: ObjectWrapper.Type): TemplateObjectTypeView {
+        return when (this) {
+            is TemplateObjectTypeView.Item -> this.copy(isSelected = this.type.id == selectedType.id)
+            is TemplateObjectTypeView.Search -> this
+        }
+    }
+
+    private suspend fun fetchAndProcessObjectTypes(selectedType: ObjectWrapper.Type, widgetState: TypeTemplatesWidgetUI.Data) {
+        val filters = ObjectSearchConstants.filterTypes(
+            spaceId = spaceManager.get(),
+            recommendedLayouts = SupportedLayouts.createObjectLayouts
+        )
+        val params = GetObjectTypes.Params(
+            filters = filters,
+            keys = ObjectSearchConstants.defaultKeysObjectType
+        )
+        getObjectTypes.async(params).fold(
+            onSuccess = { types ->
+                val list = buildList {
+                    add(TemplateObjectTypeView.Search)
+                    addAll(types.toTemplateObjectTypeViewItems(selectedType.id))
+                }
+                typeTemplatesWidgetState.value = widgetState.copy(objectTypes = list)
+            },
+            onFailure = { error ->
+                Timber.e(error, "Error while fetching object types")
+                typeTemplatesWidgetState.value = widgetState.copy(objectTypes = emptyList())
+            }
+        )
     }
 
     private suspend fun subscribeToTemplates(selectedType: ObjectWrapper.Type) {

@@ -1,10 +1,13 @@
 package com.anytypeio.anytype.presentation.sets
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -28,13 +31,12 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
-import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
-import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -66,11 +68,13 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.render
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -144,8 +148,7 @@ class ObjectSetViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val getDefaultObjectType: GetDefaultObjectType,
-    private val updateDataViewViewer: UpdateDataViewViewer,
+    private val getObjectTypes: GetObjectTypes,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
@@ -1552,18 +1555,12 @@ class ObjectSetViewModel(
 
     //region TYPES AND TEMPLATES WIDGET
     private var viewerTemplatesJob : Job? = null
-    private var viewerTypesJob : Job? = null
 
     private fun unsubscribeFromTypesTemplates() {
         if (viewerTemplatesJob != null) {
             viewerTemplatesJob?.cancel()
             viewerTemplatesJob = null
             viewModelScope.launch { templatesContainer.unsubscribeFromTemplates(SET_TEMPLATES_SUBSCRIPTION) }
-        }
-        if (viewerTypesJob != null) {
-            viewerTypesJob?.cancel()
-            viewerTypesJob = null
-            viewModelScope.launch { templatesContainer.unsubscribeFromTypes(SET_TYPES_SUBSCRIPTION) }
         }
     }
 
@@ -1597,11 +1594,11 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             val dataView = stateReducer.state.value.dataViewState() ?: return@launch
             val viewer = getViewer(dataView) ?: return@launch
-            val (type, _) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes) ?: return@launch
+            val (type, _) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
+            if (type == null || !type.isValid) return@launch
             typeTemplatesWidgetState.value = createState(viewer)
-            subscribeToViewerObjectTypes()
-            subscribeToTemplates()
             selectedTypeFlow.value = type
+            subscribeToSelectedType()
         }
         logEvent(ObjectStateAnalyticsEvent.SHOW_TEMPLATES)
     }
@@ -1713,63 +1710,98 @@ class ObjectSetViewModel(
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun subscribeToViewerObjectTypes() {
-        viewerTypesJob = viewModelScope.launch {
-            selectedTypeFlow.filterNotNull().distinctUntilChanged()
-                .flatMapLatest { selectedTypeId ->
-                    templatesContainer.subscribeToTypes(
-                        subId = SET_TYPES_SUBSCRIPTION
-                    ).map { types ->
-                        Pair(selectedTypeId, types)
-                    }
-                }.map { (selectedTypeId, types) ->
-                    buildList {
-                        add(TemplateObjectTypeView.Search)
-                        addAll( types.map { type ->
-                            TemplateObjectTypeView.Item(
-                                type = ObjectWrapper.Type(type.map),
-                                isDefault = type.id == selectedTypeId.id
-                            )
-                        })
-                    }
-                }.collectLatest { types ->
-                    typeTemplatesWidgetState.value =
-                        when (val uiState = typeTemplatesWidgetState.value) {
-                            is TypeTemplatesWidgetUI.Data -> uiState.copy(objectTypes = types)
-                            is TypeTemplatesWidgetUI.Init -> uiState
-                        }
+    private fun subscribeToSelectedType() {
+        viewModelScope.launch {
+            selectedTypeFlow
+                .filterNotNull()
+                .distinctUntilChanged()
+                .collect { selectedType ->
+                    getObjectTypesForTypeTemplatesWidget(selectedType = selectedType)
+                    subscribeToTemplates(selectedType)
                 }
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private suspend fun subscribeToTemplates() {
-        viewerTemplatesJob = viewModelScope.launch {
-            combine(
-                selectedTypeFlow.filterNotNull().distinctUntilChanged(),
-                stateReducer.state,
-            ) { selectedType, state ->
-                Pair(state, selectedType.id)
-            }.flatMapLatest { (state, selectedType) ->
-                templatesContainer.subscribeToTemplates(
-                    type = selectedType,
-                    subId = SET_TEMPLATES_SUBSCRIPTION
-                ).map {
-                        templates -> Pair(state ,templates)
+    private suspend fun getObjectTypesForTypeTemplatesWidget(selectedType: ObjectWrapper.Type) {
+        val widgetState = typeTemplatesWidgetState.value
+        if (widgetState is TypeTemplatesWidgetUI.Data && widgetState.isPossibleToChangeType) {
+            if (widgetState.objectTypes.isNotEmpty()) {
+                val types = widgetState.objectTypes.map { type ->
+                    when (type) {
+                        is TemplateObjectTypeView.Item -> {
+                            if (type.type.id == selectedType.id) {
+                                type.copy(isDefault = true)
+                            } else {
+                                type.copy(isDefault = false)
+                            }
+                        }
+                        is TemplateObjectTypeView.Search -> type
+                    }
                 }
-            }.map { (state, templates) ->
+                typeTemplatesWidgetState.value = widgetState.copy(objectTypes = types)
+            } else {
+                val filters = buildList {
+                    addAll(ObjectSearchConstants.filterTypes(spaceId = spaceManager.get()))
+                    add(
+                        DVFilter(
+                            relation = Relations.RECOMMENDED_LAYOUT,
+                            condition = DVFilterCondition.IN,
+                            value = SupportedLayouts.createObjectLayouts.map {
+                                it.code.toDouble()
+                            }
+                        )
+                    )
+                }
+                val params = GetObjectTypes.Params(
+                    filters = filters,
+                    keys = ObjectSearchConstants.defaultKeysObjectType
+                )
+                getObjectTypes.async(params).fold(
+                    onSuccess = { types ->
+                        val list = buildList {
+                            add(TemplateObjectTypeView.Search)
+                            addAll(types.map { type ->
+                                TemplateObjectTypeView.Item(
+                                    type = type,
+                                    isDefault = type.id == selectedType.id
+                                )
+                            })
+                        }
+                        typeTemplatesWidgetState.value = widgetState.copy(objectTypes = list)
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "Error while fetching object types")
+                        typeTemplatesWidgetState.value = widgetState.copy(objectTypes = emptyList())
+                    }
+                )
+            }
+        }
+    }
+
+    private suspend fun subscribeToTemplates(selectedType: ObjectWrapper.Type) {
+        unsubscribeFromTypesTemplates()
+        viewerTemplatesJob = viewModelScope.launch {
+            templatesContainer.subscribeToTemplates(
+                type = selectedType.id,
+                subId = SET_TEMPLATES_SUBSCRIPTION
+            ).map { templates ->
+                val state = stateReducer.state.value
                 val viewerId = typeTemplatesWidgetState.value.getWidgetViewerId()
                 val dataView = state.dataViewState() ?: return@map emptyList<TemplateView>()
                 val viewer = dataView.viewerById(viewerId) ?: return@map emptyList<TemplateView>()
-                val (type, template) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
+                val (type, template) = dataView.getActiveViewTypeAndTemplate(
+                    context,
+                    viewer,
+                    storeOfObjectTypes
+                )
                 when (typeTemplatesWidgetState.value) {
                     is TypeTemplatesWidgetUI.Data -> {
                         if (type?.id == selectedTypeFlow.value?.id) {
                             processTemplates(
                                 templates = templates,
                                 viewerDefType = type ?: selectedTypeFlow.value,
-                                viewerDefTemplate = template ?: selectedTypeFlow.value?.defaultTemplateId
+                                viewerDefTemplate = template
+                                    ?: selectedTypeFlow.value?.defaultTemplateId
                             )
                         } else {
                             processTemplates(
@@ -1779,13 +1811,15 @@ class ObjectSetViewModel(
                             )
                         }
                     }
+
                     is TypeTemplatesWidgetUI.Init -> emptyList()
                 }
             }.collectLatest { templates ->
-                typeTemplatesWidgetState.value = when(val uistate = typeTemplatesWidgetState.value) {
-                    is TypeTemplatesWidgetUI.Data -> uistate.copy(templates = templates)
-                    is TypeTemplatesWidgetUI.Init -> uistate
-                }
+                typeTemplatesWidgetState.value =
+                    when (val uistate = typeTemplatesWidgetState.value) {
+                        is TypeTemplatesWidgetUI.Data -> uistate.copy(templates = templates)
+                        is TypeTemplatesWidgetUI.Init -> uistate
+                    }
             }
         }
     }

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.reactive
 import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
 import android.widget.EditText
@@ -24,6 +25,19 @@ fun View.clicks(): Flow<Unit> = callbackFlow {
         trySend(Unit)
     }
     setOnClickListener(listener)
+    awaitClose { setOnClickListener(null) }
+}.conflate()
+
+fun View.longClicks(withHaptic: Boolean = false): Flow<Unit> = callbackFlow {
+    checkMainThread()
+    val listener = View.OnLongClickListener {
+        trySend(Unit)
+        if (withHaptic) {
+            performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+        }
+        true
+    }
+    setOnLongClickListener(listener)
     awaitClose { setOnClickListener(null) }
 }.conflate()
 

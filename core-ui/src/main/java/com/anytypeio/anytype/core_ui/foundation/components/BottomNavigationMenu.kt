@@ -11,12 +11,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationDefaults.Height
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 
 
 @Composable
@@ -26,6 +29,7 @@ fun BottomNavigationMenu(
     homeClick: () -> Unit = {},
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
+    onCreateObjectLongClicked: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -42,21 +46,33 @@ fun BottomNavigationMenu(
         MenuItem(BottomNavigationItem.BACK.res, onClick = backClick)
         MenuItem(BottomNavigationItem.HOME.res, onClick = homeClick)
         MenuItem(BottomNavigationItem.SEARCH.res, onClick = searchClick)
-        MenuItem(BottomNavigationItem.ADD_DOC.res, onClick = addDocClick)
+        MenuItem(
+            BottomNavigationItem.ADD_DOC.res,
+            onClick = addDocClick,
+            onLongClick = onCreateObjectLongClicked
+        )
     }
 }
 
 @Composable
 private fun MenuItem(
     @DrawableRes res: Int,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
+    onLongClick: () -> Unit = {},
 ) {
+    val haptic = LocalHapticFeedback.current
     Image(
         painter = painterResource(id = res),
         contentDescription = "",
-        modifier = Modifier.noRippleClickable {
-            onClick.invoke()
-        }
+        modifier = Modifier.noRippleCombinedClickable(
+            onClick = onClick,
+            onLongClicked = {
+                haptic.performHapticFeedback(
+                    HapticFeedbackType.LongPress
+                )
+                onLongClick()
+            }
+        )
     )
 }
 

@@ -200,7 +200,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMentionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
@@ -3148,14 +3147,15 @@ class EditorViewModel(
     }
 
 
-    fun onAddNewDocumentClicked() {
+    fun onAddNewDocumentClicked(type: Key? = null) {
         Timber.d("onAddNewDocumentClicked, ")
         proceedWithCreatingNewObject(
             internalFlags = listOf(
                 InternalFlags.ShouldSelectTemplate,
                 InternalFlags.ShouldSelectType,
                 InternalFlags.ShouldEmptyDelete
-            )
+            ),
+            typeKey = type?.let { TypeKey(it) }
         )
     }
 
@@ -3178,12 +3178,14 @@ class EditorViewModel(
     }
 
     private fun proceedWithCreatingNewObject(
-        internalFlags: List<InternalFlags> = emptyList()
+        internalFlags: List<InternalFlags> = emptyList(),
+        typeKey: TypeKey? = null
     ) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateObject.Param(
                 internalFlags = internalFlags,
+                type = typeKey
             )
             createObject.async(params = params)
                 .fold(

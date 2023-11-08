@@ -52,7 +52,8 @@ import kotlinx.coroutines.FlowPreview
 fun LibraryScreen(
     configuration: LibraryConfiguration,
     viewModel: LibraryViewModel,
-    onBackPressed: () -> Unit
+    onBackPressed: () -> Unit,
+    onCreateObjectLongClicked: () -> Unit
 ) {
 
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -67,7 +68,8 @@ fun LibraryScreen(
         Menu(
             viewModel,
             modifier = modifier,
-            screenState = screenState
+            screenState = screenState,
+            onCreateObjectLongClicked = onCreateObjectLongClicked
         )
     }) {
         println(it)
@@ -105,7 +107,8 @@ fun LibraryScreen(
 fun Menu(
     viewModel: LibraryViewModel,
     modifier: Modifier = Modifier,
-    screenState: MutableState<ScreenState>
+    screenState: MutableState<ScreenState>,
+    onCreateObjectLongClicked: () -> Unit = {}
 ) {
     val isImeVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
     if (isImeVisible) return
@@ -115,12 +118,13 @@ fun Menu(
             if (screenState.value == ScreenState.SEARCH) {
                 screenState.value = ScreenState.CONTENT
             } else {
-                viewModel.eventStream(LibraryEvent.BottomMenu.Back())
+                viewModel.eventStream(LibraryEvent.BottomMenu.Back)
             }
         },
-        homeClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Back()) },
-        searchClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Search()) },
-        addDocClick = { viewModel.eventStream(LibraryEvent.BottomMenu.AddDoc()) },
+        homeClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Back) },
+        searchClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Search) },
+        addDocClick = { viewModel.eventStream(LibraryEvent.BottomMenu.CreateObject) },
+        onCreateObjectLongClicked = onCreateObjectLongClicked
     )
 }
 

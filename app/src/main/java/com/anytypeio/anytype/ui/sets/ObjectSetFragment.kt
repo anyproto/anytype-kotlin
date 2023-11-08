@@ -48,6 +48,7 @@ import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
+import com.anytypeio.anytype.core_ui.reactive.longClicks
 import com.anytypeio.anytype.core_ui.reactive.touches
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
@@ -94,6 +95,7 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
+import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
@@ -290,6 +292,21 @@ open class ObjectSetFragment :
             subscribe(
                 binding.bottomToolbar.addDocClicks().throttleFirst()
             ) { vm.onAddNewDocumentClicked() }
+
+            binding
+                .bottomToolbar
+                .binding
+                .btnAddDoc
+                .longClicks(withHaptic = true)
+                .onEach {
+                    val dialog = CreateObjectOfTypeFragment().apply {
+                        onTypeSelected = {
+                            vm.onAddNewDocumentClicked(it)
+                        }
+                    }
+                    dialog.show(childFragmentManager, "set-create-object-of-type-dialog")
+                }
+                .launchIn(lifecycleScope)
         }
 
         with(binding.paginatorToolbar) {

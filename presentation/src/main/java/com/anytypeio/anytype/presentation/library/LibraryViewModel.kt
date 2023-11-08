@@ -10,7 +10,9 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryView
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.allUniqueBy
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
@@ -18,8 +20,8 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
@@ -133,19 +135,28 @@ class LibraryViewModel(
         when (it) {
             is LibraryEvent.BottomMenu.Back -> navigate(Navigation.Back())
             is LibraryEvent.BottomMenu.Search -> navigate(Navigation.Search())
-            is LibraryEvent.BottomMenu.AddDoc -> proceedWithCreateDoc()
+            is LibraryEvent.BottomMenu.CreateObject -> proceedWithCreateDoc()
         }
     }
 
-    private fun proceedWithCreateDoc() {
+    fun onCreateObjectOfTypeClicked(type: Key) {
+        proceedWithCreateDoc(
+            typeKey = TypeKey(type)
+        )
+    }
+
+    private fun proceedWithCreateDoc(
+        typeKey: TypeKey? = null
+    ) {
         viewModelScope.launch {
-            createObject.async(CreateObject.Param(type = null))
-                .fold(
-                    onSuccess = { result ->
-                        navigate(Navigation.CreateDoc(result.objectId))
-                    },
-                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
-                )
+            createObject.async(
+                CreateObject.Param(type = typeKey)
+            ).fold(
+                onSuccess = { result ->
+                    navigate(Navigation.CreateDoc(result.objectId))
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            )
         }
     }
 

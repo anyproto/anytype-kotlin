@@ -24,6 +24,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_MODIFY_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_UNINSTALL_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
@@ -63,11 +64,20 @@ class LibraryFragment : BaseComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     LibraryScreen(
-                        LibraryConfiguration(),
-                        vm
-                    ) {
-                        findNavController().popBackStack()
-                    }
+                        configuration = LibraryConfiguration(),
+                        viewModel = vm,
+                        onBackPressed = {
+                            findNavController().popBackStack()
+                        },
+                        onCreateObjectLongClicked = {
+                            val dialog = CreateObjectOfTypeFragment().apply {
+                                onTypeSelected = {
+                                    vm.onCreateObjectOfTypeClicked(it)
+                                }
+                            }
+                            dialog.show(childFragmentManager, "library-create-object-of-type-dialog")
+                        }
+                    )
                 }
             }
         }

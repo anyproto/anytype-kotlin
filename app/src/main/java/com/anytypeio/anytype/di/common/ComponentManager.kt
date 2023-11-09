@@ -72,7 +72,6 @@ import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemoni
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationAnimComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
-import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingVoidComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -925,12 +924,6 @@ class ComponentManager(
 
     val onboardingStartComponent = Component {
         DaggerOnboardingStartComponent
-            .factory()
-            .create(findComponentDependencies())
-    }
-
-    val onboardingNewVoidComponent = Component {
-        DaggerOnboardingVoidComponent
             .factory()
             .create(findComponentDependencies())
     }

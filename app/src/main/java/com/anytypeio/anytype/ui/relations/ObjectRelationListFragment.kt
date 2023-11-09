@@ -134,7 +134,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 )
                 fr.showChildFragment()
             }
-            is Command.EditRelationValue -> {
+            is Command.EditTagFileObjectRelationValue -> {
                 if (isSetFlow) {
                     val fr = RelationValueDVFragment().apply {
                         arguments = RelationValueDVFragment.args(

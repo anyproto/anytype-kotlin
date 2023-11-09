@@ -374,7 +374,7 @@ class ComponentManager(
             .build()
     }
 
-    val dataViewRelationListComponent = DependentComponentMap { id ->
+    val objectSetRelationListComponent = DependentComponentMap { id ->
         objectSetComponent
             .get(id)
             .objectRelationListComponent()

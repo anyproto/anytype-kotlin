@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.onboarding.screens.signup
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -29,6 +31,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
@@ -38,21 +41,27 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 
 @Composable
-fun SetProfileNameWrapper(viewModel: OnboardingSetProfileNameViewModel) {
+fun SetProfileNameWrapper(
+    viewModel: OnboardingSetProfileNameViewModel,
+    onBackClicked: () -> Unit,
+) {
     SetProfileNameScreen(
         onNextClicked = viewModel::onNextClicked,
         isLoading = viewModel.state
             .collectAsStateWithLifecycle()
-            .value is OnboardingSetProfileNameViewModel.ScreenState.Loading
+            .value is OnboardingSetProfileNameViewModel.ScreenState.Loading,
+        onBackClicked = onBackClicked
     )
 }
 
 @Composable
 private fun SetProfileNameScreen(
     onNextClicked: (Name) -> Unit,
+    onBackClicked: () -> Unit,
     isLoading: Boolean
 ) {
     val text = remember { mutableStateOf("") }
+    val focus = LocalFocusManager.current
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -70,34 +79,17 @@ private fun SetProfileNameScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
-//        LazyColumn(
-//            modifier = Modifier
-//                .fillMaxSize()
-//        ) {
-//            item {
-//                Spacer(
-//                    modifier = Modifier.height(148.dp)
-//                )
-//            }
-//            item {
-//                SetProfileNameTitle(modifier = Modifier.padding(bottom = 12.dp))
-//            }
-//            item {
-//                SetProfileNameDescription()
-//            }
-//            item {
-//                Spacer(modifier = Modifier.height(16.dp))
-//            }
-//            item {
-//                SetProfileNameInput(
-//                    text = text,
-//                    onKeyboardActionDoneClicked = { onNextClicked(text.value) }
-//                )
-//            }
-//            item {
-//                Spacer(modifier = Modifier.height(16.dp))
-//            }
-//        }
+        Image(
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(top = 16.dp, start = 9.dp)
+                .noRippleClickable {
+                    focus.clearFocus()
+                    onBackClicked()
+                },
+            painter = painterResource(id = R.drawable.ic_back_onboarding_32),
+            contentDescription = "Back button"
+        )
         SetProfileNameNextButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

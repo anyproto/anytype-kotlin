@@ -437,7 +437,10 @@ class OnboardingFragment : Fragment() {
         val keyboardInsets = WindowInsets.ime
         val density = LocalDensity.current
 
-        SetProfileNameWrapper(vm)
+        SetProfileNameWrapper(
+            viewModel = vm,
+            onBackClicked = { navController.popBackStack() }
+        )
 
         LaunchedEffect(Unit) {
             vm.navigation.collect { command ->

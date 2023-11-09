@@ -588,51 +588,51 @@ object ObjectSearchConstants {
 
     //region OBJECT TYPES
 
-    fun filterObjectTypeLibrary(space: Id) = listOf(
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.EQUAL,
-            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
-        ),
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
-        )
-    )
-
-    fun defaultDataViewFilters() = listOf(
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = Condition.NOT_EQUAL,
-            value = true,
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = Condition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = Condition.NOT_EQUAL,
-            value = true
-        )
-    )
+    fun filterTypes(
+        spaceId: Id,
+        recommendedLayouts: List<ObjectType.Layout> = emptyList()
+    ): List<DVFilter> {
+        return buildList {
+            addAll(
+                listOf(
+                    DVFilter(
+                        relation = Relations.IS_ARCHIVED,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
+                        relation = Relations.IS_DELETED,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
+                        relation = Relations.IS_HIDDEN,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
+                        relation = Relations.LAYOUT,
+                        condition = DVFilterCondition.EQUAL,
+                        value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
+                    ),
+                    DVFilter(
+                        relation = Relations.SPACE_ID,
+                        condition = DVFilterCondition.EQUAL,
+                        value = spaceId
+                    )
+                )
+            )
+            if (recommendedLayouts.isNotEmpty()) {
+                add(
+                    DVFilter(
+                        relation = Relations.RECOMMENDED_LAYOUT,
+                        condition = DVFilterCondition.IN,
+                        value = recommendedLayouts.map { it.code.toDouble() }
+                    )
+                )
+            }
+        }
+    }
 
     fun defaultDataViewFilters(space: Id) = listOf(
         DVFilter(
@@ -657,34 +657,6 @@ object ObjectSearchConstants {
         )
     )
 
-    val filterObjectTypeMarketplace = listOf(
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.EQUAL,
-            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
-        ),
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = MARKETPLACE_SPACE_ID
-        )
-    )
-
     val defaultKeysObjectType = listOf(
         Relations.ID,
         Relations.UNIQUE_KEY,
@@ -699,7 +671,8 @@ object ObjectSearchConstants {
         Relations.SMARTBLOCKTYPES,
         Relations.SOURCE_OBJECT,
         Relations.RECOMMENDED_LAYOUT,
-        Relations.DEFAULT_TEMPLATE_ID
+        Relations.DEFAULT_TEMPLATE_ID,
+        Relations.SPACE_ID
     )
 
     //endregion
@@ -759,29 +732,6 @@ object ObjectSearchConstants {
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = MARKETPLACE_SPACE_ID
-        )
-    )
-
-    fun filterTypes() : List<DVFilter> = listOf(
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.EQUAL,
-            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
         )
     )
 

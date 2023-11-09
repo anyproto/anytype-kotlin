@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
@@ -108,6 +109,9 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                     }
                 },
                 fnR = {
+                    viewModelScope.launch {
+                        analytics.sendEvent(eventName = EventsDictionary.createSpace)
+                    }
                     createAccountAnalytics(startTime)
                     val config = configStorage.getOrNull()
                     if (config != null) {

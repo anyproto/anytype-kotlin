@@ -3,6 +3,9 @@ package com.anytypeio.anytype.presentation.spaces
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.fold
@@ -17,7 +20,8 @@ import timber.log.Timber
 class CreateSpaceViewModel(
     private val createSpace: CreateSpace,
     private val spaceGradientProvider: SpaceGradientProvider,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val isInProgress = MutableStateFlow(false)
@@ -33,6 +37,10 @@ class CreateSpaceViewModel(
             to = gradient.to
         )
         spaceGradient = MutableStateFlow(view)
+
+        viewModelScope.launch {
+            analytics.sendEvent(eventName = EventsDictionary.screenSettingsSpaceCreate)
+        }
     }
 
     val isDismissed = MutableStateFlow(false)
@@ -57,6 +65,7 @@ class CreateSpaceViewModel(
                 result.fold(
                     onLoading = { isInProgress.value = true },
                     onSuccess = { space: Id ->
+                        analytics.sendEvent(eventName = EventsDictionary.createSpace)
                         setNewSpaceAsCurrentSpace(space)
                         Timber.d("Successfully created space: $space").also {
                             isDismissed.value = true
@@ -95,7 +104,8 @@ class CreateSpaceViewModel(
     class Factory @Inject constructor(
         private val createSpace: CreateSpace,
         private val spaceGradientProvider: SpaceGradientProvider,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -103,7 +113,8 @@ class CreateSpaceViewModel(
         ) = CreateSpaceViewModel(
             createSpace = createSpace,
             spaceGradientProvider = spaceGradientProvider,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            analytics = analytics
         ) as T
     }
 }

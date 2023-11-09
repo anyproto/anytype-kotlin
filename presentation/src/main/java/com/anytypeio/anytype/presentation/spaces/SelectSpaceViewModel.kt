@@ -3,6 +3,9 @@ package com.anytypeio.anytype.presentation.spaces
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
@@ -45,7 +48,8 @@ class SelectSpaceViewModel(
     private val urlBuilder: UrlBuilder,
     private val saveCurrentSpace: SaveCurrentSpace,
     private val appActionManager: AppActionManager,
-    private val getDefaultObjectType: GetDefaultObjectType
+    private val getDefaultObjectType: GetDefaultObjectType,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
@@ -181,6 +185,7 @@ class SelectSpaceViewModel(
         viewModelScope.launch {
             Timber.d("Setting space: $view")
             if (!view.isSelected) {
+                analytics.sendEvent(eventName = EventsDictionary.switchSpace)
                 spaceManager.set(view.space)
                 saveCurrentSpace.async(SaveCurrentSpace.Params(SpaceId(view.space))).fold(
                     onFailure = {
@@ -243,7 +248,8 @@ class SelectSpaceViewModel(
         private val urlBuilder: UrlBuilder,
         private val saveCurrentSpace: SaveCurrentSpace,
         private val appActionManager: AppActionManager,
-        private val getDefaultObjectType: GetDefaultObjectType
+        private val getDefaultObjectType: GetDefaultObjectType,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -255,7 +261,8 @@ class SelectSpaceViewModel(
             urlBuilder = urlBuilder,
             saveCurrentSpace = saveCurrentSpace,
             appActionManager = appActionManager,
-            getDefaultObjectType = getDefaultObjectType
+            getDefaultObjectType = getDefaultObjectType,
+            analytics = analytics
         ) as T
     }
 

@@ -3745,7 +3745,7 @@ open class EditorViewModelTest {
 
     private fun givenSharedFile() {
         documentFileShareDownloader.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(Uri.EMPTY)
+            onBlocking { async(any()) } doReturn Resultat.success(MiddlewareShareDownloader.Response(Uri.EMPTY, ""))
         }
     }
 

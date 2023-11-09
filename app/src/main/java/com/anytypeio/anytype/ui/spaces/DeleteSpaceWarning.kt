@@ -20,6 +20,7 @@ class DeleteSpaceWarning : BaseBottomSheetComposeFragment() {
     private val name: String get() = arg(ARG_NAME)
 
     var onDeletionAccepted: () -> Unit = {}
+    var onDeletionCancelled: () -> Unit = {}
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -35,7 +36,10 @@ class DeleteSpaceWarning : BaseBottomSheetComposeFragment() {
                         cancelButtonText = stringResource(R.string.back),
                         title = stringResource(R.string.delete_space_title),
                         subtitle = stringResource(R.string.delete_space_subtitle),
-                        onNegativeClick = { dismiss() },
+                        onNegativeClick = {
+                            onDeletionCancelled()
+                            dismiss()
+                        },
                         onPositiveClick = { onDeletionAccepted() },
                         isInProgress = false
                     )

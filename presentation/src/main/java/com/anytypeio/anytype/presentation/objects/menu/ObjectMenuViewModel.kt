@@ -29,10 +29,9 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplateEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import kotlinx.coroutines.launch
@@ -54,7 +53,8 @@ class ObjectMenuViewModel(
     private val updateFields: UpdateFields,
     private val addObjectToCollection: AddObjectToCollection,
     private val createTemplateFromObject: CreateTemplateFromObject,
-    private val setObjectDetails: SetObjectDetails
+    private val setObjectDetails: SetObjectDetails,
+    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -66,7 +66,8 @@ class ObjectMenuViewModel(
     dispatcher = dispatcher,
     analytics = analytics,
     menuOptionsProvider = menuOptionsProvider,
-    addObjectToCollection = addObjectToCollection
+    addObjectToCollection = addObjectToCollection,
+    debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
 ) {
 
     private val objectRestrictions = storage.objectRestrictions.current()
@@ -135,8 +136,8 @@ class ObjectMenuViewModel(
                 MiddlewareShareDownloader.Params(hash = ctx, name = "$ctx.zip")
             ).collect { result ->
                 result.fold(
-                    onSuccess = { uri ->
-                        commands.emit(Command.ShareDebugTree(uri))
+                    onSuccess = { success ->
+                        commands.emit(Command.ShareDebugTree(success.uri))
                     },
                     onLoading = {
                         sendToast(
@@ -410,7 +411,8 @@ class ObjectMenuViewModel(
         private val menuOptionsProvider: ObjectMenuOptionsProvider,
         private val addObjectToCollection: AddObjectToCollection,
         private val createTemplateFromObject: CreateTemplateFromObject,
-        private val setObjectDetails: SetObjectDetails
+        private val setObjectDetails: SetObjectDetails,
+        private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -429,7 +431,8 @@ class ObjectMenuViewModel(
                 menuOptionsProvider = menuOptionsProvider,
                 addObjectToCollection = addObjectToCollection,
                 createTemplateFromObject = createTemplateFromObject,
-                setObjectDetails = setObjectDetails
+                setObjectDetails = setObjectDetails,
+                debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
             ) as T
         }
     }

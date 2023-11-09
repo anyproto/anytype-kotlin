@@ -4,10 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.analytics.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
@@ -18,16 +20,16 @@ import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
+import com.anytypeio.anytype.core_utils.ui.showMessageSnackBar
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
-import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.base.navigation
-import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
@@ -36,6 +38,7 @@ import com.anytypeio.anytype.ui.linking.BacklinkAction
 import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
+import com.google.android.material.snackbar.Snackbar
 
 abstract class ObjectMenuBaseFragment :
     BaseBottomSheetFragment<FragmentObjectMenuBinding>(),
@@ -79,12 +82,18 @@ abstract class ObjectMenuBaseFragment :
         click(binding.optionIcon) { vm.onIconClicked(ctx) }
         click(binding.optionRelations) { vm.onRelationsClicked() }
         click(binding.optionCover) { vm.onCoverClicked(ctx) }
+        click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx) }
 
         proceed(vm.actions) { actionAdapter.submitList(it) }
         proceed(vm.toasts) { toast(it) }
         proceed(vm.isDismissed) { isDismissed -> if (isDismissed) dismiss() }
         proceed(vm.commands.throttleFirst()) { command -> execute(command) }
         proceed(vm.options) { options -> renderOptions(options) }
+
+        if (BuildConfig.DEBUG) {
+            binding.debugGoroutines.visible()
+            binding.debugGoroutinesDivider.visible()
+        }
 
         super.onStart()
         vm.onStart(
@@ -134,6 +143,18 @@ abstract class ObjectMenuBaseFragment :
             is ObjectMenuViewModelBase.Command.OpenSnackbar -> openSnackbar(command)
             is ObjectMenuViewModelBase.Command.ShareDebugTree -> shareFile(command.uri)
             is ObjectMenuViewModelBase.Command.OpenTemplate -> openTemplate(command)
+            is ObjectMenuViewModelBase.Command.ShareDebugGoroutines -> {
+                val snackbar = Snackbar.make(
+                    dialog?.window?.decorView!!,
+                    "Success, Path: ${command.path}",
+                    Snackbar.LENGTH_INDEFINITE
+                )
+                snackbar.setAction("Done") {
+                    snackbar.dismiss()
+                }
+                snackbar.anchorView = binding.anchor
+                snackbar.show()
+            }
         }
     }
 

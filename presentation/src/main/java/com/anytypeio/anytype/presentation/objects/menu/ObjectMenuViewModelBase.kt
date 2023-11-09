@@ -29,6 +29,8 @@ import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -47,7 +49,8 @@ abstract class ObjectMenuViewModelBase(
     private val analytics: Analytics,
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
     private val duplicateObject: DuplicateObject,
-    private val addObjectToCollection: AddObjectToCollection
+    private val addObjectToCollection: AddObjectToCollection,
+    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
 ) : BaseViewModel() {
 
     protected val jobs = mutableListOf<Job>()
@@ -329,6 +332,22 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
+    fun onDiagnosticsGoroutinesClicked(ctx: Id) {
+        jobs += viewModelScope.launch {
+            debugGoroutinesShareDownloader.stream(
+                MiddlewareShareDownloader.Params(hash = ctx, name = "goroutines.zip")
+            ).collect { result ->
+                result.fold(
+                    onSuccess = { success -> commands.emit(Command.ShareDebugGoroutines(success.path)) },
+                    onFailure = {
+                        sendToast("Error while collecting goroutines diagnostics :${it.message}")
+                        Timber.e(it, "Error while collecting goroutines diagnostics")
+                    }
+                )
+            }
+        }
+    }
+
     sealed class Command {
         object OpenObjectIcons : Command()
         object OpenSetIcons : Command()
@@ -340,6 +359,7 @@ abstract class ObjectMenuViewModelBase(
         object OpenSetRelations : Command()
         object OpenLinkToChooser : Command()
         data class ShareDebugTree(val uri: Uri) : Command()
+        data class ShareDebugGoroutines(val path: String) : Command()
         data class OpenSnackbar(
             val id: Id,
             val currentObjectName: String?,

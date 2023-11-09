@@ -23,7 +23,6 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -39,8 +38,7 @@ class ProfileSettingsViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder,
-    private val setImageIcon: SetDocumentImageIcon,
-    private val spaceGradientProvider: SpaceGradientProvider
+    private val setImageIcon: SetDocumentImageIcon
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -73,6 +71,14 @@ class ProfileSettingsViewModel(
         SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
         AccountProfile.Idle
     )
+
+    init {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenSettingsAccount
+            )
+        }
+    }
 
     fun onNameChange(name: String) {
         Timber.d("onNameChange, name:[$name]")
@@ -163,8 +169,7 @@ class ProfileSettingsViewModel(
         private val setObjectDetails: SetObjectDetails,
         private val configStorage: ConfigStorage,
         private val urlBuilder: UrlBuilder,
-        private val setDocumentImageIcon: SetDocumentImageIcon,
-        private val spaceGradientProvider: SpaceGradientProvider
+        private val setDocumentImageIcon: SetDocumentImageIcon
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -175,8 +180,7 @@ class ProfileSettingsViewModel(
                 setObjectDetails = setObjectDetails,
                 configStorage = configStorage,
                 urlBuilder = urlBuilder,
-                setImageIcon = setDocumentImageIcon,
-                spaceGradientProvider = spaceGradientProvider
+                setImageIcon = setDocumentImageIcon
             ) as T
         }
     }

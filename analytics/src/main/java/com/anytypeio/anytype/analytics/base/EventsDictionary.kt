@@ -20,6 +20,7 @@ object EventsDictionary {
     // Settings events
 
     const val screenSettingSpacesSpaceIndex = "ScreenSettingsSpaceIndex"
+    const val screenSettingsAccount = "ScreenSettingsAccount"
     const val clickDeleteSpace = "ClickDeleteSpace"
     const val clickDeleteSpaceWarning = "ClickDeleteSpaceWarning"
     const val createSpace = "CreateSpace"

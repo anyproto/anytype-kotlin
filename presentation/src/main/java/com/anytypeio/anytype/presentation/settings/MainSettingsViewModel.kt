@@ -35,6 +35,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Deprecated("Legacy. To be deleted")
 class MainSettingsViewModel(
     private val analytics: Analytics,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,

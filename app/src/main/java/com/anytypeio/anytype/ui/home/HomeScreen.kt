@@ -602,7 +602,7 @@ fun HomeScreenBottomToolbar(
                         contentDescription = "Custom image space icon",
                         modifier = Modifier
                             .size(24.dp)
-                            .clip(RoundedCornerShape(3.dp))
+                            .clip(CircleShape)
                             .align(Alignment.Center),
                         contentScale = ContentScale.Crop
                     )

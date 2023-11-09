@@ -15,11 +15,16 @@ abstract class MiddlewareShareDownloader(
     private val context: Context,
     private val uriFileProvider: UriFileProvider,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<MiddlewareShareDownloader.Params, Uri>(dispatchers.io) {
+) : ResultInteractor<MiddlewareShareDownloader.Params, MiddlewareShareDownloader.Response>(dispatchers.io) {
 
     data class Params(
         val hash: Hash,
         val name: String
+    )
+
+    data class Response(
+        val uri: Uri,
+        val path: String
     )
 
     /**
@@ -29,7 +34,7 @@ abstract class MiddlewareShareDownloader(
      * */
     abstract suspend fun downloadFile(hash: String, path: String): String
 
-    override suspend fun doWork(params: Params): Uri {
+    override suspend fun doWork(params: Params): Response {
         val cacheDir = context.cacheDir
 
         require(cacheDir != null) { "Impossible to cache files!" }
@@ -49,7 +54,10 @@ abstract class MiddlewareShareDownloader(
 
             tempResult.renameTo(resultFile)
         }
-        return uriFileProvider.getUriForFile(resultFile)
+        return Response(
+            uri = uriFileProvider.getUriForFile(resultFile),
+            path = resultFilePath
+        )
     }
 }
 

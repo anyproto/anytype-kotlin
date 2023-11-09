@@ -48,8 +48,7 @@ object ProfileModule {
         setObjectDetails: SetObjectDetails,
         configStorage: ConfigStorage,
         urlBuilder: UrlBuilder,
-        setDocumentImageIcon: SetDocumentImageIcon,
-        spaceGradientProvider: SpaceGradientProvider
+        setDocumentImageIcon: SetDocumentImageIcon
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
         deleteAccount = deleteAccount,
         analytics = analytics,
@@ -57,8 +56,7 @@ object ProfileModule {
         setObjectDetails = setObjectDetails,
         configStorage = configStorage,
         urlBuilder = urlBuilder,
-        setDocumentImageIcon = setDocumentImageIcon,
-        spaceGradientProvider = spaceGradientProvider
+        setDocumentImageIcon = setDocumentImageIcon
     )
 
     @Provides

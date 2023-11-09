@@ -159,7 +159,8 @@ abstract class ObjectMenuBaseFragment :
     }
 
     private fun openTemplate(command: ObjectMenuViewModelBase.Command.OpenTemplate) {
-        toast(getString(R.string.snackbar_template_add) + command.typeName)
+        val msg = "${getString(R.string.snackbar_template_add)} ${command.typeName}"
+        toast(msg)
         navigation().openModalTemplateEdit(
             template = command.templateId,
             templateTypeId = command.typeId,

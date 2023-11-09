@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">Middleware</string>
-    <string name="snackbar_template_add">The template was added to the type</string>
+    <string name="snackbar_template_add">New template was added to the type</string>
 </resources>

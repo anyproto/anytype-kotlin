@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
@@ -154,6 +158,42 @@ class SpaceSettingsViewModel(
     }
 
     fun onDeleteSpaceClicked() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickDeleteSpace,
+                props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.settings))
+            )
+        }
+    }
+
+    fun onDeleteSpaceWarningCancelled() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickDeleteSpaceWarning,
+                props = Props(
+                    mapOf(
+                        EventsPropertiesKey.type to "Cancel"
+                    )
+                )
+            )
+        }
+    }
+
+    fun onDeleteSpaceAcceptedClicked() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickDeleteSpaceWarning,
+                props = Props(
+                    mapOf(
+                        EventsPropertiesKey.type to "Delete"
+                    )
+                )
+            )
+        }
+        proceedWithSpaceDeletion()
+    }
+
+    private fun proceedWithSpaceDeletion() {
         val state = spaceViewState.value
         if (state is ViewState.Success) {
             val space = state.data.spaceId
@@ -167,6 +207,7 @@ class SpaceSettingsViewModel(
                 viewModelScope.launch {
                     deleteSpace.async(params = SpaceId(space)).fold(
                         onSuccess = {
+                            analytics.sendEvent(eventName = EventsDictionary.deleteSpace)
                             fallbackToPersonalSpaceAfterDeletion(personalSpaceId)
                         },
                         onFailure = {

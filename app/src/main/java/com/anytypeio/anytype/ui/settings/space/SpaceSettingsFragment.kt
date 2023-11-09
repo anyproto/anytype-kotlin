@@ -82,10 +82,14 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     spaceData = vm.spaceViewState.collectAsStateWithLifecycle().value,
                     onDeleteSpaceClicked = throttledClick(
                         onClick = {
+                            vm.onDeleteSpaceClicked()
                             val dialog = DeleteSpaceWarning.new()
                             dialog.onDeletionAccepted = {
                                 dialog.dismiss()
-                                vm.onDeleteSpaceClicked()
+                                vm.onDeleteSpaceAcceptedClicked()
+                            }
+                            dialog.onDeletionCancelled = {
+                                vm.onDeleteSpaceWarningCancelled()
                             }
                             dialog.show(childFragmentManager, null)
                         }

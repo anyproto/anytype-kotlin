@@ -20,6 +20,9 @@ object EventsDictionary {
     // Settings events
 
     const val screenSettingSpacesSpaceIndex = "ScreenSettingsSpaceIndex"
+    const val clickDeleteSpace = "ClickDeleteSpace"
+    const val clickDeleteSpaceWarning = "ClickDeleteSpaceWarning"
+    const val deleteSpace = "DeleteSpace"
 
 
     const val wallpaperSet = "SettingsWallpaperSet"
@@ -207,6 +210,7 @@ object EventsDictionary {
         const val objPowerTool = "Powertool"
         const val objTurnInto = "TurnInto"
         const val screenSettings = "ScreenSettings"
+        const val settings = "Settings"
         const val screenDeletion = "ScreenDeletion"
         const val navigation = "Navigation"
     }

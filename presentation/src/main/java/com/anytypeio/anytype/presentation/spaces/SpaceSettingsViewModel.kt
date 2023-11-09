@@ -56,6 +56,12 @@ class SpaceSettingsViewModel(
 
     init {
         viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenSettingSpacesSpaceIndex
+            )
+        }
+
+        viewModelScope.launch {
             spaceManager
                 .observe()
                 .take(1)

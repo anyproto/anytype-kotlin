@@ -57,3 +57,4 @@ include ':app',
 
 include ':ui-settings'
 include ':crash-reporting'
+include ':localization'

@@ -150,7 +150,8 @@ private fun SelectSpaceSpaceItem(
             SpaceImageBlock(
                 icon = item.view.icon,
                 onSpaceIconClick = { onSpaceClicked(item.view) },
-                gradientBackground = colorResource(id = R.color.default_gradient_background)
+                gradientBackground = colorResource(id = R.color.default_gradient_background),
+                gradientCornerRadius = 4.dp
             )
         }
         Spacer(modifier = Modifier.height(10.dp))

@@ -94,7 +94,9 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
+import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import dagger.Binds
 import dagger.Module
@@ -646,6 +648,12 @@ object ObjectSetModule {
         fun bindCoverImageHashProvider(
             defaultProvider: DefaultCoverImageHashProvider
         ): CoverImageHashProvider
+
+        @PerScreen
+        @Binds
+        fun bindUriFileProvider(
+            defaultProvider: DefaultUriFileProvider
+        ): UriFileProvider
     }
 
     @JvmStatic

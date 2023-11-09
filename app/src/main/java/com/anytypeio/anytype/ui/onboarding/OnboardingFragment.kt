@@ -78,7 +78,6 @@ import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfile
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signin.EnteringTheVoidScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
-import com.anytypeio.anytype.ui.onboarding.screens.signup.CreateSoulAnimWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
 import com.google.android.exoplayer2.ExoPlayer
@@ -275,16 +274,11 @@ class OnboardingFragment : Fragment() {
             }
             composable(
                 route = OnboardingNavigation.setProfileName,
-                enterTransition = { slideIntoContainer(Left, tween(ANIMATION_LENGTH_SLIDE)) },
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                },
                 exitTransition = {
-                    when (targetState.destination.route) {
-                        OnboardingNavigation.auth -> {
-                            fadeOut(tween(ANIMATION_LENGTH_FADE))
-                        }
-                        else -> {
-                            slideOutOfContainer(Left, tween(ANIMATION_LENGTH_SLIDE))
-                        }
-                    }
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
                 }
             ) {
                 val focus = LocalFocusManager.current
@@ -293,29 +287,10 @@ class OnboardingFragment : Fragment() {
                     focus.clearFocus(true)
                     navController.popBackStack()
                 }
-                SetProfileName(
-                    navController = navController,
-                    contentPaddingTop = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R)
-                        LocalConfiguration.current.screenHeightDp / 6
-                    else
-                        ContentPaddingTop()
-                )
+                SetProfileName(navController = navController)
                 BackHandler {
                     focus.clearFocus(true)
                     navController.popBackStack()
-                }
-            }
-            composable(
-                route = OnboardingNavigation.createSoulAnim,
-                enterTransition = {
-                    fadeIn(tween(ANIMATION_LENGTH_FADE))
-                }
-            ) {
-                currentPage.value = OnboardingPage.SOUL_CREATION_ANIM
-                backButtonCallback.value = null
-                CreateSoulAnimation(ContentPaddingTop())
-                BackHandler {
-                    // Intercepting back-press event but doing nothing.
                 }
             }
             composable(
@@ -411,7 +386,6 @@ class OnboardingFragment : Fragment() {
         }
     }
 
-    @Deprecated("To be deleted")
     @Composable
     private fun enterTheVoid(
         navController: NavHostController
@@ -452,25 +426,10 @@ class OnboardingFragment : Fragment() {
         }
     }
 
-    @Deprecated("To be deleted")
     @Composable
-    private fun CreateSoulAnimation(contentPaddingTop: Int) {
-        val component = componentManager().onboardingSoulCreationAnimComponent
-        CreateSoulAnimWrapper(
-            contentPaddingTop = contentPaddingTop,
-            viewModel = daggerViewModel { component.get().getViewModel() },
-            onAnimationComplete = {
-                findNavController().navigate(R.id.action_openHome)
-            }
-        )
-        DisposableEffect(Unit) {
-            onDispose { component.release() }
-        }
-    }
-
-
-    @Composable
-    private fun SetProfileName(navController: NavHostController, contentPaddingTop: Int) {
+    private fun SetProfileName(
+        navController: NavHostController
+    ) {
         val component = componentManager().onboardingSoulCreationComponent
         val vm = daggerViewModel { component.get().getViewModel() }
 
@@ -478,7 +437,7 @@ class OnboardingFragment : Fragment() {
         val keyboardInsets = WindowInsets.ime
         val density = LocalDensity.current
 
-        SetProfileNameWrapper(vm, contentPaddingTop)
+        SetProfileNameWrapper(vm)
 
         LaunchedEffect(Unit) {
             vm.navigation.collect { command ->
@@ -652,6 +611,13 @@ class OnboardingFragment : Fragment() {
     }
 
     fun releaseDependencies() {
+        with(componentManager()) {
+            onboardingComponent.release()
+            onboardingMnemonicComponent.release()
+            onboardingMnemonicLoginComponent.release()
+            onboardingLoginSetupComponent.release()
+            onboardingStartComponent.release()
+        }
         componentManager().onboardingComponent.release()
     }
 }

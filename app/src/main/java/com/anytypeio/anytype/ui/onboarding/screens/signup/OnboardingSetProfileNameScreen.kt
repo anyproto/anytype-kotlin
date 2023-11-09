@@ -1,17 +1,14 @@
 package com.anytypeio.anytype.ui.onboarding.screens.signup
 
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -23,7 +20,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -42,9 +38,8 @@ import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 
 @Composable
-fun SetProfileNameWrapper(viewModel: OnboardingSetProfileNameViewModel, contentPaddingTop: Int) {
+fun SetProfileNameWrapper(viewModel: OnboardingSetProfileNameViewModel) {
     SetProfileNameScreen(
-        contentPaddingTop = contentPaddingTop,
         onNextClicked = viewModel::onNextClicked,
         isLoading = viewModel.state
             .collectAsStateWithLifecycle()
@@ -54,62 +49,60 @@ fun SetProfileNameWrapper(viewModel: OnboardingSetProfileNameViewModel, contentP
 
 @Composable
 private fun SetProfileNameScreen(
-    contentPaddingTop: Int,
     onNextClicked: (Name) -> Unit,
     isLoading: Boolean
 ) {
     val text = remember { mutableStateOf("") }
-    val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
-    val animatedSpacerHeight = animateDpAsState(
-        targetValue = if (isKeyboardVisible)
-            contentPaddingTop.dp - 72.dp
-        else
-            contentPaddingTop.dp
-    )
 
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            item {
-                Spacer(
-                    modifier = Modifier.height(148.dp)
-                )
-            }
-            item {
-                SetProfileNameTitle(modifier = Modifier.padding(bottom = 12.dp))
-            }
-            item {
-                SetProfileNameDescription()
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-            item {
-                SetProfileNameInput(
-                    text = text,
-                    onKeyboardActionDoneClicked = { onNextClicked(text.value) }
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-            }
+        Column {
+            Spacer(
+                modifier = Modifier.height(148.dp)
+            )
+            SetProfileNameTitle(modifier = Modifier.padding(bottom = 12.dp))
+            SetProfileNameDescription()
+            Spacer(modifier = Modifier.height(16.dp))
+            SetProfileNameInput(
+                text = text,
+                onKeyboardActionDoneClicked = { onNextClicked(text.value) }
+            )
+            Spacer(modifier = Modifier.height(16.dp))
         }
+//        LazyColumn(
+//            modifier = Modifier
+//                .fillMaxSize()
+//        ) {
+//            item {
+//                Spacer(
+//                    modifier = Modifier.height(148.dp)
+//                )
+//            }
+//            item {
+//                SetProfileNameTitle(modifier = Modifier.padding(bottom = 12.dp))
+//            }
+//            item {
+//                SetProfileNameDescription()
+//            }
+//            item {
+//                Spacer(modifier = Modifier.height(16.dp))
+//            }
+//            item {
+//                SetProfileNameInput(
+//                    text = text,
+//                    onKeyboardActionDoneClicked = { onNextClicked(text.value) }
+//                )
+//            }
+//            item {
+//                Spacer(modifier = Modifier.height(16.dp))
+//            }
+//        }
         SetProfileNameNextButton(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .imePadding()
-                .padding(start = 20.dp, end = 20.dp)
-                .then(
-                    if (isKeyboardVisible)
-                        Modifier.padding(bottom = 0.dp)
-                    else
-                        Modifier.padding(bottom = 13.dp)
-                )
+                .padding(start = 20.dp, end = 20.dp, bottom = 12.dp)
             ,
             onNextClicked = onNextClicked,
             text = text,
@@ -137,6 +130,7 @@ fun SetProfileNameTitle(modifier: Modifier) {
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SetProfileNameInput(
     text: MutableState<String>,
@@ -149,9 +143,7 @@ fun SetProfileNameInput(
         contentAlignment = Alignment.Center
     ) {
         val focus = LocalFocusManager.current
-        val isKeyboardVisible = WindowInsets.ime.getBottom(LocalDensity.current) > 0
         val focusRequester = FocusRequester()
-
         OnboardingInput(
             modifier = Modifier
                 .fillMaxWidth()
@@ -167,11 +159,6 @@ fun SetProfileNameInput(
                 }
             )
         )
-
-        if (!isKeyboardVisible) {
-            focus.clearFocus()
-        }
-        
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }

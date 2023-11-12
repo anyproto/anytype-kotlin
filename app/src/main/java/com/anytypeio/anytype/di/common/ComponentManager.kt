@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.common
 import android.content.Context
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.di.feature.AddDataViewRelationObjectValueModule
 import com.anytypeio.anytype.di.feature.AddDataViewRelationOptionValueModule
 import com.anytypeio.anytype.di.feature.AddFileRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationModule
@@ -524,6 +525,14 @@ class ComponentManager(
             .get(ctx)
             .addObjectRelationObjectValueComponent()
             .module(AddObjectRelationModule)
+            .build()
+    }
+
+    val addDataViewRelationObjectValueComponent = DependentComponentMap { ctx ->
+        dataViewRelationValueComponent
+            .get(ctx)
+            .addDataViewRelationObjectValueComponent()
+            .module(AddDataViewRelationObjectValueModule)
             .build()
     }
 

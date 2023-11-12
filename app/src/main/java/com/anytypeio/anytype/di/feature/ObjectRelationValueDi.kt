@@ -38,7 +38,9 @@ interface DataViewObjectRelationValueSubComponent {
     fun addObjectRelationValueComponent(): AddObjectRelationValueSubComponent.Builder
     fun addObjectRelationObjectValueComponent(): AddObjectRelationSubComponent.Builder
     fun addRelationFileValueAddComponent() : AddFileRelationSubComponent.Builder
+
     fun addDataViewRelationOptionValueComponent(): AddDataViewRelationOptionValueSubComponent.Builder
+    fun addDataViewRelationObjectValueComponent(): AddDataViewRelationObjectValueSubComponent.Builder
 }
 
 @Subcomponent(modules = [SetOrCollectionRelationValueModule::class])

@@ -119,12 +119,17 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
     }
 
     private fun showAddObjectScreen() {
+        val flow = if (isIntrinsic) {
+            AddObjectRelationFragment.FLOW_OBJECT_SET
+        } else {
+            AddObjectRelationFragment.FLOW_DATAVIEW
+        }
         val fr = AddObjectRelationFragment.new(
             ctx = ctx,
             relationKey = relationKey,
             objectId = target,
             types = types,
-            flow = AddObjectRelationFragment.FLOW_DATAVIEW
+            flow = flow
         )
         fr.showChildFragment()
     }

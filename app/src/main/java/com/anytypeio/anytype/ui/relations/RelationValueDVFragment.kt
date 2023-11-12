@@ -133,7 +133,8 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
         val fr = AddOptionsRelationDVFragment.new(
             ctx = ctx,
             target = target,
-            relationKey = relationKey
+            relationKey = relationKey,
+            isIntrinsic = isIntrinsic
         )
         fr.showChildFragment()
     }

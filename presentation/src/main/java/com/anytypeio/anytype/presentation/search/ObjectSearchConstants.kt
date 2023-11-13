@@ -365,7 +365,7 @@ object ObjectSearchConstants {
                 DVFilter(
                     relation = Relations.LAST_MODIFIED_DATE,
                     condition = DVFilterCondition.GREATER_OR_EQUAL,
-                    value = (spaceCreationDateInSeconds + 60).toDouble()
+                    value = (spaceCreationDateInSeconds + 3).toDouble()
                 )
             )
         } else {

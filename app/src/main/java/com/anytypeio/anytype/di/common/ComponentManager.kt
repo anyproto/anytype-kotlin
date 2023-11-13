@@ -3,6 +3,8 @@ package com.anytypeio.anytype.di.common
 import android.content.Context
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.di.feature.AddDataViewRelationObjectValueModule
+import com.anytypeio.anytype.di.feature.AddDataViewRelationOptionValueModule
 import com.anytypeio.anytype.di.feature.AddFileRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationValueModule
@@ -374,7 +376,7 @@ class ComponentManager(
             .build()
     }
 
-    val dataViewRelationListComponent = DependentComponentMap { id ->
+    val objectSetRelationListComponent = DependentComponentMap { id ->
         objectSetComponent
             .get(id)
             .objectRelationListComponent()
@@ -494,6 +496,14 @@ class ComponentManager(
             .build()
     }
 
+    val addDataViewObjectRelationValueComponent = DependentComponentMap { ctx ->
+        dataViewRelationValueComponent
+            .get(ctx)
+            .addDataViewRelationOptionValueComponent()
+            .module(AddDataViewRelationOptionValueModule)
+            .build()
+    }
+
     val objectObjectRelationValueComponent = DependentComponentMap { ctx ->
         editorComponent
             .get(ctx)
@@ -515,6 +525,14 @@ class ComponentManager(
             .get(ctx)
             .addObjectRelationObjectValueComponent()
             .module(AddObjectRelationModule)
+            .build()
+    }
+
+    val addDataViewRelationObjectValueComponent = DependentComponentMap { ctx ->
+        dataViewRelationValueComponent
+            .get(ctx)
+            .addDataViewRelationObjectValueComponent()
+            .module(AddDataViewRelationObjectValueModule)
             .build()
     }
 

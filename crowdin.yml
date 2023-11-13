@@ -1,0 +1,3 @@
+files:
+  - source: /localization/src/main/res/values/strings.xml
+    translation: /localization/src/main/res/values-%two_letters_code%/strings.xml

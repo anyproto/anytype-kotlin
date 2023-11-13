@@ -45,6 +45,7 @@ import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
@@ -147,7 +148,8 @@ class HomeScreenViewModel(
     private val spaceManager: SpaceManager,
     private val spaceWidgetContainer: SpaceWidgetContainer,
     private val setWidgetActiveView: SetWidgetActiveView,
-    private val setObjectDetails: SetObjectDetails
+    private val setObjectDetails: SetObjectDetails,
+    private val getSpaceView: GetSpaceView,
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -294,7 +296,8 @@ class HomeScreenViewModel(
                             space = config.space,
                             config = config,
                             objectWatcher = objectWatcher,
-                            spaceGradientProvider = spaceGradientProvider
+                            spaceGradientProvider = spaceGradientProvider,
+                            getSpaceView = getSpaceView
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
@@ -307,7 +310,8 @@ class HomeScreenViewModel(
                                 spaceGradientProvider = spaceGradientProvider,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
-                                config = config
+                                config = config,
+                                getSpaceView = getSpaceView
                             )
                         } else {
                             DataViewListWidgetContainer(
@@ -1286,7 +1290,8 @@ class HomeScreenViewModel(
         private val setWidgetActiveView: SetWidgetActiveView,
         private val spaceManager: SpaceManager,
         private val spaceWidgetContainer: SpaceWidgetContainer,
-        private val setObjectDetails: SetObjectDetails
+        private val setObjectDetails: SetObjectDetails,
+        private val getSpaceView: GetSpaceView
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1320,7 +1325,8 @@ class HomeScreenViewModel(
             setWidgetActiveView = setWidgetActiveView,
             spaceManager = spaceManager,
             spaceWidgetContainer = spaceWidgetContainer,
-            setObjectDetails = setObjectDetails
+            setObjectDetails = setObjectDetails,
+            getSpaceView = getSpaceView
         ) as T
     }
 

@@ -186,11 +186,11 @@ interface BlockRepository {
     ): Payload
 
     suspend fun searchObjects(
-        sorts: List<DVSort>,
-        filters: List<DVFilter>,
-        fulltext: String,
-        offset: Int,
-        limit: Int,
+        sorts: List<DVSort> = emptyList(),
+        filters: List<DVFilter> = emptyList(),
+        fulltext: String = "",
+        offset: Int = 0,
+        limit: Int = 0,
         keys: List<Id> = emptyList()
     ): List<Struct>
 

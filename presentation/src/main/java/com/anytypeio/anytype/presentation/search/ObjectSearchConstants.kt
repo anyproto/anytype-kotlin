@@ -321,43 +321,70 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB RECENT
-    fun filterTabRecent(space: Id) = listOf(
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.TYPE_UNIQUE_KEY,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = ObjectTypeUniqueKeys.TEMPLATE
-        ),
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.IN,
-            value = SupportedLayouts.layouts.map { it.code.toDouble() }
-        ),
-        DVFilter(
-            relation = Relations.LAST_MODIFIED_DATE,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = null
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+    fun filterTabRecent(
+        space: Id,
+        spaceCreationDateInSeconds: Long? = null
+    ) = buildList {
+        add(
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
         )
-    )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.TYPE_UNIQUE_KEY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = ObjectTypeUniqueKeys.TEMPLATE
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.LAYOUT,
+                condition = DVFilterCondition.IN,
+                value = SupportedLayouts.layouts.map { it.code.toDouble() }
+            )
+        )
+        if (spaceCreationDateInSeconds != null) {
+            add(
+                DVFilter(
+                    relation = Relations.LAST_MODIFIED_DATE,
+                    condition = DVFilterCondition.GREATER_OR_EQUAL,
+                    value = (spaceCreationDateInSeconds + 60).toDouble()
+                )
+            )
+        } else {
+            add(
+                DVFilter(
+                    relation = Relations.LAST_MODIFIED_DATE,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = null
+                )
+            )
+        }
+        add(
+            DVFilter(
+                relation = Relations.SPACE_ID,
+                condition = DVFilterCondition.EQUAL,
+                value = space
+            )
+        )
+    }
 
     val sortTabRecent = listOf(
         DVSort(

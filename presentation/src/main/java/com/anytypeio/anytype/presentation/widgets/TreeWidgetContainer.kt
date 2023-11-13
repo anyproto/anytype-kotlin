@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
@@ -32,6 +33,7 @@ class TreeWidgetContainer(
     private val expandedBranches: Flow<List<TreePath>>,
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
+    private val getSpaceView: GetSpaceView,
     isSessionActive: Flow<Boolean>
 ) : WidgetContainer {
 
@@ -157,6 +159,20 @@ class TreeWidgetContainer(
                             .sortedBy { obj -> order[obj.id] }
                     }
                 }
+        } else if (widget.source.id == BundledWidgetSourceIds.RECENT) {
+            val spaceView = getSpaceView.async(config.spaceView).getOrNull()
+            val spaceViewCreationDate = spaceView
+                ?.getValue<Double?>(Relations.CREATED_DATE)
+                ?.toLong()
+            container.subscribe(
+                ListWidgetContainer.params(
+                    subscription = widget.source.id,
+                    space = space,
+                    keys = keys,
+                    limit = rootLevelLimit,
+                    spaceCreationDateInSeconds = spaceViewCreationDate
+                )
+            )
         } else {
             container.subscribe(
                 ListWidgetContainer.params(

@@ -869,6 +869,8 @@ class HomeScreenViewModelTest {
                 results = listOf(firstLink, secondLink)
             )
 
+            stubGetSpaceView(defaultSpaceConfig.spaceView)
+
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
                     subscription = BundledWidgetSourceIds.SETS,
@@ -1613,6 +1615,8 @@ class HomeScreenViewModelTest {
             results = listOf(firstLink, secondLink)
         )
 
+        stubGetSpaceView(defaultSpaceConfig.spaceView)
+
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
@@ -1832,6 +1836,8 @@ class HomeScreenViewModelTest {
             ),
             results = listOf(firstLink, secondLink)
         )
+
+        stubGetSpaceView(defaultSpaceConfig.spaceView)
 
         stubDefaultSearch(
             params = ListWidgetContainer.params(
@@ -2754,6 +2760,17 @@ class HomeScreenViewModelTest {
             } doReturn flowOf(
                 defaultSpaceWidgetView
             )
+        }
+    }
+
+    private fun stubGetSpaceView(
+        spaceView: Id,
+        objectWrapper: ObjectWrapper.Basic? = null
+    ) {
+        getSpaceView.stub {
+            onBlocking {
+                async(spaceView)
+            } doReturn Resultat.success(objectWrapper)
         }
     }
 

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -51,6 +52,9 @@ class TreeWidgetContainerTest {
 
     @Mock
     lateinit var objectWatcher: ObjectWatcher
+
+    @Mock
+    lateinit var getSpaceView: GetSpaceView
 
     val dispatchers = AppCoroutineDispatchers(
         io = coroutineTestRule.dispatcher,
@@ -102,7 +106,8 @@ class TreeWidgetContainerTest {
                 isSessionActive = flowOf(true),
                 config = config,
                 objectWatcher = objectWatcher,
-                spaceGradientProvider = spaceGradientProvider
+                spaceGradientProvider = spaceGradientProvider,
+                getSpaceView = getSpaceView
             )
 
             stubObjectSearch(
@@ -173,7 +178,8 @@ class TreeWidgetContainerTest {
             isSessionActive = flowOf(true),
             config = config,
             objectWatcher = objectWatcher,
-            spaceGradientProvider = spaceGradientProvider
+            spaceGradientProvider = spaceGradientProvider,
+            getSpaceView = getSpaceView
         )
 
         stubObjectSearch(
@@ -259,7 +265,8 @@ class TreeWidgetContainerTest {
                 isSessionActive = flowOf(true),
                 config = config,
                 objectWatcher = objectWatcher,
-                spaceGradientProvider = spaceGradientProvider
+                spaceGradientProvider = spaceGradientProvider,
+                getSpaceView = getSpaceView
             )
 
             stubObjectSearch(
@@ -400,7 +407,8 @@ class TreeWidgetContainerTest {
             isSessionActive = flowOf(true),
             config = config,
             objectWatcher = objectWatcher,
-            spaceGradientProvider = spaceGradientProvider
+            spaceGradientProvider = spaceGradientProvider,
+            getSpaceView = getSpaceView
         )
 
         stubObjectSearch(
@@ -458,7 +466,8 @@ class TreeWidgetContainerTest {
             isSessionActive = flowOf(true),
             config = config,
             objectWatcher = objectWatcher,
-            spaceGradientProvider = spaceGradientProvider
+            spaceGradientProvider = spaceGradientProvider,
+            getSpaceView = getSpaceView
         )
 
         stubObjectSearch(

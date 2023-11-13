@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -37,6 +38,7 @@ import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
@@ -94,7 +96,8 @@ class CollectionViewModel(
     private val analytics: Analytics,
     private val dateProvider: DateProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val getSpaceView: GetSpaceView
 ) : ViewModel(), Reducer<CoreObjectView, Payload> {
 
     val payloads: Flow<Payload>
@@ -200,7 +203,7 @@ class CollectionViewModel(
         subscribeObjects()
     }
 
-    private suspend fun buildSearchParams(): StoreSearchParams {
+    suspend fun buildSearchParams(): StoreSearchParams {
         return StoreSearchParams(
             subscription = subscription.id,
             keys = subscription.keys,
@@ -216,11 +219,35 @@ class CollectionViewModel(
                 Subscription.Favorites -> {
                     favoritesSubscriptionFlow().map { it.map { it as CollectionView } }
                 }
+                Subscription.Recent -> {
+                    val config = spaceManager.getConfig()
+                    if (config != null) {
+                        val spaceView = getSpaceView.async(params = config.spaceView)
+                        val spaceCreationDateInSeconds = spaceView
+                            .getOrNull()
+                            ?.getValue<Double?>(Relations.CREATED_DATE)
+                            ?.toLong()
+                        subscriptionFlow(
+                            StoreSearchParams(
+                                subscription = subscription.id,
+                                keys = subscription.keys,
+                                filters = ObjectSearchConstants.filterTabRecent(
+                                    space = spaceManager.get(),
+                                    spaceCreationDateInSeconds = spaceCreationDateInSeconds
+                                ),
+                                sorts = subscription.sorts,
+                                limit = subscription.limit
+                            )
+                        )
+                    } else {
+                        subscriptionFlow(buildSearchParams())
+                    }
+                }
                 Subscription.Files -> {
                     filesSubscriptionFlow()
                 }
                 else -> {
-                    subscriptionFlow()
+                    subscriptionFlow(buildSearchParams())
                 }
             }
                 .map { update -> preserveSelectedState(update) }
@@ -247,9 +274,11 @@ class CollectionViewModel(
     }
 
     @OptIn(FlowPreview::class)
-    private suspend fun subscriptionFlow() =
+    private suspend fun subscriptionFlow(
+        params: StoreSearchParams
+    ) =
         combine(
-            container.subscribe(buildSearchParams()),
+            container.subscribe(params),
             queryFlow(),
             objectTypes()
         ) { objs, query, types ->
@@ -838,7 +867,8 @@ class CollectionViewModel(
         private val analytics: Analytics,
         private val dateProvider: DateProvider,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val getSpaceView: GetSpaceView
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -861,7 +891,8 @@ class CollectionViewModel(
                 analytics = analytics,
                 dateProvider = dateProvider,
                 storeOfObjectTypes = storeOfObjectTypes,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                getSpaceView = getSpaceView
             ) as T
         }
     }

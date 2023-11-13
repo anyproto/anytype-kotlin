@@ -97,6 +97,7 @@ abstract class BaseAddOptionsRelationViewModel(
         target: Id,
         relationKey: Key
     ) {
+        Timber.d("onStart, ctx: $ctx, target: $target, relationKey: $relationKey")
         jobs += viewModelScope.launch {
             combine(
                 relations.observe(relationKey),

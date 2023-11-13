@@ -164,18 +164,31 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
     }
 
     override fun injectDependencies() {
-        if (flow == FLOW_DEFAULT) {
-            componentManager().addObjectRelationObjectValueComponent.get(ctx).inject(this)
-        } else {
-            componentManager().addObjectSetObjectRelationObjectValueComponent.get(ctx).inject(this)
+        when (flow) {
+            FLOW_OBJECT -> {
+                componentManager().addObjectRelationObjectValueComponent.get(ctx).inject(this)
+            }
+            FLOW_OBJECT_SET -> {
+                componentManager().addObjectSetObjectRelationObjectValueComponent.get(ctx)
+                    .inject(this)
+            }
+            FLOW_DATAVIEW -> {
+                componentManager().addDataViewRelationObjectValueComponent.get(ctx).inject(this)
+            }
         }
     }
 
     override fun releaseDependencies() {
-        if (flow == FLOW_DEFAULT) {
-            componentManager().addObjectRelationObjectValueComponent.release(ctx)
-        } else {
-            componentManager().addObjectSetObjectRelationObjectValueComponent.release(ctx)
+        when (flow) {
+            FLOW_OBJECT -> {
+                componentManager().addObjectRelationObjectValueComponent.release(ctx)
+            }
+            FLOW_OBJECT_SET -> {
+                componentManager().addObjectSetObjectRelationObjectValueComponent.release(ctx)
+            }
+            FLOW_DATAVIEW -> {
+                componentManager().addDataViewRelationObjectValueComponent.release(ctx)
+            }
         }
     }
 
@@ -193,7 +206,7 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
             objectId: Id,
             relationKey: Key,
             types: List<Id>,
-            flow: Int = FLOW_DEFAULT
+            flow: Int
         ) = AddObjectRelationFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
@@ -209,8 +222,9 @@ class AddObjectRelationFragment : BaseDialogFragment<FragmentRelationObjectValue
         const val OBJECT_ID = "arg.relation.add.object.object.id"
         const val TARGET_TYPES = "arg.relation.add.object.target_types"
         const val FLOW_KEY = "arg.relation.add.object.flow"
-        const val FLOW_DEFAULT = 0
-        const val FLOW_DATAVIEW = 1
+        const val FLOW_OBJECT = 1
+        const val FLOW_OBJECT_SET = 2
+        const val FLOW_DATAVIEW = 3
     }
 
     interface ObjectValueAddReceiver {

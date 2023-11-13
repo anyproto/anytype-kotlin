@@ -1831,6 +1831,7 @@ message Rpc {
             }
             message Response {
                 Error error = 1;
+                ResponseEvent event = 2;
 
                 message Error {
                     Code code = 1;
@@ -2919,6 +2920,42 @@ message Rpc {
                         // ...
                     }
                 }
+            }
+        }
+    }
+
+    message DownloadManifest {
+        message Request {
+            string url = 1;
+        }
+
+        message Response {
+            Error error = 1;
+            ManifestInfo info = 2;
+
+            message Error {
+                Code code = 1;
+                string description = 2;
+
+                enum Code {
+                    NULL = 0;
+                    UNKNOWN_ERROR = 1;
+                    BAD_INPUT = 2;
+                }
+            }
+
+            message ManifestInfo {
+                string schema = 1;
+                string id = 2;
+                string name = 3;
+                string author = 4;
+                string license = 5;
+                string title = 6;
+                string description = 7;
+                repeated string screenshots = 8;
+                string downloadLink = 9;
+                int32 fileSize = 10;
+                repeated string categories = 11;
             }
         }
     }

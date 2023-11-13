@@ -411,7 +411,7 @@ class RelationListViewModel(
                 RelationFormat.FILE,
                 RelationFormat.OBJECT -> {
                     commands.emit(
-                        Command.EditRelationValue(
+                        Command.EditTagFileObjectRelationValue(
                             ctx = ctx,
                             relationId = relation.id,
                             relationKey = relation.key,
@@ -529,7 +529,7 @@ class RelationListViewModel(
             val target: Id
         ) : Command()
 
-        data class EditRelationValue(
+        data class EditTagFileObjectRelationValue(
             val ctx: Id,
             val relationId: Id,
             val relationKey: Key,

@@ -26,6 +26,7 @@
         android:layout_height="wrap_content"
         style="@style/TextView.UXStyle.Captions.2.Regular"
         android:layout_gravity="center_horizontal"
+        android:textAlignment="center"
         android:layout_marginTop="5dp"
         android:textColor="@color/text_secondary"
         tools:text="Undo/Redo" />

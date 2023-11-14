@@ -15,7 +15,7 @@ data class NodeUsage(
 )
 
 data class SpaceUsage(
-    var spaceID: String,
+    var space: Id,
     var filesCount: Long,
     var cidsCount: Long,
     var bytesUsage: Long

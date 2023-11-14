@@ -21,7 +21,6 @@ import dagger.Module
 import dagger.Provides
 import javax.inject.Named
 import javax.inject.Singleton
-import kotlin.math.log
 import kotlinx.coroutines.CoroutineScope
 
 @Module
@@ -74,7 +73,7 @@ object SubscriptionsModule {
         subscription: RelationsSubscriptionContainer,
         spaceManager: SpaceManager
     ): RelationsSubscriptionManager = RelationsSubscriptionManager(
-        subscription = subscription,
+        container = subscription,
         spaceManager = spaceManager
     )
 
@@ -85,7 +84,7 @@ object SubscriptionsModule {
         subscription: ObjectTypesSubscriptionContainer,
         spaceManager: SpaceManager
     ): ObjectTypesSubscriptionManager = ObjectTypesSubscriptionManager(
-        subscription = subscription,
+        container = subscription,
         spaceManager = spaceManager
     )
 

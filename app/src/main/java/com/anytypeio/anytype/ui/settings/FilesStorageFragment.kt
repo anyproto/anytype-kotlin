@@ -128,7 +128,7 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
         findNavController().safeNavigate(
             R.id.filesStorageScreen,
             R.id.remoteStorageFragment,
-            bundleOf(RemoteStorageFragment.SUBSCRIPTION_KEY to subscription)
+            bundleOf(RemoteFilesManageFragment.SUBSCRIPTION_KEY to subscription)
         )
     }
 

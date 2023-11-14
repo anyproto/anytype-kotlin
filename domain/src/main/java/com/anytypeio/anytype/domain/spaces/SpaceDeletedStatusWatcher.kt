@@ -52,7 +52,7 @@ class SpaceDeletedStatusWatcher @Inject constructor(
                         ObjectWrapper.SpaceView(it.map)
                     }
                     if (spaceView.spaceAccountStatus == SpaceStatus.SPACE_DELETED) {
-                        logger.logWarning("Current is deleted: $spaceView")
+                        logger.logWarning("Current space is deleted")
                         val accountConfig = configStorage.getOrNull()
                         if (accountConfig != null) {
                             logger.logWarning("Account config found. Switching to default space.")

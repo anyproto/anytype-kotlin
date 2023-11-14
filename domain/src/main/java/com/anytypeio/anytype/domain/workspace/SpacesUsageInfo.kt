@@ -7,7 +7,6 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 class SpacesUsageInfo(
     private val repo: BlockRepository,
-    private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<Unit, NodeUsageInfo>(dispatchers.io) {
 

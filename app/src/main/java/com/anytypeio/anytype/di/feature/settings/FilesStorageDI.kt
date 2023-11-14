@@ -81,9 +81,8 @@ object FilesStorageModule {
     @PerScreen
     fun provideSpaceUsage(
         repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
-    ): SpacesUsageInfo = SpacesUsageInfo(repo, spaceManager, dispatchers)
+        dispatchers: AppCoroutineDispatchers
+    ): SpacesUsageInfo = SpacesUsageInfo(repo, dispatchers)
 
     @JvmStatic
     @Provides

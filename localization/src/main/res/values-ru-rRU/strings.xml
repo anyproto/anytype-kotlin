@@ -846,7 +846,7 @@
     <string name="cover">Обложка</string>
     <string name="cover_description">Фоновое изображение</string>
     <string name="layout_description">Расположение объектов на холсте</string>
-    <string name="relations_description">List of related objects</string>
+    <string name="relations_description">Список связанных объектов</string>
     <string name="history_description">All version of object</string>
     <string name="history">History</string>
     <string name="object_debug">Object Debug</string>

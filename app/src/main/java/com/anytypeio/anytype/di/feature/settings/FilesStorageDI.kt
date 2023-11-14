@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
-import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
+import com.anytypeio.anytype.domain.workspace.NodeUsageInfo
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
@@ -83,7 +83,7 @@ object FilesStorageModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager
-    ): FileSpaceUsage = FileSpaceUsage(repo, spaceManager, dispatchers)
+    ): NodeUsageInfo = NodeUsageInfo(repo, spaceManager, dispatchers)
 
     @JvmStatic
     @Provides

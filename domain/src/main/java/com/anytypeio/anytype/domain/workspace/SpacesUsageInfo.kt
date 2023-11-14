@@ -5,7 +5,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class NodeUsageInfo(
+class SpacesUsageInfo(
     private val repo: BlockRepository,
     private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers

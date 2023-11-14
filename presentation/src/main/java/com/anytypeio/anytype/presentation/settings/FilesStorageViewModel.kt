@@ -28,7 +28,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
-import com.anytypeio.anytype.domain.workspace.NodeUsageInfo
+import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -64,7 +64,7 @@ class FilesStorageViewModel(
     private val urlBuilder: UrlBuilder,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
-    private val nodeUsageInfo: NodeUsageInfo,
+    private val spacesUsageInfo: SpacesUsageInfo,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val buildProvider: BuildProvider,
     private val getAccount: GetAccount,
@@ -365,7 +365,7 @@ class FilesStorageViewModel(
         private val urlBuilder: UrlBuilder,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
-        private val nodeUsageInfo: NodeUsageInfo,
+        private val spacesUsageInfo: SpacesUsageInfo,
         private val interceptFileLimitEvents: InterceptFileLimitEvents,
         private val buildProvider: BuildProvider,
         private val getAccount: GetAccount,
@@ -382,7 +382,7 @@ class FilesStorageViewModel(
             urlBuilder = urlBuilder,
             spaceGradientProvider = spaceGradientProvider,
             appCoroutineDispatchers = appCoroutineDispatchers,
-            nodeUsageInfo = nodeUsageInfo,
+            spacesUsageInfo = spacesUsageInfo,
             interceptFileLimitEvents = interceptFileLimitEvents,
             buildProvider = buildProvider,
             getAccount = getAccount,

@@ -78,6 +78,7 @@ interface SpaceManager {
         }
 
         override suspend fun set(space: Id)  = withContext(dispatchers.io) {
+            logger.logWarning("Setting space: $space")
             runCatching { repo.getSpaceConfig(space) }.fold(
                 onSuccess = { config ->
                     info[space] = config
@@ -107,6 +108,7 @@ interface SpaceManager {
         }
 
         override fun clear() {
+            logger.logWarning("Clearing space")
             info.clear()
             currentSpace.value = NO_SPACE_OR_DEFAULT
         }

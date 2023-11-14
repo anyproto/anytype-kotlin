@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
@@ -45,6 +46,7 @@ interface MainEntrySubComponent {
 
 @Module
 object MainEntryModule {
+
     @JvmStatic
     @PerScreen
     @Provides
@@ -58,7 +60,8 @@ object MainEntryModule {
         relationsSubscriptionManager: RelationsSubscriptionManager,
         objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         checkAuthorizationStatus: CheckAuthorizationStatus,
-        configStorage: ConfigStorage
+        configStorage: ConfigStorage,
+        spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -69,7 +72,8 @@ object MainEntryModule {
         relationsSubscriptionManager = relationsSubscriptionManager,
         objectTypesSubscriptionManager = objectTypesSubscriptionManager,
         checkAuthorizationStatus = checkAuthorizationStatus,
-        configStorage = configStorage
+        configStorage = configStorage,
+        spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
     )
 
     @JvmStatic

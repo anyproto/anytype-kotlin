@@ -5,25 +5,28 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-class SpaceStatusWatcher @Inject constructor(
+class SpaceDeletedStatusWatcher @Inject constructor(
+    private val scope: CoroutineScope,
     private val container: StorelessSubscriptionContainer,
     private val spaceManager: SpaceManager,
     private val dispatchers: AppCoroutineDispatchers,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val logger: Logger
 ) {
 
-    private val scope = MainScope()
     private val jobs = mutableListOf<Job>()
 
     fun onStart() {
@@ -49,14 +52,18 @@ class SpaceStatusWatcher @Inject constructor(
                         ObjectWrapper.SpaceView(it.map)
                     }
                     if (spaceView.spaceAccountStatus == SpaceStatus.SPACE_DELETED) {
+                        logger.logWarning("Space is deleted: $spaceView")
                         val accountConfig = configStorage.getOrNull()
                         if (accountConfig != null) {
+                            logger.logWarning("Account config found")
                             spaceManager.set(accountConfig.space)
                         } else {
+                            logger.logWarning("Account config not found")
                             spaceManager.clear()
                         }
                     }
                 }
+                .collect()
         }
     }
 

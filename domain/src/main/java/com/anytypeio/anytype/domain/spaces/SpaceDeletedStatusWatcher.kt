@@ -52,13 +52,13 @@ class SpaceDeletedStatusWatcher @Inject constructor(
                         ObjectWrapper.SpaceView(it.map)
                     }
                     if (spaceView.spaceAccountStatus == SpaceStatus.SPACE_DELETED) {
-                        logger.logWarning("Space is deleted: $spaceView")
+                        logger.logWarning("Current is deleted: $spaceView")
                         val accountConfig = configStorage.getOrNull()
                         if (accountConfig != null) {
-                            logger.logWarning("Account config found")
+                            logger.logWarning("Account config found. Switching to default space.")
                             spaceManager.set(accountConfig.space)
                         } else {
-                            logger.logWarning("Account config not found")
+                            logger.logWarning("Account config not found. Resetting space.")
                             spaceManager.clear()
                         }
                     }

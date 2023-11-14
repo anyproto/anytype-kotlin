@@ -1128,4 +1128,5 @@
     <string name="recently_opened">Recently opened</string>
     <string name="bin">Bin</string>
     <string name="synced_files">Synced files</string>
+    <string name="log_in">Log In</string>
 </resources>

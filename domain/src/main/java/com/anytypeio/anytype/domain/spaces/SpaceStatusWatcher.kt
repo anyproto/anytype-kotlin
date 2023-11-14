@@ -4,9 +4,11 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.flow.flatMapLatest
@@ -14,10 +16,11 @@ import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
-class SpaceViewSubscriptionContainer(
+class SpaceStatusWatcher @Inject constructor(
     private val container: StorelessSubscriptionContainer,
     private val spaceManager: SpaceManager,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val configStorage: ConfigStorage
 ) {
 
     private val scope = MainScope()
@@ -46,7 +49,12 @@ class SpaceViewSubscriptionContainer(
                         ObjectWrapper.SpaceView(it.map)
                     }
                     if (spaceView.spaceAccountStatus == SpaceStatus.SPACE_DELETED) {
-                        spaceManager.clear()
+                        val accountConfig = configStorage.getOrNull()
+                        if (accountConfig != null) {
+                            spaceManager.set(accountConfig.space)
+                        } else {
+                            spaceManager.clear()
+                        }
                     }
                 }
         }

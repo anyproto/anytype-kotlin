@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.withContext
 
 class ObjectTypesSubscriptionContainer(
     private val repo: BlockRepository,
@@ -126,6 +127,14 @@ class ObjectTypesSubscriptionContainer(
      * Returns events for subscriptions and dependent subscriptions
      */
     private fun subscribe(subscriptions: List<Id>) = channel.subscribe(subscriptions)
+
+    suspend fun unsubscribe() = withContext(dispatchers.io) {
+        runCatching {
+            repo.cancelObjectSearchSubscription(
+                listOf(SUBSCRIPTION_ID)
+            )
+        }
+    }
 
     data class Params(
         val subscription: Id,

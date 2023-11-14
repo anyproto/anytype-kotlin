@@ -36,8 +36,6 @@ import kotlinx.coroutines.launch
 
 class FilesStorageFragment : BaseBottomSheetComposeFragment() {
 
-    private val isRemote get() = arg<Boolean>(ARG_STORAGE_TYPE)
-
     @Inject
     lateinit var factory: FilesStorageViewModel.Factory
 
@@ -55,19 +53,11 @@ class FilesStorageFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    if (isRemote) {
-                        RemoteStorageScreen(
-                            data = vm.state.collectAsStateWithLifecycle().value,
-                            onManageFilesClicked = { throttle { vm.event(Event.OnManageFilesClicked) } },
-                            onGetMoreSpaceClicked = { throttle { vm.event(Event.OnGetMoreSpaceClicked) } },
-                        )
-                    } else {
-                        LocalStorageScreen(
-                            data = vm.state.collectAsStateWithLifecycle().value,
-                            onOffloadFilesClicked = { throttle { vm.event(Event.OnOffloadFilesClicked) } },
-                            onDeleteAccountClicked = { proceedWithAccountDeletion() }
-                        )
-                    }
+                    LocalStorageScreen(
+                        data = vm.state.collectAsStateWithLifecycle().value,
+                        onOffloadFilesClicked = { throttle { vm.event(Event.OnOffloadFilesClicked) } },
+                        onDeleteAccountClicked = { proceedWithAccountDeletion() }
+                    )
                 }
             }
         }

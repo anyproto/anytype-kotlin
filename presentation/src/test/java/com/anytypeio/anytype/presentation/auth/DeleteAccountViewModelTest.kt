@@ -10,7 +10,9 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -65,6 +67,12 @@ class DeleteAccountViewModelTest {
     @Mock
     private lateinit var relationsSubscriptionManager: RelationsSubscriptionManager
 
+    @Mock
+    private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
+
+    @Mock
+    private lateinit var spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+
     lateinit var restoreAccount: RestoreAccount
     lateinit var logout: Logout
 
@@ -90,6 +98,8 @@ class DeleteAccountViewModelTest {
             dateHelper = helper,
             analytics = analytics,
             relationsSubscriptionManager = relationsSubscriptionManager,
+            spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
+            objectTypesSubscriptionManager = objectTypesSubscriptionManager,
             appActionManager = appActionManager
         )
     }

@@ -357,7 +357,7 @@ object ObjectSearchConstants {
             DVFilter(
                 relation = Relations.LAYOUT,
                 condition = DVFilterCondition.IN,
-                value = SupportedLayouts.layouts.map { it.code.toDouble() }
+                value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
             )
         )
         if (spaceCreationDateInSeconds != null) {

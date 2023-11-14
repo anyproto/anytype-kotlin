@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
@@ -46,6 +47,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val crashReporter: CrashReporter,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
@@ -116,13 +118,18 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                     val config = configStorage.getOrNull()
                     if (config != null) {
                         crashReporter.setUser(config.analytics)
-                        relationsSubscriptionManager.onStart()
-                        objectTypesSubscriptionManager.onStart()
+                        setupGlobalSubscriptions()
                         proceedWithSettingUpMobileUseCase(config.space, name)
                     }
                 }
             )
         }
+    }
+
+    private fun setupGlobalSubscriptions() {
+        relationsSubscriptionManager.onStart()
+        objectTypesSubscriptionManager.onStart()
+        spaceDeletedStatusWatcher.onStart()
     }
 
     private fun proceedWithSettingAccountName(name: String) {
@@ -231,7 +238,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip,
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-        private val crashReporter: CrashReporter
+        private val crashReporter: CrashReporter,
+        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -247,7 +255,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 spaceGradientProvider = spaceGradientProvider,
                 relationsSubscriptionManager = relationsSubscriptionManager,
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-                crashReporter = crashReporter
+                crashReporter = crashReporter,
+                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
             ) as T
         }
     }

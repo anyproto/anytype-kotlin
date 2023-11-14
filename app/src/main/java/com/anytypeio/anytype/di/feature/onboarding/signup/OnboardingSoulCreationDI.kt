@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
@@ -107,6 +108,7 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun metricsProvider(): MetricsProvider
     fun crashReporter(): CrashReporter
     fun spaceManager(): SpaceManager
+    fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
 }
 
 @Scope

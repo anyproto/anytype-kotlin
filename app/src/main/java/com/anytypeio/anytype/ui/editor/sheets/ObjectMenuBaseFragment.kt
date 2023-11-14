@@ -4,7 +4,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,7 +23,6 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
-import com.anytypeio.anytype.core_utils.ui.showMessageSnackBar
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
@@ -197,7 +195,7 @@ abstract class ObjectMenuBaseFragment :
                 ObjectRelationListFragment.ARG_TARGET to null,
                 ObjectRelationListFragment.ARG_LOCKED to isLocked,
                 ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
-                ObjectRelationListFragment.ARG_DATA_VIEW_FLOW to false
+                ObjectRelationListFragment.ARG_SET_FLOW to false
             )
         )
     }
@@ -210,7 +208,7 @@ abstract class ObjectMenuBaseFragment :
                 ObjectRelationListFragment.ARG_TARGET to null,
                 ObjectRelationListFragment.ARG_LOCKED to isLocked,
                 ObjectRelationListFragment.ARG_MODE to ObjectRelationListFragment.MODE_LIST,
-                ObjectRelationListFragment.ARG_DATA_VIEW_FLOW to true
+                ObjectRelationListFragment.ARG_SET_FLOW to true
             )
         )
     }

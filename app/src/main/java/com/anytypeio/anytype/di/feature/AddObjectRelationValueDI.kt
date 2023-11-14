@@ -13,6 +13,7 @@ import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationProvid
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -34,6 +35,18 @@ interface AddObjectRelationValueSubComponent {
 
     fun inject(fragment: AddOptionsRelationDVFragment)
     fun inject(fragment: AddOptionsRelationFragment)
+}
+
+@Subcomponent(modules = [AddDataViewRelationOptionValueModule::class])
+@PerDialog
+interface AddDataViewRelationOptionValueSubComponent {
+    @Subcomponent.Builder
+    interface Builder {
+        fun module(module: AddDataViewRelationOptionValueModule): Builder
+        fun build(): AddDataViewRelationOptionValueSubComponent
+    }
+
+    fun inject(fragment: AddOptionsRelationDVFragment)
 }
 
 @Module
@@ -87,6 +100,43 @@ object AddObjectRelationValueModule {
         analytics = analytics,
         optionsProvider = AddOptionsRelationProvider(),
         detailProvider = detailsProvider,
+        getOptions = getOptions,
+        spaceManager = spaceManager
+    )
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun createRelationOption(
+        repo: BlockRepository
+    ): CreateRelationOption = CreateRelationOption(repo = repo)
+}
+
+@Module
+object AddDataViewRelationOptionValueModule {
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun provideViewModelFactoryForDataView(
+        @Named(DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
+        @Named(DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
+        dispatcher: Dispatcher<Payload>,
+        createRelationOption: CreateRelationOption,
+        analytics: Analytics,
+        setObjectDetail: UpdateDetail,
+        detailsProvider: ObjectDetailProvider,
+        getOptions: GetOptions,
+        spaceManager: SpaceManager
+    ): AddOptionsRelationDVViewModel.Factory = AddOptionsRelationDVViewModel.Factory(
+        relations = relations,
+        values = values,
+        dispatcher = dispatcher,
+        createRelationOption = createRelationOption,
+        optionsProvider = AddOptionsRelationProvider(),
+        analytics = analytics,
+        setObjectDetail = setObjectDetail,
+        detailsProvider = detailsProvider,
         getOptions = getOptions,
         spaceManager = spaceManager
     )

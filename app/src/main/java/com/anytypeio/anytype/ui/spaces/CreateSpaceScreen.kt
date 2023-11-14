@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -60,36 +62,44 @@ fun CreateSpaceScreen(
     val input = remember {
         mutableStateOf("")
     }
-    Column(modifier = Modifier.fillMaxHeight()) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
-                .align(Alignment.CenterHorizontally)
+                .align(Alignment.TopCenter)
         )
-        Header()
-        Spacer(modifier = Modifier.height(16.dp))
-        SpaceIcon(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            spaceIconView = spaceIconView,
-            onSpaceIconClicked = onSpaceIconClicked
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        SpaceNameInput(input = input)
-        Divider()
-        Section(title = stringResource(id = R.string.type))
-        TypeOfSpace(spaceType = PRIVATE_SPACE_TYPE)
-        Divider()
-        Section(title = stringResource(id = R.string.create_space_start_with))
-        UseCase()
-        Divider()
-        Box(modifier = Modifier.weight(1.0f)) {
-            CreateSpaceButton(
-                onCreate = onCreate,
-                input = input,
-                modifier = Modifier.align(Alignment.BottomCenter),
-                isLoading = isLoading
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(top = 16.dp)
+        ) {
+            Header()
+            Spacer(modifier = Modifier.height(16.dp))
+            SpaceIcon(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                spaceIconView = spaceIconView,
+                onSpaceIconClicked = onSpaceIconClicked
             )
+            Spacer(modifier = Modifier.height(10.dp))
+            SpaceNameInput(input = input)
+            Divider()
+            Section(title = stringResource(id = R.string.type))
+            TypeOfSpace(spaceType = PRIVATE_SPACE_TYPE)
+            Divider()
+            Section(title = stringResource(id = R.string.create_space_start_with))
+            UseCase()
+            Divider()
+            Spacer(modifier = Modifier.height(78.dp))
         }
+        CreateSpaceButton(
+            onCreate = onCreate,
+            input = input,
+            modifier = Modifier.align(Alignment.BottomCenter),
+            isLoading = isLoading
+        )
     }
 }
 

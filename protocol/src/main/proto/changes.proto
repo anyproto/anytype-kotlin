@@ -58,6 +58,7 @@ message Change {
             StoreKeyUnset storeKeyUnset = 108;
 
             StoreSliceUpdate storeSliceUpdate = 109;
+            OriginalCreatedTimestampSet originalCreatedTimestampSet = 110;
         }
         reserved 102,103,104; // old unsupported relation changes
     }
@@ -145,5 +146,9 @@ message Change {
             string afterId = 1;
             repeated string ids = 2;
         }
+    }
+
+    message OriginalCreatedTimestampSet {
+        int64 ts = 1;
     }
 }

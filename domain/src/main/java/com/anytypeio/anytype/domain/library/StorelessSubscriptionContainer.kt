@@ -28,14 +28,7 @@ interface StorelessSubscriptionContainer {
 
     fun subscribe(searchParams: StoreSearchParams): Flow<List<ObjectWrapper.Basic>>
     fun subscribe(searchParams: StoreSearchByIdsParams) : Flow<List<ObjectWrapper.Basic>>
-
     suspend fun unsubscribe(subscriptions: List<Id>)
-    
-    companion object {
-        const val SUBSCRIPTION_SETTINGS = "settings-subscription"
-        const val SUBSCRIPTION_PROFILE = "profile-subscription"
-        const val SUBSCRIPTION_TEMPLATES = "templates-subscription"
-    }
 
     class Impl @Inject constructor(
         private val repo: BlockRepository,

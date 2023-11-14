@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.auth.model.Session
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 
+@Deprecated("To be deleted")
 class SetupNewAccountViewModelFactory(
     private val createAccount: CreateAccount,
     private val session: Session,

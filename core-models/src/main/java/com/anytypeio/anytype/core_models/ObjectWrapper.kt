@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_models
 import com.anytypeio.anytype.core_models.Relations.RELATION_FORMAT_OBJECT_TYPES
 import com.anytypeio.anytype.core_models.ext.typeOf
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 
 /**
  * Wrapper for easily parsing object's relations when object is represented as an untyped structure.
@@ -239,11 +240,19 @@ sealed class ObjectWrapper {
         val color: String = relationOptionColor.orEmpty()
     }
 
-    data class Workspace(override val map: Struct) : ObjectWrapper() {
+    data class SpaceView(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
         val name: String? by default
-        val spaceId: String? by default
+        val targetSpaceId: String? by default
+        val spaceAccountStatus: SpaceStatus
+            get() {
+                val code = getValue<Double?>(Relations.SPACE_ACCOUNT_STATUS)
+                return SpaceStatus
+                    .values()
+                    .firstOrNull { it.code == code?.toInt() }
+                    ?: SpaceStatus.UNKNOWN
+            }
     }
 
     inline fun <reified T> getValue(relation: Key): T? {

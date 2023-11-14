@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.library.processors
 
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.library.SubscriptionObject
 
@@ -15,7 +16,7 @@ class EventSetProcessor : SubscriptionEventProcessor<SubscriptionEvent.Set> {
                 indexOfItem,
                 SubscriptionObject(
                     event.target,
-                    com.anytypeio.anytype.core_models.ObjectWrapper.Basic(event.data)
+                    ObjectWrapper.Basic(event.data)
                 )
             )
         } else {
@@ -23,7 +24,7 @@ class EventSetProcessor : SubscriptionEventProcessor<SubscriptionEvent.Set> {
                 0,
                 SubscriptionObject(
                     event.target,
-                    com.anytypeio.anytype.core_models.ObjectWrapper.Basic(event.data)
+                    ObjectWrapper.Basic(event.data)
                 )
             )
         }

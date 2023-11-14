@@ -12,6 +12,7 @@ import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import javax.inject.Inject
 
 /**
@@ -29,7 +30,8 @@ class SplashViewModelFactory @Inject constructor(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val featureToggles: FeatureToggles,
-    private val crashReporter: com.anytypeio.anytype.CrashReporter
+    private val crashReporter: CrashReporter,
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -44,6 +46,7 @@ class SplashViewModelFactory @Inject constructor(
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
             featureToggles = featureToggles,
-            crashReporter = crashReporter
+            crashReporter = crashReporter,
+            spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
         ) as T
 }

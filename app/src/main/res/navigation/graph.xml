@@ -238,6 +238,12 @@
     </dialog>
 
     <dialog
+        android:id="@+id/spacesStorageScreen"
+        android:name="com.anytypeio.anytype.ui.settings.SpacesStorageFragment"
+        android:label="Spaces-Storage-Screen">
+    </dialog>
+
+    <dialog
         android:id="@+id/aboutAppScreen"
         android:name="com.anytypeio.anytype.ui.settings.AboutAppFragment" />
 

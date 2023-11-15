@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
@@ -22,7 +23,8 @@ import kotlinx.coroutines.launch
 class LimitObjectTypeViewModel(
     private val searchObjects: SearchObjects,
     private val urlBuilder: UrlBuilder,
-    private val state: StateHolder<CreateFromScratchState>
+    private val state: StateHolder<CreateFromScratchState>,
+    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectLimitObjectTypeView>>(emptyList())
@@ -36,6 +38,11 @@ class LimitObjectTypeViewModel(
             searchObjects(
                 SearchObjects.Params(
                     filters = listOf(
+                        DVFilter(
+                            relation = Relations.SPACE_ID,
+                            condition = DVFilterCondition.EQUAL,
+                            value = spaceManager.get()
+                        ),
                         DVFilter(
                             relation = Relations.LAYOUT,
                             condition = DVFilterCondition.EQUAL,
@@ -116,14 +123,16 @@ class LimitObjectTypeViewModel(
     class Factory(
         private val searchObjects: SearchObjects,
         private val urlBuilder: UrlBuilder,
-        private val state: StateHolder<CreateFromScratchState>
+        private val state: StateHolder<CreateFromScratchState>,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return LimitObjectTypeViewModel(
                 searchObjects = searchObjects,
                 urlBuilder = urlBuilder,
-                state = state
+                state = state,
+                spaceManager = spaceManager
             ) as T
         }
     }

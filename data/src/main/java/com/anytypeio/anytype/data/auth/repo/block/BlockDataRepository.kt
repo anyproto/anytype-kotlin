@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -873,8 +874,8 @@ class BlockDataRepository(
         return remote.setQueryToSet(command)
     }
 
-    override suspend fun fileSpaceUsage(space: SpaceId): FileLimits {
-        return remote.fileSpaceUsage(space)
+    override suspend fun nodeUsage(): NodeUsageInfo {
+        return remote.nodeUsage()
     }
 
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {

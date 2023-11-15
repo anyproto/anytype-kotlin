@@ -48,7 +48,6 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
-import com.anytypeio.anytype.ui.settings.FilesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.spaces.Section
@@ -96,11 +95,7 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     ),
                     onFileStorageClick = throttledClick(
                         onClick = {
-                            findNavController()
-                                .navigate(
-                                    R.id.filesStorageScreen,
-                                    FilesStorageFragment.args(isRemote = true)
-                                )
+                            findNavController().navigate(R.id.spacesStorageScreen)
                         }
                     ),
                     onPersonalizationClicked = throttledClick(

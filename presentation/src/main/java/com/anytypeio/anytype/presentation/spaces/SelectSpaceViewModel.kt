@@ -149,27 +149,28 @@ class SelectSpaceViewModel(
                             icon = profile.profileIcon(builder = urlBuilder)
                         )
                     )
-                    addAll(
-                        spaces.mapNotNull { wrapper ->
-                            val space = wrapper.getValue<String>(Relations.TARGET_SPACE_ID)
-                            if (space != null) {
-                                SelectSpaceView.Space(
-                                    WorkspaceView(
-                                        id = wrapper.id,
-                                        name = wrapper.name,
-                                        space = space,
-                                        isSelected = space == config.space,
-                                        icon = wrapper.spaceIcon(
-                                            builder = urlBuilder,
-                                            spaceGradientProvider = spaceGradientProvider
-                                        )
+                    val spaceViews = spaces.mapNotNull { wrapper ->
+                        val space = wrapper.getValue<String>(Relations.TARGET_SPACE_ID)
+                        if (space != null) {
+                            SelectSpaceView.Space(
+                                WorkspaceView(
+                                    id = wrapper.id,
+                                    name = wrapper.name,
+                                    space = space,
+                                    isSelected = space == config.space,
+                                    icon = wrapper.spaceIcon(
+                                        builder = urlBuilder,
+                                        spaceGradientProvider = spaceGradientProvider
                                     )
                                 )
-                            } else {
-                                null
-                            }
+                            )
+                        } else {
+                            null
                         }
-                    )
+                    }
+                    val (active, others) = spaceViews.partition { view -> view.view.isSelected }
+                    addAll(active)
+                    addAll(others)
                     val numberOfSpaces = count { view -> view is SelectSpaceView.Space }
                     if (numberOfSpaces < MAX_SPACE_COUNT) {
                         add(SelectSpaceView.Create)

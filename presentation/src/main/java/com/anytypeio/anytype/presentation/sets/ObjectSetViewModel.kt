@@ -322,6 +322,8 @@ class ObjectSetViewModel(
                 }
             }.collect()
         }
+
+        subscribeToSelectedType()
     }
 
     private suspend fun proceedWithSettingUnsplashImage(
@@ -660,6 +662,7 @@ class ObjectSetViewModel(
     fun onStop() {
         Timber.d("onStop, ")
         hideTemplatesWidget()
+        unsubscribeFromTypesTemplates()
         jobs.cancel()
     }
 
@@ -1575,11 +1578,9 @@ class ObjectSetViewModel(
     private var templatesSubId: Id? = null
 
     private fun unsubscribeFromTypesTemplates() {
-        if (viewerTemplatesJob.isNotEmpty()) {
-            viewerTemplatesJob.cancel()
-            templatesSubId?.let {
-                viewModelScope.launch { templatesContainer.unsubscribeFromTemplates(it) }
-            }.also { templatesSubId = null }
+        Timber.d("unsubscribeFromTypesTemplates, ")
+        viewModelScope.launch {
+            templatesContainer.unsubscribeFromTemplates("$context$SUBSCRIPTION_TEMPLATES_ID")
         }
     }
 
@@ -1622,7 +1623,6 @@ class ObjectSetViewModel(
             if (type == null || !type.isValid) return@launch
             typeTemplatesWidgetState.value = createState(viewer)
             selectedTypeFlow.value = SelectedType(type.id, type.defaultTemplateId)
-            subscribeToSelectedType()
         }
         logEvent(ObjectStateAnalyticsEvent.SHOW_TEMPLATES)
     }
@@ -1710,6 +1710,7 @@ class ObjectSetViewModel(
                 )
             }
             is TemplateView.New -> {
+                hideTemplatesWidget()
                 proceedWithCreatingTemplate(
                     targetTypeId = templateView.targetTypeId.id,
                     targetTypeKey = templateView.targetTypeKey.key
@@ -1729,14 +1730,55 @@ class ObjectSetViewModel(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun subscribeToSelectedType() {
         viewModelScope.launch {
             selectedTypeFlow
                 .filterNotNull()
-                .distinctUntilChanged()
-                .collect { selectedType ->
+                .flatMapLatest { selectedType ->
                     updateTypesForTypeTemplatesWidget(selectedType.id)
-                    subscribeToTemplates(selectedType.id)
+                    templatesContainer.subscribeToTemplates(
+                        type = selectedType.id,
+                        subId = "$context$SUBSCRIPTION_TEMPLATES_ID"
+                    )
+                }.map { templates ->
+                    val state = stateReducer.state.value
+                    val viewerId = typeTemplatesWidgetState.value.getWidgetViewerId()
+                    val dataView = state.dataViewState() ?: return@map emptyList<TemplateView>()
+                    val viewer = dataView.viewerById(viewerId) ?: return@map emptyList<TemplateView>()
+                    val selectedTypeId = selectedTypeFlow.value?.id ?: return@map emptyList<TemplateView>()
+                    val (type, template) = dataView.getActiveViewTypeAndTemplate(
+                        context,
+                        viewer,
+                        storeOfObjectTypes
+                    )
+                    when (typeTemplatesWidgetState.value) {
+                        is TypeTemplatesWidgetUI.Data -> {
+                            if (type?.id == selectedTypeFlow.value?.id) {
+                                processTemplates(
+                                    templates = templates,
+                                    viewerDefType = type ?: storeOfObjectTypes.get(selectedTypeId),
+                                    viewerDefTemplate = template
+                                        ?: selectedTypeFlow.value?.defaultTemplateId
+                                )
+                            } else {
+                                processTemplates(
+                                    templates = templates,
+                                    viewerDefType = storeOfObjectTypes.get(selectedTypeId),
+                                    viewerDefTemplate = selectedTypeFlow.value?.defaultTemplateId
+                                )
+                            }
+                        }
+
+                        is TypeTemplatesWidgetUI.Init -> emptyList()
+                    }
+                }
+                .collect{ templateViews ->
+                    typeTemplatesWidgetState.value =
+                        when (val uistate = typeTemplatesWidgetState.value) {
+                            is TypeTemplatesWidgetUI.Data -> uistate.copy(templates = templateViews)
+                            is TypeTemplatesWidgetUI.Init -> uistate
+                        }
                 }
         }
     }
@@ -1796,54 +1838,6 @@ class ObjectSetViewModel(
                 typeTemplatesWidgetState.value = widgetState.copy(objectTypes = emptyList())
             }
         )
-    }
-
-    private suspend fun subscribeToTemplates(selectedTypeId: Id) {
-        unsubscribeFromTypesTemplates()
-        viewerTemplatesJob += viewModelScope.launch {
-            val subId = "${selectedTypeId}$SUBSCRIPTION_SET_TEMPLATES"
-            templatesSubId = subId
-            templatesContainer.subscribeToTemplates(
-                type = selectedTypeId,
-                subId = subId
-            ).map { templates ->
-                val state = stateReducer.state.value
-                val viewerId = typeTemplatesWidgetState.value.getWidgetViewerId()
-                val dataView = state.dataViewState() ?: return@map emptyList<TemplateView>()
-                val viewer = dataView.viewerById(viewerId) ?: return@map emptyList<TemplateView>()
-                val (type, template) = dataView.getActiveViewTypeAndTemplate(
-                    context,
-                    viewer,
-                    storeOfObjectTypes
-                )
-                when (typeTemplatesWidgetState.value) {
-                    is TypeTemplatesWidgetUI.Data -> {
-                        if (type?.id == selectedTypeFlow.value?.id) {
-                            processTemplates(
-                                templates = templates,
-                                viewerDefType = type ?: storeOfObjectTypes.get(selectedTypeId),
-                                viewerDefTemplate = template
-                                    ?: selectedTypeFlow.value?.defaultTemplateId
-                            )
-                        } else {
-                            processTemplates(
-                                templates = templates,
-                                viewerDefType = storeOfObjectTypes.get(selectedTypeId),
-                                viewerDefTemplate = selectedTypeFlow.value?.defaultTemplateId
-                            )
-                        }
-                    }
-
-                    is TypeTemplatesWidgetUI.Init -> emptyList()
-                }
-            }.collectLatest { templates ->
-                typeTemplatesWidgetState.value =
-                    when (val uistate = typeTemplatesWidgetState.value) {
-                        is TypeTemplatesWidgetUI.Data -> uistate.copy(templates = templates)
-                        is TypeTemplatesWidgetUI.Init -> uistate
-                    }
-            }
-        }
     }
 
     fun proceedWithSelectedTemplate(
@@ -1974,9 +1968,6 @@ class ObjectSetViewModel(
                 when {
                     state.moreMenuItem != null -> state.hideMoreMenu()
                     state.showWidget -> {
-                        viewModelScope.launch {
-                            unsubscribeFromTypesTemplates()
-                        }
                         selectedTypeFlow.value = null
                         TypeTemplatesWidgetUI.Init()
                     }
@@ -1988,7 +1979,6 @@ class ObjectSetViewModel(
     }
 
     private fun hideTemplatesWidget() {
-        unsubscribeFromTypesTemplates()
         selectedTypeFlow.value = null
         typeTemplatesWidgetState.value = TypeTemplatesWidgetUI.Init()
     }
@@ -2539,6 +2529,7 @@ class ObjectSetViewModel(
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
         const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
+        private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
     }
 }
 

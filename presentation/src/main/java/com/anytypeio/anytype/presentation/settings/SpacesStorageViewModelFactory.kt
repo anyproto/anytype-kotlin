@@ -11,7 +11,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import javax.inject.Inject
 
-class SpacesStorageFactory @Inject constructor(
+class SpacesStorageViewModelFactory @Inject constructor(
     private val analytics: Analytics,
     private val spaceManager: SpaceManager,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,

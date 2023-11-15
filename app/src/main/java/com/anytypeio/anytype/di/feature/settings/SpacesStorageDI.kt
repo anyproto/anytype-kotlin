@@ -16,7 +16,7 @@ import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.settings.SpacesStorageFactory
+import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModelFactory
 import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import dagger.Binds
 import dagger.Component
@@ -90,7 +90,7 @@ object SpacesStorageModule {
 
         @PerScreen
         @Binds
-        fun bindViewModelFactory(factory: SpacesStorageFactory): ViewModelProvider.Factory
+        fun bindViewModelFactory(factory: SpacesStorageViewModelFactory): ViewModelProvider.Factory
     }
 }
 

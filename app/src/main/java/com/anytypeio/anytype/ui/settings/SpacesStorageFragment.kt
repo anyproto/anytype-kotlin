@@ -24,7 +24,7 @@ import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.settings.SpacesStorageFactory
+import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModelFactory
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel
 import com.anytypeio.anytype.ui_settings.space.SpaceStorageScreen
 import javax.inject.Inject
@@ -33,7 +33,7 @@ import kotlinx.coroutines.launch
 class SpacesStorageFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
-    lateinit var factory: SpacesStorageFactory
+    lateinit var factory: SpacesStorageViewModelFactory
 
     private val vm by viewModels<SpacesStorageViewModel> { factory }
 

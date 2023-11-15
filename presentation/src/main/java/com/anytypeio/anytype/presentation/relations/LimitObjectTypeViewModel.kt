@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -36,14 +37,19 @@ class LimitObjectTypeViewModel(
                 SearchObjects.Params(
                     filters = listOf(
                         DVFilter(
-                            relation = Relations.TYPE,
+                            relation = Relations.LAYOUT,
                             condition = DVFilterCondition.EQUAL,
-                            value = ObjectTypeIds.OBJECT_TYPE
+                            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
                         ),
                         DVFilter(
                             relation = Relations.IS_ARCHIVED,
-                            condition = DVFilterCondition.EQUAL,
-                            value = false
+                            condition = DVFilterCondition.NOT_EQUAL,
+                            value = true
+                        ),
+                        DVFilter(
+                            relation = Relations.IS_DELETED,
+                            condition = DVFilterCondition.NOT_EQUAL,
+                            value = true
                         ),
                         DVFilter(
                             relation = Relations.IS_HIDDEN,

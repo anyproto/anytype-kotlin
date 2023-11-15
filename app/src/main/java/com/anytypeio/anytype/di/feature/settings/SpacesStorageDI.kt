@@ -3,25 +3,21 @@ package com.anytypeio.anytype.di.feature.settings
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies
-import com.anytypeio.anytype.domain.account.DeleteAccount
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.Logger
-import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.ui.settings.FilesStorageFragment
+import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModelFactory
+import com.anytypeio.anytype.ui.settings.SpacesStorageFragment
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -29,26 +25,26 @@ import dagger.Provides
 
 @PerScreen
 @Component(
-    dependencies = [FilesStorageDependencies::class],
+    dependencies = [SpacesStorageDependencies::class],
     modules = [
-        FilesStorageModule::class,
-        FilesStorageModule.Declarations::class
+        SpacesStorageModule::class,
+        SpacesStorageModule.Declarations::class
     ]
 )
-interface FilesStorageComponent {
+interface SpacesStorageComponent {
 
     @Component.Builder
     interface Builder {
 
-        fun withDependencies(dependency: FilesStorageDependencies): Builder
-        fun build(): FilesStorageComponent
+        fun withDependencies(dependency: SpacesStorageDependencies): Builder
+        fun build(): SpacesStorageComponent
     }
 
-    fun inject(fragment: FilesStorageFragment)
+    fun inject(fragment: SpacesStorageFragment)
 }
 
 @Module
-object FilesStorageModule {
+object SpacesStorageModule {
 
     @JvmStatic
     @Provides
@@ -64,16 +60,6 @@ object FilesStorageModule {
         dispatchers = dispatchers,
         logger = logger
     )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun clearFileCache(repo: BlockRepository): ClearFileCache = ClearFileCache(repo)
 
     @JvmStatic
     @Provides
@@ -94,29 +80,27 @@ object FilesStorageModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideDeleteAccountUseCase(
+    fun provideGetAccountUseCase(
         repo: AuthRepository,
         dispatchers: AppCoroutineDispatchers
-    ): DeleteAccount = DeleteAccount(repo = repo)
+    ): GetAccount = GetAccount(repo = repo, dispatcher = dispatchers)
 
     @Module
     interface Declarations {
 
         @PerScreen
         @Binds
-        fun bindViewModelFactory(factory: FilesStorageViewModel.Factory): ViewModelProvider.Factory
+        fun bindViewModelFactory(factory: SpacesStorageViewModelFactory): ViewModelProvider.Factory
     }
 }
 
-interface FilesStorageDependencies : ComponentDependencies {
+interface SpacesStorageDependencies : ComponentDependencies {
     fun blockRepo(): BlockRepository
-    fun urlBuilder(): UrlBuilder
     fun dispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
     fun configStorage(): ConfigStorage
     fun channel(): SubscriptionEventChannel
     fun fileEventsChannel(): FileLimitsEventChannel
-    fun buildProvider(): BuildProvider
     fun authRepo(): AuthRepository
     fun logger(): Logger
     fun spaceManager(): SpaceManager

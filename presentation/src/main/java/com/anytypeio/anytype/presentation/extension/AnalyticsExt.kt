@@ -1760,6 +1760,12 @@ suspend fun Analytics.sendSettingsStorageManageEvent() {
     )
 }
 
+suspend fun Analytics.sendSettingsSpaceStorageManageEvent() {
+    sendEvent(
+        eventName = EventsDictionary.screenSettingsSpaceStorageManager
+    )
+}
+
 suspend fun Analytics.sendSettingsOffloadEvent() {
     sendEvent(
         eventName = EventsDictionary.screenSettingsStorageOffload

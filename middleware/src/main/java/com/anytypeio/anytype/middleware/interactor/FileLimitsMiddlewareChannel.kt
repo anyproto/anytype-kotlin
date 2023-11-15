@@ -19,6 +19,7 @@ class FileLimitsMiddlewareChannel(
                             val event = message.fileSpaceUsage
                             checkNotNull(event)
                             FileLimitsEvent.SpaceUsage(
+                                space = event.spaceId,
                                 bytesUsage = event.bytesUsage
                             )
                         }

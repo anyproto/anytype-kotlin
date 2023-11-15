@@ -150,7 +150,7 @@ class SelectSpaceViewModel(
                         )
                     )
                     val spaceViews = spaces.mapNotNull { wrapper ->
-                        val space = wrapper.getValue<String>(Relations.TARGET_SPACE_ID)
+                        val space = wrapper.targetSpaceId
                         if (space != null) {
                             SelectSpaceView.Space(
                                 WorkspaceView(

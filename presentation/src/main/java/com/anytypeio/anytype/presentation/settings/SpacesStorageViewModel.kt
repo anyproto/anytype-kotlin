@@ -52,7 +52,7 @@ class SpacesStorageViewModel(
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer
 ) : BaseViewModel() {
 
-    private val _nodeUsage = MutableStateFlow(NodeUsageInfo())
+    private val _nodeUsageInfo = MutableStateFlow(NodeUsageInfo())
     private val _viewState: MutableStateFlow<SpacesStorageScreenState?> = MutableStateFlow(null)
     val viewState: StateFlow<SpacesStorageScreenState?> = _viewState
     val events = MutableSharedFlow<Event>(replay = 0)
@@ -61,6 +61,8 @@ class SpacesStorageViewModel(
 
     init {
         subscribeToViewEvents()
+        subscribeToMiddlewareEvents()
+        proceedWithGettingNodeUsageInfo()
     }
 
     private fun subscribeToViewEvents() {
@@ -87,8 +89,6 @@ class SpacesStorageViewModel(
 
     fun onStart() {
         subscribeToSpaces()
-        subscribeToMiddlewareEvents()
-        proceedWithGettingNodeUsageInfo()
     }
 
     fun onStop() {
@@ -102,7 +102,7 @@ class SpacesStorageViewModel(
         jobs += viewModelScope.launch {
             val subscribeParams = createStoreSearchParams()
             combine(
-                _nodeUsage,
+                _nodeUsageInfo,
                 storelessSubscriptionContainer.subscribe(subscribeParams)
             ) { nodeUsageInfo, spaces ->
                 createSpacesStorageScreenState(nodeUsageInfo, spaces)
@@ -181,7 +181,7 @@ class SpacesStorageViewModel(
     private fun proceedWithGettingNodeUsageInfo() {
         viewModelScope.launch {
             spacesUsageInfo.async(Unit).fold(
-                onSuccess = { nodeUsageInfo -> _nodeUsage.value = nodeUsageInfo },
+                onSuccess = { nodeUsageInfo -> _nodeUsageInfo.value = nodeUsageInfo },
                 onFailure = { Timber.e(it, "Error while getting file space usage") }
             )
         }
@@ -191,9 +191,9 @@ class SpacesStorageViewModel(
         jobs += viewModelScope.launch {
             interceptFileLimitEvents.run(Unit)
                 .onEach { events ->
-                    val currentState = _nodeUsage.value
+                    val currentState = _nodeUsageInfo.value
                     val newState = currentState.updateState(events)
-                    _nodeUsage.value = newState
+                    _nodeUsageInfo.value = newState
                 }
                 .collect()
         }

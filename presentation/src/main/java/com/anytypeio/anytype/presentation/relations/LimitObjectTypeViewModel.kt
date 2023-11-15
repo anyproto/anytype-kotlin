@@ -19,7 +19,6 @@ import com.anytypeio.anytype.presentation.relations.model.SelectLimitObjectTypeV
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -31,20 +30,20 @@ class LimitObjectTypeViewModel(
 ) : BaseViewModel() {
 
 
-    private val query = MutableStateFlow(EMPTY_QUERY)
-    private val types = MutableStateFlow<List<SelectLimitObjectTypeView>>(emptyList())
+    private val queryFlow = MutableStateFlow(EMPTY_QUERY)
+    private val allTypeViews = MutableStateFlow<List<SelectLimitObjectTypeView>>(emptyList())
 
-    val views = combine(types, query) { t, q ->
-        if (q.isEmpty())
-            t
+    val views = combine(allTypeViews, queryFlow) { types, query ->
+        if (query.isEmpty())
+            types
         else
-            t.filter { type ->
+            types.filter { type ->
                 val title = type.item.title
                 val subtitle = type.item.subtitle
                 if (subtitle.isNullOrEmpty())
-                    title.contains(q, true)
+                    title.contains(query, true)
                 else
-                    title.contains(q, true) || subtitle.contains(q, true)
+                    title.contains(query, true) || subtitle.contains(query, true)
             }
     }
 
@@ -96,7 +95,7 @@ class LimitObjectTypeViewModel(
             ).process(
                 success = { types ->
                     val limitObjectTypes = state.state.value.limitObjectTypes
-                    this@LimitObjectTypeViewModel.types.value = types.map { t ->
+                    this@LimitObjectTypeViewModel.allTypeViews.value = types.map { t ->
                         SelectLimitObjectTypeView(
                             item = DefaultObjectTypeView(
                                 id = t.id,
@@ -122,11 +121,11 @@ class LimitObjectTypeViewModel(
     }
 
     fun onSearchInputChanged(input: String) {
-        query.value = input
+        queryFlow.value = input
     }
 
     fun onObjectTypeClicked(type: SelectLimitObjectTypeView) {
-        types.value = types.value.map { view ->
+        allTypeViews.value = allTypeViews.value.map { view ->
             if (view.item.id == type.item.id)
                 view.copy(
                     isSelected = !view.isSelected
@@ -140,7 +139,7 @@ class LimitObjectTypeViewModel(
 
     fun onAddClicked() {
         state.state.value = state.state.value.copy(
-            limitObjectTypes = types.value.filter { it.isSelected }.map { it.item }
+            limitObjectTypes = allTypeViews.value.filter { it.isSelected }.map { it.item }
         )
         isDismissed.value = true
     }

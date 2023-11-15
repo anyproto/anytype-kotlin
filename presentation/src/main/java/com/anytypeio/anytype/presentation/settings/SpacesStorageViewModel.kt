@@ -133,7 +133,7 @@ class SpacesStorageViewModel(
             ),
             DVFilter(
                 relation = Relations.SPACE_ACCOUNT_STATUS,
-                value = SpaceStatus.DELETED.code.toDouble(),
+                value = SpaceStatus.SPACE_DELETED.code.toDouble(),
                 condition = DVFilterCondition.NOT_EQUAL
             ),
             DVFilter(

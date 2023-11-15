@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -18,7 +17,10 @@ import com.anytypeio.anytype.presentation.relations.model.DefaultObjectTypeView
 import com.anytypeio.anytype.presentation.relations.model.SelectLimitObjectTypeView
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class LimitObjectTypeViewModel(
     private val searchObjects: SearchObjects,
@@ -27,7 +29,23 @@ class LimitObjectTypeViewModel(
     private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
-    val views = MutableStateFlow<List<SelectLimitObjectTypeView>>(emptyList())
+
+    private val query = MutableStateFlow("")
+    private val types = MutableStateFlow<List<SelectLimitObjectTypeView>>(emptyList())
+
+    val views = combine(types, query) { t, q ->
+        if (q.isEmpty())
+            t
+        else
+            t.filter { type ->
+                val title = type.item.title
+                val subtitle = type.item.subtitle
+                if (subtitle.isNullOrEmpty())
+                    title.contains(q, true)
+                else
+                    title.contains(q, true) || subtitle.contains(q, true)
+            }
+    }
 
     val count = MutableStateFlow(0)
 
@@ -77,7 +95,7 @@ class LimitObjectTypeViewModel(
             ).process(
                 success = { types ->
                     val limitObjectTypes = state.state.value.limitObjectTypes
-                    views.value = types.map { t ->
+                    this@LimitObjectTypeViewModel.types.value = types.map { t ->
                         SelectLimitObjectTypeView(
                             item = DefaultObjectTypeView(
                                 id = t.id,
@@ -95,13 +113,19 @@ class LimitObjectTypeViewModel(
                         count.value = it.count { view -> view.isSelected }
                     }
                 },
-                failure = {}
+                failure = {
+                    Timber.e(it, "Error while searching for types")
+                }
             )
         }
     }
 
+    fun onSearchInputChanged(input: String) {
+        query.value = input
+    }
+
     fun onObjectTypeClicked(type: SelectLimitObjectTypeView) {
-        views.value = views.value.map { view ->
+        types.value = types.value.map { view ->
             if (view.item.id == type.item.id)
                 view.copy(
                     isSelected = !view.isSelected
@@ -115,7 +139,7 @@ class LimitObjectTypeViewModel(
 
     fun onAddClicked() {
         state.state.value = state.state.value.copy(
-            limitObjectTypes = views.value.filter { it.isSelected }.map { it.item }
+            limitObjectTypes = types.value.filter { it.isSelected }.map { it.item }
         )
         isDismissed.value = true
     }

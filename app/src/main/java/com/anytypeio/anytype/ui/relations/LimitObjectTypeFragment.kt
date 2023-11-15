@@ -11,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.relations.ObjectTypeAddAdapter
+import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
@@ -47,6 +48,14 @@ class LimitObjectTypeFragment : BaseBottomSheetFragment<FragmentObjectTypeChange
         }
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    binding
+                        .searchObjectTypeInput
+                        .textChanges()
+                        .collect {
+                            vm.onSearchInputChanged(it.toString())
+                        }
+                }
                 launch {
                     vm.views.collectLatest {
                         objectTypeAdapter.submitList(it)

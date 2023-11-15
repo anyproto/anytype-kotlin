@@ -12,7 +12,7 @@ import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingLoginSetupViewModel
 import dagger.Binds
 import dagger.Component
@@ -55,9 +55,9 @@ interface OnboardingLoginSetupDependencies : ComponentDependencies {
     fun pathProvider(): PathProvider
     fun crashReporter(): CrashReporter
     fun configStorage(): ConfigStorage
-    fun workspaceManager(): WorkspaceManager
     fun featureConfigProvider(): FeaturesConfigProvider
     fun metricsProvider(): MetricsProvider
     fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
+    fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
 }

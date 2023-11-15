@@ -24,9 +24,9 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.splash.SplashFragment
 import dagger.Binds
@@ -175,7 +175,6 @@ object SplashModule {
 
 interface SplashDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
-    fun workspaceManager(): WorkspaceManager
     fun urlBuilder(): UrlBuilder
     fun analytics(): Analytics
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
@@ -190,4 +189,5 @@ interface SplashDependencies : ComponentDependencies {
     fun crashReporter(): CrashReporter
     fun metricsProvider(): MetricsProvider
     fun spaceManager(): SpaceManager
+    fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
 }

@@ -420,15 +420,16 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
     <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Recovery Phrase is to save it in your password manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">The most secure way is to write it down on paper and keep it offline, in a safe and secure place.</string>
-    <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
-    <string name="anytype_update_alert_title">It’s time to update</string>
+    <string name="anytype_update_alert_description">This object was modified in a newer version of Anytype. Please update the app to open it on this device.</string>
+    <string name="anytype_update_alert_title">Update Your App</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
 
-    <string name="space_type_personal">Personal</string>
-    <string name="space_type_private">Private</string>
+    <string name="space_type_personal">Personal Space</string>
+    <string name="space_type_private">Private Space</string>
     <string name="space_type_unknown">Unknown</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_groups">Groups</string>
     <string name="create_object_section_objects">Objects</string>
+    <string name="log_in">Log In</string>
 
 </resources>

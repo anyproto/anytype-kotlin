@@ -47,6 +47,7 @@ import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
@@ -181,6 +182,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var spaceWidgetContainer: SpaceWidgetContainer
+
+    @Mock
+    lateinit var getSpaceView: GetSpaceView
 
     @Mock
     lateinit var spaceManager: SpaceManager
@@ -864,6 +868,8 @@ class HomeScreenViewModelTest {
                 ),
                 results = listOf(firstLink, secondLink)
             )
+
+            stubGetSpaceView(defaultSpaceConfig.spaceView)
 
             stubDefaultSearch(
                 params = ListWidgetContainer.params(
@@ -1609,6 +1615,8 @@ class HomeScreenViewModelTest {
             results = listOf(firstLink, secondLink)
         )
 
+        stubGetSpaceView(defaultSpaceConfig.spaceView)
+
         stubDefaultSearch(
             params = ListWidgetContainer.params(
                 subscription = BundledWidgetSourceIds.SETS,
@@ -1828,6 +1836,8 @@ class HomeScreenViewModelTest {
             ),
             results = listOf(firstLink, secondLink)
         )
+
+        stubGetSpaceView(defaultSpaceConfig.spaceView)
 
         stubDefaultSearch(
             params = ListWidgetContainer.params(
@@ -2753,6 +2763,17 @@ class HomeScreenViewModelTest {
         }
     }
 
+    private fun stubGetSpaceView(
+        spaceView: Id,
+        objectWrapper: ObjectWrapper.Basic? = null
+    ) {
+        getSpaceView.stub {
+            onBlocking {
+                async(spaceView)
+            } doReturn Resultat.success(objectWrapper)
+        }
+    }
+
     private fun buildViewModel() = HomeScreenViewModel(
         interceptEvents = interceptEvents,
         createWidget = createWidget,
@@ -2784,7 +2805,8 @@ class HomeScreenViewModelTest {
         setWidgetActiveView = setWidgetActiveView,
         spaceWidgetContainer = spaceWidgetContainer,
         spaceManager = spaceManager,
-        setObjectDetails = setObjectDetails
+        setObjectDetails = setObjectDetails,
+        getSpaceView = getSpaceView
     )
 
     companion object {

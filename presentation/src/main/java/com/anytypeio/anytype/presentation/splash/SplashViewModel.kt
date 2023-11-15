@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -49,7 +50,8 @@ class SplashViewModel(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val featureToggles: FeatureToggles,
-    private val crashReporter: CrashReporter
+    private val crashReporter: CrashReporter,
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
 ) : ViewModel() {
 
     val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
@@ -145,6 +147,7 @@ class SplashViewModel(
     private fun proceedWithGlobalSubscriptions() {
         relationsSubscriptionManager.onStart()
         objectTypesSubscriptionManager.onStart()
+        spaceDeletedStatusWatcher.onStart()
     }
 
     fun onIntentCreateNewObject(type: Key) {

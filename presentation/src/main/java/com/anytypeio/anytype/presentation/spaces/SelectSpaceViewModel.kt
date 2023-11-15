@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
+import com.anytypeio.anytype.core_utils.ext.allUniqueBy
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -26,6 +27,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
@@ -104,7 +106,7 @@ class SelectSpaceViewModel(
                 ),
                 DVFilter(
                     relation = Relations.SPACE_ACCOUNT_STATUS,
-                    value = SpaceStatus.DELETED.code.toDouble(),
+                    value = SpaceStatus.SPACE_DELETED.code.toDouble(),
                     condition = DVFilterCondition.NOT_EQUAL
                 ),
                 DVFilter(
@@ -124,6 +126,13 @@ class SelectSpaceViewModel(
     ).catch {
         Timber.e(it, "Error in spaces subscriptions")
         emit(emptyList())
+    }.map { spaces ->
+        if (BuildConfig.DEBUG) {
+            assert(spaces.allUniqueBy { it.id }) {
+                "There were duplicated objects. Need to investigate this issue"
+            }
+        }
+        spaces.distinctBy { it.id }
     }
 
     private fun buildUI() {

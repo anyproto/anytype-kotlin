@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.collectionsSorts
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -34,6 +35,7 @@ class ListWidgetContainer(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val isWidgetCollapsed: Flow<Boolean>,
     private val objectWatcher: ObjectWatcher,
+    private val getSpaceView: GetSpaceView,
     isSessionActive: Flow<Boolean>
 ) : WidgetContainer {
 
@@ -80,6 +82,20 @@ class ListWidgetContainer(
                             )
                         }
                     }
+            } else if (subscription == BundledWidgetSourceIds.RECENT) {
+                val spaceView = getSpaceView.async(config.spaceView).getOrNull()
+                val spaceViewCreationDate = spaceView
+                    ?.getValue<Double?>(Relations.CREATED_DATE)
+                    ?.toLong()
+                storage.subscribe(
+                    buildParams(
+                        spaceCreationDateInSeconds = spaceViewCreationDate
+                    )
+                ).map { objects ->
+                    buildWidgetViewWithElements(
+                        objects = objects
+                    )
+                }
             } else {
                 storage.subscribe(buildParams()).map { objects ->
                     buildWidgetViewWithElements(
@@ -110,13 +126,15 @@ class ListWidgetContainer(
     )
 
     private fun buildParams(
-        customFavoritesOrder: List<Id> = emptyList()
+        customFavoritesOrder: List<Id> = emptyList(),
+        spaceCreationDateInSeconds: Long? = null
     ) = params(
         subscription = subscription,
         space = space,
         keys = keys,
         limit = resolveLimit(),
-        customFavoritesOrder = customFavoritesOrder
+        customFavoritesOrder = customFavoritesOrder,
+        spaceCreationDateInSeconds = spaceCreationDateInSeconds
     )
 
     private fun resolveType() = when (subscription) {
@@ -140,13 +158,17 @@ class ListWidgetContainer(
             space: Id,
             keys: List<Id>,
             limit: Int,
-            customFavoritesOrder: List<Id> = emptyList()
+            customFavoritesOrder: List<Id> = emptyList(),
+            spaceCreationDateInSeconds: Long? = null
         ) : StoreSearchParams = when (subscription) {
             BundledWidgetSourceIds.RECENT -> {
                 StoreSearchParams(
                     subscription = subscription,
                     sorts = ObjectSearchConstants.sortTabRecent,
-                    filters = ObjectSearchConstants.filterTabRecent(space),
+                    filters = ObjectSearchConstants.filterTabRecent(
+                        space = space,
+                        spaceCreationDateInSeconds = spaceCreationDateInSeconds
+                    ),
                     keys = keys,
                     limit = limit
                 )

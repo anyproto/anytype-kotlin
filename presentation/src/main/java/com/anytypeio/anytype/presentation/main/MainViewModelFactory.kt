@@ -10,10 +10,12 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
+import javax.inject.Inject
 
-class MainViewModelFactory(
+class MainViewModelFactory @Inject constructor(
     private val resumeAccount: ResumeAccount,
     private val analytics: Analytics,
     private val observeWallpaper: ObserveWallpaper,
@@ -23,7 +25,8 @@ class MainViewModelFactory(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -38,6 +41,7 @@ class MainViewModelFactory(
         relationsSubscriptionManager = relationsSubscriptionManager,
         objectTypesSubscriptionManager = objectTypesSubscriptionManager,
         checkAuthorizationStatus = checkAuthorizationStatus,
-        configStorage = configStorage
+        configStorage = configStorage,
+        spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
     ) as T
 }

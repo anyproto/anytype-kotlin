@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
@@ -37,6 +38,7 @@ class OnboardingLoginSetupViewModel @Inject constructor(
     private val pathProvider: PathProvider,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val crashReporter: CrashReporter,
     private val configStorage: ConfigStorage
 ) : BaseViewModel() {
@@ -166,6 +168,7 @@ class OnboardingLoginSetupViewModel @Inject constructor(
     private fun proceedWithGlobalSubscriptions() {
         relationsSubscriptionManager.onStart()
         objectTypesSubscriptionManager.onStart()
+        spaceDeletedStatusWatcher.onStart()
     }
 
     fun onSystemBackPressed() {
@@ -198,7 +201,7 @@ class OnboardingLoginSetupViewModel @Inject constructor(
         object Failed: SetupState()
     }
 
-    class Factory(
+    class Factory @Inject constructor(
         private val startLoadingAccounts: StartLoadingAccounts,
         private val observeAccounts: ObserveAccounts,
         private val analytics: Analytics,
@@ -207,7 +210,8 @@ class OnboardingLoginSetupViewModel @Inject constructor(
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val crashReporter: CrashReporter,
-        private val configStorage: ConfigStorage
+        private val configStorage: ConfigStorage,
+        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -221,7 +225,8 @@ class OnboardingLoginSetupViewModel @Inject constructor(
                 crashReporter = crashReporter,
                 configStorage = configStorage,
                 startLoadingAccounts = startLoadingAccounts,
-                observeAccounts = observeAccounts
+                observeAccounts = observeAccounts,
+                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
             ) as T
         }
     }

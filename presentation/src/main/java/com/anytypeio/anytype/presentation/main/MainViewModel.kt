@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.wallpaper.ObserveWallpaper
 import com.anytypeio.anytype.domain.wallpaper.RestoreWallpaper
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
@@ -38,7 +39,8 @@ class MainViewModel(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
 ) : ViewModel() {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
@@ -88,13 +90,18 @@ class MainViewModel(
                         toasts.emit("Your account is deleted. Logging out...")
                     }
                     is Interactor.Status.Success -> {
-                        relationsSubscriptionManager.onStop()
-                        objectTypesSubscriptionManager.onStop()
+                        unsubscribeFromGlobalSubscriptions()
                         commands.emit(Command.LogoutDueToAccountDeletion)
                     }
                 }
             }
         }
+    }
+
+    private fun unsubscribeFromGlobalSubscriptions() {
+        relationsSubscriptionManager.onStop()
+        objectTypesSubscriptionManager.onStop()
+        spaceDeletedStatusWatcher.onStop()
     }
 
     fun onRestore() {
@@ -111,10 +118,14 @@ class MainViewModel(
                 success = {
                     relationsSubscriptionManager.onStart()
                     objectTypesSubscriptionManager.onStart()
-                    updateUserProperties(
-                        analytics = analytics,
-                        userProperty = UserProperty.AccountId(configStorage.get().analytics)
-                    )
+                    spaceDeletedStatusWatcher.onStart()
+                    val analyticsID = configStorage.getOrNull()?.analytics
+                    if (analyticsID != null) {
+                        updateUserProperties(
+                            analytics = analytics,
+                            userProperty = UserProperty.AccountId(analyticsID)
+                        )
+                    }
                     Timber.d("Restored account after activity recreation")
                 },
                 failure = { error ->

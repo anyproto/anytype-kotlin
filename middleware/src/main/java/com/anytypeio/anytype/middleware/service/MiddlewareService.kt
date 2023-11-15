@@ -473,4 +473,9 @@ interface MiddlewareService {
     fun workspaceObjectListRemove(request: Rpc.Workspace.Object.ListRemove.Request): Rpc.Workspace.Object.ListRemove.Response
 
     //endregion
+
+    //region NODE
+    @Throws(Exception::class)
+    fun nodeUsageInfo(request: Rpc.File.NodeUsage.Request): Rpc.File.NodeUsage.Response
+    //endregion
 }

@@ -28,6 +28,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -156,12 +157,16 @@ private fun SelectSpaceSpaceItem(
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp)
+            ,
             text = item.view.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
             textAlign = TextAlign.Center,
             style = Caption1Medium,
             color = Color.White,
-            maxLines = 1
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(16.dp))
     }

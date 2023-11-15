@@ -78,7 +78,7 @@ class NavigationRouter(
 
                 is AppNavigation.Command.OpenLibrary -> navigation.openLibrary()
                 is AppNavigation.Command.MigrationErrorScreen -> navigation.migrationErrorScreen()
-                is AppNavigation.Command.OpenRemoteStorageScreen -> navigation.openRemoteStorageScreen(
+                is AppNavigation.Command.OpenRemoteFilesManageScreen -> navigation.openRemoteFilesManageScreen(
                     command.subscription
                 )
 

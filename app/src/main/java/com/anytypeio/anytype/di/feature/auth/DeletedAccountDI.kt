@@ -12,7 +12,9 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.ext.DefaultDateHelper
 import com.anytypeio.anytype.presentation.auth.account.DeletedAccountViewModel
@@ -91,10 +93,13 @@ object DeletedAccountModule {
 interface DeletedAccountDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun appActionManager(): AppActionManager
-    fun relationsSubscriptionManager(): RelationsSubscriptionManager
     fun dispatchers(): AppCoroutineDispatchers
     fun configStorage(): ConfigStorage
     fun authRepository(): AuthRepository
     fun userSettingsRepository(): UserSettingsRepository
     fun spaceManager(): SpaceManager
+
+    fun relationsSubscriptionManager(): RelationsSubscriptionManager
+    fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
+    fun spaceDeletedStatusWatcher(): SpaceDeletedStatusWatcher
 }

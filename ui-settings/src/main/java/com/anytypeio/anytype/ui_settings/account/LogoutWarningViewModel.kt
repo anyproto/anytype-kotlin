@@ -11,7 +11,10 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -21,6 +24,8 @@ class LogoutWarningViewModel(
     private val logout: Logout,
     private val analytics: Analytics,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val appActionManager: AppActionManager
 ) : ViewModel() {
 
@@ -50,7 +55,7 @@ class LogoutWarningViewModel(
                             )
                         )
                         appActionManager.setup(AppActionManager.Action.ClearAll)
-                        relationsSubscriptionManager.onStop()
+                        unsubscribeFromGlobalSubscriptions()
                         isLoggingOut.value = false
                         commands.emit(Command.Logout)
                     }
@@ -64,6 +69,12 @@ class LogoutWarningViewModel(
         }
     }
 
+    private fun unsubscribeFromGlobalSubscriptions() {
+        relationsSubscriptionManager.onStop()
+        objectTypesSubscriptionManager.onStop()
+        spaceDeletedStatusWatcher.onStop()
+    }
+
     fun onBackupClicked() {
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -74,10 +85,12 @@ class LogoutWarningViewModel(
         )
     }
 
-    class Factory(
+    class Factory @Inject constructor(
         private val logout: Logout,
         private val analytics: Analytics,
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
+        private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         private val appActionManager: AppActionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -86,6 +99,8 @@ class LogoutWarningViewModel(
                 logout = logout,
                 analytics = analytics,
                 relationsSubscriptionManager = relationsSubscriptionManager,
+                objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
                 appActionManager = appActionManager
             ) as T
         }

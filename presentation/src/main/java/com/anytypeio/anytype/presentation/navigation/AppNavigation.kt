@@ -57,7 +57,7 @@ interface AppNavigation {
     fun exitToDesktopAndOpenPage(pageId: String)
     fun exitToInvitationCodeScreen()
     fun openUpdateAppScreen()
-    fun openRemoteStorageScreen(subscription: Id)
+    fun openRemoteFilesManageScreen(subscription: Id)
 
     fun deletedAccountScreen(deadline: Long)
 
@@ -131,7 +131,7 @@ interface AppNavigation {
 
         object OpenLibrary: Command()
 
-        data class OpenRemoteStorageScreen(val subscription: Id) : Command()
+        data class OpenRemoteFilesManageScreen(val subscription: Id) : Command()
     }
 
     interface Provider {

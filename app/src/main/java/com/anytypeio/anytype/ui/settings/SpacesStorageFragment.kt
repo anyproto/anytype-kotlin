@@ -30,7 +30,7 @@ import com.anytypeio.anytype.ui_settings.space.SpaceStorageScreen
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 
-class SpacesStorageFragment: BaseBottomSheetComposeFragment() {
+class SpacesStorageFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var factory: SpacesStorageFactory
@@ -86,9 +86,11 @@ class SpacesStorageFragment: BaseBottomSheetComposeFragment() {
 
     private fun processCommands(command: SpacesStorageViewModel.Command) {
         when (command) {
-            is SpacesStorageViewModel.Command.OpenRemoteFilesManageScreen -> openRemoteStorageScreen(
-                subscription = command.subscription
-            )
+            is SpacesStorageViewModel.Command.OpenRemoteFilesManageScreen -> {
+                openRemoteStorageScreen(
+                    subscription = command.subscription
+                )
+            }
             is SpacesStorageViewModel.Command.SendGetMoreSpaceEmail -> {
                 proceedWithAction(
                     SystemAction.MailTo(
@@ -116,7 +118,7 @@ class SpacesStorageFragment: BaseBottomSheetComposeFragment() {
         name: String,
         limit: String,
 
-        ) : String {
+        ): String {
         val bodyString = resources.getString(R.string.mail_more_space_body, limit, account, name)
         return "storage@anytype.io" +
                 "?subject=Get%20more%20storage,%20account%20$account" +

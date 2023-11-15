@@ -1027,10 +1027,24 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">It’s time to update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Personal</string>
-    <string name="space_type_private">Приватний</string>
+    <string name="space_type_personal">Налаштування</string>
+    <string name="space_type_private">Private Space</string>
     <string name="space_type_unknown">Невідомо</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_groups">Groups</string>
     <string name="create_object_section_objects">Об\'єкти</string>
+    <string name="library_type_added">Type `%1$s` added to your library\"</string>
+    <string name="library_type_removed">Type `%1$s` removed from your library\"</string>
+    <string name="library_relation_added">Relation `%1$s` added to your library\"</string>
+    <string name="library_relation_removed">Relation `%1$s` removed from your library\"</string>
+    <string name="library_something_went_wrong">Something went wrong. Please, try again later.</string>
+    <string name="edit">Редагувати</string>
+    <string name="unselect_all">Скасувати вибір</string>
+    <string name="sets">Набори</string>
+    <string name="favorites">Обрані</string>
+    <string name="recent">Нещодавно відредаговані</string>
+    <string name="recently_opened">Нещодавно відкриті</string>
+    <string name="bin">Кошик</string>
+    <string name="synced_files">Синхронізовані файли</string>
+    <string name="log_in">Log In</string>
 </resources>

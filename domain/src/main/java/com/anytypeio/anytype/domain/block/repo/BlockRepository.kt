@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -423,7 +424,7 @@ interface BlockRepository {
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
-    suspend fun fileSpaceUsage(space: SpaceId): FileLimits
+    suspend fun nodeUsage(): NodeUsageInfo
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
     suspend fun duplicateObjectsList(ids: List<Id>): List<Id>
     suspend fun createTemplateFromObject(ctx: Id): Id

@@ -21,10 +21,10 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
-import com.anytypeio.anytype.ui.settings.remote.RemoteStorageScreen
+import com.anytypeio.anytype.ui.settings.remote.RemoteFilesManageScreen
 import javax.inject.Inject
 
-class RemoteStorageFragment : BaseBottomSheetComposeFragment() {
+class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var factory: CollectionViewModel.Factory
@@ -47,7 +47,7 @@ class RemoteStorageFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    RemoteStorageScreen(vm = vm)
+                    RemoteFilesManageScreen(vm = vm)
                 }
             }
         }

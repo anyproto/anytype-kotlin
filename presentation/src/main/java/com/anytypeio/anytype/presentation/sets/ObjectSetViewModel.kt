@@ -2139,7 +2139,9 @@ class ObjectSetViewModel(
                 val newView = activeView.copy(
                     id = "",
                     name = "",
-                    type = DVViewerType.GRID
+                    type = DVViewerType.GRID,
+                    filters = emptyList(),
+                    sorts = emptyList()
                 )
                 viewModelScope.launch {
                     val startTime = System.currentTimeMillis()

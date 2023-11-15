@@ -14,9 +14,9 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -2295,10 +2295,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun fileSpaceUsage(space: SpaceId): FileLimits {
-        val request = Rpc.File.SpaceUsage.Request(spaceId = space.id)
+    fun nodeUsage(): NodeUsageInfo {
+        val request = Rpc.File.NodeUsage.Request()
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceUsage(request)
+        val response = service.nodeUsageInfo(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.toCoreModel()
     }

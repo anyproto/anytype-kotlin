@@ -91,6 +91,7 @@ import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModu
 import com.anytypeio.anytype.di.feature.settings.DaggerAboutAppComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
+import com.anytypeio.anytype.di.feature.settings.DaggerSpacesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
@@ -862,6 +863,12 @@ class ComponentManager(
 
     val filesStorageComponent = Component {
         DaggerFilesStorageComponent.builder()
+            .withDependencies(findComponentDependencies())
+            .build()
+    }
+
+    val spacesStorageComponent = Component {
+        DaggerSpacesStorageComponent.builder()
             .withDependencies(findComponentDependencies())
             .build()
     }

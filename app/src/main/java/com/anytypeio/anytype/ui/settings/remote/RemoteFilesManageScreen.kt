@@ -53,7 +53,7 @@ import kotlinx.coroutines.launch
 
 @ExperimentalMaterialApi
 @Composable
-fun RemoteStorageScreen(vm: CollectionViewModel) {
+fun RemoteFilesManageScreen(vm: CollectionViewModel) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val showFileAlert by vm.openFileDeleteAlert.collectAsStateWithLifecycle()
 

@@ -319,18 +319,22 @@ class LibraryViewModel(
             assert(libTypes.items.allUniqueBy { it.id })
             assert(myTypes.items.allUniqueBy { it.id })
         }
+        val myTypeViews = myTypes
+            .items
+            .filterIsInstance<LibraryView.MyTypeView>()
+
         return libTypes.copy(
             items = libTypes.items.map { libType ->
                 if (libType is LibraryView.LibraryTypeView) {
                     with(
-                        myTypes.items.find {
-                            (it as? LibraryView.MyTypeView)?.sourceObject == libType.id
-                        }
+                        myTypeViews.find { it.uniqueKey == libType.uniqueKey }
                     ) {
                         libType.copy(
                             dependentData = if (this != null) {
                                 DependentData.Model(item = this)
-                            } else DependentData.None
+                            } else {
+                                DependentData.None
+                            }
                         )
                     }
                 } else {

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.library
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -24,6 +25,7 @@ sealed interface LibraryView {
         override val name: String,
         val icon: ObjectIcon? = null,
         val sourceObject: Id? = null,
+        val uniqueKey: Key? = null,
         val readOnly: Boolean = true,
         val editable: Boolean = true,
         override val dependentData: DependentData = DependentData.None
@@ -33,7 +35,7 @@ sealed interface LibraryView {
         override val id: Id,
         override val name: String,
         val icon: ObjectIcon? = null,
-        val objectTypeId: Id? = null,
+        val uniqueKey: Key? = null,
         override val dependentData: DependentData = DependentData.None
     ) : LibraryView
 

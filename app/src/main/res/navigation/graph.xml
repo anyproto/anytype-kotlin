@@ -165,7 +165,7 @@
 
     <dialog
         android:id="@+id/remoteStorageFragment"
-        android:name="com.anytypeio.anytype.ui.settings.RemoteStorageFragment"/>
+        android:name="com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment"/>
 
     <dialog
         android:id="@+id/selectWidgetTypeScreen"

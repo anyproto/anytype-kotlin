@@ -95,7 +95,7 @@ class LimitObjectTypeViewModel(
             ).process(
                 success = { types ->
                     val limitObjectTypes = state.state.value.limitObjectTypes
-                    this@LimitObjectTypeViewModel.allTypeViews.value = types.map { t ->
+                    allTypeViews.value = types.map { t ->
                         SelectLimitObjectTypeView(
                             item = DefaultObjectTypeView(
                                 id = t.id,

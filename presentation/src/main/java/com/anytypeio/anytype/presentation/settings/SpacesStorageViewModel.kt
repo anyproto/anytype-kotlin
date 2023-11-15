@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.presentation.settings
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.FileLimitsEvent
@@ -14,20 +14,22 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
-import com.anytypeio.anytype.device.BuildProvider
+import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
+import com.anytypeio.anytype.presentation.extension.sendGetMoreSpaceEvent
+import com.anytypeio.anytype.presentation.extension.sendSettingsSpaceStorageManageEvent
+import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -35,6 +37,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -42,11 +45,9 @@ import timber.log.Timber
 class SpacesStorageViewModel(
     private val analytics: Analytics,
     private val spaceManager: SpaceManager,
-    private val urlBuilder: UrlBuilder,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
     private val spacesUsageInfo: SpacesUsageInfo,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
-    private val buildProvider: BuildProvider,
     private val getAccount: GetAccount,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer
 ) : BaseViewModel() {
@@ -58,6 +59,32 @@ class SpacesStorageViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val jobs = mutableListOf<Job>()
 
+    init {
+        subscribeToViewEvents()
+    }
+
+    private fun subscribeToViewEvents() {
+        events
+            .throttleFirst()
+            .onEach { event ->
+                dispatchCommand(event)
+            }
+            .launchIn(viewModelScope)
+    }
+
+    private suspend fun dispatchCommand(event: Event) {
+        when (event) {
+            Event.OnManageFilesClicked -> {
+                commands.emit(Command.OpenRemoteFilesManageScreen(Subscription.Files.id))
+                analytics.sendSettingsSpaceStorageManageEvent()
+            }
+            Event.OnGetMoreSpaceClicked -> {
+                onGetMoreSpaceClicked()
+                analytics.sendGetMoreSpaceEvent()
+            }
+        }
+    }
+
     fun onStart() {
         subscribeToSpaces()
         subscribeToMiddlewareEvents()
@@ -66,102 +93,96 @@ class SpacesStorageViewModel(
 
     fun onStop() {
         viewModelScope.launch {
-            storelessSubscriptionContainer.unsubscribe(
-                listOf(SPACES_STORAGE_SUBSCRIPTION_ID)
-            )
+            storelessSubscriptionContainer.unsubscribe(listOf(SPACES_STORAGE_SUBSCRIPTION_ID))
         }
         jobs.cancel()
     }
 
     private fun subscribeToSpaces() {
         jobs += viewModelScope.launch {
-            val subscribeParams = StoreSearchParams(
-                subscription = SPACES_STORAGE_SUBSCRIPTION_ID,
-                keys = listOf(
-                    Relations.ID,
-                    Relations.TARGET_SPACE_ID,
-                    Relations.SPACE_ACCOUNT_STATUS,
-                    Relations.NAME,
-                    Relations.SPACE_ID
-                ),
-                filters = listOf(
-                    DVFilter(
-                        relation = Relations.LAYOUT,
-                        value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
-                        condition = DVFilterCondition.EQUAL
-                    ),
-                    DVFilter(
-                        relation = Relations.SPACE_ACCOUNT_STATUS,
-                        value = SpaceStatus.DELETED.code.toDouble(),
-                        condition = DVFilterCondition.NOT_EQUAL
-                    ),
-                    DVFilter(
-                        relation = Relations.SPACE_LOCAL_STATUS,
-                        value = SpaceStatus.OK.code.toDouble(),
-                        condition = DVFilterCondition.EQUAL
-                    )
-                )
-            )
+            val subscribeParams = createStoreSearchParams()
             combine(
                 _nodeUsage,
                 storelessSubscriptionContainer.subscribe(subscribeParams)
             ) { nodeUsageInfo, spaces ->
-                val bytesUsage = nodeUsageInfo.nodeUsage.bytesUsage
-                val bytesLimit = nodeUsageInfo.nodeUsage.bytesLimit
-                val localeUsage = nodeUsageInfo.nodeUsage.localBytesUsage
-                val percentUsage =
-                    if (bytesUsage != null && bytesLimit != null && bytesLimit != 0L) {
-                        (bytesUsage.toFloat() / bytesLimit.toFloat())
-                    } else {
-                        null
-                    }
-                val isShowGetMoreSpace = isNeedToShowGetMoreSpace(
-                    percentUsage = percentUsage,
-                    localUsage = localeUsage,
-                    bytesLimit = bytesLimit
-                )
-                val isShowSpaceUsedWarning = isShowSpaceUsedWarning(
-                    percentUsage = percentUsage
-                )
-                val activeSpaceId = spaceManager.get()
-                Log.d("Test1983", "Active space id: $activeSpaceId")
-                val activeSpace = spaces.firstOrNull { it.targetSpaceId == activeSpaceId }
-
-                Log.d("Test1983", "Active space: $activeSpace")
-
-                val segmentLegendItems = getSegmentLegendItems(
-                    nodeUsageInfo = nodeUsageInfo,
-                    activeSpace = activeSpace
-                )
-                val segmentLineItems = getSegmentLineItems(
-                    nodeUsageInfo = nodeUsageInfo,
-                    activeSpace = activeSpace,
-                    allSpaces = spaces
-                )
-
-                SpacesStorageScreenState(
-                    spaceLimit = bytesLimit?.readableFileSize().orEmpty(),
-                    spaceUsage = bytesUsage?.readableFileSize().orEmpty(),
-                    isShowSpaceUsedWarning = isShowSpaceUsedWarning,
-                    isShowGetMoreSpace = isShowGetMoreSpace,
-                    segmentLegendItems = segmentLegendItems,
-                    segmentLineItems = segmentLineItems
-                )
+                createSpacesStorageScreenState(nodeUsageInfo, spaces)
             }
                 .flowOn(appCoroutineDispatchers.io)
                 .collect { _viewState.value = it }
         }
     }
 
+    private fun createStoreSearchParams(): StoreSearchParams {
+        return StoreSearchParams(
+            subscription = SPACES_STORAGE_SUBSCRIPTION_ID,
+            keys = listOf(
+                Relations.ID,
+                Relations.TARGET_SPACE_ID,
+                Relations.NAME
+            ),
+            filters = createFilters()
+        )
+    }
+
+    private fun createFilters(): List<DVFilter> {
+        return listOf(
+            DVFilter(
+                relation = Relations.LAYOUT,
+                value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
+                condition = DVFilterCondition.EQUAL
+            ),
+            DVFilter(
+                relation = Relations.SPACE_ACCOUNT_STATUS,
+                value = SpaceStatus.DELETED.code.toDouble(),
+                condition = DVFilterCondition.NOT_EQUAL
+            ),
+            DVFilter(
+                relation = Relations.SPACE_LOCAL_STATUS,
+                value = SpaceStatus.OK.code.toDouble(),
+                condition = DVFilterCondition.EQUAL
+            )
+        )
+    }
+
+    private suspend fun createSpacesStorageScreenState(
+        nodeUsageInfo: NodeUsageInfo,
+        spaces: List<ObjectWrapper.Basic>
+    ): SpacesStorageScreenState {
+        val bytesUsage = nodeUsageInfo.nodeUsage.bytesUsage
+        val bytesLimit = nodeUsageInfo.nodeUsage.bytesLimit
+        val localUsage = nodeUsageInfo.nodeUsage.localBytesUsage
+        val percentUsage = calculatePercentUsage(bytesUsage, bytesLimit)
+        val isShowGetMoreSpace = isNeedToShowGetMoreSpace(percentUsage, localUsage, bytesLimit)
+        val isShowSpaceUsedWarning = isShowSpaceUsedWarning(percentUsage)
+        val activeSpaceId = spaceManager.get()
+        val activeSpace = spaces.firstOrNull { it.targetSpaceId == activeSpaceId }
+
+        val segmentLegendItems = getSegmentLegendItems(nodeUsageInfo, activeSpace)
+        val segmentLineItems = getSegmentLineItems(nodeUsageInfo, activeSpace, spaces)
+
+        return SpacesStorageScreenState(
+            spaceLimit = bytesLimit?.readableFileSize().orEmpty(),
+            spaceUsage = bytesUsage?.readableFileSize().orEmpty(),
+            isShowSpaceUsedWarning = isShowSpaceUsedWarning,
+            isShowGetMoreSpace = isShowGetMoreSpace,
+            segmentLegendItems = segmentLegendItems,
+            segmentLineItems = segmentLineItems
+        )
+    }
+
+    private fun calculatePercentUsage(bytesUsage: Long?, bytesLimit: Long?): Float? {
+        return if (bytesUsage != null && bytesLimit != null && bytesLimit != 0L) {
+            (bytesUsage.toFloat() / bytesLimit.toFloat())
+        } else {
+            null
+        }
+    }
+
     private fun proceedWithGettingNodeUsageInfo() {
         viewModelScope.launch {
             spacesUsageInfo.async(Unit).fold(
-                onSuccess = { nodeUsageInfo ->
-                    _nodeUsage.value = nodeUsageInfo
-                },
-                onFailure = {
-                    Timber.e(it, "Error while getting file space usage")
-                }
+                onSuccess = { nodeUsageInfo -> _nodeUsage.value = nodeUsageInfo },
+                onFailure = { Timber.e(it, "Error while getting file space usage") }
             )
         }
     }
@@ -235,27 +256,27 @@ class SpacesStorageViewModel(
     }
 
     private fun onGetMoreSpaceClicked() {
-//        viewModelScope.launch {
-//            val config = spaceManager.getConfig() ?: return@launch
-//            val params = StoreSearchByIdsParams(
-//                subscription = PROFILE_SUBSCRIPTION_ID,
-//                keys = listOf(Relations.ID, Relations.NAME),
-//                targets = listOf(config.profile)
-//            )
-//            combine(
-//                getAccount.asFlow(Unit),
-//                storelessSubscriptionContainer.subscribe(params)
-//            ) { account: Account, profileObj: List<ObjectWrapper.Basic> ->
-//                FilesStorageViewModel.Command.SendGetMoreSpaceEmail(
-//                    account = account.id,
-//                    name = profileObj.firstOrNull()?.name.orEmpty(),
-//                    limit = _state.value.spaceLimit
-//                )
-//            }
-//                .catch { Timber.e(it, "onGetMoreSpaceClicked error") }
-//                .flowOn(appCoroutineDispatchers.io)
-//                .collect { commands.emit(it) }
-//        }
+        viewModelScope.launch {
+            val config = spaceManager.getConfig() ?: return@launch
+            val params = StoreSearchByIdsParams(
+                subscription = PROFILE_SUBSCRIPTION_ID,
+                keys = listOf(Relations.ID, Relations.NAME),
+                targets = listOf(config.profile)
+            )
+            combine(
+                getAccount.asFlow(Unit),
+                storelessSubscriptionContainer.subscribe(params)
+            ) { account: Account, profileObj: List<ObjectWrapper.Basic> ->
+                Command.SendGetMoreSpaceEmail(
+                    account = account.id,
+                    name = profileObj.firstOrNull()?.name.orEmpty(),
+                    limit = _viewState.value?.spaceLimit.orEmpty()
+                )
+            }
+                .catch { Timber.e(it, "onGetMoreSpaceClicked error") }
+                .flowOn(appCoroutineDispatchers.io)
+                .collect { commands.emit(it) }
+        }
     }
 
     private suspend fun getSegmentLegendItems(
@@ -342,6 +363,7 @@ class SpacesStorageViewModel(
 
     sealed class SegmentLineItem {
         abstract val value: Float
+
         data class Active(override val value: Float) : SegmentLineItem()
         data class Other(override val value: Float) : SegmentLineItem()
         data class Free(override val value: Float) : SegmentLineItem()

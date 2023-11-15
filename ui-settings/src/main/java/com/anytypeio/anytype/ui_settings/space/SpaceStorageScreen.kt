@@ -12,13 +12,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,12 +32,11 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel
-import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel.SpacesStorageScreenState
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel.SegmentLegendItem.Active
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel.SegmentLegendItem.Free
 import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel.SegmentLegendItem.Other
+import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel.SpacesStorageScreenState
 import com.anytypeio.anytype.ui_settings.R
 
 @Composable

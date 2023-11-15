@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -30,7 +31,7 @@ class LimitObjectTypeViewModel(
 ) : BaseViewModel() {
 
 
-    private val query = MutableStateFlow("")
+    private val query = MutableStateFlow(EMPTY_QUERY)
     private val types = MutableStateFlow<List<SelectLimitObjectTypeView>>(emptyList())
 
     val views = combine(types, query) { t, q ->

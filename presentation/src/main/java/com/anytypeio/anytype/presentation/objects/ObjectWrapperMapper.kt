@@ -78,7 +78,7 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
     gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
 ): List<LibraryView> = map { obj ->
     val space = obj.getValue<Id?>(Relations.SPACE_ID)
-    when (val type = obj.layout) {
+    when (obj.layout) {
         ObjectType.Layout.OBJECT_TYPE -> {
             if (space == Marketplace.MARKETPLACE_SPACE_ID) {
                 LibraryView.LibraryTypeView(
@@ -88,8 +88,9 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                         obj = obj,
                         layout = obj.getProperLayout(),
                         builder = urlBuilder,
-                    gradientProvider = gradientProvider
+                        gradientProvider = gradientProvider
                     ),
+                    uniqueKey = obj.uniqueKey
                 )
             } else {
                 LibraryView.MyTypeView(
@@ -102,6 +103,7 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     gradientProvider = gradientProvider
                     ),
                     sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+                    uniqueKey = obj.uniqueKey,
                     readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
                     editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
                 )

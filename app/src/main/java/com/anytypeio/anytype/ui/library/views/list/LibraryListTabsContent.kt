@@ -186,7 +186,6 @@ private fun SearchCancel(modifier: Modifier = Modifier, visible: Boolean = false
 
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun LibraryList(
     data: LibraryScreenState.Tabs.TabData,

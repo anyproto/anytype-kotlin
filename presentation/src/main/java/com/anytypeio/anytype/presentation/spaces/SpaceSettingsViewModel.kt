@@ -27,7 +27,6 @@ import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.settings.SPACE_STORAGE_SUBSCRIPTION_ID
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -68,7 +67,7 @@ class SpaceSettingsViewModel(
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
-                            subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
+                            subscription = SPACE_SETTINGS_SUBSCRIPTION,
                             targets = listOf(config.spaceView),
                             keys = listOf(
                                 Relations.ID,
@@ -289,5 +288,6 @@ class SpaceSettingsViewModel(
 
     companion object {
         const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."
+        const val SPACE_SETTINGS_SUBSCRIPTION = "subscription.space-settings.space-views"
     }
 }

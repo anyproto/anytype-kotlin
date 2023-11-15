@@ -226,7 +226,7 @@ class ObjectTypeChangeViewModel(
         query: String
     ): List<ObjectWrapper.Type> {
         val excludedMarketplaceTypes = buildList {
-            addAll(myTypes.mapNotNull { it.sourceObject })
+            addAll(myTypes.mapNotNull { it.uniqueKey })
             if (!setup.isWithBookmark) {
                 add(MarketplaceObjectTypeIds.BOOKMARK)
             }
@@ -243,7 +243,7 @@ class ObjectTypeChangeViewModel(
                     if (excludedMarketplaceTypes.isNotEmpty()) {
                         add(
                             DVFilter(
-                                relation = Relations.ID,
+                                relation = Relations.UNIQUE_KEY,
                                 condition = DVFilterCondition.NOT_IN,
                                 value = excludedMarketplaceTypes
                             )

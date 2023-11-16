@@ -1677,6 +1677,7 @@ class ObjectSetViewModel(
             return
         }
         typeTemplatesWidgetState.value = copy(showWidget = false)
+        selectedTypeFlow.value = null
         delay(DELAY_BEFORE_CREATING_TEMPLATE)
         when (templateView) {
             is TemplateView.Blank -> {

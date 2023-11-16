@@ -1081,8 +1081,8 @@ class ObjectSetViewModel(
             createDataViewObject.async(params).fold(
                 onFailure = { Timber.e(it, "Error while creating new record") },
                 onSuccess = { result ->
-                    proceedWithNewDataViewObject(result)
                     action?.invoke(result)
+                    proceedWithNewDataViewObject(result)
                     sendAnalyticsObjectCreateEvent(
                         startTime = startTime,
                         objectType = result.objectType.key,
@@ -1119,10 +1119,19 @@ class ObjectSetViewModel(
         response: CreateDataViewObject.Result,
     ) {
         val obj = ObjectWrapper.Basic(response.struct.orEmpty())
-        proceedWithOpeningObject(
-            target = response.objectId,
-            layout = obj.layout
-        )
+        if (obj.layout == ObjectType.Layout.NOTE) {
+            proceedWithOpeningObject(
+                target = response.objectId,
+                layout = obj.layout
+            )
+        } else {
+            dispatch(
+                ObjectSetCommand.Modal.SetNameForCreatedObject(
+                    ctx = context,
+                    target = response.objectId
+                )
+            )
+        }
     }
 
     fun onViewerCustomizeButtonClicked() {
@@ -1668,6 +1677,7 @@ class ObjectSetViewModel(
             return
         }
         typeTemplatesWidgetState.value = copy(showWidget = false)
+        selectedTypeFlow.value = null
         delay(DELAY_BEFORE_CREATING_TEMPLATE)
         when (templateView) {
             is TemplateView.Blank -> {

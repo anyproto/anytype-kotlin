@@ -52,7 +52,7 @@ fun SegmentLine(items: List<SpacesStorageViewModel.SegmentLineItem>) {
                             colorResource(id = R.color.palette_system_amber_125)
                         }
                         is SpacesStorageViewModel.SegmentLineItem.Free -> {
-                            colorResource(id = R.color.shape_tertiary)
+                            colorResource(id = R.color.shape_secondary)
                         }
                         is SpacesStorageViewModel.SegmentLineItem.Other -> {
                             colorResource(id = R.color.palette_system_amber_50)

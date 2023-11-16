@@ -154,7 +154,7 @@ private fun SegmentLegend(
                     }
 
                     is Free -> {
-                        colorResource(id = R.color.shape_tertiary) to "Free | ${item.legend}"
+                        colorResource(id = R.color.shape_secondary) to "Free | ${item.legend}"
                     }
 
                     is Other -> {

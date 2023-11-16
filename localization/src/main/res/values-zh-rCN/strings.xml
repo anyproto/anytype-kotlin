@@ -1022,7 +1022,7 @@
     <string name="anytype_update_alert_title">It’s time to update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_personal">设置</string>
-    <string name="space_type_private">Private Space</string>
+    <string name="space_type_private">私人空间</string>
     <string name="space_type_unknown">未知</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_groups">Groups</string>

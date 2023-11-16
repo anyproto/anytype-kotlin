@@ -769,6 +769,7 @@ fun Account.Info.config() : Config = Config(
     profile = profileObjectId,
     gateway = gatewayUrl,
     space = accountSpaceId,
+    techSpace = techSpaceId,
     spaceView = spaceViewId,
     widgets = widgetsId,
     analytics = analyticsId,

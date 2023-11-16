@@ -2,7 +2,9 @@ package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Marketplace
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
@@ -18,6 +20,7 @@ import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
+import timber.log.Timber
 
 @Deprecated("To be deleted")
 fun List<ObjectWrapper.Basic>.toView(
@@ -53,13 +56,20 @@ fun List<ObjectWrapper.Basic>.toViews(
     gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
 ): List<DefaultObjectView> = map { obj ->
     val typeUrl = obj.getProperType()
+    val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
     val layout = obj.getProperLayout()
     DefaultObjectView(
         id = obj.id,
         name = obj.getProperName(),
         description = obj.description,
         type = typeUrl,
-        typeName = objectTypes.firstOrNull { it.id == typeUrl }?.name,
+        typeName = objectTypes.firstOrNull { type ->
+            if (isProfile) {
+                type.uniqueKey == ObjectTypeUniqueKeys.PROFILE
+            } else {
+                type.id == typeUrl
+            }
+        }?.name,
         layout = layout,
         icon = ObjectIcon.from(
             obj = obj,

@@ -155,7 +155,7 @@ fun SpaceImageBlock(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(mainSize)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(4.dp))
                     .noRippleClickable {
                         onSpaceIconClick.invoke()
                     }
@@ -192,7 +192,7 @@ fun SpaceImageBlock(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(mainSize)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(4.dp))
                     .noRippleClickable { onSpaceIconClick.invoke() }
             )
         }

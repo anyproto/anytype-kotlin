@@ -290,10 +290,11 @@ class SpacesStorageViewModel(
         otherSpaces.forEach { spaceUsage ->
             otherSpacesUsages += spaceUsage.bytesUsage
         }
+        val currentBytesUsage = currentSpace?.bytesUsage ?: 0L
         result.add(
             SegmentLegendItem.Active(
                 name = activeSpace?.name.orEmpty(),
-                usage = currentSpace?.bytesUsage?.readableFileSize().orEmpty(),
+                usage = currentBytesUsage.readableFileSize()
             )
         )
         result.add(
@@ -326,7 +327,11 @@ class SpacesStorageViewModel(
         val items = allSpaces.map { s ->
             val space = nodeSpaces.firstOrNull { it.space == s.targetSpaceId }
             if (space == null) {
-                SegmentLineItem.Other(0F)
+                if (s.targetSpaceId == activeSpace.targetSpaceId) {
+                    SegmentLineItem.Active(0F)
+                } else {
+                    SegmentLineItem.Other(0F)
+                }
             } else {
                 val value = space.bytesUsage.toFloat() / bytesLimit
                 if (space.space == activeSpace.targetSpaceId) {

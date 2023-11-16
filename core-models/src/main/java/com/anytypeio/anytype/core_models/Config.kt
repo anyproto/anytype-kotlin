@@ -12,6 +12,7 @@ data class Config(
     val profile: Id,
     val gateway: Url,
     val space: Id,
+    val techSpace: Id,
     val spaceView: Id,
     val widgets: Id,
     val analytics: Id,

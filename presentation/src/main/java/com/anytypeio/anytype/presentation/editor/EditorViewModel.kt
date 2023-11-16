@@ -3066,12 +3066,19 @@ class EditorViewModel(
         val wrapper = ObjectWrapper.Basic(map = details.details[target]?.map ?: emptyMap())
         when (wrapper.layout) {
             ObjectType.Layout.BASIC,
-            ObjectType.Layout.PROFILE,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.TODO,
             ObjectType.Layout.FILE,
             ObjectType.Layout.BOOKMARK -> {
                 proceedWithOpeningObject(target = target)
+            }
+            ObjectType.Layout.PROFILE -> {
+                val identity = wrapper.getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
+                if (identity != null) {
+                    proceedWithOpeningObject(target = identity)
+                } else {
+                    proceedWithOpeningObject(target = target)
+                }
             }
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 proceedWithOpeningDataViewObject(target = target)
@@ -5823,7 +5830,15 @@ class EditorViewModel(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
-                    space = spaceManager.get()
+                    spaces = buildList {
+                        val config = spaceManager.getConfig()
+                        if (config != null) {
+                            add(config.space)
+                            add(config.techSpace)
+                        } else {
+                            add(spaceManager.get())
+                        }
+                    }
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,

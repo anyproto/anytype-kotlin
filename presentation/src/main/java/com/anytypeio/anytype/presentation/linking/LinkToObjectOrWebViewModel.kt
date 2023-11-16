@@ -226,7 +226,15 @@ class LinkToObjectOrWebViewModel(
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
         filters = ObjectSearchConstants.getFilterLinkTo(
             ignore = ignore,
-            space = spaceManager.get()
+            spaces = buildList {
+                val config = spaceManager.getConfig()
+                if (config != null) {
+                    add(config.space)
+                    add(config.techSpace)
+                } else {
+                    add(spaceManager.get())
+                }
+            }
         ),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = ObjectSearchViewModel.EMPTY_QUERY,

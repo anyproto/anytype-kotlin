@@ -72,7 +72,9 @@ object ObjectSearchConstants {
     //endregion
 
     //region LINK TO
-    fun getFilterLinkTo(ignore: Id?, space: Id) = listOf(
+    fun getFilterLinkTo(
+        ignore: Id?, spaces: List<Id>
+    ) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -105,8 +107,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+            condition = DVFilterCondition.IN,
+            value = spaces
         )
     )
 

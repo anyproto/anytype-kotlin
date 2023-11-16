@@ -212,7 +212,10 @@ class SpaceSettingsViewModel(
                 viewModelScope.launch {
                     deleteSpace.async(params = SpaceId(space)).fold(
                         onSuccess = {
-                            analytics.sendEvent(eventName = EventsDictionary.deleteSpace)
+                            analytics.sendEvent(
+                                eventName = EventsDictionary.deleteSpace,
+                                props = Props(mapOf(EventsPropertiesKey.type to "Private"))
+                            )
                             fallbackToPersonalSpaceAfterDeletion(personalSpaceId)
                         },
                         onFailure = {

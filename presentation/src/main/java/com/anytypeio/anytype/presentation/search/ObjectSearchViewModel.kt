@@ -216,7 +216,7 @@ open class ObjectSearchViewModel(
         fulltext = EMPTY_QUERY,
         keys = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
-            add("identityProfileLink")
+            add(Relations.IDENTITY_PROFILE_LINK)
         }
     )
 

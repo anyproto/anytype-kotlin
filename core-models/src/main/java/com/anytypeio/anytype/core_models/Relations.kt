@@ -74,6 +74,8 @@ object Relations {
     const val SPACE_ACCOUNT_STATUS = "spaceAccountStatus"
     const val SPACE_LOCAL_STATUS = "spaceLocalStatus"
 
+    const val IDENTITY_PROFILE_LINK = "identityProfileLink"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

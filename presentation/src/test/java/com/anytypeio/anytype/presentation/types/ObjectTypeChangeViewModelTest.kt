@@ -152,10 +152,10 @@ class ObjectTypeChangeViewModelTest {
 
         // SETUP
 
-        val marketplaceType1 = StubObjectType()
-        val marketplaceType2 = StubObjectType()
-        val installedType1 = StubObjectType(sourceObject = marketplaceType1.id)
-        val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
+        val marketplaceType1 = StubObjectType(uniqueKey = MockDataFactory.randomUuid())
+        val marketplaceType2 = StubObjectType(uniqueKey = MockDataFactory.randomUuid())
+        val installedType1 = StubObjectType(uniqueKey = marketplaceType1.uniqueKey)
+        val installedType2 = StubObjectType(uniqueKey = marketplaceType2.uniqueKey)
 
         stubSpaceManager(spaceId)
         val vm = givenViewModel()
@@ -179,11 +179,11 @@ class ObjectTypeChangeViewModelTest {
             addAll(ObjectSearchConstants.filterObjectTypeMarketplace)
             add(
                 DVFilter(
-                    relation = Relations.ID,
+                    relation = Relations.UNIQUE_KEY,
                     condition = DVFilterCondition.NOT_IN,
                     value = listOf(
-                        marketplaceType1.id,
-                        marketplaceType2.id,
+                        marketplaceType1.uniqueKey,
+                        marketplaceType2.uniqueKey,
                         MarketplaceObjectTypeIds.BOOKMARK
                     )
                 )
@@ -258,10 +258,10 @@ class ObjectTypeChangeViewModelTest {
 
         // SETUP
 
-        val marketplaceType1 = StubObjectType()
-        val marketplaceType2 = StubObjectType()
-        val installedType1 = StubObjectType(sourceObject = marketplaceType1.id)
-        val installedType2 = StubObjectType(sourceObject = marketplaceType2.id)
+        val marketplaceType1 = StubObjectType(uniqueKey = MockDataFactory.randomUuid())
+        val marketplaceType2 = StubObjectType(uniqueKey = MockDataFactory.randomUuid())
+        val installedType1 = StubObjectType(uniqueKey = marketplaceType1.uniqueKey)
+        val installedType2 = StubObjectType(uniqueKey = marketplaceType2.uniqueKey)
 
         stubSpaceManager(spaceId)
         val vm = givenViewModel()
@@ -285,11 +285,11 @@ class ObjectTypeChangeViewModelTest {
             addAll(ObjectSearchConstants.filterObjectTypeMarketplace)
             add(
                 DVFilter(
-                    relation = Relations.ID,
+                    relation = Relations.UNIQUE_KEY,
                     condition = DVFilterCondition.NOT_IN,
                     value = listOf(
-                        marketplaceType1.id,
-                        marketplaceType2.id,
+                        marketplaceType1.uniqueKey,
+                        marketplaceType2.uniqueKey,
                         MarketplaceObjectTypeIds.BOOKMARK
                     )
                 )

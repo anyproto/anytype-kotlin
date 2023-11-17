@@ -263,7 +263,7 @@ object ObjectSearchConstants {
         } else {
             add(
                 DVFilter(
-                    relation = Relations.TYPE_UNIQUE_KEY,
+                    relation = Relations.TYPE,
                     condition = DVFilterCondition.IN,
                     value = limitObjectTypes
                 )

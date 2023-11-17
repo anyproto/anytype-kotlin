@@ -99,7 +99,7 @@ open class FilterViewModel(
     }
 
     fun onStart(viewerId: Id, relationKey: Key, filterIndex: Int?) {
-        Timber.d("onStart, viewer:[$viewerId], relationKey:[$relationKey], filterIndex:[$filterIndex]")
+        Timber.d("FilterViewModel, onStart, viewer:[$viewerId], relationKey:[$relationKey], filterIndex:[$filterIndex]")
         this.filterIndex = filterIndex
         this.relationKey = relationKey
         startObservingCondition(viewerId = viewerId)

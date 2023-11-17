@@ -1092,29 +1092,6 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithNewDataViewObject(params: CreateDataViewObject.Params, newObject: Id) {
-        when (params) {
-            is CreateDataViewObject.Params.Collection -> {
-                proceedWithOpeningObject(newObject)
-            }
-            is CreateDataViewObject.Params.SetByRelation -> {
-                proceedWithOpeningObject(newObject)
-            }
-            is CreateDataViewObject.Params.SetByType -> {
-                if (params.type.key == ObjectTypeUniqueKeys.NOTE) {
-                    proceedWithOpeningObject(newObject)
-                } else {
-                    dispatch(
-                        ObjectSetCommand.Modal.SetNameForCreatedObject(
-                            ctx = context,
-                            target = newObject
-                        )
-                    )
-                }
-            }
-        }
-    }
-
     private suspend fun proceedWithNewDataViewObject(
         response: CreateDataViewObject.Result,
     ) {

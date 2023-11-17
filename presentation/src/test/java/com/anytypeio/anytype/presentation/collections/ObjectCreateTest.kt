@@ -24,6 +24,7 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
+import org.mockito.kotlin.verifyNoInteractions
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObjectCreateTest : ObjectSetViewModelTestSetup() {
@@ -43,10 +44,12 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `Should create and open Note Object when clicking on New button in Set By Type`() =
+    fun `Should create and open Object with NOTE Layout when clicking on New button in Set By Type`() =
         runTest {
 
-            mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.NOTE)
+            val typeUniqueKey = "type-unique-key-${RandomString.make()}"
+
+            mockObjectSet = MockSet(context = root, setOfValue = typeUniqueKey)
 
             // SETUP
             stubSpaceManager(mockObjectSet.spaceId)
@@ -69,11 +72,16 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             val newObjectId = "objNewNote-${RandomString.make()}"
             val result = CreateDataViewObject.Result(
                 objectId = newObjectId,
-                objectType = TypeKey(ObjectTypeIds.NOTE)
+                objectType = TypeKey(typeUniqueKey),
+                struct = mapOf(
+                    Relations.ID to newObjectId,
+                    Relations.UNIQUE_KEY to typeUniqueKey,
+                    Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),
+                )
             )
             doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
                 CreateDataViewObject.Params.SetByType(
-                    type = TypeKey(ObjectTypeIds.NOTE),
+                    type = TypeKey(typeUniqueKey),
                     filters = mockObjectSet.filters,
                     template = null
                 )
@@ -92,7 +100,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByType(
-                        type = TypeKey(ObjectTypeIds.NOTE),
+                        type = TypeKey(typeUniqueKey),
                         filters = mockObjectSet.filters,
                         template = null
                     )
@@ -161,7 +169,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         }
 
     @Test
-    fun `Should create and open Object when clicking on New button in Set by Relations`() =
+    fun `Should create new Object and not close Set when clicking on New button in Set by Relations`() =
         runTest {
 
             val setByRelationValue = "setByRelation-${RandomString.make()}"
@@ -244,11 +252,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 )
             }
 
-            verifyBlocking(closeBlock, times(1)) { async(mockObjectSet.root) }
+            verifyNoInteractions(closeBlock)
         }
 
     @Test
-    fun `Should create and open Object when clicking on New button in Collection`() = runTest {
+    fun `Should create new Object and not close Set when clicking on New button in Collection`() = runTest {
 
         val objectCollection = MockCollection(context = root)
 
@@ -321,6 +329,6 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             )
         }
 
-        verifyBlocking(closeBlock, times(1)) { async(objectCollection.root) }
+        verifyNoInteractions(closeBlock)
     }
 }

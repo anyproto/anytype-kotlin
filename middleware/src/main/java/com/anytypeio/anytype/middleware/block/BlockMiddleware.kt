@@ -678,7 +678,7 @@ class BlockMiddleware(
         space: Id,
         name: String,
         emojiUnicode: String?
-    ): ObjectWrapper.Type = middleware.objectCreateObjectType(
+    ): Struct? = middleware.objectCreateObjectType(
         space = space,
         name = name,
         emojiUnicode = emojiUnicode

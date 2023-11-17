@@ -250,7 +250,7 @@ interface BlockRemote {
         space: Id,
         name: String,
         emojiUnicode: String?
-    ): ObjectWrapper.Type
+    ): Struct?
 
     suspend fun createRelationOption(
         space: Id,

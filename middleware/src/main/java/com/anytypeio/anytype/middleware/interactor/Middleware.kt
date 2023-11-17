@@ -952,7 +952,7 @@ class Middleware @Inject constructor(
         space: Id,
         name: String,
         emojiUnicode: String?
-    ): ObjectWrapper.Type {
+    ): Struct? {
         val request = Rpc.Object.CreateObjectType.Request(
             details = buildMap {
                 put(Relations.NAME, name)
@@ -965,9 +965,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateObjectType(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return ObjectWrapper.Type(
-            response.details ?: throw IllegalStateException("Missing details")
-        )
+        return response.details
     }
 
     @Throws(Exception::class)

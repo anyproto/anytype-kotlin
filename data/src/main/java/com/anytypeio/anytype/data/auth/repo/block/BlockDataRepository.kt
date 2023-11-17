@@ -604,7 +604,7 @@ class BlockDataRepository(
         space: Id,
         name: String,
         emojiUnicode: String?,
-    ): ObjectWrapper.Type = remote.createType(
+    ): Struct? = remote.createType(
         space = space,
         name = name,
         emojiUnicode = emojiUnicode

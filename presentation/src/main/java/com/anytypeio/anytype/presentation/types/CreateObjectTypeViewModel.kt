@@ -13,7 +13,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.types.CreateType
+import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class CreateObjectTypeViewModel(
-    private val createTypeInteractor: CreateType,
+    private val createObjectType: CreateObjectType,
     private val urlBuilder: UrlBuilder,
     private val emojiProvider: EmojiProvider,
     private val analytics: Analytics,
@@ -61,8 +61,8 @@ class CreateObjectTypeViewModel(
             return
         }
         viewModelScope.launch {
-            createTypeInteractor.execute(
-                CreateType.Params(
+            createObjectType.execute(
+                CreateObjectType.Params(
                     space = spaceManager.get(),
                     name = name,
                     emojiUnicode = uiState.value.emojiUnicode.orNull()
@@ -105,7 +105,7 @@ class CreateObjectTypeViewModel(
     }
 
     class Factory @Inject constructor(
-        private val createType: CreateType,
+        private val createObjectType: CreateObjectType,
         private val urlBuilder: UrlBuilder,
         private val emojiProvider: EmojiProvider,
         private val analytics: Analytics,
@@ -114,7 +114,7 @@ class CreateObjectTypeViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return CreateObjectTypeViewModel(
-                createTypeInteractor = createType,
+                createObjectType = createObjectType,
                 urlBuilder = urlBuilder,
                 emojiProvider = emojiProvider,
                 analytics = analytics,

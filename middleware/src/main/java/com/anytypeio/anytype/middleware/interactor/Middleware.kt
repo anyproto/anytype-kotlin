@@ -1993,7 +1993,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceObjectAdd(command: Command.AddObjectToSpace): Pair<Id, ObjectWrapper.Type> {
+    fun workspaceObjectAdd(command: Command.AddObjectToSpace): Pair<Id, Struct?> {
         val request = Rpc.Workspace.Object.Add.Request(
             objectId = command.objectId,
             spaceId = command.space
@@ -2001,7 +2001,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.workspaceObjectAdd(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(response.objectId, ObjectWrapper.Type(response.details ?: emptyMap()))
+        return Pair(response.objectId, response.details)
     }
 
     @Throws(Exception::class)

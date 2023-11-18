@@ -160,7 +160,7 @@ sealed class ObjectWrapper {
     data class Type(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
-        val uniqueKey: String? by default
+        val uniqueKey: String by default
         val name: String? by default
         val sourceObject: Id? by default
         val description: String? by default
@@ -176,10 +176,6 @@ sealed class ObjectWrapper {
                 else -> ObjectType.Layout.BASIC
             }
         val defaultTemplateId: Id? by default
-
-        val key: String? get() = uniqueKey
-
-        val isValid get() = map.containsKey(Relations.UNIQUE_KEY)
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {

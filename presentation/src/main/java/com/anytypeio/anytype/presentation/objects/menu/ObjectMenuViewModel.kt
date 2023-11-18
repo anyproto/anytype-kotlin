@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
@@ -105,10 +106,12 @@ class ObjectMenuViewModel(
 
         add(ObjectAction.UNDO_REDO)
 
-        val objTypeId = storage.details.current().details[ctx]?.type?.firstOrNull()
-        storage.details.current().details[objTypeId]?.let { objType ->
-            val objTypeWrapper = ObjectWrapper.Type(objType.map)
-            val isTemplateAllowed = objTypeWrapper.isTemplatesAllowed()
+        val details = storage.details.current().details
+        val objTypeId = details[ctx]?.type?.firstOrNull()
+        val typeStruct = details[objTypeId]?.map
+        val objType = typeStruct.mapToObjectWrapperType()
+        if (objType != null) {
+            val isTemplateAllowed = objType.isTemplatesAllowed()
             if (isTemplateAllowed && !isTemplate && !isProfile) {
                 add(ObjectAction.USE_AS_TEMPLATE)
             }
@@ -272,13 +275,9 @@ class ObjectMenuViewModel(
 
     private fun proceedWithSettingAsDefaultTemplate(ctx: Id) {
         val startTime = System.currentTimeMillis()
-        val objTemplate = ObjectWrapper.Basic(
-            storage.details.current().details[ctx]?.map ?: emptyMap()
-        )
+        val details = storage.details.current().details
+        val objTemplate = ObjectWrapper.Basic(details[ctx]?.map ?: emptyMap())
         val targetObjectTypeId = objTemplate.targetObjectType ?: return
-        val objType = ObjectWrapper.Type(
-            storage.details.current().details[targetObjectTypeId]?.map ?: emptyMap()
-        )
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = targetObjectTypeId,
@@ -286,6 +285,7 @@ class ObjectMenuViewModel(
             )
             setObjectDetails.async(params).fold(
                 onSuccess = {
+                    val objType = details[targetObjectTypeId]?.map.mapToObjectWrapperType()
                     sendAnalyticsDefaultTemplateEvent(analytics, objType, startTime)
                     _toasts.emit("The template was set as default")
                     isDismissed.value = true
@@ -324,9 +324,10 @@ class ObjectMenuViewModel(
     private suspend fun buildOpenTemplateCommand(ctx: Id, template: Id) {
         val details = storage.details.current().details
         val type = details[ctx]?.type?.firstOrNull()
-        val objType = ObjectWrapper.Type(details[type]?.map ?: emptyMap())
-        val objTypeKey = objType.key
-        if (objTypeKey != null) {
+        val typeStruct = details[type]?.map
+        val objType = typeStruct.mapToObjectWrapperType()
+        if (objType != null) {
+            val objTypeKey = objType.uniqueKey
             val command = Command.OpenTemplate(
                 templateId = template,
                 typeId = objType.id,
@@ -335,8 +336,7 @@ class ObjectMenuViewModel(
             )
             commands.emit(command)
         } else {
-            Timber.e("Error while opening template from object, type $type has no key)}")
-            sendToast("Couldn't open template from object")
+            Timber.e("Error while opening template from object, type:$type hasn't key")
         }
     }
 

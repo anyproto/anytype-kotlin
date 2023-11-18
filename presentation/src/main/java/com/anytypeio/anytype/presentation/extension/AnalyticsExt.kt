@@ -48,6 +48,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -1951,8 +1952,7 @@ private fun getAnalyticsObjectType(
     ctx: Id
 ): String {
     val objTypeId = details[ctx]?.type?.firstOrNull()
-    val sourceObject = if (objTypeId != null) {
-        ObjectWrapper.Type(details[objTypeId]?.map ?: emptyMap()).sourceObject
-    } else null
-    return sourceObject ?: OBJ_TYPE_CUSTOM
+    val typeStruct = details[objTypeId]?.map
+    val objType = typeStruct.mapToObjectWrapperType()
+    return objType?.sourceObject ?: OBJ_TYPE_CUSTOM
 }

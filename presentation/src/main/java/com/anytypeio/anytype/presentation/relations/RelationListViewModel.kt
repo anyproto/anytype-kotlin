@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -87,8 +88,12 @@ class RelationListViewModel(
 
         val objectDetails = details.details[ctx]?.map ?: emptyMap()
         val objectWrapper = ObjectWrapper.Basic(objectDetails)
-        val objectType = objectWrapper.getProperType()
-        val objectTypeWrapper = ObjectWrapper.Type(details.details[objectType]?.map ?: emptyMap())
+        val objectTypeId = objectWrapper.getProperType()
+        val objectTypeWrapper = details.details[objectTypeId]?.map.mapToObjectWrapperType()
+        if (objectTypeWrapper == null) {
+            Timber.e("Couldn't find valid object type for id: $objectTypeId")
+            return emptyList()
+        }
 
         val objectRelationViews = getObjectRelationsView(
             ctx = ctx,

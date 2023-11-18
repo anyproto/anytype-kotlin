@@ -90,15 +90,15 @@ class GetDefaultObjectType @Inject constructor(
                 Relations.DEFAULT_TEMPLATE_ID
             )
         )
-        if (items.isNotEmpty()) {
-            val note = ObjectWrapper.Type(items.first())
-            val key = TypeKey(note.uniqueKey ?: throw IllegalStateException("Default type has empty key"))
-            val id = TypeId(note.id)
+        val objType = structs.firstOrNull().mapToObjectWrapperType()
+        if (objType != null) {
+            val key = TypeKey(objType.uniqueKey)
+            val id = TypeId(objType.id)
             return Response(
                 type = key,
-                name = note.name,
+                name = objType.name,
                 id = id,
-                defaultTemplate = note.defaultTemplateId
+                defaultTemplate = objType.defaultTemplateId
             )
         } else {
             throw IllegalStateException("Default type not found")

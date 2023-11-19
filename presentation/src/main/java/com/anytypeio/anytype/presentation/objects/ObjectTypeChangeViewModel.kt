@@ -238,7 +238,7 @@ class ObjectTypeChangeViewModel(
         query: String
     ): List<ObjectWrapper.Type> {
         val excludedMarketplaceTypes = buildList {
-            addAll(myTypes.mapNotNull { it.uniqueKey })
+            addAll(myTypes.map { it.uniqueKey })
             if (!setup.isWithBookmark) {
                 add(MarketplaceObjectTypeIds.BOOKMARK)
             }

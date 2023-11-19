@@ -56,7 +56,7 @@ class CreateObjectOfTypeViewModel(
                             addAll(
                                 groups.map { type ->
                                     SelectTypeView.Type(
-                                        typeKey = type.uniqueKey!!,
+                                        typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
                                         icon = type.iconEmoji.orEmpty()
                                     )
@@ -70,7 +70,7 @@ class CreateObjectOfTypeViewModel(
                             addAll(
                                 objects.map { type ->
                                     SelectTypeView.Type(
-                                        typeKey = type.uniqueKey!!,
+                                        typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
                                         icon = type.iconEmoji.orEmpty()
                                     )

@@ -245,7 +245,7 @@ fun Block.Details.objectTypeRelation(
         ObjectRelationView.ObjectType.Base(
             id = objectTypeId,
             key = relationKey,
-            name = details[objectTypeId]?.name.orEmpty(),
+            name = objectType.name.orEmpty(),
             featured = isFeatured,
             readOnly = false,
             type = objectTypeId,

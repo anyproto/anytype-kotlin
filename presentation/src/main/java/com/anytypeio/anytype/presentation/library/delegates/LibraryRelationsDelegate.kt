@@ -49,16 +49,9 @@ class LibraryRelationsDelegate @Inject constructor(
     private fun buildSearchParams(): StoreSearchParams {
         return StoreSearchParams(
             subscription = SUB_LIBRARY_RELATIONS,
-            keys = ObjectSearchConstants.defaultKeys + listOf(Relations.RELATION_FORMAT),
+            keys = ObjectSearchConstants.defaultRelationKeys,
             filters = buildList {
                 addAll(ObjectSearchConstants.filterMarketplaceRelations())
-                add(
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = Marketplace.MARKETPLACE_SPACE_ID
-                    )
-                )
             }
         )
     }

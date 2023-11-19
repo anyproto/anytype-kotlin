@@ -137,14 +137,6 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
                 )
             }
-            LibraryView.MyRelationView(
-                id = obj.id,
-                name = obj.name.orEmpty(),
-                format = relation.format,
-                sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-                readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
-                editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
-            )
         }
         else -> LibraryView.UnknownView(
             id = obj.id,

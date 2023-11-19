@@ -61,11 +61,7 @@ class MyRelationsDelegate @Inject constructor(
     private fun buildSearchParams(space: Id): StoreSearchParams {
         return StoreSearchParams(
             subscription = SUB_LIBRARY_MY_RELATIONS,
-            keys = ObjectSearchConstants.defaultKeys + listOf(
-                Relations.SOURCE_OBJECT,
-                Relations.RELATION_FORMAT,
-                Relations.RESTRICTIONS
-            ),
+            keys = ObjectSearchConstants.defaultRelationKeys,
             filters = buildList {
                 addAll(ObjectSearchConstants.filterMyRelations())
                 add(

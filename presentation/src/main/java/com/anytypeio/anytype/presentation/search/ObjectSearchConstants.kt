@@ -648,6 +648,10 @@ object ObjectSearchConstants {
                         relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.EQUAL,
                         value = spaceId
+                    ),
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_EMPTY
                     )
                 )
             )

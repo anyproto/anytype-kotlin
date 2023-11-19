@@ -87,7 +87,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         createAccount.invoke(
             scope = viewModelScope,
             params = CreateAccount.Params(
-                name = "",
+                name = name,
                 avatarPath = null,
                 iconGradientValue = spaceGradientProvider.randomId()
             )
@@ -139,6 +139,12 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 sendAnalyticsOnboardingScreenEvent(analytics,
                     EventsDictionary.ScreenOnboardingStep.SOUL_CREATING
                 )
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = SpaceId(config.space),
+                        details = mapOf(Relations.NAME to name)
+                    )
+                )
                 setObjectDetails.async(
                     SetObjectDetails.Params(
                         ctx = config.profile, details = mapOf(Relations.NAME to name)
@@ -158,35 +164,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                         // Workaround for leaving screen in loading state to wait screen transition
                         delay(OnboardingVoidViewModel.LOADING_AFTER_SUCCESS_DELAY)
                         state.value = ScreenState.Success
-                    }
-                )
-            }
-        } else {
-            Timber.e(CONFIG_NOT_FOUND_ERROR).also {
-                sendToast(CONFIG_NOT_FOUND_ERROR)
-            }
-        }
-    }
-
-    private fun proceedWithSettingWorkspaceName(name: String) {
-        val config = configStorage.getOrNull()
-        if (config != null) {
-            viewModelScope.launch {
-                sendAnalyticsOnboardingScreenEvent(
-                    analytics = analytics,
-                    step = EventsDictionary.ScreenOnboardingStep.SPACE_CREATING
-                )
-                setSpaceDetails.async(
-                    SetSpaceDetails.Params(
-                        space = SpaceId(config.space),
-                        details = mapOf(Relations.NAME to name)
-                    )
-                ).fold(
-                    onFailure = {
-                        Timber.e(it, "Error while updating object details")
-                    },
-                    onSuccess = {
-                        analytics.sendOpenAccountEvent(analytics = config.analytics)
                     }
                 )
             }

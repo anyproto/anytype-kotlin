@@ -111,7 +111,10 @@ class ObjectTypeChangeViewModelTest {
         stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(spaceId, SupportedLayouts.editorLayouts)
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
+            spaces = listOf(spaceId),
+            SupportedLayouts.editorLayouts
+        )
 
         // TESTING
 
@@ -150,14 +153,17 @@ class ObjectTypeChangeViewModelTest {
         stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(spaceId, SupportedLayouts.editorLayouts)
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
+            spaces = listOf(spaceId),
+            SupportedLayouts.editorLayouts
+        )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         val expectedMarketplaceTypeKeys = ObjectSearchConstants.defaultKeysObjectType
         val expectedMarketplaceTypeFilters = buildList {
             addAll(
                 ObjectSearchConstants.filterTypes(
-                    spaceId = MARKETPLACE_SPACE_ID,
+                    spaces = listOf(MARKETPLACE_SPACE_ID),
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 )
             )
@@ -241,14 +247,17 @@ class ObjectTypeChangeViewModelTest {
         stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(spaceId, SupportedLayouts.editorLayouts)
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
+            spaces = listOf(spaceId),
+            SupportedLayouts.editorLayouts
+        )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         val expectedMarketplaceTypeKeys = ObjectSearchConstants.defaultKeysObjectType
         val expectedMarketplaceTypeFilters = buildList {
             addAll(
                 ObjectSearchConstants.filterTypes(
-                    spaceId = MARKETPLACE_SPACE_ID,
+                    spaces = listOf(MARKETPLACE_SPACE_ID),
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 )
             )
@@ -410,14 +419,17 @@ class ObjectTypeChangeViewModelTest {
         val expectedInstalledTypeId = MockDataFactory.randomUuid()
         val expectedInstalledTypeUniqueKey = ObjectTypeIds.PAGE
 
-        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(space, SupportedLayouts.editorLayouts)
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
+            spaces = listOf(space),
+            SupportedLayouts.editorLayouts
+        )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         val expectedMarketplaceTypeKeys = ObjectSearchConstants.defaultKeysObjectType
         val expectedMarketplaceTypeFilters = buildList {
             addAll(
                 ObjectSearchConstants.filterTypes(
-                    spaceId = MARKETPLACE_SPACE_ID,
+                    spaces = listOf(MARKETPLACE_SPACE_ID),
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 )
             )
@@ -556,7 +568,10 @@ class ObjectTypeChangeViewModelTest {
         stubSpaceManager(spaceId)
         val vm = givenViewModel()
 
-        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(spaceId, SupportedLayouts.editorLayouts)
+        val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
+            spaces = listOf(spaceId),
+            SupportedLayouts.editorLayouts
+        )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
         blockRepository.stub {

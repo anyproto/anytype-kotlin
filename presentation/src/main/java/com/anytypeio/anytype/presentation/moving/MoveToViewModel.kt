@@ -126,7 +126,7 @@ class MoveToViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaceId = spaceManager.get(),
+                    spaces = listOf(spaceManager.get()),
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType

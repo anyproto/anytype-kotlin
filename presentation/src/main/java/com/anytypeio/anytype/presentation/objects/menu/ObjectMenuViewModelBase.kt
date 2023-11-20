@@ -88,16 +88,14 @@ abstract class ObjectMenuViewModelBase(
         ctx: Id,
         isFavorite: Boolean,
         isArchived: Boolean,
-        isProfile: Boolean,
         isLocked: Boolean,
         isTemplate: Boolean
     ) {
-        Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isProfile:[$isProfile], isLocked:[$isLocked]")
+        Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isLocked:[$isLocked]")
         actions.value = buildActions(
             ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,
-            isProfile = isProfile,
             isTemplate = isTemplate
         )
         jobs += viewModelScope.launch {
@@ -111,7 +109,6 @@ abstract class ObjectMenuViewModelBase(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isProfile: Boolean,
         isTemplate: Boolean = false
     ): List<ObjectAction>
 

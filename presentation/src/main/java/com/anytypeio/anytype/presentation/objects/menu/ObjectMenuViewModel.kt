@@ -76,7 +76,6 @@ class ObjectMenuViewModel(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isProfile: Boolean,
         isTemplate: Boolean
     ): List<ObjectAction> = buildList {
 
@@ -87,10 +86,11 @@ class ObjectMenuViewModel(
                 add(ObjectAction.ADD_TO_FAVOURITE)
             }
         }
-        if (!isProfile) {
-            if (isArchived) {
-                add(ObjectAction.RESTORE)
-            } else {
+
+        if (isArchived) {
+            add(ObjectAction.RESTORE)
+        } else {
+            if (objectRestrictions.none { it == ObjectRestriction.DELETE }) {
                 add(ObjectAction.DELETE)
             }
         }
@@ -99,7 +99,7 @@ class ObjectMenuViewModel(
             add(ObjectAction.SET_AS_DEFAULT)
         }
 
-        if (!isProfile && !objectRestrictions.contains(ObjectRestriction.DUPLICATE) && !isTemplate) {
+        if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE) && !isTemplate) {
             add(ObjectAction.DUPLICATE)
         }
 
@@ -109,7 +109,7 @@ class ObjectMenuViewModel(
         storage.details.current().details[objTypeId]?.let { objType ->
             val objTypeWrapper = ObjectWrapper.Type(objType.map)
             val isTemplateAllowed = objTypeWrapper.isTemplatesAllowed()
-            if (isTemplateAllowed && !isTemplate && !isProfile) {
+            if (isTemplateAllowed && !isTemplate) {
                 add(ObjectAction.USE_AS_TEMPLATE)
             }
         }

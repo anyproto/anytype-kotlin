@@ -4845,22 +4845,12 @@ class EditorViewModel(
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = buildList {
-                    addAll(
-                        ObjectSearchConstants.filterObjectTypeLibrary(
-                            space = spaceManager.get()
-                        )
-                    )
-                    add(
-                        DVFilter(
-                            relation = Relations.RECOMMENDED_LAYOUT,
-                            condition = DVFilterCondition.IN,
-                            value = SupportedLayouts.editorLayouts.map {
-                                it.code.toDouble()
-                            }
-                        )
-                    )
-                },
+                filters = ObjectSearchConstants.filterTypes(
+                    spaces = buildList {
+                        add(spaceManager.get())
+                    },
+                    recommendedLayouts = SupportedLayouts.editorLayouts
+                ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
             getObjectTypes.async(params).fold(

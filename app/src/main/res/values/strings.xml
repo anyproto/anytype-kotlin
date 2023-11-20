@@ -430,6 +430,7 @@ Do the computation of an expensive paragraph of text on a background thread:
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_groups">Groups</string>
     <string name="create_object_section_objects">Objects</string>
+    <string name="create_object_section_library">Anytype Library</string>
     <string name="log_in">Log In</string>
 
 </resources>

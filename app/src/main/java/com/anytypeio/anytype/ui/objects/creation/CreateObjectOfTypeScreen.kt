@@ -146,6 +146,11 @@ private fun FlowRowContent(
                         title = stringResource(id = R.string.create_object_section_objects)
                     )
                 }
+                is SelectTypeView.Section.Library -> {
+                    Section(
+                        title = stringResource(id = R.string.create_object_section_library),
+                    )
+                }
             }
 
         }
@@ -180,7 +185,6 @@ private fun LazyColumnContent(
                         )
                     }
                 }
-
                 is SelectTypeView.Section.Objects -> {
                     item(
                         key = view.javaClass.name,
@@ -191,7 +195,16 @@ private fun LazyColumnContent(
                         )
                     }
                 }
-
+                is SelectTypeView.Section.Library -> {
+                    item(
+                        key = view.javaClass.name,
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        Section(
+                            title = stringResource(id = R.string.create_object_section_library)
+                        )
+                    }
+                }
                 is SelectTypeView.Type -> {
                     item(
                         key = view.typeKey

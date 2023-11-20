@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
@@ -32,20 +33,28 @@ class CreateObjectOfTypeViewModel(
 
     init {
         viewModelScope.launch {
+            val space = spaceManager.get()
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 getObjectTypes.stream(
                     GetObjectTypes.Params(
                         sorts = emptyList(),
                         filters = ObjectSearchConstants.filterTypes(
-                            spaces = listOf(spaceManager.get()),
+                            spaces = buildList {
+                                add(space)
+                                if (query.isNotEmpty()) add(Marketplace.MARKETPLACE_SPACE_ID)
+                            },
                             recommendedLayouts = SupportedLayouts.createObjectLayouts
                         ),
                         keys = ObjectSearchConstants.defaultKeysObjectType,
                         query = query
                     )
                 ).map { result ->
-                    val types = result.getOrNull() ?: emptyList()
-                    val (groups, objects) = types.partition { type ->
+
+                    val allTypes = (result.getOrNull() ?: emptyList())
+                    val (userTypes, libraryTypes) = allTypes.partition { type ->
+                        type.getValue<Id>(Relations.SPACE_ID) == space
+                    }
+                    val (groups, objects) = userTypes.partition { type ->
                         type.uniqueKey == ObjectTypeUniqueKeys.SET || type.uniqueKey == ObjectTypeUniqueKeys.COLLECTION
                     }
                     buildList {
@@ -69,6 +78,20 @@ class CreateObjectOfTypeViewModel(
                             )
                             addAll(
                                 objects.map { type ->
+                                    SelectTypeView.Type(
+                                        typeKey = type.uniqueKey!!,
+                                        name = type.name.orEmpty(),
+                                        icon = type.iconEmoji.orEmpty()
+                                    )
+                                }
+                            )
+                        }
+                        if (libraryTypes.isNotEmpty()) {
+                            add(
+                                SelectTypeView.Section.Library
+                            )
+                            addAll(
+                                libraryTypes.map { type ->
                                     SelectTypeView.Type(
                                         typeKey = type.uniqueKey!!,
                                         name = type.name.orEmpty(),
@@ -109,6 +132,7 @@ sealed class SelectTypeView {
     sealed class Section : SelectTypeView() {
         object Objects: Section()
         object Groups: Section()
+        object Library: Section()
     }
     data class Type(
         val typeKey: String,

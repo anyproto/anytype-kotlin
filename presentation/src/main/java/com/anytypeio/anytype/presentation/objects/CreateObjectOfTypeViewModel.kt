@@ -37,7 +37,7 @@ class CreateObjectOfTypeViewModel(
                     GetObjectTypes.Params(
                         sorts = emptyList(),
                         filters = ObjectSearchConstants.filterTypes(
-                            spaceId = spaceManager.get(),
+                            spaces = listOf(spaceManager.get()),
                             recommendedLayouts = SupportedLayouts.createObjectLayouts
                         ),
                         keys = ObjectSearchConstants.defaultKeysObjectType,

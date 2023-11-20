@@ -31,7 +31,7 @@
             android:exported="true"
             android:launchMode="singleTop"
             android:resizeableActivity="false"
-            android:screenOrientation="portrait"
+            android:screenOrientation="user"
             android:windowSoftInputMode="adjustResize">
             <intent-filter android:label="filter">
                 <action android:name="android.intent.action.VIEW" />
@@ -53,7 +53,7 @@
             android:name=".ui.settings.system.SettingsActivity"
             android:exported="true"
             android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
+            android:screenOrientation="user"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.APPLICATION_PREFERENCES" />

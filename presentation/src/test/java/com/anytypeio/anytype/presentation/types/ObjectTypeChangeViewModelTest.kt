@@ -113,7 +113,7 @@ class ObjectTypeChangeViewModelTest {
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
             spaces = listOf(spaceId),
-            SupportedLayouts.editorLayouts
+            recommendedLayouts = SupportedLayouts.editorLayouts
         )
 
         // TESTING
@@ -155,7 +155,7 @@ class ObjectTypeChangeViewModelTest {
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
             spaces = listOf(spaceId),
-            SupportedLayouts.editorLayouts
+            recommendedLayouts = SupportedLayouts.editorLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
@@ -249,7 +249,7 @@ class ObjectTypeChangeViewModelTest {
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
             spaces = listOf(spaceId),
-            SupportedLayouts.editorLayouts
+            recommendedLayouts = SupportedLayouts.editorLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
@@ -421,7 +421,7 @@ class ObjectTypeChangeViewModelTest {
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
             spaces = listOf(space),
-            SupportedLayouts.editorLayouts
+            recommendedLayouts = SupportedLayouts.editorLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
@@ -570,7 +570,7 @@ class ObjectTypeChangeViewModelTest {
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
             spaces = listOf(spaceId),
-            SupportedLayouts.editorLayouts
+            recommendedLayouts = SupportedLayouts.editorLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 

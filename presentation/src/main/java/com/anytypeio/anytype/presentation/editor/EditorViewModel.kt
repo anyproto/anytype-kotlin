@@ -1454,17 +1454,8 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
-        val isProfile = getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.PROFILE
         val isTemplate = isObjectTemplate()
         when {
-            isProfile -> {
-                dispatch(
-                    command = Command.OpenProfileMenu(
-                        isFavorite = details[context]?.isFavorite ?: false,
-                        isLocked = mode == EditorMode.Locked
-                    )
-                )
-            }
             isTemplate -> {
                 dispatch(
                     command = Command.OpenDocumentMenu(

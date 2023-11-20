@@ -54,7 +54,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -77,7 +76,7 @@ fun PreviewScreen() {
 
 @Composable
 fun CreateObjectOfTypeScreen(
-    onTypeClicked: (Key) -> Unit,
+    onTypeClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
     views: List<SelectTypeView>
@@ -102,7 +101,7 @@ fun CreateObjectOfTypeScreen(
 @Composable
 private fun ScreenContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (Key) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
     FlowRowContent(views, onTypeClicked)
 }
@@ -111,7 +110,7 @@ private fun ScreenContent(
 @OptIn(ExperimentalLayoutApi::class)
 private fun FlowRowContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (Key) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
     FlowRow(
         modifier = Modifier
@@ -129,9 +128,7 @@ private fun FlowRowContent(
                         name = view.name,
                         emoji = view.icon,
                         onItemClicked = throttledClick(
-                            onClick = {
-                                onTypeClicked(view.typeKey)
-                            }
+                            onClick = { onTypeClicked(view) }
                         ),
                         modifier = Modifier
                     )
@@ -161,7 +158,7 @@ private fun FlowRowContent(
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyColumnContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (Key) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
@@ -214,7 +211,7 @@ private fun LazyColumnContent(
                             emoji = view.icon,
                             onItemClicked = throttledClick(
                                 onClick = {
-                                    onTypeClicked(view.typeKey)
+                                    onTypeClicked(view)
                                 }
                             ),
                             modifier = Modifier.animateItemPlacement()

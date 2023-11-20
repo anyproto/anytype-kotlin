@@ -53,6 +53,8 @@ class SpaceSettingsViewModel(
     val isDismissed = MutableStateFlow(false)
     val spaceViewState = MutableStateFlow<ViewState<SpaceData>>(ViewState.Init)
 
+    private val spaceConfig = spaceManager.getConfig()
+
     init {
         viewModelScope.launch {
             analytics.sendEvent(
@@ -102,7 +104,9 @@ class SpaceSettingsViewModel(
                             spaceType = resolveSpaceType(config.space)
                         )
                     }
-                }.collect { spaceViewState.value = ViewState.Success(it) }
+                }.collect { spaceData ->
+                    spaceViewState.value = ViewState.Success(spaceData)
+                }
         }
     }
 
@@ -132,11 +136,10 @@ class SpaceSettingsViewModel(
         if (name.isEmpty()) return
         if (isDismissed.value) return
         viewModelScope.launch {
-            val config = spaceManager.getConfig()
-            if (config != null) {
+            if (spaceConfig != null) {
                 setSpaceDetails.async(
                     SetSpaceDetails.Params(
-                        space = SpaceId(config.space),
+                        space = SpaceId(spaceConfig.space),
                         details = mapOf(Relations.NAME to name)
                     )
                 ).fold(
@@ -145,7 +148,7 @@ class SpaceSettingsViewModel(
                         sendToast("Something went wrong. Please try again")
                     },
                     onSuccess = {
-                        Timber.d("Name successfully set for current space: ${config.space}")
+                        Timber.d("Name successfully set for current space: ${spaceConfig.space}")
                     }
                 )
             } else {
@@ -202,12 +205,12 @@ class SpaceSettingsViewModel(
         val state = spaceViewState.value
         if (state is ViewState.Success) {
             val space = state.data.spaceId
-            val config = configStorage.getOrNull()
-            if (config == null) {
+            val accountConfig = configStorage.getOrNull()
+            if (accountConfig == null) {
                 sendToast("Account config not found")
                 return
             }
-            val personalSpaceId = config.space
+            val personalSpaceId = accountConfig.space
             if (space != null && space != personalSpaceId) {
                 viewModelScope.launch {
                     deleteSpace.async(params = SpaceId(space)).fold(

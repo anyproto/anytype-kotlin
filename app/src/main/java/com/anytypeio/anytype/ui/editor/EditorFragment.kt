@@ -936,27 +936,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         isArchived = command.isArchived,
                         isFavorite = command.isFavorite,
                         isLocked = command.isLocked,
-                        isProfile = false,
                         fromName = getFrom(),
                         isTemplate = command.isTemplate
                     )
                     fr.showChildFragment()
-                }
-                is Command.OpenProfileMenu -> {
-                    hideKeyboard()
-                    findNavController().safeNavigate(
-                        R.id.pageScreen,
-                        R.id.objectMainMenuScreen,
-                        bundleOf(
-                            ObjectMenuBaseFragment.CTX_KEY to ctx,
-                            ObjectMenuBaseFragment.IS_ARCHIVED_KEY to false,
-                            ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
-                            ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isLocked,
-                            ObjectMenuBaseFragment.IS_PROFILE_KEY to true,
-                            ObjectMenuBaseFragment.FROM_NAME to getFrom(),
-                            ObjectMenuBaseFragment.IS_TEMPLATE_KEY to false
-                        )
-                    )
                 }
                 is Command.OpenCoverGallery -> {
                     findNavController().safeNavigate(

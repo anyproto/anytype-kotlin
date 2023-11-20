@@ -46,7 +46,9 @@ class CreateObjectOfTypeViewModel(
                         filters = ObjectSearchConstants.filterTypes(
                             spaces = buildList {
                                 add(space)
-                                if (query.isNotEmpty()) add(Marketplace.MARKETPLACE_SPACE_ID)
+                                if (query.isNotEmpty()) {
+                                    add(Marketplace.MARKETPLACE_SPACE_ID)
+                                }
                             },
                             recommendedLayouts = SupportedLayouts.createObjectLayouts
                         ),

@@ -9,8 +9,13 @@ jobs:
   setup-android:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup java
+        uses: actions/setup-java@v2
+        with:
+          distribution: "temurin"
+          java-version: 17
 
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v2
       - name: Setup middleware dependency
         env:
           token_secret: ${{ secrets.ANYTYPE_SECRET }}

@@ -13,3 +13,7 @@ dependencies {
     implementation libs.design
     implementation libs.recyclerView
 }
+
+android {
+    namespace 'com.anytypeio.anytype.test_utils'
+}

@@ -12,3 +12,7 @@ wire {
     protoPath { srcDir 'src/main/proto' }
     kotlin {}
 }
+
+android {
+    namespace 'com.anytypeio.anytype.protocol'
+}

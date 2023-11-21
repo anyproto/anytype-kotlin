@@ -15,6 +15,7 @@ android {
             buildConfigField ANYTYPE_CLIPBOARD_LABEL_TYPE, ANYTYPE_CLIPBOARD_LABEL, ANYTYPE_CLIPBOARD_LABEL_VALUE
         }
     }
+    namespace 'com.anytypeio.anytype.clipboard'
 }
 
 dependencies {

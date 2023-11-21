@@ -17,6 +17,7 @@ android {
         }
         includeDependenciesReport = true
     }
+    namespace 'com.anytypeio.anytype.crash_reporting'
 }
 
 dependencies {

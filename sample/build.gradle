@@ -47,6 +47,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion libs.versions.composeKotlinCompilerVersion.get()
     }
+    namespace 'com.anytypeio.anytype.sample'
 }
 
 dependencies {

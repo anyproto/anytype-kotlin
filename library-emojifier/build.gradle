@@ -14,3 +14,7 @@ dependencies {
     testImplementation libs.junit
     testImplementation libs.kotlinTest
 }
+
+android {
+    namespace 'com.anytypeio.anytype.emojifier'
+}

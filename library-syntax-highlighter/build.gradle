@@ -18,3 +18,7 @@ dependencies {
     testImplementation libs.robolectric
     testImplementation libs.androidXTestCore
 }
+
+android {
+    namespace 'com.anytypeio.anytype.library_syntax_highlighter'
+}

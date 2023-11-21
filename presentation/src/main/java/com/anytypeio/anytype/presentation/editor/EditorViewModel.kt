@@ -1454,17 +1454,8 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
-        val isProfile = getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.PROFILE
         val isTemplate = isObjectTemplate()
         when {
-            isProfile -> {
-                dispatch(
-                    command = Command.OpenProfileMenu(
-                        isFavorite = details[context]?.isFavorite ?: false,
-                        isLocked = mode == EditorMode.Locked
-                    )
-                )
-            }
             isTemplate -> {
                 dispatch(
                     command = Command.OpenDocumentMenu(
@@ -3064,12 +3055,19 @@ class EditorViewModel(
         val wrapper = ObjectWrapper.Basic(map = details.details[target]?.map ?: emptyMap())
         when (wrapper.layout) {
             ObjectType.Layout.BASIC,
-            ObjectType.Layout.PROFILE,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.TODO,
             ObjectType.Layout.FILE,
             ObjectType.Layout.BOOKMARK -> {
                 proceedWithOpeningObject(target = target)
+            }
+            ObjectType.Layout.PROFILE -> {
+                val identity = wrapper.getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
+                if (identity != null) {
+                    proceedWithOpeningObject(target = identity)
+                } else {
+                    proceedWithOpeningObject(target = target)
+                }
             }
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 proceedWithOpeningDataViewObject(target = target)
@@ -4836,7 +4834,9 @@ class EditorViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaceId = spaceManager.get(),
+                    spaces = buildList {
+                        add(spaceManager.get())
+                    },
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
@@ -5811,7 +5811,15 @@ class EditorViewModel(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
-                    space = spaceManager.get()
+                    spaces = buildList {
+                        val config = spaceManager.getConfig()
+                        if (config != null) {
+                            add(config.space)
+                            add(config.techSpace)
+                        } else {
+                            add(spaceManager.get())
+                        }
+                    }
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
@@ -5904,7 +5912,9 @@ class EditorViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaceId = spaceManager.get(),
+                    spaces = buildList {
+                        add(spaceManager.get())
+                    },
                     recommendedLayouts = SupportedLayouts.createObjectLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
@@ -6263,13 +6273,15 @@ class EditorViewModel(
             templatesContainer
                 .subscribeToTemplates(type = objType.id, subId = EDITOR_TEMPLATES_SUBSCRIPTION)
                 .catch { Timber.e(it, "Error while subscribing to templates") }
-                .map { templates ->
-                    templates.size + 1
-                }.collect { count ->
-                    selectTemplateViewState.value = SelectTemplateViewState.Active(
-                        count = count,
-                        typeId = objType.id
-                    )
+                .collect { templates ->
+                    if (templates.isNotEmpty()) {
+                        selectTemplateViewState.value = SelectTemplateViewState.Active(
+                            count = templates.size + 1,
+                            typeId = objType.id
+                        )
+                    } else {
+                        selectTemplateViewState.value = SelectTemplateViewState.Idle
+                    }
                 }
         }
     }

@@ -53,7 +53,8 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
             widgets = info.widgetsId,
             analytics = info.analyticsId,
             device = info.deviceId,
-            network = info.networkId
+            network = info.networkId,
+            techSpace = info.techSpaceId
         ),
         status = status?.core() ?: AccountStatus.Unknown
     )

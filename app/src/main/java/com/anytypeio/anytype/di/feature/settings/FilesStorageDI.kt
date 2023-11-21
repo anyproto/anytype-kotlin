@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.DeleteAccount
-import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -17,7 +16,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.FileLimitsEventChannel
-import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
+import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.settings.FilesStorageViewModel
@@ -81,9 +80,8 @@ object FilesStorageModule {
     @PerScreen
     fun provideSpaceUsage(
         repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
-    ): FileSpaceUsage = FileSpaceUsage(repo, spaceManager, dispatchers)
+        dispatchers: AppCoroutineDispatchers
+    ): SpacesUsageInfo = SpacesUsageInfo(repo, dispatchers)
 
     @JvmStatic
     @Provides
@@ -92,14 +90,6 @@ object FilesStorageModule {
         channel: FileLimitsEventChannel,
         dispatchers: AppCoroutineDispatchers
     ) : InterceptFileLimitEvents = InterceptFileLimitEvents(channel, dispatchers)
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideGetAccountUseCase(
-        repo: AuthRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): GetAccount = GetAccount(repo = repo, dispatcher = dispatchers)
 
     @JvmStatic
     @Provides

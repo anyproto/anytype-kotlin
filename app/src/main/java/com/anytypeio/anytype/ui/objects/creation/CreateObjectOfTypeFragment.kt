@@ -5,13 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.objects.Command
 import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -37,12 +41,26 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
             ) {
                 CreateObjectOfTypeScreen(
                     views = vm.views.collectAsStateWithLifecycle().value,
-                    onTypeClicked = {
-                        onTypeSelected.invoke(it)
-                    },
+                    onTypeClicked = vm::onTypeClicked,
                     onQueryChanged = vm::onQueryChanged,
                     onFocused = { expand() }
                 )
+            }
+            LaunchedEffect(Unit) {
+                vm.commands.collect { command ->
+                    proceedWithCommand(command)
+                }
+            }
+        }
+    }
+
+    private fun proceedWithCommand(command: Command) {
+        when (command) {
+            is Command.DispatchTypeKey -> {
+                onTypeSelected(command.type)
+            }
+            is Command.ShowTypeInstalledToast -> {
+                toast(resources.getString(R.string.library_type_added, command.typeName))
             }
         }
     }

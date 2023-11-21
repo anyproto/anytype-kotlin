@@ -18,6 +18,7 @@ object ObjectTypeIds {
     const val TASK = "ot-task"
     const val DATE = "ot-date"
     const val PROFILE = "ot-profile" //contains User Profile page and Anytype Person page
+    const val HUMAN = "ot-human"
     const val NOTE = "ot-note"
     const val WORKSPACE = "ot-space"
     const val DASHBOARD = "ot-dashboard"
@@ -60,6 +61,7 @@ object MarketplaceObjectTypeIds {
     const val TASK = "_ottask"
     const val DATE = "_otdate"
     const val PROFILE = "_otprofile"
+    const val HUMAN = "_othuman"
     const val NOTE = "_otnote"
     const val DASHBOARD = "_otdashboard"
     const val BOOKMARK = "_otbookmark"

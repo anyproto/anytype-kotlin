@@ -55,6 +55,7 @@ object EventsDictionary {
     const val appearanceScreenShow = "ScreenSettingsAppearance"
     const val screenSettingsStorage = "ScreenSettingsStorageIndex"
     const val screenSettingsStorageManage = "ScreenSettingsStorageManager"
+    const val screenSettingsSpaceStorageManager = "ScreenSettingsSpaceStorageManager"
     const val screenSettingsStorageOffload = "ScreenFileOffloadWarning"
     const val settingsStorageOffload = "SettingsStorageOffload"
     const val screenSettingsDelete = "ScreenSettingsDelete"

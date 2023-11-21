@@ -319,18 +319,22 @@ class LibraryViewModel(
             assert(libTypes.items.allUniqueBy { it.id })
             assert(myTypes.items.allUniqueBy { it.id })
         }
+        val myTypeViews = myTypes
+            .items
+            .filterIsInstance<LibraryView.MyTypeView>()
+
         return libTypes.copy(
             items = libTypes.items.map { libType ->
                 if (libType is LibraryView.LibraryTypeView) {
                     with(
-                        myTypes.items.find {
-                            (it as? LibraryView.MyTypeView)?.sourceObject == libType.id
-                        }
+                        myTypeViews.find { it.uniqueKey == libType.uniqueKey }
                     ) {
                         libType.copy(
                             dependentData = if (this != null) {
                                 DependentData.Model(item = this)
-                            } else DependentData.None
+                            } else {
+                                DependentData.None
+                            }
                         )
                     }
                 } else {
@@ -348,25 +352,34 @@ class LibraryViewModel(
             assert(libRelations.items.allUniqueBy { it.id })
             assert(myRelations.items.allUniqueBy { it.id })
         }
-        return libRelations.copy(
-            items = libRelations.items.map { libRelation ->
-                if (libRelation is LibraryView.LibraryRelationView) {
-                    with(
-                        myRelations.items.find {
-                            (it as? LibraryView.MyRelationView)?.sourceObject == libRelation.id
-                        }
-                    ) {
-                        libRelation.copy(
-                            dependentData = if (this != null) {
-                                DependentData.Model(item = this)
-                            } else DependentData.None
-                        )
-                    }
-                } else {
-                    libRelation
-                }
-            }.distinctBy { view -> view.id }
+
+        val updatedLibraryRelations = updateLibraryRelationItems(
+            libraryItems = libRelations.items,
+            myRelationItems = myRelations.items
         )
+        return libRelations.copy(
+            items = updatedLibraryRelations.distinctBy { view -> view.id }
+        )
+    }
+
+    private fun updateLibraryRelationItems(
+        libraryItems: List<LibraryView>,
+        myRelationItems: List<LibraryView>
+    ): List<LibraryView> {
+        return libraryItems.map { libraryItem ->
+            if (libraryItem !is LibraryView.LibraryRelationView) {
+                return@map libraryItem
+            }
+            val relationInstalled = myRelationItems.firstOrNull { myRelationItem ->
+                (myRelationItem as? LibraryView.MyRelationView)?.sourceObject == libraryItem.id
+            }
+            val dependedData = if (relationInstalled != null) {
+                DependentData.Model(item = relationInstalled)
+            } else {
+                DependentData.None
+            }
+            libraryItem.copy(dependentData = dependedData)
+        }
     }
 
     fun updateObject(id: String, name: String, icon: String?) {

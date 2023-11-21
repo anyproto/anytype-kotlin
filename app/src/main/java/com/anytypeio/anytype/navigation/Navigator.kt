@@ -16,7 +16,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.ui.settings.RemoteStorageFragment
+import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_SELECT
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
@@ -305,9 +305,9 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.libraryFragment)
     }
 
-    override fun openRemoteStorageScreen(subscription: Id) {
+    override fun openRemoteFilesManageScreen(subscription: Id) {
         navController?.navigate(R.id.remoteStorageFragment,
-            bundleOf(RemoteStorageFragment.SUBSCRIPTION_KEY to subscription))
+            bundleOf(RemoteFilesManageFragment.SUBSCRIPTION_KEY to subscription))
     }
 
     override fun openTemplatesModal(typeId: Id) {

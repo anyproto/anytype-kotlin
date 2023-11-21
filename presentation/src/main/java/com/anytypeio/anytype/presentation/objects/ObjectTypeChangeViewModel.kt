@@ -226,7 +226,7 @@ class ObjectTypeChangeViewModel(
         query: String
     ): List<ObjectWrapper.Type> {
         val excludedMarketplaceTypes = buildList {
-            addAll(myTypes.mapNotNull { it.sourceObject })
+            addAll(myTypes.mapNotNull { it.uniqueKey })
             if (!setup.isWithBookmark) {
                 add(MarketplaceObjectTypeIds.BOOKMARK)
             }
@@ -236,14 +236,14 @@ class ObjectTypeChangeViewModel(
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterTypes(
-                            spaceId = Marketplace.MARKETPLACE_SPACE_ID,
+                            spaces = listOf(Marketplace.MARKETPLACE_SPACE_ID),
                             recommendedLayouts = SupportedLayouts.editorLayouts
                         )
                     )
                     if (excludedMarketplaceTypes.isNotEmpty()) {
                         add(
                             DVFilter(
-                                relation = Relations.ID,
+                                relation = Relations.UNIQUE_KEY,
                                 condition = DVFilterCondition.NOT_IN,
                                 value = excludedMarketplaceTypes
                             )
@@ -263,7 +263,7 @@ class ObjectTypeChangeViewModel(
     ) = getObjectTypes.run(
         GetObjectTypes.Params(
             filters = ObjectSearchConstants.filterTypes(
-                spaceId = spaceManager.get(),
+                spaces = listOf(spaceManager.get()),
                 recommendedLayouts = SupportedLayouts.editorLayouts
             ),
             sorts = ObjectSearchConstants.defaultObjectSearchSorts(),

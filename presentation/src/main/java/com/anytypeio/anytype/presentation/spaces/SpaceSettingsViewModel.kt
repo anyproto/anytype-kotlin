@@ -27,7 +27,6 @@ import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.settings.SPACE_STORAGE_SUBSCRIPTION_ID
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,6 +53,8 @@ class SpaceSettingsViewModel(
     val isDismissed = MutableStateFlow(false)
     val spaceViewState = MutableStateFlow<ViewState<SpaceData>>(ViewState.Init)
 
+    private val spaceConfig = spaceManager.getConfig()
+
     init {
         viewModelScope.launch {
             analytics.sendEvent(
@@ -68,7 +69,7 @@ class SpaceSettingsViewModel(
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
-                            subscription = SPACE_STORAGE_SUBSCRIPTION_ID,
+                            subscription = SPACE_SETTINGS_SUBSCRIPTION,
                             targets = listOf(config.spaceView),
                             keys = listOf(
                                 Relations.ID,
@@ -103,7 +104,9 @@ class SpaceSettingsViewModel(
                             spaceType = resolveSpaceType(config.space)
                         )
                     }
-                }.collect { spaceViewState.value = ViewState.Success(it) }
+                }.collect { spaceData ->
+                    spaceViewState.value = ViewState.Success(spaceData)
+                }
         }
     }
 
@@ -133,11 +136,10 @@ class SpaceSettingsViewModel(
         if (name.isEmpty()) return
         if (isDismissed.value) return
         viewModelScope.launch {
-            val config = spaceManager.getConfig()
-            if (config != null) {
+            if (spaceConfig != null) {
                 setSpaceDetails.async(
                     SetSpaceDetails.Params(
-                        space = SpaceId(config.space),
+                        space = SpaceId(spaceConfig.space),
                         details = mapOf(Relations.NAME to name)
                     )
                 ).fold(
@@ -146,7 +148,7 @@ class SpaceSettingsViewModel(
                         sendToast("Something went wrong. Please try again")
                     },
                     onSuccess = {
-                        Timber.d("Name successfully set for current space: ${config.space}")
+                        Timber.d("Name successfully set for current space: ${spaceConfig.space}")
                     }
                 )
             } else {
@@ -203,17 +205,20 @@ class SpaceSettingsViewModel(
         val state = spaceViewState.value
         if (state is ViewState.Success) {
             val space = state.data.spaceId
-            val config = configStorage.getOrNull()
-            if (config == null) {
+            val accountConfig = configStorage.getOrNull()
+            if (accountConfig == null) {
                 sendToast("Account config not found")
                 return
             }
-            val personalSpaceId = config.space
+            val personalSpaceId = accountConfig.space
             if (space != null && space != personalSpaceId) {
                 viewModelScope.launch {
                     deleteSpace.async(params = SpaceId(space)).fold(
                         onSuccess = {
-                            analytics.sendEvent(eventName = EventsDictionary.deleteSpace)
+                            analytics.sendEvent(
+                                eventName = EventsDictionary.deleteSpace,
+                                props = Props(mapOf(EventsPropertiesKey.type to "Private"))
+                            )
                             fallbackToPersonalSpaceAfterDeletion(personalSpaceId)
                         },
                         onFailure = {
@@ -289,5 +294,6 @@ class SpaceSettingsViewModel(
 
     companion object {
         const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."
+        const val SPACE_SETTINGS_SUBSCRIPTION = "subscription.space-settings.space-views"
     }
 }

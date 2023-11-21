@@ -21,7 +21,7 @@ import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 object ObjectSearchConstants {
 
     //region SEARCH OBJECTS
-    fun filterSearchObjects(space: Id) = listOf(
+    fun filterSearchObjects(spaces: List<Id>) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -57,8 +57,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+            condition = DVFilterCondition.IN,
+            value = spaces
         )
     )
 
@@ -72,7 +72,9 @@ object ObjectSearchConstants {
     //endregion
 
     //region LINK TO
-    fun getFilterLinkTo(ignore: Id?, space: Id) = listOf(
+    fun getFilterLinkTo(
+        ignore: Id?, spaces: List<Id>
+    ) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -105,8 +107,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+            condition = DVFilterCondition.IN,
+            value = spaces
         )
     )
 
@@ -261,7 +263,7 @@ object ObjectSearchConstants {
         } else {
             add(
                 DVFilter(
-                    relation = Relations.TYPE_UNIQUE_KEY,
+                    relation = Relations.TYPE,
                     condition = DVFilterCondition.IN,
                     value = limitObjectTypes
                 )
@@ -611,12 +613,35 @@ object ObjectSearchConstants {
         Relations.FILE_MIME_TYPE
     )
 
+    val defaultRelationKeys = listOf(
+        Relations.ID,
+        Relations.SPACE_ID,
+        Relations.UNIQUE_KEY,
+        Relations.NAME,
+        Relations.DESCRIPTION,
+        Relations.ICON_EMOJI,
+        Relations.TYPE,
+        Relations.LAYOUT,
+        Relations.IS_ARCHIVED,
+        Relations.IS_DELETED,
+        Relations.IS_HIDDEN,
+        Relations.SNIPPET,
+        Relations.RESTRICTIONS,
+        Relations.SOURCE_OBJECT,
+        Relations.RELATION_FORMAT,
+        Relations.RELATION_KEY,
+        Relations.RELATION_OPTION_COLOR,
+        Relations.RELATION_DEFAULT_VALUE,
+        Relations.RELATION_FORMAT_OBJECT_TYPES,
+        Relations.RELATION_READ_ONLY_VALUE
+    )
+
     //endregion
 
     //region OBJECT TYPES
 
     fun filterTypes(
-        spaceId: Id,
+        spaces: List<Id>,
         recommendedLayouts: List<ObjectType.Layout> = emptyList()
     ): List<DVFilter> {
         return buildList {
@@ -644,8 +669,8 @@ object ObjectSearchConstants {
                     ),
                     DVFilter(
                         relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = spaceId
+                        condition = DVFilterCondition.IN,
+                        value = spaces
                     )
                 )
             )

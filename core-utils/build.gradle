@@ -12,6 +12,7 @@ android {
     buildFeatures {
         viewBinding true
     }
+    namespace 'com.anytypeio.anytype.core_utils'
 }
 
 dependencies {

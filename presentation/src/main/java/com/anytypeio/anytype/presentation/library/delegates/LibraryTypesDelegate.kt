@@ -49,7 +49,7 @@ class LibraryTypesDelegate @Inject constructor(
             subscription = SUB_LIBRARY_TYPES,
             keys = ObjectSearchConstants.defaultKeys,
             filters = ObjectSearchConstants.filterTypes(
-                spaceId = MARKETPLACE_SPACE_ID
+                spaces = listOf(MARKETPLACE_SPACE_ID)
             )
         )
     }

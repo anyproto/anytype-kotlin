@@ -43,6 +43,7 @@ class ViewerFilterViewModel(
     val commands = MutableSharedFlow<ViewerFilterCommand>()
 
     fun onStart(viewerId: Id) {
+        Timber.d("ViewerFilterViewModel, onStart, viewerId: [$viewerId]")
         jobs += viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { objectSet ->
                 val filterExpression = objectSet.filterExpression(viewerId = viewerId)
@@ -119,6 +120,7 @@ class ViewerFilterViewModel(
         }
 
     fun onAddNewFilterClicked(viewerId: Id) {
+        Timber.d("ViewerFilterViewModel, onAddNewFilterClicked, viewerId: [$viewerId]")
         emitCommand(Modal.ShowRelationList(viewerId))
     }
 

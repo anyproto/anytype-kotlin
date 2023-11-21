@@ -140,13 +140,6 @@ abstract class RelationAddViewModelBase(
                 }
                 add(
                     DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = MARKETPLACE_SPACE_ID
-                    )
-                )
-                add(
-                    DVFilter(
                         relation = Relations.RELATION_KEY,
                         condition = DVFilterCondition.NOT_IN,
                         value = Relations.systemRelationKeys

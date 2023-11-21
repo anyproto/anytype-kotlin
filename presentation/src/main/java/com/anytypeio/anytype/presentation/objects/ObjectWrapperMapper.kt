@@ -2,12 +2,13 @@ package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Marketplace
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.library.LibraryView
@@ -53,13 +54,20 @@ fun List<ObjectWrapper.Basic>.toViews(
     gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
 ): List<DefaultObjectView> = map { obj ->
     val typeUrl = obj.getProperType()
+    val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
     val layout = obj.getProperLayout()
     DefaultObjectView(
         id = obj.id,
         name = obj.getProperName(),
         description = obj.description,
         type = typeUrl,
-        typeName = objectTypes.firstOrNull { it.id == typeUrl }?.name,
+        typeName = objectTypes.firstOrNull { type ->
+            if (isProfile) {
+                type.uniqueKey == ObjectTypeUniqueKeys.PROFILE
+            } else {
+                type.id == typeUrl
+            }
+        }?.name,
         layout = layout,
         icon = ObjectIcon.from(
             obj = obj,
@@ -78,7 +86,7 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
     gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default,
 ): List<LibraryView> = map { obj ->
     val space = obj.getValue<Id?>(Relations.SPACE_ID)
-    when (val type = obj.layout) {
+    when (obj.layout) {
         ObjectType.Layout.OBJECT_TYPE -> {
             if (space == Marketplace.MARKETPLACE_SPACE_ID) {
                 LibraryView.LibraryTypeView(
@@ -88,8 +96,9 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                         obj = obj,
                         layout = obj.getProperLayout(),
                         builder = urlBuilder,
-                    gradientProvider = gradientProvider
+                        gradientProvider = gradientProvider
                     ),
+                    uniqueKey = obj.uniqueKey
                 )
             } else {
                 LibraryView.MyTypeView(
@@ -102,6 +111,7 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     gradientProvider = gradientProvider
                     ),
                     sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
+                    uniqueKey = obj.uniqueKey,
                     readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
                     editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
                 )
@@ -125,14 +135,6 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
                 )
             }
-            LibraryView.MyRelationView(
-                id = obj.id,
-                name = obj.name.orEmpty(),
-                format = relation.format,
-                sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-                readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
-                editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
-            )
         }
         else -> LibraryView.UnknownView(
             id = obj.id,

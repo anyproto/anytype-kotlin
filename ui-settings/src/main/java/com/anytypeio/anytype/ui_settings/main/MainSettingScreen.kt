@@ -184,7 +184,8 @@ fun SpaceHeader(
         if (icon != null) {
             SpaceImageBlock(
                 icon = icon,
-                onSpaceIconClick = onSpaceIconClick
+                onSpaceIconClick = onSpaceIconClick,
+                gradientCornerRadius = 4.dp
             )
         }
     }

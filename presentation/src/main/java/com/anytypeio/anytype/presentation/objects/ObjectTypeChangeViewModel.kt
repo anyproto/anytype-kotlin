@@ -167,7 +167,7 @@ class ObjectTypeChangeViewModel(
 
     private suspend fun proceedWithNewlyAddedObjectType(result: AddObjectToSpace.Result) {
         val struct = result.type
-        val type = struct.mapToObjectWrapperType()
+        val type = struct?.mapToObjectWrapperType()
         if (type != null) {
             commands.emit(Command.TypeAdded(type = type.name.orEmpty()))
             proceedWithDispatchingType(

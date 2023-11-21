@@ -232,7 +232,7 @@ fun Block.Details.objectTypeRelation(
     objectTypeId: Id
 ): ObjectRelationView {
     val typeStruct = details[objectTypeId]?.map
-    val objectType = typeStruct.mapToObjectWrapperType()
+    val objectType = typeStruct?.mapToObjectWrapperType()
     return if (objectType == null || objectType.isDeleted == true) {
         ObjectRelationView.ObjectType.Deleted(
             id = objectTypeId,

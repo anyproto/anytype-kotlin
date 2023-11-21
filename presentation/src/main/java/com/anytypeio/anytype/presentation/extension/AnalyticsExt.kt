@@ -1953,6 +1953,6 @@ private fun getAnalyticsObjectType(
 ): String {
     val objTypeId = details[ctx]?.type?.firstOrNull()
     val typeStruct = details[objTypeId]?.map
-    val objType = typeStruct.mapToObjectWrapperType()
+    val objType = typeStruct?.mapToObjectWrapperType()
     return objType?.sourceObject ?: OBJ_TYPE_CUSTOM
 }

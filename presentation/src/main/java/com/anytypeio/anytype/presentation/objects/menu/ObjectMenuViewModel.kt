@@ -109,7 +109,7 @@ class ObjectMenuViewModel(
         val details = storage.details.current().details
         val objTypeId = details[ctx]?.type?.firstOrNull()
         val typeStruct = details[objTypeId]?.map
-        val objType = typeStruct.mapToObjectWrapperType()
+        val objType = typeStruct?.mapToObjectWrapperType()
         if (objType != null) {
             val isTemplateAllowed = objType.isTemplatesAllowed()
             if (isTemplateAllowed && !isTemplate) {
@@ -285,7 +285,7 @@ class ObjectMenuViewModel(
             )
             setObjectDetails.async(params).fold(
                 onSuccess = {
-                    val objType = details[targetObjectTypeId]?.map.mapToObjectWrapperType()
+                    val objType = details[targetObjectTypeId]?.map?.mapToObjectWrapperType()
                     sendAnalyticsDefaultTemplateEvent(analytics, objType, startTime)
                     _toasts.emit("The template was set as default")
                     isDismissed.value = true
@@ -325,7 +325,7 @@ class ObjectMenuViewModel(
         val details = storage.details.current().details
         val type = details[ctx]?.type?.firstOrNull()
         val typeStruct = details[type]?.map
-        val objType = typeStruct.mapToObjectWrapperType()
+        val objType = typeStruct?.mapToObjectWrapperType()
         if (objType != null) {
             val objTypeKey = objType.uniqueKey
             val command = Command.OpenTemplate(

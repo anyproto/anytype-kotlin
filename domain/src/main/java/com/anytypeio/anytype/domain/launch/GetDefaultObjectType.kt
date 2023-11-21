@@ -89,7 +89,7 @@ class GetDefaultObjectType @Inject constructor(
                 Relations.DEFAULT_TEMPLATE_ID
             )
         )
-        val objType = structs.firstOrNull().mapToObjectWrapperType()
+        val objType = structs.firstOrNull()?.mapToObjectWrapperType()
         if (objType != null) {
             val key = TypeKey(objType.uniqueKey)
             val id = TypeId(objType.id)
@@ -131,7 +131,7 @@ class GetDefaultObjectType @Inject constructor(
                 Relations.DEFAULT_TEMPLATE_ID
             )
         )
-        return structs.firstOrNull().mapToObjectWrapperType()
+        return structs.firstOrNull()?.mapToObjectWrapperType()
     }
 
     private fun filterObjectTypeLibrary(space: SpaceId) = listOf(

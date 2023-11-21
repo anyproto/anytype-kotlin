@@ -89,7 +89,7 @@ class RelationListViewModel(
         val objectDetails = details.details[ctx]?.map ?: emptyMap()
         val objectWrapper = ObjectWrapper.Basic(objectDetails)
         val objectTypeId = objectWrapper.getProperType()
-        val objectTypeWrapper = details.details[objectTypeId]?.map.mapToObjectWrapperType()
+        val objectTypeWrapper = details.details[objectTypeId]?.map?.mapToObjectWrapperType()
         if (objectTypeWrapper == null) {
             Timber.e("Couldn't find valid object type for id: $objectTypeId")
             return emptyList()

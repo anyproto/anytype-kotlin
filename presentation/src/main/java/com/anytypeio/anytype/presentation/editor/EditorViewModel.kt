@@ -4915,7 +4915,7 @@ class EditorViewModel(
         objectTypeStruct: Struct?,
         details: Block.Details
     ): List<ObjectRelationView> {
-        val objType = objectTypeStruct.mapToObjectWrapperType()
+        val objType = objectTypeStruct?.mapToObjectWrapperType()
         val recommendedRelations = objType?.recommendedRelations ?: emptyList()
         return getNotIncludedRecommendedRelations(
             relationLinks = relationLinks,
@@ -6255,7 +6255,7 @@ class EditorViewModel(
         val currentObject = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
         val currentObjectTypeId = currentObject.getProperType() ?: return null
         val struct = details.details[currentObjectTypeId]?.map
-        return struct.mapToObjectWrapperType()
+        return struct?.mapToObjectWrapperType()
     }
 
     fun isObjectTemplate(): Boolean {

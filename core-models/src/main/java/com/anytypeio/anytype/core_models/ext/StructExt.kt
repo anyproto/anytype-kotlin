@@ -41,8 +41,7 @@ fun Map<Id, Struct>.unset(
     return this + mapOf(target to update)
 }
 
-fun Struct?.mapToObjectWrapperType(): ObjectWrapper.Type? {
-    if (this == null) return null
+fun Struct.mapToObjectWrapperType(): ObjectWrapper.Type? {
     if (!this.containsKey(Relations.ID) || !this.containsKey(Relations.UNIQUE_KEY)) return null
     return ObjectWrapper.Type(this)
 }

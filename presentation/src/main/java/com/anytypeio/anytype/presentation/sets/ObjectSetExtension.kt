@@ -118,7 +118,7 @@ private fun ObjectState.DataView.mapFeaturedRelations(
     when (key) {
         Relations.DESCRIPTION -> null
         Relations.TYPE -> details.details[ctx]?.type?.firstOrNull()?.let { typeId ->
-            val objectType = details.details[typeId]?.map.mapToObjectWrapperType()
+            val objectType = details.details[typeId]?.map?.mapToObjectWrapperType()
             if (objectType?.isDeleted == true) {
                 ObjectRelationView.ObjectType.Deleted(
                     id = typeId,
@@ -549,7 +549,7 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
                     Timber.d("Set by type setOf param is null or empty, not possible to get Type and Template")
                     Pair(null, null)
                 } else {
-                    val defaultSetObjectType = details[setOf]?.map.mapToObjectWrapperType()
+                    val defaultSetObjectType = details[setOf]?.map?.mapToObjectWrapperType()
                     if (activeView.defaultTemplate.isNullOrEmpty()) {
                         val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
                         Pair(defaultSetObjectType, defaultTemplateId)

@@ -166,7 +166,7 @@ class CollectionViewModel(
         val params = GetObjectTypes.Params(
             sorts = emptyList(),
             filters = ObjectSearchConstants.filterTypes(
-                spaceId = spaceManager.get()
+                spaces = listOf(spaceManager.get())
             ),
             keys = ObjectSearchConstants.defaultKeysObjectType
         )

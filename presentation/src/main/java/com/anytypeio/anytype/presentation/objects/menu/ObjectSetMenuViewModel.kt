@@ -136,7 +136,6 @@ class ObjectSetMenuViewModel(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isProfile: Boolean,
         isTemplate: Boolean
     ): List<ObjectAction> = buildList {
         if (isArchived) {

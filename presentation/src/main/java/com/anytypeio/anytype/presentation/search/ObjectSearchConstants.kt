@@ -641,7 +641,7 @@ object ObjectSearchConstants {
     //region OBJECT TYPES
 
     fun filterTypes(
-        spaceId: Id,
+        spaces: List<Id>,
         recommendedLayouts: List<ObjectType.Layout> = emptyList()
     ): List<DVFilter> {
         return buildList {
@@ -669,8 +669,8 @@ object ObjectSearchConstants {
                     ),
                     DVFilter(
                         relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = spaceId
+                        condition = DVFilterCondition.IN,
+                        value = spaces
                     ),
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,

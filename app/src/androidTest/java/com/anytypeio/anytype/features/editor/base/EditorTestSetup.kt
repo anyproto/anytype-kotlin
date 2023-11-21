@@ -559,7 +559,9 @@ open class EditorTestSetup {
         repo.stub {
             onBlocking {
                 searchObjects(
-                    filters = ObjectSearchConstants.filterTypes(workspaceId),
+                    filters = ObjectSearchConstants.filterTypes(
+                        spaces = listOf(workspaceId)
+                    ),
                     keys = ObjectSearchConstants.defaultKeysObjectType,
                     sorts = emptyList(),
                     limit = 0,

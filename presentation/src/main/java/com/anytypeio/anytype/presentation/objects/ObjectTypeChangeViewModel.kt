@@ -248,7 +248,7 @@ class ObjectTypeChangeViewModel(
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterTypes(
-                            spaceId = Marketplace.MARKETPLACE_SPACE_ID,
+                            spaces = listOf(Marketplace.MARKETPLACE_SPACE_ID),
                             recommendedLayouts = SupportedLayouts.editorLayouts
                         )
                     )
@@ -275,7 +275,7 @@ class ObjectTypeChangeViewModel(
     ) = getObjectTypes.run(
         GetObjectTypes.Params(
             filters = ObjectSearchConstants.filterTypes(
-                spaceId = spaceManager.get(),
+                spaces = listOf(spaceManager.get()),
                 recommendedLayouts = SupportedLayouts.editorLayouts
             ),
             sorts = ObjectSearchConstants.defaultObjectSearchSorts(),

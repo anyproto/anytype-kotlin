@@ -1805,7 +1805,7 @@ class ObjectSetViewModel(
 
     private suspend fun fetchAndProcessObjectTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
         val filters = ObjectSearchConstants.filterTypes(
-            spaceId = spaceManager.get(),
+            spaces = listOf(spaceManager.get()),
             recommendedLayouts = SupportedLayouts.createObjectLayouts
         )
         val params = GetObjectTypes.Params(

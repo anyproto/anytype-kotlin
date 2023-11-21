@@ -1456,17 +1456,8 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
-        val isProfile = getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.PROFILE
         val isTemplate = isObjectTemplate()
         when {
-            isProfile -> {
-                dispatch(
-                    command = Command.OpenProfileMenu(
-                        isFavorite = details[context]?.isFavorite ?: false,
-                        isLocked = mode == EditorMode.Locked
-                    )
-                )
-            }
             isTemplate -> {
                 dispatch(
                     command = Command.OpenDocumentMenu(
@@ -4845,7 +4836,9 @@ class EditorViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaceId = spaceManager.get(),
+                    spaces = buildList {
+                        add(spaceManager.get())
+                    },
                     recommendedLayouts = SupportedLayouts.editorLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
@@ -5922,7 +5915,9 @@ class EditorViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaceId = spaceManager.get(),
+                    spaces = buildList {
+                        add(spaceManager.get())
+                    },
                     recommendedLayouts = SupportedLayouts.createObjectLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType

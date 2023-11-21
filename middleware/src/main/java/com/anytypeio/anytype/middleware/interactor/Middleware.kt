@@ -952,7 +952,7 @@ class Middleware @Inject constructor(
         space: Id,
         name: String,
         emojiUnicode: String?
-    ): Struct? {
+    ): Struct {
         val request = Rpc.Object.CreateObjectType.Request(
             details = buildMap {
                 put(Relations.NAME, name)
@@ -965,7 +965,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateObjectType(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return response.details
+        return response.details ?: throw IllegalStateException("Null object type struct")
     }
 
     @Throws(Exception::class)

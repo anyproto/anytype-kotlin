@@ -32,6 +32,10 @@ android {
 
     compileSdkVersion config.compile_sdk
 
+    androidResources {
+        generateLocaleConfig true
+    }
+
     defaultConfig {
         applicationId config.application_id
         minSdkVersion config.min_sdk

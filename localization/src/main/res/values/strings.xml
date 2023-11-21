@@ -1129,4 +1129,5 @@
     <string name="bin">Bin</string>
     <string name="synced_files">Synced files</string>
     <string name="log_in">Log In</string>
+    <string name="create_object_section_library">Anytype Library</string>
 </resources>

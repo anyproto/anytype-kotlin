@@ -23,6 +23,7 @@ dependencies {
     implementation project(':analytics')
     implementation project(':core-models')
     implementation project(':core-utils')
+    implementation project(':localization')
     implementation project(':presentation')
     implementation project(':library-emojifier')
 

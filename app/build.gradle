@@ -32,6 +32,10 @@ android {
 
     compileSdkVersion config.compile_sdk
 
+    androidResources {
+        generateLocaleConfig true
+    }
+
     defaultConfig {
         applicationId config.application_id
         minSdkVersion config.min_sdk
@@ -146,6 +150,7 @@ dependencies {
 
     implementation project(':domain')
     implementation project(':core-models')
+    implementation project(':localization')
     implementation project(':data')
     implementation project(':device')
     implementation project(':persistence')

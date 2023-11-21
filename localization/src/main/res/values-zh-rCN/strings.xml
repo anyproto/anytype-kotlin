@@ -550,7 +550,7 @@
     <string name="none">无</string>
     <string name="small">小</string>
     <string name="medium">中等</string>
-    <string name="visible">Visible</string>
+    <string name="visible">可见性</string>
     <string name="card">卡片</string>
     <string name="inline">Inline</string>
     <string name="set_view">Set View</string>

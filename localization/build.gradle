@@ -9,5 +9,5 @@ dependencies {
 }
 
 android {
-    namespace 'com.anytypeio.anytype.middleware'
+    namespace 'com.anytypeio.anytype.localization'
 }

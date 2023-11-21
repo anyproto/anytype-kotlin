@@ -125,6 +125,7 @@ android {
     }
 
     ndkVersion "23.2.8568313"
+    namespace 'com.anytypeio.anytype'
 }
 
 kotlin {

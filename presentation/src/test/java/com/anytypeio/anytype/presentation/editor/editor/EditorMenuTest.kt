@@ -177,9 +177,12 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         vm.onDocumentMenuClicked()
 
         observer.assertValue { value ->
-            value.peekContent() == Command.OpenProfileMenu(
+            value.peekContent() == Command.OpenDocumentMenu(
                 isFavorite = false,
-                isLocked = false
+                isLocked = false,
+                isArchived = false,
+                fromName = "",
+                isTemplate = false
             )
         }
     }

@@ -9,8 +9,12 @@ jobs:
   setup-android:
     runs-on: ubuntu-latest
     steps:
+      -  uses: actions/checkout@v3
+      -  uses: actions/setup-java@v3
+         with:
+          distribution: "zulu"
+          java-version: 17
 
-      - uses: actions/checkout@master
       - name: Setup middleware dependency
         env:
           token_secret: ${{ secrets.ANYTYPE_SECRET }}

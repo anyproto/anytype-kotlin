@@ -263,7 +263,7 @@ object ObjectSearchConstants {
         } else {
             add(
                 DVFilter(
-                    relation = Relations.TYPE_UNIQUE_KEY,
+                    relation = Relations.TYPE,
                     condition = DVFilterCondition.IN,
                     value = limitObjectTypes
                 )
@@ -611,6 +611,29 @@ object ObjectSearchConstants {
         Relations.PAGE_COVER,
         Relations.FILE_EXT,
         Relations.FILE_MIME_TYPE
+    )
+
+    val defaultRelationKeys = listOf(
+        Relations.ID,
+        Relations.SPACE_ID,
+        Relations.UNIQUE_KEY,
+        Relations.NAME,
+        Relations.DESCRIPTION,
+        Relations.ICON_EMOJI,
+        Relations.TYPE,
+        Relations.LAYOUT,
+        Relations.IS_ARCHIVED,
+        Relations.IS_DELETED,
+        Relations.IS_HIDDEN,
+        Relations.SNIPPET,
+        Relations.RESTRICTIONS,
+        Relations.SOURCE_OBJECT,
+        Relations.RELATION_FORMAT,
+        Relations.RELATION_KEY,
+        Relations.RELATION_OPTION_COLOR,
+        Relations.RELATION_DEFAULT_VALUE,
+        Relations.RELATION_FORMAT_OBJECT_TYPES,
+        Relations.RELATION_READ_ONLY_VALUE
     )
 
     //endregion

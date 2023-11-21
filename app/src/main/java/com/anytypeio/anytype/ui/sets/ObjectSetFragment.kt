@@ -880,7 +880,6 @@ open class ObjectSetFragment :
                         ObjectMenuBaseFragment.CTX_KEY to command.ctx,
                         ObjectMenuBaseFragment.IS_ARCHIVED_KEY to command.isArchived,
                         ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
-                        ObjectMenuBaseFragment.IS_PROFILE_KEY to false,
                         ObjectMenuBaseFragment.IS_LOCKED_KEY to false,
                         ObjectMenuBaseFragment.FROM_NAME to title.text.toString()
                     )

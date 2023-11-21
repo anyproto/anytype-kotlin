@@ -24,3 +24,7 @@ dependencies {
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
 }
+
+android {
+    namespace 'com.anytypeio.anytype.middleware'
+}

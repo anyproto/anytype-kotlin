@@ -7,6 +7,7 @@ object SupportedLayouts {
         ObjectType.Layout.BASIC,
         ObjectType.Layout.FILE,
         ObjectType.Layout.IMAGE,
+        ObjectType.Layout.VIDEO,
         ObjectType.Layout.PROFILE,
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION,

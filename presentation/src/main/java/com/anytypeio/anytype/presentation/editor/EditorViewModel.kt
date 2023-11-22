@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -40,6 +41,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.descendants
 import com.anytypeio.anytype.core_models.ext.isAllTextAndNoneCodeBlocks
 import com.anytypeio.anytype.core_models.ext.isAllTextBlocks
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.ext.parents
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.ext.sortByType
@@ -4883,7 +4885,6 @@ class EditorViewModel(
         val objectDetails = details.details[context]?.map ?: emptyMap()
         val objectWrapper = ObjectWrapper.Basic(objectDetails)
         val objectType = objectWrapper.getProperType()
-        val objectTypeWrapper = ObjectWrapper.Type(details.details[objectType]?.map ?: emptyMap())
         val relationLinks = orchestrator.stores.relationLinks.current()
 
         viewModelScope.launch {
@@ -4899,7 +4900,7 @@ class EditorViewModel(
                 ctx = context,
                 objectDetails = objectDetails,
                 relationLinks = relationLinks,
-                objectTypeWrapper = objectTypeWrapper,
+                objectTypeStruct = details.details[objectType]?.map,
                 details = details
             )
             val update =
@@ -4933,12 +4934,14 @@ class EditorViewModel(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
         relationLinks: List<RelationLink>,
-        objectTypeWrapper: ObjectWrapper.Type,
+        objectTypeStruct: Struct?,
         details: Block.Details
     ): List<ObjectRelationView> {
+        val objType = objectTypeStruct?.mapToObjectWrapperType()
+        val recommendedRelations = objType?.recommendedRelations ?: emptyList()
         return getNotIncludedRecommendedRelations(
             relationLinks = relationLinks,
-            recommendedRelations = objectTypeWrapper.recommendedRelations,
+            recommendedRelations = recommendedRelations,
             storeOfRelations = storeOfRelations
         ).views(
             context = ctx,
@@ -6287,11 +6290,8 @@ class EditorViewModel(
         val details = orchestrator.stores.details.current()
         val currentObject = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
         val currentObjectTypeId = currentObject.getProperType() ?: return null
-        return if (details.details.containsKey(currentObjectTypeId)) {
-            ObjectWrapper.Type(details.details[currentObjectTypeId]?.map ?: emptyMap())
-        } else {
-            null
-        }
+        val struct = details.details[currentObjectTypeId]?.map
+        return struct?.mapToObjectWrapperType()
     }
 
     fun isObjectTemplate(): Boolean {

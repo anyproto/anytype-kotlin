@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -23,9 +24,10 @@ class GetObjectTypes @Inject constructor(
             offset = params.offset,
             fulltext = params.query
         )
-        return result.map { struct ->
-            ObjectWrapper.Type(struct)
-        }
+        return result
+            .mapNotNull {
+                it.mapToObjectWrapperType()
+            }
     }
 
     data class Params(

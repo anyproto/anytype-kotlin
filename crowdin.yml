@@ -1,0 +1,17 @@
+append_commit_message: 
+commit_message: 'l10n | Enhancement | %language% [skip ci]'
+pull_request_title: "l10n | Enhancement"
+export_languages:                          
+  - 'zh-CN'
+  - 'no'
+  - 'id'
+  - 'es-ES'
+  - 'de'
+  - 'pt-BR'
+  - 'uk'
+  - 'fr'
+  - 'it'
+  - 'ru'
+files:
+  - source: /localization/src/main/res/values/strings.xml
+    translation: /localization/src/main/res/values-%android_code%/strings.xml

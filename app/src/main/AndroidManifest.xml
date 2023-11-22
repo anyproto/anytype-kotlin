@@ -40,7 +40,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="www.anytype.io"
+                    android:host="https://anytype.io/"
                     android:pathPrefix="/todo"
                     android:scheme="http" />
             </intent-filter>

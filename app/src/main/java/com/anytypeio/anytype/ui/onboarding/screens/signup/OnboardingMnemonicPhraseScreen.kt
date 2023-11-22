@@ -229,7 +229,8 @@ fun MnemonicTitle() {
             text = stringResource(R.string.onboarding_mnemonic_title),
             style = HeadlineHeading.copy(
                 color = OnBoardingTextPrimaryColor
-            )
+            ),
+            textAlign = TextAlign.Center
         )
     }
 }

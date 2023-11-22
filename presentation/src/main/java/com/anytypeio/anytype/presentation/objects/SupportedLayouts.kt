@@ -24,6 +24,17 @@ object SupportedLayouts {
     val fileLayouts = listOf(
         ObjectType.Layout.FILE,
         ObjectType.Layout.IMAGE,
+        ObjectType.Layout.VIDEO,
+        ObjectType.Layout.AUDIO
+    )
+
+    val systemLayouts = listOf(
+        ObjectType.Layout.OBJECT_TYPE,
+        ObjectType.Layout.RELATION,
+        ObjectType.Layout.RELATION_OPTION,
+        ObjectType.Layout.DASHBOARD,
+        ObjectType.Layout.SPACE,
+        ObjectType.Layout.SPACE_VIEW,
     )
 
     val createObjectLayouts = listOf(

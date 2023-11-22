@@ -39,8 +39,6 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
-import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import javax.inject.Inject
 import timber.log.Timber
 import com.anytypeio.anytype.presentation.editor.Editor.Mode as EditorMode
@@ -1518,13 +1516,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                         else
                             null
                     },
-                    spaceGradient = details.details[root.id]?.iconOption?.let { code ->
-                        val gradient = SpaceGradientProvider.Default.get(code)
-                        SpaceIconView.Gradient(
-                            from = gradient.from,
-                            to = gradient.to
-                        )
-                    },
+                    spaceGradient = null,
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,

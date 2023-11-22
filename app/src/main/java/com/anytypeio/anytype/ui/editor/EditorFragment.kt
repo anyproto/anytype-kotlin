@@ -48,6 +48,7 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
@@ -2088,12 +2089,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedToCreateObjectAndAddToTextAsLink(name)
     }
 
-    override fun onProceedWithUpdateType(item: ObjectTypeView) {
-        vm.onObjectTypeChanged(item)
-    }
-
-    override fun onProceedWithDraftUpdateType(item: ObjectTypeView) {
-        vm.onObjectTypeChanged(item)
+    override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
+        vm.onObjectTypeChanged(objType)
     }
 
     override fun onAddRelationToTarget(target: Id, relationKey: Key) {

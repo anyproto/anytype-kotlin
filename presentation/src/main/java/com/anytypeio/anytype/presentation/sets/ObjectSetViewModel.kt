@@ -1296,6 +1296,7 @@ class ObjectSetViewModel(
             ObjectType.Layout.NOTE,
             ObjectType.Layout.IMAGE,
             ObjectType.Layout.FILE,
+            ObjectType.Layout.VIDEO,
             ObjectType.Layout.BOOKMARK -> proceedWithOpeningObject(target)
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 closeBlock.async(context).fold(

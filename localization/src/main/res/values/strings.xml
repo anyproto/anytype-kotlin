@@ -730,6 +730,8 @@
 
     <string name="editor_toolbar">button</string>
 
+    <string name="wait_a_bit_message">Please give us a moment. We\'re almost there…</string>
+
     <string name="confirm">Confirm</string>
     <string name="code_empty">Invitation code should not be null</string>
     <string name="enter_invitation_hint">Invitation code</string>
@@ -911,7 +913,6 @@
     <string name="object_debug">Object Debug</string>
     <string name="object_diagnostics">Diagnostics</string>
     <string name="provide_name">Provide name for new object</string>
-    <string name="wait_a_bit_message">Please give us a moment. We’re almost there…</string>
     <string name="soon">Soon</string>
 
     <string name="are_you_sure_delete_one_object">Are you sure you want to delete 1 object?</string>

@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
@@ -47,7 +48,10 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    RemoteFilesManageScreen(vm = vm)
+                    RemoteFilesManageScreen(
+                        vm = vm,
+                        scope = lifecycleScope
+                    )
                 }
             }
         }

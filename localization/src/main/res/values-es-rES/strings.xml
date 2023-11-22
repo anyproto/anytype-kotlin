@@ -251,10 +251,7 @@
     <string name="color">Color</string>
     <string name="background">Fondo</string>
     <string name="content_description_close_button">Botón de Cerrar</string>
-    <!-- Non-valid certificate, need update -->
-    <string-array name="certs">
-        <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
-    </string-array>
+
     <string name="action_bar_add_below">Agregar bloque debajo</string>
     <string name="action_bar_turn_into">Convertir en</string>
     <string name="action_bar_turn_into_page">Convertir en página</string>

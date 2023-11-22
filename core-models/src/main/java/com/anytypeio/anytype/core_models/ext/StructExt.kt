@@ -2,6 +2,8 @@ package com.anytypeio.anytype.core_models.ext
 
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 
 fun Map<Id, Struct>.process(event: Event.Command.Details) = when (event) {
@@ -38,3 +40,7 @@ fun Map<Id, Struct>.unset(
     val update = curr - keys
     return this + mapOf(target to update)
 }
+
+fun Struct.mapToObjectWrapperType(): ObjectWrapper.Type? =
+    if (containsKey(Relations.ID) && containsKey(Relations.UNIQUE_KEY)) ObjectWrapper.Type(this)
+    else null

@@ -535,7 +535,7 @@ class ObjectTypeChangeViewModelTest {
                 expected = ObjectTypeChangeViewModel.Command.DispatchType(
                     ObjectTypeView(
                         id = expectedType.id,
-                        key = expectedType.key!!,
+                        key = expectedType.uniqueKey,
                         name = expectedType.name.orEmpty(),
                         description = expectedType.description.orEmpty(),
                         emoji = null

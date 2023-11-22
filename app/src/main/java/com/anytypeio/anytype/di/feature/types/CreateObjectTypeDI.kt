@@ -7,7 +7,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.types.CreateType
+import com.anytypeio.anytype.domain.types.CreateObjectType
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
@@ -50,7 +50,7 @@ object CreateObjectTypeModule {
     fun provideCreateTypeInteractor(
         blockRepository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): CreateType = CreateType(blockRepository, dispatchers)
+    ): CreateObjectType = CreateObjectType(blockRepository, dispatchers)
 
     @Module
     interface Declarations {

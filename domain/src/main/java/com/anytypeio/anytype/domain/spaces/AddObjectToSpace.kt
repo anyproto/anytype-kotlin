@@ -2,7 +2,7 @@ package com.anytypeio.anytype.domain.spaces
 
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -35,7 +35,7 @@ class AddObjectToSpace(
 
     data class Result(
         val id: Id,
-        val type: ObjectWrapper.Type
+        val type: Struct?
     )
 }
 

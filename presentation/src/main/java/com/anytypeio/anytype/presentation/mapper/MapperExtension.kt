@@ -600,7 +600,7 @@ fun RelationFormat.toView() = when (this) {
 fun ObjectWrapper.Type.toObjectTypeView(selectedSources: List<Id> = emptyList()): ObjectTypeView =
     ObjectTypeView(
         id = id,
-        key = uniqueKey.orEmpty(),
+        key = uniqueKey,
         name = name.orEmpty(),
         emoji = iconEmoji,
         description = description,

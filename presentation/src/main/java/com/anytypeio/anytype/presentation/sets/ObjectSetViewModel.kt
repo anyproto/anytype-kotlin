@@ -1606,7 +1606,7 @@ class ObjectSetViewModel(
             val dataView = stateReducer.state.value.dataViewState() ?: return@launch
             val viewer = getViewer(dataView) ?: return@launch
             val (type, _) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
-            if (type == null || !type.isValid) return@launch
+            if (type == null) return@launch
             typeTemplatesWidgetState.value = createState(viewer)
             selectedTypeFlow.value = SelectedType(type.id, type.defaultTemplateId)
         }
@@ -1851,9 +1851,7 @@ class ObjectSetViewModel(
         if (viewerDefType == null) return emptyList()
 
         val viewerDefTypeId = viewerDefType.id
-        val viewerDefTypeKey =
-            (if (viewerDefType.uniqueKey != null) TypeKey(viewerDefType.uniqueKey!!) else null)
-                ?: return emptyList()
+        val viewerDefTypeKey = TypeKey(viewerDefType.uniqueKey)
 
         val isTemplatesAllowed = viewerDefType.isTemplatesAllowed()
 

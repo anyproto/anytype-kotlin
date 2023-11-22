@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -36,9 +37,7 @@ class GetDefaultObjectType @Inject constructor(
                 space = space
             )
             return if (item != null) {
-                val key = item.uniqueKey?.let {
-                    TypeKey(it)
-                } ?: TypeKey(ObjectTypeUniqueKeys.NOTE)
+                val key = TypeKey(item.uniqueKey)
                 val id = TypeId(item.id)
                 Response(
                     type = key,
@@ -55,7 +54,7 @@ class GetDefaultObjectType @Inject constructor(
     }
 
     private suspend fun fetchDefaultType(): Response {
-        val items = blockRepository.searchObjects(
+        val structs = blockRepository.searchObjects(
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
@@ -90,15 +89,15 @@ class GetDefaultObjectType @Inject constructor(
                 Relations.DEFAULT_TEMPLATE_ID
             )
         )
-        if (items.isNotEmpty()) {
-            val note = ObjectWrapper.Type(items.first())
-            val key = TypeKey(note.uniqueKey ?: throw IllegalStateException("Default type has empty key"))
-            val id = TypeId(note.id)
+        val objType = structs.firstOrNull()?.mapToObjectWrapperType()
+        if (objType != null) {
+            val key = TypeKey(objType.uniqueKey)
+            val id = TypeId(objType.id)
             return Response(
                 type = key,
-                name = note.name,
+                name = objType.name,
                 id = id,
-                defaultTemplate = note.defaultTemplateId
+                defaultTemplate = objType.defaultTemplateId
             )
         } else {
             throw IllegalStateException("Default type not found")
@@ -109,7 +108,7 @@ class GetDefaultObjectType @Inject constructor(
         type: TypeId,
         space: SpaceId
     ): ObjectWrapper.Type? {
-        val items = blockRepository.searchObjects(
+        val structs = blockRepository.searchObjects(
             limit = 1,
             fulltext = NO_VALUE,
             filters = buildList {
@@ -132,11 +131,7 @@ class GetDefaultObjectType @Inject constructor(
                 Relations.DEFAULT_TEMPLATE_ID
             )
         )
-        return if (items.isNotEmpty()) {
-            ObjectWrapper.Type(items.first())
-        } else {
-            null
-        }
+        return structs.firstOrNull()?.mapToObjectWrapperType()
     }
 
     private fun filterObjectTypeLibrary(space: SpaceId) = listOf(

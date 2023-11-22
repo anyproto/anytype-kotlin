@@ -7,29 +7,28 @@ import android.view.ViewGroup
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.databinding.FragmentUserSettingsBinding
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.settings.PersonalizationSettingsViewModel
 import com.anytypeio.anytype.ui.dashboard.ClearCacheAlertFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
 import javax.inject.Inject
 
 class PersonalizationSettingsFragment : BaseBottomSheetFragment<FragmentUserSettingsBinding>(),
-    AppDefaultObjectTypeFragment.OnObjectTypeAction {
+    OnObjectSelectTypeAction {
 
     @Inject
     lateinit var factory: PersonalizationSettingsViewModel.Factory
 
     private val vm by viewModels<PersonalizationSettingsViewModel> { factory }
 
-    override fun onProceedWithUpdateType(item: ObjectTypeView) {
-        vm.proceedWithUpdateType(type = item.id, key = item.key, name = item.name)
+    override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
+        vm.proceedWithUpdateType(type = objType.id, key = objType.uniqueKey, name = objType.name)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

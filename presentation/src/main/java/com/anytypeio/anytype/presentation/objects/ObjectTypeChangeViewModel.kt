@@ -47,6 +47,7 @@ class ObjectTypeChangeViewModel(
     }
 
     private val setup = MutableSharedFlow<Setup>(replay = 0)
+    private val _objTypes = MutableStateFlow<List<ObjectWrapper.Type>>(emptyList())
 
     val views = MutableStateFlow<List<ObjectTypeItemView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
@@ -60,6 +61,7 @@ class ObjectTypeChangeViewModel(
             setup = setup,
             query = query
         )
+        _objTypes.value = myTypes + marketplaceTypes
         val filteredLibraryTypes = filterLibraryTypesByExcluded(
             libraryTypes = myTypes,
             excludeTypes = setup.excludeTypes
@@ -158,9 +160,13 @@ class ObjectTypeChangeViewModel(
                     }
                 )
             } else {
-                proceedWithDispatchingType(
-                    item = item
-                )
+                val objType = _objTypes.value.firstOrNull { it.id == item.id }
+                if (objType == null) {
+                    Timber.e("Object Type Change Screen, type is not found in types list")
+                    sendToast("Error while choosing object type by key:${item.key}")
+                } else {
+                    proceedWithDispatchingType(item = objType)
+                }
             }
         }
     }
@@ -170,16 +176,7 @@ class ObjectTypeChangeViewModel(
         val type = struct?.mapToObjectWrapperType()
         if (type != null) {
             commands.emit(Command.TypeAdded(type = type.name.orEmpty()))
-            proceedWithDispatchingType(
-                item = ObjectTypeView(
-                    id = result.id,
-                    key = type.uniqueKey,
-                    name = type.name.orEmpty(),
-                    description = type.description.orEmpty(),
-                    emoji = type.iconEmoji,
-                    defaultTemplate = type.defaultTemplateId
-                )
-            )
+            proceedWithDispatchingType(item = type)
         } else {
             Timber.e("Type is not valid")
             sendToast("Error while adding object type by id:${result.id} to space")
@@ -187,7 +184,7 @@ class ObjectTypeChangeViewModel(
     }
 
     private suspend fun proceedWithDispatchingType(
-        item: ObjectTypeView
+        item: ObjectWrapper.Type
     ) {
         commands.emit(Command.DispatchType(item))
     }
@@ -299,7 +296,7 @@ class ObjectTypeChangeViewModel(
 
     sealed class Command {
         data class DispatchType(
-            val item: ObjectTypeView
+            val item: ObjectWrapper.Type
         ) : Command()
 
         data class TypeAdded(val type: String) : Command()

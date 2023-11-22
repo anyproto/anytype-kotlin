@@ -47,9 +47,14 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun `Should create and open Object with NOTE Layout when clicking on New button in Set By Type`() =
         runTest {
 
-            val typeUniqueKey = "type-unique-key-${RandomString.make()}"
+            val setOfId = "setOf-id-${RandomString.make()}"
+            val setOfKey = "setOf-key-${RandomString.make()}"
 
-            mockObjectSet = MockSet(context = root, setOfValue = typeUniqueKey)
+            mockObjectSet = MockSet(
+                context = root,
+                setOfValue = setOfId,
+                setOfKey = setOfKey
+            )
 
             // SETUP
             stubSpaceManager(mockObjectSet.spaceId)
@@ -72,16 +77,16 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             val newObjectId = "objNewNote-${RandomString.make()}"
             val result = CreateDataViewObject.Result(
                 objectId = newObjectId,
-                objectType = TypeKey(typeUniqueKey),
+                objectType = TypeKey(setOfKey),
                 struct = mapOf(
                     Relations.ID to newObjectId,
-                    Relations.UNIQUE_KEY to typeUniqueKey,
+                    Relations.UNIQUE_KEY to setOfKey,
                     Relations.LAYOUT to ObjectType.Layout.NOTE.code.toDouble(),
                 )
             )
             doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
                 CreateDataViewObject.Params.SetByType(
-                    type = TypeKey(typeUniqueKey),
+                    type = TypeKey(setOfKey),
                     filters = mockObjectSet.filters,
                     template = null
                 )
@@ -100,7 +105,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByType(
-                        type = TypeKey(typeUniqueKey),
+                        type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
                         template = null
                     )
@@ -114,7 +119,14 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun `Should create and open Not-Note Object when clicking on New button in Set by Type`() =
         runTest {
 
-            mockObjectSet = MockSet(context = root, setOfValue = ObjectTypeIds.PAGE)
+            val setOfId = "setOf-id-${RandomString.make()}"
+            val setOfKey = ObjectTypeIds.PAGE
+
+            mockObjectSet = MockSet(
+                context = root,
+                setOfValue = setOfId,
+                setOfKey = setOfKey
+            )
 
             // SETUP
             stubSpaceManager(mockObjectSet.spaceId)
@@ -140,7 +152,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             )
             doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
                 CreateDataViewObject.Params.SetByType(
-                    type = TypeKey(ObjectTypeIds.PAGE),
+                    type = TypeKey(setOfKey),
                     filters = mockObjectSet.filters,
                     template = null
                 )
@@ -160,7 +172,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByType(
-                        type = TypeKey(ObjectTypeIds.PAGE),
+                        type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
                         template = null
                     )

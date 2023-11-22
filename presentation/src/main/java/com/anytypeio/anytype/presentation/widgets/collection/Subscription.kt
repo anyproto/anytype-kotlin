@@ -13,14 +13,14 @@ sealed class Subscription(
     val keys: List<String>,
     val sorts: List<DVSort>,
     val limit: Int,
-    val filters: (Id) -> List<DVFilter>
+    val filters: (List<Id>) -> List<DVFilter>
 ) {
     object Recent : Subscription(
         Subscriptions.SUBSCRIPTION_RECENT,
         SUBSCRIPTION_DEFAULT_KEYS + Relations.LAST_MODIFIED_DATE,
         ObjectSearchConstants.sortTabRecent,
         ObjectSearchConstants.limitTabRecent,
-        filters = { space: Id -> ObjectSearchConstants.filterTabRecent(space) }
+        filters = { spaces -> ObjectSearchConstants.filterTabRecent(spaces) }
     )
 
     object RecentLocal : Subscription(
@@ -28,7 +28,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS + Relations.LAST_OPENED_DATE,
         ObjectSearchConstants.sortTabRecentLocal,
         ObjectSearchConstants.limitTabRecent,
-        filters = { space: Id -> ObjectSearchConstants.filterTabRecentLocal(space) }
+        filters = { spaces -> ObjectSearchConstants.filterTabRecentLocal(spaces) }
     )
 
     object Bin : Subscription(
@@ -36,7 +36,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabArchive,
         0,
-        filters = { space : Id -> ObjectSearchConstants.filterTabArchive(space) }
+        filters = { spaces -> ObjectSearchConstants.filterTabArchive(spaces) }
     )
 
     object Sets : Subscription(
@@ -44,7 +44,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabSets,
         0,
-        filters = { space: Id -> ObjectSearchConstants.filterTabSets(space) }
+        filters = { spaces -> ObjectSearchConstants.filterTabSets(spaces) }
     )
 
     object Collections : Subscription(
@@ -52,7 +52,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         ObjectSearchConstants.sortTabSets,
         0,
-        filters = { space: Id -> ObjectSearchConstants.collectionFilters(space) }
+        filters = { spaces -> ObjectSearchConstants.collectionFilters(spaces) }
     )
 
     object Favorites : Subscription(
@@ -60,7 +60,7 @@ sealed class Subscription(
         SUBSCRIPTION_DEFAULT_KEYS,
         emptyList(),
         0,
-        filters = { space: Id -> ObjectSearchConstants.filterTabFavorites(space = space) }
+        filters = { spaces -> ObjectSearchConstants.filterTabFavorites(spaces) }
     )
 
     object Files : Subscription(
@@ -73,7 +73,7 @@ sealed class Subscription(
             )
         ),
         limit = 0,
-        filters = { space: Id -> ObjectSearchConstants.filesFilters(space) }
+        filters = { spaces -> ObjectSearchConstants.filesFilters(spaces) }
     )
 
     object None : Subscription("", emptyList(), emptyList(), 0, filters = { emptyList() })

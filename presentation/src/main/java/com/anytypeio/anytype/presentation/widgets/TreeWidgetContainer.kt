@@ -167,7 +167,10 @@ class TreeWidgetContainer(
             container.subscribe(
                 ListWidgetContainer.params(
                     subscription = widget.source.id,
-                    space = space,
+                    spaces = buildList {
+                        add(config.space)
+                        add(config.techSpace)
+                    },
                     keys = keys,
                     limit = rootLevelLimit,
                     spaceCreationDateInSeconds = spaceViewCreationDate
@@ -177,7 +180,10 @@ class TreeWidgetContainer(
             container.subscribe(
                 ListWidgetContainer.params(
                     subscription = widget.source.id,
-                    space = space,
+                    spaces = buildList {
+                        add(config.space)
+                        add(config.techSpace)
+                    },
                     keys = keys,
                     limit = rootLevelLimit
                 )

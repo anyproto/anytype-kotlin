@@ -151,11 +151,6 @@ fun ObjectWrapper.Basic.widgetElementIcon(
         ObjectType.Layout.PROFILE -> {
             if (!img.isNullOrBlank()) {
                 ObjectIcon.Profile.Image(hash = builder.thumbnail(img))
-            } else if (option != null) {
-                ObjectIcon.Profile.Gradient(
-                    from = option.from,
-                    to = option.to
-                )
             } else {
                 ObjectIcon.Profile.Avatar(name = name.orEmpty())
             }

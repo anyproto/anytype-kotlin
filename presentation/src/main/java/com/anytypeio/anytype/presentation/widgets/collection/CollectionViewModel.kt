@@ -207,7 +207,17 @@ class CollectionViewModel(
         return StoreSearchParams(
             subscription = subscription.id,
             keys = subscription.keys,
-            filters = subscription.filters(spaceManager.get()),
+            filters = subscription.filters(
+                buildList {
+                    val config = spaceManager.getConfig()
+                    if (config != null) {
+                        add(config.space)
+                        add(config.techSpace)
+                    } else {
+                        add(spaceManager.get())
+                    }
+                }
+            ),
             sorts = subscription.sorts,
             limit = subscription.limit
         )
@@ -232,7 +242,10 @@ class CollectionViewModel(
                                 subscription = subscription.id,
                                 keys = subscription.keys,
                                 filters = ObjectSearchConstants.filterTabRecent(
-                                    space = spaceManager.get(),
+                                    spaces = buildList {
+                                        add(config.space)
+                                        add(config.techSpace)
+                                    },
                                     spaceCreationDateInSeconds = spaceCreationDateInSeconds
                                 ),
                                 sorts = subscription.sorts,
@@ -316,18 +329,7 @@ class CollectionViewModel(
         if (favs.size != this.size) {
             Timber.e("Favorite order size is not equal to the list size")
         }
-        val orderedFavorites = MutableList<ObjectWrapper.Basic?>(this.size) { null }
-        for (item in this) {
-            val order = favs[item.id]?.order
-            if (order == null) {
-                Timber.e("Favorite order is null for ${item.id}")
-            } else if (order < 0 || order >= this.size) {
-                Timber.e("Favorite order is out of bounds for ${item.id}")
-            } else {
-                orderedFavorites[order] = item
-            }
-        }
-        return orderedFavorites.filterNotNull()
+        return sortedBy { obj -> favs[obj.id]?.order }
     }
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -361,9 +363,8 @@ class CollectionViewModel(
             root = favoritesObj.root,
             details = favoritesObj.details
         )
-
         return objs.toOrder(favs).filter { obj ->
-            obj.getProperName().lowercase().contains(query.lowercase())
+            obj.getProperName().lowercase().contains(query.lowercase(), true)
         }
             .toViews(urlBuilder, types)
             .map { FavoritesView(it, favs[it.id]?.blockId ?: "") }

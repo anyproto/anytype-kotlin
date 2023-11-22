@@ -1,2 +1,6 @@
 <resources>
+    <!-- Non-valid certificate, need update -->
+    <string-array name="certs">
+        <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
+    </string-array>
 </resources>

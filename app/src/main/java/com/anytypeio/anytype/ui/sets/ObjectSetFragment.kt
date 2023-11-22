@@ -478,7 +478,6 @@ open class ObjectSetFragment :
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
-        lifecycleScope.subscribe(vm.toasts) { toast(it) }
         lifecycleScope.subscribe(vm.status) { setStatus(it) }
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
@@ -1154,6 +1153,7 @@ open class ObjectSetFragment :
                 featuredRelations.gone()
             }
         }
+        jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
         vm.onStart(ctx)
     }
 

@@ -203,7 +203,7 @@ class ObjectSetViewModel(
 
     private var context: Id = ""
 
-    private val selectedTypeFlow: MutableStateFlow<SelectedType?> = MutableStateFlow(null)
+    private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
     init {
         Timber.d("ObjectSetViewModel, init")
@@ -1580,14 +1580,7 @@ class ObjectSetViewModel(
 
     fun onNewTypeForViewerClicked(objType: ObjectWrapper.Type) {
         Timber.d("onNewTypeForViewerClicked, objType:[$objType]")
-        viewModelScope.launch {
-            val type = storeOfObjectTypes.get(objType.id)
-            if (type != null) {
-                selectedTypeFlow.value = SelectedType(type.id, type.defaultTemplateId)
-            } else {
-                Timber.e("Couldn't find type in store by id:${objType.id}")
-            }
-        }
+        selectedTypeFlow.value = objType
     }
 
     private fun showTypeTemplatesWidgetForObjectCreation() {
@@ -1616,7 +1609,7 @@ class ObjectSetViewModel(
             val (type, _) = dataView.getActiveViewTypeAndTemplate(context, viewer, storeOfObjectTypes)
             if (type == null) return@launch
             typeTemplatesWidgetState.value = createState(viewer)
-            selectedTypeFlow.value = SelectedType(type.id, type.defaultTemplateId)
+            selectedTypeFlow.value = type
         }
         logEvent(ObjectStateAnalyticsEvent.SHOW_TEMPLATES)
     }
@@ -1629,10 +1622,7 @@ class ObjectSetViewModel(
                 is TypeTemplatesWidgetUIAction.TypeClick.Item -> {
                     when (uiState) {
                         is TypeTemplatesWidgetUI.Data -> {
-                            selectedTypeFlow.value = SelectedType(
-                                id = action.type.id,
-                                defaultTemplateId = action.type.defaultTemplateId
-                            )
+                            selectedTypeFlow.value = action.type
                         }
                         is TypeTemplatesWidgetUI.Init -> Unit
                     }
@@ -2525,9 +2515,3 @@ class ObjectSetViewModel(
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
     }
 }
-
-
-data class SelectedType(
-    val id: Id,
-    val defaultTemplateId: Id?
-)

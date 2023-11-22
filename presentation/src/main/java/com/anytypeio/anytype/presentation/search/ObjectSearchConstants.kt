@@ -671,6 +671,10 @@ object ObjectSearchConstants {
                         relation = Relations.SPACE_ID,
                         condition = DVFilterCondition.IN,
                         value = spaces
+                    ),
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_EMPTY
                     )
                 )
             )

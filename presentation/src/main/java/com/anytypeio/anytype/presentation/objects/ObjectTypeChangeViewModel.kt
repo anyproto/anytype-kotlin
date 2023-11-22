@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.MARKETPLACE_OBJECT_TYPE_PREFIX
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -148,18 +149,8 @@ class ObjectTypeChangeViewModel(
                     space = spaceManager.get()
                 )
                 addObjectTypeToSpace.async(params = params).fold(
-                    onSuccess = { result ->
-                        commands.emit(Command.TypeAdded(type = result.type.name.orEmpty()))
-                        proceedWithDispatchingType(
-                            item = ObjectTypeView(
-                                id = result.id,
-                                key = result.type.uniqueKey.orEmpty(),
-                                name = result.type.name.orEmpty(),
-                                description = result.type.description.orEmpty(),
-                                emoji = result.type.iconEmoji,
-                                defaultTemplate = result.type.defaultTemplateId
-                            )
-                        )
+                    onSuccess = {
+                        proceedWithNewlyAddedObjectType(it)
                     },
                     onFailure = {
                         Timber.e(it, "Error while adding object by id:${item.id} to space")
@@ -171,6 +162,27 @@ class ObjectTypeChangeViewModel(
                     item = item
                 )
             }
+        }
+    }
+
+    private suspend fun proceedWithNewlyAddedObjectType(result: AddObjectToSpace.Result) {
+        val struct = result.type
+        val type = struct?.mapToObjectWrapperType()
+        if (type != null) {
+            commands.emit(Command.TypeAdded(type = type.name.orEmpty()))
+            proceedWithDispatchingType(
+                item = ObjectTypeView(
+                    id = result.id,
+                    key = type.uniqueKey,
+                    name = type.name.orEmpty(),
+                    description = type.description.orEmpty(),
+                    emoji = type.iconEmoji,
+                    defaultTemplate = type.defaultTemplateId
+                )
+            )
+        } else {
+            Timber.e("Type is not valid")
+            sendToast("Error while adding object type by id:${result.id} to space")
         }
     }
 
@@ -226,7 +238,7 @@ class ObjectTypeChangeViewModel(
         query: String
     ): List<ObjectWrapper.Type> {
         val excludedMarketplaceTypes = buildList {
-            addAll(myTypes.mapNotNull { it.uniqueKey })
+            addAll(myTypes.map { it.uniqueKey })
             if (!setup.isWithBookmark) {
                 add(MarketplaceObjectTypeIds.BOOKMARK)
             }

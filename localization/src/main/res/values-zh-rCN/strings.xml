@@ -676,7 +676,6 @@
     <string name="confirm">确认</string>
     <string name="code_empty">邀请码不能为空</string>
     <string name="enter_invitation_hint">邀请码</string>
-    <string name="enter_invitation_text">If you don\'t have one just go to anytype.io and sign up to the waiting list. We are inviting people on the rolling bases.</string>
     <string name="start_login_text">使用Anytype，您可以写便笺和文档，管理任务，分享文件或从网络上保存重要内容。</string>
     <string name="login">登录</string>
     <string name="sign_up">注册</string>

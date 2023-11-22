@@ -648,7 +648,6 @@
     <string name="confirm">Confirm</string>
     <string name="code_empty">Invitation code should not be null</string>
     <string name="enter_invitation_hint">Invitation code</string>
-    <string name="enter_invitation_text">If you don\'t have one just go to anytype.io and sign up to the waiting list. We are inviting people on the rolling bases.</string>
     <string name="start_login_text">With Anytype you can write notes and documents, manage tasks, share files and save important content from the web.</string>
     <string name="login">Masuk</string>
     <string name="sign_up">Daftar</string>
@@ -818,7 +817,6 @@
     <string name="object_debug">Object Debug</string>
     <string name="object_diagnostics">Diagnostics</string>
     <string name="provide_name">Provide name for new object</string>
-    <string name="wait_a_bit_message">Please give us a moment. We’re almost there…</string>
     <string name="soon">Segera</string>
     <string name="are_you_sure_delete_one_object">Are you sure you want to delete 1 object?</string>
     <string name="are_you_sure_delete_n_objects">Are you sure you want to delete %1$d objects?</string>
@@ -833,7 +831,6 @@
     <string name="shortcut_create_new">Create a new %1$s</string>
     <string name="close">Tutup</string>
     <string name="go_to_settings">Go to settings</string>
-    <string name="do_not_forget_mnemonic_phrase">Don’t forget to take and save your recovery phrase</string>
     <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
     <string name="if_you_lose_recovery_phrase_warning">If you lose the recovery phrase and get logged out you will not be able to ever access your data again. Save this recovery phrase outside of Anytype for data recovery.</string>
     <string name="card_size">Ukuran kartu</string>
@@ -936,7 +933,6 @@
     <string name="onboarding_join_button_text">Buat Akun Baru</string>
     <string name="onboarding_log_in_button_text">Masuk</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
-    <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_mnemonic_title">Simpan Frasa Pemulihanmu</string>

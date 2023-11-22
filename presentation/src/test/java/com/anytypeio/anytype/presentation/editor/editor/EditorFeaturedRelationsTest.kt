@@ -6,9 +6,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObjectType
-import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.core_models.ext.content
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -76,17 +74,13 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, block, featuredBlock)
 
         val objectTypeId = MockDataFactory.randomString()
+        val objectTypeKey = MockDataFactory.randomString()
         val objectTypeName = MockDataFactory.randomString()
         val objectTypeDescription = MockDataFactory.randomString()
 
         val r1 = MockTypicalDocumentFactory.relationObject("Ad")
         val r2 = MockTypicalDocumentFactory.relationObject("De")
         val r3 = MockTypicalDocumentFactory.relationObject("HJ")
-
-        val relationObjectType = StubObjectType(
-            id = objectTypeId,
-            name = "Object Type"
-        )
 
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
@@ -103,6 +97,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         val objectTypeFields = Block.Fields(
             mapOf(
+                Relations.ID to objectTypeId,
+                Relations.UNIQUE_KEY to objectTypeKey,
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )
@@ -125,10 +121,6 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         storeOfRelations.merge(
             listOf(r1, r2, r3)
-        )
-
-        storeOfObjectTypes.merge(
-            types = listOf(relationObjectType)
         )
 
         val vm = buildViewModel()
@@ -203,17 +195,13 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, block)
 
         val objectTypeId = MockDataFactory.randomString()
+        val objectTypeKey = MockDataFactory.randomString()
         val objectTypeName = MockDataFactory.randomString()
         val objectTypeDescription = MockDataFactory.randomString()
 
         val r1 = MockTypicalDocumentFactory.relationObject("Ad")
         val r2 = MockTypicalDocumentFactory.relationObject("De")
         val r3 = MockTypicalDocumentFactory.relationObject("HJ")
-
-        val relationObjectType = StubObjectType(
-            id = objectTypeId,
-            name = "Object Type"
-        )
 
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
@@ -230,6 +218,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         val objectTypeFields = Block.Fields(
             mapOf(
+                Relations.ID to objectTypeId,
+                Relations.UNIQUE_KEY to objectTypeKey,
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )
@@ -251,10 +241,6 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
         storeOfRelations.merge(
             listOf(r1, r2, r3)
-        )
-
-        storeOfObjectTypes.merge(
-            listOf(relationObjectType)
         )
 
         val vm = buildViewModel()
@@ -311,18 +297,13 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         val doc = listOf(page, header, title, block, featuredBlock)
 
         val objectTypeId = MockDataFactory.randomString()
+        val objectTypeKey = MockDataFactory.randomString()
         val objectTypeName = MockDataFactory.randomString()
         val objectTypeDescription = MockDataFactory.randomString()
 
         val r1 = MockTypicalDocumentFactory.relationObject("Ad")
         val r2 = MockTypicalDocumentFactory.relationObject("De")
         val r3 = MockTypicalDocumentFactory.relationObject("HJ")
-        val relationObjectType = StubRelationObject(
-            key = Block.Fields.TYPE_KEY,
-            name = "Object Type",
-            format = Relation.Format.OBJECT
-        )
-
 
         val value1 = MockDataFactory.randomString()
         val value2 = MockDataFactory.randomString()
@@ -332,13 +313,15 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                 r1.key to value1,
                 r2.key to value2,
                 r3.key to value3,
-                relationObjectType.key to objectTypeId,
+                Relations.TYPE to objectTypeId,
                 Relations.FEATURED_RELATIONS to emptyList<String>()
             )
         )
 
         val objectTypeFields = Block.Fields(
             mapOf(
+                Relations.ID to objectTypeId,
+                Relations.UNIQUE_KEY to objectTypeKey,
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )
@@ -359,7 +342,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         )
 
         storeOfRelations.merge(
-            listOf(r1, r2, r3, relationObjectType)
+            listOf(r1, r2, r3)
         )
 
         val vm = buildViewModel()
@@ -417,17 +400,13 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             val doc = listOf(page, header, title, block, featuredBlock)
 
             val objectTypeId = MockDataFactory.randomString()
+            val objectTypeKey = MockDataFactory.randomString()
             val objectTypeName = "Movie"
             val objectTypeDescription = MockDataFactory.randomString()
 
             val r1 = MockTypicalDocumentFactory.relationObject("Ad")
             val r2 = MockTypicalDocumentFactory.relationObject("De")
             val r3 = MockTypicalDocumentFactory.relationObject("HJ")
-            val relationObjectType = StubRelationObject(
-                key = Block.Fields.TYPE_KEY,
-                name = "Object Type",
-                format = Relation.Format.OBJECT
-            )
 
             val value1 = MockDataFactory.randomString()
             val value2 = MockDataFactory.randomString()
@@ -437,13 +416,15 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                     r1.key to value1,
                     r2.key to value2,
                     r3.key to value3,
-                    relationObjectType.key to objectTypeId,
-                    Relations.FEATURED_RELATIONS to listOf(relationObjectType.key, r3.key)
+                    Relations.TYPE to objectTypeId,
+                    Relations.FEATURED_RELATIONS to listOf(Relations.TYPE, r3.key)
                 )
             )
 
             val objectTypeFields = Block.Fields(
                 mapOf(
+                    Relations.ID to objectTypeId,
+                    Relations.UNIQUE_KEY to objectTypeKey,
                     Relations.NAME to objectTypeName,
                     Relations.DESCRIPTION to objectTypeDescription
                 )
@@ -464,7 +445,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             )
 
             storeOfRelations.merge(
-                listOf(r1, r2, relationObjectType)
+                listOf(r1, r2)
             )
 
             val vm = buildViewModel()
@@ -542,13 +523,9 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             val doc = listOf(page, header, title, block, featuredBlock)
 
             val objectTypeId = MockDataFactory.randomString()
+            val objectTypeKey = MockDataFactory.randomString()
             val objectTypeName = MockDataFactory.randomString()
             val objectTypeDescription = MockDataFactory.randomString()
-
-            val relationObjectType = StubObjectType(
-                id = objectTypeId,
-                name = "Object Type"
-            )
 
             val value1 = MockDataFactory.randomString()
             val value2 = MockDataFactory.randomString()
@@ -566,6 +543,8 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
             val objectTypeFields = Block.Fields(
                 mapOf(
+                    Relations.ID to objectTypeId,
+                    Relations.UNIQUE_KEY to objectTypeKey,
                     Relations.NAME to objectTypeName,
                     Relations.DESCRIPTION to objectTypeDescription
                 )
@@ -588,10 +567,6 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
             storeOfRelations.merge(
                 listOf(r1, r2, r3)
-            )
-
-            storeOfObjectTypes.merge(
-                listOf(relationObjectType)
             )
 
             val vm = buildViewModel()
@@ -678,10 +653,6 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
             val r2 = MockTypicalDocumentFactory.relationObject("De")
             val r3 = MockTypicalDocumentFactory.relationObject("HJ")
 
-            val relationObjectType = StubObjectType(
-                id = objectTypeId
-            )
-
             val value1 = MockDataFactory.randomString()
             val value2 = MockDataFactory.randomString()
             val value3 = MockDataFactory.randomString()
@@ -708,10 +679,6 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
 
             storeOfRelations.merge(
                 listOf(r1, r2, r3)
-            )
-
-            storeOfObjectTypes.merge(
-                types = listOf(relationObjectType)
             )
 
             val vm = buildViewModel()

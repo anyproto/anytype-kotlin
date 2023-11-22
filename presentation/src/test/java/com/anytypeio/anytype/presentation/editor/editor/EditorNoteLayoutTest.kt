@@ -113,6 +113,7 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
         val objectTypeFields = Block.Fields(
             mapOf(
                 Relations.ID to objectTypeId,
+                Relations.UNIQUE_KEY to objectType.uniqueKey,
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )
@@ -229,6 +230,8 @@ class EditorNoteLayoutTest : EditorPresentationTestSetup() {
 
         val objectTypeFields = Block.Fields(
             mapOf(
+                Relations.ID to objectTypeId,
+                Relations.UNIQUE_KEY to MockDataFactory.randomString(),
                 Relations.NAME to objectTypeName,
                 Relations.DESCRIPTION to objectTypeDescription
             )

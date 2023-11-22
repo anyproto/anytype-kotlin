@@ -4305,12 +4305,22 @@ class EditorViewModel(
         )
     }
 
+    fun onTypesWidgetItemClicked(item: ObjectTypeView) {
+        Timber.d("onTypesWidgetItemClicked, item:[$item]")
+        val objType = _objectTypes.firstOrNull { item.id == it.id }
+        if (objType != null) {
+            onObjectTypeChanged(objType)
+        } else {
+            Timber.e("Error while getting object type from objectTypes list")
+        }
+    }
+
     fun onObjectTypeChanged(
-        item: ObjectTypeView
+        objType: ObjectWrapper.Type
     ) {
-        Timber.d("onObjectTypeChanged, item:[$item]")
+        Timber.d("onObjectTypeChanged, item:[$objType]")
         viewModelScope.launch {
-            when (item.key) {
+            when (objType.uniqueKey) {
                 ObjectTypeIds.SET -> {
                     proceedWithConvertingToSet()
                 }
@@ -4318,7 +4328,7 @@ class EditorViewModel(
                     proceedWithConvertingToCollection()
                 }
                 else -> {
-                    proceedWithObjectTypeChangeAndApplyTemplate(item)
+                    proceedWithObjectTypeChangeAndApplyTemplate(objType)
                 }
             }
         }
@@ -4854,6 +4864,8 @@ class EditorViewModel(
             getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
+                    _objectTypes.clear()
+                    _objectTypes.addAll(types)
                     val views = types.getObjectTypeViewsForSBPage(
                         isWithCollection = false,
                         isWithBookmark = false,
@@ -5916,6 +5928,8 @@ class EditorViewModel(
         sendHideObjectTypeWidgetEvent()
     }
 
+    private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
+
     private fun proceedWithGettingObjectTypesForObjectTypeWidget() {
         viewModelScope.launch {
             val excludeTypes = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
@@ -5942,6 +5956,8 @@ class EditorViewModel(
             getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
+                    _objectTypes.clear()
+                    _objectTypes.addAll(types)
                     val views = types.getObjectTypeViewsForSBPage(
                         isWithCollection = true,
                         isWithBookmark = false,
@@ -5973,24 +5989,24 @@ class EditorViewModel(
         if (isObjectTypesWidgetVisible) controlPanelInteractor.onEvent(ObjectTypesWidgetEvent.Hide)
     }
 
-    private fun proceedWithObjectTypeChange(item: ObjectTypeView, onSuccess: (() -> Unit)? = null) {
+    private fun proceedWithObjectTypeChange(objType: ObjectWrapper.Type, onSuccess: (() -> Unit)? = null) {
         val startTime = System.currentTimeMillis()
         val internalFlags = getInternalFlagsFromDetails()
         val containsTypeFlag = internalFlags.contains(InternalFlags.ShouldSelectType)
         viewModelScope.launch {
             val params = SetObjectType.Params(
                 context = context,
-                objectTypeKey = item.key
+                objectTypeKey = objType.uniqueKey
             )
             setObjectType.async(params).fold(
-                onFailure = { Timber.e(it, "Error while updating object type: [${item.key}]") },
+                onFailure = { Timber.e(it, "Error while updating object type: [${objType.uniqueKey}]") },
                 onSuccess = { response ->
-                    Timber.d("proceedWithObjectTypeChange success, key:[${item.key}]")
+                    Timber.d("proceedWithObjectTypeChange success, key:[${objType.uniqueKey}]")
                     dispatcher.send(response)
                     sendAnalyticsObjectTypeSelectOrChangeEvent(
                         analytics = analytics,
                         startTime = startTime,
-                        sourceObject = item.sourceObject,
+                        sourceObject = objType.sourceObject,
                         containsFlagType = containsTypeFlag
                     )
                     onSuccess?.invoke()
@@ -5999,12 +6015,12 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithObjectTypeChangeAndApplyTemplate(item: ObjectTypeView) {
-        proceedWithObjectTypeChange(item) {
+    private fun proceedWithObjectTypeChangeAndApplyTemplate(objType: ObjectWrapper.Type) {
+        proceedWithObjectTypeChange(objType) {
             val internalFlags = getInternalFlagsFromDetails()
             if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
                 onProceedWithApplyingTemplateByObjectId(
-                    template = item.defaultTemplate
+                    template = objType.defaultTemplateId
                 )
             }
         }

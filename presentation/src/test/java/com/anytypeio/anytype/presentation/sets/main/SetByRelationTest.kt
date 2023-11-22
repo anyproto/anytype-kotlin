@@ -25,11 +25,14 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
     private lateinit var viewModel: ObjectSetViewModel
     private lateinit var mockObjectSet: MockSet
 
+    private val setOfId = "setOfId"
+    private val setOfKey = "setOfKey"
+
     @Before
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root)
+        mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey)
     }
 
     @After
@@ -60,7 +63,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         )
         doReturn(Unit).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
-                type = TypeKey(mockObjectSet.setOf),
+                type = TypeKey(setOfKey),
                 filters = mockObjectSet.filters,
                 template = null
             )
@@ -83,7 +86,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByType(
-                        type = TypeKey(mockObjectSet.setOf),
+                        type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
                         template = null
                     )

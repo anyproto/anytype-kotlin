@@ -4305,6 +4305,16 @@ class EditorViewModel(
         )
     }
 
+    fun onTypesWidgetItemClicked(item: ObjectTypeView) {
+        Timber.d("onTypesWidgetItemClicked, item:[$item]")
+        val objType = _objectTypes.firstOrNull { item.id == it.id }
+        if (objType != null) {
+            onObjectTypeChanged(objType)
+        } else {
+            Timber.e("Error while getting object type from objectTypes list")
+        }
+    }
+
     fun onObjectTypeChanged(
         objType: ObjectWrapper.Type
     ) {
@@ -4846,6 +4856,8 @@ class EditorViewModel(
             getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
+                    _objectTypes.clear()
+                    _objectTypes.addAll(types)
                     val views = types.getObjectTypeViewsForSBPage(
                         isWithCollection = false,
                         isWithBookmark = false,
@@ -5909,6 +5921,8 @@ class EditorViewModel(
         sendHideObjectTypeWidgetEvent()
     }
 
+    private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
+
     private fun proceedWithGettingObjectTypesForObjectTypeWidget() {
         viewModelScope.launch {
             val excludeTypes = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
@@ -5925,6 +5939,8 @@ class EditorViewModel(
             getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
+                    _objectTypes.clear()
+                    _objectTypes.addAll(types)
                     val views = types.getObjectTypeViewsForSBPage(
                         isWithCollection = true,
                         isWithBookmark = false,

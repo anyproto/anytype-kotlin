@@ -42,6 +42,7 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
@@ -1246,14 +1247,9 @@ open class ObjectSetFragment :
         inflater, container, false
     )
 
-    override fun onProceedWithUpdateType(item: ObjectTypeView) {
-        vm.onNewTypeForViewerClicked(item.id)
+    override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
+        vm.onNewTypeForViewerClicked(objType)
     }
-
-    override fun onProceedWithDraftUpdateType(item: ObjectTypeView) {
-        // Do nothing.
-    }
-
 
     private fun observeSelectingTemplate() {
         val navController = findNavController()

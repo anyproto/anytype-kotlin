@@ -1570,14 +1570,14 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onNewTypeForViewerClicked(typeId: Id) {
-        Timber.d("onNewTypeForViewerClicked, typeId:[$typeId]")
+    fun onNewTypeForViewerClicked(objType: ObjectWrapper.Type) {
+        Timber.d("onNewTypeForViewerClicked, objType:[$objType]")
         viewModelScope.launch {
-            val type = storeOfObjectTypes.get(typeId)
+            val type = storeOfObjectTypes.get(objType.id)
             if (type != null) {
                 selectedTypeFlow.value = SelectedType(type.id, type.defaultTemplateId)
             } else {
-                Timber.e("Couldn't find type in store by id:$typeId")
+                Timber.e("Couldn't find type in store by id:${objType.id}")
             }
         }
     }

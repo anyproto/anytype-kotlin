@@ -702,7 +702,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         )
 
         binding.objectTypesToolbar.setupClicks(
-            onItemClick = vm::onObjectTypeChanged,
+            onItemClick = vm::onTypesWidgetItemClicked,
             onSearchClick = vm::onObjectTypesWidgetSearchClicked,
             onDoneClick = vm::onObjectTypesWidgetDoneClicked
         )

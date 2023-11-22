@@ -779,6 +779,13 @@ class ObjectSetViewModel(
 
             if (relation.isReadonlyValue) {
                 if (relation.format == Relation.Format.OBJECT) {
+
+                    if (relation.key == Relations.TYPE) {
+                        Timber.w("Cannot open Object Type from here.")
+                        toast(NOT_ALLOWED_CELL)
+                        return@launch
+                    }
+
                     // TODO terrible workaround, which must be removed in the future!
                     if (cell is CellView.Object && cell.objects.isNotEmpty()) {
                         val obj = cell.objects.first()
@@ -1296,6 +1303,7 @@ class ObjectSetViewModel(
             ObjectType.Layout.NOTE,
             ObjectType.Layout.IMAGE,
             ObjectType.Layout.FILE,
+            ObjectType.Layout.VIDEO,
             ObjectType.Layout.BOOKMARK -> proceedWithOpeningObject(target)
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 closeBlock.async(context).fold(

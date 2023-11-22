@@ -29,7 +29,6 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.ui_settings.main.GradientComposeView
 
 @Composable
 fun TreeWidgetObjectIcon(
@@ -52,7 +51,12 @@ fun TreeWidgetObjectIcon(
                     )
             ) {
                 Text(
-                    text = icon.name.ifEmpty { stringResource(id = R.string.u) }.take(1),
+                    text = icon
+                        .name
+                        .ifEmpty { stringResource(id = R.string.u) }
+                        .take(1)
+                        .uppercase()
+                    ,
                     modifier = Modifier.align(Alignment.Center),
                     style = TextStyle(
                         fontSize = 11.sp,
@@ -66,14 +70,6 @@ fun TreeWidgetObjectIcon(
             UriImage(
                 uri = icon.hash,
                 modifier = modifier.padding(start = paddingStart, end = paddingEnd)
-            )
-        }
-        is ObjectIcon.Profile.Gradient -> {
-            GradientComposeView(
-                modifier = modifier.padding(start = paddingStart, end = paddingEnd),
-                from = icon.from,
-                to = icon.to,
-                size = 18.dp
             )
         }
         is ObjectIcon.Basic.Emoji -> {
@@ -136,12 +132,6 @@ fun ListWidgetObjectIcon(
     when (icon) {
         is ObjectIcon.Profile.Avatar -> DefaultProfileAvatarIcon(modifier, iconSize, icon)
         is ObjectIcon.Profile.Image -> defaultProfileIconImage(icon, modifier, iconSize)
-        is ObjectIcon.Profile.Gradient -> GradientComposeView(
-            modifier = modifier,
-            from = icon.from,
-            to = icon.to,
-            size = iconSize
-        )
         is ObjectIcon.Basic.Emoji -> DefaultEmojiObjectIcon(modifier, iconSize, icon)
         is ObjectIcon.Basic.Image -> DefaultObjectImageIcon(icon.hash, modifier, iconSize)
         is ObjectIcon.Bookmark -> DefaultObjectBookmarkIcon(icon.image, modifier, iconSize)
@@ -224,9 +214,12 @@ private fun DefaultProfileAvatarIcon(
                 color = colorResource(id = R.color.shape_primary)
             )
     ) {
-        val name = icon.name.ifEmpty { stringResource(id = R.string.u) }
         Text(
-            text = name.take(1),
+            text = icon
+                .name
+                .ifEmpty { stringResource(id = R.string.u) }
+                .take(1)
+                .uppercase(),
             modifier = Modifier.align(Alignment.Center),
             style = TextStyle(
                 fontSize = 28.sp,

@@ -178,9 +178,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.gone()
             initialContainer.visible()
             composeView.gone()
-            if (initialContainer.background == null) {
-                initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
-            }
+            initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
             initial.setTextColor(context.color(R.color.text_white))
             initial.setHintTextColor(context.color(R.color.text_tertiary))
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
@@ -197,9 +195,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.gone()
             initialContainer.visible()
             composeView.gone()
-            if (initialContainer.background == null) {
-                initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
-            }
+            initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
             initial.setTextColor(textColor)
             initial.setHintTextColor(textColor)
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()

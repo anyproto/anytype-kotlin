@@ -51,7 +51,12 @@ fun TreeWidgetObjectIcon(
                     )
             ) {
                 Text(
-                    text = icon.name.ifEmpty { stringResource(id = R.string.u) }.take(1),
+                    text = icon
+                        .name
+                        .ifEmpty { stringResource(id = R.string.u) }
+                        .take(1)
+                        .uppercase()
+                    ,
                     modifier = Modifier.align(Alignment.Center),
                     style = TextStyle(
                         fontSize = 11.sp,
@@ -209,9 +214,12 @@ private fun DefaultProfileAvatarIcon(
                 color = colorResource(id = R.color.shape_primary)
             )
     ) {
-        val name = icon.name.ifEmpty { stringResource(id = R.string.u) }
         Text(
-            text = name.take(1),
+            text = icon
+                .name
+                .ifEmpty { stringResource(id = R.string.u) }
+                .take(1)
+                .uppercase(),
             modifier = Modifier.align(Alignment.Center),
             style = TextStyle(
                 fontSize = 28.sp,

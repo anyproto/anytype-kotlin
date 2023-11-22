@@ -740,7 +740,7 @@
     <string name="button_allow">Allow</string>
     <string name="button_deny">Deny</string>
     <string name="button_ok">Ok</string>
-    <string name="error">Error</string>
+    <string name="error">Erro</string>
     <string name="page_icon">Page icon</string>
     <string name="page_icon_picker_remove_text">Remover</string>
     <string name="create_bookmark">Criar</string>
@@ -863,7 +863,7 @@
     <string name="snack_object_set_not_found">Set not found for this type.</string>
     <string name="create_new_set">Criar</string>
     <string name="shortcut_create_new">Create a new %1$s</string>
-    <string name="close">Close</string>
+    <string name="close">Fechar</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="do_not_forget_mnemonic_phrase">Don’t forget to take and save your recovery phrase</string>
     <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
@@ -873,7 +873,7 @@
     <string name="clear_cache_title">Você tem certeza?</string>
     <string name="download_from_node">Todos os arquivos de mídia armazenados no Anytype serão excluídos do seu dispositivo atual. Eles podem ser baixados novamente de um nó de backup ou de outro dispositivo.</string>
     <string name="new_profile">New profile</string>
-    <string name="back_up_your_phrase">Back up phrase</string>
+    <string name="back_up_your_phrase">Frase de recuperação</string>
     <string name="anytype_analytics">Anytype Analytics</string>
     <string name="anytype_analytics_msg">Understanding how people use Anytype helps us improve the product. This version of Anytype includes the analytics code that protects your privacy.\nIt doesn\'t record the actual document\'s content but still allows us to understand how you use Anytype.\nStay subscribed to our mailing list, as we will soon announce a new release that enables you to opt-out.</string>
     <string name="retry">Retry</string>
@@ -1024,7 +1024,7 @@
     <string name="anytype_update_alert_title">It’s time to update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_personal">Configurações</string>
-    <string name="space_type_private">Private Space</string>
+    <string name="space_type_private">Espaço Privado</string>
     <string name="space_type_unknown">Desconhecido</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_groups">Groups</string>

@@ -3,11 +3,10 @@ package com.anytypeio.anytype.ui.objects.types.pickers
 import androidx.core.os.bundleOf
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
 /**
@@ -23,8 +22,8 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
         )
     }
 
-    override fun onItemClicked(item: ObjectTypeView) {
-        withParent<OnObjectTypeAction> {
+    override fun onItemClicked(item: ObjectWrapper.Type) {
+        withParent<OnObjectSelectTypeAction> {
             onProceedWithUpdateType(item)
         }
         hideSoftInput()
@@ -47,9 +46,5 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
         fun newInstance(excludeTypes: List<Id>) = AppDefaultObjectTypeFragment().apply {
             arguments = bundleOf(ARG_EXCLUDE_TYPES to excludeTypes)
         }
-    }
-
-    interface OnObjectTypeAction {
-        fun onProceedWithUpdateType(item: ObjectTypeView)
     }
 }

@@ -42,6 +42,7 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
@@ -478,7 +479,6 @@ open class ObjectSetFragment :
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
-        lifecycleScope.subscribe(vm.toasts) { toast(it) }
         lifecycleScope.subscribe(vm.status) { setStatus(it) }
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
@@ -1154,6 +1154,7 @@ open class ObjectSetFragment :
                 featuredRelations.gone()
             }
         }
+        jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
         vm.onStart(ctx)
     }
 
@@ -1246,14 +1247,9 @@ open class ObjectSetFragment :
         inflater, container, false
     )
 
-    override fun onProceedWithUpdateType(item: ObjectTypeView) {
-        vm.onNewTypeForViewerClicked(item.id)
+    override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
+        vm.onNewTypeForViewerClicked(objType)
     }
-
-    override fun onProceedWithDraftUpdateType(item: ObjectTypeView) {
-        // Do nothing.
-    }
-
 
     private fun observeSelectingTemplate() {
         val navController = findNavController()

@@ -24,11 +24,14 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
     private lateinit var viewModel: ObjectSetViewModel
     private lateinit var mockObjectSet: MockSet
 
+    private val setOfId = "setOfId"
+    private val setOfKey = "setOfKey"
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
-        mockObjectSet = MockSet(context = root)
+        mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey)
     }
 
     @After
@@ -57,7 +60,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         )
         doReturn(Unit).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.SetByType(
-                type = TypeKey(mockObjectSet.setOf),
+                type = TypeKey(setOfKey),
                 filters = mockObjectSet.filters,
                 template = null
             )
@@ -80,7 +83,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByType(
-                        type = TypeKey(mockObjectSet.setOf),
+                        type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
                         template = null
                     )

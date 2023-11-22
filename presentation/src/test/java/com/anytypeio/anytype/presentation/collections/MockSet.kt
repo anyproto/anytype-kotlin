@@ -21,7 +21,10 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import net.bytebuddy.utility.RandomString
 
-class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.make()}") {
+class MockSet(context: String,
+              val setOfValue: String = "setOf-${RandomString.make()}",
+              val setOfKey: String = "setOfKey-${RandomString.make()}"
+    ) {
 
     val root = context
     val title =
@@ -184,7 +187,8 @@ class MockSet(context: String, val setOfValue: String = "setOf-${RandomString.ma
             ),
             setOf to Block.Fields(
                 map = mapOf(
-                    Relations.UNIQUE_KEY to setOf,
+                    Relations.ID to setOf,
+                    Relations.UNIQUE_KEY to setOfKey,
                     Relations.TYPE to ObjectTypeIds.OBJECT_TYPE,
                     Relations.RECOMMENDED_LAYOUT to ObjectType.Layout.BASIC.code.toDouble(),
                     Relations.LAYOUT to ObjectType.Layout.OBJECT_TYPE.code.toDouble(),

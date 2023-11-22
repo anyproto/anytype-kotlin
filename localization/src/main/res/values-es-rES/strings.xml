@@ -204,13 +204,11 @@
     <string name="modal_detail_type">Tipo de detalle</string>
     <string name="hint_title">Título</string>
     <string name="hint_profile_title">Nombre y Apellido</string>
-    <string name="hint_paragraph">Párrafo</string>
     <string name="hint_header_one">Título</string>
     <string name="hint_quote">Cita</string>
     <string name="hint_header_two">Título</string>
     <string name="hint_header_three">Subtítulo</string>
     <string name="hint_checkbox">Casilla de verificación</string>
-    <string name="hint_video">Introducir la URL del vídeo</string>
     <string name="hint_upload_video">Subir un vídeo</string>
     <string name="hint_upload_image">Subir una imagen</string>
     <string name="hint_upload_file">Subir un archivo</string>
@@ -219,7 +217,6 @@
     <string name="hint_bullet">Elemento de lista de viñetas</string>
     <string name="hint_numbered_list">Elemento de lista numerada</string>
     <string name="hint_toggle">Alternar bloque</string>
-    <string name="hint_empty">Vacío</string>
     <string name="hint_paste_link">Pegar enlace</string>
     <string name="empty_tap_to_create_new_block">Vacío. Toca para crear un nuevo bloque</string>
     <string name="untitled">Sin título</string>

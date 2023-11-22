@@ -204,13 +204,11 @@
     <string name="modal_detail_type">Detail type</string>
     <string name="hint_title">Titre</string>
     <string name="hint_profile_title">Name Surname</string>
-    <string name="hint_paragraph">Paragraph</string>
     <string name="hint_header_one">Titre</string>
     <string name="hint_quote">Quote</string>
     <string name="hint_header_two">Titre</string>
     <string name="hint_header_three">Sous-titre</string>
     <string name="hint_checkbox">Case à cocher</string>
-    <string name="hint_video">Enter video URL</string>
     <string name="hint_upload_video">Importer une vidéo</string>
     <string name="hint_upload_image">Importer une image</string>
     <string name="hint_upload_file">Importer un fichier</string>
@@ -219,7 +217,6 @@
     <string name="hint_bullet">Élément de liste à puces</string>
     <string name="hint_numbered_list">Élément de liste numérotée</string>
     <string name="hint_toggle">Toggle block</string>
-    <string name="hint_empty">Vide</string>
     <string name="hint_paste_link">Coller le lien</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">Sans titre</string>

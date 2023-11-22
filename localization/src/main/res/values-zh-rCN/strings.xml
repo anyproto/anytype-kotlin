@@ -204,13 +204,11 @@
     <string name="modal_detail_type">Detail type</string>
     <string name="hint_title">大标题</string>
     <string name="hint_profile_title">Name Surname</string>
-    <string name="hint_paragraph">Paragraph</string>
     <string name="hint_header_one">大标题</string>
     <string name="hint_quote">Quote</string>
     <string name="hint_header_two">中等标题</string>
     <string name="hint_header_three">副标题</string>
     <string name="hint_checkbox">复选框</string>
-    <string name="hint_video">Enter video URL</string>
     <string name="hint_upload_video">上传视频</string>
     <string name="hint_upload_image">上传图像</string>
     <string name="hint_upload_file">上传文件</string>
@@ -219,7 +217,6 @@
     <string name="hint_bullet">项目符号列表项</string>
     <string name="hint_numbered_list">编号列表项</string>
     <string name="hint_toggle">切换块</string>
-    <string name="hint_empty">空的</string>
     <string name="hint_paste_link">粘贴链接</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">无标题</string>

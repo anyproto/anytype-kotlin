@@ -204,13 +204,11 @@
     <string name="modal_detail_type">Detail type</string>
     <string name="hint_title">Название</string>
     <string name="hint_profile_title">Name Surname</string>
-    <string name="hint_paragraph">Paragraph</string>
     <string name="hint_header_one">Название</string>
     <string name="hint_quote">Quote</string>
     <string name="hint_header_two">Заголовок</string>
     <string name="hint_header_three">Подзаголовок</string>
     <string name="hint_checkbox">Флажок</string>
-    <string name="hint_video">Enter video URL</string>
     <string name="hint_upload_video">Загрузить видео</string>
     <string name="hint_upload_image">Загрузить изображение</string>
     <string name="hint_upload_file">Загрузить файл</string>
@@ -219,7 +217,6 @@
     <string name="hint_bullet">Маркированный список</string>
     <string name="hint_numbered_list">Нумерованный список</string>
     <string name="hint_toggle">Переключить блок</string>
-    <string name="hint_empty">Пусто</string>
     <string name="hint_paste_link">Вставить ссылку</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">Без названия</string>

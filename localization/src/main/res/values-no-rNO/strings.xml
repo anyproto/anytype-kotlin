@@ -204,13 +204,11 @@
     <string name="modal_detail_type">Detail type</string>
     <string name="hint_title">Tittel</string>
     <string name="hint_profile_title">Name Surname</string>
-    <string name="hint_paragraph">Paragraph</string>
     <string name="hint_header_one">Tittel</string>
     <string name="hint_quote">Quote</string>
     <string name="hint_header_two">Overskrift</string>
     <string name="hint_header_three">Underoverskrift</string>
     <string name="hint_checkbox">Avkrysningsboks</string>
-    <string name="hint_video">Enter video URL</string>
     <string name="hint_upload_video">Last opp en video</string>
     <string name="hint_upload_image">Last opp et bilde</string>
     <string name="hint_upload_file">Last opp en fil</string>
@@ -219,7 +217,6 @@
     <string name="hint_bullet">Punktliste-element</string>
     <string name="hint_numbered_list">Nummerert liste-element</string>
     <string name="hint_toggle">Ekspanderbar blokk</string>
-    <string name="hint_empty">Tom</string>
     <string name="hint_paste_link">Lim inn lenke</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">Uten tittel</string>

@@ -81,32 +81,32 @@
     <string name="multi_select_turn_into">Turn into</string>
     <string name="multi_select_move_to">Move to</string>
 
-    <string name="content_description_add_block">Add block button</string>
-    <string name="content_description_hide_keyboard_button">Hide keyboard button</string>
-    <string name="content_description_show_actions">Show actions</string>
-    <string name="content_description_show_colors">Show colors</string>
-    <string name="content_description_bold_text">Bold text</string>
-    <string name="content_description_italic_text">Italic text</string>
-    <string name="content_description_strike_through_text">Strike-through text</string>
-    <string name="content_description_link">Link</string>
-    <string name="content_description_code">Code</string>
-    <string name="content_description_option_picture">Option picture</string>
-    <string name="content_description_action_picture">Action picture</string>
-    <string name="content_description_checkbox_pic">Checkbox pic</string>
-    <string name="content_description_task_pic">Task pic</string>
-    <string name="content_description_page_icon">Page icon</string>
-    <string name="content_description_more_button">More button</string>
-    <string name="content_description_avatar_image">Avatar image</string>
-    <string name="content_description_bookmark_image">Bookmark image</string>
-    <string name="content_description_filter_remove">Remove filter</string>
-    <string name="content_description_filter_format">Filter format</string>
-    <string name="content_description_qr_image">QR code</string>
-    <string name="content_description_toggle_icon">Toggle icon</string>
-    <string name="content_description_turn_into_arrow">Turn into arrow</string>
-    <string name="content_description_document_previous_search_result_icon">Document previous search result icon</string>
-    <string name="content_description_document_next_search_result_icon">Document next search result icon</string>
-    <string name="content_description_document_search_icon">Document search icon</string>
-    <string name="content_description_document_clear_search_icon">Document clear search icon</string>
+    <string name="content_description_add_block" translatable="false">Add block button</string>
+    <string name="content_description_hide_keyboard_button" translatable="false">Hide keyboard button</string>
+    <string name="content_description_show_actions" translatable="false">Show actions</string>
+    <string name="content_description_show_colors" translatable="false">Show colors</string>
+    <string name="content_description_bold_text" translatable="false">Bold text</string>
+    <string name="content_description_italic_text" translatable="false">Italic text</string>
+    <string name="content_description_strike_through_text" translatable="false">Strike-through text</string>
+    <string name="content_description_link" translatable="false">Link</string>
+    <string name="content_description_code" translatable="false">Code</string>
+    <string name="content_description_option_picture" translatable="false">Option picture</string>
+    <string name="content_description_action_picture" translatable="false">Action picture</string>
+    <string name="content_description_checkbox_pic" translatable="false">Checkbox pic</string>
+    <string name="content_description_task_pic" translatable="false">Task pic</string>
+    <string name="content_description_page_icon" translatable="false">Page icon</string>
+    <string name="content_description_more_button" translatable="false">More button</string>
+    <string name="content_description_avatar_image" translatable="false">Avatar image</string>
+    <string name="content_description_bookmark_image" translatable="false">Bookmark image</string>
+    <string name="content_description_filter_remove" translatable="false">Remove filter</string>
+    <string name="content_description_filter_format" translatable="false">Filter format</string>
+    <string name="content_description_qr_image" translatable="false">QR code</string>
+    <string name="content_description_toggle_icon" translatable="false">Toggle icon</string>
+    <string name="content_description_turn_into_arrow" translatable="false">Turn into arrow</string>
+    <string name="content_description_document_previous_search_result_icon" translatable="false">Document previous search result icon</string>
+    <string name="content_description_document_next_search_result_icon" translatable="false">Document next search result icon</string>
+    <string name="content_description_document_search_icon" translatable="false">Document search icon</string>
+    <string name="content_description_document_clear_search_icon" translatable="false">Document clear search icon</string>
 
     <string name="option_toolbar_header_turn_into">Turn into</string>
     <string name="option_toolbar_header_add_block">Add block</string>
@@ -225,15 +225,14 @@
     <string name="modal_details">Details</string>
     <string name="modal_detail_name">Detail name</string>
     <string name="modal_detail_type">Detail type</string>
+
     <string name="hint_title">Title</string>
     <string name="hint_profile_title">Name Surname</string>
-    <string name="hint_paragraph">Paragraph</string>
     <string name="hint_header_one">Title</string>
     <string name="hint_quote">Quote</string>
     <string name="hint_header_two">Heading</string>
     <string name="hint_header_three">Subheading</string>
     <string name="hint_checkbox">Checkbox</string>
-    <string name="hint_video">Enter video URL</string>
     <string name="hint_upload_video">Upload a video</string>
     <string name="hint_upload_image">Upload a picture</string>
     <string name="hint_upload_file">Upload a file</string>
@@ -242,7 +241,6 @@
     <string name="hint_bullet">Bulleted list item</string>
     <string name="hint_numbered_list">Numbered list item</string>
     <string name="hint_toggle">Toggle block</string>
-    <string name="hint_empty">Empty</string>
     <string name="hint_paste_link">Paste link</string>
 
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>

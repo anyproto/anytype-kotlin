@@ -204,13 +204,11 @@
     <string name="modal_detail_type">Detail type</string>
     <string name="hint_title">Judul</string>
     <string name="hint_profile_title">Name Surname</string>
-    <string name="hint_paragraph">Paragraph</string>
     <string name="hint_header_one">Judul</string>
     <string name="hint_quote">Quote</string>
     <string name="hint_header_two">Tajuk 2</string>
     <string name="hint_header_three">Tajuk 3</string>
     <string name="hint_checkbox">Kotak centang</string>
-    <string name="hint_video">Enter video URL</string>
     <string name="hint_upload_video">Unggah sebuah video</string>
     <string name="hint_upload_image">Unggah sebuah gambar</string>
     <string name="hint_upload_file">Unggah sebuah berkas</string>
@@ -219,7 +217,6 @@
     <string name="hint_bullet">Daftar bertitik</string>
     <string name="hint_numbered_list">Daftar urut</string>
     <string name="hint_toggle">Balok bukaan</string>
-    <string name="hint_empty">Kosong</string>
     <string name="hint_paste_link">Tempelkan tautan</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">Nirjudul</string>

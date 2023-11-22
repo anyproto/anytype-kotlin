@@ -68,32 +68,7 @@
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Turn into</string>
     <string name="multi_select_move_to">Перемістити до</string>
-    <string name="content_description_add_block">Add block button</string>
-    <string name="content_description_hide_keyboard_button">Hide keyboard button</string>
-    <string name="content_description_show_actions">Show actions</string>
-    <string name="content_description_show_colors">Show colors</string>
-    <string name="content_description_bold_text">Bold text</string>
-    <string name="content_description_italic_text">Italic text</string>
-    <string name="content_description_strike_through_text">Strike-through text</string>
-    <string name="content_description_link">Посилання</string>
-    <string name="content_description_code">Код</string>
-    <string name="content_description_option_picture">Option picture</string>
-    <string name="content_description_action_picture">Action picture</string>
-    <string name="content_description_checkbox_pic">Checkbox pic</string>
-    <string name="content_description_task_pic">Task pic</string>
-    <string name="content_description_page_icon">Page icon</string>
-    <string name="content_description_more_button">More button</string>
-    <string name="content_description_avatar_image">Avatar image</string>
-    <string name="content_description_bookmark_image">Bookmark image</string>
-    <string name="content_description_filter_remove">Remove filter</string>
-    <string name="content_description_filter_format">Filter format</string>
-    <string name="content_description_qr_image">QR code</string>
-    <string name="content_description_toggle_icon">Toggle icon</string>
-    <string name="content_description_turn_into_arrow">Turn into arrow</string>
-    <string name="content_description_document_previous_search_result_icon">Document previous search result icon</string>
-    <string name="content_description_document_next_search_result_icon">Document next search result icon</string>
-    <string name="content_description_document_search_icon">Document search icon</string>
-    <string name="content_description_document_clear_search_icon">Document clear search icon</string>
+
     <string name="option_toolbar_header_turn_into">Turn into</string>
     <string name="option_toolbar_header_add_block">Add block</string>
     <string name="option_text_text">Текст</string>
@@ -120,25 +95,6 @@
     <string name="option_other_dots">Точковий розділювач</string>
     <string name="option_other_code">Фрагмент коду</string>
     <string name="option_relation_relation">Relation</string>
-    <string name="add_block_or_turn_into_subtitle_text">Write a plain text</string>
-    <string name="add_block_or_turn_into_subtitle_header_one">Big headline of a chapter, paragraph or section</string>
-    <string name="add_block_or_turn_into_subtitle_header_two">Середній заголовок</string>
-    <string name="add_block_or_turn_into_subtitle_header_three">Маленький заголовок</string>
-    <string name="add_block_or_turn_into_subtitle_highlighted">Spotlight what needs special attention</string>
-    <string name="add_block_or_turn_into_subtitle_checkbox">Створюйте та відстежуйте завдання зі списком ToDo</string>
-    <string name="add_block_or_turn_into_subtitle_bulleted">Простий список</string>
-    <string name="add_block_or_turn_into_subtitle_numbered">Нумерований список</string>
-    <string name="add_block_or_turn_into_subtitle_toggle">Приховати й показати вміст всередині</string>
-    <string name="add_block_or_turn_into_subtitle_page">Create new page inside this one</string>
-    <string name="add_block_or_turn_into_subtitle_existing_page">Link existing page with this one</string>
-    <string name="add_block_or_turn_into_subtitle_file">Зберігати файл у початковому стані</string>
-    <string name="add_block_or_turn_into_subtitle_image">Завантажити та наповнити сторінку зображенням</string>
-    <string name="add_block_or_turn_into_subtitle_video">Завантажити відтворюване відео</string>
-    <string name="add_block_or_turn_into_subtitle_bookmark">Зберегти ваше улюблене посилання з коротким описом</string>
-    <string name="add_block_or_turn_into_subtitle_code">Записати фрагмент коду</string>
-    <string name="add_block_or_turn_into_subtitle_line_divider">Separate information with line</string>
-    <string name="add_block_or_turn_into_subtitle_dots">Separate information with three dots</string>
-    <string name="add_block_or_turn_into_subtitle_relation">Meaningful connection between objects</string>
     <string name="toolbar_section_text">Текст</string>
     <string name="toolbar_section_list">Список</string>
     <string name="toolbar_section_page">Page</string>
@@ -204,13 +160,11 @@
     <string name="modal_detail_type">Detail type</string>
     <string name="hint_title">Назва</string>
     <string name="hint_profile_title">Name Surname</string>
-    <string name="hint_paragraph">Paragraph</string>
     <string name="hint_header_one">Назва</string>
     <string name="hint_quote">Quote</string>
     <string name="hint_header_two">Заголовок</string>
     <string name="hint_header_three">Підзаголовок</string>
     <string name="hint_checkbox">Прапорець</string>
-    <string name="hint_video">Enter video URL</string>
     <string name="hint_upload_video">Завантажити відео</string>
     <string name="hint_upload_image">Завантажити зображення</string>
     <string name="hint_upload_file">Завантажити файл</string>
@@ -219,7 +173,6 @@
     <string name="hint_bullet">Елемент маркованого списку</string>
     <string name="hint_numbered_list">Елемент нумерованого списку</string>
     <string name="hint_toggle">Перемкнути блок</string>
-    <string name="hint_empty">Пусто</string>
     <string name="hint_paste_link">Вставити посилання</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">Без назви</string>
@@ -254,10 +207,7 @@
     <string name="color">Колір</string>
     <string name="background">Тло</string>
     <string name="content_description_close_button">Close button</string>
-    <!-- Non-valid certificate, need update -->
-    <string-array name="certs">
-        <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
-    </string-array>
+
     <string name="action_bar_add_below">Add block below</string>
     <string name="action_bar_turn_into">Turn into</string>
     <string name="action_bar_turn_into_page">Turn into Page</string>
@@ -682,7 +632,6 @@
     <string name="confirm">Confirm</string>
     <string name="code_empty">Invitation code should not be null</string>
     <string name="enter_invitation_hint">Invitation code</string>
-    <string name="enter_invitation_text">If you don\'t have one just go to anytype.io and sign up to the waiting list. We are inviting people on the rolling bases.</string>
     <string name="start_login_text">With Anytype you can write notes and documents, manage tasks, share files and save important content from the web.</string>
     <string name="login">Вхід</string>
     <string name="sign_up">Зареєструватись</string>
@@ -766,8 +715,6 @@
     <string name="link">Посилання</string>
     <string name="move_into_this_page">Move into this page</string>
     <string name="move_into">Move into</string>
-    <string name="telegram_app">https://t.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
-    <string name="telegram_web">http://www.telegram.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
     <string name="fetching_your_account">Fetching your account…</string>
     <string name="search_on_page">Search on page</string>
     <string name="object_view_type">Object view type</string>
@@ -852,7 +799,6 @@
     <string name="object_debug">Object Debug</string>
     <string name="object_diagnostics">Diagnostics</string>
     <string name="provide_name">Provide name for new object</string>
-    <string name="wait_a_bit_message">Please give us a moment. We’re almost there…</string>
     <string name="soon">Soon</string>
     <string name="are_you_sure_delete_one_object">Are you sure you want to delete 1 object?</string>
     <string name="are_you_sure_delete_n_objects">Are you sure you want to delete %1$d objects?</string>
@@ -973,7 +919,6 @@
     <string name="onboarding_join_button_text">Create New Account</string>
     <string name="onboarding_log_in_button_text">Вхід</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
-    <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_mnemonic_title">Збережіть вашу фразу відновлення</string>
@@ -983,7 +928,6 @@
     <string name="onboarding_mnemonic_skip">Пропустити</string>
     <string name="onboarding_mnemonic_copy">Скопіювати в буфер обміну</string>
     <string name="onboarding_set_your_name_title">Choose your name</string>
-    <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>

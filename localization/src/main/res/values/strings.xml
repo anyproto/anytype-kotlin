@@ -112,26 +112,6 @@
     <string name="option_other_code">Code snippet</string>
     <string name="option_relation_relation">Relation</string>
 
-    <string name="add_block_or_turn_into_subtitle_text">Write a plain text</string>
-    <string name="add_block_or_turn_into_subtitle_header_one">Big headline of a chapter, paragraph or section</string>
-    <string name="add_block_or_turn_into_subtitle_header_two">Medium headline</string>
-    <string name="add_block_or_turn_into_subtitle_header_three">Small headline</string>
-    <string name="add_block_or_turn_into_subtitle_highlighted">Spotlight what needs special attention</string>
-    <string name="add_block_or_turn_into_subtitle_checkbox">Create and track task with to-do list</string>
-    <string name="add_block_or_turn_into_subtitle_bulleted">Simple list</string>
-    <string name="add_block_or_turn_into_subtitle_numbered">Numbered list</string>
-    <string name="add_block_or_turn_into_subtitle_toggle">Hide and show content inside</string>
-    <string name="add_block_or_turn_into_subtitle_page">Create new page inside this one</string>
-    <string name="add_block_or_turn_into_subtitle_existing_page">Link existing page with this one</string>
-    <string name="add_block_or_turn_into_subtitle_file">Store file in original state</string>
-    <string name="add_block_or_turn_into_subtitle_image">Upload and enrich the page with image</string>
-    <string name="add_block_or_turn_into_subtitle_video">Upload playable video</string>
-    <string name="add_block_or_turn_into_subtitle_bookmark">Save your favorite link with summary</string>
-    <string name="add_block_or_turn_into_subtitle_code">Capture code snippet</string>
-    <string name="add_block_or_turn_into_subtitle_line_divider">Separate information with line</string>
-    <string name="add_block_or_turn_into_subtitle_dots">Separate information with three dots</string>
-    <string name="add_block_or_turn_into_subtitle_relation">Meaningful connection between objects</string>
-
     <string name="toolbar_section_text">Text</string>
     <string name="toolbar_section_list">List</string>
     <string name="toolbar_section_page">Page</string>
@@ -293,15 +273,7 @@
     <string name="page_nav_links_to">Links to</string>
     <string name="filter_view_search_hint">Search</string>
     <string name="filter_view_filter_hint">Filter</string>
-    <string name="content_desc_page_toolbar_search">Search pages</string>
-    <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
-    <string name="content_desc_page_toolbar_add_doc">Add new page</string>
-    <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
-    <string name="content_desc_link_to_remove_link">Remove link icon</string>
-    <string name="content_desc_link_to_copy_link">Copy link icon</string>
-    <string name="content_desc_object_icon">Object image or emoji</string>
-    <string name="content_desc_checkbox_icon">Checkbox icon</string>
-    <string name="content_desc_layout_icon">Layout icon</string>
+
     <string name="move">Move</string>
     <string name="move_to">Move to</string>
     <string name="preview">Preview</string>
@@ -1148,6 +1120,16 @@
     <string name="content_description_edit_view_button">Edit-view button</string>
     <string name="content_description_open_to_edit_view_button">Open to edit relation button</string>
     <string name="content_description_remove_from_set_button">Remove relation from this set</string>
+
+    <string name="content_desc_page_toolbar_search">Search pages</string>
+    <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
+    <string name="content_desc_page_toolbar_add_doc">Add new page</string>
+    <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
+    <string name="content_desc_link_to_remove_link">Remove link icon</string>
+    <string name="content_desc_link_to_copy_link">Copy link icon</string>
+    <string name="content_desc_object_icon">Object image or emoji</string>
+    <string name="content_desc_checkbox_icon">Checkbox icon</string>
+    <string name="content_desc_layout_icon">Layout icon</string>
 
     <!--endregion-->
 </resources>

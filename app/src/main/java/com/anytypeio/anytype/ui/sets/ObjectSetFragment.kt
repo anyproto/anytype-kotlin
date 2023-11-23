@@ -529,7 +529,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
@@ -542,7 +542,7 @@ open class ObjectSetFragment :
                 initView.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
@@ -568,7 +568,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
@@ -581,7 +581,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)
@@ -617,9 +617,14 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setupNewButtons(isTemplatesAllowed: Boolean) {
-        addNewButton.gone()
-        addNewIconButton.visible()
+    private fun setupNewButtons(isCreateObjectAllowed: Boolean) {
+        if (isCreateObjectAllowed) {
+            addNewButton.gone()
+            addNewIconButton.visible()
+        } else {
+            addNewButton.gone()
+            addNewIconButton.gone()
+        }
     }
 
     private fun setViewer(viewer: Viewer?) {

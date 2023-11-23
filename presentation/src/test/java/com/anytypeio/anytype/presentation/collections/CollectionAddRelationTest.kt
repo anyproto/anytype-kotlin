@@ -122,6 +122,7 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
             val gridState = awaitItem()
             assertEquals(
                 expected = DataViewViewState.Collection.Default(
+                    isCreateObjectAllowed = true,
                     viewer = Viewer.ListView(
                         id = objectCollection.viewerList.id,
                         title = objectCollection.viewerList.name,

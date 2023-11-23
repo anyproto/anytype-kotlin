@@ -7,6 +7,8 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
+import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -581,11 +583,11 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Collection.NoItems>(item)
-        assertTrue(item.hasTemplates)
+        assertTrue(item.isCreateObjectAllowed)
     }
 
     @Test
-    fun `should be collection without templates allowed when active viewer default type is NOTE`() = runTest {
+    fun `should be collection with object create templates allowed when active viewer default type is NOTE`() = runTest {
         // SETUP
 
         val noteTypeId = MockDataFactory.randomString()
@@ -648,11 +650,11 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Collection.NoItems>(item)
-        assertFalse(item.hasTemplates)
+        assertTrue(item.isCreateObjectAllowed)
     }
 
     @Test
-    fun `should be collection without templates allowed when active viewer default type is custom type without recommended layouts`() = runTest {
+    fun `should be collection without object create allowed when restriction is present`() = runTest {
         // SETUP
 
         val defaultObjectType = RandomString.make()
@@ -678,7 +680,13 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
                 mockObjectCollection.title,
                 dataview
             ),
-            details = mockObjectCollection.details
+            details = mockObjectCollection.details,
+            dataViewRestrictions = listOf(
+                DataViewRestrictions(
+                    block = dataview.id,
+                    restrictions = listOf(DataViewRestriction.CREATE_OBJECT)
+                )
+            )
         )
         stubStoreOfObjectTypes(
             defaultObjectType,
@@ -711,11 +719,11 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Collection.NoItems>(item)
-        assertFalse(item.hasTemplates)
+        assertFalse(item.isCreateObjectAllowed)
     }
 
     @Test
-    fun `should be collection with templates allowed when active viewer default type is custom type with recommended layouts`() = runTest {
+    fun `should be collection with object create allowed when active viewer default type is custom type with recommended layouts`() = runTest {
         // SETUP
 
         val defaultObjectTypeId = RandomString.make()
@@ -776,6 +784,6 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Collection.NoItems>(item)
-        assertTrue(item.hasTemplates)
+        assertTrue(item.isCreateObjectAllowed)
     }
 }

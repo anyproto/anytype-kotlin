@@ -449,6 +449,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Set.NoItems>(item)
-        assertTrue(item.hasTemplates)
+        assertTrue(item.isCreateObjectAllowed)
     }
 }

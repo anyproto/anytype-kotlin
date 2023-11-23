@@ -76,7 +76,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.keyboardAsState
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -377,7 +377,7 @@ fun SectionItem(
         Text(
             modifier = Modifier.padding(16.dp, 20.dp, 0.dp, 0.dp),
             text = view.name,
-            style = BodyCalloutRegular,
+            style = Caption1Regular,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             color = colorResource(id = R.color.text_secondary)

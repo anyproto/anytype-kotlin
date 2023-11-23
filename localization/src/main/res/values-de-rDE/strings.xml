@@ -570,7 +570,7 @@
     <string name="paste_link">Link</string>
     <string name="next">Weiter</string>
     <string name="limit_object_types">Objekttypen einschränken</string>
-    <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your account to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted account data is permanently removed from the backup node.</string>
+    <string name="deleted_account_msg">Schade das du gehst. Sobald die Löschung deines Kontos angefordert wurde, hast du 30 Tage um diese Anfrage zu stornieren. Nach 30 Tagen werden deine Accountdaten dauerhaft aus dem Backup-Knoten entfernt. Du kannst dich danach nicht auf neuen Geräten bei Anytype anmelden.</string>
     <string name="swipe_down_to_skip">Swipe down to skip</string>
     <string name="show">Zeigen</string>
     <string name="this_type_has_templates">This type has %1$d templates</string>

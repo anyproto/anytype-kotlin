@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
+import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.Result
@@ -68,6 +69,7 @@ import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
@@ -551,23 +553,17 @@ class ObjectSetViewModel(
                 when {
                     viewer == null -> DataViewViewState.Collection.NoView
                     viewer.isEmpty() -> {
-                        val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            context, dvViewer, storeOfObjectTypes
-                        )
-                        val hasTemplates = defType?.isTemplatesAllowed() ?: false
+                        val isCreateObjectAllowed = objectState.isCreateObjectAllowed()
                         DataViewViewState.Collection.NoItems(
                             title = viewer.title,
-                            hasTemplates = hasTemplates
+                            isCreateObjectAllowed = isCreateObjectAllowed
                         )
                     }
                     else -> {
-                        val (defType, _) = objectState.getActiveViewTypeAndTemplate(
-                            context, dvViewer, storeOfObjectTypes
-                        )
-                        val hasTemplates = defType?.isTemplatesAllowed() ?: false
+                        val isCreateObjectAllowed = objectState.isCreateObjectAllowed()
                         DataViewViewState.Collection.Default(
                             viewer = viewer,
-                            hasTemplates = hasTemplates
+                            isCreateObjectAllowed = isCreateObjectAllowed
                         )
                     }
                 }
@@ -622,7 +618,7 @@ class ObjectSetViewModel(
                         )
                         DataViewViewState.Set.NoItems(
                             title = render.title,
-                            hasTemplates = defType?.isTemplatesAllowed() ?: false
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType)
                         )
                     }
                     else -> {
@@ -631,7 +627,7 @@ class ObjectSetViewModel(
                         )
                         DataViewViewState.Set.Default(
                             viewer = render,
-                            hasTemplates = defType?.isTemplatesAllowed() ?: false
+                            isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType)
                         )
                     }
                 }

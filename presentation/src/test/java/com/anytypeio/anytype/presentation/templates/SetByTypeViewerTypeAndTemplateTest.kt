@@ -139,7 +139,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
         // ASSERT NEW + BUTTON
-        assertTrue(uiState.hasTemplates)
+        assertTrue(uiState.isCreateObjectAllowed)
 
         viewModel.proceedWithDataViewObjectCreate()
 
@@ -227,7 +227,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
         // ASSERT NEW + BUTTON
-        assertTrue(uiState.hasTemplates)
+        assertTrue(uiState.isCreateObjectAllowed)
 
         viewModel.proceedWithDataViewObjectCreate()
 
@@ -315,7 +315,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
         // ASSERT NEW + BUTTON
-        assertTrue(uiState.hasTemplates)
+        assertTrue(uiState.isCreateObjectAllowed)
 
         viewModel.proceedWithDataViewObjectCreate()
 
@@ -417,7 +417,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
             // ASSERT NEW + BUTTON
-            assertTrue(uiState.hasTemplates)
+            assertTrue(uiState.isCreateObjectAllowed)
 
             viewModel.proceedWithDataViewObjectCreate()
 
@@ -505,7 +505,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
         // ASSERT NEW + BUTTON
-        assertTrue(uiState.hasTemplates)
+        assertTrue(uiState.isCreateObjectAllowed)
 
         viewModel.proceedWithDataViewObjectCreate()
 
@@ -593,7 +593,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
         val uiState = viewModel.currentViewer.value as DataViewViewState.Set.NoItems
 
         // ASSERT NEW + BUTTON
-        assertTrue(uiState.hasTemplates)
+        assertTrue(uiState.isCreateObjectAllowed)
 
         viewModel.proceedWithDataViewObjectCreate()
 

@@ -1716,8 +1716,10 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             selectedTypeFlow
                 .filterNotNull()
+                .onEach {
+                    updateTypesForTypeTemplatesWidget(it.id)
+                }
                 .flatMapLatest { selectedType ->
-                    updateTypesForTypeTemplatesWidget(selectedType.id)
                     templatesContainer.subscribeToTemplates(
                         type = selectedType.id,
                         subId = "$context$SUBSCRIPTION_TEMPLATES_ID"
@@ -1778,7 +1780,10 @@ class ObjectSetViewModel(
     }
 
     private suspend fun updateWidgetStateWithTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
-        if (widgetState.objectTypes.isNotEmpty()) {
+        val objectTypes = widgetState.objectTypes
+        val isTypePresent = objectTypes.filterIsInstance<TemplateObjectTypeView.Item>()
+            .any { it.type.id == selectedType }
+        if (objectTypes.isNotEmpty() && isTypePresent) {
             updateExistingTypes(selectedType, widgetState)
         } else {
             fetchAndProcessObjectTypes(selectedType, widgetState)
@@ -1842,7 +1847,10 @@ class ObjectSetViewModel(
         viewerDefTemplate: Id?
     ): List<TemplateView> {
 
-        if (viewerDefType == null) return emptyList()
+        if (viewerDefType == null) {
+            Timber.e("processTemplates, Viewer def type is null")
+            return emptyList()
+        }
 
         val viewerDefTypeId = viewerDefType.id
         val viewerDefTypeKey = TypeKey(viewerDefType.uniqueKey)
@@ -1857,6 +1865,7 @@ class ObjectSetViewModel(
         }
 
         val newTemplate = if (!isTemplatesAllowed) {
+            Timber.d("processTemplates, Templates are not allowed for this type")
             emptyList()
         } else {
             listOf(

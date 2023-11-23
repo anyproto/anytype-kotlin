@@ -83,6 +83,7 @@ class TemplateBlankViewModel(
         val typeDetails = Block.Fields(
             mapOf(
                 Relations.ID to typeId,
+                Relations.UNIQUE_KEY to ObjectTypeIds.TEMPLATE,
                 Relations.NAME to TEMPLATE_TYPE_NAME,
                 Relations.TYPE_UNIQUE_KEY to ObjectTypeIds.TEMPLATE
             )

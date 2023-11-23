@@ -22,6 +22,7 @@ import com.anytypeio.anytype.databinding.FragmentTemplateBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.templates.TemplateBlankViewModel
 import com.anytypeio.anytype.presentation.templates.TemplateBlankViewModelFactory
+import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import java.util.LinkedList
 import javax.inject.Inject
 import timber.log.Timber
@@ -92,7 +93,7 @@ class TemplateBlankFragment : BaseFragment<FragmentTemplateBinding>(R.layout.fra
             Timber.d("Select Blank template clicked, get back to Editor")
             findNavController().apply {
                 previousBackStackEntry?.savedStateHandle?.apply {
-                    set(EditorTemplateFragment.ARG_TEMPLATE_ID, "")
+                    set(EditorTemplateFragment.ARG_TEMPLATE_ID, DEFAULT_TEMPLATE_ID_BLANK)
                 }
                 popBackStack(R.id.templatesModalScreen, true)
             }

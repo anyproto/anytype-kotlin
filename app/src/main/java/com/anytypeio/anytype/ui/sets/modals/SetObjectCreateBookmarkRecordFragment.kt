@@ -24,6 +24,10 @@ class SetObjectCreateBookmarkRecordFragment :
     lateinit var factory: ObjectSetCreateBookmarkRecordViewModel.Factory
     override val vm: ObjectSetCreateBookmarkRecordViewModel by viewModels { factory }
 
+    override fun onStart() {
+        super.onStart()
+        vm.onStart(collectionId = collectionId)
+    }
 
     override fun injectDependencies() {
         componentManager().objectSetCreateBookmarkRecordComponent.get(ctx).inject(this)

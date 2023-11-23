@@ -1,11 +1,14 @@
 package com.anytypeio.anytype.di.feature;
 
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sets.ObjectSetCreateBookmarkRecordViewModel
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateBookmarkRecordFragment
 import dagger.Module
 import dagger.Provides
@@ -32,11 +35,15 @@ object ObjectSetCreateBookmarkRecordModule {
     fun provideObjectSetRecordViewModelFactory(
         createBookmarkObject: CreateBookmarkObject,
         urlValidator: UrlValidator,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        addObjectToCollection: AddObjectToCollection,
+        dispatcher: Dispatcher<Payload>
     ) = ObjectSetCreateBookmarkRecordViewModel.Factory(
         createBookmarkObject = createBookmarkObject,
         urlValidator = urlValidator,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        addObjectToCollection = addObjectToCollection,
+        dispatcher = dispatcher
     )
 
     @JvmStatic

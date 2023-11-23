@@ -11,6 +11,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.argStringOrNull
 import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
@@ -31,6 +32,7 @@ abstract class SetObjectCreateRecordFragmentBase<T: ViewBinding> :
     abstract fun onKeyboardActionDone()
 
     protected val ctx: String get() = argString(CONTEXT_KEY)
+    protected val collectionId: String? get() = argStringOrNull(COLLECTION_ID)
 
     private val handler: (Int) -> Boolean = { action ->
         action == EditorInfo.IME_ACTION_DONE
@@ -75,5 +77,6 @@ abstract class SetObjectCreateRecordFragmentBase<T: ViewBinding> :
     companion object {
         const val CONTEXT_KEY = "arg.object-set-record.context"
         const val TARGET_KEY = "arg.object-set-record.target"
+        const val COLLECTION_ID = "arg.object-set-record.collection-id"
     }
 }

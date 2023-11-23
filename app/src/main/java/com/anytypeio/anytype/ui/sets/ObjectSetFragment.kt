@@ -1021,7 +1021,11 @@ open class ObjectSetFragment :
                 findNavController().safeNavigate(
                     R.id.objectSetScreen,
                     R.id.setUrlForNewBookmark,
-                    bundleOf(SetObjectCreateRecordFragmentBase.CONTEXT_KEY to command.ctx))
+                    bundleOf(
+                        SetObjectCreateRecordFragmentBase.CONTEXT_KEY to command.ctx,
+                        SetObjectCreateRecordFragmentBase.COLLECTION_ID to command.collection
+                    )
+                )
             }
             is ObjectSetCommand.Modal.OpenDataViewSelectQueryScreen -> {
                 val fr = DataViewSelectSourceFragment.newInstance(

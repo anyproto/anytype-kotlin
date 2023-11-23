@@ -45,15 +45,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = listOf(
-                ObjectType.Layout.BASIC.code.toDouble(),
-                ObjectType.Layout.PROFILE.code.toDouble(),
-                ObjectType.Layout.SET.code.toDouble(),
-                ObjectType.Layout.COLLECTION.code.toDouble(),
-                ObjectType.Layout.TODO.code.toDouble(),
-                ObjectType.Layout.NOTE.code.toDouble(),
-                ObjectType.Layout.BOOKMARK.code.toDouble()
-            )
+            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
@@ -98,7 +90,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.layouts.map { it.code.toDouble() }
+            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.ID,
@@ -299,7 +291,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.layouts.map { it.code.toDouble() }
+            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.TYPE_UNIQUE_KEY,
@@ -422,7 +414,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.layouts.map { it.code.toDouble() }
+            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.LAST_OPENED_DATE,

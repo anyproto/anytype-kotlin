@@ -2443,7 +2443,7 @@ class HomeScreenViewModelTest {
                 addAll(ObjectSearchConstants.defaultDataViewFilters(defaultSpaceConfig.space))
                 add(
                     DVFilter(
-                        relation = Relations.TYPE,
+                        relation = Relations.TYPE_UNIQUE_KEY,
                         condition = DVFilterCondition.NOT_IN,
                         value = listOf(
                             ObjectTypeIds.OBJECT_TYPE,

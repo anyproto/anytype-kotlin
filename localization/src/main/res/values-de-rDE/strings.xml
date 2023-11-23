@@ -66,7 +66,7 @@
     <string name="snackbar_template_add">Neue Vorlage wurde zum Typ hinzugefügt</string>
     <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
-    <string name="multi_select_turn_into">Turn into</string>
+    <string name="multi_select_turn_into">Verwandele in</string>
     <string name="multi_select_move_to">Verschieben nach</string>
     <string name="content_description_add_block">Add block button</string>
     <string name="content_description_hide_keyboard_button">Hide keyboard button</string>
@@ -94,7 +94,7 @@
     <string name="content_description_document_next_search_result_icon">Document next search result icon</string>
     <string name="content_description_document_search_icon">Document search icon</string>
     <string name="content_description_document_clear_search_icon">Document clear search icon</string>
-    <string name="option_toolbar_header_turn_into">Turn into</string>
+    <string name="option_toolbar_header_turn_into">Verwandele in</string>
     <string name="option_toolbar_header_add_block">Füge Block hinzu</string>
     <string name="option_text_text">Text</string>
     <string name="option_text_header_one">Überschrift 1</string>
@@ -191,7 +191,7 @@
     <string name="detail_url">Link</string>
     <string name="detail_phone">Telefon</string>
     <string name="add_new">Füge neues Hinzu</string>
-    <string name="turn_into">Turn into</string>
+    <string name="turn_into">Verwandele in</string>
     <string name="modal_reorder">Sortieren</string>
     <string name="modal_done">Fertig</string>
     <string name="modal_prop_name">Name der Eigenschaft</string>
@@ -259,7 +259,7 @@
         <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
     </string-array>
     <string name="action_bar_add_below">Add block below</string>
-    <string name="action_bar_turn_into">Turn into</string>
+    <string name="action_bar_turn_into">Verwandele in</string>
     <string name="action_bar_turn_into_page">Turn into Page</string>
     <string name="action_bar_delete">Löschen</string>
     <string name="action_bar_to_bin">In Papierkorb verschieben</string>

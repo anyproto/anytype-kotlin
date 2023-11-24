@@ -75,16 +75,13 @@ class TemplateSelectViewModel(
                     layout = objType.recommendedLayout?.code ?: 0
                 )
             )
-            addAll(templates.mapNotNull {
-                val typeKey = objType.key
-                if (typeKey != null) {
-                    TemplateSelectView.Template(
-                        id = it.id,
-                        layout = it.layout ?: ObjectType.Layout.BASIC,
-                        typeId = objType.id,
-                        typeKey = typeKey
-                    )
-                } else null
+            addAll(templates.map {
+                TemplateSelectView.Template(
+                    id = it.id,
+                    layout = it.layout ?: ObjectType.Layout.BASIC,
+                    typeId = objType.id,
+                    typeKey = objType.uniqueKey
+                )
             })
         }
         _viewState.emit(

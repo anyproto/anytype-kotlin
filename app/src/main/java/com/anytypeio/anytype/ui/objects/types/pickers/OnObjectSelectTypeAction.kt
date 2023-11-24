@@ -1,8 +1,8 @@
 package com.anytypeio.anytype.ui.objects.types.pickers
 
-import com.anytypeio.anytype.presentation.objects.ObjectTypeView
+import com.anytypeio.anytype.core_models.ObjectWrapper
+
 
 interface OnObjectSelectTypeAction {
-    fun onProceedWithUpdateType(item: ObjectTypeView)
-    fun onProceedWithDraftUpdateType(item: ObjectTypeView)
+    fun onProceedWithUpdateType(objType: ObjectWrapper.Type)
 }

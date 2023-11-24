@@ -120,25 +120,6 @@
     <string name="option_other_dots">圆点分隔线</string>
     <string name="option_other_code">代码片段</string>
     <string name="option_relation_relation">关联</string>
-    <string name="add_block_or_turn_into_subtitle_text">撰写纯文本</string>
-    <string name="add_block_or_turn_into_subtitle_header_one">分隔章节、段落的大标题</string>
-    <string name="add_block_or_turn_into_subtitle_header_two">中等标题</string>
-    <string name="add_block_or_turn_into_subtitle_header_three">小标题</string>
-    <string name="add_block_or_turn_into_subtitle_highlighted">聚焦，这需要特别关注</string>
-    <string name="add_block_or_turn_into_subtitle_checkbox">使用待办事项列表创建和跟踪任务</string>
-    <string name="add_block_or_turn_into_subtitle_bulleted">简单列表</string>
-    <string name="add_block_or_turn_into_subtitle_numbered">编号列表</string>
-    <string name="add_block_or_turn_into_subtitle_toggle">隐藏和显示内部内容</string>
-    <string name="add_block_or_turn_into_subtitle_page">在此页面创建新页面</string>
-    <string name="add_block_or_turn_into_subtitle_existing_page">链接到现有页面</string>
-    <string name="add_block_or_turn_into_subtitle_file">以原始状态存储文件</string>
-    <string name="add_block_or_turn_into_subtitle_image">上传图片，丰富页面内容</string>
-    <string name="add_block_or_turn_into_subtitle_video">上传可播放的视频</string>
-    <string name="add_block_or_turn_into_subtitle_bookmark">剪藏您最喜欢的链接和摘要</string>
-    <string name="add_block_or_turn_into_subtitle_code">捕获代码片段</string>
-    <string name="add_block_or_turn_into_subtitle_line_divider">用行分隔信息</string>
-    <string name="add_block_or_turn_into_subtitle_dots">使用三个英文句号来分割信息</string>
-    <string name="add_block_or_turn_into_subtitle_relation">对象之间有意义的连接</string>
     <string name="toolbar_section_text">正文</string>
     <string name="toolbar_section_list">列表</string>
     <string name="toolbar_section_page">页面</string>
@@ -254,10 +235,7 @@
     <string name="color">颜色</string>
     <string name="background">背景</string>
     <string name="content_description_close_button">关闭按钮</string>
-    <!-- Non-valid certificate, need update -->
-    <string-array name="certs">
-        <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
-    </string-array>
+
     <string name="action_bar_add_below">在下方添加块</string>
     <string name="action_bar_turn_into">转换为</string>
     <string name="action_bar_turn_into_page">转换为页面</string>
@@ -679,7 +657,6 @@
     <string name="confirm">确认</string>
     <string name="code_empty">邀请码不能为空</string>
     <string name="enter_invitation_hint">邀请码</string>
-    <string name="enter_invitation_text">If you don\'t have one just go to anytype.io and sign up to the waiting list. We are inviting people on the rolling bases.</string>
     <string name="start_login_text">使用Anytype，您可以写便笺和文档，管理任务，分享文件或从网络上保存重要内容。</string>
     <string name="login">登录</string>
     <string name="sign_up">注册</string>
@@ -763,8 +740,6 @@
     <string name="link">链接</string>
     <string name="move_into_this_page">移动到此页面</string>
     <string name="move_into">移动到</string>
-    <string name="telegram_app">https://t.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
-    <string name="telegram_web">http://www.telegram.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
     <string name="fetching_your_account">正在获取您的帐户…</string>
     <string name="search_on_page">在页面上搜索</string>
     <string name="object_view_type">Object view type</string>

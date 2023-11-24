@@ -36,7 +36,7 @@
     <string name="about_anytype_community">Comunidade Anytype</string>
     <string name="about_help_and_tutorials">Help &amp; Tutorials</string>
     <string name="about_legal">Informações Legais</string>
-    <string name="about_terms_of_use">Terms of Use\"</string>
+    <string name="about_terms_of_use">Terms of Use</string>
     <string name="about_privacy_policy">Política de Privacidade</string>
     <string name="about_acknowledgements">Acknowledgments</string>
     <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
@@ -68,32 +68,7 @@
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Turn into</string>
     <string name="multi_select_move_to">Mover para</string>
-    <string name="content_description_add_block">Add block button</string>
-    <string name="content_description_hide_keyboard_button">Hide keyboard button</string>
-    <string name="content_description_show_actions">Show actions</string>
-    <string name="content_description_show_colors">Show colors</string>
-    <string name="content_description_bold_text">Bold text</string>
-    <string name="content_description_italic_text">Italic text</string>
-    <string name="content_description_strike_through_text">Strike-through text</string>
-    <string name="content_description_link">Link</string>
-    <string name="content_description_code">Código</string>
-    <string name="content_description_option_picture">Option picture</string>
-    <string name="content_description_action_picture">Action picture</string>
-    <string name="content_description_checkbox_pic">Checkbox pic</string>
-    <string name="content_description_task_pic">Task pic</string>
-    <string name="content_description_page_icon">Page icon</string>
-    <string name="content_description_more_button">More button</string>
-    <string name="content_description_avatar_image">Avatar image</string>
-    <string name="content_description_bookmark_image">Bookmark image</string>
-    <string name="content_description_filter_remove">Remove filter</string>
-    <string name="content_description_filter_format">Filter format</string>
-    <string name="content_description_qr_image">QR code</string>
-    <string name="content_description_toggle_icon">Toggle icon</string>
-    <string name="content_description_turn_into_arrow">Turn into arrow</string>
-    <string name="content_description_document_previous_search_result_icon">Document previous search result icon</string>
-    <string name="content_description_document_next_search_result_icon">Document next search result icon</string>
-    <string name="content_description_document_search_icon">Document search icon</string>
-    <string name="content_description_document_clear_search_icon">Document clear search icon</string>
+
     <string name="option_toolbar_header_turn_into">Turn into</string>
     <string name="option_toolbar_header_add_block">Add block</string>
     <string name="option_text_text">Texto</string>
@@ -120,25 +95,6 @@
     <string name="option_other_dots">Divisor pontilhado</string>
     <string name="option_other_code">Trecho de código</string>
     <string name="option_relation_relation">Relation</string>
-    <string name="add_block_or_turn_into_subtitle_text">Write a plain text</string>
-    <string name="add_block_or_turn_into_subtitle_header_one">Big headline of a chapter, paragraph or section</string>
-    <string name="add_block_or_turn_into_subtitle_header_two">Título médio</string>
-    <string name="add_block_or_turn_into_subtitle_header_three">Título pequeno</string>
-    <string name="add_block_or_turn_into_subtitle_highlighted">Spotlight what needs special attention</string>
-    <string name="add_block_or_turn_into_subtitle_checkbox">Criar e rastrear tarefas com uma lista de tarefas</string>
-    <string name="add_block_or_turn_into_subtitle_bulleted">Lista simples</string>
-    <string name="add_block_or_turn_into_subtitle_numbered">Lista numerada</string>
-    <string name="add_block_or_turn_into_subtitle_toggle">Exibir e ocultar conteúdo</string>
-    <string name="add_block_or_turn_into_subtitle_page">Create new page inside this one</string>
-    <string name="add_block_or_turn_into_subtitle_existing_page">Link existing page with this one</string>
-    <string name="add_block_or_turn_into_subtitle_file">Armazenar arquivo no estado original</string>
-    <string name="add_block_or_turn_into_subtitle_image">Enviar e enriquecer a página com imagem</string>
-    <string name="add_block_or_turn_into_subtitle_video">Enviar vídeo</string>
-    <string name="add_block_or_turn_into_subtitle_bookmark">Salvar link favorito com resumo</string>
-    <string name="add_block_or_turn_into_subtitle_code">Capturar pedaço de código</string>
-    <string name="add_block_or_turn_into_subtitle_line_divider">Separate information with line</string>
-    <string name="add_block_or_turn_into_subtitle_dots">Separate information with three dots</string>
-    <string name="add_block_or_turn_into_subtitle_relation">Meaningful connection between objects</string>
     <string name="toolbar_section_text">Texto</string>
     <string name="toolbar_section_list">Lista</string>
     <string name="toolbar_section_page">Page</string>
@@ -204,13 +160,11 @@
     <string name="modal_detail_type">Detail type</string>
     <string name="hint_title">Título</string>
     <string name="hint_profile_title">Name Surname</string>
-    <string name="hint_paragraph">Paragraph</string>
     <string name="hint_header_one">Título</string>
     <string name="hint_quote">Quote</string>
     <string name="hint_header_two">Cabeçalho</string>
     <string name="hint_header_three">Subtítulo</string>
     <string name="hint_checkbox">Caixa de seleção</string>
-    <string name="hint_video">Enter video URL</string>
     <string name="hint_upload_video">Enviar um vídeo</string>
     <string name="hint_upload_image">Enviar uma imagem</string>
     <string name="hint_upload_file">Enviar um arquivo</string>
@@ -219,7 +173,6 @@
     <string name="hint_bullet">Item da lista com marcadores</string>
     <string name="hint_numbered_list">Item da lista numerada</string>
     <string name="hint_toggle">Alternar bloco</string>
-    <string name="hint_empty">Vazio</string>
     <string name="hint_paste_link">Colar link</string>
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
     <string name="untitled">Sem título</string>
@@ -254,10 +207,6 @@
     <string name="color">Cor</string>
     <string name="background">Fundo</string>
     <string name="content_description_close_button">Close button</string>
-    <!-- Non-valid certificate, need update -->
-    <string-array name="certs">
-        <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
-    </string-array>
     <string name="action_bar_add_below">Add block below</string>
     <string name="action_bar_turn_into">Turn into</string>
     <string name="action_bar_turn_into_page">Turn into Page</string>
@@ -680,7 +629,6 @@
     <string name="confirm">Confirm</string>
     <string name="code_empty">Invitation code should not be null</string>
     <string name="enter_invitation_hint">Invitation code</string>
-    <string name="enter_invitation_text">If you don\'t have one just go to anytype.io and sign up to the waiting list. We are inviting people on the rolling bases.</string>
     <string name="start_login_text">With Anytype you can write notes and documents, manage tasks, share files and save important content from the web.</string>
     <string name="login">Entrar</string>
     <string name="sign_up">Registrar-se</string>
@@ -764,8 +712,6 @@
     <string name="link">Link</string>
     <string name="move_into_this_page">Move into this page</string>
     <string name="move_into">Move into</string>
-    <string name="telegram_app">https://t.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
-    <string name="telegram_web">http://www.telegram.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
     <string name="fetching_your_account">Fetching your account…</string>
     <string name="search_on_page">Search on page</string>
     <string name="object_view_type">Object view type</string>
@@ -850,7 +796,6 @@
     <string name="object_debug">Object Debug</string>
     <string name="object_diagnostics">Diagnostics</string>
     <string name="provide_name">Provide name for new object</string>
-    <string name="wait_a_bit_message">Please give us a moment. We’re almost there…</string>
     <string name="soon">Soon</string>
     <string name="are_you_sure_delete_one_object">Are you sure you want to delete 1 object?</string>
     <string name="are_you_sure_delete_n_objects">Are you sure you want to delete %1$d objects?</string>
@@ -969,7 +914,6 @@
     <string name="onboarding_join_button_text">Criar nova conta</string>
     <string name="onboarding_log_in_button_text">Entrar</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
-    <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_mnemonic_title">Salve sua frase de recuperação</string>
@@ -979,7 +923,6 @@
     <string name="onboarding_mnemonic_skip">Pular</string>
     <string name="onboarding_mnemonic_copy">Copiar para área de transferência</string>
     <string name="onboarding_set_your_name_title">Escolha seu nome</string>
-    <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
@@ -1023,7 +966,7 @@
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
     <string name="anytype_update_alert_title">It’s time to update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
-    <string name="space_type_personal">Configurações</string>
+    <string name="space_type_personal">Espaço Personal</string>
     <string name="space_type_private">Espaço Privado</string>
     <string name="space_type_unknown">Desconhecido</string>
     <string name="create_space_start_with">Start with</string>

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -230,12 +231,8 @@ fun Block.Details.objectTypeRelation(
     isFeatured: Boolean,
     objectTypeId: Id
 ): ObjectRelationView {
-    val typeDetails = details[objectTypeId]?.map
-    val objectType = if (typeDetails != null) {
-        ObjectWrapper.Type(typeDetails)
-    } else {
-        null
-    }
+    val typeStruct = details[objectTypeId]?.map
+    val objectType = typeStruct?.mapToObjectWrapperType()
     return if (objectType == null || objectType.isDeleted == true) {
         ObjectRelationView.ObjectType.Deleted(
             id = objectTypeId,
@@ -248,7 +245,7 @@ fun Block.Details.objectTypeRelation(
         ObjectRelationView.ObjectType.Base(
             id = objectTypeId,
             key = relationKey,
-            name = details[objectTypeId]?.name.orEmpty(),
+            name = objectType.name.orEmpty(),
             featured = isFeatured,
             readOnly = false,
             type = objectTypeId,

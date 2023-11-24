@@ -94,7 +94,6 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption2Semibold
-import com.anytypeio.anytype.core_ui.views.ModalTitle
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.emojifier.Emojifier
@@ -250,31 +249,6 @@ fun TypeTemplatesWidget(
                                 text = title,
                                 style = Title1,
                                 color = colorResource(R.color.text_primary)
-                            )
-                        }
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.CenterEnd)
-                                .noRippleThrottledClickable {
-                                    val templates =
-                                        (currentState as? TypeTemplatesWidgetUI.Data)?.templates
-                                    val newTemplate =
-                                        templates?.firstOrNull { it is TemplateView.New }
-                                    if (newTemplate != null) {
-                                        action(TemplateClick(newTemplate))
-                                    }
-                                }
-                                .alpha(if (currentState.isPossibleToChangeTemplate) 1f else 0f)
-                        ) {
-                            Image(
-                                modifier = Modifier.padding(
-                                    start = 16.dp,
-                                    top = 12.dp,
-                                    bottom = 12.dp,
-                                    end = 16.dp
-                                ),
-                                painter = painterResource(id = R.drawable.ic_default_plus),
-                                contentDescription = null
                             )
                         }
                     }
@@ -917,7 +891,7 @@ fun ObjectTypesList(
                     is TemplateObjectTypeView.Item -> {
                         val borderWidth: Dp
                         val borderColor: Color
-                        if (item.isDefault) {
+                        if (item.isSelected) {
                             borderWidth = 2.dp
                             borderColor = colorResource(id = R.color.palette_system_amber_50)
                         } else {

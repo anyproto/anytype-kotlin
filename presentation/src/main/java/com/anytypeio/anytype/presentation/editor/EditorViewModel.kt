@@ -13,8 +13,6 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.FileLimitsEvent
@@ -4400,6 +4398,8 @@ class EditorViewModel(
         const val ERROR_UNSUPPORTED_BEHAVIOR = "Currently unsupported behavior."
         const val NOT_ALLOWED_FOR_OBJECT = "Not allowed for this object"
         const val NOT_ALLOWED_FOR_RELATION = "Not allowed for this relation"
+
+        private const val EDITOR_TEMPLATES_SUBSCRIPTION = "editor_templates_subscription"
     }
 
     data class MarkupAction(
@@ -5928,22 +5928,12 @@ class EditorViewModel(
             val excludeTypes = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = buildList {
-                    addAll(
-                        ObjectSearchConstants.filterObjectTypeLibrary(
-                            space = spaceManager.get()
-                        )
-                    )
-                    add(
-                        DVFilter(
-                            relation = Relations.RECOMMENDED_LAYOUT,
-                            condition = DVFilterCondition.IN,
-                            value = SupportedLayouts.createObjectLayouts.map { layout ->
-                                layout.code.toDouble()
-                            }
-                        )
-                    )
-                },
+                filters = ObjectSearchConstants.filterTypes(
+                    spaces = buildList {
+                        add(spaceManager.get())
+                    },
+                    recommendedLayouts = SupportedLayouts.createObjectLayouts
+                ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
             getObjectTypes.async(params).fold(
@@ -6297,7 +6287,7 @@ class EditorViewModel(
     private fun startTemplatesSubscription(objType: ObjectWrapper.Type) {
         templatesJob += viewModelScope.launch {
             templatesContainer
-                .subscribeToTemplates(type = objType.id)
+                .subscribeToTemplates(type = objType.id, subId = EDITOR_TEMPLATES_SUBSCRIPTION)
                 .catch { Timber.e(it, "Error while subscribing to templates") }
                 .collect { templates ->
                     if (templates.isNotEmpty()) {
@@ -6317,7 +6307,7 @@ class EditorViewModel(
             selectTemplateViewState.value = SelectTemplateViewState.Idle
             templatesJob.cancel()
             viewModelScope.launch {
-                templatesContainer.unsubscribeFromTemplates()
+                templatesContainer.unsubscribeFromTemplates(subId = EDITOR_TEMPLATES_SUBSCRIPTION)
             }
         }
     }

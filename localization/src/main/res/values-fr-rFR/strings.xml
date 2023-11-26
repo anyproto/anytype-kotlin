@@ -102,7 +102,7 @@
     <string name="option_text_header_three">Header 3</string>
     <string name="option_text_highlighted">Surligné</string>
     <string name="option_list_checkbox">Case à cocher</string>
-    <string name="option_list_bulleted_list">Bulleted list</string>
+    <string name="option_list_bulleted_list">Liste à puces</string>
     <string name="option_list_numbered_list">Liste numérotée</string>
     <string name="option_list_toggle_list">Toggle list</string>
     <string name="option_tool_task">Tâche</string>

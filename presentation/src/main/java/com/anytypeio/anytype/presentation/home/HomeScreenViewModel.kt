@@ -1018,16 +1018,16 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
-        when (obj.layout) {
-            ObjectType.Layout.BASIC,
-            ObjectType.Layout.PROFILE,
-            ObjectType.Layout.NOTE,
-            ObjectType.Layout.TODO,
-            ObjectType.Layout.FILE,
-            ObjectType.Layout.BOOKMARK -> navigate(Navigation.OpenObject(obj.id))
-            ObjectType.Layout.SET -> navigate(Navigation.OpenSet(obj.id))
-            ObjectType.Layout.COLLECTION -> navigate(Navigation.OpenSet(obj.id))
-            else -> sendToast("Unexpected layout: ${obj.layout}")
+        when(val navigation = obj.navigation()) {
+            is OpenObjectNavigation.OpenDataView -> {
+                navigate(Navigation.OpenSet(navigation.target))
+            }
+            is OpenObjectNavigation.OpenEditor -> {
+                navigate(Navigation.OpenObject(navigation.target))
+            }
+            is OpenObjectNavigation.UnexpectedLayoutError -> {
+                sendToast("Unexpected layout: ${navigation.layout}")
+            }
         }
     }
 
@@ -1408,3 +1408,36 @@ typealias Widgets = List<Widget>?
  * Null means there are no info about containers — due to loading or error state.
  */
 typealias Containers = List<WidgetContainer>?
+
+sealed class OpenObjectNavigation {
+    data class OpenEditor(val target: Id) : OpenObjectNavigation()
+    data class OpenDataView(val target: Id): OpenObjectNavigation()
+    data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
+}
+
+fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
+    return when (layout) {
+        ObjectType.Layout.BASIC,
+        ObjectType.Layout.NOTE,
+        ObjectType.Layout.TODO,
+        ObjectType.Layout.FILE,
+        ObjectType.Layout.BOOKMARK -> {
+            OpenObjectNavigation.OpenEditor(id)
+        }
+        ObjectType.Layout.PROFILE -> {
+            val identityLink = getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
+            if (identityLink.isNullOrEmpty()) {
+                OpenObjectNavigation.OpenEditor(id)
+            } else {
+                OpenObjectNavigation.OpenEditor(identityLink)
+            }
+        }
+        ObjectType.Layout.SET,
+        ObjectType.Layout.COLLECTION -> {
+            OpenObjectNavigation.OpenDataView(id)
+        }
+        else -> {
+            OpenObjectNavigation.UnexpectedLayoutError(layout)
+        }
+    }
+}

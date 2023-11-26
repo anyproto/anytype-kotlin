@@ -54,7 +54,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -77,7 +76,7 @@ fun PreviewScreen() {
 
 @Composable
 fun CreateObjectOfTypeScreen(
-    onTypeClicked: (Key) -> Unit,
+    onTypeClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
     views: List<SelectTypeView>
@@ -102,7 +101,7 @@ fun CreateObjectOfTypeScreen(
 @Composable
 private fun ScreenContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (Key) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
     FlowRowContent(views, onTypeClicked)
 }
@@ -111,7 +110,7 @@ private fun ScreenContent(
 @OptIn(ExperimentalLayoutApi::class)
 private fun FlowRowContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (Key) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
     FlowRow(
         modifier = Modifier
@@ -129,9 +128,7 @@ private fun FlowRowContent(
                         name = view.name,
                         emoji = view.icon,
                         onItemClicked = throttledClick(
-                            onClick = {
-                                onTypeClicked(view.typeKey)
-                            }
+                            onClick = { onTypeClicked(view) }
                         ),
                         modifier = Modifier
                     )
@@ -146,6 +143,11 @@ private fun FlowRowContent(
                         title = stringResource(id = R.string.create_object_section_objects)
                     )
                 }
+                is SelectTypeView.Section.Library -> {
+                    Section(
+                        title = stringResource(id = R.string.create_object_section_library),
+                    )
+                }
             }
 
         }
@@ -156,7 +158,7 @@ private fun FlowRowContent(
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyColumnContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (Key) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
@@ -180,7 +182,6 @@ private fun LazyColumnContent(
                         )
                     }
                 }
-
                 is SelectTypeView.Section.Objects -> {
                     item(
                         key = view.javaClass.name,
@@ -191,7 +192,16 @@ private fun LazyColumnContent(
                         )
                     }
                 }
-
+                is SelectTypeView.Section.Library -> {
+                    item(
+                        key = view.javaClass.name,
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        Section(
+                            title = stringResource(id = R.string.create_object_section_library)
+                        )
+                    }
+                }
                 is SelectTypeView.Type -> {
                     item(
                         key = view.typeKey
@@ -201,7 +211,7 @@ private fun LazyColumnContent(
                             emoji = view.icon,
                             onItemClicked = throttledClick(
                                 onClick = {
-                                    onTypeClicked(view.typeKey)
+                                    onTypeClicked(view)
                                 }
                             ),
                             modifier = Modifier.animateItemPlacement()

@@ -8,9 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.unit.dp
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
@@ -142,7 +139,6 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Basic.Avatar -> setBasicInitials(icon.name)
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
-            is ObjectIcon.Profile.Gradient -> setSpaceGradientView(icon)
             is ObjectIcon.Task -> setCheckbox(icon.isChecked)
             is ObjectIcon.Bookmark -> setBookmark(icon.image)
             is ObjectIcon.None -> removeIcon()
@@ -150,30 +146,6 @@ class ObjectIconWidget @JvmOverloads constructor(
                 mime = icon.mime,
                 fileName = icon.fileName
             )
-        }
-    }
-
-    private fun setSpaceGradientView(icon: ObjectIcon.Profile.Gradient) {
-        with(binding) {
-            ivCheckbox.gone()
-            initialContainer.gone()
-            emojiContainer.gone()
-            ivBookmark.gone()
-            ivImage.gone()
-            ivBookmark.setImageDrawable(null)
-            ivEmoji.setImageDrawable(null)
-        }
-        binding.composeView.visible()
-        binding.composeView.apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                RadialGradientComposeView(
-                    modifier = Modifier,
-                    from = icon.from,
-                    to = icon.to,
-                    size = 0.dp
-                )
-            }
         }
     }
 
@@ -206,9 +178,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.gone()
             initialContainer.visible()
             composeView.gone()
-            if (initialContainer.background == null) {
-                initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
-            }
+            initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
             initial.setTextColor(context.color(R.color.text_white))
             initial.setHintTextColor(context.color(R.color.text_tertiary))
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
@@ -225,9 +195,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.gone()
             initialContainer.visible()
             composeView.gone()
-            if (initialContainer.background == null) {
-                initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
-            }
+            initialContainer.setBackgroundResource(R.drawable.object_in_list_background_basic_initial)
             initial.setTextColor(textColor)
             initial.setHintTextColor(textColor)
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()

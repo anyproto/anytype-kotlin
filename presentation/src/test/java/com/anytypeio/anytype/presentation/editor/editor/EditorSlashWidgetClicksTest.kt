@@ -337,7 +337,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type1.id,
-                    key = type1.uniqueKey.orEmpty(),
+                    key = type1.uniqueKey,
                     name = type1.name.orEmpty(),
                     description = type1.description,
                         emoji = type1.iconEmoji
@@ -346,7 +346,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type2.id,
-                    key = type2.uniqueKey.orEmpty(),
+                    key = type2.uniqueKey,
                     name = type2.name.orEmpty(),
                     description = type2.description,
                     emoji = type2.iconEmoji
@@ -355,7 +355,7 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
             SlashItem.ObjectType(
                 objectTypeView = ObjectTypeView(
                     id = type3.id,
-                    key = type3.uniqueKey.orEmpty(),
+                    key = type3.uniqueKey,
                     name = type3.name.orEmpty(),
                     description = type3.description,
                     emoji = type3.iconEmoji

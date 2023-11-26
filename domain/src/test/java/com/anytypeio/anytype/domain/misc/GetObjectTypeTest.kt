@@ -52,30 +52,35 @@ class GetObjectTypeTest {
     fun `should return all object types`() {
 
         val type1 = ObjectWrapper.Type(
-            mapOf(Relations.ID to MockDataFactory.randomUuid())
+            mapOf(
+                Relations.ID to MockDataFactory.randomUuid(),
+                Relations.UNIQUE_KEY to MockDataFactory.randomUuid()
+            )
         )
 
         val type2 = ObjectWrapper.Type(
-            mapOf(Relations.ID to MockDataFactory.randomUuid())
+            mapOf(
+                Relations.ID to MockDataFactory.randomUuid(),
+                Relations.UNIQUE_KEY to MockDataFactory.randomUuid()
+            )
         )
 
         val type3 = ObjectWrapper.Type(
-            mapOf(Relations.ID to MockDataFactory.randomUuid())
+            mapOf(
+                Relations.ID to MockDataFactory.randomUuid(),
+                Relations.UNIQUE_KEY to MockDataFactory.randomUuid()
+            )
         )
 
         runBlocking {
             stubGetObjectTypes(types = listOf(type1, type2, type3))
 
             val firstTimeResult = usecase.execute(params = defaultParams)
-            firstTimeResult.fold(
-                onFailure = { Assert.fail() },
-                onSuccess = { results ->
-                    assertEquals(
-                        expected = listOf(type1, type2, type3),
-                        actual = results
-                    )
-                }
-            )
+            firstTimeResult.fold(onFailure = { Assert.fail() }, onSuccess = { results ->
+                assertEquals(
+                    expected = listOf(type1, type2, type3), actual = results
+                )
+            })
             val secondTimeResult = usecase.execute(params = defaultParams)
             assertEquals(firstTimeResult, secondTimeResult)
 
@@ -106,15 +111,11 @@ class GetObjectTypeTest {
             stubGetObjectTypes(types = listOf(type1))
 
             val firstTimeResult = usecase.execute(params = defaultParams)
-            firstTimeResult.fold(
-                onFailure = { Assert.fail() },
-                onSuccess = { results ->
-                    assertEquals(
-                        expected = sourceObject,
-                        actual = results.first().sourceObject
-                    )
-                }
-            )
+            firstTimeResult.fold(onFailure = { Assert.fail() }, onSuccess = { results ->
+                assertEquals(
+                    expected = sourceObject, actual = results.first().sourceObject
+                )
+            })
         }
     }
 
@@ -134,15 +135,11 @@ class GetObjectTypeTest {
             stubGetObjectTypes(types = listOf(type1))
 
             val firstTimeResult = usecase.execute(params = defaultParams)
-            firstTimeResult.fold(
-                onFailure = { Assert.fail() },
-                onSuccess = { results ->
-                    assertEquals(
-                        expected = sourceObject,
-                        actual = results.first().sourceObject
-                    )
-                }
-            )
+            firstTimeResult.fold(onFailure = { Assert.fail() }, onSuccess = { results ->
+                assertEquals(
+                    expected = sourceObject, actual = results.first().sourceObject
+                )
+            })
         }
     }
 
@@ -164,15 +161,11 @@ class GetObjectTypeTest {
             stubGetObjectTypes(types = listOf(type1))
 
             val firstTimeResult = usecase.execute(params = defaultParams)
-            firstTimeResult.fold(
-                onFailure = { Assert.fail() },
-                onSuccess = { results ->
-                    assertEquals(
-                        expected = sourceObject,
-                        actual = results.first().sourceObject
-                    )
-                }
-            )
+            firstTimeResult.fold(onFailure = { Assert.fail() }, onSuccess = { results ->
+                assertEquals(
+                    expected = sourceObject, actual = results.first().sourceObject
+                )
+            })
         }
     }
 
@@ -191,12 +184,9 @@ class GetObjectTypeTest {
             stubGetObjectTypes(types = listOf(type1))
 
             val firstTimeResult = usecase.execute(params = defaultParams)
-            firstTimeResult.fold(
-                onFailure = { Assert.fail() },
-                onSuccess = { results ->
-                    assertNull(results.first().sourceObject)
-                }
-            )
+            firstTimeResult.fold(onFailure = { Assert.fail() }, onSuccess = { results ->
+                assertNull(results.first().sourceObject)
+            })
         }
     }
 
@@ -214,12 +204,9 @@ class GetObjectTypeTest {
             stubGetObjectTypes(types = listOf(type1))
 
             val firstTimeResult = usecase.execute(params = defaultParams)
-            firstTimeResult.fold(
-                onFailure = { Assert.fail() },
-                onSuccess = { results ->
-                    assertNull(results.first().sourceObject)
-                }
-            )
+            firstTimeResult.fold(onFailure = { Assert.fail() }, onSuccess = { results ->
+                assertNull(results.first().sourceObject)
+            })
         }
     }
 

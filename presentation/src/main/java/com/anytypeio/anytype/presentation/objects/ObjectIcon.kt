@@ -18,7 +18,6 @@ sealed class ObjectIcon {
     sealed class Profile : ObjectIcon() {
         data class Avatar(val name: String) : Profile()
         data class Image(val hash: Hash) : Profile()
-        data class Gradient(val from: String, val to: String) : Profile()
     }
 
     data class Task(val isChecked: Boolean) : ObjectIcon()
@@ -50,14 +49,8 @@ sealed class ObjectIcon {
                     else -> Basic.Avatar(obj.name.orEmpty())
                 }
                 ObjectType.Layout.PROFILE -> {
-                    val option = obj.iconOption
-                    val gradient = option?.let { code ->
-                        gradientProvider.get(code)
-                    }
                     if (!img.isNullOrBlank()) {
                         Profile.Image(hash = builder.thumbnail(img))
-                    } else if (gradient != null) {
-                        Profile.Gradient(from = gradient.from, to = gradient.to)
                     } else {
                         Profile.Avatar(name = obj.name.orEmpty())
                     }

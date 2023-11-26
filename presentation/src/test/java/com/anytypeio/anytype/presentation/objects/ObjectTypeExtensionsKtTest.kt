@@ -33,7 +33,7 @@ class ObjectTypeExtensionsTest {
     fun `isTemplateAllowed returns false when type is BOOKMARK`() {
         val objectType = StubObjectType(
             uniqueKey = ObjectTypeIds.BOOKMARK,
-            recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
+            recommendedLayout = ObjectType.Layout.BOOKMARK.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()
         assertFalse(result)
@@ -43,7 +43,7 @@ class ObjectTypeExtensionsTest {
     fun `isTemplateAllowed returns false when type is FILE`() {
         val objectType = StubObjectType(
             uniqueKey = ObjectTypeIds.FILE,
-            recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
+            recommendedLayout = ObjectType.Layout.FILE.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()
         assertFalse(result)
@@ -74,6 +74,36 @@ class ObjectTypeExtensionsTest {
         val objectType = StubObjectType(
             uniqueKey = ObjectTypeIds.COLLECTION,
             recommendedLayout = ObjectType.Layout.COLLECTION.code.toDouble()
+        )
+        val result = objectType.isTemplatesAllowed()
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isTemplateAllowed returns false when type is IMAGE`() {
+        val objectType = StubObjectType(
+            uniqueKey = ObjectTypeIds.IMAGE,
+            recommendedLayout = ObjectType.Layout.IMAGE.code.toDouble()
+        )
+        val result = objectType.isTemplatesAllowed()
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isTemplateAllowed returns false when type is VIDEO`() {
+        val objectType = StubObjectType(
+            uniqueKey = ObjectTypeIds.VIDEO,
+            recommendedLayout = ObjectType.Layout.VIDEO.code.toDouble()
+        )
+        val result = objectType.isTemplatesAllowed()
+        assertFalse(result)
+    }
+
+    @Test
+    fun `isTemplateAllowed returns false when type is AUDIO`() {
+        val objectType = StubObjectType(
+            uniqueKey = ObjectTypeIds.AUDIO,
+            recommendedLayout = ObjectType.Layout.AUDIO.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()
         assertFalse(result)

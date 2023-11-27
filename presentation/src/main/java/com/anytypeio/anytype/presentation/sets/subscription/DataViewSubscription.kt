@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewFilters
 import com.anytypeio.anytype.presentation.sets.filterOutDeletedAndMissingObjects
 import com.anytypeio.anytype.presentation.sets.getSetOfValue
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -59,10 +60,15 @@ class DefaultDataViewSubscription(
             Timber.w("Data view collection subscription: active viewer is null")
             return emptyFlow()
         }
-        val filters =
-            activeViewer.filters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = space
+        val filters = buildList {
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
+            addAll(
+                defaultDataViewFilters(
+                    space = space,
+                    context = context
+                )
             )
+        }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
 
@@ -112,10 +118,15 @@ class DefaultDataViewSubscription(
             return emptyFlow()
         }
 
-        val filters =
-            activeViewer.filters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = space
+        val filters = buildList {
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
+            addAll(
+                defaultDataViewFilters(
+                    space = space,
+                    context = context
+                )
             )
+        }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
 

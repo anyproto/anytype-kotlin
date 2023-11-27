@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -76,7 +75,6 @@ import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMI
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.render
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.search.Subscriptions.SUBSCRIPTION_SET_TEMPLATES
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState

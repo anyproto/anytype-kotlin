@@ -685,7 +685,7 @@ object ObjectSearchConstants {
         }
     }
 
-    fun defaultDataViewFilters(space: Id) = listOf(
+    fun defaultDataViewFilters(space: Id, context: Id) = listOf(
         DVFilter(
             relation = Relations.IS_HIDDEN,
             condition = Condition.NOT_EQUAL,
@@ -705,6 +705,11 @@ object ObjectSearchConstants {
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = space
+        ),
+        DVFilter(
+            relation = Relations.ID,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = context
         )
     )
 

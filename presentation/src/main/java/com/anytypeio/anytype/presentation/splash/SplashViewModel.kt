@@ -136,7 +136,8 @@ class SplashViewModel(
                             state.value = ViewState.Error(ERROR_NEED_UPDATE)
                         }
                         else -> {
-                            state.value = ViewState.Error(ERROR_MESSAGE)
+                            val msg = "$ERROR_MESSAGE : ${e.message ?: "Unknown error"}"
+                            state.value = ViewState.Error(msg)
                         }
                     }
                 }
@@ -239,7 +240,7 @@ class SplashViewModel(
     }
 
     companion object {
-        const val ERROR_MESSAGE = "An error occurred while starting account..."
+        const val ERROR_MESSAGE = "An error occurred while starting account"
         const val ERROR_NEED_UPDATE = "Unable to retrieve account. Please update Anytype to the latest version."
     }
 }

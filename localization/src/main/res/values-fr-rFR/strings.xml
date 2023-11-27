@@ -512,7 +512,7 @@
     <string name="choose">Choose</string>
     <string name="attributes">Attributes</string>
     <string name="file_delete_alert_title">Êtes-vous sûr de vouloir supprimer définitivement les fichiers ?</string>
-    <string name="file_delete_alert_subtitle">You can\'t undo this action.</string>
+    <string name="file_delete_alert_subtitle">Vous ne pouvez pas annuler cette action.</string>
     <string name="file_delete_cancel">Annuler</string>
     <string name="file_delete_delete">Supprimer</string>
     <string name="menu_type_change">Changer le type</string>
@@ -531,7 +531,7 @@
     <string name="set_as_default">Make default</string>
     <string name="default_object">Default object</string>
     <string name="default_template">Default template</string>
-    <string name="title_templates_not_allowed">This type doesn\'t support templates</string>
+    <string name="title_templates_not_allowed">Ce type d\'objet ne prend pas en charge les modèles</string>
     <string name="num_applied">%1$d applied</string>
     <string name="view_list">Liste</string>
     <string name="view_grid">Grille</string>
@@ -539,7 +539,7 @@
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Page cover</string>
     <string name="editor_toolbar">button</string>
-    <string name="wait_a_bit_message">Please give us a moment. We\'re almost there…</string>
+    <string name="wait_a_bit_message">Veuillez nous donner un instant. Nous sommes presque là…</string>
     <string name="confirm">Confirm</string>
     <string name="code_empty">Invitation code should not be null</string>
     <string name="enter_invitation_hint">Invitation code</string>
@@ -576,7 +576,7 @@
     <string name="other_settings">Other settings</string>
     <string name="your_page">Your public page</string>
     <string name="updates">Updates</string>
-    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
+    <string name="recovery_phrase_text">Vous en aurez besoin pour vous connecter. Conservez le dans un endroit sûr. Si vous le perdez, vous ne pouvez plus accéder à votre compte.</string>
     <string name="back_up_your_recovery_phrase">Sauvegardez votre phrase de récupération</string>
     <string name="i_ve_written_it_down">i\'ve written it down</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
@@ -720,7 +720,7 @@
     <string name="shortcut_create_new">Create a new %1$s</string>
     <string name="close">Fermer</string>
     <string name="go_to_settings">Go to settings</string>
-    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your recovery phrase</string>
+    <string name="do_not_forget_mnemonic_phrase">N\'oubliez pas d\'enregistrer votre phrase de récupération</string>
     <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
     <string name="if_you_lose_recovery_phrase_warning">If you lose the recovery phrase and get logged out you will not be able to ever access your data again. Save this recovery phrase outside of Anytype for data recovery.</string>
     <string name="card_size">Card size</string>
@@ -745,7 +745,7 @@
     <string name="swipe_to_choose">Use swipe to choose</string>
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your recovery phrase from settings</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">N\'oubliez pas de prendre et d\'enregistrer votre phrase de récupération dans les paramètres</string>
     <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new relation</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
     <string name="fragment_relation_create_from_scratch_title">Sélectionner le type de relation</string>
@@ -770,8 +770,8 @@
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
     <string name="almost_there">Almost there!</string>
-    <string name="i_did_not_not_complete_migration">I didn\'t complete migration</string>
-    <string name="not_completed_migration_steps">I didn\'t complete migration</string>
+    <string name="i_did_not_not_complete_migration">Je n\'ai pas terminé la migration</string>
+    <string name="not_completed_migration_steps">Je n\'ai pas terminé la migration</string>
     <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your account.</string>
     <string name="i_completed_migration">I completed migration</string>
     <string name="here">here</string>
@@ -796,7 +796,7 @@
     <string name="created_by">Created by</string>
     <string name="space_id">Space ID</string>
     <string name="network_id">ID réseau</string>
-    <string name="delete_space_subtitle">This space will be deleted irrevocably. You can\'t undo this action.</string>
+    <string name="delete_space_subtitle">Cet espace sera supprimé définitivement. Vous ne pouvez pas annuler cette action.</string>
     <string name="delete_space_title_with_param">Delete \'%1$s\' space</string>
     <string name="delete_space_title">Are you sure to delete this space?</string>
     <string name="space_id_copied_toast_msg">Space ID copied</string>
@@ -806,7 +806,7 @@
     <string name="anytype_update_alert_title">It\'s time to update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_personal">Personnel</string>
-    <string name="space_type_private">Private</string>
+    <string name="space_type_private">Privé</string>
     <string name="space_type_unknown">Inconnu</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_groups">Groups</string>
@@ -959,7 +959,7 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_mnemonic_title">Sauvegardez votre phrase de récupération</string>
-    <string name="onboarding_mnemonic_description">It\'s a novel way of authentication that gives you full ownership over your account and data.</string>
+    <string name="onboarding_mnemonic_description">C’est un nouveau moyen d’authentification qui vous octroie la pleine propriété de votre compte et de vos données.</string>
     <string name="onboarding_mnemonic_show_key">Afficher la phrase de récupération</string>
     <string name="onboarding_mnemonic_key_saved">Accéder à l\'application</string>
     <string name="onboarding_mnemonic_skip">Ignorer</string>
@@ -977,7 +977,7 @@
     <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
     <string name="onboqrding_what_is_recovery_phrase">Qu\'est-ce que la phrase de récupération ?</string>
     <string name="onboarding_recovery_phrase_description">La phrase de récupération est une combinaison aléatoire de 12 mots à partir desquels votre compte est généré comme par magie sur cet appareil.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>
+    <string name="onboarding_recovery_phrase_description_2">Celui qui connaît votre Phrase de Récupération possède le compte. </string>
     <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
     <string name="onboarding_recovery_phrase_description_4">C\'est pourquoi il est essentiel de garder la phrase de récupération en sécurité. En tant que propriétaire unique, personne ne peut vous aider si elle est perdue.</string>
     <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>

@@ -341,7 +341,8 @@ open class ObjectSetViewModelTestSetup {
             subscription = subscription,
             collection = collection,
             filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = spaceId
+                space = spaceId,
+                context = root
             ),
             sorts = dvSorts,
             keys = dvKeys,

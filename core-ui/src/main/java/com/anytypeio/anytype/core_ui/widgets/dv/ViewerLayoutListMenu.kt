@@ -46,7 +46,7 @@ fun ViewerLayoutListMenu(
                     shape = RoundedCornerShape(size = 10.dp)
                 )
                 .background(
-                    color = colorResource(id = R.color.background_secondary),
+                    color = colorResource(id = R.color.shape_secondary),
                     shape = RoundedCornerShape(size = 10.dp)
                 )
                 .clickable {

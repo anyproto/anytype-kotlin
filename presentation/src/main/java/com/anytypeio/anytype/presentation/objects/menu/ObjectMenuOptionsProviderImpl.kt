@@ -53,6 +53,7 @@ class ObjectMenuOptionsProviderImpl(
                 ObjectType.Layout.FILE,
                 ObjectType.Layout.DASHBOARD,
                 ObjectType.Layout.IMAGE,
+                ObjectType.Layout.VIDEO,
                 ObjectType.Layout.SPACE,
                 ObjectType.Layout.SET,
                 ObjectType.Layout.COLLECTION,

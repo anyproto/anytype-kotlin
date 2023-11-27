@@ -93,13 +93,28 @@ task clean(type: Delete) {
     delete rootProject.buildDir
 }
 
+//tasks.register("installGitHooks") {
+//    setGroup("Build Setup")
+//    setDescription("Install local repository git hooks")
+//    exec {
+//        commandLine 'sh', '-c', 'git config core.hooksPath .githooks'
+//    }
+//}
+
 tasks.register("installGitHooks") {
-    setGroup("Build Setup")
-    setDescription("Install local repository git hooks")
-    exec {
-        commandLine 'sh', '-c', 'git config core.hooksPath .githooks'
+    doLast {
+        if (System.getProperty('os.name').toLowerCase().contains('windows')) {
+            exec {
+                commandLine 'cmd', '/c', 'git config core.hooksPath .githooks'
+            }
+        } else {
+            exec {
+                commandLine 'sh', '-c', 'git config core.hooksPath .githooks'
+            }
+        }
     }
 }
+
 
 var initialTaskNames = getProject().getGradle().getStartParameter().getTaskNames()
 getProject().getGradle().getStartParameter().setTaskNames(

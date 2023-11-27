@@ -511,7 +511,7 @@
     <string name="choose">选择</string>
     <string name="attributes">属性</string>
     <string name="file_delete_alert_title">是否确定要永久删除文件?</string>
-    <string name="file_delete_alert_subtitle">You can\'t undo this action.</string>
+    <string name="file_delete_alert_subtitle">您无法撤消此操作。</string>
     <string name="file_delete_cancel">取消</string>
     <string name="file_delete_delete">删除</string>
     <string name="menu_type_change">更改类型</string>
@@ -530,7 +530,7 @@
     <string name="set_as_default">设为默认</string>
     <string name="default_object">默认对象</string>
     <string name="default_template">默认模板</string>
-    <string name="title_templates_not_allowed">This type doesn\'t support templates</string>
+    <string name="title_templates_not_allowed">此对象类型不支持模板</string>
     <string name="num_applied">%1$d 已应用</string>
     <string name="view_list">列表</string>
     <string name="view_grid">网格</string>
@@ -538,7 +538,7 @@
     <string name="view_kanban">看板</string>
     <string name="page_cover">页面封面</string>
     <string name="editor_toolbar">按钮</string>
-    <string name="wait_a_bit_message">Please give us a moment. We\'re almost there…</string>
+    <string name="wait_a_bit_message">请给我们一点时间，马上就好…</string>
     <string name="confirm">确认</string>
     <string name="code_empty">邀请码不能为空</string>
     <string name="enter_invitation_hint">邀请码</string>
@@ -575,7 +575,7 @@
     <string name="other_settings">其他设置</string>
     <string name="your_page">您的公开页面</string>
     <string name="updates">更新</string>
-    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
+    <string name="recovery_phrase_text">您将需要短语才能登录。将其保存在安全的地方。如果您丢失了它，您将无法再访问您的帐户。</string>
     <string name="back_up_your_recovery_phrase">备份恢复短语</string>
     <string name="i_ve_written_it_down">我已经把它写下来</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
@@ -719,7 +719,7 @@
     <string name="shortcut_create_new">创建新%1$s</string>
     <string name="close">关闭</string>
     <string name="go_to_settings">前往设置</string>
-    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your recovery phrase</string>
+    <string name="do_not_forget_mnemonic_phrase">不要忘记保存您的恢复短语</string>
     <string name="you_can_always_find_mnemonic_in_settings">您总是可以在仪表盘屏幕上的设置中找到恢复短语。</string>
     <string name="if_you_lose_recovery_phrase_warning">如果您丢失恢复短语并退出登录，您将无法再次访问您的数据。 请务必在Anytype之外的其他地方保存此恢复短语。</string>
     <string name="card_size">卡片尺寸</string>
@@ -744,7 +744,7 @@
     <string name="swipe_to_choose">滑动来选择</string>
     <string name="without_template">无模板</string>
     <string name="unsplash_generic_error">在 Unsplash上搜索图像时出错。请稍后再试。</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your recovery phrase from settings</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">不要忘记在设置中保存您的恢复短语</string>
     <string name="unlock_your_object_to_add_new_relation">解锁您的对象以编辑关联</string>
     <string name="unlock_your_object_to_edit_relations">解锁您的对象以编辑关联</string>
     <string name="fragment_relation_create_from_scratch_title">选择关联类型</string>
@@ -768,8 +768,8 @@
     <string name="this_widget_has_no_object">此小部件没有对象。\n尝试创建一个新小部件。</string>
     <string name="emoji">Emoji</string>
     <string name="almost_there">快完成了！</string>
-    <string name="i_did_not_not_complete_migration">I didn\'t complete migration</string>
-    <string name="not_completed_migration_steps">I didn\'t complete migration</string>
+    <string name="i_did_not_not_complete_migration">我没有完成迁移</string>
+    <string name="not_completed_migration_steps">我没有完成迁移</string>
     <string name="almost_there_subtitle">要使用此版本的应用，请选择下面正确的选项来迁移您的账户。</string>
     <string name="i_completed_migration">我完成了迁移</string>
     <string name="here">这里</string>
@@ -794,7 +794,7 @@
     <string name="created_by">创建者</string>
     <string name="space_id">空间 ID</string>
     <string name="network_id">网络 ID</string>
-    <string name="delete_space_subtitle">This space will be deleted irrevocably. You can\'t undo this action.</string>
+    <string name="delete_space_subtitle">此空间将被不可撤销地删除。您不能撤消此操作。</string>
     <string name="delete_space_title_with_param">删除 \'%1$s\' 空间</string>
     <string name="delete_space_title">您确定要删除此空间吗？</string>
     <string name="space_id_copied_toast_msg">已复制空间 ID</string>
@@ -804,7 +804,7 @@
     <string name="anytype_update_alert_title">是时候更新了</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_personal">个人</string>
-    <string name="space_type_private">Private</string>
+    <string name="space_type_private">私人</string>
     <string name="space_type_unknown">未知</string>
     <string name="create_space_start_with">开始于：</string>
     <string name="create_object_section_groups">分组</string>
@@ -957,7 +957,7 @@
     <string name="onboarding_void_title">这是您的 Void</string>
     <string name="onboarding_void_description">这是您创建的所有内容的加密位置。所有内容都存储在您的设备上，并备份到分布式网络。</string>
     <string name="onboarding_mnemonic_title">保存您的恢复短语</string>
-    <string name="onboarding_mnemonic_description">It\'s a novel way of authentication that gives you full ownership over your account and data.</string>
+    <string name="onboarding_mnemonic_description">要登录您的帐户，您需要一个恢复短语。它是12个随机单词，就像所有数据的主密码。立即保存或稍后在设置中保存恢复短语。</string>
     <string name="onboarding_mnemonic_show_key">显示恢复短语</string>
     <string name="onboarding_mnemonic_key_saved">进入应用</string>
     <string name="onboarding_mnemonic_skip">以后再做吧</string>
@@ -975,7 +975,7 @@
     <string name="onboarding_mnemonic_additional_info">恢复短语可以在 Anytype 设置中找到</string>
     <string name="onboqrding_what_is_recovery_phrase">什么是恢复短语？</string>
     <string name="onboarding_recovery_phrase_description">恢复短语是12个单词的随机组合，您的帐户在此设备上神奇般地生成。</string>
-    <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>
+    <string name="onboarding_recovery_phrase_description_2">无论是谁，知道恢复短语，就拥有此账户。 </string>
     <string name="onboarding_recovery_phrase_description_3">此时此刻，你是世界上唯一知道这一点的人。</string>
     <string name="onboarding_recovery_phrase_description_4">这就是为什么必须确保恢复短语的安全。作为唯一的所有者，如果恢复短语丢失了，没有人可以帮助到您。</string>
     <string name="onboarding_how_to_save_my_phrase">如何保存我的恢复短语？</string>

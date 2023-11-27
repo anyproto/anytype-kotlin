@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.Unsubscriber
+import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
@@ -213,6 +214,11 @@ object HomeScreenModule {
 
     @Module
     interface Declarations {
+
+        @PerScreen
+        @Binds
+        fun factoryCreateObject(factory: CreateObjectOfTypeViewModel.Factory): ViewModelProvider.Factory
+
         @PerScreen
         @Binds
         fun factory(factory: HomeScreenViewModel.Factory): ViewModelProvider.Factory

@@ -119,7 +119,7 @@ fun SpaceImageBlock(
     mainSize: Dp = 96.dp,
     emojiSize: Dp = 48.dp,
     gradientSize: Dp = 64.dp,
-    gradientBackground: Color = colorResource(id = R.color.glyph_selected),
+    gradientBackground: Color = colorResource(id = R.color.default_gradient_background),
     gradientCornerRadius: Dp = 8.dp
 ) {
     when (icon) {

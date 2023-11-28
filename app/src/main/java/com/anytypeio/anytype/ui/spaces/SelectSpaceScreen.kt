@@ -4,8 +4,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,7 +53,7 @@ fun SelectSpaceScreen(
     onSpaceSettingsClicked: () -> Unit,
     onProfileClicked: () -> Unit
 ) {
-    Column() {
+    Column {
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
@@ -61,7 +63,9 @@ fun SelectSpaceScreen(
             columns = GridCells.Fixed(count = 3),
             modifier = Modifier.padding(
                 bottom = 16.dp
-            )
+            ),
+            contentPadding = PaddingValues(horizontal = 30.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             spaces.forEach { item ->
                 when (item) {
@@ -109,7 +113,7 @@ private fun SelectSpaceCreateButton(onAddClicked: () -> Unit) {
             modifier = Modifier
                 .size(96.dp)
                 .align(Alignment.CenterHorizontally)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(4.dp))
                 .background(Color(0x33FFFFFF))
                 .clickable { onAddClicked() }
         ) {
@@ -131,7 +135,7 @@ private fun SelectSpaceSpaceItem(
     item: SelectSpaceView.Space,
     onSpaceClicked: (WorkspaceView) -> Unit
 ) {
-    Column(modifier = Modifier) {
+    Column {
         Box(
             modifier = Modifier
                 .size(96.dp)
@@ -159,8 +163,7 @@ private fun SelectSpaceSpaceItem(
         Text(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 8.dp)
-            ,
+                .padding(horizontal = 8.dp),
             text = item.view.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
             textAlign = TextAlign.Center,
             style = Caption1Medium,
@@ -185,9 +188,7 @@ private fun SelectSpaceProfileHeader(
             .padding(bottom = 6.dp)
     ) {
         SelectSpaceProfileIcon(
-            modifier = Modifier
-                .padding(start = 30.dp)
-                .align(Alignment.CenterStart),
+            modifier = Modifier.align(Alignment.CenterStart),
             name = profile.name,
             icon = profile.icon,
             onProfileIconClick = onProfileClicked
@@ -201,15 +202,14 @@ private fun SelectSpaceProfileHeader(
                     Alignment.CenterStart
                 )
                 .padding(
-                    start = 74.dp,
-                    end = 74.dp
+                    start = 44.dp,
+                    end = 44.dp
                 )
                 .fillMaxWidth()
                 .noRippleClickable { onProfileClicked() }
         )
         Box(
             modifier = Modifier
-                .padding(end = 30.dp)
                 .size(32.dp)
                 .align(Alignment.CenterEnd)
                 .noRippleClickable { onSpaceSettingsClicked() }
@@ -247,6 +247,7 @@ fun SelectSpaceProfileIcon(
                     }
             )
         }
+
         else -> {
             val nameFirstChar = if (name.isEmpty()) {
                 stringResource(id = R.string.account_default_name)

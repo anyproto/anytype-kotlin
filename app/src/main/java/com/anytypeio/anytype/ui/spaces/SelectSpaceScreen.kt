@@ -51,7 +51,7 @@ fun SelectSpaceScreen(
     onSpaceSettingsClicked: () -> Unit,
     onProfileClicked: () -> Unit
 ) {
-    Column() {
+    Column(Modifier.padding(horizontal = 4.dp)) {
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
@@ -186,7 +186,7 @@ private fun SelectSpaceProfileHeader(
     ) {
         SelectSpaceProfileIcon(
             modifier = Modifier
-                .padding(start = 30.dp)
+                .padding(start = 16.dp)
                 .align(Alignment.CenterStart),
             name = profile.name,
             icon = profile.icon,
@@ -209,7 +209,7 @@ private fun SelectSpaceProfileHeader(
         )
         Box(
             modifier = Modifier
-                .padding(end = 30.dp)
+                .padding(end = 16.dp)
                 .size(32.dp)
                 .align(Alignment.CenterEnd)
                 .noRippleClickable { onSpaceSettingsClicked() }

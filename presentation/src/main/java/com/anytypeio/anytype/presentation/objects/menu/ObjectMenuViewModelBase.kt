@@ -370,6 +370,7 @@ abstract class ObjectMenuViewModelBase(
                     result.fold(
                         onSuccess = {
                             sendToast("Widget created")
+                            isDismissed.value = true
                         },
                         onFailure = {
                             Timber.e(it, "Error while creating widget")

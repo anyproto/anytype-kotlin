@@ -402,7 +402,6 @@
     <string name="layout_todo_description">带复选框的操作重点布局</string>
     <string name="move_to_bin">移到废纸篓</string>
     <string name="undoredo">撤消/重做</string>
-    <string name="object_action_duplicate">生成副本</string>
     <string name="object_removal_process">对象移除进程</string>
     <string name="please_wait_your_object_deletion">请稍候。您的对象将很快被删除。</string>
     <string name="large">大</string>
@@ -981,6 +980,10 @@
     <string name="onboarding_how_to_save_my_phrase">如何保存我的恢复短语？</string>
     <string name="onboarding_how_to_save_my_phrase_2">保存恢复短语的最简单方法是将其保存在您的密码管理器中。</string>
     <string name="onboarding_how_to_save_my_phrase_3">最可靠的方法是现实中在纸面上写下，并放在一个安全可靠的地方。</string>
+    <!--endregion-->
+    <!--region OBJECT ACTIONS -->
+    <string name="object_action_duplicate">生成副本</string>
+    <string name="object_action_to_widgets">至小部件</string>
     <!--endregion-->
     <!--region CONTENT DESCRIPTIONS FOR ACCESSIBILITY -->
     <string name="content_description_delete_button">Delete button</string>

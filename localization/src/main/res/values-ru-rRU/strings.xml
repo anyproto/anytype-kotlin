@@ -340,9 +340,9 @@
     <string name="template">Шаблон</string>
     <string name="templates">Templates</string>
     <string name="lock">Lock</string>
-    <string name="unlock">Unlock</string>
+    <string name="unlock">Разблокировать</string>
     <string name="restore">Восстановить</string>
-    <string name="unfavorite">Unfavorite</string>
+    <string name="unfavorite">Удалить из избранного</string>
     <string name="delete_view">Delete View</string>
     <string name="select_tags">Select tags</string>
     <string name="select_status">Выбрать статус</string>
@@ -391,7 +391,7 @@
     <string name="no_source">Нет источника</string>
     <string name="deleted_object">Удаленный объект</string>
     <string name="open_set">Open set</string>
-    <string name="deleted">Deleted</string>
+    <string name="deleted">Удалено</string>
     <string name="paste_link_or_search">Вставить ссылку или найти объекты</string>
     <string name="paste_from_clipboard">Вставить из буфера обмена</string>
     <string name="create_object_with_name">Create object \"%1$s\"</string>
@@ -458,7 +458,7 @@
     <string name="simple_tables_widget_tab_row">Row</string>
     <string name="simple_tables_widget_tab_column">Column</string>
     <string name="open_object">Открыть объект</string>
-    <string name="open_source">Open source</string>
+    <string name="open_source">Открыть источник</string>
     <string name="reload_object_content">Перезагрузить содержимое объекта</string>
     <string name="open_link">Открыть ссылку</string>
     <string name="copy_email">Скопировать адрес электронной почты</string>

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import android.content.Context
+import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
@@ -112,6 +113,7 @@ import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegat
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
+import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DefaultObjectValueProvider
@@ -1185,5 +1187,9 @@ object EditorUseCaseModule {
         fun bindUriFileProvider(
             defaultProvider: DefaultUriFileProvider
         ): UriFileProvider
+
+        @PerScreen
+        @Binds
+        fun factoryCreateObject(factory: CreateObjectOfTypeViewModel.Factory): ViewModelProvider.Factory
     }
 }

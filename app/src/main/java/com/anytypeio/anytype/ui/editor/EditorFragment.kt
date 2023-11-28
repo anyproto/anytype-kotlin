@@ -21,6 +21,7 @@ import android.widget.PopupMenu
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.annotation.RequiresApi
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
@@ -118,8 +119,9 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetD
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
+import com.anytypeio.anytype.presentation.objects.CommandCreateObject
+import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.base.navigation
@@ -132,7 +134,6 @@ import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageFragment
 import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageReceiver
 import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
 import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
-import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.linking.LinkToObjectFragment
@@ -141,7 +142,7 @@ import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
-import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
+import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeScreen
 import com.anytypeio.anytype.ui.objects.types.pickers.DraftObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
@@ -434,6 +435,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     @Inject
     lateinit var factory: EditorViewModelFactory
 
+    @Inject
+    lateinit var factoryCreateObject: CreateObjectOfTypeViewModel.Factory
+
+    private val vmCreateObject by viewModels<CreateObjectOfTypeViewModel> { factoryCreateObject }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         pickerDelegate.initPicker(ctx)
@@ -481,6 +487,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
             }
+            jobs += subscribe(vmCreateObject.commands) { command ->
+                when (command) {
+                    is CommandCreateObject.DispatchTypeKey -> {
+                        vmCreateObject.setViewVisibility(false)
+                        vm.onAddNewDocumentClicked(command.type)
+                    }
+
+                    is CommandCreateObject.ShowTypeInstalledToast -> {
+                        toast(resources.getString(R.string.library_type_added, command.typeName))
+                    }
+                }
+            }
+
         }
         vm.onStart(id = extractDocumentId(), saveAsLastOpened = saveAsLastOpened())
         super.onStart()
@@ -594,24 +613,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onAddNewDocumentClicked() }
             .launchIn(lifecycleScope)
 
-        binding.bottomToolbar
-            .addDocClicks()
-            .onEach { vm.onAddNewDocumentClicked() }
-            .launchIn(lifecycleScope)
-
         binding
             .bottomToolbar
             .binding
             .btnAddDoc
             .longClicks(withHaptic = true)
-            .onEach {
-                val dialog = CreateObjectOfTypeFragment().apply {
-                    onTypeSelected = {
-                        vm.onAddNewDocumentClicked(it)
-                    }
-                }
-                dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
-            }
+            .onEach { vmCreateObject.setViewVisibility(true) }
             .launchIn(lifecycleScope)
 
         binding.topToolbar.menu
@@ -738,6 +745,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             BottomSheetBehavior.STATE_HIDDEN
         BottomSheetBehavior.from(binding.simpleTableWidget).state =
             BottomSheetBehavior.STATE_HIDDEN
+
+        binding.createObjectWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                CreateObjectOfTypeScreen(
+                    vmCreateObject = vmCreateObject,
+                    onTypeClicked = { vmCreateObject.onTypeClicked(it) },
+                    onQueryChanged = { vmCreateObject.onQueryChanged(it) },
+                    onFocused = {},
+                    scope = viewLifecycleOwner.lifecycleScope
+                )
+            }
+        }
 
     }
 

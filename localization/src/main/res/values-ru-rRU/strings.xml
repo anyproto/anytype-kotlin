@@ -822,7 +822,7 @@
     <string name="recent">Недавно обновлено</string>
     <string name="recently_opened">Недавно открытые</string>
     <string name="bin">Корзина</string>
-    <string name="synced_files">Synced files</string>
+    <string name="synced_files">Синхронизированные файлы</string>
     <string name="log_in">Войти</string>
     <string name="create_object_section_library">Библиотека Anytype</string>
     <!--region SLASH WIDGET -->

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -58,7 +59,8 @@ class ObjectMenuViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val createTemplateFromObject: CreateTemplateFromObject,
     private val setObjectDetails: SetObjectDetails,
-    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
+    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
+    private val spaceManager: SpaceManager
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -72,7 +74,8 @@ class ObjectMenuViewModel(
     menuOptionsProvider = menuOptionsProvider,
     addObjectToCollection = addObjectToCollection,
     debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
-    createWidget = createWidget
+    createWidget = createWidget,
+    spaceManager = spaceManager
 ) {
 
     private val objectRestrictions = storage.objectRestrictions.current()
@@ -417,7 +420,8 @@ class ObjectMenuViewModel(
         private val createTemplateFromObject: CreateTemplateFromObject,
         private val setObjectDetails: SetObjectDetails,
         private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
-        private val createWidget: CreateWidget
+        private val createWidget: CreateWidget,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -438,7 +442,8 @@ class ObjectMenuViewModel(
                 createTemplateFromObject = createTemplateFromObject,
                 setObjectDetails = setObjectDetails,
                 debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
-                createWidget = createWidget
+                createWidget = createWidget,
+                spaceManager = spaceManager
             ) as T
         }
     }

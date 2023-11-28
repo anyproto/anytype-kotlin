@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.objects.ObjectAction
@@ -37,6 +38,7 @@ class ObjectSetMenuViewModel(
     dispatcher: Dispatcher<Payload>,
     menuOptionsProvider: ObjectMenuOptionsProvider,
     createWidget: CreateWidget,
+    spaceManager: SpaceManager,
     private val objectState: StateFlow<ObjectState>,
     private val analytics: Analytics,
     private val addObjectToCollection: AddObjectToCollection,
@@ -54,7 +56,8 @@ class ObjectSetMenuViewModel(
     menuOptionsProvider = menuOptionsProvider,
     addObjectToCollection = addObjectToCollection,
     debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
-    createWidget = createWidget
+    createWidget = createWidget,
+    spaceManager = spaceManager
 ) {
 
     @Suppress("UNCHECKED_CAST")
@@ -72,7 +75,8 @@ class ObjectSetMenuViewModel(
         private val menuOptionsProvider: ObjectMenuOptionsProvider,
         private val addObjectToCollection: AddObjectToCollection,
         private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
-        private val createWidget: CreateWidget
+        private val createWidget: CreateWidget,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -89,7 +93,8 @@ class ObjectSetMenuViewModel(
                 menuOptionsProvider = menuOptionsProvider,
                 addObjectToCollection = addObjectToCollection,
                 debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
-                createWidget = createWidget
+                createWidget = createWidget,
+                spaceManager = spaceManager
             ) as T
         }
     }

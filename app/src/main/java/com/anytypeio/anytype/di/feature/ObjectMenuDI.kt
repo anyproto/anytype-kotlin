@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -122,7 +123,8 @@ object ObjectMenuModule {
         createTemplateFromObject: CreateTemplateFromObject,
         setObjectDetails: SetObjectDetails,
         debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
-        createWidget: CreateWidget
+        createWidget: CreateWidget,
+        spaceManager: SpaceManager
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -141,7 +143,8 @@ object ObjectMenuModule {
         createTemplateFromObject = createTemplateFromObject,
         setObjectDetails = setObjectDetails,
         debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
-        createWidget = createWidget
+        createWidget = createWidget,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -210,7 +213,8 @@ object ObjectSetMenuModule {
         dispatcher: Dispatcher<Payload>,
         addObjectToCollection: AddObjectToCollection,
         debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
-        createWidget: CreateWidget
+        createWidget: CreateWidget,
+        spaceManager: SpaceManager
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
@@ -225,7 +229,8 @@ object ObjectSetMenuModule {
         menuOptionsProvider = createMenuOptionsProvider(state, featureToggles),
         addObjectToCollection = addObjectToCollection,
         debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
-        createWidget = createWidget
+        createWidget = createWidget,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

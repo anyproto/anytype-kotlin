@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -159,6 +160,7 @@ class ObjectSetMenuViewModel(
         } else {
             add(ObjectAction.ADD_TO_FAVOURITE)
         }
+        add(ObjectAction.CREATE_WIDGET)
         val dataViewState = objectState.value.dataViewState()
         if (dataViewState != null && !dataViewState.objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
             add(ObjectAction.DUPLICATE)
@@ -185,6 +187,11 @@ class ObjectSetMenuViewModel(
             }
             ObjectAction.DUPLICATE -> {
                 proceedWithDuplication(ctx = ctx, details = objectState.value.dataViewState()?.details)
+            }
+            ObjectAction.CREATE_WIDGET -> {
+                val details = objectState.value.dataViewState()?.details?.get(ctx)
+                val wrapper = ObjectWrapper.Basic(details?.map ?: emptyMap())
+                proceedWithCreatingWidget(obj = wrapper)
             }
             ObjectAction.MOVE_TO,
             ObjectAction.SEARCH_ON_PAGE,

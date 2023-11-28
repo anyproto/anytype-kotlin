@@ -369,10 +369,11 @@ abstract class ObjectMenuViewModelBase(
                 ).collect { result ->
                     result.fold(
                         onSuccess = {
-                            Timber.d("Created widget")
+                            sendToast("Widget created")
                         },
                         onFailure = {
                             Timber.e(it, "Error while creating widget")
+                            sendToast(SOMETHING_WENT_WRONG_MSG)
                         }
                     )
                 }

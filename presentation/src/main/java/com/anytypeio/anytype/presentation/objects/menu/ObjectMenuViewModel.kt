@@ -103,6 +103,8 @@ class ObjectMenuViewModel(
             }
         }
 
+        add(ObjectAction.CREATE_WIDGET)
+
         if (isTemplate) {
             add(ObjectAction.SET_AS_DEFAULT)
         }
@@ -271,6 +273,11 @@ class ObjectMenuViewModel(
             }
             ObjectAction.SET_AS_DEFAULT -> {
                 proceedWithSettingAsDefaultTemplate(ctx = ctx)
+            }
+            ObjectAction.CREATE_WIDGET -> {
+                val details = storage.details.current().details[ctx]
+                val wrapper = ObjectWrapper.Basic(details?.map ?: emptyMap())
+                proceedWithCreatingWidget(obj = wrapper)
             }
             ObjectAction.MOVE_TO,
             ObjectAction.MOVE_TO_BIN,

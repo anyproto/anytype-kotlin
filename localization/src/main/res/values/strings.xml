@@ -445,7 +445,6 @@
     <string name="layout_todo_description">Action-focused layout with a checkbox</string>
     <string name="move_to_bin">To Bin</string>
     <string name="undoredo">Undo/Redo</string>
-    <string name="object_action_duplicate">Duplicate</string>
     <string name="object_removal_process">Object removal process</string>
     <string name="please_wait_your_object_deletion">Please wait a bit. Your objects will be deleted shortly.</string>
     <string name="large">Large</string>
@@ -1084,6 +1083,13 @@
     <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
     <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Recovery Phrase is to save it in your password manager.</string>
     <string name="onboarding_how_to_save_my_phrase_3">The most secure way is to write it down on paper and keep it offline, in a safe and secure place.</string>
+
+    <!--endregion-->
+
+    <!--region OBJECT ACTIONS -->
+
+    <string name="object_action_duplicate">Duplicate</string>
+    <string name="object_action_to_widgets">To widgets</string>
 
     <!--endregion-->
 

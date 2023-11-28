@@ -109,7 +109,7 @@ private fun SelectSpaceCreateButton(onAddClicked: () -> Unit) {
             modifier = Modifier
                 .size(96.dp)
                 .align(Alignment.CenterHorizontally)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(4.dp))
                 .background(Color(0x33FFFFFF))
                 .clickable { onAddClicked() }
         ) {

@@ -1,10 +1,17 @@
 package com.anytypeio.anytype.ui.objects.creation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,9 +24,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -29,12 +38,19 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
@@ -42,15 +58,17 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
-import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
@@ -60,50 +78,121 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.core_ui.widgets.DragStates
 import com.anytypeio.anytype.emojifier.Emojifier
+import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
+import kotlin.math.roundToInt
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
-@Preview
-@Composable
-fun PreviewScreen() {
-    CreateObjectOfTypeScreen(
-        onTypeClicked = {},
-        views = emptyList(),
-        onQueryChanged = {},
-        onFocused = {}
-    )
-}
-
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 fun CreateObjectOfTypeScreen(
+    vmCreateObject: CreateObjectOfTypeViewModel,
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
-    views: List<SelectTypeView>
+    scope: CoroutineScope
 ) {
-    Column(
-        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
 
+    val widgetState by vmCreateObject.viewVisibility.collectAsState()
+    val widgetViews by vmCreateObject.views.collectAsState()
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.BottomStart,
     ) {
-        Dragger(
-            Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 6.dp)
-        )
-        SearchField(
-            onQueryChanged = onQueryChanged,
-            onFocused = onFocused
-        )
-        ScreenContent(views, onTypeClicked)
-    }
-}
+        val swipeableState = rememberSwipeableState(DragStates.VISIBLE)
+        val keyboardController = LocalSoftwareKeyboardController.current
 
-@Composable
-private fun ScreenContent(
-    views: List<SelectTypeView>,
-    onTypeClicked: (SelectTypeView.Type) -> Unit
-) {
-    FlowRowContent(views, onTypeClicked)
+        AnimatedVisibility(
+            visible = widgetState,
+            enter = fadeIn(),
+            exit = fadeOut(
+                tween(200)
+            )
+        ) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.4f))
+                    .noRippleClickable { vmCreateObject.hideView() }
+            )
+        }
+
+        if (swipeableState.isAnimationRunning && swipeableState.targetValue == DragStates.DISMISSED) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                    vmCreateObject.hideView()
+                }
+            }
+        }
+
+        if (!widgetState) {
+            DisposableEffect(Unit) {
+                onDispose {
+                    scope.launch { swipeableState.snapTo(DragStates.VISIBLE) }
+                }
+            }
+        }
+
+        val sizePx =
+            with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
+
+        AnimatedVisibility(
+            visible = widgetState,
+            enter = slideInVertically { it },
+            exit = slideOutVertically(tween(200)) { it },
+            modifier = Modifier
+                .swipeable(state = swipeableState,
+                    orientation = Orientation.Vertical,
+                    anchors = mapOf(
+                        0f to DragStates.VISIBLE, sizePx to DragStates.DISMISSED
+                    ),
+                    thresholds = { _, _ -> FractionalThreshold(0.3f) })
+                .offset { IntOffset(0, swipeableState.offset.value.roundToInt()) }
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(start = 8.dp, end = 8.dp, bottom = 8.dp)
+                    .background(
+                        color = colorResource(id = R.color.background_secondary),
+                        shape = RoundedCornerShape(size = 16.dp)
+                    )
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(bottom = 28.dp)
+                ) {
+                    Dragger(
+                        Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(vertical = 6.dp)
+                    )
+                    SearchField(
+                        onQueryChanged = onQueryChanged,
+                        onFocused = onFocused,
+                        focusRequester = focusRequester,
+                        keyboardController = keyboardController
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    FlowRowContent(
+                        views = widgetViews,
+                        onTypeClicked = onTypeClicked
+                    )
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -114,11 +203,12 @@ private fun FlowRowContent(
 ) {
     FlowRow(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(horizontal = 12.dp)
             .verticalScroll(rememberScrollState())
         ,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         views.forEach { view ->
@@ -269,11 +359,13 @@ fun ObjectTypeItem(
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalComposeUiApi::class)
 @Composable
 private fun SearchField(
     onQueryChanged: (String) -> Unit,
-    onFocused: () -> Unit
+    onFocused: () -> Unit,
+    focusRequester: FocusRequester,
+    keyboardController: SoftwareKeyboardController?,
 ) {
     Box(
         modifier = Modifier
@@ -281,7 +373,6 @@ private fun SearchField(
             .fillMaxWidth()
     ) {
         val focusManager = LocalFocusManager.current
-        val focusRequester = FocusRequester()
         val input = remember { mutableStateOf(String()) }
         Box(
             modifier = Modifier
@@ -319,7 +410,10 @@ private fun SearchField(
                     onQueryChanged(it)
                 },
                 keyboardActions = KeyboardActions(
-                    onDone = { focusManager.clearFocus() }
+                    onDone = {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    }
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
@@ -379,11 +473,10 @@ private fun SearchField(
 @Composable
 private fun Section(title: String) {
     Box(modifier = Modifier
-        .height(52.dp)
+        .height(44.dp)
         .fillMaxWidth()) {
         Text(
             modifier = Modifier
-                .padding(bottom = 8.dp)
                 .align(Alignment.BottomStart),
             text = title,
             color = colorResource(id = R.color.text_secondary),

@@ -8,14 +8,15 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -50,7 +51,8 @@ abstract class ObjectMenuViewModelBase(
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
     private val duplicateObject: DuplicateObject,
     private val addObjectToCollection: AddObjectToCollection,
-    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
+    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
+    private val createWidget: CreateWidget
 ) : BaseViewModel() {
 
     protected val jobs = mutableListOf<Job>()

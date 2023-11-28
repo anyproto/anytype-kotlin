@@ -5,7 +5,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
@@ -15,12 +14,14 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
+import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -120,7 +121,8 @@ object ObjectMenuModule {
         addObjectToCollection: AddObjectToCollection,
         createTemplateFromObject: CreateTemplateFromObject,
         setObjectDetails: SetObjectDetails,
-        debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
+        debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
+        createWidget: CreateWidget
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -138,7 +140,8 @@ object ObjectMenuModule {
         addObjectToCollection = addObjectToCollection,
         createTemplateFromObject = createTemplateFromObject,
         setObjectDetails = setObjectDetails,
-        debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
+        debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
+        createWidget = createWidget
     )
 
     @JvmStatic
@@ -206,7 +209,8 @@ object ObjectSetMenuModule {
         featureToggles: FeatureToggles,
         dispatcher: Dispatcher<Payload>,
         addObjectToCollection: AddObjectToCollection,
-        debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
+        debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
+        createWidget: CreateWidget
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
@@ -220,7 +224,8 @@ object ObjectSetMenuModule {
         dispatcher = dispatcher,
         menuOptionsProvider = createMenuOptionsProvider(state, featureToggles),
         addObjectToCollection = addObjectToCollection,
-        debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
+        debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
+        createWidget = createWidget
     )
 
     @JvmStatic

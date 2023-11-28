@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -118,7 +119,8 @@ fun SpaceImageBlock(
     mainSize: Dp = 96.dp,
     emojiSize: Dp = 48.dp,
     gradientSize: Dp = 64.dp,
-    gradientBackground: Color = colorResource(id = R.color.glyph_selected)
+    gradientBackground: Color = colorResource(id = R.color.glyph_selected),
+    gradientCornerRadius: Dp = 8.dp
 ) {
     when (icon) {
         is SpaceIconView.Emoji -> {
@@ -153,7 +155,7 @@ fun SpaceImageBlock(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(mainSize)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(4.dp))
                     .noRippleClickable {
                         onSpaceIconClick.invoke()
                     }
@@ -169,7 +171,7 @@ fun SpaceImageBlock(
             Box(
                 modifier = Modifier
                     .size(mainSize)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(gradientCornerRadius))
                     .background(color = gradientBackground)
                     .noRippleClickable { onSpaceIconClick.invoke() }
             ) {
@@ -177,7 +179,7 @@ fun SpaceImageBlock(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .size(gradientSize)
-                        .clip(RoundedCornerShape(32.dp))
+                        .clip(CircleShape)
                         .background(gradient)
                 )
             }
@@ -190,7 +192,7 @@ fun SpaceImageBlock(
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
                     .size(mainSize)
-                    .clip(RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(4.dp))
                     .noRippleClickable { onSpaceIconClick.invoke() }
             )
         }

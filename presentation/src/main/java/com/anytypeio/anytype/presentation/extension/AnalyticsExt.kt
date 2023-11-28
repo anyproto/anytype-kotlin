@@ -41,16 +41,19 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.sets.isChangingDefaultTypeAvailable
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
@@ -627,6 +630,31 @@ fun CoroutineScope.sendAnalyticsObjectTypeChangeEvent(
             originalId = analytics.getOriginalId(),
             sourceObject = objType?.sourceObject
         ),
+        startTime = startTime
+    )
+}
+
+fun CoroutineScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
+    analytics: Analytics,
+    startTime: Long,
+    sourceObject: Id? = null,
+    containsFlagType: Boolean
+) {
+    val objType = sourceObject ?: OBJ_TYPE_CUSTOM
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.objectType to objType
+        )
+    )
+    val event = if (containsFlagType) {
+        EventsDictionary.selectObjectType
+    } else {
+        EventsDictionary.objectTypeChanged
+    }
+    sendEvent(
+        analytics = analytics,
+        eventName = event,
+        props = props,
         startTime = startTime
     )
 }
@@ -1327,16 +1355,18 @@ fun CoroutineScope.logEvent(
                 is ObjectState.DataView.Collection -> EventsDictionary.Routes.objCreateCollection
                 is ObjectState.DataView.Set -> EventsDictionary.Routes.objCreateSet
             }
-            scope.sendEvent(
-                analytics = analytics,
-                eventName = defaultTypeChanged,
-                startTime = startTime,
-                middleTime = middleTime,
-                props = buildProps(
-                    route = route,
-                    objectType = type ?: OBJ_TYPE_CUSTOM
+            if (state.isChangingDefaultTypeAvailable()) {
+                scope.sendEvent(
+                    analytics = analytics,
+                    eventName = defaultTypeChanged,
+                    startTime = startTime,
+                    middleTime = middleTime,
+                    props = buildProps(
+                        route = route,
+                        objectType = type ?: OBJ_TYPE_CUSTOM
+                    )
                 )
-            )
+            }
         }
 
         ObjectStateAnalyticsEvent.CHANGE_DEFAULT_TEMPLATE -> {
@@ -1731,6 +1761,12 @@ suspend fun Analytics.sendSettingsStorageManageEvent() {
     )
 }
 
+suspend fun Analytics.sendSettingsSpaceStorageManageEvent() {
+    sendEvent(
+        eventName = EventsDictionary.screenSettingsSpaceStorageManager
+    )
+}
+
 suspend fun Analytics.sendSettingsOffloadEvent() {
     sendEvent(
         eventName = EventsDictionary.screenSettingsStorageOffload
@@ -1892,11 +1928,11 @@ fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
 
 fun CoroutineScope.sendAnalyticsDefaultTemplateEvent(
     analytics: Analytics,
-    objType: ObjectWrapper.Type,
+    objType: ObjectWrapper.Type?,
     startTime: Long,
     route: String? = null
 ) {
-    val objectType = objType.sourceObject ?: OBJ_TYPE_CUSTOM
+    val objectType = objType?.sourceObject ?: OBJ_TYPE_CUSTOM
     sendEvent(
         analytics = analytics,
         eventName = changeDefaultTemplate,
@@ -1915,9 +1951,8 @@ private fun getAnalyticsObjectType(
     details: Map<Id, Block.Fields>,
     ctx: Id
 ): String {
-    val objTypeId = details.getValue(ctx).type.firstOrNull()
-    val sourceObject = if (objTypeId != null) {
-        ObjectWrapper.Type(details.getValue(objTypeId).map).sourceObject
-    } else null
-    return sourceObject ?: OBJ_TYPE_CUSTOM
+    val objTypeId = details[ctx]?.type?.firstOrNull()
+    val typeStruct = details[objTypeId]?.map
+    val objType = typeStruct?.mapToObjectWrapperType()
+    return objType?.sourceObject ?: OBJ_TYPE_CUSTOM
 }

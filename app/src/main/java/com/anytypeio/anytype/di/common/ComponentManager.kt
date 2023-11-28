@@ -3,6 +3,8 @@ package com.anytypeio.anytype.di.common
 import android.content.Context
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.di.feature.AddDataViewRelationObjectValueModule
+import com.anytypeio.anytype.di.feature.AddDataViewRelationOptionValueModule
 import com.anytypeio.anytype.di.feature.AddFileRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationValueModule
@@ -64,6 +66,7 @@ import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
+import com.anytypeio.anytype.di.feature.objects.DaggerCreateObjectOfTypeComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponent
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingLoginSetupComponent
@@ -71,7 +74,6 @@ import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemoni
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationAnimComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
-import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingVoidComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -89,6 +91,7 @@ import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectModu
 import com.anytypeio.anytype.di.feature.settings.DaggerAboutAppComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
+import com.anytypeio.anytype.di.feature.settings.DaggerSpacesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
@@ -374,7 +377,7 @@ class ComponentManager(
             .build()
     }
 
-    val dataViewRelationListComponent = DependentComponentMap { id ->
+    val objectSetRelationListComponent = DependentComponentMap { id ->
         objectSetComponent
             .get(id)
             .objectRelationListComponent()
@@ -494,6 +497,14 @@ class ComponentManager(
             .build()
     }
 
+    val addDataViewObjectRelationValueComponent = DependentComponentMap { ctx ->
+        dataViewRelationValueComponent
+            .get(ctx)
+            .addDataViewRelationOptionValueComponent()
+            .module(AddDataViewRelationOptionValueModule)
+            .build()
+    }
+
     val objectObjectRelationValueComponent = DependentComponentMap { ctx ->
         editorComponent
             .get(ctx)
@@ -515,6 +526,14 @@ class ComponentManager(
             .get(ctx)
             .addObjectRelationObjectValueComponent()
             .module(AddObjectRelationModule)
+            .build()
+    }
+
+    val addDataViewRelationObjectValueComponent = DependentComponentMap { ctx ->
+        dataViewRelationValueComponent
+            .get(ctx)
+            .addDataViewRelationObjectValueComponent()
+            .module(AddDataViewRelationObjectValueModule)
             .build()
     }
 
@@ -848,6 +867,12 @@ class ComponentManager(
             .build()
     }
 
+    val spacesStorageComponent = Component {
+        DaggerSpacesStorageComponent.builder()
+            .withDependencies(findComponentDependencies())
+            .build()
+    }
+
     val appearanceComponent = Component {
         DaggerAppearanceComponent
             .factory()
@@ -928,12 +953,6 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val onboardingNewVoidComponent = Component {
-        DaggerOnboardingVoidComponent
-            .factory()
-            .create(findComponentDependencies())
-    }
-
     val onboardingMnemonicComponent = Component {
         DaggerOnboardingMnemonicComponent
             .factory()
@@ -981,6 +1000,13 @@ class ComponentManager(
             .factory()
             .create(findComponentDependencies())
     }
+
+    val createObjectOfTypeComponent = Component {
+        DaggerCreateObjectOfTypeComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
 
     class Component<T>(private val builder: () -> T) {
 

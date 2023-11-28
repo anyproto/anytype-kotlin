@@ -10,7 +10,9 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -19,6 +21,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.letNotNull
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -42,6 +45,7 @@ import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
@@ -144,7 +148,8 @@ class HomeScreenViewModel(
     private val spaceManager: SpaceManager,
     private val spaceWidgetContainer: SpaceWidgetContainer,
     private val setWidgetActiveView: SetWidgetActiveView,
-    private val setObjectDetails: SetObjectDetails
+    private val setObjectDetails: SetObjectDetails,
+    private val getSpaceView: GetSpaceView,
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -291,7 +296,8 @@ class HomeScreenViewModel(
                             space = config.space,
                             config = config,
                             objectWatcher = objectWatcher,
-                            spaceGradientProvider = spaceGradientProvider
+                            spaceGradientProvider = spaceGradientProvider,
+                            getSpaceView = getSpaceView
                         )
                         is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
                             ListWidgetContainer(
@@ -304,7 +310,8 @@ class HomeScreenViewModel(
                                 spaceGradientProvider = spaceGradientProvider,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
-                                config = config
+                                config = config,
+                                getSpaceView = getSpaceView
                             )
                         } else {
                             DataViewListWidgetContainer(
@@ -375,7 +382,7 @@ class HomeScreenViewModel(
                 .flatMapLatest { config ->
                     storelessSubscriptionContainer.subscribe(
                         StoreSearchByIdsParams(
-                            subscription = HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION,
+                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
                             targets = listOf(config.profile),
                             keys = listOf(
                                 Relations.ID,
@@ -1011,27 +1018,31 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
-        when (obj.layout) {
-            ObjectType.Layout.BASIC,
-            ObjectType.Layout.PROFILE,
-            ObjectType.Layout.NOTE,
-            ObjectType.Layout.TODO,
-            ObjectType.Layout.FILE,
-            ObjectType.Layout.BOOKMARK -> navigate(Navigation.OpenObject(obj.id))
-            ObjectType.Layout.SET -> navigate(Navigation.OpenSet(obj.id))
-            ObjectType.Layout.COLLECTION -> navigate(Navigation.OpenSet(obj.id))
-            else -> sendToast("Unexpected layout: ${obj.layout}")
+        when(val navigation = obj.navigation()) {
+            is OpenObjectNavigation.OpenDataView -> {
+                navigate(Navigation.OpenSet(navigation.target))
+            }
+            is OpenObjectNavigation.OpenEditor -> {
+                navigate(Navigation.OpenObject(navigation.target))
+            }
+            is OpenObjectNavigation.UnexpectedLayoutError -> {
+                sendToast("Unexpected layout: ${navigation.layout}")
+            }
         }
     }
 
-    fun onCreateNewObjectClicked() {
+    fun onCreateNewObjectClicked(type: Key? = null) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateObject.Param(
-                internalFlags  = listOf(
-                    InternalFlags.ShouldSelectTemplate,
-                    InternalFlags.ShouldSelectType,
-                )
+                internalFlags  = buildList {
+                    add(InternalFlags.ShouldSelectTemplate)
+                    add(InternalFlags.ShouldEmptyDelete)
+                    if (type.isNullOrBlank()) {
+                        add(InternalFlags.ShouldSelectType)
+                    }
+                },
+                type = if (type != null) TypeKey(key = type) else null
             )
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
@@ -1045,7 +1056,11 @@ class HomeScreenViewModel(
                             startTime = startTime,
                             view = EventsDictionary.View.viewHome
                         )
-                        navigate(Navigation.OpenObject(result.objectId))
+                        if (type == ObjectTypeUniqueKeys.SET || type == ObjectTypeUniqueKeys.COLLECTION) {
+                            navigate(Navigation.OpenSet(result.objectId))
+                        } else {
+                            navigate(Navigation.OpenObject(result.objectId))
+                        }
                     },
                     onFailure = {
                         Timber.e(it, "Error while creating object")
@@ -1234,7 +1249,7 @@ class HomeScreenViewModel(
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
-            unsubscriber.unsubscribe(listOf(HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION))
+            unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
         }
     }
 
@@ -1275,7 +1290,8 @@ class HomeScreenViewModel(
         private val setWidgetActiveView: SetWidgetActiveView,
         private val spaceManager: SpaceManager,
         private val spaceWidgetContainer: SpaceWidgetContainer,
-        private val setObjectDetails: SetObjectDetails
+        private val setObjectDetails: SetObjectDetails,
+        private val getSpaceView: GetSpaceView
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1309,7 +1325,8 @@ class HomeScreenViewModel(
             setWidgetActiveView = setWidgetActiveView,
             spaceManager = spaceManager,
             spaceWidgetContainer = spaceWidgetContainer,
-            setObjectDetails = setObjectDetails
+            setObjectDetails = setObjectDetails,
+            getSpaceView = getSpaceView
         ) as T
     }
 
@@ -1318,7 +1335,7 @@ class HomeScreenViewModel(
             WidgetView.Action.EditWidgets
         )
 
-        const val HOME_SCREEN_SPACE_OBJECT_SUBSCRIPTION = "subscription.home-screen.space-object"
+        const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
     }
 }
 
@@ -1391,3 +1408,36 @@ typealias Widgets = List<Widget>?
  * Null means there are no info about containers — due to loading or error state.
  */
 typealias Containers = List<WidgetContainer>?
+
+sealed class OpenObjectNavigation {
+    data class OpenEditor(val target: Id) : OpenObjectNavigation()
+    data class OpenDataView(val target: Id): OpenObjectNavigation()
+    data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
+}
+
+fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
+    return when (layout) {
+        ObjectType.Layout.BASIC,
+        ObjectType.Layout.NOTE,
+        ObjectType.Layout.TODO,
+        ObjectType.Layout.FILE,
+        ObjectType.Layout.BOOKMARK -> {
+            OpenObjectNavigation.OpenEditor(id)
+        }
+        ObjectType.Layout.PROFILE -> {
+            val identityLink = getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
+            if (identityLink.isNullOrEmpty()) {
+                OpenObjectNavigation.OpenEditor(id)
+            } else {
+                OpenObjectNavigation.OpenEditor(identityLink)
+            }
+        }
+        ObjectType.Layout.SET,
+        ObjectType.Layout.COLLECTION -> {
+            OpenObjectNavigation.OpenDataView(id)
+        }
+        else -> {
+            OpenObjectNavigation.UnexpectedLayoutError(layout)
+        }
+    }
+}

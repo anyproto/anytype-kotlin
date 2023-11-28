@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -35,7 +36,8 @@ class ObjectSetMenuViewModel(
     menuOptionsProvider: ObjectMenuOptionsProvider,
     private val objectState: StateFlow<ObjectState>,
     private val analytics: Analytics,
-    private val addObjectToCollection: AddObjectToCollection
+    private val addObjectToCollection: AddObjectToCollection,
+    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -47,7 +49,8 @@ class ObjectSetMenuViewModel(
     dispatcher = dispatcher,
     analytics = analytics,
     menuOptionsProvider = menuOptionsProvider,
-    addObjectToCollection = addObjectToCollection
+    addObjectToCollection = addObjectToCollection,
+    debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
 ) {
 
     @Suppress("UNCHECKED_CAST")
@@ -63,7 +66,8 @@ class ObjectSetMenuViewModel(
         private val analytics: Analytics,
         private val objectState: StateFlow<ObjectState>,
         private val menuOptionsProvider: ObjectMenuOptionsProvider,
-        private val addObjectToCollection: AddObjectToCollection
+        private val addObjectToCollection: AddObjectToCollection,
+        private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -78,7 +82,8 @@ class ObjectSetMenuViewModel(
                 objectState = objectState,
                 dispatcher = dispatcher,
                 menuOptionsProvider = menuOptionsProvider,
-                addObjectToCollection = addObjectToCollection
+                addObjectToCollection = addObjectToCollection,
+                debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
             ) as T
         }
     }
@@ -131,7 +136,6 @@ class ObjectSetMenuViewModel(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isProfile: Boolean,
         isTemplate: Boolean
     ): List<ObjectAction> = buildList {
         if (isArchived) {

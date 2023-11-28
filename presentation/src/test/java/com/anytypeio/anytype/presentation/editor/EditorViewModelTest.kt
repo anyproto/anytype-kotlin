@@ -112,10 +112,9 @@ import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableDelegat
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.editor.selection.SelectionStateHolder
-import com.anytypeio.anytype.presentation.editor.template.DefaultEditorTemplateDelegate
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -323,7 +322,8 @@ open class EditorViewModelTest {
     @Mock
     lateinit var fillTableRow: FillTableRow
 
-    private lateinit var editorTemplateDelegate: EditorTemplateDelegate
+    @Mock
+    lateinit var templatesContainer: ObjectTypeTemplatesContainer
 
     @Mock
     lateinit var createObject: CreateObject
@@ -390,10 +390,6 @@ open class EditorViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         builder = UrlBuilder(gateway)
-        editorTemplateDelegate = DefaultEditorTemplateDelegate(
-            getTemplates = getTemplates,
-            applyTemplate = applyTemplate
-        )
     }
 
     @Test
@@ -404,7 +400,7 @@ open class EditorViewModelTest {
 
     @Test
     fun `should start opening page when requested`() {
-        val param = root
+        val param = OpenPage.Params(root, true)
 
         stubInterceptEvents()
         givenViewModel()
@@ -3749,7 +3745,7 @@ open class EditorViewModelTest {
 
     private fun givenSharedFile() {
         documentFileShareDownloader.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(Uri.EMPTY)
+            onBlocking { async(any()) } doReturn Resultat.success(MiddlewareShareDownloader.Response(Uri.EMPTY, ""))
         }
     }
 
@@ -3883,7 +3879,6 @@ open class EditorViewModelTest {
             downloadUnsplashImage = downloadUnsplashImage,
             setDocCoverImage = setDocCoverImage,
             setDocImageIcon = setDocImageIcon,
-            templateDelegate = editorTemplateDelegate,
             createObject = createObject,
             objectToSet = objectToSet,
             objectToCollection = convertObjectToCollection,
@@ -3894,10 +3889,10 @@ open class EditorViewModelTest {
             getObjectTypes = getObjectTypes,
             interceptFileLimitEvents = interceptFileLimitEvents,
             addRelationToObject = addRelationToObject,
-            setObjectInternalFlags = setObjectInternalFlags,
             spaceManager = spaceManager,
             applyTemplate = applyTemplate,
-            setObjectType = setObjectType
+            setObjectType = setObjectType,
+            templatesContainer = templatesContainer
         )
     }
 

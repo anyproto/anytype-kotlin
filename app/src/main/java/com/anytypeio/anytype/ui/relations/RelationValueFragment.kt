@@ -139,7 +139,8 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
             ctx = ctx,
             relationKey = relationKey,
             objectId = target,
-            types = types
+            types = types,
+            flow = AddObjectRelationFragment.FLOW_OBJECT
         )
         fr.showChildFragment()
     }

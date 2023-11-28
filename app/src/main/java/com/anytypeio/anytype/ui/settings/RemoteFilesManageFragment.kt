@@ -9,6 +9,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
@@ -21,10 +22,10 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
-import com.anytypeio.anytype.ui.settings.remote.RemoteStorageScreen
+import com.anytypeio.anytype.ui.settings.remote.RemoteFilesManageScreen
 import javax.inject.Inject
 
-class RemoteStorageFragment : BaseBottomSheetComposeFragment() {
+class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var factory: CollectionViewModel.Factory
@@ -47,7 +48,10 @@ class RemoteStorageFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    RemoteStorageScreen(vm = vm)
+                    RemoteFilesManageScreen(
+                        vm = vm,
+                        scope = lifecycleScope
+                    )
                 }
             }
         }

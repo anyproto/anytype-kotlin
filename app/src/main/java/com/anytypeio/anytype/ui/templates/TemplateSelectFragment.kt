@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
@@ -15,21 +16,24 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
+import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.databinding.FragmentTemplateSelectBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.templates.TemplateSelectViewModel
+import com.anytypeio.anytype.ui.editor.sheets.SetAsDefaultListener
+import com.anytypeio.anytype.ui.editor.sheets.TemplateBlankMenuFragment
 import com.google.android.material.tabs.TabLayoutMediator
 import javax.inject.Inject
 
 class TemplateSelectFragment :
-    BaseBottomSheetFragment<FragmentTemplateSelectBinding>() {
+    BaseBottomSheetFragment<FragmentTemplateSelectBinding>(), SetAsDefaultListener {
 
     private val vm by viewModels<TemplateSelectViewModel> { factory }
 
     @Inject
     lateinit var factory: TemplateSelectViewModel.Factory
 
-    private val targetTypeKey get() = arg<Id>(ARG_TARGET_TYPE_KEY)
+    private val typeId get() = arg<Id>(ARG_TYPE_ID)
 
     private lateinit var templatesAdapter: TemplateSelectAdapter
 
@@ -49,7 +53,15 @@ class TemplateSelectFragment :
             if (currentTemplate is EditorTemplateFragment) {
                 currentTemplate.onDocumentMenuClicked()
             }
+            if (currentTemplate is TemplateBlankFragment) {
+                val fr = TemplateBlankMenuFragment()
+                fr.showChildFragment()
+            }
         }
+    }
+
+    override fun onSetAsDefaultClicked() {
+        vm.proceedWithSettingAsDefaultTemplate(typeId)
     }
 
     private fun setupViewPagerAndTabs() {
@@ -63,11 +75,16 @@ class TemplateSelectFragment :
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.viewState) { render(it) }
         jobs += lifecycleScope.subscribe(vm.isDismissed) { if (it) exit() }
+        proceed(vm.toasts) { msg ->
+            Toast.makeText(
+                requireContext(),
+                msg,
+                Toast.LENGTH_SHORT
+            ).show()
+        }
         super.onStart()
         expand()
-        vm.onStart(
-            typeKey = targetTypeKey,
-        )
+        vm.onStart(typeId = typeId)
     }
 
     private fun render(viewState: TemplateSelectViewModel.ViewState) {
@@ -106,7 +123,7 @@ class TemplateSelectFragment :
     )
 
     companion object {
-        const val ARG_TARGET_TYPE_KEY = "arg.template.arg_target_object_type_key"
+        const val ARG_TYPE_ID = "arg.template.arg_target_object_type_id"
         const val TAB_SPACE = "   "
     }
 }

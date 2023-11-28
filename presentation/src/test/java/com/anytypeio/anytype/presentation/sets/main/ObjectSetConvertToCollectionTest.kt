@@ -98,7 +98,8 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
                 eq(listOf()),
                 eq(
                     mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                        mockObjectSet.spaceId
+                        mockObjectSet.spaceId,
+                        mockObjectSet.root
                     )
                 ),
                 eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),

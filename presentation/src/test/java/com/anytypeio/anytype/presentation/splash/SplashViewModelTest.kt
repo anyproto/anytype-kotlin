@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -67,6 +68,9 @@ class SplashViewModelTest {
     @Mock
     private lateinit var objectTypesSubscriptionManager: ObjectTypesSubscriptionManager
 
+    @Mock
+    private lateinit var spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+
     @Mock lateinit var featureToggles: FeatureToggles
 
     @Mock
@@ -94,7 +98,8 @@ class SplashViewModelTest {
             relationsSubscriptionManager = relationsSubscriptionManager,
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
             featureToggles = featureToggles,
-            crashReporter = crashReporter
+            crashReporter = crashReporter,
+            spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
         )
     }
 

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_models
 import com.anytypeio.anytype.core_models.Relations.RELATION_FORMAT_OBJECT_TYPES
 import com.anytypeio.anytype.core_models.ext.typeOf
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 
 /**
  * Wrapper for easily parsing object's relations when object is represented as an untyped structure.
@@ -134,6 +135,8 @@ sealed class ObjectWrapper {
         val isValid get() = map.containsKey(Relations.ID)
 
         val notDeletedNorArchived get() = (isDeleted != true && isArchived != true)
+
+        val targetSpaceId: String? by default
     }
 
     /**
@@ -157,9 +160,9 @@ sealed class ObjectWrapper {
     data class Type(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
-        val uniqueKey: String? by default
+        val uniqueKey: String by default
         val name: String? by default
-        val sourceObject: Id? by default
+        val sourceObject: Id? get() = getSingleValue(Relations.SOURCE_OBJECT)
         val description: String? by default
         val isArchived: Boolean? by default
         val iconEmoji: String? by default
@@ -173,10 +176,6 @@ sealed class ObjectWrapper {
                 else -> ObjectType.Layout.BASIC
             }
         val defaultTemplateId: Id? by default
-
-        val key: String? get() = uniqueKey
-
-        val isValid get() = map.containsKey(Relations.UNIQUE_KEY)
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {
@@ -239,11 +238,19 @@ sealed class ObjectWrapper {
         val color: String = relationOptionColor.orEmpty()
     }
 
-    data class Workspace(override val map: Struct) : ObjectWrapper() {
+    data class SpaceView(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
         val name: String? by default
-        val spaceId: String? by default
+        val targetSpaceId: String? by default
+        val spaceAccountStatus: SpaceStatus
+            get() {
+                val code = getValue<Double?>(Relations.SPACE_ACCOUNT_STATUS)
+                return SpaceStatus
+                    .values()
+                    .firstOrNull { it.code == code?.toInt() }
+                    ?: SpaceStatus.UNKNOWN
+            }
     }
 
     inline fun <reified T> getValue(relation: Key): T? {
@@ -253,6 +260,13 @@ sealed class ObjectWrapper {
         else
             null
     }
+
+    inline fun <reified T> getSingleValue(relation: Key): T? =
+        when (val value = map.getOrDefault(relation, null)) {
+            is T -> value
+            is List<*> -> value.typeOf<T>().firstOrNull()
+            else -> null
+        }
 
     inline fun <reified T> getValues(relation: Key): List<T> {
         return when (val value = map.getOrDefault(relation, emptyList<T>())) {

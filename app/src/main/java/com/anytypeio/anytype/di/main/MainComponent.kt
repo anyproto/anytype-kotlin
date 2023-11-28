@@ -21,6 +21,7 @@ import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
+import com.anytypeio.anytype.di.feature.objects.CreateObjectOfTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingLoginSetupDependencies
@@ -37,6 +38,7 @@ import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
+import com.anytypeio.anytype.di.feature.settings.SpacesStorageDependencies
 import com.anytypeio.anytype.di.feature.spaces.CreateSpaceDependencies
 import com.anytypeio.anytype.di.feature.spaces.SelectSpaceDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
@@ -103,7 +105,10 @@ interface MainComponent :
     TemplateSelectDependencies,
     SelectSpaceDependencies,
     CreateSpaceDependencies,
-    SpaceSettingsDependencies {
+    SpaceSettingsDependencies,
+    CreateObjectOfTypeDependencies,
+    SpacesStorageDependencies
+{
 
     fun inject(app: AndroidApplication)
 
@@ -278,4 +283,14 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(SpaceSettingsDependencies::class)
     abstract fun provideSpaceSettingsDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CreateObjectOfTypeDependencies::class)
+    abstract fun provideCreateObjectOfTypeDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SpacesStorageDependencies::class)
+    abstract fun provideSpacesStorageDependencies(component: MainComponent): ComponentDependencies
 }

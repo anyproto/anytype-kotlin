@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -186,11 +187,11 @@ interface BlockRepository {
     ): Payload
 
     suspend fun searchObjects(
-        sorts: List<DVSort>,
-        filters: List<DVFilter>,
-        fulltext: String,
-        offset: Int,
-        limit: Int,
+        sorts: List<DVSort> = emptyList(),
+        filters: List<DVFilter> = emptyList(),
+        fulltext: String = "",
+        offset: Int = 0,
+        limit: Int = 0,
         keys: List<Id> = emptyList()
     ): List<Struct>
 
@@ -305,7 +306,7 @@ interface BlockRepository {
         space: Id,
         name: String,
         emojiUnicode: String?
-    ): ObjectWrapper.Type
+    ): Struct?
 
     suspend fun createRelationOption(
         space: Id,
@@ -385,7 +386,7 @@ interface BlockRepository {
     suspend fun createWorkspace(details: Struct): Id
     suspend fun getSpaceConfig(space: Id): Config
     suspend fun addObjectListToSpace(objects: List<Id>, space: Id) : List<Id>
-    suspend fun addObjectToSpace(command: Command.AddObjectToSpace) : Pair<Id, ObjectWrapper.Type>
+    suspend fun addObjectToSpace(command: Command.AddObjectToSpace) : Pair<Id, Struct?>
     suspend fun removeObjectFromWorkspace(objects: List<Id>) : List<Id>
 
     suspend fun createWidget(
@@ -423,8 +424,9 @@ interface BlockRepository {
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
-    suspend fun fileSpaceUsage(space: SpaceId): FileLimits
+    suspend fun nodeUsage(): NodeUsageInfo
     suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload
     suspend fun duplicateObjectsList(ids: List<Id>): List<Id>
     suspend fun createTemplateFromObject(ctx: Id): Id
+    suspend fun debugStackGoroutines(path: String)
 }

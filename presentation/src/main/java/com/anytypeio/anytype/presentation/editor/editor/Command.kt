@@ -62,11 +62,6 @@ sealed class Command {
         val isTemplate: Boolean
     ) : Command()
 
-    data class OpenProfileMenu(
-        val isFavorite: Boolean,
-        val isLocked: Boolean
-    ) : Command()
-
     data class OpenCoverGallery(val ctx: String) : Command()
     data class OpenObjectLayout(val ctx: String) : Command()
 

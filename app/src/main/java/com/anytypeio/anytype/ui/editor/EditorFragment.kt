@@ -48,6 +48,7 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
@@ -61,6 +62,7 @@ import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMove
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
 import com.anytypeio.anytype.core_ui.menu.ObjectTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
+import com.anytypeio.anytype.core_ui.reactive.longClicks
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.EditorHeaderOverlayDetector
 import com.anytypeio.anytype.core_ui.tools.LastItemBottomOffsetDecorator
@@ -139,6 +141,7 @@ import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
+import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DraftObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
@@ -479,7 +482,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
         }
-        vm.onStart(id = extractDocumentId())
+        vm.onStart(id = extractDocumentId(), saveAsLastOpened = saveAsLastOpened())
         super.onStart()
     }
 
@@ -591,6 +594,26 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach { vm.onAddNewDocumentClicked() }
             .launchIn(lifecycleScope)
 
+        binding.bottomToolbar
+            .addDocClicks()
+            .onEach { vm.onAddNewDocumentClicked() }
+            .launchIn(lifecycleScope)
+
+        binding
+            .bottomToolbar
+            .binding
+            .btnAddDoc
+            .longClicks(withHaptic = true)
+            .onEach {
+                val dialog = CreateObjectOfTypeFragment().apply {
+                    onTypeSelected = {
+                        vm.onAddNewDocumentClicked(it)
+                    }
+                }
+                dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
+            }
+            .launchIn(lifecycleScope)
+
         binding.topToolbar.menu
             .clicks()
             .throttleFirst()
@@ -679,7 +702,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         )
 
         binding.objectTypesToolbar.setupClicks(
-            onItemClick = vm::onObjectTypeChanged,
+            onItemClick = vm::onTypesWidgetItemClicked,
             onSearchClick = vm::onObjectTypesWidgetSearchClicked,
             onDoneClick = vm::onObjectTypesWidgetDoneClicked
         )
@@ -692,7 +715,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         binding.topToolbar.templates.clicks()
             .throttleFirst()
-            .onEach { vm.onShowTemplateClicked() }
+            .onEach { vm.onTemplatesToolbarClicked() }
             .launchIn(lifecycleScope)
 
         lifecycleScope.launch {
@@ -914,27 +937,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         isArchived = command.isArchived,
                         isFavorite = command.isFavorite,
                         isLocked = command.isLocked,
-                        isProfile = false,
                         fromName = getFrom(),
                         isTemplate = command.isTemplate
                     )
                     fr.showChildFragment()
-                }
-                is Command.OpenProfileMenu -> {
-                    hideKeyboard()
-                    findNavController().safeNavigate(
-                        R.id.pageScreen,
-                        R.id.objectMainMenuScreen,
-                        bundleOf(
-                            ObjectMenuBaseFragment.CTX_KEY to ctx,
-                            ObjectMenuBaseFragment.IS_ARCHIVED_KEY to false,
-                            ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
-                            ObjectMenuBaseFragment.IS_LOCKED_KEY to command.isLocked,
-                            ObjectMenuBaseFragment.IS_PROFILE_KEY to true,
-                            ObjectMenuBaseFragment.FROM_NAME to getFrom(),
-                            ObjectMenuBaseFragment.IS_TEMPLATE_KEY to false
-                        )
-                    )
                 }
                 is Command.OpenCoverGallery -> {
                     findNavController().safeNavigate(
@@ -1919,6 +1925,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             ?: throw IllegalStateException("Document id missing")
     }
 
+    open fun saveAsLastOpened(): Boolean {
+        return true
+    }
+
     private fun processScrollAndMoveStateChanges() {
         lifecycleScope.launch {
             scrollAndMoveStateChannel
@@ -2079,12 +2089,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         vm.proceedToCreateObjectAndAddToTextAsLink(name)
     }
 
-    override fun onProceedWithUpdateType(item: ObjectTypeView) {
-        vm.onObjectTypeChanged(item)
-    }
-
-    override fun onProceedWithDraftUpdateType(item: ObjectTypeView) {
-        vm.onObjectTypeChanged(item)
+    override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
+        vm.onObjectTypeChanged(objType)
     }
 
     override fun onAddRelationToTarget(target: Id, relationKey: Key) {

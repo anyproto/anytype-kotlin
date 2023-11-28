@@ -23,7 +23,8 @@ data class ObjectTypeView(
     val description: String?,
     val emoji: String?,
     val isSelected: Boolean = false,
-    val defaultTemplate: Id? = null
+    val defaultTemplate: Id? = null,
+    val sourceObject: Id? = null
 )
 
 class ObjectTypeViewComparator : Comparator<ObjectTypeView> {

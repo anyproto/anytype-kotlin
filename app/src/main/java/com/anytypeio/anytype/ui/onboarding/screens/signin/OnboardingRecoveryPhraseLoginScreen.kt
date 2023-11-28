@@ -115,7 +115,7 @@ fun RecoveryScreen(
                 }
                 item {
                     OnBoardingButtonPrimary(
-                        text = stringResource(id = R.string.next),
+                        text = stringResource(id = R.string.log_in),
                         onClick = {
                             onNextClicked.invoke(text.value).also {
                                 focus.clearFocus()

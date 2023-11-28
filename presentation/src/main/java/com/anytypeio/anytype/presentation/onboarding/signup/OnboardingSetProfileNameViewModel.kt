@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
@@ -45,6 +47,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val crashReporter: CrashReporter,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
@@ -84,7 +87,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         createAccount.invoke(
             scope = viewModelScope,
             params = CreateAccount.Params(
-                name = "",
+                name = name,
                 avatarPath = null,
                 iconGradientValue = spaceGradientProvider.randomId()
             )
@@ -108,17 +111,25 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                     }
                 },
                 fnR = {
+                    viewModelScope.launch {
+                        analytics.sendEvent(eventName = EventsDictionary.createSpace)
+                    }
                     createAccountAnalytics(startTime)
                     val config = configStorage.getOrNull()
                     if (config != null) {
                         crashReporter.setUser(config.analytics)
-                        relationsSubscriptionManager.onStart()
-                        objectTypesSubscriptionManager.onStart()
+                        setupGlobalSubscriptions()
                         proceedWithSettingUpMobileUseCase(config.space, name)
                     }
                 }
             )
         }
+    }
+
+    private fun setupGlobalSubscriptions() {
+        relationsSubscriptionManager.onStart()
+        objectTypesSubscriptionManager.onStart()
+        spaceDeletedStatusWatcher.onStart()
     }
 
     private fun proceedWithSettingAccountName(name: String) {
@@ -127,6 +138,12 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
             viewModelScope.launch {
                 sendAnalyticsOnboardingScreenEvent(analytics,
                     EventsDictionary.ScreenOnboardingStep.SOUL_CREATING
+                )
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = SpaceId(config.space),
+                        details = mapOf(Relations.NAME to name)
+                    )
                 )
                 setObjectDetails.async(
                     SetObjectDetails.Params(
@@ -147,35 +164,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                         // Workaround for leaving screen in loading state to wait screen transition
                         delay(OnboardingVoidViewModel.LOADING_AFTER_SUCCESS_DELAY)
                         state.value = ScreenState.Success
-                    }
-                )
-            }
-        } else {
-            Timber.e(CONFIG_NOT_FOUND_ERROR).also {
-                sendToast(CONFIG_NOT_FOUND_ERROR)
-            }
-        }
-    }
-
-    private fun proceedWithSettingWorkspaceName(name: String) {
-        val config = configStorage.getOrNull()
-        if (config != null) {
-            viewModelScope.launch {
-                sendAnalyticsOnboardingScreenEvent(
-                    analytics = analytics,
-                    step = EventsDictionary.ScreenOnboardingStep.SPACE_CREATING
-                )
-                setSpaceDetails.async(
-                    SetSpaceDetails.Params(
-                        space = SpaceId(config.space),
-                        details = mapOf(Relations.NAME to name)
-                    )
-                ).fold(
-                    onFailure = {
-                        Timber.e(it, "Error while updating object details")
-                    },
-                    onSuccess = {
-                        analytics.sendOpenAccountEvent(analytics = config.analytics)
                     }
                 )
             }
@@ -227,7 +215,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip,
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-        private val crashReporter: CrashReporter
+        private val crashReporter: CrashReporter,
+        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -243,7 +232,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 spaceGradientProvider = spaceGradientProvider,
                 relationsSubscriptionManager = relationsSubscriptionManager,
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
-                crashReporter = crashReporter
+                crashReporter = crashReporter,
+                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
             ) as T
         }
     }

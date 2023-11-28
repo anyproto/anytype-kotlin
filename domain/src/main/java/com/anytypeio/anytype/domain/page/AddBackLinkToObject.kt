@@ -9,7 +9,6 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
-import kotlinx.coroutines.Dispatchers
 
 /**
  * Add backlink from set or object itself to another object as a last block
@@ -23,7 +22,11 @@ class AddBackLinkToObject(
 
 
     override suspend fun doWork(params: Params): ObjectWrapper.Basic {
-        when (val result = openPage.run(params.objectToPlaceLink)) {
+        val openPageParams = OpenPage.Params(
+            obj = params.objectToPlaceLink,
+            saveAsLastOpened = params.saveAsLastOpened
+        )
+        when (val result = openPage.run(openPageParams)) {
             is Result.Success -> {
                 val event = result.data
                     .events
@@ -60,6 +63,7 @@ class AddBackLinkToObject(
 
     data class Params(
         val objectToLink: Id,
-        val objectToPlaceLink: Id
+        val objectToPlaceLink: Id,
+        val saveAsLastOpened: Boolean
     )
 }

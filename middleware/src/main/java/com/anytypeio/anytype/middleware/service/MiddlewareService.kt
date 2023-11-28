@@ -436,6 +436,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun debugSubscriptions(request: Rpc.Debug.Subscriptions.Request): Rpc.Debug.Subscriptions.Response
 
+    @Throws(Exception::class)
+    fun debugStackGoroutines(request: Rpc.Debug.StackGoroutines.Request): Rpc.Debug.StackGoroutines.Response
+
     //endregion
 
     //region WIDGETS commands
@@ -469,5 +472,10 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun workspaceObjectListRemove(request: Rpc.Workspace.Object.ListRemove.Request): Rpc.Workspace.Object.ListRemove.Response
 
+    //endregion
+
+    //region NODE
+    @Throws(Exception::class)
+    fun nodeUsageInfo(request: Rpc.File.NodeUsage.Request): Rpc.File.NodeUsage.Response
     //endregion
 }

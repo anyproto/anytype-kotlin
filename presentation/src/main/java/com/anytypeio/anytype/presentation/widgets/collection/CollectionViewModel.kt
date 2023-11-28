@@ -10,11 +10,15 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -34,6 +38,7 @@ import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
@@ -91,7 +96,8 @@ class CollectionViewModel(
     private val analytics: Analytics,
     private val dateProvider: DateProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val getSpaceView: GetSpaceView
 ) : ViewModel(), Reducer<CoreObjectView, Payload> {
 
     val payloads: Flow<Payload>
@@ -159,8 +165,8 @@ class CollectionViewModel(
     private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
         val params = GetObjectTypes.Params(
             sorts = emptyList(),
-            filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                space = spaceManager.get()
+            filters = ObjectSearchConstants.filterTypes(
+                spaces = listOf(spaceManager.get())
             ),
             keys = ObjectSearchConstants.defaultKeysObjectType
         )
@@ -197,11 +203,21 @@ class CollectionViewModel(
         subscribeObjects()
     }
 
-    private suspend fun buildSearchParams(): StoreSearchParams {
+    suspend fun buildSearchParams(): StoreSearchParams {
         return StoreSearchParams(
             subscription = subscription.id,
             keys = subscription.keys,
-            filters = subscription.filters(spaceManager.get()),
+            filters = subscription.filters(
+                buildList {
+                    val config = spaceManager.getConfig()
+                    if (config != null) {
+                        add(config.space)
+                        add(config.techSpace)
+                    } else {
+                        add(spaceManager.get())
+                    }
+                }
+            ),
             sorts = subscription.sorts,
             limit = subscription.limit
         )
@@ -213,11 +229,38 @@ class CollectionViewModel(
                 Subscription.Favorites -> {
                     favoritesSubscriptionFlow().map { it.map { it as CollectionView } }
                 }
+                Subscription.Recent -> {
+                    val config = spaceManager.getConfig()
+                    if (config != null) {
+                        val spaceView = getSpaceView.async(params = config.spaceView)
+                        val spaceCreationDateInSeconds = spaceView
+                            .getOrNull()
+                            ?.getValue<Double?>(Relations.CREATED_DATE)
+                            ?.toLong()
+                        subscriptionFlow(
+                            StoreSearchParams(
+                                subscription = subscription.id,
+                                keys = subscription.keys,
+                                filters = ObjectSearchConstants.filterTabRecent(
+                                    spaces = buildList {
+                                        add(config.space)
+                                        add(config.techSpace)
+                                    },
+                                    spaceCreationDateInSeconds = spaceCreationDateInSeconds
+                                ),
+                                sorts = subscription.sorts,
+                                limit = subscription.limit
+                            )
+                        )
+                    } else {
+                        subscriptionFlow(buildSearchParams())
+                    }
+                }
                 Subscription.Files -> {
                     filesSubscriptionFlow()
                 }
                 else -> {
-                    subscriptionFlow()
+                    subscriptionFlow(buildSearchParams())
                 }
             }
                 .map { update -> preserveSelectedState(update) }
@@ -244,9 +287,11 @@ class CollectionViewModel(
     }
 
     @OptIn(FlowPreview::class)
-    private suspend fun subscriptionFlow() =
+    private suspend fun subscriptionFlow(
+        params: StoreSearchParams
+    ) =
         combine(
-            container.subscribe(buildSearchParams()),
+            container.subscribe(params),
             queryFlow(),
             objectTypes()
         ) { objs, query, types ->
@@ -284,18 +329,7 @@ class CollectionViewModel(
         if (favs.size != this.size) {
             Timber.e("Favorite order size is not equal to the list size")
         }
-        val orderedFavorites = MutableList<ObjectWrapper.Basic?>(this.size) { null }
-        for (item in this) {
-            val order = favs[item.id]?.order
-            if (order == null) {
-                Timber.e("Favorite order is null for ${item.id}")
-            } else if (order < 0 || order >= this.size) {
-                Timber.e("Favorite order is out of bounds for ${item.id}")
-            } else {
-                orderedFavorites[order] = item
-            }
-        }
-        return orderedFavorites.filterNotNull()
+        return sortedBy { obj -> favs[obj.id]?.order }
     }
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -329,9 +363,8 @@ class CollectionViewModel(
             root = favoritesObj.root,
             details = favoritesObj.details
         )
-
         return objs.toOrder(favs).filter { obj ->
-            obj.getProperName().lowercase().contains(query.lowercase())
+            obj.getProperName().lowercase().contains(query.lowercase(), true)
         }
             .toViews(urlBuilder, types)
             .map { FavoritesView(it, favs[it.id]?.blockId ?: "") }
@@ -749,7 +782,7 @@ class CollectionViewModel(
         }
     }
 
-    fun onAddClicked() {
+    fun onAddClicked(type: Key? = null) {
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.createObjectCollectionsNavBar,
@@ -758,20 +791,30 @@ class CollectionViewModel(
 
         val startTime = System.currentTimeMillis()
         launch {
-            createObject.execute(CreateObject.Param(type = null))
-                .fold(
-                    onSuccess = { result ->
-                        sendAnalyticsObjectCreateEvent(
-                            analytics = analytics,
-                            type = result.objectId,
-                            storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.objCreateHome,
-                            startTime = startTime
-                        )
-                        commands.emit(Command.LaunchDocument(result.objectId))
-                    },
-                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            createObject.execute(
+                CreateObject.Param(
+                    type = type?.let { TypeKey(it) },
+                    internalFlags = buildList {
+                        add(InternalFlags.ShouldSelectTemplate)
+                        add(InternalFlags.ShouldEmptyDelete)
+                        if (type.isNullOrEmpty()) {
+                            add(InternalFlags.ShouldSelectType)
+                        }
+                    }
                 )
+            ).fold(
+                onSuccess = { result ->
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        type = result.objectId,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        route = EventsDictionary.Routes.objCreateHome,
+                        startTime = startTime
+                    )
+                    commands.emit(Command.LaunchDocument(result.objectId))
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            )
         }
     }
 
@@ -825,7 +868,8 @@ class CollectionViewModel(
         private val analytics: Analytics,
         private val dateProvider: DateProvider,
         private val storeOfObjectTypes: StoreOfObjectTypes,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val getSpaceView: GetSpaceView
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -848,7 +892,8 @@ class CollectionViewModel(
                 analytics = analytics,
                 dateProvider = dateProvider,
                 storeOfObjectTypes = storeOfObjectTypes,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                getSpaceView = getSpaceView
             ) as T
         }
     }

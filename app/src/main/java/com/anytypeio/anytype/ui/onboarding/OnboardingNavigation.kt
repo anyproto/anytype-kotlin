@@ -6,6 +6,5 @@ object OnboardingNavigation {
     const val void = "void"
     const val mnemonic = "mnemonic"
     const val setProfileName = "createSoul"
-    const val createSoulAnim = "createSoulAnim"
     const val enterTheVoid = "enterTheVoid"
 }

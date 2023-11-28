@@ -4,11 +4,13 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import javax.inject.Inject
 
-class GetObjectTypes(
+class GetObjectTypes @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<GetObjectTypes.Params, List<ObjectWrapper.Type>>(dispatchers.io) {
@@ -22,9 +24,10 @@ class GetObjectTypes(
             offset = params.offset,
             fulltext = params.query
         )
-        return result.map { struct ->
-            ObjectWrapper.Type(struct)
-        }
+        return result
+            .mapNotNull {
+                it.mapToObjectWrapperType()
+            }
     }
 
     data class Params(

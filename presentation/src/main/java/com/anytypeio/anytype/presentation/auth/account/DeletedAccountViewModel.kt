@@ -15,7 +15,9 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import java.math.RoundingMode
 import javax.inject.Inject
@@ -33,6 +35,8 @@ class DeletedAccountViewModel(
     private val dateHelper: DateHelper,
     private val analytics: Analytics,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val appActionManager: AppActionManager
 ) : BaseViewModel() {
 
@@ -124,7 +128,7 @@ class DeletedAccountViewModel(
                         is Interactor.Status.Success -> {
                             clearShortcuts()
                             isLoggingOut.value = false
-                            relationsSubscriptionManager.onStop()
+                            unsubscribeFromGlobalSubscriptions()
                             commands.emit(Command.Logout)
                         }
                     }
@@ -142,12 +146,20 @@ class DeletedAccountViewModel(
         }
     }
 
+    private fun unsubscribeFromGlobalSubscriptions() {
+        relationsSubscriptionManager.onStop()
+        objectTypesSubscriptionManager.onStop()
+        spaceDeletedStatusWatcher.onStop()
+    }
+
     class Factory @Inject constructor(
         private val restoreAccount: RestoreAccount,
         private val logout: Logout,
         private val helper: DateHelper,
         private val analytics: Analytics,
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
+        private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         private val appActionManager: AppActionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -158,6 +170,8 @@ class DeletedAccountViewModel(
                 dateHelper = helper,
                 analytics = analytics,
                 relationsSubscriptionManager = relationsSubscriptionManager,
+                objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
                 appActionManager = appActionManager
             ) as T
         }

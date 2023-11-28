@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -603,7 +604,7 @@ class BlockDataRepository(
         space: Id,
         name: String,
         emojiUnicode: String?,
-    ): ObjectWrapper.Type = remote.createType(
+    ): Struct? = remote.createType(
         space = space,
         name = name,
         emojiUnicode = emojiUnicode
@@ -781,7 +782,7 @@ class BlockDataRepository(
 
     override suspend fun addObjectToSpace(
         command: Command.AddObjectToSpace
-    ): Pair<Id, ObjectWrapper.Type> = remote.addObjectToSpace(command)
+    ): Pair<Id, Struct?> = remote.addObjectToSpace(command)
 
     override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
         return remote.removeObjectFromWorkspace(
@@ -873,8 +874,8 @@ class BlockDataRepository(
         return remote.setQueryToSet(command)
     }
 
-    override suspend fun fileSpaceUsage(space: SpaceId): FileLimits {
-        return remote.fileSpaceUsage(space)
+    override suspend fun nodeUsage(): NodeUsageInfo {
+        return remote.nodeUsage()
     }
 
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {
@@ -887,5 +888,9 @@ class BlockDataRepository(
 
     override suspend fun createTemplateFromObject(ctx: Id): Id {
         return remote.createTemplateFromObject(ctx)
+    }
+
+    override suspend fun debugStackGoroutines(path: String) {
+        return remote.debugStackGoroutines(path)
     }
 }

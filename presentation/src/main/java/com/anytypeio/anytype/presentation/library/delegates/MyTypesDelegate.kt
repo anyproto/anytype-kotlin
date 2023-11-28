@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.presentation.library.delegates
 
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -64,16 +62,9 @@ class MyTypesDelegate @Inject constructor(
                 Relations.SOURCE_OBJECT,
                 Relations.RESTRICTIONS
             ),
-            filters = buildList {
-                addAll(ObjectSearchConstants.filterTypes())
-                add(
-                    DVFilter(
-                        relation = Relations.SPACE_ID,
-                        condition = DVFilterCondition.EQUAL,
-                        value = space
-                    )
-                )
-            }
+            filters = ObjectSearchConstants.filterTypes(
+                spaces = listOf(space)
+            )
         )
     }
 

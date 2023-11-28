@@ -20,6 +20,13 @@ object EventsDictionary {
     // Settings events
 
     const val screenSettingSpacesSpaceIndex = "ScreenSettingsSpaceIndex"
+    const val screenSettingsAccount = "ScreenSettingsAccount"
+    const val clickDeleteSpace = "ClickDeleteSpace"
+    const val clickDeleteSpaceWarning = "ClickDeleteSpaceWarning"
+    const val createSpace = "CreateSpace"
+    const val switchSpace = "SwitchSpace"
+    const val deleteSpace = "DeleteSpace"
+    const val screenSettingsSpaceCreate = "ScreenSettingsSpaceCreate"
 
 
     const val wallpaperSet = "SettingsWallpaperSet"
@@ -48,6 +55,7 @@ object EventsDictionary {
     const val appearanceScreenShow = "ScreenSettingsAppearance"
     const val screenSettingsStorage = "ScreenSettingsStorageIndex"
     const val screenSettingsStorageManage = "ScreenSettingsStorageManager"
+    const val screenSettingsSpaceStorageManager = "ScreenSettingsSpaceStorageManager"
     const val screenSettingsStorageOffload = "ScreenFileOffloadWarning"
     const val settingsStorageOffload = "SettingsStorageOffload"
     const val screenSettingsDelete = "ScreenSettingsDelete"
@@ -57,6 +65,7 @@ object EventsDictionary {
     const val searchResult = "SearchResult"
     const val searchWords = "SearchWords"
     const val objectTypeChanged = "ChangeObjectType"
+    const val selectObjectType = "SelectObjectType"
     const val objectLayoutChange = "ChangeLayout"
     const val objectSetIcon = "SetIcon"
     const val objectRemoveIcon = "RemoveIcon"
@@ -206,6 +215,7 @@ object EventsDictionary {
         const val objPowerTool = "Powertool"
         const val objTurnInto = "TurnInto"
         const val screenSettings = "ScreenSettings"
+        const val settings = "Settings"
         const val screenDeletion = "ScreenDeletion"
         const val navigation = "Navigation"
     }

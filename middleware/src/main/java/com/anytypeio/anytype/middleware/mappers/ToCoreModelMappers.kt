@@ -22,8 +22,9 @@ import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NodeUsage
+import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -32,6 +33,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.SpaceUsage
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -737,11 +739,24 @@ fun MDVViewCardSize.toCodeModels(): DVViewerCardSize = when (this) {
     MDVViewCardSize.Large -> DVViewerCardSize.LARGE
 }
 
-fun Rpc.File.SpaceUsage.Response.toCoreModel(): FileLimits {
-    return FileLimits(
-        bytesUsage = usage?.bytesUsage,
-        bytesLimit = usage?.bytesLimit,
-        localBytesUsage = usage?.localBytesUsage
+fun Rpc.File.NodeUsage.Response.toCoreModel(): NodeUsageInfo {
+    return NodeUsageInfo(
+        nodeUsage = NodeUsage(
+            filesCount = usage?.filesCount,
+            cidsCount = usage?.cidsCount,
+            bytesUsage = usage?.bytesUsage,
+            bytesLeft = usage?.bytesLeft,
+            bytesLimit = usage?.bytesLimit,
+            localBytesUsage = usage?.localBytesUsage
+        ),
+        spaces = spaces.map {
+            SpaceUsage(
+                space = it.spaceId,
+                filesCount = it.filesCount,
+                cidsCount = it.cidsCount,
+                bytesUsage = it.bytesUsage
+            )
+        }
     )
 }
 
@@ -754,6 +769,7 @@ fun Account.Info.config() : Config = Config(
     profile = profileObjectId,
     gateway = gatewayUrl,
     space = accountSpaceId,
+    techSpace = techSpaceId,
     spaceView = spaceViewId,
     widgets = widgetsId,
     analytics = analyticsId,

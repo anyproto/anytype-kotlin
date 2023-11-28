@@ -48,7 +48,6 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
-import com.anytypeio.anytype.ui.settings.FilesStorageFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.spaces.Section
@@ -82,21 +81,21 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     spaceData = vm.spaceViewState.collectAsStateWithLifecycle().value,
                     onDeleteSpaceClicked = throttledClick(
                         onClick = {
+                            vm.onDeleteSpaceClicked()
                             val dialog = DeleteSpaceWarning.new()
                             dialog.onDeletionAccepted = {
                                 dialog.dismiss()
-                                vm.onDeleteSpaceClicked()
+                                vm.onDeleteSpaceAcceptedClicked()
+                            }
+                            dialog.onDeletionCancelled = {
+                                vm.onDeleteSpaceWarningCancelled()
                             }
                             dialog.show(childFragmentManager, null)
                         }
                     ),
                     onFileStorageClick = throttledClick(
                         onClick = {
-                            findNavController()
-                                .navigate(
-                                    R.id.filesStorageScreen,
-                                    FilesStorageFragment.args(isRemote = true)
-                                )
+                            findNavController().navigate(R.id.spacesStorageScreen)
                         }
                     ),
                     onPersonalizationClicked = throttledClick(

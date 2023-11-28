@@ -1,9 +1,9 @@
 package com.anytypeio.anytype.di.feature
 
+import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
-import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -30,7 +30,9 @@ import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModel
 import com.anytypeio.anytype.presentation.objects.menu.ObjectSetMenuViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetMenuFragment
 import dagger.Module
@@ -117,7 +119,8 @@ object ObjectMenuModule {
         delegator: Delegator<Action>,
         addObjectToCollection: AddObjectToCollection,
         createTemplateFromObject: CreateTemplateFromObject,
-        setObjectDetails: SetObjectDetails
+        setObjectDetails: SetObjectDetails,
+        debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -134,7 +137,8 @@ object ObjectMenuModule {
         menuOptionsProvider = createMenuOptionsProvider(storage, featureToggles),
         addObjectToCollection = addObjectToCollection,
         createTemplateFromObject = createTemplateFromObject,
-        setObjectDetails = setObjectDetails
+        setObjectDetails = setObjectDetails,
+        debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
     )
 
     @JvmStatic
@@ -166,6 +170,21 @@ object ObjectMenuModule {
         repo = repo,
         dispatchers = dispatchers
     )
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun debugGoRoutines(
+        repo: BlockRepository,
+        context: Context,
+        fileProvider: UriFileProvider,
+        dispatchers: AppCoroutineDispatchers
+    ): DebugGoroutinesShareDownloader = DebugGoroutinesShareDownloader(
+        repo = repo,
+        context = context.applicationContext,
+        uriFileProvider = fileProvider,
+        dispatchers = dispatchers
+    )
 }
 
 @Module
@@ -186,7 +205,8 @@ object ObjectSetMenuModule {
         state: MutableStateFlow<ObjectState>,
         featureToggles: FeatureToggles,
         dispatcher: Dispatcher<Payload>,
-        addObjectToCollection: AddObjectToCollection
+        addObjectToCollection: AddObjectToCollection,
+        debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         addToFavorite = addToFavorite,
@@ -199,7 +219,8 @@ object ObjectSetMenuModule {
         objectState = state,
         dispatcher = dispatcher,
         menuOptionsProvider = createMenuOptionsProvider(state, featureToggles),
-        addObjectToCollection = addObjectToCollection
+        addObjectToCollection = addObjectToCollection,
+        debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
     )
 
     @JvmStatic
@@ -219,6 +240,21 @@ object ObjectSetMenuModule {
         dispatchers: AppCoroutineDispatchers
     ): CreateBlock = CreateBlock(
         repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerDialog
+    fun debugGoRoutines(
+        repo: BlockRepository,
+        context: Context,
+        fileProvider: UriFileProvider,
+        dispatchers: AppCoroutineDispatchers
+    ): DebugGoroutinesShareDownloader = DebugGoroutinesShareDownloader(
+        repo = repo,
+        context = context.applicationContext,
+        uriFileProvider = fileProvider,
         dispatchers = dispatchers
     )
 

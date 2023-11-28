@@ -6,11 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.FileLimitsEvent
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -28,26 +25,22 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.PROFILE_SUBSCRIPTION_ID
-import com.anytypeio.anytype.domain.workspace.FileSpaceUsage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.SpacesUsageInfo
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendGetMoreSpaceEvent
 import com.anytypeio.anytype.presentation.extension.sendScreenSettingsDeleteEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsOffloadEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageEvent
-import com.anytypeio.anytype.presentation.extension.sendSettingsStorageManageEvent
 import com.anytypeio.anytype.presentation.extension.sendSettingsStorageOffloadEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
-import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
@@ -64,10 +57,9 @@ class FilesStorageViewModel(
     private val urlBuilder: UrlBuilder,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
-    private val fileSpaceUsage: FileSpaceUsage,
+    private val spacesUsageInfo: SpacesUsageInfo,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val buildProvider: BuildProvider,
-    private val getAccount: GetAccount,
     private val deleteAccount: DeleteAccount
 ) : BaseViewModel() {
 
@@ -103,12 +95,16 @@ class FilesStorageViewModel(
 
     private fun subscribeToFileLimits() {
         jobs += viewModelScope.launch {
-            fileSpaceUsage
+            spacesUsageInfo
                 .stream(Unit)
                 .collect { result ->
                     result.fold(
                         onSuccess = {
-                            _fileLimitsState.value = it
+                            _fileLimitsState.value = FileLimits(
+                                bytesUsage = it.nodeUsage.bytesUsage,
+                                bytesLimit = it.nodeUsage.bytesLimit,
+                                localBytesUsage = it.nodeUsage.localBytesUsage
+                            )
                         },
                         onFailure = {
                             Timber.e(it, "Error while getting file space usage")
@@ -191,17 +187,9 @@ class FilesStorageViewModel(
 
     private suspend fun dispatchCommand(event: Event) {
         when (event) {
-            Event.OnManageFilesClicked -> {
-                commands.emit(Command.OpenRemoteStorageScreen(Subscription.Files.id))
-                analytics.sendSettingsStorageManageEvent()
-            }
             Event.OnOffloadFilesClicked -> {
                 commands.emit(Command.OpenOffloadFilesScreen)
                 analytics.sendSettingsOffloadEvent()
-            }
-            Event.OnGetMoreSpaceClicked -> {
-                onGetMoreSpaceClicked()
-                analytics.sendGetMoreSpaceEvent()
             }
         }
     }
@@ -295,30 +283,6 @@ class FilesStorageViewModel(
         return percentUsage != null && percentUsage >= WARNING_PERCENT
     }
 
-    private fun onGetMoreSpaceClicked() {
-        viewModelScope.launch {
-            val config = spaceManager.getConfig() ?: return@launch
-            val params = StoreSearchByIdsParams(
-                subscription = PROFILE_SUBSCRIPTION_ID,
-                keys = listOf(Relations.ID, Relations.NAME),
-                targets = listOf(config.profile)
-            )
-            combine(
-                getAccount.asFlow(Unit),
-                storelessSubscriptionContainer.subscribe(params)
-            ) { account: Account, profileObj: List<ObjectWrapper.Basic> ->
-                Command.SendGetMoreSpaceEmail(
-                    account = account.id,
-                    name = profileObj.firstOrNull()?.name.orEmpty(),
-                    limit = _state.value.spaceLimit
-                )
-            }
-                .catch { Timber.e(it, "onGetMoreSpaceClicked error") }
-                .flowOn(appCoroutineDispatchers.io)
-                .collect { commands.emit(it) }
-        }
-    }
-
     fun proceedWithAccountDeletion() {
         viewModelScope.launch {
             analytics.sendScreenSettingsDeleteEvent()
@@ -346,15 +310,11 @@ class FilesStorageViewModel(
     }
 
     sealed class Event {
-        object OnManageFilesClicked : Event()
         object OnOffloadFilesClicked : Event()
-        object OnGetMoreSpaceClicked : Event()
     }
 
     sealed class Command {
         object OpenOffloadFilesScreen : Command()
-        data class OpenRemoteStorageScreen(val subscription: Id) : Command()
-        data class SendGetMoreSpaceEmail(val account: Id, val name: String, val limit: String) : Command()
     }
 
     class Factory @Inject constructor(
@@ -365,10 +325,9 @@ class FilesStorageViewModel(
         private val urlBuilder: UrlBuilder,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
-        private val fileSpaceUsage: FileSpaceUsage,
+        private val spacesUsageInfo: SpacesUsageInfo,
         private val interceptFileLimitEvents: InterceptFileLimitEvents,
         private val buildProvider: BuildProvider,
-        private val getAccount: GetAccount,
         private val deleteAccount: DeleteAccount
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -382,10 +341,9 @@ class FilesStorageViewModel(
             urlBuilder = urlBuilder,
             spaceGradientProvider = spaceGradientProvider,
             appCoroutineDispatchers = appCoroutineDispatchers,
-            fileSpaceUsage = fileSpaceUsage,
+            spacesUsageInfo = spacesUsageInfo,
             interceptFileLimitEvents = interceptFileLimitEvents,
             buildProvider = buildProvider,
-            getAccount = getAccount,
             deleteAccount = deleteAccount
         ) as T
     }

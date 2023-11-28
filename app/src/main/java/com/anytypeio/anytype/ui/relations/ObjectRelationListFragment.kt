@@ -51,7 +51,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
     private val target: String? get() = argStringOrNull(ARG_TARGET)
     private val mode: Int get() = argInt(ARG_MODE)
     private val isLocked: Boolean get() = arg(ARG_LOCKED)
-    private val isDataViewFLow: Boolean get() = arg(ARG_DATA_VIEW_FLOW)
+    private val isSetFlow: Boolean get() = arg(ARG_SET_FLOW)
 
     private val docRelationAdapter by lazy {
         DocumentRelationAdapter(
@@ -97,7 +97,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
             if (!isLocked) {
                 RelationAddToObjectFragment.new(
                     ctx = ctx,
-                    isSetOrCollection = isDataViewFLow
+                    isSetOrCollection = isSetFlow
                 ).showChildFragment()
             } else {
                 toast(getString(R.string.unlock_your_object_to_add_new_relation))
@@ -114,7 +114,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                     relationKey = command.relationKey,
                     objectId = command.target,
                     isLocked = command.isLocked,
-                    flow = if (isDataViewFLow)
+                    flow = if (isSetFlow)
                         RelationTextValueFragment.FLOW_DATAVIEW
                     else
                         RelationTextValueFragment.FLOW_DEFAULT
@@ -126,7 +126,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                     ctx = ctx,
                     relationKey = command.relationKey,
                     objectId = command.target,
-                    flow = if (isDataViewFLow) {
+                    flow = if (isSetFlow) {
                         RelationDateValueFragment.FLOW_SET_OR_COLLECTION
                     } else {
                         RelationDateValueFragment.FLOW_DEFAULT
@@ -134,8 +134,8 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 )
                 fr.showChildFragment()
             }
-            is Command.EditRelationValue -> {
-                if (isDataViewFLow) {
+            is Command.EditTagFileObjectRelationValue -> {
+                if (isSetFlow) {
                     val fr = RelationValueDVFragment().apply {
                         arguments = RelationValueDVFragment.args(
                             ctx = command.ctx,
@@ -167,7 +167,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 dismiss()
             }
             is Command.EditStatusRelationValue -> {
-                if (isDataViewFLow) {
+                if (isSetFlow) {
                     val fr = RelationValueDVFragment().apply {
                         arguments = RelationValueDVFragment.args(
                             ctx = command.ctx,
@@ -272,16 +272,16 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
     }
 
     override fun injectDependencies() {
-        if (isDataViewFLow) {
-            componentManager().dataViewRelationListComponent.get(ctx).inject(this)
+        if (isSetFlow) {
+            componentManager().objectSetRelationListComponent.get(ctx).inject(this)
         } else {
             componentManager().objectRelationListComponent.get(ctx).inject(this)
         }
     }
 
     override fun releaseDependencies() {
-        if (isDataViewFLow) {
-            componentManager().dataViewRelationListComponent.release(ctx)
+        if (isSetFlow) {
+            componentManager().objectSetRelationListComponent.release(ctx)
         } else {
             componentManager().objectRelationListComponent.release(ctx)
         }
@@ -294,20 +294,25 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         inflater, container, false
     )
 
+    /**
+     * This screen should be started from Objects with Editor Layouts
+     * or from objects with Set or Collection Layouts
+     * @param isSetFlow - true if started from Set or Collection
+     */
     companion object {
         fun new(
             ctx: String,
             target: String?,
             mode: Int,
             locked: Boolean = false,
-            isDataViewFlow: Boolean = false,
+            isSetFlow: Boolean = false,
         ) = ObjectRelationListFragment().apply {
             arguments = bundleOf(
                 ARG_CTX to ctx,
                 ARG_TARGET to target,
                 ARG_MODE to mode,
                 ARG_LOCKED to locked,
-                ARG_DATA_VIEW_FLOW to isDataViewFlow
+                ARG_SET_FLOW to isSetFlow
             )
         }
 
@@ -317,6 +322,6 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
         const val ARG_LOCKED = "arg.document-relation.locked"
         const val MODE_ADD = 1
         const val MODE_LIST = 2
-        const val ARG_DATA_VIEW_FLOW = "arg.document-relation.data-view-flow"
+        const val ARG_SET_FLOW = "arg.document-relation.set-flow"
     }
 }

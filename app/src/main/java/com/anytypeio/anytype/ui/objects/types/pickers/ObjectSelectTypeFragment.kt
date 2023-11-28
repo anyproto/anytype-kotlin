@@ -3,11 +3,10 @@ package com.anytypeio.anytype.ui.objects.types.pickers
 import androidx.core.os.bundleOf
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
 /**
@@ -25,7 +24,7 @@ class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
         )
     }
 
-    override fun onItemClicked(item: ObjectTypeView) {
+    override fun onItemClicked(item: ObjectWrapper.Type) {
         withParent<OnObjectSelectTypeAction> {
             onProceedWithUpdateType(item)
         }

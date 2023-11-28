@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature.relations
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.LimitObjectTypeViewModel
 import com.anytypeio.anytype.presentation.relations.model.CreateFromScratchState
 import com.anytypeio.anytype.presentation.relations.model.StateHolder
@@ -32,10 +33,12 @@ object LimitObjectTypeModule {
     fun provideViewModelFactory(
         searchObjects: SearchObjects,
         urlBuilder: UrlBuilder,
-        state: StateHolder<CreateFromScratchState>
+        state: StateHolder<CreateFromScratchState>,
+        spaceManager: SpaceManager
     ): LimitObjectTypeViewModel.Factory = LimitObjectTypeViewModel.Factory(
         searchObjects = searchObjects,
         urlBuilder = urlBuilder,
-        state = state
+        state = state,
+        spaceManager = spaceManager
     )
 }

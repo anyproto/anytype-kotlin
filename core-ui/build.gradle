@@ -18,12 +18,14 @@ android {
         viewBinding true
         compose true
     }
+    namespace 'com.anytypeio.anytype.core_ui'
 }
 
 dependencies {
 
     implementation project(':core-utils')
     implementation project(':core-models')
+    implementation project(':localization')
     implementation project(':presentation')
     implementation project(':library-emojifier')
     implementation project(':library-syntax-highlighter')

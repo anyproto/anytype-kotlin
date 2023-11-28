@@ -1719,4 +1719,30 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun debugStackGoroutines(request: Rpc.Debug.StackGoroutines.Request): Rpc.Debug.StackGoroutines.Response {
+        val encoded = Service.debugStackGoroutines(
+            Rpc.Debug.StackGoroutines.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Debug.StackGoroutines.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Debug.StackGoroutines.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun nodeUsageInfo(request: Rpc.File.NodeUsage.Request): Rpc.File.NodeUsage.Response {
+        val encoded = Service.fileNodeUsage(
+            Rpc.File.NodeUsage.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.File.NodeUsage.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.File.NodeUsage.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

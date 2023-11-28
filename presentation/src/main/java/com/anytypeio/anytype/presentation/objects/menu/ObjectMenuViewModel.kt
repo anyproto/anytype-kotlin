@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
@@ -29,10 +30,9 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplateEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import kotlinx.coroutines.launch
@@ -54,7 +54,8 @@ class ObjectMenuViewModel(
     private val updateFields: UpdateFields,
     private val addObjectToCollection: AddObjectToCollection,
     private val createTemplateFromObject: CreateTemplateFromObject,
-    private val setObjectDetails: SetObjectDetails
+    private val setObjectDetails: SetObjectDetails,
+    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -66,7 +67,8 @@ class ObjectMenuViewModel(
     dispatcher = dispatcher,
     analytics = analytics,
     menuOptionsProvider = menuOptionsProvider,
-    addObjectToCollection = addObjectToCollection
+    addObjectToCollection = addObjectToCollection,
+    debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
 ) {
 
     private val objectRestrictions = storage.objectRestrictions.current()
@@ -75,7 +77,6 @@ class ObjectMenuViewModel(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isProfile: Boolean,
         isTemplate: Boolean
     ): List<ObjectAction> = buildList {
 
@@ -86,10 +87,11 @@ class ObjectMenuViewModel(
                 add(ObjectAction.ADD_TO_FAVOURITE)
             }
         }
-        if (!isProfile) {
-            if (isArchived) {
-                add(ObjectAction.RESTORE)
-            } else {
+
+        if (isArchived) {
+            add(ObjectAction.RESTORE)
+        } else {
+            if (objectRestrictions.none { it == ObjectRestriction.DELETE }) {
                 add(ObjectAction.DELETE)
             }
         }
@@ -98,17 +100,19 @@ class ObjectMenuViewModel(
             add(ObjectAction.SET_AS_DEFAULT)
         }
 
-        if (!isProfile && !objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
+        if (!objectRestrictions.contains(ObjectRestriction.DUPLICATE) && !isTemplate) {
             add(ObjectAction.DUPLICATE)
         }
 
         add(ObjectAction.UNDO_REDO)
 
-        val objTypeId = storage.details.current().details[ctx]?.type?.firstOrNull()
-        storage.details.current().details[objTypeId]?.let { objType ->
-            val objTypeWrapper = ObjectWrapper.Type(objType.map)
-            val isTemplateAllowed = objTypeWrapper.isTemplatesAllowed()
-            if (isTemplateAllowed && !isTemplate && !isProfile) {
+        val details = storage.details.current().details
+        val objTypeId = details[ctx]?.type?.firstOrNull()
+        val typeStruct = details[objTypeId]?.map
+        val objType = typeStruct?.mapToObjectWrapperType()
+        if (objType != null) {
+            val isTemplateAllowed = objType.isTemplatesAllowed()
+            if (isTemplateAllowed && !isTemplate) {
                 add(ObjectAction.USE_AS_TEMPLATE)
             }
         }
@@ -135,8 +139,8 @@ class ObjectMenuViewModel(
                 MiddlewareShareDownloader.Params(hash = ctx, name = "$ctx.zip")
             ).collect { result ->
                 result.fold(
-                    onSuccess = { uri ->
-                        commands.emit(Command.ShareDebugTree(uri))
+                    onSuccess = { success ->
+                        commands.emit(Command.ShareDebugTree(success.uri))
                     },
                     onLoading = {
                         sendToast(
@@ -271,13 +275,9 @@ class ObjectMenuViewModel(
 
     private fun proceedWithSettingAsDefaultTemplate(ctx: Id) {
         val startTime = System.currentTimeMillis()
-        val objTemplate = ObjectWrapper.Basic(
-            storage.details.current().details[ctx]?.map ?: emptyMap()
-        )
+        val details = storage.details.current().details
+        val objTemplate = ObjectWrapper.Basic(details[ctx]?.map ?: emptyMap())
         val targetObjectTypeId = objTemplate.targetObjectType ?: return
-        val objType = ObjectWrapper.Type(
-            storage.details.current().details[targetObjectTypeId]?.map ?: emptyMap()
-        )
         viewModelScope.launch {
             val params = SetObjectDetails.Params(
                 ctx = targetObjectTypeId,
@@ -285,6 +285,7 @@ class ObjectMenuViewModel(
             )
             setObjectDetails.async(params).fold(
                 onSuccess = {
+                    val objType = details[targetObjectTypeId]?.map?.mapToObjectWrapperType()
                     sendAnalyticsDefaultTemplateEvent(analytics, objType, startTime)
                     _toasts.emit("The template was set as default")
                     isDismissed.value = true
@@ -323,9 +324,10 @@ class ObjectMenuViewModel(
     private suspend fun buildOpenTemplateCommand(ctx: Id, template: Id) {
         val details = storage.details.current().details
         val type = details[ctx]?.type?.firstOrNull()
-        val objType = ObjectWrapper.Type(details[type]?.map ?: emptyMap())
-        val objTypeKey = objType.key
-        if (objTypeKey != null) {
+        val typeStruct = details[type]?.map
+        val objType = typeStruct?.mapToObjectWrapperType()
+        if (objType != null) {
+            val objTypeKey = objType.uniqueKey
             val command = Command.OpenTemplate(
                 templateId = template,
                 typeId = objType.id,
@@ -334,8 +336,7 @@ class ObjectMenuViewModel(
             )
             commands.emit(command)
         } else {
-            Timber.e("Error while opening template from object, type $type has no key)}")
-            sendToast("Couldn't open template from object")
+            Timber.e("Error while opening template from object, type:$type hasn't key")
         }
     }
 
@@ -410,7 +411,8 @@ class ObjectMenuViewModel(
         private val menuOptionsProvider: ObjectMenuOptionsProvider,
         private val addObjectToCollection: AddObjectToCollection,
         private val createTemplateFromObject: CreateTemplateFromObject,
-        private val setObjectDetails: SetObjectDetails
+        private val setObjectDetails: SetObjectDetails,
+        private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -429,7 +431,8 @@ class ObjectMenuViewModel(
                 menuOptionsProvider = menuOptionsProvider,
                 addObjectToCollection = addObjectToCollection,
                 createTemplateFromObject = createTemplateFromObject,
-                setObjectDetails = setObjectDetails
+                setObjectDetails = setObjectDetails,
+                debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
             ) as T
         }
     }

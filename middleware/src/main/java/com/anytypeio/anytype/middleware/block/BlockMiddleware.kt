@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -677,7 +678,7 @@ class BlockMiddleware(
         space: Id,
         name: String,
         emojiUnicode: String?
-    ): ObjectWrapper.Type = middleware.objectCreateObjectType(
+    ): Struct? = middleware.objectCreateObjectType(
         space = space,
         name = name,
         emojiUnicode = emojiUnicode
@@ -737,7 +738,7 @@ class BlockMiddleware(
 
     override suspend fun addObjectToSpace(
         command: Command.AddObjectToSpace
-    ): Pair<Id, ObjectWrapper.Type> = middleware.workspaceObjectAdd(command)
+    ): Pair<Id, Struct?> = middleware.workspaceObjectAdd(command)
 
     override suspend fun removeObjectFromWorkspace(objects: List<Id>): List<Id> {
         return middleware.workspaceObjectListRemove(objects)
@@ -835,8 +836,8 @@ class BlockMiddleware(
         return middleware.setQueryToSet(command)
     }
 
-    override suspend fun fileSpaceUsage(space: SpaceId): FileLimits {
-        return middleware.fileSpaceUsage(space)
+    override suspend fun nodeUsage(): NodeUsageInfo {
+        return middleware.nodeUsage()
     }
 
     override suspend fun setInternalFlags(command: Command.SetInternalFlags): Payload {
@@ -849,5 +850,9 @@ class BlockMiddleware(
 
     override suspend fun createTemplateFromObject(ctx: Id): Id {
         return middleware.createTemplateFromObject(ctx)
+    }
+
+    override suspend fun debugStackGoroutines(path: String) {
+        return middleware.debugStackGoroutines(path)
     }
 }

@@ -19,6 +19,7 @@ import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectSubc
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -93,7 +94,9 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
+import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import dagger.Binds
 import dagger.Module
@@ -189,6 +192,14 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideGetObjectTypesUseCase(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): GetObjectTypes = GetObjectTypes(repository, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideObjectSetViewModelFactory(
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
@@ -218,8 +229,7 @@ object ObjectSetModule {
         addObjectToCollection: AddObjectToCollection,
         convertObjectToCollection: ConvertObjectToCollection,
         storeOfObjectTypes: StoreOfObjectTypes,
-        getDefaultObjectType: GetDefaultObjectType,
-        updateDataViewViewer: UpdateDataViewViewer,
+        getObjectTypes: GetObjectTypes,
         duplicateObjects: DuplicateObjects,
         templatesContainer: ObjectTypeTemplatesContainer,
         setObjectListIsArchived: SetObjectListIsArchived,
@@ -255,8 +265,7 @@ object ObjectSetModule {
         addObjectToCollection = addObjectToCollection,
         objectToCollection = convertObjectToCollection,
         storeOfObjectTypes = storeOfObjectTypes,
-        getDefaultObjectType = getDefaultObjectType,
-        updateDataViewViewer = updateDataViewViewer,
+        getObjectTypes = getObjectTypes,
         duplicateObjects = duplicateObjects,
         templatesContainer = templatesContainer,
         setObjectListIsArchived = setObjectListIsArchived,
@@ -639,6 +648,12 @@ object ObjectSetModule {
         fun bindCoverImageHashProvider(
             defaultProvider: DefaultCoverImageHashProvider
         ): CoverImageHashProvider
+
+        @PerScreen
+        @Binds
+        fun bindUriFileProvider(
+            defaultProvider: DefaultUriFileProvider
+        ): UriFileProvider
     }
 
     @JvmStatic

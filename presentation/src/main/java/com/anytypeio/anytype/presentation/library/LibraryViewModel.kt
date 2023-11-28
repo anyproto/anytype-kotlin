@@ -10,7 +10,10 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryView
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.allUniqueBy
 import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.domain.base.fold
@@ -18,8 +21,8 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
@@ -133,19 +136,37 @@ class LibraryViewModel(
         when (it) {
             is LibraryEvent.BottomMenu.Back -> navigate(Navigation.Back())
             is LibraryEvent.BottomMenu.Search -> navigate(Navigation.Search())
-            is LibraryEvent.BottomMenu.AddDoc -> proceedWithCreateDoc()
+            is LibraryEvent.BottomMenu.CreateObject -> proceedWithCreateDoc()
         }
     }
 
-    private fun proceedWithCreateDoc() {
+    fun onCreateObjectOfTypeClicked(type: Key) {
+        proceedWithCreateDoc(
+            typeKey = TypeKey(type)
+        )
+    }
+
+    private fun proceedWithCreateDoc(
+        typeKey: TypeKey? = null
+    ) {
         viewModelScope.launch {
-            createObject.async(CreateObject.Param(type = null))
-                .fold(
-                    onSuccess = { result ->
-                        navigate(Navigation.CreateDoc(result.objectId))
-                    },
-                    onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            createObject.async(
+                CreateObject.Param(
+                    type = typeKey,
+                    internalFlags = buildList {
+                        add(InternalFlags.ShouldSelectTemplate)
+                        add(InternalFlags.ShouldEmptyDelete)
+                        if (typeKey == null) {
+                            add(InternalFlags.ShouldSelectType)
+                        }
+                    }
                 )
+            ).fold(
+                onSuccess = { result ->
+                    navigate(Navigation.CreateDoc(result.objectId))
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            )
         }
     }
 
@@ -298,18 +319,22 @@ class LibraryViewModel(
             assert(libTypes.items.allUniqueBy { it.id })
             assert(myTypes.items.allUniqueBy { it.id })
         }
+        val myTypeViews = myTypes
+            .items
+            .filterIsInstance<LibraryView.MyTypeView>()
+
         return libTypes.copy(
             items = libTypes.items.map { libType ->
                 if (libType is LibraryView.LibraryTypeView) {
                     with(
-                        myTypes.items.find {
-                            (it as? LibraryView.MyTypeView)?.sourceObject == libType.id
-                        }
+                        myTypeViews.find { it.uniqueKey == libType.uniqueKey }
                     ) {
                         libType.copy(
                             dependentData = if (this != null) {
                                 DependentData.Model(item = this)
-                            } else DependentData.None
+                            } else {
+                                DependentData.None
+                            }
                         )
                     }
                 } else {
@@ -327,25 +352,34 @@ class LibraryViewModel(
             assert(libRelations.items.allUniqueBy { it.id })
             assert(myRelations.items.allUniqueBy { it.id })
         }
-        return libRelations.copy(
-            items = libRelations.items.map { libRelation ->
-                if (libRelation is LibraryView.LibraryRelationView) {
-                    with(
-                        myRelations.items.find {
-                            (it as? LibraryView.MyRelationView)?.sourceObject == libRelation.id
-                        }
-                    ) {
-                        libRelation.copy(
-                            dependentData = if (this != null) {
-                                DependentData.Model(item = this)
-                            } else DependentData.None
-                        )
-                    }
-                } else {
-                    libRelation
-                }
-            }.distinctBy { view -> view.id }
+
+        val updatedLibraryRelations = updateLibraryRelationItems(
+            libraryItems = libRelations.items,
+            myRelationItems = myRelations.items
         )
+        return libRelations.copy(
+            items = updatedLibraryRelations.distinctBy { view -> view.id }
+        )
+    }
+
+    private fun updateLibraryRelationItems(
+        libraryItems: List<LibraryView>,
+        myRelationItems: List<LibraryView>
+    ): List<LibraryView> {
+        return libraryItems.map { libraryItem ->
+            if (libraryItem !is LibraryView.LibraryRelationView) {
+                return@map libraryItem
+            }
+            val relationInstalled = myRelationItems.firstOrNull { myRelationItem ->
+                (myRelationItem as? LibraryView.MyRelationView)?.sourceObject == libraryItem.id
+            }
+            val dependedData = if (relationInstalled != null) {
+                DependentData.Model(item = relationInstalled)
+            } else {
+                DependentData.None
+            }
+            libraryItem.copy(dependentData = dependedData)
+        }
     }
 
     fun updateObject(id: String, name: String, icon: String?) {

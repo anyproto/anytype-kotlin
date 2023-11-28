@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory.page
 import com.anytypeio.anytype.presentation.MockTypicalDocumentFactory.profile
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import org.junit.Before
 import org.junit.Rule
@@ -147,11 +148,17 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         // SETUP
 
         val doc = page(root)
+        val typeId = MockDataFactory.randomString()
         val details =
             Block.Details(
                 mapOf(
                     root to Block.Fields(
-                        mapOf(Relations.TYPE to ObjectTypeIds.PROFILE)))
+                        mapOf(Relations.TYPE to typeId)
+                    ),
+                    typeId to Block.Fields(
+                        mapOf(Relations.ID to typeId, Relations.UNIQUE_KEY to ObjectTypeIds.PROFILE)
+                    )
+                )
             )
 
         stubInterceptEvents()
@@ -170,9 +177,12 @@ class EditorMenuTest : EditorPresentationTestSetup() {
         vm.onDocumentMenuClicked()
 
         observer.assertValue { value ->
-            value.peekContent() == Command.OpenProfileMenu(
+            value.peekContent() == Command.OpenDocumentMenu(
                 isFavorite = false,
-                isLocked = false
+                isLocked = false,
+                isArchived = false,
+                fromName = "",
+                isTemplate = false
             )
         }
     }

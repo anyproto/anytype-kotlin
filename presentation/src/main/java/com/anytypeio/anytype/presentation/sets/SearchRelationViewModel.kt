@@ -18,6 +18,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * Inherit this class in order to enable search-for-relations feature.
@@ -38,14 +39,16 @@ abstract class SearchRelationViewModel(
     private val jobs = mutableListOf<Job>()
 
     fun onStart(viewerId: Id) {
+        Timber.d("SearchRelationViewModel, onStart, viewerId: [$viewerId]")
         // Initializing views before any query.
         jobs += viewModelScope.launch {
-            _views.value =
-                filterRelationsFromAlreadyInUse(
-                    objectState = objectState.value,
-                    viewerId = viewerId,
-                    storeOfRelations = storeOfRelations
-                ).filterNot { notAllowedRelations(it) }
+            val initViews = filterRelationsFromAlreadyInUse(
+                objectState = objectState.value,
+                viewerId = viewerId,
+                storeOfRelations = storeOfRelations
+            ).filterNot { notAllowedRelations(it) }
+            Timber.d("SearchRelationViewModel, initRelationViews: [$initViews]")
+            _views.value = initViews
         }
         // Searching and mapping views based on query changes.
         jobs += viewModelScope.launch {

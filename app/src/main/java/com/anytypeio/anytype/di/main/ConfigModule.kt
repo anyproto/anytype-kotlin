@@ -8,8 +8,11 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 
 @Module
 object ConfigModule {
@@ -38,4 +41,14 @@ object ConfigModule {
         computation = Dispatchers.Default,
         main = Dispatchers.Main
     )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    @Named(DEFAULT_APP_COROUTINE_SCOPE)
+    fun applicationCoroutineScope() : CoroutineScope = CoroutineScope(
+        SupervisorJob() + Dispatchers.Default
+    )
+
+    const val DEFAULT_APP_COROUTINE_SCOPE = "Default application coroutine scope"
 }

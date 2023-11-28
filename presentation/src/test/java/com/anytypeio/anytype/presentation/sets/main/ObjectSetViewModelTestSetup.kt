@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.SearchResult
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -154,6 +156,9 @@ open class ObjectSetViewModelTestSetup {
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     @Mock
+    lateinit var getObjectTypes: GetObjectTypes
+
+    @Mock
     lateinit var getDefaultObjectType: GetDefaultObjectType
 
     @Mock
@@ -206,17 +211,7 @@ open class ObjectSetViewModelTestSetup {
             computation = rule.dispatcher,
             main = rule.dispatcher
         )
-        spaceConfig = Config(
-            home = "morbi",
-            profile = "indoctum",
-            gateway = "luctus",
-            space = "nonumy",
-            spaceView = "etiam",
-            widgets = "eloquentiam",
-            analytics = "quem",
-            device = "elaboraret",
-            network = "network"
-        )
+        spaceConfig = StubConfig()
         spaceManager = SpaceManager.Impl(
             repo = repo,
             dispatchers = dispatchers,
@@ -260,14 +255,13 @@ open class ObjectSetViewModelTestSetup {
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             storeOfObjectTypes = storeOfObjectTypes,
-            getDefaultObjectType = getDefaultObjectType,
-            updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
-            createTemplate = createTemplate
+            createTemplate = createTemplate,
+            getObjectTypes = getObjectTypes
         )
     }
 
@@ -320,19 +314,9 @@ open class ObjectSetViewModelTestSetup {
 
     suspend fun stubSpaceManager(space: Id) {
         repo.stub {
-            onBlocking { getSpaceConfig(space) } doReturn Config(
-                home = "morbi",
-                profile = "indoctum",
-                gateway = "luctus",
-                space = space,
-                spaceView = "etiam",
-                widgets = "eloquentiam",
-                analytics = "quem",
-                device = "elaboraret",
-                network = "network"
-            )
+            onBlocking { getSpaceConfig(space) } doReturn spaceConfig
+            spaceManager.set(space)
         }
-        spaceManager.set(space)
     }
 
     suspend fun stubSubscriptionResults(
@@ -340,7 +324,7 @@ open class ObjectSetViewModelTestSetup {
         spaceId: Id,
         collection: Id? = null,
         objects: List<ObjectWrapper.Basic> = emptyList(),
-        dependencies: List<ObjectWrapper.Basic>  = listOf(),
+        dependencies: List<ObjectWrapper.Basic> = listOf(),
         dvFilters: List<Block.Content.DataView.Filter> = emptyList(),
         dvSorts: List<Block.Content.DataView.Sort> = emptyList(),
         storeOfRelations: StoreOfRelations,
@@ -357,7 +341,8 @@ open class ObjectSetViewModelTestSetup {
             subscription = subscription,
             collection = collection,
             filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = spaceId
+                space = spaceId,
+                context = root
             ),
             sorts = dvSorts,
             keys = dvKeys,
@@ -378,7 +363,7 @@ open class ObjectSetViewModelTestSetup {
         }
     }
 
-    protected suspend fun stubStoreOfRelations(mockObjectCollection: MockCollection) {
+    suspend fun stubStoreOfRelations(mockObjectCollection: MockCollection) {
         storeOfRelations.merge(
             listOf(
                 mockObjectCollection.relationObject1,
@@ -391,7 +376,7 @@ open class ObjectSetViewModelTestSetup {
         )
     }
 
-    protected suspend fun stubStoreOfRelations(mockObjectSet: MockSet) {
+    suspend fun stubStoreOfRelations(mockObjectSet: MockSet) {
         storeOfRelations.merge(
             listOf(
                 mockObjectSet.relationObject1,
@@ -412,7 +397,7 @@ open class ObjectSetViewModelTestSetup {
         name: String = defaultObjectPageTypeName,
         id: TypeId = TypeId(MockDataFactory.randomString()),
         template: Id? = null
-        ) {
+    ) {
         getDefaultObjectType.stub {
             onBlocking { run(Unit) } doReturn GetDefaultObjectType.Response(
                 type = type,
@@ -425,18 +410,11 @@ open class ObjectSetViewModelTestSetup {
 
     fun stubTemplatesForTemplatesContainer(
         type: String = MockDataFactory.randomString(),
-        templates: List<ObjectWrapper.Basic> = emptyList()
+        templates: List<ObjectWrapper.Basic> = emptyList(),
+        subId: Id = MockDataFactory.randomString()
     ) {
         templatesContainer.stub {
-            onBlocking { subscribeToTemplates(type) }.thenReturn(flowOf(templates))
-        }
-    }
-
-    fun stubTypesForTemplatesContainer(
-        objTypes: List<ObjectWrapper.Basic> = emptyList()
-    ) {
-        templatesContainer.stub {
-            onBlocking { subscribeToTypes() }.thenReturn(flowOf(objTypes))
+            onBlocking { subscribeToTemplates(type, subId) }.thenReturn(flowOf(templates))
         }
     }
 

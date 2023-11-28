@@ -32,6 +32,10 @@ android {
 
     compileSdkVersion config.compile_sdk
 
+    androidResources {
+        generateLocaleConfig true
+    }
+
     defaultConfig {
         applicationId config.application_id
         minSdkVersion config.min_sdk
@@ -100,8 +104,12 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_11
-        targetCompatibility JavaVersion.VERSION_11
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
     }
 
     composeOptions {
@@ -125,6 +133,7 @@ android {
     }
 
     ndkVersion "23.2.8568313"
+    namespace 'com.anytypeio.anytype'
 }
 
 kotlin {
@@ -141,6 +150,7 @@ dependencies {
 
     implementation project(':domain')
     implementation project(':core-models')
+    implementation project(':localization')
     implementation project(':data')
     implementation project(':device')
     implementation project(':persistence')

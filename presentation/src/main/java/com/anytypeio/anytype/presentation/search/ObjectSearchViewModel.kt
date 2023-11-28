@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
@@ -116,8 +117,8 @@ open class ObjectSearchViewModel(
         jobs += viewModelScope.launch {
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                    space = spaceManager.get()
+                filters = ObjectSearchConstants.filterTypes(
+                    spaces = listOf(spaceManager.get())
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
@@ -155,7 +156,6 @@ open class ObjectSearchViewModel(
         val target = view.id
         sendSearchResultEvent(target)
         when (view.layout) {
-            ObjectType.Layout.PROFILE,
             ObjectType.Layout.BASIC,
             ObjectType.Layout.TODO,
             ObjectType.Layout.NOTE,
@@ -163,6 +163,18 @@ open class ObjectSearchViewModel(
             ObjectType.Layout.IMAGE,
             ObjectType.Layout.BOOKMARK -> {
                 navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = target)))
+            }
+            ObjectType.Layout.PROFILE -> {
+                val obj = objects
+                    .value
+                    .getOrNull()
+                    ?.find { obj -> obj.id == view.id }
+                val identity = obj?.getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
+                if (identity != null) {
+                    navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = identity)))
+                } else {
+                    navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = target)))
+                }
             }
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 navigate(EventWrapper(AppNavigation.Command.LaunchObjectSet(target = target)))
@@ -190,11 +202,22 @@ open class ObjectSearchViewModel(
     open suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.filterSearchObjects(
-            space = spaceManager.get()
+            spaces = buildList {
+                val config = spaceManager.getConfig()
+                if (config != null) {
+                    add(config.space)
+                    add(config.techSpace)
+                } else {
+                    add(spaceManager.get())
+                }
+            }
         ),
         sorts = ObjectSearchConstants.sortsSearchObjects,
         fulltext = EMPTY_QUERY,
-        keys = ObjectSearchConstants.defaultKeys
+        keys = buildList {
+            addAll(ObjectSearchConstants.defaultKeys)
+            add(Relations.IDENTITY_PROFILE_LINK)
+        }
     )
 
     override fun onDialogCancelled() {

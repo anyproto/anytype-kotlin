@@ -46,6 +46,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -342,6 +343,7 @@ fun NameTextField(
             textStyle = Title1.copy(color = colorResource(id = R.color.text_primary)),
             singleLine = true,
             enabled = true,
+            cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()

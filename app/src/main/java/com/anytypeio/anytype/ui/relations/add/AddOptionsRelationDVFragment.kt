@@ -4,6 +4,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.add.AddOptionsRelationDVViewModel
@@ -14,6 +15,8 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
     @Inject
     lateinit var factory: AddOptionsRelationDVViewModel.Factory
     override val vm: AddOptionsRelationDVViewModel by viewModels { factory }
+
+    private val isIntrinsic: Boolean get() = argOrNull<Boolean>(IS_INTRINSIC_KEY) ?: false
 
     override fun onStatusClicked(status: RelationValueView.Option.Status) {
         vm.onAddObjectSetStatusClicked(
@@ -41,24 +44,36 @@ open class AddOptionsRelationDVFragment : BaseAddOptionsRelationFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().addObjectSetObjectRelationValueComponent.get(ctx).inject(this)
+        if (isIntrinsic) {
+            componentManager().addObjectSetObjectRelationValueComponent.get(ctx).inject(this)
+        } else {
+            componentManager().addDataViewObjectRelationValueComponent.get(ctx).inject(this)
+        }
     }
 
     override fun releaseDependencies() {
-        componentManager().addObjectSetObjectRelationValueComponent.release(ctx)
+        if (isIntrinsic) {
+            componentManager().addObjectSetObjectRelationValueComponent.release(ctx)
+        } else {
+            componentManager().addDataViewObjectRelationValueComponent.release(ctx)
+        }
     }
 
     companion object {
         fun new(
             ctx: Id,
             target: Id,
-            relationKey: Key
+            relationKey: Key,
+            isIntrinsic: Boolean
         ) = AddOptionsRelationDVFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 TARGET_KEY to target,
-                RELATION_KEY to relationKey
+                RELATION_KEY to relationKey,
+                IS_INTRINSIC_KEY to isIntrinsic
             )
         }
+
+        private const val IS_INTRINSIC_KEY = "args.relations.edit-value.is-intrinsic"
     }
 }

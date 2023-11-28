@@ -13,8 +13,6 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.FileLimitsEvent
@@ -30,6 +28,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -40,6 +39,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.descendants
 import com.anytypeio.anytype.core_models.ext.isAllTextAndNoneCodeBlocks
 import com.anytypeio.anytype.core_models.ext.isAllTextBlocks
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.ext.parents
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.ext.sortByType
@@ -51,6 +51,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.isEndLineClick
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.switchToLatestFrom
@@ -76,7 +77,6 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
-import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -187,9 +187,6 @@ import com.anytypeio.anytype.presentation.editor.selection.getTableRowsById
 import com.anytypeio.anytype.presentation.editor.selection.toggleTableMode
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockSelection
 import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
-import com.anytypeio.anytype.presentation.editor.template.EditorTemplateDelegate
-import com.anytypeio.anytype.presentation.editor.template.SelectTemplateEvent
-import com.anytypeio.anytype.presentation.editor.template.SelectTemplateState
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
@@ -203,7 +200,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMentionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeChangeEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
@@ -226,6 +223,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
+import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
@@ -234,6 +232,7 @@ import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -283,7 +282,6 @@ class EditorViewModel(
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val setDocImageIcon: SetDocumentImageIcon,
-    private val templateDelegate: EditorTemplateDelegate,
     private val createObject: CreateObject,
     private val objectToSet: ConvertObjectToSet,
     private val objectToCollection: ConvertObjectToCollection,
@@ -295,9 +293,9 @@ class EditorViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val interceptFileLimitEvents: InterceptFileLimitEvents,
     private val addRelationToObject: AddRelationToObject,
-    private val setObjectInternalFlags: SetObjectInternalFlags,
     private val applyTemplate: ApplyTemplate,
-    private val setObjectType: SetObjectType
+    private val setObjectType: SetObjectType,
+    private val templatesContainer: ObjectTypeTemplatesContainer
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -305,7 +303,6 @@ class EditorViewModel(
     BlockViewRenderer by renderer,
     ToggleStateHolder by renderer,
     SelectionStateHolder by orchestrator.memory.selections,
-    EditorTemplateDelegate by templateDelegate,
     EditorTableDelegate by tableDelegate,
     StateReducer<List<Block>, Event> by reducer {
 
@@ -318,16 +315,7 @@ class EditorViewModel(
     val isRedoEnabled = MutableStateFlow(false)
     val isUndoRedoToolbarIsVisible = MutableStateFlow(false)
 
-    val selectTemplateViewState = templateDelegateState.map { state ->
-        when (state) {
-            is SelectTemplateState.Available -> {
-                SelectTemplateViewState.Active(
-                    count = state.templates.size + 1,
-                )
-            }
-            else -> SelectTemplateViewState.Idle
-        }
-    }
+    val selectTemplateViewState = MutableStateFlow<SelectTemplateViewState>(SelectTemplateViewState.Idle)
 
     val searchResultScrollPosition = MutableStateFlow(NO_SEARCH_RESULT_POSITION)
 
@@ -412,26 +400,6 @@ class EditorViewModel(
                     Action.UndoRedo -> onUndoRedoActionClicked()
                     is Action.OpenObject -> proceedWithOpeningObject(action.id)
                     is Action.OpenCollection -> proceedWithOpeningDataViewObject(action.id)
-                }
-            }
-        }
-
-        viewModelScope.launch {
-            templateDelegateState.collect { state ->
-                Timber.v("Template delegate state: $state")
-                when (state) {
-                    is SelectTemplateState.Accepted -> {
-                        commands.postValue(EventWrapper(Command.CloseKeyboard))
-                        navigate(
-                            EventWrapper(
-                                AppNavigation.Command.OpenTemplates(
-                                    typeKey = state.typeKey
-                                )
-                            )
-                        )
-                    }
-                    is SelectTemplateState.Available -> {}
-                    SelectTemplateState.Idle -> {}
                 }
             }
         }
@@ -956,7 +924,7 @@ class EditorViewModel(
         }
     }
 
-    fun onStart(id: Id) {
+    fun onStart(id: Id, saveAsLastOpened: Boolean = true) {
         Timber.d("onStart, id:[$id]")
 
         context = id
@@ -993,7 +961,11 @@ class EditorViewModel(
 
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            openPage.async(id).fold(
+            val params = OpenPage.Params(
+                obj = id,
+                saveAsLastOpened = saveAsLastOpened
+            )
+            openPage.async(params).fold(
                 onSuccess = { result ->
                     when (result) {
                         is Result.Success -> {
@@ -1484,24 +1456,30 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
-        val isProfile = wrapper.type.firstOrNull() == ObjectTypeIds.PROFILE
-        if (isProfile) {
-            dispatch(
-                command = Command.OpenProfileMenu(
-                    isFavorite = details[context]?.isFavorite ?: false,
-                    isLocked = mode == EditorMode.Locked
+        val isTemplate = isObjectTemplate()
+        when {
+            isTemplate -> {
+                dispatch(
+                    command = Command.OpenDocumentMenu(
+                        isArchived = false,
+                        isFavorite = false,
+                        isLocked = false,
+                        fromName = wrapper.getProperObjectName().orEmpty(),
+                        isTemplate = true
+                    )
                 )
-            )
-        } else {
-            dispatch(
-                command = Command.OpenDocumentMenu(
-                    isArchived = details[context]?.isArchived ?: false,
-                    isFavorite = details[context]?.isFavorite ?: false,
-                    isLocked = mode == EditorMode.Locked,
-                    fromName = wrapper.getProperObjectName().orEmpty(),
-                    isTemplate = isObjectTemplate()
+            }
+            else -> {
+                dispatch(
+                    command = Command.OpenDocumentMenu(
+                        isArchived = details[context]?.isArchived ?: false,
+                        isFavorite = details[context]?.isFavorite ?: false,
+                        isLocked = mode == EditorMode.Locked,
+                        fromName = wrapper.getProperObjectName().orEmpty(),
+                        isTemplate = isObjectTemplate()
+                    )
                 )
-            )
+            }
         }
     }
 
@@ -3079,12 +3057,19 @@ class EditorViewModel(
         val wrapper = ObjectWrapper.Basic(map = details.details[target]?.map ?: emptyMap())
         when (wrapper.layout) {
             ObjectType.Layout.BASIC,
-            ObjectType.Layout.PROFILE,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.TODO,
             ObjectType.Layout.FILE,
             ObjectType.Layout.BOOKMARK -> {
                 proceedWithOpeningObject(target = target)
+            }
+            ObjectType.Layout.PROFILE -> {
+                val identity = wrapper.getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
+                if (identity != null) {
+                    proceedWithOpeningObject(target = identity)
+                } else {
+                    proceedWithOpeningObject(target = target)
+                }
             }
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 proceedWithOpeningDataViewObject(target = target)
@@ -3160,14 +3145,17 @@ class EditorViewModel(
     }
 
 
-    fun onAddNewDocumentClicked() {
+    fun onAddNewDocumentClicked(type: Key? = null) {
         Timber.d("onAddNewDocumentClicked, ")
         proceedWithCreatingNewObject(
-            internalFlags = listOf(
-                InternalFlags.ShouldSelectTemplate,
-                InternalFlags.ShouldSelectType,
-                InternalFlags.ShouldEmptyDelete
-            )
+            internalFlags = buildList {
+                add(InternalFlags.ShouldSelectTemplate)
+                add(InternalFlags.ShouldEmptyDelete)
+                if (type.isNullOrEmpty()) {
+                    add(InternalFlags.ShouldSelectType)
+                }
+            },
+            typeKey = type?.let { TypeKey(it) }
         )
     }
 
@@ -3190,12 +3178,14 @@ class EditorViewModel(
     }
 
     private fun proceedWithCreatingNewObject(
-        internalFlags: List<InternalFlags> = emptyList()
+        internalFlags: List<InternalFlags> = emptyList(),
+        typeKey: TypeKey? = null
     ) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateObject.Param(
                 internalFlags = internalFlags,
+                type = typeKey
             )
             createObject.async(params = params)
                 .fold(
@@ -4315,12 +4305,22 @@ class EditorViewModel(
         )
     }
 
+    fun onTypesWidgetItemClicked(item: ObjectTypeView) {
+        Timber.d("onTypesWidgetItemClicked, item:[$item]")
+        val objType = _objectTypes.firstOrNull { item.id == it.id }
+        if (objType != null) {
+            onObjectTypeChanged(objType)
+        } else {
+            Timber.e("Error while getting object type from objectTypes list")
+        }
+    }
+
     fun onObjectTypeChanged(
-        item: ObjectTypeView
+        objType: ObjectWrapper.Type
     ) {
-        Timber.d("onObjectTypeChanged, item:[$item]")
+        Timber.d("onObjectTypeChanged, item:[$objType]")
         viewModelScope.launch {
-            when (item.key) {
+            when (objType.uniqueKey) {
                 ObjectTypeIds.SET -> {
                     proceedWithConvertingToSet()
                 }
@@ -4328,13 +4328,14 @@ class EditorViewModel(
                     proceedWithConvertingToCollection()
                 }
                 else -> {
-                    proceedWithObjectTypeChangeAndApplyTemplate(item)
+                    proceedWithObjectTypeChangeAndApplyTemplate(objType)
                 }
             }
         }
     }
 
     private suspend fun proceedWithConvertingToSet() {
+        val startTime = System.currentTimeMillis()
         val params = ConvertObjectToSet.Params(
             ctx = context,
             sources = emptyList()
@@ -4343,16 +4344,29 @@ class EditorViewModel(
             onFailure = { error -> Timber.e(error, "Error convert object to set") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
+                viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
+                    analytics = analytics,
+                    startTime = startTime,
+                    sourceObject = ObjectTypeIds.SET,
+                    containsFlagType = true
+                )
             }
         )
     }
 
     private suspend fun proceedWithConvertingToCollection() {
+        val startTime = System.currentTimeMillis()
         val params = ConvertObjectToCollection.Params(ctx = context)
         objectToCollection.async(params).fold(
             onFailure = { error -> Timber.e(error, "Error convert object to collection") },
             onSuccess = {
                 proceedWithOpeningDataViewObject(target = context, isPopUpToDashboard = true)
+                viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
+                    analytics = analytics,
+                    startTime = startTime,
+                    sourceObject = ObjectTypeIds.COLLECTION,
+                    containsFlagType = true
+                )
             }
         )
     }
@@ -4384,6 +4398,8 @@ class EditorViewModel(
         const val ERROR_UNSUPPORTED_BEHAVIOR = "Currently unsupported behavior."
         const val NOT_ALLOWED_FOR_OBJECT = "Not allowed for this object"
         const val NOT_ALLOWED_FOR_RELATION = "Not allowed for this relation"
+
+        private const val EDITOR_TEMPLATES_SUBSCRIPTION = "editor_templates_subscription"
     }
 
     data class MarkupAction(
@@ -4417,6 +4433,7 @@ class EditorViewModel(
         if (copyFileToCache.isActive()) {
             copyFileToCache.cancel()
         }
+        stopTemplatesSubscription()
     }
 
     enum class Session { IDLE, OPEN, ERROR }
@@ -4828,27 +4845,19 @@ class EditorViewModel(
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = buildList {
-                    addAll(
-                        ObjectSearchConstants.filterObjectTypeLibrary(
-                            space = spaceManager.get()
-                        )
-                    )
-                    add(
-                        DVFilter(
-                            relation = Relations.RECOMMENDED_LAYOUT,
-                            condition = DVFilterCondition.IN,
-                            value = SupportedLayouts.editorLayouts.map {
-                                it.code.toDouble()
-                            }
-                        )
-                    )
-                },
+                filters = ObjectSearchConstants.filterTypes(
+                    spaces = buildList {
+                        add(spaceManager.get())
+                    },
+                    recommendedLayouts = SupportedLayouts.editorLayouts
+                ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
             getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
+                    _objectTypes.clear()
+                    _objectTypes.addAll(types)
                     val views = types.getObjectTypeViewsForSBPage(
                         isWithCollection = false,
                         isWithBookmark = false,
@@ -4866,7 +4875,6 @@ class EditorViewModel(
         val objectDetails = details.details[context]?.map ?: emptyMap()
         val objectWrapper = ObjectWrapper.Basic(objectDetails)
         val objectType = objectWrapper.getProperType()
-        val objectTypeWrapper = ObjectWrapper.Type(details.details[objectType]?.map ?: emptyMap())
         val relationLinks = orchestrator.stores.relationLinks.current()
 
         viewModelScope.launch {
@@ -4882,7 +4890,7 @@ class EditorViewModel(
                 ctx = context,
                 objectDetails = objectDetails,
                 relationLinks = relationLinks,
-                objectTypeWrapper = objectTypeWrapper,
+                objectTypeStruct = details.details[objectType]?.map,
                 details = details
             )
             val update =
@@ -4916,12 +4924,14 @@ class EditorViewModel(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
         relationLinks: List<RelationLink>,
-        objectTypeWrapper: ObjectWrapper.Type,
+        objectTypeStruct: Struct?,
         details: Block.Details
     ): List<ObjectRelationView> {
+        val objType = objectTypeStruct?.mapToObjectWrapperType()
+        val recommendedRelations = objType?.recommendedRelations ?: emptyList()
         return getNotIncludedRecommendedRelations(
             relationLinks = relationLinks,
-            recommendedRelations = objectTypeWrapper.recommendedRelations,
+            recommendedRelations = recommendedRelations,
             storeOfRelations = storeOfRelations
         ).views(
             context = ctx,
@@ -5816,7 +5826,15 @@ class EditorViewModel(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
-                    space = spaceManager.get()
+                    spaces = buildList {
+                        val config = spaceManager.getConfig()
+                        if (config != null) {
+                            add(config.space)
+                            add(config.techSpace)
+                        } else {
+                            add(spaceManager.get())
+                        }
+                    }
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
@@ -5903,32 +5921,26 @@ class EditorViewModel(
         sendHideObjectTypeWidgetEvent()
     }
 
+    private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
+
     private fun proceedWithGettingObjectTypesForObjectTypeWidget() {
         viewModelScope.launch {
             val excludeTypes = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = buildList {
-                    addAll(
-                        ObjectSearchConstants.filterObjectTypeLibrary(
-                            space = spaceManager.get()
-                        )
-                    )
-                    add(
-                        DVFilter(
-                            relation = Relations.RECOMMENDED_LAYOUT,
-                            condition = DVFilterCondition.IN,
-                            value = SupportedLayouts.createObjectLayouts.map { layout ->
-                                layout.code.toDouble()
-                            }
-                        )
-                    )
-                },
+                filters = ObjectSearchConstants.filterTypes(
+                    spaces = buildList {
+                        add(spaceManager.get())
+                    },
+                    recommendedLayouts = SupportedLayouts.createObjectLayouts
+                ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
             getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
+                    _objectTypes.clear()
+                    _objectTypes.addAll(types)
                     val views = types.getObjectTypeViewsForSBPage(
                         isWithCollection = true,
                         isWithBookmark = false,
@@ -5960,22 +5972,25 @@ class EditorViewModel(
         if (isObjectTypesWidgetVisible) controlPanelInteractor.onEvent(ObjectTypesWidgetEvent.Hide)
     }
 
-    private fun proceedWithObjectTypeChange(item: ObjectTypeView, onSuccess: (() -> Unit)? = null) {
+    private fun proceedWithObjectTypeChange(objType: ObjectWrapper.Type, onSuccess: (() -> Unit)? = null) {
         val startTime = System.currentTimeMillis()
+        val internalFlags = getInternalFlagsFromDetails()
+        val containsTypeFlag = internalFlags.contains(InternalFlags.ShouldSelectType)
         viewModelScope.launch {
             val params = SetObjectType.Params(
                 context = context,
-                objectTypeKey = item.key
+                objectTypeKey = objType.uniqueKey
             )
             setObjectType.async(params).fold(
-                onFailure = { Timber.e(it, "Error while updating object type: [${item.key}]") },
+                onFailure = { Timber.e(it, "Error while updating object type: [${objType.uniqueKey}]") },
                 onSuccess = { response ->
-                    Timber.d("proceedWithObjectTypeChange success, key:[${item.key}]")
+                    Timber.d("proceedWithObjectTypeChange success, key:[${objType.uniqueKey}]")
                     dispatcher.send(response)
-                    sendAnalyticsObjectTypeChangeEvent(
+                    sendAnalyticsObjectTypeSelectOrChangeEvent(
                         analytics = analytics,
-                        objType = storeOfObjectTypes.getByKey(item.key),
-                        startTime = startTime
+                        startTime = startTime,
+                        sourceObject = objType.sourceObject,
+                        containsFlagType = containsTypeFlag
                     )
                     onSuccess?.invoke()
                 }
@@ -5983,12 +5998,12 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithObjectTypeChangeAndApplyTemplate(item: ObjectTypeView) {
-        proceedWithObjectTypeChange(item) {
+    private fun proceedWithObjectTypeChangeAndApplyTemplate(objType: ObjectWrapper.Type) {
+        proceedWithObjectTypeChange(objType) {
             val internalFlags = getInternalFlagsFromDetails()
             if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
                 onProceedWithApplyingTemplateByObjectId(
-                    template = item.defaultTemplate
+                    template = objType.defaultTemplateId
                 )
             }
         }
@@ -6210,26 +6225,37 @@ class EditorViewModel(
     //endregion
 
     //region TEMPLATING
+    private val templatesJob = mutableListOf<Job>()
 
-    fun onShowTemplateClicked() {
-        viewModelScope.launch { onEvent(SelectTemplateEvent.OnAccepted) }
+    fun onTemplatesToolbarClicked() {
+        Timber.d("onTemplatesToolbarClicked, ")
+        commands.postValue(EventWrapper(Command.CloseKeyboard))
+        val state = selectTemplateViewState.value
+        if (state is SelectTemplateViewState.Active) {
+            navigate(
+                EventWrapper(
+                    AppNavigation.Command.OpenTemplates(typeId = state.typeId)
+                )
+            )
+        } else {
+            Timber.e("State of templates widget is invalid when clicked, should be SelectTemplateViewState.Activ")
+        }
     }
 
-    private fun proceedWithStartTemplateEvent(typeKey: Id) {
-        Timber.d("proceedWithStartTemplateEvent, typeKey:[$typeKey]")
-        viewModelScope.launch {
-            val objType = storeOfObjectTypes.getByKey(typeKey)
-            if (objType?.uniqueKey != null) {
-                onEvent(
-                    SelectTemplateEvent.OnStart(
-                        ctx = context,
-                        objType = objType
-                    )
-                )
-            } else {
-                Timber.e("Error while getting object type from storeOfObjectTypes by ley: $typeKey")
-            }
+    private fun proceedWithShowTemplatesToolbar() {
+        val objType = getObjectTypeFromDetails() ?: return
+        if (objType.isTemplatesAllowed()) {
+            Timber.d("proceedWithShowTemplatesToolbar, typeId:[${objType.id}]")
+            startTemplatesSubscription(objType = objType)
+        } else {
+            stopTemplatesSubscription()
+            Timber.e("proceedWithShowTemplatesToolbar, Templates are not allowed for typeId:[${objType.id}]")
         }
+    }
+
+    private fun proceedWithHideTemplatesToolbar() {
+        Timber.d("proceedWithHideTemplatesToolbar, ")
+        stopTemplatesSubscription()
     }
 
     private fun getObjectTypeUniqueKeyFromDetails(): Id? {
@@ -6240,6 +6266,14 @@ class EditorViewModel(
         return currentObjectType.uniqueKey
     }
 
+    private fun getObjectTypeFromDetails(): ObjectWrapper.Type? {
+        val details = orchestrator.stores.details.current()
+        val currentObject = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
+        val currentObjectTypeId = currentObject.getProperType() ?: return null
+        val struct = details.details[currentObjectTypeId]?.map
+        return struct?.mapToObjectWrapperType()
+    }
+
     fun isObjectTemplate(): Boolean {
         return getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.TEMPLATE
     }
@@ -6247,6 +6281,34 @@ class EditorViewModel(
     fun onSelectTemplateClicked() {
         viewModelScope.launch {
             sendAnalyticsSelectTemplateEvent(analytics)
+        }
+    }
+
+    private fun startTemplatesSubscription(objType: ObjectWrapper.Type) {
+        templatesJob += viewModelScope.launch {
+            templatesContainer
+                .subscribeToTemplates(type = objType.id, subId = EDITOR_TEMPLATES_SUBSCRIPTION)
+                .catch { Timber.e(it, "Error while subscribing to templates") }
+                .collect { templates ->
+                    if (templates.isNotEmpty()) {
+                        selectTemplateViewState.value = SelectTemplateViewState.Active(
+                            count = templates.size + 1,
+                            typeId = objType.id
+                        )
+                    } else {
+                        selectTemplateViewState.value = SelectTemplateViewState.Idle
+                    }
+                }
+        }
+    }
+
+    private fun stopTemplatesSubscription() {
+        if (templatesJob.isNotEmpty()) {
+            selectTemplateViewState.value = SelectTemplateViewState.Idle
+            templatesJob.cancel()
+            viewModelScope.launch {
+                templatesContainer.unsubscribeFromTemplates(subId = EDITOR_TEMPLATES_SUBSCRIPTION)
+            }
         }
     }
     //endregion
@@ -6965,12 +7027,11 @@ class EditorViewModel(
 
     private fun proceedWithCheckingInternalFlagShouldSelectTemplate(flags: List<InternalFlags>) {
         if (flags.contains(InternalFlags.ShouldSelectTemplate)) {
-            //We use this flag to show template widget and then we don't need it anymore
-            val typeKey = getObjectTypeUniqueKeyFromDetails() ?: return
-            proceedWithStartTemplateEvent(typeKey = typeKey)
+            Timber.d("Object has internal flag: ShouldSelectTemplate. Show templates toolbar")
+            proceedWithShowTemplatesToolbar()
         } else {
-            viewModelScope.launch { onEvent(SelectTemplateEvent.OnSkipped) }
-            Timber.d("Object doesn't have internal flag: ShouldSelectTemplate")
+            proceedWithHideTemplatesToolbar()
+            Timber.d("Object doesn't have internal flag: ShouldSelectTemplate. Hide templates toolbar")
         }
     }
 

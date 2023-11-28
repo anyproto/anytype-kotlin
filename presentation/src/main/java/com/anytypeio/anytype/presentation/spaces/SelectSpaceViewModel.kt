@@ -3,18 +3,21 @@ package com.anytypeio.anytype.presentation.spaces
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
+import com.anytypeio.anytype.core_utils.ext.allUniqueBy
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
@@ -24,10 +27,12 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,11 +50,13 @@ class SelectSpaceViewModel(
     private val urlBuilder: UrlBuilder,
     private val saveCurrentSpace: SaveCurrentSpace,
     private val appActionManager: AppActionManager,
-    private val getDefaultObjectType: GetDefaultObjectType
+    private val getDefaultObjectType: GetDefaultObjectType,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectSpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
+    val jobs = mutableListOf<Job>()
 
     private val profile = spaceManager
         .observe()
@@ -99,7 +106,7 @@ class SelectSpaceViewModel(
                 ),
                 DVFilter(
                     relation = Relations.SPACE_ACCOUNT_STATUS,
-                    value = SpaceStatus.DELETED.code.toDouble(),
+                    value = SpaceStatus.SPACE_DELETED.code.toDouble(),
                     condition = DVFilterCondition.NOT_EQUAL
                 ),
                 DVFilter(
@@ -119,10 +126,17 @@ class SelectSpaceViewModel(
     ).catch {
         Timber.e(it, "Error in spaces subscriptions")
         emit(emptyList())
+    }.map { spaces ->
+        if (BuildConfig.DEBUG) {
+            assert(spaces.allUniqueBy { it.id }) {
+                "There were duplicated objects. Need to investigate this issue"
+            }
+        }
+        spaces.distinctBy { it.id }
     }
 
-    init {
-        viewModelScope.launch {
+    private fun buildUI() {
+        jobs += viewModelScope.launch {
             combine(
                 spaces,
                 profile,
@@ -135,27 +149,28 @@ class SelectSpaceViewModel(
                             icon = profile.profileIcon(builder = urlBuilder)
                         )
                     )
-                    addAll(
-                        spaces.mapNotNull { wrapper ->
-                            val space = wrapper.getValue<String>(Relations.TARGET_SPACE_ID)
-                            if (space != null) {
-                                SelectSpaceView.Space(
-                                    WorkspaceView(
-                                        id = wrapper.id,
-                                        name = wrapper.name,
-                                        space = space,
-                                        isSelected = space == config.space,
-                                        icon = wrapper.spaceIcon(
-                                            builder = urlBuilder,
-                                            spaceGradientProvider = spaceGradientProvider
-                                        )
+                    val spaceViews = spaces.mapNotNull { wrapper ->
+                        val space = wrapper.targetSpaceId
+                        if (space != null) {
+                            SelectSpaceView.Space(
+                                WorkspaceView(
+                                    id = wrapper.id,
+                                    name = wrapper.name,
+                                    space = space,
+                                    isSelected = space == config.space,
+                                    icon = wrapper.spaceIcon(
+                                        builder = urlBuilder,
+                                        spaceGradientProvider = spaceGradientProvider
                                     )
                                 )
-                            } else {
-                                null
-                            }
+                            )
+                        } else {
+                            null
                         }
-                    )
+                    }
+                    val (active, others) = spaceViews.partition { view -> view.view.isSelected }
+                    addAll(active)
+                    addAll(others)
                     val numberOfSpaces = count { view -> view is SelectSpaceView.Space }
                     if (numberOfSpaces < MAX_SPACE_COUNT) {
                         add(SelectSpaceView.Create)
@@ -167,10 +182,20 @@ class SelectSpaceViewModel(
         }
     }
 
+    fun onStart() {
+        buildUI()
+    }
+
+    fun onStop() {
+        jobs.cancel()
+        proceedWithUnsubscribing()
+    }
+
     fun onSpaceClicked(view: WorkspaceView) {
         viewModelScope.launch {
             Timber.d("Setting space: $view")
             if (!view.isSelected) {
+                analytics.sendEvent(eventName = EventsDictionary.switchSpace)
                 spaceManager.set(view.space)
                 saveCurrentSpace.async(SaveCurrentSpace.Params(SpaceId(view.space))).fold(
                     onFailure = {
@@ -192,21 +217,12 @@ class SelectSpaceViewModel(
         getDefaultObjectType.async(Unit).fold(
             onSuccess = { result ->
                 val type = result.type
-                if (type != null) {
-                    appActionManager.setup(
-                        AppActionManager.Action.CreateNew(
-                            type = type,
-                            name = result.name ?: "Object"
-                        )
+                appActionManager.setup(
+                    AppActionManager.Action.CreateNew(
+                        type = type,
+                        name = result.name ?: "Object"
                     )
-                } else {
-                    appActionManager.setup(
-                        AppActionManager.Action.CreateNew(
-                            type = TypeKey(ObjectTypeUniqueKeys.NOTE),
-                            name = "Note"
-                        )
-                    )
-                }
+                )
                 onExit()
             },
             onFailure = { onExit() }
@@ -224,16 +240,15 @@ class SelectSpaceViewModel(
         }
     }
 
-    override fun onCleared() {
+    private fun proceedWithUnsubscribing() {
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(
                 subscriptions = listOf(
                     SELECT_SPACE_PROFILE_SUBSCRIPTION,
-                    SELECT_SPACE_PROFILE_SUBSCRIPTION
+                    SELECT_SPACE_SUBSCRIPTION
                 )
             )
         }
-        super.onCleared()
     }
 
     class Factory @Inject constructor(
@@ -243,7 +258,8 @@ class SelectSpaceViewModel(
         private val urlBuilder: UrlBuilder,
         private val saveCurrentSpace: SaveCurrentSpace,
         private val appActionManager: AppActionManager,
-        private val getDefaultObjectType: GetDefaultObjectType
+        private val getDefaultObjectType: GetDefaultObjectType,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -255,7 +271,8 @@ class SelectSpaceViewModel(
             urlBuilder = urlBuilder,
             saveCurrentSpace = saveCurrentSpace,
             appActionManager = appActionManager,
-            getDefaultObjectType = getDefaultObjectType
+            getDefaultObjectType = getDefaultObjectType,
+            analytics = analytics
         ) as T
     }
 

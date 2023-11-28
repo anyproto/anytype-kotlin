@@ -40,8 +40,12 @@ suspend fun <T> List<T>.toView(
 ): List<String> =
     mapNotNull {
         val relation = storeOfRelations.getByKey(mapper(it))
+        val isRelationDoneOrName = relation?.key == "done" || relation?.key == "name"
         relation?.name.orEmpty()
-            .takeIf { _ -> relation != null && relation.isValid && relation.isHidden != true }
+            .takeIf { _ ->
+                relation != null && relation.isValid
+                        && (isRelationDoneOrName || relation.isHidden != true)
+            }
     }
 
 suspend fun DVViewer.toViewerEditWidgetState(

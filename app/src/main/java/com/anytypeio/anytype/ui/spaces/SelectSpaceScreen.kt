@@ -28,6 +28,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -135,13 +136,13 @@ private fun SelectSpaceSpaceItem(
             modifier = Modifier
                 .size(96.dp)
                 .align(Alignment.CenterHorizontally)
-                .clip(RoundedCornerShape(8.dp))
+                .clip(RoundedCornerShape(4.dp))
                 .then(
                     if (item.view.isSelected)
                         Modifier.border(
                             width = if (item.view.isSelected) 2.dp else 0.dp,
                             color = Color.White,
-                            shape = RoundedCornerShape(8.dp)
+                            shape = RoundedCornerShape(4.dp)
                         )
                     else
                         Modifier
@@ -150,17 +151,22 @@ private fun SelectSpaceSpaceItem(
             SpaceImageBlock(
                 icon = item.view.icon,
                 onSpaceIconClick = { onSpaceClicked(item.view) },
-                gradientBackground = colorResource(id = R.color.default_gradient_background)
+                gradientBackground = colorResource(id = R.color.default_gradient_background),
+                gradientCornerRadius = 4.dp
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 8.dp)
+            ,
             text = item.view.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
             textAlign = TextAlign.Center,
             style = Caption1Medium,
             color = Color.White,
-            maxLines = 1
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.height(16.dp))
     }

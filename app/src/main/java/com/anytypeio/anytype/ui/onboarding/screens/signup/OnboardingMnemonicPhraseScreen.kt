@@ -54,7 +54,6 @@ fun MnemonicPhraseScreenWrapper(
     viewModel: OnboardingMnemonicViewModel,
     onCheckLaterClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
-    contentPaddingTop: Int,
     vm: OnboardingMnemonicViewModel,
     mnemonicColorPalette: List<Color>
 ) {
@@ -68,7 +67,6 @@ fun MnemonicPhraseScreenWrapper(
             }
         },
         copyMnemonicToClipboard = copyMnemonicToClipboard,
-        contentPaddingTop = contentPaddingTop,
         mnemonicColorPalette = mnemonicColorPalette
     )
 }
@@ -84,7 +82,6 @@ fun PreviewMnemonicPhraseScreen() {
         reviewMnemonic = { /*TODO*/ },
         onCheckLaterClicked = { /*TODO*/ },
         copyMnemonicToClipboard = {},
-        contentPaddingTop = 0,
         mnemonicColorPalette = emptyList()
     )
 }
@@ -96,7 +93,6 @@ fun MnemonicPhraseScreen(
     reviewMnemonic: () -> Unit,
     onCheckLaterClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
-    contentPaddingTop: Int,
     mnemonicColorPalette: List<Color>
 ) {
     val showWhatIsRecoveryPhraseDialog = remember { mutableStateOf(false) }
@@ -107,7 +103,7 @@ fun MnemonicPhraseScreen(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.Top
         ) {
-            Spacer(modifier = Modifier.height(contentPaddingTop.dp))
+            Spacer(modifier = Modifier.height(148.dp))
             MnemonicTitle()
             MnemonicDescription()
             ReadMoreButton(showWhatIsRecoveryPhraseDialog)
@@ -153,7 +149,7 @@ private fun ReadMoreButton(showWhatIsRecoveryPhraseDialog: MutableState<Boolean>
         Text(
             text = stringResource(id = R.string.onboarding_mnemonic_read_more),
             style = BodyRegular.copy(
-                color = Color.White
+                color = Color(0xFFDBDAD4)
             ),
             modifier = Modifier.align(Alignment.Center)
         )
@@ -233,7 +229,8 @@ fun MnemonicTitle() {
             text = stringResource(R.string.onboarding_mnemonic_title),
             style = HeadlineHeading.copy(
                 color = OnBoardingTextPrimaryColor
-            )
+            ),
+            textAlign = TextAlign.Center
         )
     }
 }

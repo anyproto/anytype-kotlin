@@ -29,6 +29,8 @@ import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
+import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -47,7 +49,8 @@ abstract class ObjectMenuViewModelBase(
     private val analytics: Analytics,
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
     private val duplicateObject: DuplicateObject,
-    private val addObjectToCollection: AddObjectToCollection
+    private val addObjectToCollection: AddObjectToCollection,
+    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
 ) : BaseViewModel() {
 
     protected val jobs = mutableListOf<Job>()
@@ -85,16 +88,14 @@ abstract class ObjectMenuViewModelBase(
         ctx: Id,
         isFavorite: Boolean,
         isArchived: Boolean,
-        isProfile: Boolean,
         isLocked: Boolean,
         isTemplate: Boolean
     ) {
-        Timber.d("onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isProfile:[$isProfile], isLocked:[$isLocked]")
+        Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isLocked:[$isLocked]")
         actions.value = buildActions(
             ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,
-            isProfile = isProfile,
             isTemplate = isTemplate
         )
         jobs += viewModelScope.launch {
@@ -108,7 +109,6 @@ abstract class ObjectMenuViewModelBase(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isProfile: Boolean,
         isTemplate: Boolean = false
     ): List<ObjectAction>
 
@@ -255,7 +255,11 @@ abstract class ObjectMenuViewModelBase(
         jobs += viewModelScope.launch {
             val startTime = System.currentTimeMillis()
             addBackLinkToObject.execute(
-                AddBackLinkToObject.Params(objectToLink = myself, objectToPlaceLink = addTo)
+                AddBackLinkToObject.Params(
+                    objectToLink = myself,
+                    objectToPlaceLink = addTo,
+                    saveAsLastOpened = true
+                )
             ).fold(
                 onSuccess = { obj ->
                     sendAnalyticsBackLinkAddEvent(
@@ -325,6 +329,22 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
+    fun onDiagnosticsGoroutinesClicked(ctx: Id) {
+        jobs += viewModelScope.launch {
+            debugGoroutinesShareDownloader.stream(
+                MiddlewareShareDownloader.Params(hash = ctx, name = "goroutines")
+            ).collect { result ->
+                result.fold(
+                    onSuccess = { success -> commands.emit(Command.ShareDebugGoroutines(success.path)) },
+                    onFailure = {
+                        sendToast("Error while collecting goroutines diagnostics :${it.message}")
+                        Timber.e(it, "Error while collecting goroutines diagnostics")
+                    }
+                )
+            }
+        }
+    }
+
     sealed class Command {
         object OpenObjectIcons : Command()
         object OpenSetIcons : Command()
@@ -336,6 +356,7 @@ abstract class ObjectMenuViewModelBase(
         object OpenSetRelations : Command()
         object OpenLinkToChooser : Command()
         data class ShareDebugTree(val uri: Uri) : Command()
+        data class ShareDebugGoroutines(val path: String) : Command()
         data class OpenSnackbar(
             val id: Id,
             val currentObjectName: String?,

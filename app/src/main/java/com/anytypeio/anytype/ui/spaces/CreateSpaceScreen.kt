@@ -6,13 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -27,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -59,36 +62,44 @@ fun CreateSpaceScreen(
     val input = remember {
         mutableStateOf("")
     }
-    Column(modifier = Modifier.fillMaxHeight()) {
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
         Dragger(
             modifier = Modifier
                 .padding(vertical = 6.dp)
-                .align(Alignment.CenterHorizontally)
+                .align(Alignment.TopCenter)
         )
-        Header()
-        Spacer(modifier = Modifier.height(16.dp))
-        SpaceIcon(
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            spaceIconView = spaceIconView,
-            onSpaceIconClicked = onSpaceIconClicked
-        )
-        Spacer(modifier = Modifier.height(10.dp))
-        SpaceNameInput(input = input)
-        Divider()
-        Section(title = stringResource(id = R.string.type))
-        TypeOfSpace(spaceType = PERSONAL_SPACE_TYPE)
-        Divider()
-        Section(title = stringResource(id = R.string.create_space_start_with))
-        UseCase()
-        Divider()
-        Box(modifier = Modifier.weight(1.0f)) {
-            CreateSpaceButton(
-                onCreate = onCreate,
-                input = input,
-                modifier = Modifier.align(Alignment.BottomCenter),
-                isLoading = isLoading
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+                .padding(top = 16.dp)
+        ) {
+            Header()
+            Spacer(modifier = Modifier.height(16.dp))
+            SpaceIcon(
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                spaceIconView = spaceIconView,
+                onSpaceIconClicked = onSpaceIconClicked
             )
+            Spacer(modifier = Modifier.height(10.dp))
+            SpaceNameInput(input = input)
+            Divider()
+            Section(title = stringResource(id = R.string.type))
+            TypeOfSpace(spaceType = PRIVATE_SPACE_TYPE)
+            Divider()
+            Section(title = stringResource(id = R.string.create_space_start_with))
+            UseCase()
+            Divider()
+            Spacer(modifier = Modifier.height(78.dp))
         }
+        CreateSpaceButton(
+            onCreate = onCreate,
+            input = input,
+            modifier = Modifier.align(Alignment.BottomCenter),
+            isLoading = isLoading
+        )
     }
 }
 
@@ -182,6 +193,9 @@ fun SpaceNameInput(
             textStyle = HeadlineHeading.copy(
                 color = colorResource(id = R.color.text_primary)
             ),
+            cursorBrush = SolidColor(
+                colorResource(id = R.color.cursor_color)
+            ),
             decorationBox = @Composable { innerTextField ->
                 TextFieldDefaults.OutlinedTextFieldDecorationBox(
                     value = input.value,
@@ -196,14 +210,13 @@ fun SpaceNameInput(
                         )
                     },
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        textColor = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_primary),
+                        textColor = colorResource(id = R.color.text_primary),
                         backgroundColor = Color.Transparent,
                         disabledBorderColor = Color.Transparent,
                         errorBorderColor = Color.Transparent,
                         focusedBorderColor = Color.Transparent,
                         unfocusedBorderColor = Color.Transparent,
-                        placeholderColor = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.text_tertiary),
-                        cursorColor = colorResource(id = com.anytypeio.anytype.ui_settings.R.color.orange)
+                        placeholderColor = colorResource(id = R.color.text_tertiary)
                     ),
                     contentPadding = PaddingValues(
                         start = 0.dp,

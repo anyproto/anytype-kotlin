@@ -454,8 +454,8 @@ class Orchestrator(
                             name = intent.name
                         )
                     ).suspendFold(
-                        onSuccess = { uri ->
-                            intent.onDownloaded(uri)
+                        onSuccess = { result ->
+                            intent.onDownloaded(result.uri)
                             analytics.sendAnalyticsDownloadMediaEvent(intent.type)
                         },
                         onFailure = { e -> Timber.e(e, "Error while sharing a file") }

@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.auth.Keys
@@ -15,7 +16,9 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.ui.settings.RemoteStorageFragment
+import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
+import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_SELECT
 import com.anytypeio.anytype.ui.templates.TemplateSelectFragment
 import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import timber.log.Timber
@@ -89,13 +92,34 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun openModalEditor(id: String, targetTypeId: Id, targetTypeKey: Id) {
+    override fun openModalTemplateSelect(
+        template: Id,
+        templateTypeId: Id,
+        templateTypeKey: Key
+    ) {
         navController?.navigate(
             R.id.nav_editor_modal,
             bundleOf(
-                EditorModalFragment.ARG_ID to id,
-                EditorModalFragment.ARG_TARGET_TYPE_ID to targetTypeId,
-                EditorModalFragment.ARG_TARGET_TYPE_KEY to targetTypeKey
+                EditorModalFragment.ARG_TEMPLATE_ID to template,
+                EditorModalFragment.ARG_TEMPLATE_TYPE_ID to templateTypeId,
+                EditorModalFragment.ARG_TEMPLATE_TYPE_KEY to templateTypeKey,
+                EditorModalFragment.ARG_SCREEN_TYPE to TYPE_TEMPLATE_SELECT
+            )
+        )
+    }
+
+    override fun openModalTemplateEdit(
+        template: Id,
+        templateTypeId: Id,
+        templateTypeKey: Key
+    ) {
+        navController?.navigate(
+            R.id.nav_editor_modal,
+            bundleOf(
+                EditorModalFragment.ARG_TEMPLATE_ID to template,
+                EditorModalFragment.ARG_TEMPLATE_TYPE_ID to templateTypeId,
+                EditorModalFragment.ARG_TEMPLATE_TYPE_KEY to templateTypeKey,
+                EditorModalFragment.ARG_SCREEN_TYPE to TYPE_TEMPLATE_EDIT
             )
         )
     }
@@ -281,16 +305,16 @@ class Navigator : AppNavigation {
         navController?.navigate(R.id.libraryFragment)
     }
 
-    override fun openRemoteStorageScreen(subscription: Id) {
+    override fun openRemoteFilesManageScreen(subscription: Id) {
         navController?.navigate(R.id.remoteStorageFragment,
-            bundleOf(RemoteStorageFragment.SUBSCRIPTION_KEY to subscription))
+            bundleOf(RemoteFilesManageFragment.SUBSCRIPTION_KEY to subscription))
     }
 
-    override fun openTemplatesModal(targetTypeKey: Id) {
+    override fun openTemplatesModal(typeId: Id) {
         navController?.navigate(
             R.id.nav_templates_modal,
             bundleOf(
-                TemplateSelectFragment.ARG_TARGET_TYPE_KEY to targetTypeKey
+                TemplateSelectFragment.ARG_TYPE_ID to typeId
             )
         )
     }

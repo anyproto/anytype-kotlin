@@ -14,9 +14,9 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -952,7 +952,7 @@ class Middleware @Inject constructor(
         space: Id,
         name: String,
         emojiUnicode: String?
-    ): ObjectWrapper.Type {
+    ): Struct {
         val request = Rpc.Object.CreateObjectType.Request(
             details = buildMap {
                 put(Relations.NAME, name)
@@ -965,9 +965,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateObjectType(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return ObjectWrapper.Type(
-            response.details ?: throw IllegalStateException("Missing details")
-        )
+        return response.details ?: throw IllegalStateException("Null object type struct")
     }
 
     @Throws(Exception::class)
@@ -1995,7 +1993,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceObjectAdd(command: Command.AddObjectToSpace): Pair<Id, ObjectWrapper.Type> {
+    fun workspaceObjectAdd(command: Command.AddObjectToSpace): Pair<Id, Struct?> {
         val request = Rpc.Workspace.Object.Add.Request(
             objectId = command.objectId,
             spaceId = command.space
@@ -2003,7 +2001,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.workspaceObjectAdd(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(response.objectId, ObjectWrapper.Type(response.details ?: emptyMap()))
+        return Pair(response.objectId, response.details)
     }
 
     @Throws(Exception::class)
@@ -2295,10 +2293,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun fileSpaceUsage(space: SpaceId): FileLimits {
-        val request = Rpc.File.SpaceUsage.Request(spaceId = space.id)
+    fun nodeUsage(): NodeUsageInfo {
+        val request = Rpc.File.NodeUsage.Request()
         if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.spaceUsage(request)
+        val response = service.nodeUsageInfo(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.toCoreModel()
     }
@@ -2327,6 +2325,16 @@ class Middleware @Inject constructor(
         val response = service.createTemplateFromObject(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.id
+    }
+
+    @Throws(Exception::class)
+    fun debugStackGoroutines(path: String) {
+        val request = Rpc.Debug.StackGoroutines.Request(
+            path = path
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.debugStackGoroutines(request)
+        if (BuildConfig.DEBUG) logResponse(response)
     }
 
     private fun logRequest(any: Any) {

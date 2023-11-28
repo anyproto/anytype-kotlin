@@ -48,10 +48,11 @@ fun SpaceWidgetCard(
         ) {
             SpaceImageBlock(
                 icon = icon,
-                onSpaceIconClick = {},
+                onSpaceIconClick = { onClick() },
                 mainSize = 40.dp,
                 gradientSize = 24.dp,
-                emojiSize = 24.dp
+                emojiSize = 24.dp,
+                gradientCornerRadius = 2.dp
             )
         }
         Text(

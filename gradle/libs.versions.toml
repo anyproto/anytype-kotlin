@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.29.6"
+middlewareVersion = "v0.29.16"
 kotlinVersion = '1.7.10'
 
 androidxCoreVersion = "1.10.1"
@@ -161,8 +161,8 @@ appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "991
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "7.4.1" }
-library = { id = "com.android.library", version = "7.4.1" }
+application = { id = "com.android.application", version = "8.1.4" }
+library = { id = "com.android.library", version = "8.1.4" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "kotlinVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }

@@ -57,7 +57,7 @@
     <string name="space_usage">%1$s of %2$s used</string>
     <string name="remote_storage">Удалённое хранилище</string>
     <string name="contact_us">Связаться с нами</string>
-    <string name="get_more_space">Получить больше места для хранения</string>
+    <string name="get_more_space">Увеличить объем хранилища</string>
     <string name="account_name">Имя учетной записи</string>
     <string name="space_settings">Настройки пространства</string>
     <string name="data_management">Data management</string>
@@ -762,7 +762,7 @@
     <string name="debug_mode">debug_mode</string>
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Настройки</string>
-    <string name="snack_link_to">linked to</string>
+    <string name="snack_link_to">связано с</string>
     <string name="snack_move_to">moved to</string>
     <string name="recovery_phrase_copied">Фраза для восстановления скопирована</string>
     <string name="type_editing_title">Type settings</string>

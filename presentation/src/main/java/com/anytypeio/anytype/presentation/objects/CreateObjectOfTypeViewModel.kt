@@ -17,6 +17,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -36,7 +37,21 @@ class CreateObjectOfTypeViewModel(
 
     lateinit var space: Id
 
-    init {
+    private val _viewVisibility = MutableStateFlow(false)
+    val viewVisibility: StateFlow<Boolean> get() = _viewVisibility
+
+    fun setViewVisibility(visible: Boolean) {
+        if (visible) {
+            getTypes()
+        }
+        _viewVisibility.value = visible
+    }
+
+    fun hideView() {
+        _viewVisibility.value = false
+    }
+
+    private fun getTypes() {
         viewModelScope.launch {
             space = spaceManager.get()
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
@@ -106,7 +121,7 @@ class CreateObjectOfTypeViewModel(
                                 filteredLibraryTypes.map { type ->
                                     SelectTypeView.Type(
                                         id = type.id,
-                                        typeKey = type.uniqueKey!!,
+                                        typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
                                         icon = type.iconEmoji.orEmpty(),
                                         isFromLibrary = true

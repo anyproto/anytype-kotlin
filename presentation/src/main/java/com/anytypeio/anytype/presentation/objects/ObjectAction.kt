@@ -15,5 +15,6 @@ enum class ObjectAction {
     UNLOCK,
     LINK_TO,
     DELETE_FILES,
-    SET_AS_DEFAULT
+    SET_AS_DEFAULT,
+    CREATE_WIDGET
 }

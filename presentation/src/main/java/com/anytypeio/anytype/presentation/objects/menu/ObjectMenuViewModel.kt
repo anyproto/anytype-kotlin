@@ -24,6 +24,8 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
+import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -35,6 +37,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
+import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -48,6 +51,7 @@ class ObjectMenuViewModel(
     dispatcher: Dispatcher<Payload>,
     menuOptionsProvider: ObjectMenuOptionsProvider,
     duplicateObject: DuplicateObject,
+    createWidget: CreateWidget,
     private val debugTreeShareDownloader: DebugTreeShareDownloader,
     private val storage: Editor.Storage,
     private val analytics: Analytics,
@@ -55,7 +59,8 @@ class ObjectMenuViewModel(
     private val addObjectToCollection: AddObjectToCollection,
     private val createTemplateFromObject: CreateTemplateFromObject,
     private val setObjectDetails: SetObjectDetails,
-    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
+    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
+    private val spaceManager: SpaceManager
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addToFavorite = addToFavorite,
@@ -68,7 +73,9 @@ class ObjectMenuViewModel(
     analytics = analytics,
     menuOptionsProvider = menuOptionsProvider,
     addObjectToCollection = addObjectToCollection,
-    debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
+    debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
+    createWidget = createWidget,
+    spaceManager = spaceManager
 ) {
 
     private val objectRestrictions = storage.objectRestrictions.current()
@@ -95,6 +102,8 @@ class ObjectMenuViewModel(
                 add(ObjectAction.DELETE)
             }
         }
+
+        add(ObjectAction.CREATE_WIDGET)
 
         if (isTemplate) {
             add(ObjectAction.SET_AS_DEFAULT)
@@ -265,6 +274,11 @@ class ObjectMenuViewModel(
             ObjectAction.SET_AS_DEFAULT -> {
                 proceedWithSettingAsDefaultTemplate(ctx = ctx)
             }
+            ObjectAction.CREATE_WIDGET -> {
+                val details = storage.details.current().details[ctx]
+                val wrapper = ObjectWrapper.Basic(details?.map ?: emptyMap())
+                proceedWithCreatingWidget(obj = wrapper)
+            }
             ObjectAction.MOVE_TO,
             ObjectAction.MOVE_TO_BIN,
             ObjectAction.DELETE_FILES -> {
@@ -395,7 +409,7 @@ class ObjectMenuViewModel(
     }
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(
+    class Factory @Inject constructor(
         private val setObjectIsArchived: SetObjectIsArchived,
         private val duplicateObject: DuplicateObject,
         private val debugTreeShareDownloader: DebugTreeShareDownloader,
@@ -412,7 +426,9 @@ class ObjectMenuViewModel(
         private val addObjectToCollection: AddObjectToCollection,
         private val createTemplateFromObject: CreateTemplateFromObject,
         private val setObjectDetails: SetObjectDetails,
-        private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
+        private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
+        private val createWidget: CreateWidget,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -432,7 +448,9 @@ class ObjectMenuViewModel(
                 addObjectToCollection = addObjectToCollection,
                 createTemplateFromObject = createTemplateFromObject,
                 setObjectDetails = setObjectDetails,
-                debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
+                debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
+                createWidget = createWidget,
+                spaceManager = spaceManager
             ) as T
         }
     }

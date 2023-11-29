@@ -31,7 +31,7 @@ class CreateObjectOfTypeViewModel(
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectTypeView>>(emptyList())
-    val commands = MutableSharedFlow<Command>()
+    val commands = MutableSharedFlow<CommandCreateObject>()
 
     private val query = MutableSharedFlow<String>()
 
@@ -156,12 +156,12 @@ class CreateObjectOfTypeViewModel(
                         Timber.e(it, "Error while installing type")
                     },
                     success = {
-                        commands.emit(Command.ShowTypeInstalledToast(type.name))
-                        commands.emit(Command.DispatchTypeKey(type.typeKey))
+                        commands.emit(CommandCreateObject.ShowTypeInstalledToast(type.name))
+                        commands.emit(CommandCreateObject.DispatchTypeKey(type.typeKey))
                     }
                 )
             } else {
-                commands.emit(Command.DispatchTypeKey(type.typeKey))
+                commands.emit(CommandCreateObject.DispatchTypeKey(type.typeKey))
             }
         }
     }
@@ -197,7 +197,7 @@ sealed class SelectTypeView {
     ): SelectTypeView()
 }
 
-sealed class Command {
-    data class ShowTypeInstalledToast(val typeName: String): Command()
-    data class DispatchTypeKey(val type: Key): Command()
+sealed class CommandCreateObject {
+    data class ShowTypeInstalledToast(val typeName: String): CommandCreateObject()
+    data class DispatchTypeKey(val type: Key): CommandCreateObject()
 }

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -93,7 +94,8 @@ fun CreateObjectOfTypeScreen(
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
-    scope: CoroutineScope
+    scope: CoroutineScope,
+    useComposeIme: Boolean = false
 ) {
 
     val widgetState by vmCreateObject.viewVisibility.collectAsState()
@@ -111,9 +113,7 @@ fun CreateObjectOfTypeScreen(
         AnimatedVisibility(
             visible = widgetState,
             enter = fadeIn(),
-            exit = fadeOut(
-                tween(200)
-            )
+            exit = fadeOut(tween(DURATION_ANIMATION_OUT))
         ) {
             Box(
                 Modifier
@@ -144,11 +144,17 @@ fun CreateObjectOfTypeScreen(
         val sizePx =
             with(LocalDensity.current) { LocalConfiguration.current.screenHeightDp.dp.toPx() }
 
+        val modifier = if (useComposeIme) {
+            Modifier.imePadding()
+        } else {
+            Modifier
+        }
+
         AnimatedVisibility(
             visible = widgetState,
             enter = slideInVertically { it },
-            exit = slideOutVertically(tween(200)) { it },
-            modifier = Modifier
+            exit = slideOutVertically(tween(DURATION_ANIMATION_OUT)) { it },
+            modifier = modifier
                 .swipeable(state = swipeableState,
                     orientation = Orientation.Vertical,
                     anchors = mapOf(
@@ -484,3 +490,6 @@ private fun Section(title: String) {
         )
     }
 }
+
+
+private const val DURATION_ANIMATION_OUT = 50

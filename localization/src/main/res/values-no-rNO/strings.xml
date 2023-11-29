@@ -66,14 +66,14 @@
     <string name="snackbar_template_add">Ny mal ble lagt til typen</string>
     <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
-    <string name="multi_select_turn_into">Turn into</string>
+    <string name="multi_select_turn_into">Endre til</string>
     <string name="multi_select_move_to">Flytt til</string>
-    <string name="option_toolbar_header_turn_into">Turn into</string>
+    <string name="option_toolbar_header_turn_into">Endre til</string>
     <string name="option_toolbar_header_add_block">Legg til blokk</string>
     <string name="option_text_text">Tekst</string>
-    <string name="option_text_header_one">Header 1</string>
-    <string name="option_text_header_two">Header 2</string>
-    <string name="option_text_header_three">Header 3</string>
+    <string name="option_text_header_one">Overskrift 1</string>
+    <string name="option_text_header_two">Overskrift 2</string>
+    <string name="option_text_header_three">Overskrift 3</string>
     <string name="option_text_highlighted">Uthevet</string>
     <string name="option_list_checkbox">Avkrysningsboks</string>
     <string name="option_list_bulleted_list">Punktliste</string>
@@ -146,7 +146,7 @@
     <string name="detail_url">URL</string>
     <string name="detail_phone">Telefon</string>
     <string name="add_new">Legg til ny</string>
-    <string name="turn_into">Turn into</string>
+    <string name="turn_into">Endre til</string>
     <string name="modal_reorder">Endre rekkefølge</string>
     <string name="modal_done">Ferdig</string>
     <string name="modal_prop_name">Egenskapsnavn</string>
@@ -207,7 +207,7 @@
     <string name="background">Bakgrunn</string>
     <string name="content_description_close_button">Close button</string>
     <string name="action_bar_add_below">Legg til blokk under</string>
-    <string name="action_bar_turn_into">Turn into</string>
+    <string name="action_bar_turn_into">Endre til</string>
     <string name="action_bar_turn_into_page">Gjør om til side</string>
     <string name="action_bar_delete">Slett</string>
     <string name="action_bar_to_bin">Flytt til papirkurv</string>
@@ -252,26 +252,26 @@
     <string name="mention_suggester_new_page">Opprett nytt objekt</string>
     <string name="mention_suggester_create_object">Opprett objekt</string>
     <string name="your_search_query">Søk</string>
-    <string name="syncing">Syncing…</string>
-    <string name="choose_a_object_type_for_this_set">Choose a object type for this set</string>
-    <string name="new_set">New set</string>
-    <string name="create_new_object_type">Create new object type</string>
+    <string name="syncing">Synkroniserer…</string>
+    <string name="choose_a_object_type_for_this_set">Velg en objekttype for dette settet</string>
+    <string name="new_set">Nytt sett</string>
+    <string name="create_new_object_type">Opprett ny objekttype</string>
     <plurals name="page_selected">
-        <item quantity="one">%d page selected</item>
-        <item quantity="other">%d pages selected</item>
+        <item quantity="one">%d side valgt</item>
+        <item quantity="other">%d sider valgt</item>
     </plurals>
     <string name="button_new">Ny</string>
     <string name="viewer_default_title">Alle</string>
-    <string name="sync_status_unknown">Preparing…</string>
+    <string name="sync_status_unknown">Forbereder…</string>
     <string name="sync_status_offline">Ingen tilkobling</string>
-    <string name="sync_status_syncing">Syncing…</string>
+    <string name="sync_status_syncing">Synkroniserer…</string>
     <string name="sync_status_synced">Synkronisert</string>
-    <string name="sync_status_failed">Not synced</string>
+    <string name="sync_status_failed">Ikke synkronisert</string>
     <string name="sync_status_toast_unknown">Initialiserer synkronisering</string>
     <string name="sync_status_toast_offline">Anytype-noden er ikke tilkoblet</string>
     <string name="sync_status_toast_syncing">Laster ned eller laster opp data til en node</string>
     <string name="sync_status_toast_synced">Sikkerhetskopiert på minst én node</string>
-    <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
+    <string name="sync_status_toast_failed">Klarte ikke å synkronisere, prøver igjen…</string>
     <string name="sync_status_toast_incompatible">Versjonen er utdatert. Vennligst oppdater Anytype</string>
     <string name="relation_format_description">Beskrivelse</string>
     <string name="relation_format_title">Tittel</string>
@@ -286,22 +286,22 @@
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Objekt</string>
     <string name="relation_format_relation">Relasjon</string>
-    <string name="viewer_sorting_prefix">Then</string>
+    <string name="viewer_sorting_prefix">Deretter</string>
     <string name="enter_value">Skriv inn verdi</string>
     <string name="ityem_relations">Relasjoner</string>
-    <string name="add_sort">Add a sort</string>
+    <string name="add_sort">Legg til sortering</string>
     <string name="apply">Bruk</string>
-    <string name="add_filter">Add a filter</string>
+    <string name="add_filter">Legg til et filter</string>
     <string name="relation_format_tag">Tag</string>
-    <string name="unknown_number_of_objects">Unknown number of objects</string>
-    <string name="sort_from_first_to_last">First → Last</string>
-    <string name="sort_from_last_to_first">Last → First</string>
+    <string name="unknown_number_of_objects">Ukjent antall objekter</string>
+    <string name="sort_from_first_to_last">Første → Siste</string>
+    <string name="sort_from_last_to_first">Siste → Første</string>
     <string name="sort_from_one_to_nine">1 → 9</string>
     <string name="sort_from_nine_to_one">9 → 1</string>
     <string name="sort_from_checked_to_unchecked">Checked → Unchecked</string>
     <string name="sort_from_unchecked_to_checked">Unchecked → Checked</string>
-    <string name="sort_from_a_to_z">A → Z</string>
-    <string name="sort_from_z_to_a">Z → A</string>
+    <string name="sort_from_a_to_z">A → Å</string>
+    <string name="sort_from_z_to_a">Å → A</string>
     <string name="value_quotes">\"%1$s\"</string>
     <string name="select_all">Velg alle</string>
     <string name="value">Verdi</string>
@@ -309,9 +309,9 @@
     <string name="dv_cell_description_hint">Add text…</string>
     <string name="dv_cell_number_hint">Add number…</string>
     <string name="unknown_object_type">Unknown type</string>
-    <string name="relation_format_short_text">Short text</string>
-    <string name="relation_format_long_text">Long text</string>
-    <string name="set_new_relation">Set new relation</string>
+    <string name="relation_format_short_text">Kort tekst</string>
+    <string name="relation_format_long_text">Lang tekst</string>
+    <string name="set_new_relation">Angi ny relasjon</string>
     <string name="relation_deleted">Slettet relasjon</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
@@ -985,7 +985,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Dupliser</string>
-    <string name="object_action_to_widgets">To widgets</string>
+    <string name="object_action_to_widgets">Til widgets</string>
     <!--endregion-->
     <!--region CONTENT DESCRIPTIONS FOR ACCESSIBILITY -->
     <string name="content_description_delete_button">Delete button</string>

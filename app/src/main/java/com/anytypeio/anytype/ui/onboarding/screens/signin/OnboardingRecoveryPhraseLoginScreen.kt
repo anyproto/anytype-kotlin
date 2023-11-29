@@ -181,7 +181,7 @@ typealias Mnemonic = String
 object MnemonicPhraseFormatter : VisualTransformation {
 
     override fun filter(text: AnnotatedString): TransformedText {
-        val output = buildAnnotatedString {
+        val transformed = buildAnnotatedString {
             var colorIndex = 0
             var isPreviousLetterOrDigit = false
             text.forEachIndexed { index, char ->
@@ -207,7 +207,7 @@ object MnemonicPhraseFormatter : VisualTransformation {
             }
         }
         return TransformedText(
-            output,
+            transformed,
             OffsetMapping.Identity
         )
     }

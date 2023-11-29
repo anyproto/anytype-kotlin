@@ -94,6 +94,7 @@ fun CreateObjectOfTypeScreen(
             onQueryChanged = onQueryChanged,
             onFocused = onFocused
         )
+        Spacer(modifier = Modifier.height(8.dp))
         ScreenContent(views, onTypeClicked)
     }
 }
@@ -379,11 +380,10 @@ private fun SearchField(
 @Composable
 private fun Section(title: String) {
     Box(modifier = Modifier
-        .height(52.dp)
+        .height(44.dp)
         .fillMaxWidth()) {
         Text(
             modifier = Modifier
-                .padding(bottom = 8.dp)
                 .align(Alignment.BottomStart),
             text = title,
             color = colorResource(id = R.color.text_secondary),

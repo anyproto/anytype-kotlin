@@ -35,8 +35,8 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 
 @Composable
 fun ChooseTypeHorizontalWidget(
-    state: EditorViewModel.ChooseTypeWidgetState,
-    onTypeClicked: (EditorViewModel.ChooseTypeItem) -> Unit
+    state: EditorViewModel.TypesWidgetState,
+    onTypeClicked: (EditorViewModel.TypesWidgetItem) -> Unit
 ) {
     if (state.visible) {
         Box(
@@ -57,7 +57,7 @@ fun ChooseTypeHorizontalWidget(
                     items = state.items,
                     itemContent = { index, item ->
                         when (item) {
-                            EditorViewModel.ChooseTypeItem.Search -> {
+                            EditorViewModel.TypesWidgetItem.Search -> {
                                 Box(
                                     modifier = Modifier
                                         .size(40.dp)
@@ -77,7 +77,7 @@ fun ChooseTypeHorizontalWidget(
                                 }
                             }
 
-                            is EditorViewModel.ChooseTypeItem.Type -> {
+                            is EditorViewModel.TypesWidgetItem.Type -> {
                                 Row(
                                     modifier = Modifier
                                         .height(40.dp)

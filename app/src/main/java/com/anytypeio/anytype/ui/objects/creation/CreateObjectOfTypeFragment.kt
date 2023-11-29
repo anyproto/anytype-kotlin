@@ -9,13 +9,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.objects.Command
+import com.anytypeio.anytype.presentation.objects.CommandCreateObject
 import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -40,10 +40,11 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 CreateObjectOfTypeScreen(
-                    views = vm.views.collectAsStateWithLifecycle().value,
+                    vmCreateObject = vm,
                     onTypeClicked = vm::onTypeClicked,
                     onQueryChanged = vm::onQueryChanged,
-                    onFocused = { expand() }
+                    onFocused = { expand() },
+                    scope = viewLifecycleOwner.lifecycleScope
                 )
             }
             LaunchedEffect(Unit) {
@@ -52,14 +53,15 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
                 }
             }
         }
+        vm.setViewVisibility(true)
     }
 
-    private fun proceedWithCommand(command: Command) {
+    private fun proceedWithCommand(command: CommandCreateObject) {
         when (command) {
-            is Command.DispatchTypeKey -> {
+            is CommandCreateObject.DispatchTypeKey -> {
                 onTypeSelected(command.type)
             }
-            is Command.ShowTypeInstalledToast -> {
+            is CommandCreateObject.ShowTypeInstalledToast -> {
                 toast(resources.getString(R.string.library_type_added, command.typeName))
             }
         }

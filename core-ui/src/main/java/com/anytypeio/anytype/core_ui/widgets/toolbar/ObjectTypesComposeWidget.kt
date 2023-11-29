@@ -24,20 +24,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.presentation.objects.SelectTypeView
+
 
 @Composable
 fun ChooseTypeHorizontalWidget(
-    state: EditorViewModel.TypesWidgetState,
-    onTypeClicked: (SelectTypeView) -> Unit
+    state: EditorViewModel.ChooseTypeWidgetState,
+    onTypeClicked: (EditorViewModel.ChooseTypeItem) -> Unit
 ) {
     if (state.visible) {
         Box(
@@ -55,10 +54,10 @@ fun ChooseTypeHorizontalWidget(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 itemsIndexed(
-                    items = state.views,
-                    itemContent = { _, view ->
-                        when (view) {
-                            SelectTypeView.Search -> {
+                    items = state.items,
+                    itemContent = { index, item ->
+                        when (item) {
+                            EditorViewModel.ChooseTypeItem.Search -> {
                                 Box(
                                     modifier = Modifier
                                         .size(40.dp)
@@ -67,7 +66,7 @@ fun ChooseTypeHorizontalWidget(
                                             color = colorResource(id = R.color.shape_primary),
                                             shape = RoundedCornerShape(10.dp)
                                         )
-                                        .noRippleThrottledClickable { },
+                                        .noRippleThrottledClickable { onTypeClicked(item) },
                                     contentAlignment = Alignment.Center
                                 ) {
                                     Image(
@@ -77,7 +76,8 @@ fun ChooseTypeHorizontalWidget(
                                     )
                                 }
                             }
-                            is SelectTypeView.Type -> {
+
+                            is EditorViewModel.ChooseTypeItem.Type -> {
                                 Row(
                                     modifier = Modifier
                                         .height(40.dp)
@@ -86,11 +86,11 @@ fun ChooseTypeHorizontalWidget(
                                             color = colorResource(id = R.color.shape_primary),
                                             shape = RoundedCornerShape(10.dp)
                                         )
-                                        .noRippleThrottledClickable { onTypeClicked(view) },
+                                        .noRippleThrottledClickable { onTypeClicked(item) },
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     Spacer(modifier = Modifier.width(12.dp))
-                                    val uri = Emojifier.safeUri(view.icon)
+                                    val uri = Emojifier.safeUri(item.item.emoji.orEmpty())
                                     if (uri.isNotEmpty()) {
                                         Image(
                                             painter = rememberAsyncImagePainter(uri),
@@ -100,7 +100,7 @@ fun ChooseTypeHorizontalWidget(
                                         Spacer(modifier = Modifier.width(8.dp))
                                     }
                                     Text(
-                                        text = view.name,
+                                        text = item.item.name,
                                         style = Caption1Medium,
                                         color = colorResource(id = R.color.text_primary),
                                         maxLines = 1,
@@ -109,28 +109,10 @@ fun ChooseTypeHorizontalWidget(
                                     )
                                 }
                             }
-                            else -> {}
                         }
                     }
                 )
             }
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewChooseTypeWidget() {
-    ChooseTypeHorizontalWidget(state = EditorViewModel.TypesWidgetState(
-        views = listOf(
-            SelectTypeView.Search, SelectTypeView.Type(
-                id = "voluptatibus",
-                typeKey = "persecuti",
-                name = "Books",
-                icon = "📚",
-                isFromLibrary = false
-            )
-        ),
-        visible = true
-    ), onTypeClicked = {})
 }

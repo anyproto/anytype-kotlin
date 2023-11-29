@@ -49,6 +49,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.ui.onboarding.screens.signin.MnemonicPhraseFormatter
 
 @Composable
 fun PagerIndicator(
@@ -236,7 +237,8 @@ fun OnboardingInput(
         },
         singleLine = singleLine,
         keyboardActions = keyboardActions,
-        keyboardOptions = keyboardOptions
+        keyboardOptions = keyboardOptions,
+        visualTransformation = MnemonicPhraseFormatter
     )
 }
 

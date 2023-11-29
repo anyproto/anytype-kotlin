@@ -186,7 +186,6 @@ object MnemonicPhraseFormatter : VisualTransformation {
             var isPreviousLetterOrDigit = false
             text.forEachIndexed { index, char ->
                 if (char.isLetterOrDigit()) {
-                    isPreviousLetterOrDigit = true
                     withStyle(
                         style = SpanStyle(
                             color = MnemonicPhrasePaletteColors[colorIndex]
@@ -194,6 +193,7 @@ object MnemonicPhraseFormatter : VisualTransformation {
                     ) {
                         append(char)
                     }
+                    isPreviousLetterOrDigit = true
                 } else {
                     if (isPreviousLetterOrDigit) {
                         colorIndex = colorIndex.inc()

@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.objects.types.pickers
+package com.anytypeio.anytype.core_ui.widgets.toolbar
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,9 +35,9 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
 
 @Composable
-fun ChooseTypeWidget(
+fun ChooseTypeHorizontalWidget(
     state: EditorViewModel.TypesWidgetState,
-    onTypeClicked: (SelectTypeView.Type) -> Unit
+    onTypeClicked: (SelectTypeView) -> Unit
 ) {
     if (state.visible) {
         Box(
@@ -121,7 +121,7 @@ fun ChooseTypeWidget(
 @Preview(showBackground = true)
 @Composable
 fun PreviewChooseTypeWidget() {
-    ChooseTypeWidget(state = EditorViewModel.TypesWidgetState(
+    ChooseTypeHorizontalWidget(state = EditorViewModel.TypesWidgetState(
         views = listOf(
             SelectTypeView.Search, SelectTypeView.Type(
                 id = "voluptatibus",

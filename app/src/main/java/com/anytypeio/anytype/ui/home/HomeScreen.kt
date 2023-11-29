@@ -21,8 +21,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -56,6 +58,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
+import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
@@ -65,6 +68,7 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeScreen
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
@@ -73,6 +77,7 @@ import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
+import kotlinx.coroutines.CoroutineScope
 import org.burnoutcrew.reorderable.ReorderableItem
 import org.burnoutcrew.reorderable.detectReorderAfterLongPress
 import org.burnoutcrew.reorderable.rememberReorderableLazyListState
@@ -102,10 +107,16 @@ fun HomeScreen(
     onProfileClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
-    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
+    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    vmCreateObject: CreateObjectOfTypeViewModel,
+    scope: CoroutineScope
 ) {
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .systemBarsPadding()
+    ) {
         WidgetList(
             widgets = widgets,
             onExpand = onExpand,
@@ -166,6 +177,14 @@ fun HomeScreen(
                 modifier = Modifier
             )
         }
+        CreateObjectOfTypeScreen(
+            vmCreateObject = vmCreateObject,
+            onTypeClicked = { vmCreateObject.onTypeClicked(it) },
+            onQueryChanged = { vmCreateObject.onQueryChanged(it) },
+            onFocused = {},
+            scope = scope,
+            useComposeIme = true
+        )
     }
 
     BackHandler(enabled = mode is InteractionMode.Edit) { onExitEditMode() }

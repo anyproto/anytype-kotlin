@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -20,24 +21,29 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
+import com.anytypeio.anytype.presentation.objects.CommandCreateObject
+import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
-import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import javax.inject.Inject
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class HomeScreenFragment : BaseComposeFragment() {
+class HomeScreenFragment : Fragment() {
 
+    private val jobs = mutableListOf<Job>()
     private var isMnemonicReminderDialogNeeded: Boolean
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
         set(value) { arguments?.putBoolean(SHOW_MNEMONIC_KEY, value) }
@@ -45,7 +51,16 @@ class HomeScreenFragment : BaseComposeFragment() {
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
 
+    @Inject
+    lateinit var factoryCreateObject: CreateObjectOfTypeViewModel.Factory
+
     private val vm by viewModels<HomeScreenViewModel> { factory }
+    private val vmCreateObject by viewModels<CreateObjectOfTypeViewModel> { factoryCreateObject }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        injectDependencies()
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,15 +101,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                         onClick = { vm.onCreateNewObjectClicked() }
                     ),
                     onCreateNewObjectLongClicked = throttledClick(
-                        onClick = {
-                            val dialog = CreateObjectOfTypeFragment().apply {
-                                onTypeSelected = {
-                                    vm.onCreateNewObjectClicked(it)
-                                    dismiss()
-                                }
-                            }
-                            dialog.show(childFragmentManager, "TEST")
-                        }
+                        onClick = { vmCreateObject.setViewVisibility(true) }
                     ),
                     onProfileClicked = throttledClick(
                         onClick = {
@@ -119,7 +126,9 @@ class HomeScreenFragment : BaseComposeFragment() {
                     ),
                     onBundledWidgetClicked = vm::onBundledWidgetClicked,
                     onMove = vm::onMove,
-                    onObjectCheckboxClicked = vm::onObjectCheckboxClicked
+                    onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
+                    vmCreateObject = vmCreateObject,
+                    scope = viewLifecycleOwner.lifecycleScope
                 )
             }
         }
@@ -127,10 +136,26 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     override fun onStart() {
         super.onStart()
+        jobs += subscribe(vmCreateObject.commands) { command ->
+            when (command) {
+                is CommandCreateObject.DispatchTypeKey -> {
+                    vmCreateObject.setViewVisibility(false)
+                    lifecycleScope.launch {
+                        delay(100)
+                        vm.onCreateNewObjectClicked(command.type)
+                    }
+                }
+
+                is CommandCreateObject.ShowTypeInstalledToast -> {
+                    toast(resources.getString(R.string.library_type_added, command.typeName))
+                }
+            }
+        }
         vm.onStart()
     }
 
     override fun onStop() {
+        jobs.cancel()
         super.onStop()
         vm.onStop()
     }
@@ -149,6 +174,11 @@ class HomeScreenFragment : BaseComposeFragment() {
     override fun onResume() {
         super.onResume()
         if (isMnemonicReminderDialogNeeded) showMnemonicReminderAlert()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        releaseDependencies()
     }
 
     private fun proceed(command: Command) {
@@ -216,11 +246,11 @@ class HomeScreenFragment : BaseComposeFragment() {
         findNavController().navigate(R.id.dashboardKeychainDialog)
     }
 
-    override fun injectDependencies() {
+    fun injectDependencies() {
         componentManager().homeScreenComponent.get().inject(this)
     }
 
-    override fun releaseDependencies() {
+    fun releaseDependencies() {
         componentManager().homeScreenComponent.release()
     }
 

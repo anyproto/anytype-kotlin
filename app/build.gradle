@@ -101,6 +101,21 @@ android {
                 serviceCredentialsFile = "$rootDir/scripts/distribution/anytype-debug-service-account-key.json"
             }
         }
+
+        applicationVariants.all {
+            variant ->
+                if (variant.name == 'release') {
+                    variant.outputs.each {
+                        output ->
+                            project.ext { appName = 'anytype' }
+                            def newName = output.outputFile.name
+                            newName = newName.replace("app-", "$project.ext.appName-$variant.versionName-")
+                            newName = newName.replace("-release", "")
+                            newName = newName.replace("-universal", "")
+                            output.outputFileName = newName
+                    }
+                }
+        }
     }
 
     compileOptions {
@@ -127,7 +142,7 @@ android {
             // Enables building multiple APKs per ABI.
             enable false
             reset()
-            include "armeabi-v7a", "arm64-v8a"//, "x86_64", "x86",
+            include "armeabi-v7a", "arm64-v8a"
             universalApk false
         }
     }

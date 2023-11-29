@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -94,6 +95,7 @@ fun CreateObjectOfTypeScreen(
             onQueryChanged = onQueryChanged,
             onFocused = onFocused
         )
+        Spacer(modifier = Modifier.height(8.dp))
         ScreenContent(views, onTypeClicked)
     }
 }
@@ -114,11 +116,12 @@ private fun FlowRowContent(
 ) {
     FlowRow(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 20.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(horizontal = 12.dp)
             .verticalScroll(rememberScrollState())
         ,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         views.forEach { view ->
@@ -379,11 +382,10 @@ private fun SearchField(
 @Composable
 private fun Section(title: String) {
     Box(modifier = Modifier
-        .height(52.dp)
+        .height(44.dp)
         .fillMaxWidth()) {
         Text(
             modifier = Modifier
-                .padding(bottom = 8.dp)
                 .align(Alignment.BottomStart),
             text = title,
             color = colorResource(id = R.color.text_secondary),

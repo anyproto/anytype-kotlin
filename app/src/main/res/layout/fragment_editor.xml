@@ -303,4 +303,10 @@
         android:visibility="gone"
         android:layout_gravity="bottom|center_horizontal"/>
 
+    <androidx.compose.ui.platform.ComposeView
+        android:id="@+id/createObjectWidget"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center_horizontal" />
+
 </FrameLayout>

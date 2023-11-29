@@ -491,7 +491,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 when (command) {
                     is CommandCreateObject.DispatchTypeKey -> {
                         vmCreateObject.setViewVisibility(false)
-                        vm.onAddNewDocumentClicked(command.type)
+                        lifecycleScope.launch {
+                            delay(DEFAULT_ANIM_DURATION)
+                            vm.onAddNewDocumentClicked(command.type)
+                        }
                     }
 
                     is CommandCreateObject.ShowTypeInstalledToast -> {
@@ -767,6 +770,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 dispatchMode = DISPATCH_MODE_STOP
             )
             binding.toolbar.syncTranslationWithImeVisibility(
+                dispatchMode = DISPATCH_MODE_STOP
+            )
+            binding.createObjectWidget.syncTranslationWithImeVisibility(
                 dispatchMode = DISPATCH_MODE_STOP
             )
         }

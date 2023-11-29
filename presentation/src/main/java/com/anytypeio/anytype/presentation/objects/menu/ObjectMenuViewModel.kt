@@ -32,6 +32,8 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplateEvent
 import com.anytypeio.anytype.presentation.objects.ObjectAction
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts.fileLayouts
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts.systemLayouts
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
@@ -87,6 +89,9 @@ class ObjectMenuViewModel(
         isTemplate: Boolean
     ): List<ObjectAction> = buildList {
 
+        val wrapper = ObjectWrapper.Basic(storage.details.current().details[ctx]?.map.orEmpty())
+        val layout = wrapper.layout
+
         if (!isTemplate) {
             if (isFavorite) {
                 add(ObjectAction.REMOVE_FROM_FAVOURITE)
@@ -103,7 +108,9 @@ class ObjectMenuViewModel(
             }
         }
 
-        add(ObjectAction.CREATE_WIDGET)
+        if (!isTemplate && !systemLayouts.contains(layout) && !fileLayouts.contains(layout)) {
+            add(ObjectAction.CREATE_WIDGET)
+        }
 
         if (isTemplate) {
             add(ObjectAction.SET_AS_DEFAULT)

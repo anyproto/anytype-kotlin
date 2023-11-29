@@ -117,7 +117,7 @@ private fun FlowRowContent(
     FlowRow(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 12.dp)
+            .padding(horizontal = 20.dp)
             .verticalScroll(rememberScrollState())
         ,
         verticalArrangement = Arrangement.spacedBy(8.dp),

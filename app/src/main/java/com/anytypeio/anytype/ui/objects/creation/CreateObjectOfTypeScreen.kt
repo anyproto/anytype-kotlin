@@ -116,12 +116,11 @@ private fun FlowRowContent(
 ) {
     FlowRow(
         modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
+            .fillMaxSize()
             .padding(horizontal = 12.dp)
             .verticalScroll(rememberScrollState())
         ,
-        verticalArrangement = Arrangement.spacedBy(8.dp, Alignment.Bottom),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         views.forEach { view ->

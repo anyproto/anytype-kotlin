@@ -106,7 +106,7 @@ class CreateObjectOfTypeViewModel(
                                 filteredLibraryTypes.map { type ->
                                     SelectTypeView.Type(
                                         id = type.id,
-                                        typeKey = type.uniqueKey!!,
+                                        typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
                                         icon = type.iconEmoji.orEmpty(),
                                         isFromLibrary = true

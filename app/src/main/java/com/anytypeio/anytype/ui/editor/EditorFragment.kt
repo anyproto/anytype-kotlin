@@ -588,12 +588,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .searchClicks()
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
-
-        binding.bottomToolbar
-            .addDocClicks()
-            .onEach { vm.onAddNewDocumentClicked() }
-            .launchIn(lifecycleScope)
-
+        
         binding.bottomToolbar
             .addDocClicks()
             .onEach { vm.onAddNewDocumentClicked() }

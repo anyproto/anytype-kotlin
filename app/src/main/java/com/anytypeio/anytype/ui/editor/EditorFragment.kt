@@ -143,7 +143,6 @@ import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.DraftObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
@@ -1037,13 +1036,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 Command.AddSlashWidgetTriggerToFocusedBlock -> {
                     binding.recycler.addTextFromSelectedStart(text = "/")
-                }
-                is Command.OpenDraftObjectSelectTypeScreen -> {
-                    hideKeyboard()
-                    val fr = DraftObjectSelectTypeFragment.newInstance(
-                        excludeTypes = command.excludedTypes
-                    )
-                    fr.showChildFragment()
                 }
                 is Command.OpenObjectSelectTypeScreen -> {
                     hideKeyboard()

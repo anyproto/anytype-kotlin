@@ -35,7 +35,7 @@ class AlertImportExperienceUnsupported : BaseBottomSheetComposeFragment() {
                         config = AlertConfig.WithOneButton(
                             title = stringResource(id = R.string.alert_gallery_unsupported_title),
                             description = stringResource(R.string.alert_gallery_unsupported_description),
-                            firstButtonText = stringResource(R.string.button_okay),
+                            firstButtonText = stringResource(R.string.button_close),
                             firstButtonType = BUTTON_SECONDARY,
                             icon = AlertConfig.Icon(
                                 icon = R.drawable.ic_alert_error,

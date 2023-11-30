@@ -336,7 +336,7 @@ private fun MoreMenu(
             .shadow(spotColor = Color(0xCC000000), elevation = 30.dp)
             .clip(RoundedCornerShape(size = 10.dp)),
         shape = RoundedCornerShape(size = 10.dp),
-        backgroundColor = colorResource(id = R.color.shape_secondary),
+        backgroundColor = colorResource(id = R.color.context_menu_background),
         elevation = 30.dp
     ) {
         Column {

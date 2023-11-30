@@ -1032,6 +1032,7 @@ class HomeScreenViewModel(
     }
 
     fun onCreateNewObjectClicked(type: Key? = null) {
+        Timber.d("onCreateNewObjectClicked, type:[$type]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateObject.Param(
@@ -1047,10 +1048,9 @@ class HomeScreenViewModel(
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
-                        // TODO Multispaces - Check analytics events
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = result.objectId,
+                            type = result.typeKey.key,
                             storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.navigation,
                             startTime = startTime,

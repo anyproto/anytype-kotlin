@@ -77,4 +77,9 @@ sealed class DefaultObjectRelationValueView {
         override val relationKey: Id,
         val files: List<FileView>
     ) : DefaultObjectRelationValueView()
+
+    data class Empty(
+        override val objectId: Id,
+        override val relationKey: Id,
+    ) : DefaultObjectRelationValueView()
 }

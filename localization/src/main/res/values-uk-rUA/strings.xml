@@ -881,7 +881,7 @@
     <string name="slash_widget_actions_duplicate">Дублювати</string>
     <string name="slash_widget_actions_copy">Копіювати</string>
     <string name="slash_widget_actions_paste">Вставити</string>
-    <string name="slash_widget_actions_link_to">Зв\'язати з об\'єктом</string>
+    <string name="slash_widget_actions_link_to">Додайте посилання</string>
     <string name="slash_widget_actions_link_to_subtitle">Зв\'язати з наявним об\'єктом</string>
     <string name="slash_widget_actions_move">Перемістити</string>
     <string name="slash_widget_actions_moveto">Перемістити до</string>
@@ -1010,5 +1010,13 @@
     <string name="content_desc_object_icon">Object image or emoji</string>
     <string name="content_desc_checkbox_icon">Checkbox icon</string>
     <string name="content_desc_layout_icon">Layout icon</string>
+    <!--endregion-->
+    <!--region BUTTONS -->
+    <string name="button_okay">Okay</string>
+    <string name="button_close">Close</string>
+    <!--endregion-->
+    <!--region ALERTS -->
+    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
+    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
     <!--endregion-->
 </resources>

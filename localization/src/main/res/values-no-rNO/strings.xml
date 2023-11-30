@@ -53,8 +53,8 @@
     <string name="manage_files">Administrer filer</string>
     <string name="local_storage">Lokal lagring</string>
     <string name="offload_files">Slett lokale filer</string>
-    <string name="local_storage_used">%1$s used</string>
-    <string name="space_usage">%1$s of %2$s used</string>
+    <string name="local_storage_used">%1$s brukt</string>
+    <string name="space_usage">%1$s av %2$s brukt</string>
     <string name="remote_storage">Fjernlagring</string>
     <string name="contact_us">Kontakt oss</string>
     <string name="get_more_space">Få mer plass</string>
@@ -877,7 +877,7 @@
     <string name="slash_widget_actions_duplicate">Dupliser</string>
     <string name="slash_widget_actions_copy">Kopier</string>
     <string name="slash_widget_actions_paste">Lim inn</string>
-    <string name="slash_widget_actions_link_to">Lenke til objekt</string>
+    <string name="slash_widget_actions_link_to">Legg til lenke</string>
     <string name="slash_widget_actions_link_to_subtitle">Lenke til eksisterende objekt</string>
     <string name="slash_widget_actions_move">Flytt</string>
     <string name="slash_widget_actions_moveto">Flytt til</string>
@@ -988,8 +988,8 @@
     <string name="object_action_to_widgets">Til widgets</string>
     <!--endregion-->
     <!--region SEARCH -->
-    <string name="nothing_found">Nothing found</string>
-    <string name="nothing_found_object_types">No object type found. Please try changing your request.</string>
+    <string name="nothing_found">Ingenting funnet</string>
+    <string name="nothing_found_object_types">Ingen objekttype funnet. Vennligst prøv å endre søket ditt.</string>
     <!--endregion-->
     <!--region CONTENT DESCRIPTIONS FOR ACCESSIBILITY -->
     <string name="content_description_delete_button">Delete button</string>
@@ -1006,5 +1006,13 @@
     <string name="content_desc_object_icon">Object image or emoji</string>
     <string name="content_desc_checkbox_icon">Checkbox icon</string>
     <string name="content_desc_layout_icon">Layout icon</string>
+    <!--endregion-->
+    <!--region BUTTONS -->
+    <string name="button_okay">Okay</string>
+    <string name="button_close">Lukk</string>
+    <!--endregion-->
+    <!--region ALERTS -->
+    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
+    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
     <!--endregion-->
 </resources>

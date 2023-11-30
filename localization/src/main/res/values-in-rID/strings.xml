@@ -875,7 +875,7 @@
     <string name="slash_widget_actions_duplicate">Gandakan</string>
     <string name="slash_widget_actions_copy">Salin</string>
     <string name="slash_widget_actions_paste">Tempel</string>
-    <string name="slash_widget_actions_link_to">Tautkan ke objek</string>
+    <string name="slash_widget_actions_link_to">Tambahkan tautan</string>
     <string name="slash_widget_actions_link_to_subtitle">Tautkan ke objek yang telah ada</string>
     <string name="slash_widget_actions_move">Pindahkan</string>
     <string name="slash_widget_actions_moveto">Pindahkan ke</string>
@@ -1004,5 +1004,13 @@
     <string name="content_desc_object_icon">Object image or emoji</string>
     <string name="content_desc_checkbox_icon">Checkbox icon</string>
     <string name="content_desc_layout_icon">Layout icon</string>
+    <!--endregion-->
+    <!--region BUTTONS -->
+    <string name="button_okay">Okay</string>
+    <string name="button_close">Tutup</string>
+    <!--endregion-->
+    <!--region ALERTS -->
+    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
+    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
     <!--endregion-->
 </resources>

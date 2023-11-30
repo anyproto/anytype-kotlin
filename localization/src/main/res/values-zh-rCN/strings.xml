@@ -875,7 +875,7 @@
     <string name="slash_widget_actions_duplicate">生成副本</string>
     <string name="slash_widget_actions_copy">拷贝</string>
     <string name="slash_widget_actions_paste">粘贴</string>
-    <string name="slash_widget_actions_link_to">链接到对象</string>
+    <string name="slash_widget_actions_link_to">添加链接</string>
     <string name="slash_widget_actions_link_to_subtitle">链接到现有对象</string>
     <string name="slash_widget_actions_move">移动</string>
     <string name="slash_widget_actions_moveto">移至</string>
@@ -1004,5 +1004,13 @@
     <string name="content_desc_object_icon">对象图像或表情</string>
     <string name="content_desc_checkbox_icon">复选框图标</string>
     <string name="content_desc_layout_icon">布局图标</string>
+    <!--endregion-->
+    <!--region BUTTONS -->
+    <string name="button_okay">Okay</string>
+    <string name="button_close">关闭</string>
+    <!--endregion-->
+    <!--region ALERTS -->
+    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
+    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
     <!--endregion-->
 </resources>

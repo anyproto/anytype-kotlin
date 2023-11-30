@@ -1093,6 +1093,13 @@
 
     <!--endregion-->
 
+    <!--region SEARCH -->
+    
+    <string name="nothing_found">Nothing found</string>
+    <string name="nothing_found_object_types">No object type found. Please try changing your request.</string>
+
+    <!--endregion-->
+
     <!--region CONTENT DESCRIPTIONS FOR ACCESSIBILITY -->
 
     <string name="content_description_add_block" translatable="false">Add block button</string>

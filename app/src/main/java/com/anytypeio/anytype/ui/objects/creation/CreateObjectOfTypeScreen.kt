@@ -65,7 +65,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
-import timber.log.Timber
 
 @Preview
 @Composable
@@ -108,15 +107,14 @@ private fun ScreenContent(
     views: List<SelectTypeView>,
     onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
-    Timber.d("Views size: ${views.size}")
     if (views.isNotEmpty()) {
         FlowRowContent(views, onTypeClicked)
     } else {
         Box(modifier = Modifier.fillMaxSize()) {
             EmptyState(
                 modifier = Modifier.align(Alignment.Center),
-                title = "Nothing found",
-                description = "Please try changing your request",
+                title = stringResource(id = R.string.nothing_found),
+                description = stringResource(id = R.string.nothing_found_object_types),
                 icon = AlertConfig.Icon(
                     gradient = GRADIENT_TYPE_RED,
                     icon = R.drawable.ic_alert_error

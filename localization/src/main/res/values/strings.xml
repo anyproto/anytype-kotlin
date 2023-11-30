@@ -1096,7 +1096,7 @@
     <!--region SEARCH -->
     
     <string name="nothing_found">Nothing found</string>
-    <string name="nothing_found_object_types">No object types `%1$s` found. Please try changing your request.</string>
+    <string name="nothing_found_object_types">No object type found. Please try changing your request.</string>
 
     <!--endregion-->
 

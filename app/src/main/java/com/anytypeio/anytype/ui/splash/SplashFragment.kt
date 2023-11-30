@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentSplashBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.other.DEEP_LINK_PATTERN
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.editor.EditorFragment
@@ -136,7 +137,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 Timber.d("Timber intent: ${intent}")
                 if (intent != null && intent.action == Intent.ACTION_VIEW) {
                     val data = intent.dataString
-                    if (data != null && data.contains(DEEP_LINK)) {
+                    if (data != null && data.contains(DEEP_LINK_PATTERN)) {
                         vm.onDeepLink(data)
                     } else {
                         val bundle = intent.extras
@@ -183,5 +184,3 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
         container: ViewGroup?
     ): FragmentSplashBinding = FragmentSplashBinding.inflate(inflater, container, false)
 }
-
-const val DEEP_LINK = "anytype://main"

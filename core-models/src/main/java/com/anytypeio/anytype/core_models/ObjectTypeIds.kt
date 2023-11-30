@@ -71,6 +71,8 @@ object MarketplaceObjectTypeIds {
 
 object Marketplace {
     const val MARKETPLACE_SPACE_ID = "_anytype_marketplace"
+    const val SET_MARKETPLACE_ID = "_otset"
+    const val COLLECTION_MARKETPLACE_ID = "_otcollection"
 }
 
 /**

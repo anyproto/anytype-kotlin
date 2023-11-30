@@ -19,6 +19,8 @@ import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.Marketplace.COLLECTION_MARKETPLACE_ID
+import com.anytypeio.anytype.core_models.Marketplace.SET_MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -4354,7 +4356,7 @@ class EditorViewModel(
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
-                    sourceObject = ObjectTypeIds.SET,
+                    sourceObject = SET_MARKETPLACE_ID,
                     containsFlagType = true
                 )
             }
@@ -4371,7 +4373,7 @@ class EditorViewModel(
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
-                    sourceObject = ObjectTypeIds.COLLECTION,
+                    sourceObject = COLLECTION_MARKETPLACE_ID,
                     containsFlagType = true
                 )
             }
@@ -6114,7 +6116,7 @@ class EditorViewModel(
                 proceedToAddObjectToTextAsLink(id = result.id)
                 viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
-                    type = typeId?.id,
+                    type = typeKey.key,
                     storeOfObjectTypes = storeOfObjectTypes,
                     route = EventsDictionary.Routes.objTurnInto,
                     startTime = startTime

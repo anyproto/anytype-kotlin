@@ -42,6 +42,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
@@ -655,7 +656,8 @@ fun CoroutineScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
         analytics = analytics,
         eventName = event,
         props = props,
-        startTime = startTime
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
     )
 }
 
@@ -730,14 +732,13 @@ fun CoroutineScope.sendAnalyticsRelationDeleteEvent(
 fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     analytics: Analytics,
     storeOfObjectTypes: StoreOfObjectTypes,
-    type: String?,
+    type: Key?,
     route: String,
     startTime: Long? = null,
     view: String? = null
 ) {
-    // TODO Multispaces check this analytics event
     this.launch {
-        val objType = type?.let { storeOfObjectTypes.get(it) }
+        val objType = type?.let { storeOfObjectTypes.getByKey(it) }
         analytics.sendEvent(
             eventName = objectCreate,
             props = propsForObjectEvents(

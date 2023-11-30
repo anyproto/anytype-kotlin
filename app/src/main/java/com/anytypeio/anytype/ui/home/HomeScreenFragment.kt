@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -39,7 +40,7 @@ import timber.log.Timber
 
 class HomeScreenFragment : BaseComposeFragment() {
 
-    private val deepLink: String? get() = argOrNull("test_deeplink")
+    private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
 
     private var isMnemonicReminderDialogNeeded: Boolean
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
@@ -232,5 +233,9 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     companion object {
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
+        const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
+        fun args(deeplink: String?) : Bundle = bundleOf(
+            DEEP_LINK_KEY to deeplink
+        )
     }
 }

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.other.DEEP_LINK_PATTERN
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -84,11 +85,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 try {
                     findNavController().navigate(
                         R.id.action_splashScreen_to_homeScreen,
-                        args = if (!command.deeplink.isNullOrEmpty()) {
-                            bundleOf("test_deeplink" to command.deeplink)
-                        } else {
-                            null
-                        }
+                        args = HomeScreenFragment.args(command.deeplink)
                     )
                 } catch (e: Exception) {
                     Timber.e(e, "Error while opening dashboard from splash screen")

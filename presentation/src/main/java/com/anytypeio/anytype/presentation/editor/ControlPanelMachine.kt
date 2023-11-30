@@ -243,11 +243,6 @@ sealed class ControlPanelMachine {
         object OnDocumentMenuClicked : Event()
         object OnDocumentIconClicked : Event()
 
-        sealed class ObjectTypesWidgetEvent : Event() {
-            data class Show(val data: List<ObjectTypeView>) : ObjectTypesWidgetEvent()
-            object Hide : ObjectTypesWidgetEvent()
-        }
-
         sealed class SimpleTableWidget : Event() {
             data class ShowCellTab(
                 val tableId: Id,
@@ -314,9 +309,6 @@ sealed class ControlPanelMachine {
                                                     emptyList()
                                                 }
                                             }
-                                        ),
-                                        objectTypesToolbar = state.objectTypesToolbar.copy(
-                                            isVisible = false
                                         )
                                     )
                                 }
@@ -331,18 +323,12 @@ sealed class ControlPanelMachine {
                                         markupMainToolbar = Toolbar.MarkupMainToolbar.reset(),
                                         markupColorToolbar = state.markupColorToolbar.copy(
                                             isVisible = false
-                                        ),
-                                        objectTypesToolbar = state.objectTypesToolbar.copy(
-                                            isVisible = false
                                         )
                                     )
                                 } else {
                                     state.copy(
                                         markupMainToolbar = state.markupMainToolbar.copy(
                                             style = event.target.style(event.selection)
-                                        ),
-                                        objectTypesToolbar = state.objectTypesToolbar.copy(
-                                            isVisible = false
                                         )
                                     )
                                 }
@@ -440,7 +426,6 @@ sealed class ControlPanelMachine {
                             isVisible = false
                         ),
                         slashWidget = Toolbar.SlashWidget.reset(),
-                        objectTypesToolbar = Toolbar.ObjectTypes.reset(),
                         styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
                         simpleTableWidget = Toolbar.SimpleTableWidget.reset()
                     )
@@ -474,7 +459,6 @@ sealed class ControlPanelMachine {
                 ),
                 styleTextToolbar = Toolbar.Styling.reset(),
                 navigationToolbar = Toolbar.Navigation(isVisible = false),
-                objectTypesToolbar = Toolbar.ObjectTypes.reset(),
                 styleBackgroundToolbar = Toolbar.Styling.Background.reset()
             )
             is Event.SearchToolbar.OnExitSearchMode -> state.copy(
@@ -528,7 +512,6 @@ sealed class ControlPanelMachine {
                             styleTextToolbar = Toolbar.Styling.reset(),
                             mentionToolbar = Toolbar.MentionToolbar.reset(),
                             slashWidget = Toolbar.SlashWidget.reset(),
-                            objectTypesToolbar = Toolbar.ObjectTypes.reset(),
                             styleBackgroundToolbar = Toolbar.Styling.Background.reset(),
                             simpleTableWidget = Toolbar.SimpleTableWidget.reset()
                         )
@@ -538,24 +521,7 @@ sealed class ControlPanelMachine {
             Event.OnDocumentMenuClicked -> { init() }
             Event.OnDocumentIconClicked -> {
                 state.copy(
-                    slashWidget = Toolbar.SlashWidget.reset(),
-                    objectTypesToolbar = Toolbar.ObjectTypes.reset()
-                )
-            }
-            is Event.ObjectTypesWidgetEvent.Show -> {
-                state.copy(
-                    objectTypesToolbar = state.objectTypesToolbar.copy(
-                        isVisible = true,
-                        data = event.data
-                    )
-                )
-            }
-            Event.ObjectTypesWidgetEvent.Hide -> {
-                state.copy(
-                    objectTypesToolbar = state.objectTypesToolbar.copy(
-                        isVisible = false,
-                        data = listOf()
-                    )
+                    slashWidget = Toolbar.SlashWidget.reset()
                 )
             }
             is Event.SimpleTableWidget -> {
@@ -575,7 +541,6 @@ sealed class ControlPanelMachine {
                         state = event.state
                     ),
                     navigationToolbar = Toolbar.Navigation.reset(),
-                    objectTypesToolbar = Toolbar.ObjectTypes.reset(),
                     styleBackgroundToolbar = Toolbar.Styling.Background.reset()
                 )
             }
@@ -631,7 +596,6 @@ sealed class ControlPanelMachine {
                     navigationToolbar = state.navigationToolbar.copy(
                         isVisible = false
                     ),
-                    objectTypesToolbar = Toolbar.ObjectTypes.reset(),
                     styleColorBackgroundToolbar = Toolbar.Styling.ColorBackground.reset(),
                     styleBackgroundToolbar = Toolbar.Styling.Background(
                         isVisible = true,

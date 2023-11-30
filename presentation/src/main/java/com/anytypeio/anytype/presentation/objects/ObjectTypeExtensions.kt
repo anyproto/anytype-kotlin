@@ -33,14 +33,14 @@ fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
         if (obj.isArchived == true || obj.isDeleted == true) {
             return@forEach
         }
-        if (obj.id == COLLECTION || obj.id == SET) {
+        if (obj.uniqueKey == COLLECTION || obj.uniqueKey == SET) {
             if (isWithCollection) {
                 val objTypeView = obj.toObjectTypeView(selectedTypes)
                 result.add(objTypeView)
             }
             return@forEach
         }
-        if (obj.id == BOOKMARK) {
+        if (obj.uniqueKey == BOOKMARK) {
             if (isWithBookmark) {
                 val objTypeView = obj.toObjectTypeView(selectedTypes)
                 result.add(objTypeView)

@@ -8,9 +8,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
+import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -26,11 +29,12 @@ import timber.log.Timber
 class CreateObjectOfTypeViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val spaceManager: SpaceManager,
-    private val addObjectToWorkspace: AddObjectToWorkspace
+    private val addObjectToSpace: AddObjectToSpace,
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<SelectTypeView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
+    private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
 
     private val query = MutableSharedFlow<String>()
 
@@ -56,7 +60,8 @@ class CreateObjectOfTypeViewModel(
                         query = query
                     )
                 ).map { result ->
-
+                    _objectTypes.clear()
+                    _objectTypes.addAll(result.getOrNull() ?: emptyList())
                     val allTypes = (result.getOrNull() ?: emptyList())
                     val (allUserTypes, allLibraryTypes) = allTypes.partition { type ->
                         type.getValue<Id>(Relations.SPACE_ID) == space
@@ -128,25 +133,35 @@ class CreateObjectOfTypeViewModel(
         }
     }
 
-    fun onTypeClicked(type: SelectTypeView.Type) {
+    fun onTypeClicked(typeView: SelectTypeView.Type) {
         viewModelScope.launch {
-            if (type.isFromLibrary) {
-                addObjectToWorkspace(
-                    AddObjectToWorkspace.Params(
-                        objects = listOf(type.id),
-                        space = space
-                    )
-                ).proceed(
-                    failure = {
-                        Timber.e(it, "Error while installing type")
+            if (typeView.isFromLibrary) {
+                val params = AddObjectToSpace.Params(
+                    obj = typeView.id,
+                    space = space
+                )
+                addObjectToSpace.async(params = params).fold(
+                    onSuccess = { result ->
+                        val struct = result.type
+                        val type = struct?.mapToObjectWrapperType()
+                        if (type != null) {
+                            commands.emit(Command.ShowTypeInstalledToast(type.name.orEmpty()))
+                            commands.emit(Command.DispatchObjectType(type))
+                        } else {
+                            Timber.e("Type is not valid")
+                            sendToast("Error while installing type")
+                        }
+
                     },
-                    success = {
-                        commands.emit(Command.ShowTypeInstalledToast(type.name))
-                        commands.emit(Command.DispatchTypeKey(type.typeKey))
+                    onFailure = {
+                        Timber.e(it, "Error while installing type")
+                        sendToast("Error while installing type")
                     }
                 )
             } else {
-                commands.emit(Command.DispatchTypeKey(type.typeKey))
+                _objectTypes.find { it.id == typeView.id }?.let { type ->
+                    commands.emit(Command.DispatchObjectType(type))
+                } ?: Timber.e("CreateObjectOfTypeViewModel, Type not found by id")
             }
         }
     }
@@ -154,7 +169,7 @@ class CreateObjectOfTypeViewModel(
     class Factory @Inject constructor(
         private val getObjectTypes: GetObjectTypes,
         private val spaceManager: SpaceManager,
-        private val addObjectToWorkspace: AddObjectToWorkspace,
+        private val addObjectToSpace: AddObjectToSpace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -162,27 +177,28 @@ class CreateObjectOfTypeViewModel(
         ) = CreateObjectOfTypeViewModel(
             getObjectTypes = getObjectTypes,
             spaceManager = spaceManager,
-            addObjectToWorkspace = addObjectToWorkspace
+            addObjectToSpace = addObjectToSpace
         ) as T
     }
 }
 
 sealed class SelectTypeView {
     sealed class Section : SelectTypeView() {
-        object Objects: Section()
-        object Groups: Section()
-        object Library: Section()
+        object Objects : Section()
+        object Groups : Section()
+        object Library : Section()
     }
+
     data class Type(
         val id: Id,
         val typeKey: Key,
         val name: String,
         val icon: String,
         val isFromLibrary: Boolean = false
-    ): SelectTypeView()
+    ) : SelectTypeView()
 }
 
 sealed class Command {
-    data class ShowTypeInstalledToast(val typeName: String): Command()
-    data class DispatchTypeKey(val type: Key): Command()
+    data class ShowTypeInstalledToast(val typeName: String) : Command()
+    data class DispatchObjectType(val type: ObjectWrapper.Type) : Command()
 }

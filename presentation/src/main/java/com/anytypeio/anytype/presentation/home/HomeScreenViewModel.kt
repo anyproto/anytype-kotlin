@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
@@ -977,13 +978,17 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onStart(deeplink: String? = null) {
+    fun onStart(deeplink: DeepLinkResolver.Action? = null) {
         Timber.d("onStart: $deeplink")
-        if (deeplink != null) {
-            viewModelScope.launch {
-                delay(5000)
-                Timber.d("Sending toast")
-                commands.emit(Command.Deeplink.Unsupported)
+        when(deeplink) {
+            DeepLinkResolver.Action.Import.Experience -> {
+                viewModelScope.launch {
+                    delay(1000)
+                    commands.emit(Command.Deeplink.CannotImportExperience)
+                }
+            }
+            else -> {
+                // Do nothing
             }
         }
         widgetObjectPipelineJobs += viewModelScope.launch {
@@ -1406,7 +1411,7 @@ sealed class Command {
     }
 
     sealed class Deeplink : Command() {
-        object Unsupported : Deeplink()
+        object CannotImportExperience : Deeplink()
     }
 }
 

@@ -7,7 +7,7 @@ interface DeepLinkResolver {
     sealed class Action {
         object Unknown : Action()
         sealed class Import : Action() {
-            object Gallery : Action()
+            object Experience : Action()
         }
     }
 }

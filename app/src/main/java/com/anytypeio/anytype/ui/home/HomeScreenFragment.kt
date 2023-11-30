@@ -23,11 +23,11 @@ import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
-import com.anytypeio.anytype.ui.alert.AlertGalleryUnsupported
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -130,7 +130,7 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     override fun onStart() {
         super.onStart()
-        vm.onStart(deepLink)
+        vm.onStart(deepLink?.let { DefaultDeepLinkResolver.resolve(it) })
     }
 
     override fun onStop() {
@@ -202,10 +202,8 @@ class HomeScreenFragment : BaseComposeFragment() {
                     )
                 )
             }
-            is Command.Deeplink.Unsupported -> {
-                AlertGalleryUnsupported().apply {
-                    onCancel = { navigation().exit() }
-                }.showChildFragment("test")
+            is Command.Deeplink.CannotImportExperience -> {
+                findNavController().navigate(R.id.alertImportExperienceUnsupported)
             }
         }
     }

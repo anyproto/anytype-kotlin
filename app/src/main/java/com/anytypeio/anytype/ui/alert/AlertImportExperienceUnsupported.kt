@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.alert
 
-import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,9 +17,7 @@ import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.ui.settings.typography
 
-class AlertGalleryUnsupported : BaseBottomSheetComposeFragment() {
-
-    lateinit var onCancel: () -> Unit
+class AlertImportExperienceUnsupported : BaseBottomSheetComposeFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,18 +46,5 @@ class AlertGalleryUnsupported : BaseBottomSheetComposeFragment() {
                 }
             }
         }
-    }
-
-    override fun onDismiss(dialog: DialogInterface) {
-        onCancel()
-        super.onDismiss(dialog)
-    }
-
-    override fun injectDependencies() {
-        // Do nothing
-    }
-
-    override fun releaseDependencies() {
-        // Do nothing
     }
 }

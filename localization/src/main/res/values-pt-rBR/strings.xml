@@ -877,7 +877,7 @@
     <string name="slash_widget_actions_duplicate">Duplicar</string>
     <string name="slash_widget_actions_copy">Copiar</string>
     <string name="slash_widget_actions_paste">Colar</string>
-    <string name="slash_widget_actions_link_to">Vincular a um objeto</string>
+    <string name="slash_widget_actions_link_to">Adicionar link</string>
     <string name="slash_widget_actions_link_to_subtitle">Vincular a objeto existente</string>
     <string name="slash_widget_actions_move">Mover</string>
     <string name="slash_widget_actions_moveto">Mover para</string>
@@ -1006,5 +1006,13 @@
     <string name="content_desc_object_icon">Object image or emoji</string>
     <string name="content_desc_checkbox_icon">Checkbox icon</string>
     <string name="content_desc_layout_icon">Layout icon</string>
+    <!--endregion-->
+    <!--region BUTTONS -->
+    <string name="button_okay">Okay</string>
+    <string name="button_close">Fechar</string>
+    <!--endregion-->
+    <!--region ALERTS -->
+    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
+    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
     <!--endregion-->
 </resources>

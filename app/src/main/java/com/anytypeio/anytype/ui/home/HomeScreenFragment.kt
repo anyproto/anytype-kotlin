@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
@@ -37,6 +39,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class HomeScreenFragment : BaseComposeFragment() {
+
+    private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
 
     private var isMnemonicReminderDialogNeeded: Boolean
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
@@ -127,7 +131,7 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     override fun onStart() {
         super.onStart()
-        vm.onStart()
+        vm.onStart(deepLink?.let { DefaultDeepLinkResolver.resolve(it) })
     }
 
     override fun onStop() {
@@ -199,6 +203,9 @@ class HomeScreenFragment : BaseComposeFragment() {
                     )
                 )
             }
+            is Command.Deeplink.CannotImportExperience -> {
+                findNavController().navigate(R.id.alertImportExperienceUnsupported)
+            }
         }
     }
 
@@ -226,5 +233,9 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     companion object {
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
+        const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
+        fun args(deeplink: String?) : Bundle = bundleOf(
+            DEEP_LINK_KEY to deeplink
+        )
     }
 }

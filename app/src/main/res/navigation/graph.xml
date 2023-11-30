@@ -164,6 +164,10 @@
         android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment" />
 
     <dialog
+        android:id="@+id/alertImportExperienceUnsupported"
+        android:name="com.anytypeio.anytype.ui.alert.AlertImportExperienceUnsupported" />
+
+    <dialog
         android:id="@+id/remoteStorageFragment"
         android:name="com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment"/>
 

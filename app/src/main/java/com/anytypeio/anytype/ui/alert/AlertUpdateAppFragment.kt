@@ -77,12 +77,4 @@ class AlertUpdateAppFragment : BaseBottomSheetComposeFragment() {
             context?.toast(getString(R.string.generic_error))
         }
     }
-
-    override fun injectDependencies() {
-        // Do nothing
-    }
-
-    override fun releaseDependencies() {
-        // Do nothing
-    }
 }

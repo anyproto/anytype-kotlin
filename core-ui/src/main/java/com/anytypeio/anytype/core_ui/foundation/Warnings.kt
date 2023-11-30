@@ -106,8 +106,8 @@ fun AlertWithWarningButton() {
 
 @Composable
 fun GenericAlert(
-    onFirstButtonClicked: () -> Unit,
-    onSecondButtonClicked: () -> Unit,
+    onFirstButtonClicked: () -> Unit = {},
+    onSecondButtonClicked: () -> Unit = {},
     config: AlertConfig
 ) {
     val icon = config.icon

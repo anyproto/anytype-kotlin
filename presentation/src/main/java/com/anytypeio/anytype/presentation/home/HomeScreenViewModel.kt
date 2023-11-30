@@ -979,7 +979,7 @@ class HomeScreenViewModel(
     }
 
     fun onStart(deeplink: DeepLinkResolver.Action? = null) {
-        Timber.d("onStart: $deeplink")
+        Timber.d("onStart, deep link:$deeplink")
         when(deeplink) {
             DeepLinkResolver.Action.Import.Experience -> {
                 viewModelScope.launch {

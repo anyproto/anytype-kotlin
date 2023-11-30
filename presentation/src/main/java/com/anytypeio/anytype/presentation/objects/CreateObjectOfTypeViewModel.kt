@@ -8,7 +8,9 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -17,6 +19,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -55,8 +58,7 @@ class CreateObjectOfTypeViewModel(
                         keys = ObjectSearchConstants.defaultKeysObjectType,
                         query = query
                     )
-                ).map { result ->
-
+                ).filterIsInstance<Resultat.Success<List<ObjectWrapper.Type>>>().map { result ->
                     val allTypes = (result.getOrNull() ?: emptyList())
                     val (allUserTypes, allLibraryTypes) = allTypes.partition { type ->
                         type.getValue<Id>(Relations.SPACE_ID) == space
@@ -99,9 +101,7 @@ class CreateObjectOfTypeViewModel(
                             )
                         }
                         if (filteredLibraryTypes.isNotEmpty()) {
-                            add(
-                                SelectTypeView.Section.Library
-                            )
+                            add(SelectTypeView.Section.Library)
                             addAll(
                                 filteredLibraryTypes.map { type ->
                                     SelectTypeView.Type(
@@ -117,6 +117,7 @@ class CreateObjectOfTypeViewModel(
                     }
                 }
             }.collect {
+                Timber.d("Assigning views: ${it.size}")
                 views.value = it
             }
         }

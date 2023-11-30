@@ -55,13 +55,17 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.EmptyState
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
+import timber.log.Timber
 
 @Preview
 @Composable
@@ -104,7 +108,22 @@ private fun ScreenContent(
     views: List<SelectTypeView>,
     onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
-    FlowRowContent(views, onTypeClicked)
+    Timber.d("Views size: ${views.size}")
+    if (views.isNotEmpty()) {
+        FlowRowContent(views, onTypeClicked)
+    } else {
+        Box(modifier = Modifier.fillMaxSize()) {
+            EmptyState(
+                modifier = Modifier.align(Alignment.Center),
+                title = "Nothing found",
+                description = "Please try changing your request",
+                icon = AlertConfig.Icon(
+                    gradient = GRADIENT_TYPE_RED,
+                    icon = R.drawable.ic_alert_error
+                )
+            )
+        }
+    }
 }
 
 @Composable

@@ -115,9 +115,9 @@ fun GenericAlert(
         Spacer(modifier = Modifier.height(20.dp))
         if (icon != null) { AlertIcon(icon) }
         Spacer(modifier = Modifier.height(16.dp))
-        AlertTitle(config)
+        AlertTitle(config.title)
         Spacer(modifier = Modifier.height(8.dp))
-        AlertDescription(config)
+        AlertDescription(config.description)
         Spacer(modifier = Modifier.height(20.dp))
         AlertButtons(
             config = config,
@@ -128,21 +128,22 @@ fun GenericAlert(
 }
 
 @Composable
-private fun AlertDescription(config: AlertConfig) {
+fun AlertDescription(description: String) {
     Text(
-        text = config.description,
+        text = description,
         style = BodyRegular,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
-        color = colorResource(id = R.color.text_primary)
+        color = colorResource(id = R.color.text_primary),
+        textAlign = TextAlign.Center
     )
 }
 
 @Composable
-private fun AlertTitle(config: AlertConfig) {
+fun AlertTitle(title: String) {
     Text(
-        text = config.title,
+        text = title,
         style = HeadlineHeading,
         modifier = Modifier
             .fillMaxWidth()
@@ -153,7 +154,7 @@ private fun AlertTitle(config: AlertConfig) {
 }
 
 @Composable
-private fun AlertIcon(icon: AlertConfig.Icon) {
+fun AlertIcon(icon: AlertConfig.Icon) {
     val gradientColors = when(icon.gradient) {
         GRADIENT_TYPE_GREEN -> listOf(GREEN_FROM, GREEN_TO)
         GRADIENT_TYPE_RED -> listOf(RED_FROM, RED_TO)

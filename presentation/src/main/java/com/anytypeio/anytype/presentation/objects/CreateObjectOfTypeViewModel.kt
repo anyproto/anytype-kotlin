@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -59,7 +61,7 @@ class CreateObjectOfTypeViewModel(
                         keys = ObjectSearchConstants.defaultKeysObjectType,
                         query = query
                     )
-                ).map { result ->
+                ).filterIsInstance<Resultat.Success<List<ObjectWrapper.Type>>>().map { result ->
                     _objectTypes.clear()
                     _objectTypes.addAll(result.getOrNull() ?: emptyList())
                     val allTypes = (result.getOrNull() ?: emptyList())
@@ -104,9 +106,7 @@ class CreateObjectOfTypeViewModel(
                             )
                         }
                         if (filteredLibraryTypes.isNotEmpty()) {
-                            add(
-                                SelectTypeView.Section.Library
-                            )
+                            add(SelectTypeView.Section.Library)
                             addAll(
                                 filteredLibraryTypes.map { type ->
                                     SelectTypeView.Type(

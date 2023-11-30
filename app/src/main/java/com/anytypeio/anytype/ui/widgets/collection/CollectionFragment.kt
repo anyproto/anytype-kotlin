@@ -54,7 +54,7 @@ class CollectionFragment : BaseComposeFragment() {
                         onCreateObjectLongClicked = {
                             val dialog = CreateObjectOfTypeFragment().apply {
                                 onTypeSelected = {
-                                    vm.onAddClicked(it)
+                                    vm.onAddClicked(it.uniqueKey)
                                 }
                             }
                             dialog.show(childFragmentManager, "fullscreen-widget-create-object-of-type-dialog")

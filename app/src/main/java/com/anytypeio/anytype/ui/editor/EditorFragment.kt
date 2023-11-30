@@ -602,7 +602,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach {
                 val dialog = CreateObjectOfTypeFragment().apply {
                     onTypeSelected = {
-                        vm.onAddNewDocumentClicked(it)
+                        vm.onAddNewDocumentClicked(it.uniqueKey)
                     }
                 }
                 dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")
@@ -1039,10 +1039,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenObjectSelectTypeScreen -> {
                     hideKeyboard()
-                    val fr = ObjectSelectTypeFragment.newInstance(
-                        excludeTypes = command.excludedTypes
-                    )
-                    fr.showChildFragment()
+                    val dialog = CreateObjectOfTypeFragment().apply {
+                        onTypeSelected = {
+                            vm.onObjectTypeChanged(it)
+                            dismiss()
+                        }
+                    }
+                    dialog.show(childFragmentManager, null)
                 }
                 is Command.OpenMoveToScreen -> {
                     jobs += lifecycleScope.launch {

@@ -987,6 +987,10 @@
     <string name="object_action_duplicate">Dupliquer</string>
     <string name="object_action_to_widgets">Vers les widgets</string>
     <!--endregion-->
+    <!--region SEARCH -->
+    <string name="nothing_found">Aucun résultat</string>
+    <string name="nothing_found_object_types">Aucun type d\'objet trouvé. Essayez de modifier votre requête.</string>
+    <!--endregion-->
     <!--region CONTENT DESCRIPTIONS FOR ACCESSIBILITY -->
     <string name="content_description_delete_button">Delete button</string>
     <string name="content_description_duplicate_button">Duplicate button</string>

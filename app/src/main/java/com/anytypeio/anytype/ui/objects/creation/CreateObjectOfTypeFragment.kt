@@ -11,7 +11,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -27,7 +27,7 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<CreateObjectOfTypeViewModel> { factory }
 
-    lateinit var onTypeSelected: (Key) -> Unit
+    lateinit var onTypeSelected: (ObjectWrapper.Type) -> Unit
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -56,7 +56,7 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
 
     private fun proceedWithCommand(command: Command) {
         when (command) {
-            is Command.DispatchTypeKey -> {
+            is Command.DispatchObjectType -> {
                 onTypeSelected(command.type)
             }
             is Command.ShowTypeInstalledToast -> {

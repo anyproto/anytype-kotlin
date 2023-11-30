@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
+import com.anytypeio.anytype.ui.alert.AlertGalleryUnsupported
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -37,6 +38,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class HomeScreenFragment : BaseComposeFragment() {
+
+    private val deepLink: String? get() = argOrNull("test_deeplink")
 
     private var isMnemonicReminderDialogNeeded: Boolean
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
@@ -127,7 +130,7 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     override fun onStart() {
         super.onStart()
-        vm.onStart()
+        vm.onStart(deepLink)
     }
 
     override fun onStop() {
@@ -198,6 +201,11 @@ class HomeScreenFragment : BaseComposeFragment() {
                         isInEditMode = command.isInEditMode
                     )
                 )
+            }
+            is Command.Deeplink.Unsupported -> {
+                AlertGalleryUnsupported().apply {
+                    onCancel = { navigation().exit() }
+                }.showChildFragment("test")
             }
         }
     }

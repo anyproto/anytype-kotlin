@@ -79,17 +79,22 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
 
     private fun observe(command: SplashViewModel.Command) {
         when (command) {
-            SplashViewModel.Command.NavigateToDashboard -> {
+            is SplashViewModel.Command.NavigateToDashboard -> {
                 try {
                     findNavController().navigate(
-                        R.id.action_splashScreen_to_homeScreen
+                        R.id.action_splashScreen_to_homeScreen,
+                        args = if (!command.deeplink.isNullOrEmpty()) {
+                            bundleOf("test_deeplink" to command.deeplink)
+                        } else {
+                            null
+                        }
                     )
                 } catch (e: Exception) {
                     Timber.e(e, "Error while opening dashboard from splash screen")
                     toast("Error while navigating to desktop: ${e.message}")
                 }
             }
-            SplashViewModel.Command.NavigateToWidgets -> {
+            is SplashViewModel.Command.NavigateToWidgets -> {
                 try {
                     findNavController().navigate(
                         R.id.action_splashScreen_to_widgets
@@ -128,17 +133,23 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             }
             is SplashViewModel.Command.CheckAppStartIntent -> {
                 val intent = requireActivity().intent
+                Timber.d("Timber intent: ${intent}")
                 if (intent != null && intent.action == Intent.ACTION_VIEW) {
-                    val bundle = intent.extras
-                    if (bundle != null) {
-                        val type = bundle.getString(ACTION_CREATE_NEW_TYPE_KEY)
-                        if (type != null) {
-                            vm.onIntentCreateNewObject(type = type)
+                    val data = intent.dataString
+                    if (data != null && data.contains(DEEP_LINK)) {
+                        vm.onDeepLink(data)
+                    } else {
+                        val bundle = intent.extras
+                        if (bundle != null) {
+                            val type = bundle.getString(ACTION_CREATE_NEW_TYPE_KEY)
+                            if (type != null) {
+                                vm.onIntentCreateNewObject(type = type)
+                            } else {
+                                vm.onIntentActionNotFound()
+                            }
                         } else {
                             vm.onIntentActionNotFound()
                         }
-                    } else {
-                        vm.onIntentActionNotFound()
                     }
                 }
                 else {
@@ -172,3 +183,5 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
         container: ViewGroup?
     ): FragmentSplashBinding = FragmentSplashBinding.inflate(inflater, container, false)
 }
+
+const val DEEP_LINK = "anytype://main"

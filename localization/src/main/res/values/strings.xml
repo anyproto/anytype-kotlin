@@ -1145,4 +1145,18 @@
     <string name="content_desc_layout_icon">Layout icon</string>
 
     <!--endregion-->
+
+    <!--region BUTTONS -->
+
+    <string name="button_okay">Okay</string>
+
+    <!--endregion-->
+
+    <!--region ALERTS -->
+
+    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
+    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
+
+    <!--endregion-->
+
 </resources>

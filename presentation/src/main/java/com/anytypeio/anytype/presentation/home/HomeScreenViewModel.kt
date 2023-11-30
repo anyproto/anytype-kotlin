@@ -87,6 +87,7 @@ import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -976,8 +977,15 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onStart() {
-        Timber.d("onStart")
+    fun onStart(deeplink: String? = null) {
+        Timber.d("onStart: $deeplink")
+        if (deeplink != null) {
+            viewModelScope.launch {
+                delay(5000)
+                Timber.d("Sending toast")
+                commands.emit(Command.Deeplink.Unsupported)
+            }
+        }
         widgetObjectPipelineJobs += viewModelScope.launch {
             if (!isWidgetSessionRestored) {
                 val session = withContext(appCoroutineDispatchers.io) {
@@ -1395,6 +1403,10 @@ sealed class Command {
             const val TYPE_COMPACT_LIST = 3
             const val UNDEFINED_LAYOUT_CODE = -1
         }
+    }
+
+    sealed class Deeplink : Command() {
+        object Unsupported : Deeplink()
     }
 }
 

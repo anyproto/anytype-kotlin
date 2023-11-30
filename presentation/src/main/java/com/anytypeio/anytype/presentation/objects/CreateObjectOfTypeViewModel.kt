@@ -117,7 +117,6 @@ class CreateObjectOfTypeViewModel(
                     }
                 }
             }.collect {
-                Timber.d("Assigning views: ${it.size}")
                 views.value = it
             }
         }

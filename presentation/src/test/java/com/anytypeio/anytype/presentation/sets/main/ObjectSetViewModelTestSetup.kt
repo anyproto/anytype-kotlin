@@ -340,10 +340,7 @@ open class ObjectSetViewModelTestSetup {
         ).`when`(repo).searchObjectsWithSubscription(
             subscription = subscription,
             collection = collection,
-            filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = spaceId,
-                context = root
-            ),
+            filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(space = spaceId),
             sorts = dvSorts,
             keys = dvKeys,
             source = sources,

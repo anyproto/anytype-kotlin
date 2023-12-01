@@ -10,6 +10,7 @@ import android.view.Gravity
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.content.res.use
 import androidx.core.view.updateLayoutParams
@@ -69,9 +70,13 @@ class GalleryViewContentWidget @JvmOverloads constructor(
 
     fun setItems(relations: List<DefaultObjectRelationValueView>) {
         removeAllViews()
+        var placeholdersBottom = 0
         val size = relations.size
         relations.forEachIndexed { index, relation ->
             when (relation) {
+                is DefaultObjectRelationValueView.Empty -> {
+                    placeholdersBottom += 1
+                }
                 is DefaultObjectRelationValueView.Text -> {
                     val view = TextView(themeWrapper).apply {
                         id = generateViewId()
@@ -83,8 +88,8 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                     addView(view)
                     view.updateLayoutParams<LayoutParams> {
                         marginStart = firstItemMargin
-                        bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
                         marginEnd = firstItemMargin
+                        bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
                     }
                 }
                 is DefaultObjectRelationValueView.Url -> {
@@ -184,7 +189,8 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                     addView(view)
                     view.updateLayoutParams<LayoutParams> {
                         marginStart = firstItemMargin
-                        bottomMargin = defaultBottomMargin * 2
+                        marginEnd = firstItemMargin
+                        bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
                     }
                 }
                 is DefaultObjectRelationValueView.Checkbox -> {
@@ -199,7 +205,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         width = resources.getDimension(R.dimen.dp_16).toInt()
                         height = resources.getDimension(R.dimen.dp_16).toInt()
                         marginStart = firstItemMargin
-                        bottomMargin = defaultBottomMargin * 2
+                        bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
                     }
                 }
                 is DefaultObjectRelationValueView.Object -> {
@@ -445,6 +451,12 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
                     }
                 }
+            }
+        }
+        if (placeholdersBottom > 0) {
+            val margin = resources.getDimension(R.dimen.dp_20).toInt() * placeholdersBottom
+            this.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                bottomMargin = margin
             }
         }
     }

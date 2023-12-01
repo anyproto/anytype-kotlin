@@ -1414,6 +1414,10 @@ fun List<BlockView>.getOnFocusChangedEvent(blockId: Id): ControlPanelMachine.Eve
                 id = blockId,
                 type = ControlPanelState.Toolbar.Main.TargetBlockType.Title
             )
+            is BlockView.Description -> ControlPanelMachine.Event.OnFocusChanged(
+                id = blockId,
+                type = ControlPanelState.Toolbar.Main.TargetBlockType.Description
+            )
             else -> ControlPanelMachine.Event.OnFocusChanged(
                 id = blockId,
                 type = ControlPanelState.Toolbar.Main.TargetBlockType.Any

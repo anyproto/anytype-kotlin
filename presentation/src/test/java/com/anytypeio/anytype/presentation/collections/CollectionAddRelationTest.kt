@@ -134,20 +134,17 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                                 hideIcon = false,
                                 icon = ObjectIcon.Basic.Avatar(name = objectCollection.obj1.name!!),
                                 relations = listOf(
-                                    DefaultObjectRelationValueView.Text(
+                                    DefaultObjectRelationValueView.Empty(
                                         objectId = objectCollection.obj1.id,
-                                        relationKey = objectCollection.relationObject1.key,
-                                        text = null
+                                        relationKey = objectCollection.relationObject1.key
                                     ),
-                                    DefaultObjectRelationValueView.Text(
+                                    DefaultObjectRelationValueView.Empty(
                                         objectId = objectCollection.obj1.id,
-                                        relationKey = objectCollection.relationObject2.key,
-                                        text = null
+                                        relationKey = objectCollection.relationObject2.key
                                     ),
-                                    DefaultObjectRelationValueView.Tag(
+                                    DefaultObjectRelationValueView.Empty(
                                         objectId = objectCollection.obj1.id,
-                                        relationKey = objectCollection.relationObject3.key,
-                                        tags = emptyList()
+                                        relationKey = objectCollection.relationObject3.key
                                     )
                                 )
                             ),
@@ -158,20 +155,17 @@ class CollectionAddRelationTest : ObjectSetViewModelTestSetup() {
                                 hideIcon = false,
                                 icon = ObjectIcon.Basic.Avatar(name = objectCollection.obj2.name!!),
                                 relations = listOf(
-                                    DefaultObjectRelationValueView.Text(
+                                    DefaultObjectRelationValueView.Empty(
                                         objectId = objectCollection.obj2.id,
-                                        relationKey = objectCollection.relationObject1.key,
-                                        text = null
+                                        relationKey = objectCollection.relationObject1.key
                                     ),
-                                    DefaultObjectRelationValueView.Text(
+                                    DefaultObjectRelationValueView.Empty(
                                         objectId = objectCollection.obj2.id,
-                                        relationKey = objectCollection.relationObject2.key,
-                                        text = null
+                                        relationKey = objectCollection.relationObject2.key
                                     ),
-                                    DefaultObjectRelationValueView.Tag(
+                                    DefaultObjectRelationValueView.Empty(
                                         objectId = objectCollection.obj2.id,
-                                        relationKey = objectCollection.relationObject3.key,
-                                        tags = emptyList()
+                                        relationKey = objectCollection.relationObject3.key
                                     )
                                 )
                             )

@@ -62,12 +62,7 @@ class DefaultDataViewSubscription(
         }
         val filters = buildList {
             addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
-            addAll(
-                defaultDataViewFilters(
-                    space = space,
-                    context = context
-                )
-            )
+            addAll(defaultDataViewFilters(space = space))
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
@@ -120,12 +115,7 @@ class DefaultDataViewSubscription(
 
         val filters = buildList {
             addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
-            addAll(
-                defaultDataViewFilters(
-                    space = space,
-                    context = context
-                )
-            )
+            addAll(defaultDataViewFilters(space = space))
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys

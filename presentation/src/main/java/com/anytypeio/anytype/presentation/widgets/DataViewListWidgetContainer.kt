@@ -159,12 +159,7 @@ class DataViewListWidgetContainer(
             }.distinct(),
             filters = buildList {
                 addAll(view.filters)
-                addAll(
-                    ObjectSearchConstants.defaultDataViewFilters(
-                        space = space,
-                        context = root
-                    )
-                )
+                addAll(ObjectSearchConstants.defaultDataViewFilters(space = space))
                 add(
                     DVFilter(
                         relation = Relations.TYPE_UNIQUE_KEY,

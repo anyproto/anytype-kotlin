@@ -44,11 +44,11 @@ class ObjectTypeViewComparator : Comparator<ObjectTypeView> {
         if (o1Key == NOTE && o2Key != NOTE) return -1
         if (o1Key != NOTE && o2Key == NOTE) return 1
 
-        if (o1Key == COLLECTION && o2Key != COLLECTION) return -1
-        if (o1Key != COLLECTION && o2Key == COLLECTION) return 1
-
         if (o1Key == TASK && o2Key != TASK) return -1
         if (o1Key != TASK && o2Key == TASK) return 1
+
+        if (o1Key == COLLECTION && o2Key != COLLECTION) return -1
+        if (o1Key != COLLECTION && o2Key == COLLECTION) return 1
 
         val o1Name = o1.name
         val o2Name = o2.name

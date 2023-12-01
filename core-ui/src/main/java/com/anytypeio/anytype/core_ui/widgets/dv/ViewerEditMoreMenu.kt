@@ -47,7 +47,7 @@ fun ViewerEditMoreMenu(
                     shape = RoundedCornerShape(size = 10.dp)
                 )
                 .background(
-                    color = colorResource(id = R.color.shape_secondary),
+                    color = colorResource(id = R.color.context_menu_background),
                     shape = RoundedCornerShape(size = 10.dp)
                 )
         ) {

@@ -30,11 +30,11 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -51,9 +51,9 @@ import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment.Companion.DI
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui_settings.account.Action
 import com.anytypeio.anytype.ui_settings.account.ActionWithProgressBar
-import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 
 class DeletedAccountFragment : BaseComposeFragment() {
 
@@ -99,7 +99,14 @@ class DeletedAccountFragment : BaseComposeFragment() {
                                 }
                             }
                             DeletedAccountViewModel.Command.Logout -> {
-                                findNavController().navigate(R.id.main_navigation)
+                                findNavController().navigate(
+                                    resId = R.id.main_navigation,
+                                    args = null,
+                                    navOptions = NavOptions
+                                        .Builder()
+                                        .setPopUpTo(R.id.main_navigation, true)
+                                        .build()
+                                )
                             }
                         }
                     }

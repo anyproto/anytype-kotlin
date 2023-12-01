@@ -24,10 +24,7 @@ class GetObjectTypes @Inject constructor(
             offset = params.offset,
             fulltext = params.query
         )
-        return result
-            .mapNotNull {
-                it.mapToObjectWrapperType()
-            }
+        return result.mapNotNull { it.mapToObjectWrapperType() }
     }
 
     data class Params(

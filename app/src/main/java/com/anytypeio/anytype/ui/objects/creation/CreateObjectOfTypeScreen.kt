@@ -1,5 +1,9 @@
 package com.anytypeio.anytype.ui.objects.creation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -55,7 +59,10 @@ import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.EmptyState
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -94,6 +101,7 @@ fun CreateObjectOfTypeScreen(
             onQueryChanged = onQueryChanged,
             onFocused = onFocused
         )
+        Spacer(modifier = Modifier.height(8.dp))
         ScreenContent(views, onTypeClicked)
     }
 }
@@ -103,7 +111,26 @@ private fun ScreenContent(
     views: List<SelectTypeView>,
     onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
-    FlowRowContent(views, onTypeClicked)
+    if (views.isNotEmpty()) {
+        FlowRowContent(views, onTypeClicked)
+    }
+    AnimatedVisibility(
+        visible = views.isEmpty(),
+        enter = fadeIn(animationSpec = tween(500)),
+        exit = fadeOut(animationSpec = tween(500))
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            EmptyState(
+                modifier = Modifier.align(Alignment.Center),
+                title = stringResource(id = R.string.nothing_found),
+                description = stringResource(id = R.string.nothing_found_object_types),
+                icon = AlertConfig.Icon(
+                    gradient = GRADIENT_TYPE_RED,
+                    icon = R.drawable.ic_alert_error
+                )
+            )
+        }
+    }
 }
 
 @Composable
@@ -379,11 +406,10 @@ private fun SearchField(
 @Composable
 private fun Section(title: String) {
     Box(modifier = Modifier
-        .height(52.dp)
+        .height(44.dp)
         .fillMaxWidth()) {
         Text(
             modifier = Modifier
-                .padding(bottom = 8.dp)
                 .align(Alignment.BottomStart),
             text = title,
             color = colorResource(id = R.color.text_secondary),

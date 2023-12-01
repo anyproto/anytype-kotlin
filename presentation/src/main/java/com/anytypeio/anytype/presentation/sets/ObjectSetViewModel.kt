@@ -22,7 +22,6 @@ import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
-import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.Result
@@ -1086,7 +1085,7 @@ class ObjectSetViewModel(
                     proceedWithNewDataViewObject(result)
                     sendAnalyticsObjectCreateEvent(
                         startTime = startTime,
-                        objectType = result.objectType.key,
+                        typeKey = result.objectType.key,
                     )
                 }
             )
@@ -1383,15 +1382,15 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun sendAnalyticsObjectCreateEvent(startTime: Long, objectType: String?) {
+    private fun sendAnalyticsObjectCreateEvent(startTime: Long, typeKey: Key?) {
         viewModelScope.launch {
-            val sourceType = objectType?.let { storeOfObjectTypes.get(it) }
+            val objType = typeKey?.let { storeOfObjectTypes.getByKey(it) }
             logEvent(
                 state = stateReducer.state.value,
                 analytics = analytics,
                 event = ObjectStateAnalyticsEvent.OBJECT_CREATE,
                 startTime = startTime,
-                type = sourceType?.sourceObject
+                type = objType?.sourceObject
             )
         }
     }

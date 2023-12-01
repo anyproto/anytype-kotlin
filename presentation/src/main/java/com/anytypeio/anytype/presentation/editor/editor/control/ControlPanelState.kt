@@ -29,7 +29,6 @@ data class ControlPanelState(
     val mentionToolbar: Toolbar.MentionToolbar = Toolbar.MentionToolbar.reset(),
     val slashWidget: Toolbar.SlashWidget = Toolbar.SlashWidget.reset(),
     val searchToolbar: Toolbar.SearchToolbar = Toolbar.SearchToolbar.reset(),
-    val objectTypesToolbar: Toolbar.ObjectTypes = Toolbar.ObjectTypes.reset(),
     val simpleTableWidget: Toolbar.SimpleTableWidget = Toolbar.SimpleTableWidget.reset(),
 ) {
 
@@ -252,18 +251,6 @@ data class ControlPanelState(
             }
         }
 
-        data class ObjectTypes(
-            override val isVisible: Boolean,
-            val data: List<ObjectTypeView> = emptyList()
-        ) : Toolbar() {
-            companion object {
-                fun reset(): ObjectTypes = ObjectTypes(
-                    isVisible = false,
-                    data = listOf()
-                )
-            }
-        }
-
         data class SimpleTableWidget(
             override val isVisible: Boolean,
             val tableId: Id,
@@ -330,7 +317,6 @@ data class ControlPanelState(
                 isVisible = false
             ),
             slashWidget = Toolbar.SlashWidget.reset(),
-            objectTypesToolbar = Toolbar.ObjectTypes.reset(),
             simpleTableWidget = Toolbar.SimpleTableWidget.reset()
         )
     }

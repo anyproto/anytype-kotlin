@@ -217,4 +217,6 @@
 
     <color name="cursor_color">#FFBB2C</color>
 
+    <color name="context_menu_background">#FFFFFF</color>
+
 </resources>

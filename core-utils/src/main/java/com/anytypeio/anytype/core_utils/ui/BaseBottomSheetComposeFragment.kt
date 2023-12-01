@@ -98,8 +98,13 @@ abstract class BaseBottomSheetComposeFragment : BottomSheetDialogFragment() {
         releaseDependencies()
     }
 
-    abstract fun injectDependencies()
-    abstract fun releaseDependencies()
+    open fun injectDependencies() {
+        // Inject nothing by default. Override to inject.
+    }
+
+    open fun releaseDependencies() {
+        // Inject nothing by default. Override to inject.
+    }
 }
 
 fun Fragment.getNavigationId() = findNavController().currentDestination?.id

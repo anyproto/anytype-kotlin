@@ -445,7 +445,6 @@
     <string name="layout_todo_description">Action-focused layout with a checkbox</string>
     <string name="move_to_bin">To Bin</string>
     <string name="undoredo">Undo/Redo</string>
-    <string name="object_action_duplicate">Duplicate</string>
     <string name="object_removal_process">Object removal process</string>
     <string name="please_wait_your_object_deletion">Please wait a bit. Your objects will be deleted shortly.</string>
     <string name="large">Large</string>
@@ -965,7 +964,7 @@
     <string name="slash_widget_actions_duplicate">Duplicate</string>
     <string name="slash_widget_actions_copy">Copy</string>
     <string name="slash_widget_actions_paste">Paste</string>
-    <string name="slash_widget_actions_link_to">Link to object</string>
+    <string name="slash_widget_actions_link_to">Add link</string>
     <string name="slash_widget_actions_link_to_subtitle">Link to existing object</string>
     <string name="slash_widget_actions_move">Move</string>
     <string name="slash_widget_actions_moveto">Move to</string>
@@ -1087,6 +1086,20 @@
 
     <!--endregion-->
 
+    <!--region OBJECT ACTIONS -->
+
+    <string name="object_action_duplicate">Duplicate</string>
+    <string name="object_action_to_widgets">To widgets</string>
+
+    <!--endregion-->
+
+    <!--region SEARCH -->
+    
+    <string name="nothing_found">Nothing found</string>
+    <string name="nothing_found_object_types">No object type found. Please try changing your request.</string>
+
+    <!--endregion-->
+
     <!--region CONTENT DESCRIPTIONS FOR ACCESSIBILITY -->
 
     <string name="content_description_add_block" translatable="false">Add block button</string>
@@ -1132,4 +1145,19 @@
     <string name="content_desc_layout_icon">Layout icon</string>
 
     <!--endregion-->
+
+    <!--region BUTTONS -->
+
+    <string name="button_okay">Okay</string>
+    <string name="button_close">Close</string>
+
+    <!--endregion-->
+
+    <!--region ALERTS -->
+
+    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
+    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
+
+    <!--endregion-->
+
 </resources>

@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -49,7 +50,6 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
-import com.anytypeio.anytype.ui.onboarding.screens.signin.MnemonicPhraseFormatter
 
 @Composable
 fun PagerIndicator(
@@ -208,7 +208,8 @@ fun OnboardingInput(
     placeholder: String? = null,
     singleLine: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    keyboardActions: KeyboardActions = KeyboardActions()
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     TextField(
         modifier = modifier.then(
@@ -238,7 +239,7 @@ fun OnboardingInput(
         singleLine = singleLine,
         keyboardActions = keyboardActions,
         keyboardOptions = keyboardOptions,
-        visualTransformation = MnemonicPhraseFormatter
+        visualTransformation = visualTransformation
     )
 }
 

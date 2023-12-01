@@ -118,7 +118,8 @@ fun RecoveryScreen(
                                     context.toast(emptyRecoveryPhraseError)
                                 }
                             }
-                        )
+                        ),
+                        visualTransformation = MnemonicPhraseFormatter
                     )
                 }
                 item {

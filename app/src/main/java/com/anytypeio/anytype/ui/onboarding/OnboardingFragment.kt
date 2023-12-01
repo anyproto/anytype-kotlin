@@ -294,9 +294,6 @@ class OnboardingFragment : Fragment() {
         }
     }
 
-    @Composable
-    private fun ContentPaddingTop() = LocalConfiguration.current.screenHeightDp * 2 / 6
-
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     private fun Recovery(navController: NavHostController) {

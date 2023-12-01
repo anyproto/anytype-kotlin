@@ -23,11 +23,11 @@ import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
-import com.anytypeio.anytype.presentation.common.ViewState
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.take
@@ -50,9 +50,10 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val configStorage: ConfigStorage
 ) : ViewModel() {
 
+    private val jobs = mutableListOf<Job>()
+
     val sideEffects = MutableSharedFlow<SideEffect>()
-    val state = MutableSharedFlow<ViewState<Boolean>>()
-    val setupState = MutableStateFlow<SetupState>(SetupState.Idle)
+    val state = MutableStateFlow<SetupState>(SetupState.Idle)
 
     val navigation = MutableSharedFlow<OnboardingLoginSetupViewModel.Navigation>()
 
@@ -66,11 +67,13 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     fun onLoginClicked(chain: String) {
-        proceedWithRecoveringWallet(chain.trim())
-        viewModelScope.sendAnalyticsOnboardingLoginEvent(
-            analytics = analytics,
-            type = EventsDictionary.ClickLoginButton.PHRASE
-        )
+        if (state.value is SetupState.Idle) {
+            proceedWithRecoveringWallet(chain.trim())
+            viewModelScope.sendAnalyticsOnboardingLoginEvent(
+                analytics = analytics,
+                type = EventsDictionary.ClickLoginButton.PHRASE
+            )
+        }
     }
 
     fun onActionDone(chain: String) {
@@ -178,7 +181,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     private fun startObservingAccounts() {
-        viewModelScope.launch {
+        jobs += viewModelScope.launch {
+            state.value = SetupState.InProgress
             observeAccounts.build().take(1).collect { account ->
                 onFirstAccountLoaded(account.id)
             }
@@ -192,7 +196,6 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private fun proceedWithSelectingAccount(id: String) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            setupState.value = SetupState.InProgress
             selectAccount(
                 SelectAccount.Params(
                     id = id,
@@ -201,7 +204,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
             ).process(
                 failure = { e ->
                     Timber.e(e, "Error while selecting account with id: $id")
-                    setupState.value = SetupState.Failed
+                    state.value = SetupState.Failed
                     when (e) {
                         is MigrationNeededException -> {
                             navigateToMigrationErrorScreen()

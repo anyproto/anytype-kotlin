@@ -55,7 +55,7 @@ fun RecoveryScreenWrapper(
         onNextClicked = vm::onLoginClicked,
         onActionDoneClicked = vm::onActionDone,
         onScanQrClicked = onScanQrClick,
-        isLoading = vm.setupState
+        isLoading = vm.state
             .collectAsState().value
                 is OnboardingMnemonicLoginViewModel.SetupState.InProgress
     )

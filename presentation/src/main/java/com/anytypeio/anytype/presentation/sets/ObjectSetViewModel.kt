@@ -1238,6 +1238,11 @@ class ObjectSetViewModel(
     //region NAVIGATION
 
     private suspend fun proceedWithOpeningObject(target: Id, layout: ObjectType.Layout? = null) {
+        if (target == context) {
+            toast("You are already here")
+            Timber.d("proceedWithOpeningObject, target == context")
+            return
+        }
         isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {
             val navigateCommand = when (layout) {
@@ -1274,6 +1279,11 @@ class ObjectSetViewModel(
     }
 
     private suspend fun proceedWithOpeningObjectCollection(target: Id) {
+        if (target == context) {
+            toast("You are already here")
+            Timber.d("proceedWithOpeningObject, target == context")
+            return
+        }
         isCustomizeViewPanelVisible.value = false
         jobs += viewModelScope.launch {
             closeBlock.async(context).fold(
@@ -1289,6 +1299,11 @@ class ObjectSetViewModel(
     }
 
     private suspend fun proceedWithNavigation(target: Id, layout: ObjectType.Layout?) {
+        if (target == context) {
+            toast("You are already here")
+            Timber.d("proceedWithOpeningObject, target == context")
+            return
+        }
         when (layout) {
             ObjectType.Layout.BASIC,
             ObjectType.Layout.PROFILE,

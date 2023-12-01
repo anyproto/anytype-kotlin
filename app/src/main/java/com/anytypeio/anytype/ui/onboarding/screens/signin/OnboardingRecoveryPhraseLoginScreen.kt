@@ -42,6 +42,7 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TitleLogin
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
+import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel.SetupState
 import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 @Composable
@@ -55,9 +56,7 @@ fun RecoveryScreenWrapper(
         onNextClicked = vm::onLoginClicked,
         onActionDoneClicked = vm::onActionDone,
         onScanQrClicked = onScanQrClick,
-        isLoading = vm.state
-            .collectAsState().value
-                is OnboardingMnemonicLoginViewModel.SetupState.InProgress
+        isLoading = vm.state.collectAsState().value is SetupState.InProgress
     )
 }
 

@@ -88,8 +88,8 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                     addView(view)
                     view.updateLayoutParams<LayoutParams> {
                         marginStart = firstItemMargin
-                        bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
                         marginEnd = firstItemMargin
+                        bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
                     }
                 }
                 is DefaultObjectRelationValueView.Url -> {
@@ -189,7 +189,8 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                     addView(view)
                     view.updateLayoutParams<LayoutParams> {
                         marginStart = firstItemMargin
-                        bottomMargin = defaultBottomMargin * 2
+                        marginEnd = firstItemMargin
+                        bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
                     }
                 }
                 is DefaultObjectRelationValueView.Checkbox -> {
@@ -204,7 +205,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         width = resources.getDimension(R.dimen.dp_16).toInt()
                         height = resources.getDimension(R.dimen.dp_16).toInt()
                         marginStart = firstItemMargin
-                        bottomMargin = defaultBottomMargin * 2
+                        bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
                     }
                 }
                 is DefaultObjectRelationValueView.Object -> {
@@ -453,8 +454,9 @@ class GalleryViewContentWidget @JvmOverloads constructor(
             }
         }
         if (placeholdersBottom > 0) {
+            val margin = resources.getDimension(R.dimen.dp_20).toInt() * placeholdersBottom
             this.updateLayoutParams<ConstraintLayout.LayoutParams> {
-                bottomMargin = resources.getDimension(R.dimen.dp_20).toInt() * placeholdersBottom
+                bottomMargin = margin
             }
         }
     }

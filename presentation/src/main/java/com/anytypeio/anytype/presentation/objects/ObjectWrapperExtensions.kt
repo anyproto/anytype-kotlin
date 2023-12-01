@@ -30,44 +30,83 @@ suspend fun ObjectWrapper.Basic.values(
     relations.forEach { relation ->
         when (relation.format) {
             RelationFormat.SHORT_TEXT, RelationFormat.LONG_TEXT -> {
-                val value = DefaultObjectRelationValueView.Text(
-                    objectId = id,
-                    relationKey = relation.key,
-                    text = getValue<String>(relation.key)
-                )
+                val relationValue = getValue<String>(relation.key)
+                val value = if (relationValue.isNullOrBlank()) {
+                    DefaultObjectRelationValueView.Empty(
+                        objectId = id,
+                        relationKey = relation.key,
+                    )
+                } else {
+                    DefaultObjectRelationValueView.Text(
+                        objectId = id,
+                        relationKey = relation.key,
+                        text = relationValue
+                    )
+                }
                 values.add(value)
             }
             RelationFormat.NUMBER -> {
                 val number = map.getOrDefault(key = relation.key, null)
-                val value = DefaultObjectRelationValueView.Number(
-                    objectId = id,
-                    relationKey = relation.key,
-                    number = NumberParser.parse(number)
-                )
+                val value = if (number == null) {
+                    DefaultObjectRelationValueView.Empty(
+                        objectId = id,
+                        relationKey = relation.key,
+                    )
+                } else {
+                    DefaultObjectRelationValueView.Number(
+                        objectId = id,
+                        relationKey = relation.key,
+                        number = NumberParser.parse(number)
+                    )
+                }
                 values.add(value)
             }
             RelationFormat.URL -> {
-                val value = DefaultObjectRelationValueView.Url(
-                    objectId = id,
-                    relationKey = relation.key,
-                    url = getValue<String>(relation.key)
-                )
+                val relationValue = getValue<String>(relation.key)
+                val value = if (relationValue.isNullOrBlank()) {
+                    DefaultObjectRelationValueView.Empty(
+                        objectId = id,
+                        relationKey = relation.key,
+                    )
+                } else {
+                    DefaultObjectRelationValueView.Url(
+                        objectId = id,
+                        relationKey = relation.key,
+                        url = relationValue
+                    )
+                }
                 values.add(value)
             }
             RelationFormat.EMAIL -> {
-                val value = DefaultObjectRelationValueView.Email(
-                    objectId = id,
-                    relationKey = relation.key,
-                    email = getValue<String>(relation.key)
-                )
+                val relationValue = getValue<String>(relation.key)
+                val value = if (relationValue.isNullOrBlank()) {
+                    DefaultObjectRelationValueView.Empty(
+                        objectId = id,
+                        relationKey = relation.key,
+                    )
+                } else {
+                    DefaultObjectRelationValueView.Email(
+                        objectId = id,
+                        relationKey = relation.key,
+                        email = relationValue
+                    )
+                }
                 values.add(value)
             }
             RelationFormat.PHONE -> {
-                val value = DefaultObjectRelationValueView.Phone(
-                    objectId = id,
-                    relationKey = relation.key,
-                    phone = getValue<String>(relation.key)
-                )
+                val relationValue = getValue<String>(relation.key)
+                val value = if (relationValue.isNullOrBlank()) {
+                    DefaultObjectRelationValueView.Empty(
+                        objectId = id,
+                        relationKey = relation.key,
+                    )
+                } else {
+                    DefaultObjectRelationValueView.Phone(
+                        objectId = id,
+                        relationKey = relation.key,
+                        phone = relationValue
+                    )
+                }
                 values.add(value)
             }
             RelationFormat.CHECKBOX -> {
@@ -82,7 +121,6 @@ suspend fun ObjectWrapper.Basic.values(
                 val setting = settings.find { it.key == relation.key }
                 val format: String
                 val dateFormat: String
-
                 if (setting != null) {
                     dateFormat = setting.dateFormat?.format ?: DateConst.DEFAULT_DATE_FORMAT
                     format = if (setting.isDateIncludeTime == true) {
@@ -97,60 +135,98 @@ suspend fun ObjectWrapper.Basic.values(
                 } else {
                     format = DateConst.DEFAULT_DATE_FORMAT
                 }
-
                 val time = map.getOrDefault(key = relation.key, null)
-
-                val value = DefaultObjectRelationValueView.Date(
-                    objectId = id,
-                    relationKey = relation.key,
-                    timeInMillis = DateParser.parseInMillis(time),
-                    dateFormat = format
-                )
+                val value = if (time == null) {
+                    DefaultObjectRelationValueView.Empty(
+                        objectId = id,
+                        relationKey = relation.key,
+                    )
+                } else {
+                    DefaultObjectRelationValueView.Date(
+                        objectId = id,
+                        relationKey = relation.key,
+                        timeInMillis = DateParser.parseInMillis(time),
+                        dateFormat = format
+                    )
+                }
                 values.add(value)
             }
             RelationFormat.STATUS -> {
-                val value = DefaultObjectRelationValueView.Status(
-                    objectId = id,
-                    relationKey = relation.key,
-                    status = statuses(
-                        relation = relation.key,
-                        storeOfObjects = storeOfObjects
-                    )
+                val statuses = statuses(
+                    relation = relation.key,
+                    storeOfObjects = storeOfObjects
                 )
+                val value = if (statuses.isEmpty()) {
+                    DefaultObjectRelationValueView.Empty(
+                        objectId = id,
+                        relationKey = relation.key,
+                    )
+                } else {
+                    DefaultObjectRelationValueView.Status(
+                        objectId = id,
+                        relationKey = relation.key,
+                        status = statuses
+                    )
+                }
                 values.add(value)
             }
             RelationFormat.TAG -> {
-                val value = DefaultObjectRelationValueView.Tag(
-                    objectId = id,
-                    relationKey = relation.key,
-                    tags = tags(
-                        relation = relation.key,
-                        storeOfObjects = storeOfObjects
-                    )
+                val tags = tags(
+                    relation = relation.key,
+                    storeOfObjects = storeOfObjects
                 )
+                val value = if (tags.isEmpty()) {
+                    DefaultObjectRelationValueView.Empty(
+                        objectId = id,
+                        relationKey = relation.key,
+                    )
+                } else {
+                    DefaultObjectRelationValueView.Tag(
+                        objectId = id,
+                        relationKey = relation.key,
+                        tags = tags
+                    )
+                }
                 values.add(value)
             }
             RelationFormat.FILE -> {
-                val value = DefaultObjectRelationValueView.File(
-                    objectId = id,
-                    relationKey = relation.key,
-                    files = files(
-                        relation = relation.key,
-                        storeOfObjects = storeOfObjects
-                    )
+                val files = files(
+                    relation = relation.key,
+                    storeOfObjects = storeOfObjects
                 )
+                val value = if (files.isEmpty()) {
+                    DefaultObjectRelationValueView.Empty(
+                        objectId = id,
+                        relationKey = relation.key,
+                    )
+                } else {
+                    DefaultObjectRelationValueView.File(
+                        objectId = id,
+                        relationKey = relation.key,
+                        files = files
+                    )
+
+                }
                 values.add(value)
             }
             RelationFormat.OBJECT -> {
-                val value = DefaultObjectRelationValueView.Object(
-                    objectId = id,
-                    relationKey = relation.key,
-                    objects = objects(
-                        relation = relation.key,
-                        urlBuilder = urlBuilder,
-                        storeOfObjects = storeOfObjects
-                    )
+                val objects = objects(
+                    relation = relation.key,
+                    urlBuilder = urlBuilder,
+                    storeOfObjects = storeOfObjects
                 )
+                val value = if (objects.isEmpty()) {
+                    DefaultObjectRelationValueView.Empty(
+                        objectId = id,
+                        relationKey = relation.key,
+                    )
+                } else {
+                    DefaultObjectRelationValueView.Object(
+                        objectId = id,
+                        relationKey = relation.key,
+                        objects = objects
+                    )
+                }
                 values.add(value)
             }
             else -> {

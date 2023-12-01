@@ -183,6 +183,7 @@ class ListViewItemRelationGroupWidget @JvmOverloads constructor(
                         ids.add(view.id)
                     }
                 }
+                is DefaultObjectRelationValueView.Empty -> {}
             }
         }
 

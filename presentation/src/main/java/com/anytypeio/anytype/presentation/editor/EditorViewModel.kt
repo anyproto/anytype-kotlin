@@ -113,6 +113,7 @@ import com.anytypeio.anytype.presentation.editor.editor.SideEffect
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Toolbar.Main.TargetBlockType
 import com.anytypeio.anytype.presentation.editor.editor.ext.clearSearchHighlights
 import com.anytypeio.anytype.presentation.editor.editor.ext.cutPartOfText
 import com.anytypeio.anytype.presentation.editor.editor.ext.enterSAM
@@ -1246,13 +1247,14 @@ class EditorViewModel(
             orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
         }
         blocks.find { it.id == id }?.let { target ->
-            val content = target.content
-            val targetBlockType =
-                if (content is TextBlock && content.style == Content.Text.Style.TITLE) {
-                    ControlPanelState.Toolbar.Main.TargetBlockType.Title
-                } else {
-                    ControlPanelState.Toolbar.Main.TargetBlockType.Any
+            val targetBlockType = when (val content = target.content) {
+                is TextBlock -> when (content.style) {
+                    Content.Text.Style.TITLE -> TargetBlockType.Title
+                    Content.Text.Style.DESCRIPTION -> TargetBlockType.Description
+                    else -> TargetBlockType.Any
                 }
+                else -> TargetBlockType.Any
+            }
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.OnSelectionChanged(
                     target = target,
@@ -1274,7 +1276,7 @@ class EditorViewModel(
                 ControlPanelMachine.Event.OnSelectionChanged(
                     target = target,
                     selection = selection,
-                    targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Cell
+                    targetBlockType = TargetBlockType.Cell
                 )
             )
         }

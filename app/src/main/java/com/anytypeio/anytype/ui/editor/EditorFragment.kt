@@ -1340,6 +1340,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 Main.TargetBlockType.Any -> BlockToolbarWidget.State.Any
                 Main.TargetBlockType.Title -> BlockToolbarWidget.State.Title
                 Main.TargetBlockType.Cell -> BlockToolbarWidget.State.Cell
+                Main.TargetBlockType.Description -> BlockToolbarWidget.State.Description
             }
         } else {
             binding.toolbar.invisible()

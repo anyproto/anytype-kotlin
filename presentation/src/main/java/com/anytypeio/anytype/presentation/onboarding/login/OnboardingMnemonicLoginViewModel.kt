@@ -3,17 +3,34 @@ package com.anytypeio.anytype.presentation.onboarding.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
+import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
+import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
+import com.anytypeio.anytype.domain.auth.interactor.ObserveAccounts
 import com.anytypeio.anytype.domain.auth.interactor.RecoverWallet
 import com.anytypeio.anytype.domain.auth.interactor.SaveMnemonic
+import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
+import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.common.ViewState
+import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
+import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -22,11 +39,24 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val convertWallet: ConvertWallet,
     private val saveMnemonic: SaveMnemonic,
     private val pathProvider: PathProvider,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val startLoadingAccounts: StartLoadingAccounts,
+    private val observeAccounts: ObserveAccounts,
+    private val selectAccount: SelectAccount,
+    private val relationsSubscriptionManager: RelationsSubscriptionManager,
+    private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+    private val crashReporter: CrashReporter,
+    private val configStorage: ConfigStorage
 ) : ViewModel() {
 
     val sideEffects = MutableSharedFlow<SideEffect>()
     val state = MutableSharedFlow<ViewState<Boolean>>()
+    private val setupState = MutableStateFlow<OnboardingLoginSetupViewModel.SetupState>(OnboardingLoginSetupViewModel.SetupState.Idle)
+
+    val navigation = MutableSharedFlow<OnboardingLoginSetupViewModel.Navigation>()
+
+    val error by lazy { MutableStateFlow(OnboardingLoginSetupViewModel.NO_ERROR) }
 
     init {
         viewModelScope.sendEvent(
@@ -126,6 +156,106 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         )
     }
 
+    private fun startLoadingAccount() {
+        startLoadingAccounts.invoke(
+            viewModelScope, StartLoadingAccounts.Params()
+        ) { result ->
+            result.either(
+                fnL = { e ->
+                    if (e is AccountIsDeletedException) {
+                        error.value = "This account is deleted. Try using another account or create a new one."
+                    } else {
+                        error.value = "Error while account loading \n ${e.localizedMessage}"
+                    }
+                    Timber.e(e, "Error while account loading")
+                    // TODO refact
+                    viewModelScope.launch { navigation.emit(OnboardingLoginSetupViewModel.Navigation.Exit) }
+                },
+                fnR = {
+                    Timber.d("Account loading successfully finished")
+                }
+            )
+        }
+    }
+
+    private fun startObservingAccounts() {
+        viewModelScope.launch {
+            observeAccounts.build().take(1).collect { account ->
+                onFirstAccountLoaded(account.id)
+            }
+        }
+    }
+
+    private fun onFirstAccountLoaded(id: String) {
+        proceedWithSelectingAccount(id)
+    }
+
+    private fun proceedWithSelectingAccount(id: String) {
+        val startTime = System.currentTimeMillis()
+        viewModelScope.launch {
+            setupState.value = OnboardingLoginSetupViewModel.SetupState.InProgress
+            selectAccount(
+                SelectAccount.Params(
+                    id = id,
+                    path = pathProvider.providePath()
+                )
+            ).process(
+                failure = { e ->
+                    Timber.e(e, "Error while selecting account with id: $id")
+                    setupState.value = OnboardingLoginSetupViewModel.SetupState.Failed
+                    when (e) {
+                        is MigrationNeededException -> {
+                            navigateToMigrationErrorScreen()
+                        }
+                        is AccountIsDeletedException -> {
+                            error.value = "This account is deleted. Try using another account or create a new one."
+                        }
+                        is NeedToUpdateApplicationException -> {
+                            error.value = SplashViewModel.ERROR_NEED_UPDATE
+                        }
+                        else -> {
+                            val msg = e.message ?: "Unknown error"
+                            error.value = "${SetupSelectedAccountViewModel.ERROR_MESSAGE}: $msg"
+                        }
+                    }
+                },
+                success = { (analyticsId, status) ->
+                    analytics.proceedWithAccountEvent(
+                        configStorage = configStorage,
+                        startTime = startTime,
+                        eventName = EventsDictionary.openAccount
+                    )
+                    crashReporter.setUser(analyticsId)
+                    proceedWithGlobalSubscriptions()
+                    navigateToDashboard()
+                }
+            )
+        }
+    }
+
+    private fun navigateToMigrationErrorScreen() {
+        viewModelScope.launch {
+            navigation.emit(OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen)
+        }
+    }
+
+    private fun proceedWithGlobalSubscriptions() {
+        relationsSubscriptionManager.onStart()
+        objectTypesSubscriptionManager.onStart()
+        spaceDeletedStatusWatcher.onStart()
+    }
+
+    private fun navigateToDashboard() {
+        viewModelScope.launch {
+            navigation.emit(OnboardingLoginSetupViewModel.Navigation.NavigateToHomeScreen)
+        }
+    }
+
+    fun onRetryClicked(id: Id) {
+        // TODO
+        proceedWithSelectingAccount(id)
+    }
+
     sealed class SideEffect {
         object ProceedWithLogin : SideEffect()
         data class Error(val msg: String): SideEffect()
@@ -137,7 +267,15 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         private val convertWallet: ConvertWallet,
         private val recoverWallet: RecoverWallet,
         private val saveMnemonic: SaveMnemonic,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val startLoadingAccounts: StartLoadingAccounts,
+        private val observeAccounts: ObserveAccounts,
+        private val selectAccount: SelectAccount,
+        private val relationsSubscriptionManager: RelationsSubscriptionManager,
+        private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
+        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+        private val crashReporter: CrashReporter,
+        private val configStorage: ConfigStorage
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -146,7 +284,15 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 convertWallet = convertWallet,
                 pathProvider = pathProvider,
                 saveMnemonic = saveMnemonic,
-                analytics = analytics
+                analytics = analytics,
+                relationsSubscriptionManager = relationsSubscriptionManager,
+                objectTypesSubscriptionManager = objectTypesSubscriptionManager,
+                crashReporter = crashReporter,
+                configStorage = configStorage,
+                startLoadingAccounts = startLoadingAccounts,
+                observeAccounts = observeAccounts,
+                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
+                selectAccount = selectAccount
             ) as T
         }
     }

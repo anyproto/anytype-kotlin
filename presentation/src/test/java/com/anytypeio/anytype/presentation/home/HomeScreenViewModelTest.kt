@@ -815,7 +815,7 @@ class HomeScreenViewModelTest {
                     subscription = BundledWidgetSourceIds.FAVORITE,
                     spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                     keys = TreeWidgetContainer.keys,
-                    limit = TreeWidgetContainer.NO_LIMIT
+                    limit = WidgetConfig.NO_LIMIT
                 ),
                 results = listOf(firstLink, secondLink)
             )
@@ -1600,7 +1600,7 @@ class HomeScreenViewModelTest {
                 subscription = BundledWidgetSourceIds.FAVORITE,
                 spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace),
                 keys = TreeWidgetContainer.keys,
-                limit = TreeWidgetContainer.NO_LIMIT
+                limit = WidgetConfig.NO_LIMIT
             ),
             results = listOf(firstLink, secondLink)
         )

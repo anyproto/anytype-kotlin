@@ -52,7 +52,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     val sideEffects = MutableSharedFlow<SideEffect>()
     val state = MutableSharedFlow<ViewState<Boolean>>()
-    private val setupState = MutableStateFlow<OnboardingLoginSetupViewModel.SetupState>(OnboardingLoginSetupViewModel.SetupState.Idle)
+    val setupState = MutableStateFlow<SetupState>(SetupState.Idle)
 
     val navigation = MutableSharedFlow<OnboardingLoginSetupViewModel.Navigation>()
 
@@ -192,7 +192,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private fun proceedWithSelectingAccount(id: String) {
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            setupState.value = OnboardingLoginSetupViewModel.SetupState.InProgress
+            setupState.value = SetupState.InProgress
             selectAccount(
                 SelectAccount.Params(
                     id = id,
@@ -201,7 +201,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
             ).process(
                 failure = { e ->
                     Timber.e(e, "Error while selecting account with id: $id")
-                    setupState.value = OnboardingLoginSetupViewModel.SetupState.Failed
+                    setupState.value = SetupState.Failed
                     when (e) {
                         is MigrationNeededException -> {
                             navigateToMigrationErrorScreen()
@@ -259,6 +259,12 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         object ProceedWithLogin : SideEffect()
         data class Error(val msg: String): SideEffect()
         object Exit: SideEffect()
+    }
+
+    sealed class SetupState {
+        object Idle : SetupState()
+        object InProgress: SetupState()
+        object Failed: SetupState()
     }
 
     class Factory @Inject constructor(

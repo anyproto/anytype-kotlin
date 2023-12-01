@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -53,7 +54,10 @@ fun RecoveryScreenWrapper(
         onBackClicked = onBackClicked,
         onNextClicked = vm::onLoginClicked,
         onActionDoneClicked = vm::onActionDone,
-        onScanQrClicked = onScanQrClick
+        onScanQrClicked = onScanQrClick,
+        isLoading = vm.setupState
+            .collectAsState().value
+                is OnboardingMnemonicLoginViewModel.SetupState.InProgress
     )
 }
 
@@ -62,7 +66,8 @@ fun RecoveryScreen(
     onBackClicked: () -> Unit,
     onNextClicked: (Mnemonic) -> Unit,
     onActionDoneClicked: (Mnemonic) -> Unit,
-    onScanQrClicked: () -> Unit
+    onScanQrClicked: () -> Unit,
+    isLoading: Boolean
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -134,12 +139,15 @@ fun RecoveryScreen(
                         size = ButtonSize.Large,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 18.dp)
+                            .padding(horizontal = 18.dp),
+                        isLoading = isLoading
                     )
                 }
                 item {
                     Text(
-                        modifier = Modifier.fillMaxSize().padding(vertical = 12.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 12.dp),
                         textAlign = TextAlign.Center,
                         text = stringResource(id = R.string.onboarding_login_or),
                         style = ConditionLogin.copy(

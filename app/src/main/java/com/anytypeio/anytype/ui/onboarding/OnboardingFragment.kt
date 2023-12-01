@@ -309,7 +309,6 @@ class OnboardingFragment : Fragment() {
                 vm.onGetEntropyFromQRCode(entropy = r.contents)
             }
         }
-
         RecoveryScreenWrapper(
             vm = vm,
             onBackClicked = vm::onBackButtonPressed,
@@ -328,11 +327,6 @@ class OnboardingFragment : Fragment() {
                             navController.popBackStack()
                         }
                     }
-
-                    is OnboardingMnemonicLoginViewModel.SideEffect.ProceedWithLogin -> {
-                        navController.navigate(OnboardingNavigation.enterTheVoid)
-                    }
-
                     is OnboardingMnemonicLoginViewModel.SideEffect.Error -> {
                         toast(effect.msg)
                     }

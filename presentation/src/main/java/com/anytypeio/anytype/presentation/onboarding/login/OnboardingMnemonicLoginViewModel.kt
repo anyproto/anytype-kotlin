@@ -259,7 +259,6 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     sealed class SideEffect {
-        object ProceedWithLogin : SideEffect()
         data class Error(val msg: String): SideEffect()
         object Exit: SideEffect()
     }

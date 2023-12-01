@@ -53,8 +53,8 @@
     <string name="manage_files">Administrer filer</string>
     <string name="local_storage">Lokal lagring</string>
     <string name="offload_files">Slett lokale filer</string>
-    <string name="local_storage_used">%1$s used</string>
-    <string name="space_usage">%1$s of %2$s used</string>
+    <string name="local_storage_used">%1$s brukt</string>
+    <string name="space_usage">%1$s av %2$s brukt</string>
     <string name="remote_storage">Fjernlagring</string>
     <string name="contact_us">Kontakt oss</string>
     <string name="get_more_space">Få mer plass</string>
@@ -190,7 +190,7 @@
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
     <string name="bookmark_error">Noe gikk galt, vennligst prøv på nytt</string>
     <string name="deleted_type">Slettet type</string>
-    <string name="deleted_type_in_set">Type: Deleted</string>
+    <string name="deleted_type_in_set">Type: Slettet</string>
     <string name="menu_item_bold">Fet</string>
     <string name="menu_item_italic">Kursiv</string>
     <string name="menu_item_strike">Strike</string>
@@ -306,9 +306,9 @@
     <string name="select_all">Velg alle</string>
     <string name="value">Verdi</string>
     <string name="empty">Tom</string>
-    <string name="dv_cell_description_hint">Add text…</string>
-    <string name="dv_cell_number_hint">Add number…</string>
-    <string name="unknown_object_type">Unknown type</string>
+    <string name="dv_cell_description_hint">Legg til tekst…</string>
+    <string name="dv_cell_number_hint">Legg til nummer…</string>
+    <string name="unknown_object_type">Ukjent type</string>
     <string name="relation_format_short_text">Kort tekst</string>
     <string name="relation_format_long_text">Lang tekst</string>
     <string name="set_new_relation">Angi ny relasjon</string>
@@ -345,7 +345,7 @@
     <string name="select_tags">Select tags</string>
     <string name="select_status">Velg status</string>
     <string name="select_objects">Select objects</string>
-    <string name="source">Source</string>
+    <string name="source">Kilde</string>
     <string name="query">Spørring</string>
     <string name="select_query">Velg spørring</string>
     <string name="objects">Objekter</string>
@@ -367,7 +367,7 @@
     <string name="unsupported_block">Blokk støttet ikke</string>
     <string name="new_relation">Ny relasjon</string>
     <string name="copy_link">Kopier lenke</string>
-    <string name="edit_link">Edit link</string>
+    <string name="edit_link">Rediger lenke</string>
     <string name="unlink">Unlink</string>
     <string name="choose_layout_type">Velg oppsett</string>
     <string name="user_settings_title">User settings</string>
@@ -388,7 +388,7 @@
     <string name="no_data">Ingen data</string>
     <string name="no_source">Ingen kilde</string>
     <string name="deleted_object">Slettet objekt</string>
-    <string name="open_set">Open set</string>
+    <string name="open_set">Åpne sett</string>
     <string name="deleted">Slettet</string>
     <string name="paste_link_or_search">Lim inn kobling eller søk i objekter</string>
     <string name="paste_from_clipboard">Lim inn fra utklippstavle</string>
@@ -689,7 +689,7 @@
     <string name="choose_option">Choose option</string>
     <string name="find_a_relation">Find a relation</string>
     <string name="inbox">Inbox</string>
-    <string name="unknown_type">Unknown type</string>
+    <string name="unknown_type">Ukjent type</string>
     <string name="set">Sett</string>
     <string name="collection">Samling</string>
     <string name="layout">Oppsett</string>
@@ -877,7 +877,7 @@
     <string name="slash_widget_actions_duplicate">Dupliser</string>
     <string name="slash_widget_actions_copy">Kopier</string>
     <string name="slash_widget_actions_paste">Lim inn</string>
-    <string name="slash_widget_actions_link_to">Lenke til objekt</string>
+    <string name="slash_widget_actions_link_to">Legg til lenke</string>
     <string name="slash_widget_actions_link_to_subtitle">Lenke til eksisterende objekt</string>
     <string name="slash_widget_actions_move">Flytt</string>
     <string name="slash_widget_actions_moveto">Flytt til</string>
@@ -988,8 +988,8 @@
     <string name="object_action_to_widgets">Til widgets</string>
     <!--endregion-->
     <!--region SEARCH -->
-    <string name="nothing_found">Nothing found</string>
-    <string name="nothing_found_object_types">No object type found. Please try changing your request.</string>
+    <string name="nothing_found">Ingenting funnet</string>
+    <string name="nothing_found_object_types">Ingen objekttype funnet. Vennligst prøv å endre søket ditt.</string>
     <!--endregion-->
     <!--region CONTENT DESCRIPTIONS FOR ACCESSIBILITY -->
     <string name="content_description_delete_button">Delete button</string>
@@ -1006,5 +1006,13 @@
     <string name="content_desc_object_icon">Object image or emoji</string>
     <string name="content_desc_checkbox_icon">Checkbox icon</string>
     <string name="content_desc_layout_icon">Layout icon</string>
+    <!--endregion-->
+    <!--region BUTTONS -->
+    <string name="button_okay">Okay</string>
+    <string name="button_close">Lukk</string>
+    <!--endregion-->
+    <!--region ALERTS -->
+    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
+    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
     <!--endregion-->
 </resources>

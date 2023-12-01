@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
@@ -87,6 +88,7 @@ import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -976,8 +978,19 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onStart() {
-        Timber.d("onStart")
+    fun onStart(deeplink: DeepLinkResolver.Action? = null) {
+        Timber.d("onStart, deep link:$deeplink")
+        when(deeplink) {
+            DeepLinkResolver.Action.Import.Experience -> {
+                viewModelScope.launch {
+                    delay(1000)
+                    commands.emit(Command.Deeplink.CannotImportExperience)
+                }
+            }
+            else -> {
+                // Do nothing
+            }
+        }
         widgetObjectPipelineJobs += viewModelScope.launch {
             if (!isWidgetSessionRestored) {
                 val session = withContext(appCoroutineDispatchers.io) {
@@ -1395,6 +1408,10 @@ sealed class Command {
             const val TYPE_COMPACT_LIST = 3
             const val UNDEFINED_LAYOUT_CODE = -1
         }
+    }
+
+    sealed class Deeplink : Command() {
+        object CannotImportExperience : Deeplink()
     }
 }
 

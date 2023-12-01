@@ -171,6 +171,12 @@ class SplashViewModel(
         proceedWithNavigation()
     }
 
+    fun onDeepLink(deeplink: String) {
+        viewModelScope.launch {
+            proceedWithDashboardNavigation(deeplink)
+        }
+    }
+
     private fun proceedWithNavigation() {
         viewModelScope.launch {
             getLastOpenedObject(BaseUseCase.None).process(
@@ -200,11 +206,11 @@ class SplashViewModel(
         }
     }
 
-    private suspend fun proceedWithDashboardNavigation() {
+    private suspend fun proceedWithDashboardNavigation(deeplink: String? = null) {
         if (BuildConfig.ENABLE_WIDGETS) {
             commands.emit(Command.NavigateToWidgets)
         } else {
-            commands.emit(Command.NavigateToDashboard)
+            commands.emit(Command.NavigateToDashboard(deeplink))
         }
     }
 
@@ -227,7 +233,7 @@ class SplashViewModel(
     }
 
     sealed class Command {
-        object NavigateToDashboard : Command()
+        data class NavigateToDashboard(val deeplink: String? = null) : Command()
         object NavigateToWidgets : Command()
         object NavigateToLogin : Command()
 

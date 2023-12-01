@@ -7,6 +7,7 @@ import android.widget.LinearLayout
 import com.anytypeio.anytype.core_ui.databinding.WidgetBlockToolbarBinding
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.core_utils.ext.visible
 
@@ -31,6 +32,12 @@ class BlockToolbarWidget @JvmOverloads constructor(
          * Toolbar is shown specially for Simple Table cells
          */
         object Cell : State
+
+
+        /**
+         * Toolbar is shown specially for Description block
+         */
+        object Description : State
     }
 
     private val binding = WidgetBlockToolbarBinding.inflate(
@@ -67,6 +74,13 @@ class BlockToolbarWidget @JvmOverloads constructor(
                     blockMentionButton.visible()
                     slashWidgetButton.gone()
                     changeStyleButton.gone()
+                }
+                State.Description -> {
+                    done.visible()
+                    changeStyleButton.invisible()
+                    blockActions.invisible()
+                    blockMentionButton.invisible()
+                    slashWidgetButton.invisible()
                 }
             }
         }

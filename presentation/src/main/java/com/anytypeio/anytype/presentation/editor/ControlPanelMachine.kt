@@ -490,6 +490,7 @@ sealed class ControlPanelMachine {
                                 Toolbar.Main.TargetBlockType.Any -> Toolbar.Main.TargetBlockType.Any
                                 Toolbar.Main.TargetBlockType.Cell -> Toolbar.Main.TargetBlockType.Cell
                                 Toolbar.Main.TargetBlockType.Title -> Toolbar.Main.TargetBlockType.Title
+                                Toolbar.Main.TargetBlockType.Description -> Toolbar.Main.TargetBlockType.Description
                             }
                         ),
                         styleTextToolbar = Toolbar.Styling.reset(),
@@ -507,6 +508,7 @@ sealed class ControlPanelMachine {
                                     Toolbar.Main.TargetBlockType.Any -> Toolbar.Main.TargetBlockType.Any
                                     Toolbar.Main.TargetBlockType.Cell -> Toolbar.Main.TargetBlockType.Cell
                                     Toolbar.Main.TargetBlockType.Title -> Toolbar.Main.TargetBlockType.Title
+                                    Toolbar.Main.TargetBlockType.Description -> Toolbar.Main.TargetBlockType.Description
                                 }
                             ),
                             styleTextToolbar = Toolbar.Styling.reset(),

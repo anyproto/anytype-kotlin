@@ -140,9 +140,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         ) { result ->
             result.either(
                 fnR = {
-                    viewModelScope.launch {
-                        sideEffects.emit(SideEffect.ProceedWithLogin)
-                    }
+                    startObservingAccounts()
+                    startLoadingAccount()
                 },
                 fnL = { Timber.e(it, "Error while saving mnemonic") }
             )

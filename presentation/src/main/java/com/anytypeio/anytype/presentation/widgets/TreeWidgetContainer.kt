@@ -280,13 +280,10 @@ class TreeWidgetContainer(
         )
     }
 
-    private fun resolveLimit(): Int = NO_LIMIT
-
     companion object {
         const val ROOT_INDENT = 0
         const val MAX_INDENT = 3
         const val SEPARATOR = "/"
-        const val NO_LIMIT = 0
         val keys = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
             add(Relations.LINKS)

@@ -41,14 +41,9 @@ object WidgetConfig {
         }
     }
 
-    fun resolveTreeWidgetLimit(limit: Int) : Int {
-        return if (treeLimitOptions.contains(limit)) {
-            limit
-        } else {
-            DEFAULT_TREE_LIMIT
-        }
-    }
+    fun resolveTreeWidgetLimit(limit: Int) : Int  = NO_LIMIT
 
+    const val NO_LIMIT = 0
     const val DEFAULT_LIST_LIMIT = 4
     const val DEFAULT_COMPACT_LIST_LIMIT = 6
     const val DEFAULT_TREE_LIMIT = 6

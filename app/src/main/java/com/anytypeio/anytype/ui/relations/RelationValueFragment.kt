@@ -158,7 +158,7 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
     }
 
     override fun onUploadFromGalleryAction() {
-        toast("Not implemented")
+        vm.onFileValueActionUploadFromGalleryClicked()
     }
 
     override fun onUploadFromStorageAction() {

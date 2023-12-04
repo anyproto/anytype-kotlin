@@ -1008,11 +1008,11 @@
     <string name="content_desc_layout_icon">Layout icon</string>
     <!--endregion-->
     <!--region BUTTONS -->
-    <string name="button_okay">Okay</string>
+    <string name="button_okay">D\'accord</string>
     <string name="button_close">Fermer</string>
     <!--endregion-->
     <!--region ALERTS -->
-    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
-    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
+    <string name="alert_gallery_unsupported_title">La galerie sera bientôt prise en charge</string>
+    <string name="alert_gallery_unsupported_description">Veuillez utiliser l\'application de bureau pour le moment.</string>
     <!--endregion-->
 </resources>

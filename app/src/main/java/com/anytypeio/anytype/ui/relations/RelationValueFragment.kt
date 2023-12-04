@@ -109,8 +109,16 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddFileScreen -> {
                 showAddFileScreen()
             }
-            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
+            RelationValueBaseViewModel.ObjectRelationValueCommand.UploadFromStorage -> {
                 openFilePicker()
+            }
+            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileActionsScreen -> {
+                val fr = FileActionsFragment()
+                fr.showChildFragment()
+            }
+
+            RelationValueBaseViewModel.ObjectRelationValueCommand.UploadFromGallery -> {
+                openGallery()
             }
         }
     }
@@ -145,17 +153,15 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
         fr.showChildFragment()
     }
 
-    override fun onFileValueActionAdd() {
+    override fun onAddAction() {
         vm.onFileValueActionAddClicked()
     }
 
-    override fun onFileValueActionUploadFromGallery() {
+    override fun onUploadFromGalleryAction() {
         toast("Not implemented")
-        vm.onFileValueActionUploadFromGalleryClicked()
     }
 
-    override fun onFileValueActionUploadFromStorage() {
-        toast("Not implemented")
+    override fun onUploadFromStorageAction() {
         vm.onFileValueActionUploadFromStorageClicked()
     }
 

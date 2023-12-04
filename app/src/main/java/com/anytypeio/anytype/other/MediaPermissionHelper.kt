@@ -4,9 +4,6 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.anytypeio.anytype.core_utils.ext.FilePickerUtils.getPermissionToRequestByMime
-import com.anytypeio.anytype.core_utils.ext.FilePickerUtils.getPermissionToRequestForFiles
-import com.anytypeio.anytype.core_utils.ext.FilePickerUtils.getPermissionToRequestForImages
-import com.anytypeio.anytype.core_utils.ext.FilePickerUtils.getPermissionToRequestForVideos
 import com.anytypeio.anytype.core_utils.ext.FilePickerUtils.hasPermission
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 
@@ -18,26 +15,20 @@ class MediaPermissionHelper(
     private var mimeType: Mimetype? = null
     private var requestCode: Int? = null
 
-    private val permissionReadStorage: ActivityResultLauncher<Array<String>>
-
-    init {
-        permissionReadStorage = fragment.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
-            val readResult = when (mimeType) {
-                Mimetype.MIME_VIDEO_ALL -> grantResults[getPermissionToRequestForVideos()]
-                Mimetype.MIME_IMAGE_ALL -> grantResults[getPermissionToRequestForImages()]
-                Mimetype.MIME_FILE_ALL -> grantResults[getPermissionToRequestForFiles()]
-                null -> false
-            }
-            if (readResult == true) {
-                val type = requireNotNull(mimeType) {
-                    "mimeType should be initialized"
+    private val permissionReadStorage: ActivityResultLauncher<Array<String>> =
+        fragment.registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { grantResults ->
+            grantResults.entries.forEach {
+                val isGranted = it.value
+                if (isGranted) {
+                    val type = requireNotNull(mimeType) {
+                        "mimeType should be initialized"
+                    }
+                    onPermissionSuccess(type, requestCode)
+                } else {
+                    onPermissionDenied()
                 }
-                onPermissionSuccess(type, requestCode)
-            } else {
-                onPermissionDenied()
             }
         }
-    }
 
     fun openFilePicker(mimeType: Mimetype, requestCode: Int?) {
         this.mimeType = mimeType
@@ -48,7 +39,7 @@ class MediaPermissionHelper(
             onPermissionSuccess(mimeType, requestCode)
         } else {
             val permission = mimeType.getPermissionToRequestByMime()
-            permissionReadStorage.launch(arrayOf(permission))
+            permissionReadStorage.launch(permission)
         }
     }
 }

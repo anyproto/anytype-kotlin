@@ -271,14 +271,15 @@ message Rpc {
                 option (no_auth) = true;
 
                 string name = 1; // Account name
-                oneof avatar { //TODO: Remove if not needed, GO-1926
+                oneof avatar {//TODO: Remove if not needed, GO-1926
                     string avatarLocalPath = 2; // Path to an image, that will be used as an avatar of this account
                 }
                 string storePath = 3; // Path to local storage
                 int64 icon = 4; // Option of pre-installed icon
                 bool disableLocalNetworkSync = 5; // Disable local network discovery
+                NetworkMode networkMode = 6; // optional, default is DefaultConfig
+                string networkCustomConfigFilePath = 7; // config path for the custom network mode            }
             }
-
             /**
             * Middleware-to-front-end response for an account creation request, that can contain a NULL error and created account or a non-NULL error and an empty account
             */
@@ -391,6 +392,8 @@ message Rpc {
                 string id = 1; // Id of a selected account
                 string rootPath = 2; // Root path is optional, set if this is a first request
                 bool disableLocalNetworkSync = 3; // Disable local network discovery
+                NetworkMode networkMode = 4; // optional, default is DefaultConfig
+                string networkCustomConfigFilePath = 5; // config path for the custom network mode
             }
 
             /**
@@ -486,7 +489,6 @@ message Rpc {
 
         message ConfigUpdate {
             message Request {
-                string timeZone = 1;
                 string IPFSStorageAddr = 2;
             }
 
@@ -594,6 +596,40 @@ message Rpc {
                 }
             }
 
+        }
+
+        message ChangeNetworkConfigAndRestart {
+            message Request {
+                NetworkMode networkMode = 1;
+                string networkCustomConfigFilePath = 2;
+            }
+            message Response {
+                Error error = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        ACCOUNT_IS_NOT_RUNNING = 4;
+
+                        CONFIG_FILE_NOT_FOUND = 100;
+                        CONFIG_FILE_INVALID = 101;
+                        ACCOUNT_FAILED_TO_STOP = 102;
+
+                    }
+                }
+            }
+
+        }
+
+        enum NetworkMode {
+            DefaultConfig = 0; // use network config that embedded in binary
+            LocalOnly = 1;  // disable any-sync network and use only local p2p nodes
+            CustomConfig = 2; // use config provided in networkConfigFilePath
         }
     }
 
@@ -1939,6 +1975,7 @@ message Rpc {
                 Mode mode = 11;
                 bool noProgress = 12;
                 bool isMigration = 13;
+                bool isNewSpace = 15;
 
                 message NotionParams {
                     string apiKey = 1;
@@ -1963,6 +2000,12 @@ message Rpc {
                 message PbParams {
                     repeated string path = 1;
                     bool noCollection = 2;
+                    string collectionTitle = 3;
+                    Type importType = 4;
+                    enum Type {
+                        SPACE = 0;
+                        EXPERIENCE = 1;
+                    };
                 }
 
                 message CsvParams {
@@ -2014,6 +2057,7 @@ message Rpc {
                         NO_OBJECTS_TO_IMPORT = 5;
                         IMPORT_IS_CANCELED = 6;
                         LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED = 7;
+                        FILE_LOAD_ERROR = 8;
                     }
                 }
             }
@@ -2113,8 +2157,9 @@ message Rpc {
         message ImportExperience {
             message Request {
                 string spaceId = 1;
-                string source = 2;
-                bool isLocal = 3;
+                string url = 2;
+                string title = 3;
+                bool isNewSpace = 4;
             }
 
             message Response {

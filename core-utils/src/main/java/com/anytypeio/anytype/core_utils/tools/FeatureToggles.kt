@@ -16,7 +16,5 @@ interface FeatureToggles {
 
     val isLogEditorControlPanelMachine: Boolean
 
-    val isNewOnBoardingEnabled: Boolean
-
     val enableSpaces: Boolean
 }

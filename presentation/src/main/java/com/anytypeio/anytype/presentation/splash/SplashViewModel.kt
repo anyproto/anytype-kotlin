@@ -77,11 +77,7 @@ class SplashViewModel(
                 failure = { e -> Timber.e(e, "Error while checking auth status") },
                 success = { status ->
                     if (status == AuthStatus.UNAUTHORIZED) {
-                        if (featureToggles.isNewOnBoardingEnabled) {
-                            commands.emit(Command.NavigateToAuthStart)
-                        } else {
-                            commands.emit(Command.NavigateToLogin)
-                        }
+                        commands.emit(Command.NavigateToAuthStart)
                     } else {
                         proceedWithLaunchingWallet()
                     }
@@ -243,10 +239,7 @@ class SplashViewModel(
     sealed class Command {
         data class NavigateToDashboard(val deeplink: String? = null) : Command()
         object NavigateToWidgets : Command()
-        object NavigateToLogin : Command()
-
         object NavigateToAuthStart : Command()
-
         object NavigateToMigration: Command()
         object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id) : Command()

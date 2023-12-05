@@ -61,7 +61,8 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         }
         screen.addPreference(dropDownPreference)
         filePathPreference = Preference(context).apply {
-            title = "Network file"
+            icon = null
+            title = getString(R.string.settings_network_configuration_file)
             isSingleLineTitle = true
         }
         setFilePathPreference()
@@ -74,7 +75,12 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     }
 
     private fun setFilePathPreference() {
-        filePathPreference.summary = sharedPreferences.getString(NETWORK_CONFIG_FILE_PATH, "")
+        val filePath = sharedPreferences.getString(NETWORK_CONFIG_FILE_PATH, "")
+        if (filePath.isNullOrBlank()) {
+            filePathPreference.summary = "..."
+        } else {
+            filePathPreference.summary = filePath
+        }
     }
 
     private fun openFilePicker() {

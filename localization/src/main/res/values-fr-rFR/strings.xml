@@ -69,11 +69,11 @@
     <string name="multi_select_turn_into">Transformer en</string>
     <string name="multi_select_move_to">Déplacer vers</string>
     <string name="option_toolbar_header_turn_into">Transformer en</string>
-    <string name="option_toolbar_header_add_block">Add block</string>
+    <string name="option_toolbar_header_add_block">Ajouter un bloc</string>
     <string name="option_text_text">Texte</string>
-    <string name="option_text_header_one">Header 1</string>
-    <string name="option_text_header_two">Header 2</string>
-    <string name="option_text_header_three">Header 3</string>
+    <string name="option_text_header_one">Titre 1</string>
+    <string name="option_text_header_two">Titre 2</string>
+    <string name="option_text_header_three">Titre 3</string>
     <string name="option_text_highlighted">Surligné</string>
     <string name="option_list_checkbox">Case à cocher</string>
     <string name="option_list_bulleted_list">Liste à puces</string>

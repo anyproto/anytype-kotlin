@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -51,7 +52,8 @@ class SplashViewModel(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val featureToggles: FeatureToggles,
     private val crashReporter: CrashReporter,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+    private val localeProvider: LocaleProvider
 ) : ViewModel() {
 
     val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
@@ -219,6 +221,12 @@ class SplashViewModel(
             analytics = analytics,
             userProperty = UserProperty.AccountId(id)
         )
+        localeProvider.language()?.let { lang ->
+            viewModelScope.updateUserProperties(
+                analytics = analytics,
+                userProperty = UserProperty.InterfaceLanguage(lang)
+            )
+        }
     }
 
     private fun sendEvent(startTime: Long, event: String, props: Props) {

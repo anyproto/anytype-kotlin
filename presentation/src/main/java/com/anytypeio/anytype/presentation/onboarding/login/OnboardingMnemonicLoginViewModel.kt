@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
@@ -47,7 +48,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val crashReporter: CrashReporter,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val localeProvider: LocaleProvider
 ) : ViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -225,7 +227,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     analytics.proceedWithAccountEvent(
                         configStorage = configStorage,
                         startTime = startTime,
-                        eventName = EventsDictionary.openAccount
+                        eventName = EventsDictionary.openAccount,
+                        lang = localeProvider.language()
                     )
                     crashReporter.setUser(analyticsId)
                     proceedWithGlobalSubscriptions()
@@ -282,7 +285,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         private val crashReporter: CrashReporter,
-        private val configStorage: ConfigStorage
+        private val configStorage: ConfigStorage,
+        private val localeProvider: LocaleProvider,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -299,7 +303,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 startLoadingAccounts = startLoadingAccounts,
                 observeAccounts = observeAccounts,
                 spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
-                selectAccount = selectAccount
+                selectAccount = selectAccount,
+                localeProvider = localeProvider
             ) as T
         }
     }

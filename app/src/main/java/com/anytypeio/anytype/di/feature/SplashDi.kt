@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.platform.MetricsProvider
@@ -190,4 +191,5 @@ interface SplashDependencies : ComponentDependencies {
     fun metricsProvider(): MetricsProvider
     fun spaceManager(): SpaceManager
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
+    fun localeProvider(): LocaleProvider
 }

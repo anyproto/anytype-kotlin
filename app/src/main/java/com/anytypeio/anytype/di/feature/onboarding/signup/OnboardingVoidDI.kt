@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -107,4 +108,5 @@ interface OnboardingVoidDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun crashReporter(): CrashReporter
     fun spaceManager(): SpaceManager
+    fun localeProvider(): LocaleProvider
 }

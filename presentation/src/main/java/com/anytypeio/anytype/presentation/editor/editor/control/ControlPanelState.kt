@@ -73,6 +73,8 @@ data class ControlPanelState(
                 object Title: TargetBlockType
 
                 object Cell: TargetBlockType
+
+                object Description : TargetBlockType
             }
 
             companion object {

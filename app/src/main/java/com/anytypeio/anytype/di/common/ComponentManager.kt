@@ -72,7 +72,6 @@ import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponen
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingLoginSetupComponent
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemonicComponent
-import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationAnimComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
@@ -961,12 +960,6 @@ class ComponentManager(
 
     val onboardingSoulCreationComponent = Component {
         DaggerOnboardingSoulCreationComponent
-            .factory()
-            .create(findComponentDependencies())
-    }
-
-    val onboardingSoulCreationAnimComponent = Component {
-        DaggerOnboardingSoulCreationAnimComponent
             .factory()
             .create(findComponentDependencies())
     }

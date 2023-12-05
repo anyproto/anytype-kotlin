@@ -18,15 +18,15 @@ class FileActionsFragment : BaseDialogFragment<FragmentRelationFileValueActionBi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.btnAdd.setOnClickListener {
-            withParent<FileActionReceiver> { onFileValueActionAdd() }
+            withParent<FileActionReceiver> { onAddAction() }
             dismiss()
         }
         binding.btnUploadFromGallery.setOnClickListener {
-            withParent<FileActionReceiver> { onFileValueActionUploadFromGallery() }
+            withParent<FileActionReceiver> { onUploadFromGalleryAction() }
             dismiss()
         }
         binding.btnUploadFromStorage.setOnClickListener {
-            withParent<FileActionReceiver> { onFileValueActionUploadFromStorage() }
+            withParent<FileActionReceiver> { onUploadFromStorageAction() }
             dismiss()
         }
     }
@@ -53,8 +53,8 @@ class FileActionsFragment : BaseDialogFragment<FragmentRelationFileValueActionBi
     )
 
     interface FileActionReceiver {
-        fun onFileValueActionAdd()
-        fun onFileValueActionUploadFromGallery()
-        fun onFileValueActionUploadFromStorage()
+        fun onAddAction()
+        fun onUploadFromGalleryAction()
+        fun onUploadFromStorageAction()
     }
 }

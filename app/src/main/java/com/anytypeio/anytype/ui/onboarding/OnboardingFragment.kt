@@ -33,7 +33,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -76,7 +75,6 @@ import com.anytypeio.anytype.presentation.onboarding.login.OnboardingLoginSetupV
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
-import com.anytypeio.anytype.ui.onboarding.screens.signin.EnteringTheVoidScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
@@ -293,23 +291,8 @@ class OnboardingFragment : Fragment() {
                     navController.popBackStack()
                 }
             }
-            composable(
-                route = OnboardingNavigation.enterTheVoid,
-                enterTransition = {
-                    fadeIn(tween(ANIMATION_LENGTH_FADE))
-                },
-                exitTransition = {
-                    fadeOut(tween(ANIMATION_LENGTH_FADE))
-                }
-            ) {
-                currentPage.value = OnboardingPage.ENTER_THE_VOID
-                enterTheVoid(navController)
-            }
         }
     }
-
-    @Composable
-    private fun ContentPaddingTop() = LocalConfiguration.current.screenHeightDp * 2 / 6
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
@@ -326,7 +309,6 @@ class OnboardingFragment : Fragment() {
                 vm.onGetEntropyFromQRCode(entropy = r.contents)
             }
         }
-
         RecoveryScreenWrapper(
             vm = vm,
             onBackClicked = vm::onBackButtonPressed,
@@ -345,13 +327,29 @@ class OnboardingFragment : Fragment() {
                             navController.popBackStack()
                         }
                     }
-
-                    is OnboardingMnemonicLoginViewModel.SideEffect.ProceedWithLogin -> {
-                        navController.navigate(OnboardingNavigation.enterTheVoid)
-                    }
-
                     is OnboardingMnemonicLoginViewModel.SideEffect.Error -> {
                         toast(effect.msg)
+                    }
+                }
+            }
+        }
+        LaunchedEffect(Unit) {
+            vm.navigation.collect { navigation ->
+                when (navigation) {
+                    OnboardingLoginSetupViewModel.Navigation.Exit -> {
+                        navController.popBackStack()
+                    }
+
+                    OnboardingLoginSetupViewModel.Navigation.NavigateToHomeScreen -> {
+                        findNavController().navigate(R.id.action_openHome)
+                    }
+
+                    OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen -> {
+                        findNavController().navigate(R.id.migrationNeededScreen, null, navOptions {
+                            popUpTo(R.id.onboarding_nav) {
+                                inclusive = false
+                            }
+                        })
                     }
                 }
             }
@@ -383,46 +381,6 @@ class OnboardingFragment : Fragment() {
         } catch (e: Exception) {
             toast("Error while scanning QR code")
             Timber.e(e, "Error while scanning QR code")
-        }
-    }
-
-    @Composable
-    private fun enterTheVoid(
-        navController: NavHostController
-    ) {
-        val component = componentManager().onboardingLoginSetupComponent
-        val vm = daggerViewModel { component.get().getViewModel() }
-        EnteringTheVoidScreen(
-            error = vm.error.collectAsState().value,
-            contentPaddingTop = ContentPaddingTop(),
-            onSystemBackPressed = vm::onSystemBackPressed
-        )
-        LaunchedEffect(Unit) {
-            vm.navigation.collect { navigation ->
-                when (navigation) {
-                    OnboardingLoginSetupViewModel.Navigation.Exit -> {
-                        navController.popBackStack()
-                    }
-
-                    OnboardingLoginSetupViewModel.Navigation.NavigateToHomeScreen -> {
-                        findNavController().navigate(R.id.action_openHome)
-                    }
-
-                    OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen -> {
-                        findNavController().navigate(R.id.migrationNeededScreen, null, navOptions {
-                            popUpTo(R.id.onboarding_nav) {
-                                inclusive = false
-                            }
-                        })
-                    }
-                }
-            }
-        }
-        LaunchedEffect(Unit) {
-            vm.toasts.collect { toast(it) }
-        }
-        DisposableEffect(Unit) {
-            onDispose { component.release() }
         }
     }
 

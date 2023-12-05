@@ -327,10 +327,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
                 eq(mockObjectSet.subscriptionId),
                 eq(listOf()),
                 eq(
-                    mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                        mockObjectSet.spaceId,
-                        root
-                    )
+                    mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(mockObjectSet.spaceId)
                 ),
                 eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
                 eq(listOf(type2.id)),

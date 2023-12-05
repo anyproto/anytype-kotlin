@@ -2,13 +2,14 @@ package com.anytypeio.anytype.presentation.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
-import com.anytypeio.anytype.CrashReporter
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -31,7 +32,8 @@ class SplashViewModelFactory @Inject constructor(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val featureToggles: FeatureToggles,
     private val crashReporter: CrashReporter,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+    private val localeProvider: LocaleProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -47,6 +49,7 @@ class SplashViewModelFactory @Inject constructor(
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
             featureToggles = featureToggles,
             crashReporter = crashReporter,
-            spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
+            spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
+            localeProvider = localeProvider
         ) as T
 }

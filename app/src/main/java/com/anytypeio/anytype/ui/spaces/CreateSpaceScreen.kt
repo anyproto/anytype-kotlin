@@ -260,7 +260,8 @@ fun Section(
                 )
                 .align(Alignment.BottomStart),
             text = title,
-            color = colorResource(id = R.color.text_secondary)
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption1Regular
         )
     }
 }

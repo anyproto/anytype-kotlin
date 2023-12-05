@@ -99,4 +99,6 @@
 
     <color name="select_space_bottom_sheet_background_color">#1F1E1D</color>
 
+    <color name="context_menu_background">#302F2B</color>
+
 </resources>

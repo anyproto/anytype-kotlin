@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.29.13"
+middlewareVersion = "v0.29.16"
 kotlinVersion = '1.7.10'
 
 androidxCoreVersion = "1.10.1"
@@ -12,7 +12,7 @@ composeConstraintLayoutVersion = '1.0.1'
 
 activityComposeVersion = '1.7.2'
 composeReorderableVersion = '0.9.6'
-accompanistVersion = "0.29.1-alpha"
+accompanistVersion = "0.30.0"
 appcompatVersion = '1.6.1'
 fragmentVersion = "1.6.1"
 exoplayerVersion = "2.19.1"
@@ -77,6 +77,7 @@ composeFoundation = { module = "androidx.compose.foundation:foundation", version
 composeMaterial = { module = "androidx.compose.material:material", version.ref = "composeMaterialVersion" }
 composeMaterial3 = { module = "androidx.compose.material3:material3", version.ref = "composeMaterial3Version" }
 composeAccompanistPager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistVersion" }
+composeAccompanistPermissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistVersion" }
 composeAccompanistPagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistVersion" }
 composeAccompanistThemeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "accompanistVersion" }
 composeReorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "composeReorderableVersion" }
@@ -161,8 +162,8 @@ appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "991
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "7.4.1" }
-library = { id = "com.android.library", version = "7.4.1" }
+application = { id = "com.android.application", version = "8.1.4" }
+library = { id = "com.android.library", version = "8.1.4" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "kotlinVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }

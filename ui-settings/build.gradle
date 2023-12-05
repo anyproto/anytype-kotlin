@@ -14,6 +14,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion libs.versions.composeKotlinCompilerVersion.get()
     }
+    namespace 'com.anytypeio.anytype.ui_settings'
 }
 
 dependencies {

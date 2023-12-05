@@ -19,7 +19,6 @@ import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.tools.DefaultDividerItemDecoration
 import com.anytypeio.anytype.core_utils.ext.drawable
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.databinding.FragmentRelationValueBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.RelationValueView
@@ -109,8 +108,16 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowAddFileScreen -> {
                 showAddFileScreen()
             }
-            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileValueActionScreen -> {
+            RelationValueBaseViewModel.ObjectRelationValueCommand.UploadFromStorage -> {
                 openFilePicker()
+            }
+            RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileActionsScreen -> {
+                val fr = FileActionsFragment()
+                fr.show(childFragmentManager, null)
+            }
+
+            RelationValueBaseViewModel.ObjectRelationValueCommand.UploadFromGallery -> {
+                openGallery()
             }
         }
     }
@@ -122,7 +129,7 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
             objectId = target,
             flow = AddFileRelationFragment.FLOW_DEFAULT
         )
-        fr.showChildFragment()
+        fr.show(childFragmentManager, null)
     }
 
     private fun showAddStatusOrTagScreen() {
@@ -131,7 +138,7 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
             objectId = target,
             relationKey = relationKey
         )
-        fr.showChildFragment()
+        fr.show(childFragmentManager, null)
     }
 
     private fun showAddObjectScreen() {
@@ -142,20 +149,18 @@ class RelationValueFragment : RelationValueBaseFragment<FragmentRelationValueBin
             types = types,
             flow = AddObjectRelationFragment.FLOW_OBJECT
         )
-        fr.showChildFragment()
+        fr.show(childFragmentManager, null)
     }
 
-    override fun onFileValueActionAdd() {
+    override fun onAddAction() {
         vm.onFileValueActionAddClicked()
     }
 
-    override fun onFileValueActionUploadFromGallery() {
-        toast("Not implemented")
+    override fun onUploadFromGalleryAction() {
         vm.onFileValueActionUploadFromGalleryClicked()
     }
 
-    override fun onFileValueActionUploadFromStorage() {
-        toast("Not implemented")
+    override fun onUploadFromStorageAction() {
         vm.onFileValueActionUploadFromStorageClicked()
     }
 

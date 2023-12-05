@@ -13,14 +13,14 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.Marketplace.COLLECTION_MARKETPLACE_ID
+import com.anytypeio.anytype.core_models.Marketplace.SET_MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -40,6 +41,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.descendants
 import com.anytypeio.anytype.core_models.ext.isAllTextAndNoneCodeBlocks
 import com.anytypeio.anytype.core_models.ext.isAllTextBlocks
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.ext.parents
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.ext.sortByType
@@ -98,7 +100,6 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.StateReducer
 import com.anytypeio.anytype.presentation.common.SupportCommand
-import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Event.ObjectTypesWidgetEvent
 import com.anytypeio.anytype.presentation.editor.ControlPanelMachine.Interactor
 import com.anytypeio.anytype.presentation.editor.Editor.Restore
 import com.anytypeio.anytype.presentation.editor.editor.Command
@@ -112,6 +113,7 @@ import com.anytypeio.anytype.presentation.editor.editor.SideEffect
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.actions.ActionItemType
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
+import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState.Toolbar.Main.TargetBlockType
 import com.anytypeio.anytype.presentation.editor.editor.ext.clearSearchHighlights
 import com.anytypeio.anytype.presentation.editor.editor.ext.cutPartOfText
 import com.anytypeio.anytype.presentation.editor.editor.ext.enterSAM
@@ -244,6 +246,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.debounce
@@ -1193,7 +1196,7 @@ class EditorViewModel(
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
-        sendHideObjectTypeWidgetEvent()
+        sendHideTypesWidgetEvent()
     }
 
     fun onDescriptionBlockTextChanged(view: BlockView.Description) {
@@ -1208,7 +1211,7 @@ class EditorViewModel(
         )
         viewModelScope.launch { orchestrator.stores.views.update(new) }
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
-        sendHideObjectTypeWidgetEvent()
+        sendHideTypesWidgetEvent()
     }
 
     fun onTextBlockTextChanged(view: BlockView.Text) {
@@ -1234,7 +1237,7 @@ class EditorViewModel(
         }
 
         viewModelScope.launch { orchestrator.proxies.changes.send(update) }
-        sendHideObjectTypeWidgetEvent()
+        sendHideTypesWidgetEvent()
     }
 
     fun onSelectionChanged(id: String, selection: IntRange) {
@@ -1244,13 +1247,14 @@ class EditorViewModel(
             orchestrator.stores.textSelection.update(Editor.TextSelection(id, selection))
         }
         blocks.find { it.id == id }?.let { target ->
-            val content = target.content
-            val targetBlockType =
-                if (content is TextBlock && content.style == Content.Text.Style.TITLE) {
-                    ControlPanelState.Toolbar.Main.TargetBlockType.Title
-                } else {
-                    ControlPanelState.Toolbar.Main.TargetBlockType.Any
+            val targetBlockType = when (val content = target.content) {
+                is TextBlock -> when (content.style) {
+                    Content.Text.Style.TITLE -> TargetBlockType.Title
+                    Content.Text.Style.DESCRIPTION -> TargetBlockType.Description
+                    else -> TargetBlockType.Any
                 }
+                else -> TargetBlockType.Any
+            }
             controlPanelInteractor.onEvent(
                 ControlPanelMachine.Event.OnSelectionChanged(
                     target = target,
@@ -1272,7 +1276,7 @@ class EditorViewModel(
                 ControlPanelMachine.Event.OnSelectionChanged(
                     target = target,
                     selection = selection,
-                    targetBlockType = ControlPanelState.Toolbar.Main.TargetBlockType.Cell
+                    targetBlockType = TargetBlockType.Cell
                 )
             )
         }
@@ -1413,7 +1417,7 @@ class EditorViewModel(
     ) {
         Timber.d("onEndLineEnterClicked, id:[$id] text:[$text] marks:[$marks]")
 
-        sendHideObjectTypeWidgetEvent()
+        sendHideTypesWidgetEvent()
 
         val target = blocks.first { it.id == id }
 
@@ -1456,17 +1460,8 @@ class EditorViewModel(
         controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentMenuClicked)
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
-        val isProfile = getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.PROFILE
         val isTemplate = isObjectTemplate()
         when {
-            isProfile -> {
-                dispatch(
-                    command = Command.OpenProfileMenu(
-                        isFavorite = details[context]?.isFavorite ?: false,
-                        isLocked = mode == EditorMode.Locked
-                    )
-                )
-            }
             isTemplate -> {
                 dispatch(
                     command = Command.OpenDocumentMenu(
@@ -2907,7 +2902,7 @@ class EditorViewModel(
     fun onOutsideClicked() {
         Timber.d("onOutsideClicked, ")
 
-        sendHideObjectTypeWidgetEvent()
+        sendHideTypesWidgetEvent()
 
         if (mode is EditorMode.Styling) {
             onExitBlockStyleToolbarClicked()
@@ -4314,12 +4309,29 @@ class EditorViewModel(
         )
     }
 
+    fun onTypesWidgetItemClicked(item: TypesWidgetItem) {
+        Timber.d("onTypesWidgetItemClicked, item:[$item]")
+        when (item) {
+            TypesWidgetItem.Search -> {
+                onTypesWidgetSearchClicked()
+            }
+            is TypesWidgetItem.Type -> {
+                val objType = _objectTypes.firstOrNull { item.item.id == it.id }
+                if (objType != null) {
+                    onObjectTypeChanged(objType)
+                } else {
+                    Timber.e("Error while getting object type from objectTypes list")
+                }
+            }
+        }
+    }
+
     fun onObjectTypeChanged(
-        item: ObjectTypeView
+        objType: ObjectWrapper.Type
     ) {
-        Timber.d("onObjectTypeChanged, item:[$item]")
+        Timber.d("onObjectTypeChanged, item:[$objType]")
         viewModelScope.launch {
-            when (item.key) {
+            when (objType.uniqueKey) {
                 ObjectTypeIds.SET -> {
                     proceedWithConvertingToSet()
                 }
@@ -4327,7 +4339,7 @@ class EditorViewModel(
                     proceedWithConvertingToCollection()
                 }
                 else -> {
-                    proceedWithObjectTypeChangeAndApplyTemplate(item)
+                    proceedWithObjectTypeChangeAndApplyTemplate(objType)
                 }
             }
         }
@@ -4346,7 +4358,7 @@ class EditorViewModel(
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
-                    sourceObject = ObjectTypeIds.SET,
+                    sourceObject = SET_MARKETPLACE_ID,
                     containsFlagType = true
                 )
             }
@@ -4363,7 +4375,7 @@ class EditorViewModel(
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
                     analytics = analytics,
                     startTime = startTime,
-                    sourceObject = ObjectTypeIds.COLLECTION,
+                    sourceObject = COLLECTION_MARKETPLACE_ID,
                     containsFlagType = true
                 )
             }
@@ -4397,6 +4409,8 @@ class EditorViewModel(
         const val ERROR_UNSUPPORTED_BEHAVIOR = "Currently unsupported behavior."
         const val NOT_ALLOWED_FOR_OBJECT = "Not allowed for this object"
         const val NOT_ALLOWED_FOR_RELATION = "Not allowed for this relation"
+
+        private const val EDITOR_TEMPLATES_SUBSCRIPTION = "editor_templates_subscription"
     }
 
     data class MarkupAction(
@@ -4842,27 +4856,19 @@ class EditorViewModel(
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = buildList {
-                    addAll(
-                        ObjectSearchConstants.filterObjectTypeLibrary(
-                            space = spaceManager.get()
-                        )
-                    )
-                    add(
-                        DVFilter(
-                            relation = Relations.RECOMMENDED_LAYOUT,
-                            condition = DVFilterCondition.IN,
-                            value = SupportedLayouts.editorLayouts.map {
-                                it.code.toDouble()
-                            }
-                        )
-                    )
-                },
+                filters = ObjectSearchConstants.filterTypes(
+                    spaces = buildList {
+                        add(spaceManager.get())
+                    },
+                    recommendedLayouts = SupportedLayouts.editorLayouts
+                ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
             getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
                 onSuccess = { types ->
+                    _objectTypes.clear()
+                    _objectTypes.addAll(types)
                     val views = types.getObjectTypeViewsForSBPage(
                         isWithCollection = false,
                         isWithBookmark = false,
@@ -4880,7 +4886,6 @@ class EditorViewModel(
         val objectDetails = details.details[context]?.map ?: emptyMap()
         val objectWrapper = ObjectWrapper.Basic(objectDetails)
         val objectType = objectWrapper.getProperType()
-        val objectTypeWrapper = ObjectWrapper.Type(details.details[objectType]?.map ?: emptyMap())
         val relationLinks = orchestrator.stores.relationLinks.current()
 
         viewModelScope.launch {
@@ -4896,7 +4901,7 @@ class EditorViewModel(
                 ctx = context,
                 objectDetails = objectDetails,
                 relationLinks = relationLinks,
-                objectTypeWrapper = objectTypeWrapper,
+                objectTypeStruct = details.details[objectType]?.map,
                 details = details
             )
             val update =
@@ -4930,12 +4935,14 @@ class EditorViewModel(
         ctx: Id,
         objectDetails: Map<Key, Any?>,
         relationLinks: List<RelationLink>,
-        objectTypeWrapper: ObjectWrapper.Type,
+        objectTypeStruct: Struct?,
         details: Block.Details
     ): List<ObjectRelationView> {
+        val objType = objectTypeStruct?.mapToObjectWrapperType()
+        val recommendedRelations = objType?.recommendedRelations ?: emptyList()
         return getNotIncludedRecommendedRelations(
             relationLinks = relationLinks,
-            recommendedRelations = objectTypeWrapper.recommendedRelations,
+            recommendedRelations = recommendedRelations,
             storeOfRelations = storeOfRelations
         ).views(
             context = ctx,
@@ -5379,7 +5386,7 @@ class EditorViewModel(
         Timber.d("onKeyPressedEvent, event:[$event]")
         when (event) {
             is KeyPressedEvent.OnTitleBlockEnterKeyEvent -> {
-                sendHideObjectTypeWidgetEvent()
+                sendHideTypesWidgetEvent()
                 proceedWithTitleEnterClicked(
                     title = event.target,
                     text = event.text,
@@ -5911,54 +5918,61 @@ class EditorViewModel(
     //endregion
 
     //region OBJECT TYPES WIDGET
-    private val isObjectTypesWidgetVisible: Boolean
-        get() =
-            controlPanelViewState.value?.objectTypesToolbar?.isVisible ?: false
+    data class TypesWidgetState(
+        val items: List<TypesWidgetItem>,
+        val visible: Boolean
+    )
 
-    fun onObjectTypesWidgetSearchClicked() {
+    sealed class TypesWidgetItem {
+        object Search : TypesWidgetItem()
+        data class Type(val item: ObjectTypeView) : TypesWidgetItem()
+    }
+
+    private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
+    private val _typesWidgetState = MutableStateFlow(TypesWidgetState(emptyList(), false))
+    private val isTypesWidgetVisible: Boolean get() = _typesWidgetState.value.visible
+    val typesWidgetState: StateFlow<TypesWidgetState> get() = _typesWidgetState
+
+    private fun setTypesWidgetVisibility(visible: Boolean) {
+        if (visible) {
+            proceedWithGettingObjectTypesForTypesWidget()
+        }
+        _typesWidgetState.value = _typesWidgetState.value.copy(visible = visible)
+    }
+
+    private fun onTypesWidgetSearchClicked() {
         Timber.d("onObjectTypesWidgetSearchClicked, ")
         proceedWithOpeningSelectingObjectTypeScreen()
     }
 
-    fun onObjectTypesWidgetDoneClicked() {
-        Timber.d("onObjectTypesWidgetDoneClicked, ")
-        sendHideObjectTypeWidgetEvent()
-    }
-
-    private fun proceedWithGettingObjectTypesForObjectTypeWidget() {
+    private fun proceedWithGettingObjectTypesForTypesWidget() {
         viewModelScope.launch {
             val excludeTypes = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
-                filters = buildList {
-                    addAll(
-                        ObjectSearchConstants.filterObjectTypeLibrary(
-                            space = spaceManager.get()
-                        )
-                    )
-                    add(
-                        DVFilter(
-                            relation = Relations.RECOMMENDED_LAYOUT,
-                            condition = DVFilterCondition.IN,
-                            value = SupportedLayouts.createObjectLayouts.map { layout ->
-                                layout.code.toDouble()
-                            }
-                        )
-                    )
-                },
+                filters = ObjectSearchConstants.filterTypes(
+                    spaces = buildList {
+                        add(spaceManager.get())
+                    },
+                    recommendedLayouts = SupportedLayouts.createObjectLayouts
+                ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
             getObjectTypes.async(params).fold(
                 onFailure = { Timber.e(it, "Error while getting library object types") },
-                onSuccess = { types ->
-                    val views = types.getObjectTypeViewsForSBPage(
-                        isWithCollection = true,
-                        isWithBookmark = false,
-                        selectedTypes = emptyList(),
-                        excludeTypes = excludeTypes
-                    )
-                    val filtered = views.filter { !excludeTypes.contains(it.key) }
-                    controlPanelInteractor.onEvent(ObjectTypesWidgetEvent.Show(filtered))
+                onSuccess = { objects ->
+                    _objectTypes.clear()
+                    _objectTypes.addAll(objects)
+                    val items = buildList {
+                        add(TypesWidgetItem.Search)
+                        addAll(objects.getObjectTypeViewsForSBPage(
+                            isWithCollection = true,
+                            isWithBookmark = false,
+                            excludeTypes = excludeTypes
+                        ).filter { !excludeTypes.contains(it.key) }
+                            .map { TypesWidgetItem.Type(it, ) })
+                    }
+                    _typesWidgetState.value = _typesWidgetState.value.copy(items = items)
                 }
             )
         }
@@ -5966,40 +5980,34 @@ class EditorViewModel(
 
     private fun proceedWithOpeningSelectingObjectTypeScreen() {
         val excludeTypes = orchestrator.stores.details.current().details[context]?.type
-        val command = if (isObjectTypesWidgetVisible) {
-            Command.OpenDraftObjectSelectTypeScreen(
-                excludedTypes = excludeTypes ?: emptyList()
-            )
-        } else {
-            Command.OpenObjectSelectTypeScreen(
-                excludedTypes = excludeTypes ?: emptyList()
-            )
-        }
+        val command = Command.OpenObjectSelectTypeScreen(
+            excludedTypes = excludeTypes ?: emptyList()
+        )
         dispatch(command)
     }
 
-    private fun sendHideObjectTypeWidgetEvent() {
-        if (isObjectTypesWidgetVisible) controlPanelInteractor.onEvent(ObjectTypesWidgetEvent.Hide)
+    private fun sendHideTypesWidgetEvent() {
+        setTypesWidgetVisibility(false)
     }
 
-    private fun proceedWithObjectTypeChange(item: ObjectTypeView, onSuccess: (() -> Unit)? = null) {
+    private fun proceedWithObjectTypeChange(objType: ObjectWrapper.Type, onSuccess: (() -> Unit)? = null) {
         val startTime = System.currentTimeMillis()
         val internalFlags = getInternalFlagsFromDetails()
         val containsTypeFlag = internalFlags.contains(InternalFlags.ShouldSelectType)
         viewModelScope.launch {
             val params = SetObjectType.Params(
                 context = context,
-                objectTypeKey = item.key
+                objectTypeKey = objType.uniqueKey
             )
             setObjectType.async(params).fold(
-                onFailure = { Timber.e(it, "Error while updating object type: [${item.key}]") },
+                onFailure = { Timber.e(it, "Error while updating object type: [${objType.uniqueKey}]") },
                 onSuccess = { response ->
-                    Timber.d("proceedWithObjectTypeChange success, key:[${item.key}]")
+                    Timber.d("proceedWithObjectTypeChange success, key:[${objType.uniqueKey}]")
                     dispatcher.send(response)
                     sendAnalyticsObjectTypeSelectOrChangeEvent(
                         analytics = analytics,
                         startTime = startTime,
-                        sourceObject = item.sourceObject,
+                        sourceObject = objType.sourceObject,
                         containsFlagType = containsTypeFlag
                     )
                     onSuccess?.invoke()
@@ -6008,12 +6016,12 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithObjectTypeChangeAndApplyTemplate(item: ObjectTypeView) {
-        proceedWithObjectTypeChange(item) {
+    private fun proceedWithObjectTypeChangeAndApplyTemplate(objType: ObjectWrapper.Type) {
+        proceedWithObjectTypeChange(objType) {
             val internalFlags = getInternalFlagsFromDetails()
             if (internalFlags.contains(InternalFlags.ShouldSelectTemplate)) {
                 onProceedWithApplyingTemplateByObjectId(
-                    template = item.defaultTemplate
+                    template = objType.defaultTemplateId
                 )
             }
         }
@@ -6110,7 +6118,7 @@ class EditorViewModel(
                 proceedToAddObjectToTextAsLink(id = result.id)
                 viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
-                    type = typeId?.id,
+                    type = typeKey.key,
                     storeOfObjectTypes = storeOfObjectTypes,
                     route = EventsDictionary.Routes.objTurnInto,
                     startTime = startTime
@@ -6259,7 +6267,7 @@ class EditorViewModel(
             startTemplatesSubscription(objType = objType)
         } else {
             stopTemplatesSubscription()
-            Timber.e("proceedWithShowTemplatesToolbar, Templates are not allowed for typeId:[${objType.id}]")
+            Timber.w("proceedWithShowTemplatesToolbar, Templates are not allowed for typeId:[${objType.id}]")
         }
     }
 
@@ -6280,11 +6288,8 @@ class EditorViewModel(
         val details = orchestrator.stores.details.current()
         val currentObject = ObjectWrapper.Basic(details.details[context]?.map ?: emptyMap())
         val currentObjectTypeId = currentObject.getProperType() ?: return null
-        return if (details.details.containsKey(currentObjectTypeId)) {
-            ObjectWrapper.Type(details.details[currentObjectTypeId]?.map ?: emptyMap())
-        } else {
-            null
-        }
+        val struct = details.details[currentObjectTypeId]?.map
+        return struct?.mapToObjectWrapperType()
     }
 
     fun isObjectTemplate(): Boolean {
@@ -6300,7 +6305,7 @@ class EditorViewModel(
     private fun startTemplatesSubscription(objType: ObjectWrapper.Type) {
         templatesJob += viewModelScope.launch {
             templatesContainer
-                .subscribeToTemplates(type = objType.id)
+                .subscribeToTemplates(type = objType.id, subId = EDITOR_TEMPLATES_SUBSCRIPTION)
                 .catch { Timber.e(it, "Error while subscribing to templates") }
                 .collect { templates ->
                     if (templates.isNotEmpty()) {
@@ -6320,7 +6325,7 @@ class EditorViewModel(
             selectTemplateViewState.value = SelectTemplateViewState.Idle
             templatesJob.cancel()
             viewModelScope.launch {
-                templatesContainer.unsubscribeFromTemplates()
+                templatesContainer.unsubscribeFromTemplates(subId = EDITOR_TEMPLATES_SUBSCRIPTION)
             }
         }
     }
@@ -7024,15 +7029,15 @@ class EditorViewModel(
     private fun proceedWithCheckingInternalFlagShouldSelectType(flags: List<InternalFlags>) {
         val containsFlag = flags.any { it == InternalFlags.ShouldSelectType }
         when {
-            isObjectTypesWidgetVisible -> {
+            isTypesWidgetVisible -> {
                 if (!containsFlag) {
-                    sendHideObjectTypeWidgetEvent()
+                    sendHideTypesWidgetEvent()
                 }
             }
             containsFlag -> {
                 val restrictions = orchestrator.stores.objectRestrictions.current()
                 if (restrictions.none { it == ObjectRestriction.TYPE_CHANGE }) {
-                    proceedWithGettingObjectTypesForObjectTypeWidget()
+                    setTypesWidgetVisibility(true)
                 }
             }
         }

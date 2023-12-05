@@ -11,6 +11,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -19,11 +20,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
+import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -33,6 +42,7 @@ import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.TitleLogin
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
+import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel.SetupState
 import com.anytypeio.anytype.ui.onboarding.OnboardingInput
 
 @Composable
@@ -45,7 +55,8 @@ fun RecoveryScreenWrapper(
         onBackClicked = onBackClicked,
         onNextClicked = vm::onLoginClicked,
         onActionDoneClicked = vm::onActionDone,
-        onScanQrClicked = onScanQrClick
+        onScanQrClicked = onScanQrClick,
+        isLoading = vm.state.collectAsState().value is SetupState.InProgress
     )
 }
 
@@ -54,7 +65,8 @@ fun RecoveryScreen(
     onBackClicked: () -> Unit,
     onNextClicked: (Mnemonic) -> Unit,
     onActionDoneClicked: (Mnemonic) -> Unit,
-    onScanQrClicked: () -> Unit
+    onScanQrClicked: () -> Unit,
+    isLoading: Boolean
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
@@ -110,7 +122,8 @@ fun RecoveryScreen(
                                     context.toast(emptyRecoveryPhraseError)
                                 }
                             }
-                        )
+                        ),
+                        visualTransformation = MnemonicPhraseFormatter
                     )
                 }
                 item {
@@ -125,12 +138,15 @@ fun RecoveryScreen(
                         size = ButtonSize.Large,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 18.dp)
+                            .padding(horizontal = 18.dp),
+                        isLoading = isLoading
                     )
                 }
                 item {
                     Text(
-                        modifier = Modifier.fillMaxSize().padding(vertical = 12.dp),
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 12.dp),
                         textAlign = TextAlign.Center,
                         text = stringResource(id = R.string.onboarding_login_or),
                         style = ConditionLogin.copy(
@@ -169,3 +185,38 @@ fun RecoveryScreen(
 }
 
 typealias Mnemonic = String
+
+object MnemonicPhraseFormatter : VisualTransformation {
+
+    override fun filter(text: AnnotatedString): TransformedText {
+        val transformed = buildAnnotatedString {
+            var colorIndex = 0
+            var isPreviousLetterOrDigit = false
+            text.forEachIndexed { index, char ->
+                if (char.isLetterOrDigit()) {
+                    withStyle(
+                        style = SpanStyle(
+                            color = MnemonicPhrasePaletteColors[colorIndex]
+                        )
+                    ) {
+                        append(char)
+                    }
+                    isPreviousLetterOrDigit = true
+                } else {
+                    if (isPreviousLetterOrDigit) {
+                        colorIndex = colorIndex.inc()
+                        isPreviousLetterOrDigit = false
+                    }
+                    append(char)
+                }
+                if (colorIndex > MnemonicPhrasePaletteColors.lastIndex) {
+                    colorIndex = 0
+                }
+            }
+        }
+        return TransformedText(
+            transformed,
+            OffsetMapping.Identity
+        )
+    }
+}

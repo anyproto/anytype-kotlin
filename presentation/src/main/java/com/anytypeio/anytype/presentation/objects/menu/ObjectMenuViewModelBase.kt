@@ -7,15 +7,20 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -50,7 +55,9 @@ abstract class ObjectMenuViewModelBase(
     private val menuOptionsProvider: ObjectMenuOptionsProvider,
     private val duplicateObject: DuplicateObject,
     private val addObjectToCollection: AddObjectToCollection,
-    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
+    private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
+    private val createWidget: CreateWidget,
+    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
     protected val jobs = mutableListOf<Job>()
@@ -88,16 +95,14 @@ abstract class ObjectMenuViewModelBase(
         ctx: Id,
         isFavorite: Boolean,
         isArchived: Boolean,
-        isProfile: Boolean,
         isLocked: Boolean,
         isTemplate: Boolean
     ) {
-        Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isProfile:[$isProfile], isLocked:[$isLocked]")
+        Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isLocked:[$isLocked]")
         actions.value = buildActions(
             ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,
-            isProfile = isProfile,
             isTemplate = isTemplate
         )
         jobs += viewModelScope.launch {
@@ -111,7 +116,6 @@ abstract class ObjectMenuViewModelBase(
         ctx: Id,
         isArchived: Boolean,
         isFavorite: Boolean,
-        isProfile: Boolean,
         isTemplate: Boolean = false
     ): List<ObjectAction>
 
@@ -344,6 +348,36 @@ abstract class ObjectMenuViewModelBase(
                         Timber.e(it, "Error while collecting goroutines diagnostics")
                     }
                 )
+            }
+        }
+    }
+
+    fun proceedWithCreatingWidget(obj: ObjectWrapper.Basic) {
+        viewModelScope.launch {
+            val config = spaceManager.getConfig()
+            if (config != null) {
+                createWidget(
+                    CreateWidget.Params(
+                        ctx = config.widgets,
+                        source = obj.id,
+                        type = if (obj.layout.isDataView()) {
+                            WidgetLayout.COMPACT_LIST
+                        } else {
+                            WidgetLayout.TREE
+                        }
+                    )
+                ).collect { result ->
+                    result.fold(
+                        onSuccess = {
+                            sendToast("Widget created")
+                            isDismissed.value = true
+                        },
+                        onFailure = {
+                            Timber.e(it, "Error while creating widget")
+                            sendToast(SOMETHING_WENT_WRONG_MSG)
+                        }
+                    )
+                }
             }
         }
     }

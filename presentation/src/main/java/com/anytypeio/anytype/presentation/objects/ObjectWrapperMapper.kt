@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSize
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.library.LibraryView
@@ -20,7 +19,6 @@ import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
-import timber.log.Timber
 
 @Deprecated("To be deleted")
 fun List<ObjectWrapper.Basic>.toView(
@@ -44,8 +42,7 @@ fun List<ObjectWrapper.Basic>.toView(
             icon = ObjectIcon.from(
                 obj = obj,
                 layout = layout,
-                builder = urlBuilder,
-                gradientProvider = gradientProvider
+                builder = urlBuilder
             )
         )
     }
@@ -137,14 +134,6 @@ fun List<ObjectWrapper.Basic>.toLibraryViews(
                     editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
                 )
             }
-            LibraryView.MyRelationView(
-                id = obj.id,
-                name = obj.name.orEmpty(),
-                format = relation.format,
-                sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-                readOnly = obj.restrictions.contains(ObjectRestriction.DELETE),
-                editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
-            )
         }
         else -> LibraryView.UnknownView(
             id = obj.id,

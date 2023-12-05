@@ -14,10 +14,10 @@ import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVVie
 import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVViewerRelationUpdate
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -47,7 +47,6 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_TYPE_UNSUPPORTED
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
-import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAULT_TEMPLATE_ID_BLANK
 import timber.log.Timber
 
 fun ObjectState.DataView.featuredRelations(
@@ -119,7 +118,7 @@ private fun ObjectState.DataView.mapFeaturedRelations(
     when (key) {
         Relations.DESCRIPTION -> null
         Relations.TYPE -> details.details[ctx]?.type?.firstOrNull()?.let { typeId ->
-            val objectType = details.details[typeId]?.map?.let { ObjectWrapper.Type(it) }
+            val objectType = details.details[typeId]?.map?.mapToObjectWrapperType()
             if (objectType?.isDeleted == true) {
                 ObjectRelationView.ObjectType.Deleted(
                     id = typeId,
@@ -550,9 +549,9 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
                     Timber.d("Set by type setOf param is null or empty, not possible to get Type and Template")
                     Pair(null, null)
                 } else {
-                    val defaultSetObjectType = ObjectWrapper.Type(details[setOf]?.map.orEmpty())
+                    val defaultSetObjectType = details[setOf]?.map?.mapToObjectWrapperType()
                     if (activeView.defaultTemplate.isNullOrEmpty()) {
-                        val defaultTemplateId = defaultSetObjectType.defaultTemplateId
+                        val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
                         Pair(defaultSetObjectType, defaultTemplateId)
                     } else {
                         Pair(defaultSetObjectType, activeView.defaultTemplate)

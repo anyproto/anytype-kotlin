@@ -116,13 +116,6 @@ class RelationAddViewModelBaseTest {
                         )
                         add(
                             DVFilter(
-                                relation = Relations.SPACE_ID,
-                                condition = DVFilterCondition.EQUAL,
-                                value = MARKETPLACE_SPACE_ID
-                            )
-                        )
-                        add(
-                            DVFilter(
                                 relation = Relations.RELATION_KEY,
                                 condition = DVFilterCondition.NOT_IN,
                                 value = Relations.systemRelationKeys
@@ -237,13 +230,6 @@ class RelationAddViewModelBaseTest {
                                     relation = Relations.ID,
                                     condition = DVFilterCondition.NOT_IN,
                                     value = library.mapNotNull { it.sourceObject }
-                                )
-                            )
-                            add(
-                                DVFilter(
-                                    relation = Relations.SPACE_ID,
-                                    condition = DVFilterCondition.EQUAL,
-                                    value = MARKETPLACE_SPACE_ID
                                 )
                             )
                             add(

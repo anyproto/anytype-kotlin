@@ -1,5 +1,9 @@
 package com.anytypeio.anytype.ui.objects.creation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -54,9 +58,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.EmptyState
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -77,7 +83,7 @@ fun PreviewScreen() {
 
 @Composable
 fun CreateObjectOfTypeScreen(
-    onTypeClicked: (Key) -> Unit,
+    onTypeClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
     views: List<SelectTypeView>
@@ -95,6 +101,7 @@ fun CreateObjectOfTypeScreen(
             onQueryChanged = onQueryChanged,
             onFocused = onFocused
         )
+        Spacer(modifier = Modifier.height(8.dp))
         ScreenContent(views, onTypeClicked)
     }
 }
@@ -102,16 +109,35 @@ fun CreateObjectOfTypeScreen(
 @Composable
 private fun ScreenContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (Key) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
-    FlowRowContent(views, onTypeClicked)
+    if (views.isNotEmpty()) {
+        FlowRowContent(views, onTypeClicked)
+    }
+    AnimatedVisibility(
+        visible = views.isEmpty(),
+        enter = fadeIn(animationSpec = tween(500)),
+        exit = fadeOut(animationSpec = tween(500))
+    ) {
+        Box(modifier = Modifier.fillMaxSize()) {
+            EmptyState(
+                modifier = Modifier.align(Alignment.Center),
+                title = stringResource(id = R.string.nothing_found),
+                description = stringResource(id = R.string.nothing_found_object_types),
+                icon = AlertConfig.Icon(
+                    gradient = GRADIENT_TYPE_RED,
+                    icon = R.drawable.ic_alert_error
+                )
+            )
+        }
+    }
 }
 
 @Composable
 @OptIn(ExperimentalLayoutApi::class)
 private fun FlowRowContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (Key) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
     FlowRow(
         modifier = Modifier
@@ -129,9 +155,7 @@ private fun FlowRowContent(
                         name = view.name,
                         emoji = view.icon,
                         onItemClicked = throttledClick(
-                            onClick = {
-                                onTypeClicked(view.typeKey)
-                            }
+                            onClick = { onTypeClicked(view) }
                         ),
                         modifier = Modifier
                     )
@@ -146,6 +170,11 @@ private fun FlowRowContent(
                         title = stringResource(id = R.string.create_object_section_objects)
                     )
                 }
+                is SelectTypeView.Section.Library -> {
+                    Section(
+                        title = stringResource(id = R.string.create_object_section_library),
+                    )
+                }
             }
 
         }
@@ -156,7 +185,7 @@ private fun FlowRowContent(
 @OptIn(ExperimentalFoundationApi::class)
 private fun LazyColumnContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (Key) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
     LazyVerticalGrid(
         modifier = Modifier.fillMaxSize(),
@@ -180,7 +209,6 @@ private fun LazyColumnContent(
                         )
                     }
                 }
-
                 is SelectTypeView.Section.Objects -> {
                     item(
                         key = view.javaClass.name,
@@ -191,7 +219,16 @@ private fun LazyColumnContent(
                         )
                     }
                 }
-
+                is SelectTypeView.Section.Library -> {
+                    item(
+                        key = view.javaClass.name,
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        Section(
+                            title = stringResource(id = R.string.create_object_section_library)
+                        )
+                    }
+                }
                 is SelectTypeView.Type -> {
                     item(
                         key = view.typeKey
@@ -201,7 +238,7 @@ private fun LazyColumnContent(
                             emoji = view.icon,
                             onItemClicked = throttledClick(
                                 onClick = {
-                                    onTypeClicked(view.typeKey)
+                                    onTypeClicked(view)
                                 }
                             ),
                             modifier = Modifier.animateItemPlacement()
@@ -369,11 +406,10 @@ private fun SearchField(
 @Composable
 private fun Section(title: String) {
     Box(modifier = Modifier
-        .height(52.dp)
+        .height(44.dp)
         .fillMaxWidth()) {
         Text(
             modifier = Modifier
-                .padding(bottom = 8.dp)
                 .align(Alignment.BottomStart),
             text = title,
             color = colorResource(id = R.color.text_secondary),

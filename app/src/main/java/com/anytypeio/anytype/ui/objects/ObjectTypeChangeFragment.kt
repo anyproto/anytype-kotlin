@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -20,7 +21,6 @@ import com.anytypeio.anytype.databinding.FragmentObjectTypeChangeBinding
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel.Command
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
-import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import javax.inject.Inject
 
 abstract class BaseObjectTypeChangeFragment :
@@ -28,7 +28,7 @@ abstract class BaseObjectTypeChangeFragment :
 
     abstract fun setTitle()
     abstract fun startWithParams()
-    abstract fun onItemClicked(item: ObjectTypeView)
+    abstract fun onItemClicked(item: ObjectWrapper.Type)
 
     @Inject
     lateinit var factory: ObjectTypeChangeViewModelFactory

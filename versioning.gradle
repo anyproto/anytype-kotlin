@@ -19,9 +19,7 @@ tasks.register("incrementVersionPatch") {
 }
 
 tasks.register("enableDatedVersionName") {
-    doLast {
-        enableDatedVersionName()
-    }
+    enableDatedVersionName()
 }
 
 def incrementVersion(maj, min, patch) {

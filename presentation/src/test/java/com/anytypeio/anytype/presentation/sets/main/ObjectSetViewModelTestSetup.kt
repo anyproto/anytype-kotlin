@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -155,6 +156,9 @@ open class ObjectSetViewModelTestSetup {
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     @Mock
+    lateinit var getObjectTypes: GetObjectTypes
+
+    @Mock
     lateinit var getDefaultObjectType: GetDefaultObjectType
 
     @Mock
@@ -251,14 +255,13 @@ open class ObjectSetViewModelTestSetup {
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             storeOfObjectTypes = storeOfObjectTypes,
-            getDefaultObjectType = getDefaultObjectType,
-            updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
-            createTemplate = createTemplate
+            createTemplate = createTemplate,
+            getObjectTypes = getObjectTypes
         )
     }
 
@@ -337,9 +340,7 @@ open class ObjectSetViewModelTestSetup {
         ).`when`(repo).searchObjectsWithSubscription(
             subscription = subscription,
             collection = collection,
-            filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = spaceId
-            ),
+            filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(space = spaceId),
             sorts = dvSorts,
             keys = dvKeys,
             source = sources,
@@ -406,18 +407,11 @@ open class ObjectSetViewModelTestSetup {
 
     fun stubTemplatesForTemplatesContainer(
         type: String = MockDataFactory.randomString(),
-        templates: List<ObjectWrapper.Basic> = emptyList()
+        templates: List<ObjectWrapper.Basic> = emptyList(),
+        subId: Id = MockDataFactory.randomString()
     ) {
         templatesContainer.stub {
-            onBlocking { subscribeToTemplates(type) }.thenReturn(flowOf(templates))
-        }
-    }
-
-    fun stubTypesForTemplatesContainer(
-        objTypes: List<ObjectWrapper.Basic> = emptyList()
-    ) {
-        templatesContainer.stub {
-            onBlocking { subscribeToTypes() }.thenReturn(flowOf(objTypes))
+            onBlocking { subscribeToTemplates(type, subId) }.thenReturn(flowOf(templates))
         }
     }
 

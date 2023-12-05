@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.DraftObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import dagger.Module
@@ -29,7 +28,6 @@ interface ObjectTypeChangeSubComponent {
         fun build(): ObjectTypeChangeSubComponent
     }
 
-    fun inject(fragment: DraftObjectSelectTypeFragment)
     fun inject(fragment: ObjectSelectTypeFragment)
     fun inject(fragment: DataViewSelectSourceFragment)
     fun inject(fragment: EmptyDataViewSelectSourceFragment)

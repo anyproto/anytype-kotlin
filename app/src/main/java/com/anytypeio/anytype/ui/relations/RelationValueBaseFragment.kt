@@ -280,6 +280,11 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
     //endregion
 
     //region UPLOAD FILE LOGIC
+
+    fun openGallery() {
+        pickerDelegate.openFilePicker(Mimetype.MIME_IMAGE_AND_VIDEO)
+    }
+
     protected fun openFilePicker() {
         pickerDelegate.openFilePicker(Mimetype.MIME_FILE_ALL)
     }

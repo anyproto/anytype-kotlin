@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -51,7 +52,8 @@ class SplashViewModel(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val featureToggles: FeatureToggles,
     private val crashReporter: CrashReporter,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+    private val localeProvider: LocaleProvider
 ) : ViewModel() {
 
     val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
@@ -136,7 +138,8 @@ class SplashViewModel(
                             state.value = ViewState.Error(ERROR_NEED_UPDATE)
                         }
                         else -> {
-                            state.value = ViewState.Error(ERROR_MESSAGE)
+                            val msg = "$ERROR_MESSAGE : ${e.message ?: "Unknown error"}"
+                            state.value = ViewState.Error(msg)
                         }
                     }
                 }
@@ -170,6 +173,12 @@ class SplashViewModel(
         proceedWithNavigation()
     }
 
+    fun onDeepLink(deeplink: String) {
+        viewModelScope.launch {
+            proceedWithDashboardNavigation(deeplink)
+        }
+    }
+
     private fun proceedWithNavigation() {
         viewModelScope.launch {
             getLastOpenedObject(BaseUseCase.None).process(
@@ -199,11 +208,11 @@ class SplashViewModel(
         }
     }
 
-    private suspend fun proceedWithDashboardNavigation() {
+    private suspend fun proceedWithDashboardNavigation(deeplink: String? = null) {
         if (BuildConfig.ENABLE_WIDGETS) {
             commands.emit(Command.NavigateToWidgets)
         } else {
-            commands.emit(Command.NavigateToDashboard)
+            commands.emit(Command.NavigateToDashboard(deeplink))
         }
     }
 
@@ -212,6 +221,12 @@ class SplashViewModel(
             analytics = analytics,
             userProperty = UserProperty.AccountId(id)
         )
+        localeProvider.language()?.let { lang ->
+            viewModelScope.updateUserProperties(
+                analytics = analytics,
+                userProperty = UserProperty.InterfaceLanguage(lang)
+            )
+        }
     }
 
     private fun sendEvent(startTime: Long, event: String, props: Props) {
@@ -226,7 +241,7 @@ class SplashViewModel(
     }
 
     sealed class Command {
-        object NavigateToDashboard : Command()
+        data class NavigateToDashboard(val deeplink: String? = null) : Command()
         object NavigateToWidgets : Command()
         object NavigateToLogin : Command()
 
@@ -239,7 +254,7 @@ class SplashViewModel(
     }
 
     companion object {
-        const val ERROR_MESSAGE = "An error occurred while starting account..."
+        const val ERROR_MESSAGE = "An error occurred while starting account"
         const val ERROR_NEED_UPDATE = "Unable to retrieve account. Please update Anytype to the latest version."
     }
 }

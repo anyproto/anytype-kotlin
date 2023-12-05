@@ -42,6 +42,7 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
@@ -301,7 +302,7 @@ open class ObjectSetFragment :
                 .onEach {
                     val dialog = CreateObjectOfTypeFragment().apply {
                         onTypeSelected = {
-                            vm.onAddNewDocumentClicked(it)
+                            vm.onAddNewDocumentClicked(it.uniqueKey)
                         }
                     }
                     dialog.show(childFragmentManager, "set-create-object-of-type-dialog")
@@ -478,7 +479,6 @@ open class ObjectSetFragment :
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
-        lifecycleScope.subscribe(vm.toasts) { toast(it) }
         lifecycleScope.subscribe(vm.status) { setStatus(it) }
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
@@ -530,7 +530,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
@@ -543,7 +543,7 @@ open class ObjectSetFragment :
                 initView.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
@@ -569,7 +569,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
@@ -582,7 +582,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)
@@ -618,9 +618,14 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setupNewButtons(isTemplatesAllowed: Boolean) {
-        addNewButton.gone()
-        addNewIconButton.visible()
+    private fun setupNewButtons(isCreateObjectAllowed: Boolean) {
+        if (isCreateObjectAllowed) {
+            addNewButton.gone()
+            addNewIconButton.visible()
+        } else {
+            addNewButton.gone()
+            addNewIconButton.gone()
+        }
     }
 
     private fun setViewer(viewer: Viewer?) {
@@ -880,7 +885,6 @@ open class ObjectSetFragment :
                         ObjectMenuBaseFragment.CTX_KEY to command.ctx,
                         ObjectMenuBaseFragment.IS_ARCHIVED_KEY to command.isArchived,
                         ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
-                        ObjectMenuBaseFragment.IS_PROFILE_KEY to false,
                         ObjectMenuBaseFragment.IS_LOCKED_KEY to false,
                         ObjectMenuBaseFragment.FROM_NAME to title.text.toString()
                     )
@@ -1155,6 +1159,7 @@ open class ObjectSetFragment :
                 featuredRelations.gone()
             }
         }
+        jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
         vm.onStart(ctx)
     }
 
@@ -1247,14 +1252,9 @@ open class ObjectSetFragment :
         inflater, container, false
     )
 
-    override fun onProceedWithUpdateType(item: ObjectTypeView) {
-        vm.onNewTypeForViewerClicked(item.id)
+    override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
+        vm.onNewTypeForViewerClicked(objType)
     }
-
-    override fun onProceedWithDraftUpdateType(item: ObjectTypeView) {
-        // Do nothing.
-    }
-
 
     private fun observeSelectingTemplate() {
         val navController = findNavController()

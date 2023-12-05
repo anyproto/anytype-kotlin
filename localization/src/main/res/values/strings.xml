@@ -44,7 +44,7 @@
     <string name="about_anytype_community">Anytype Community</string>
     <string name="about_help_and_tutorials">Help &amp; Tutorials</string>
     <string name="about_legal">Legal</string>
-    <string name="about_terms_of_use">Terms of Use"</string>
+    <string name="about_terms_of_use">Terms of Use</string>
     <string name="about_privacy_policy">Privacy Policy</string>
     <string name="about_acknowledgements">Acknowledgments</string>
 
@@ -81,33 +81,6 @@
     <string name="multi_select_turn_into">Turn into</string>
     <string name="multi_select_move_to">Move to</string>
 
-    <string name="content_description_add_block">Add block button</string>
-    <string name="content_description_hide_keyboard_button">Hide keyboard button</string>
-    <string name="content_description_show_actions">Show actions</string>
-    <string name="content_description_show_colors">Show colors</string>
-    <string name="content_description_bold_text">Bold text</string>
-    <string name="content_description_italic_text">Italic text</string>
-    <string name="content_description_strike_through_text">Strike-through text</string>
-    <string name="content_description_link">Link</string>
-    <string name="content_description_code">Code</string>
-    <string name="content_description_option_picture">Option picture</string>
-    <string name="content_description_action_picture">Action picture</string>
-    <string name="content_description_checkbox_pic">Checkbox pic</string>
-    <string name="content_description_task_pic">Task pic</string>
-    <string name="content_description_page_icon">Page icon</string>
-    <string name="content_description_more_button">More button</string>
-    <string name="content_description_avatar_image">Avatar image</string>
-    <string name="content_description_bookmark_image">Bookmark image</string>
-    <string name="content_description_filter_remove">Remove filter</string>
-    <string name="content_description_filter_format">Filter format</string>
-    <string name="content_description_qr_image">QR code</string>
-    <string name="content_description_toggle_icon">Toggle icon</string>
-    <string name="content_description_turn_into_arrow">Turn into arrow</string>
-    <string name="content_description_document_previous_search_result_icon">Document previous search result icon</string>
-    <string name="content_description_document_next_search_result_icon">Document next search result icon</string>
-    <string name="content_description_document_search_icon">Document search icon</string>
-    <string name="content_description_document_clear_search_icon">Document clear search icon</string>
-
     <string name="option_toolbar_header_turn_into">Turn into</string>
     <string name="option_toolbar_header_add_block">Add block</string>
     <string name="option_text_text">Text</string>
@@ -138,26 +111,6 @@
     <string name="option_other_dots">Dots divider</string>
     <string name="option_other_code">Code snippet</string>
     <string name="option_relation_relation">Relation</string>
-
-    <string name="add_block_or_turn_into_subtitle_text">Write a plain text</string>
-    <string name="add_block_or_turn_into_subtitle_header_one">Big headline of a chapter, paragraph or section</string>
-    <string name="add_block_or_turn_into_subtitle_header_two">Medium headline</string>
-    <string name="add_block_or_turn_into_subtitle_header_three">Small headline</string>
-    <string name="add_block_or_turn_into_subtitle_highlighted">Spotlight what needs special attention</string>
-    <string name="add_block_or_turn_into_subtitle_checkbox">Create and track task with to-do list</string>
-    <string name="add_block_or_turn_into_subtitle_bulleted">Simple list</string>
-    <string name="add_block_or_turn_into_subtitle_numbered">Numbered list</string>
-    <string name="add_block_or_turn_into_subtitle_toggle">Hide and show content inside</string>
-    <string name="add_block_or_turn_into_subtitle_page">Create new page inside this one</string>
-    <string name="add_block_or_turn_into_subtitle_existing_page">Link existing page with this one</string>
-    <string name="add_block_or_turn_into_subtitle_file">Store file in original state</string>
-    <string name="add_block_or_turn_into_subtitle_image">Upload and enrich the page with image</string>
-    <string name="add_block_or_turn_into_subtitle_video">Upload playable video</string>
-    <string name="add_block_or_turn_into_subtitle_bookmark">Save your favorite link with summary</string>
-    <string name="add_block_or_turn_into_subtitle_code">Capture code snippet</string>
-    <string name="add_block_or_turn_into_subtitle_line_divider">Separate information with line</string>
-    <string name="add_block_or_turn_into_subtitle_dots">Separate information with three dots</string>
-    <string name="add_block_or_turn_into_subtitle_relation">Meaningful connection between objects</string>
 
     <string name="toolbar_section_text">Text</string>
     <string name="toolbar_section_list">List</string>
@@ -225,15 +178,14 @@
     <string name="modal_details">Details</string>
     <string name="modal_detail_name">Detail name</string>
     <string name="modal_detail_type">Detail type</string>
+
     <string name="hint_title">Title</string>
     <string name="hint_profile_title">Name Surname</string>
-    <string name="hint_paragraph">Paragraph</string>
     <string name="hint_header_one">Title</string>
     <string name="hint_quote">Quote</string>
     <string name="hint_header_two">Heading</string>
     <string name="hint_header_three">Subheading</string>
     <string name="hint_checkbox">Checkbox</string>
-    <string name="hint_video">Enter video URL</string>
     <string name="hint_upload_video">Upload a video</string>
     <string name="hint_upload_image">Upload a picture</string>
     <string name="hint_upload_file">Upload a file</string>
@@ -242,7 +194,6 @@
     <string name="hint_bullet">Bulleted list item</string>
     <string name="hint_numbered_list">Numbered list item</string>
     <string name="hint_toggle">Toggle block</string>
-    <string name="hint_empty">Empty</string>
     <string name="hint_paste_link">Paste link</string>
 
     <string name="empty_tap_to_create_new_block">Empty. Tap to create a new block</string>
@@ -284,10 +235,6 @@
     <string name="background">Background</string>
     <string name="content_description_close_button">Close button</string>
 
-    <!-- Non-valid certificate, need update -->
-    <string-array name="certs">
-        <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
-    </string-array>
     <string name="action_bar_add_below">Add block below</string>
     <string name="action_bar_turn_into">Turn into</string>
     <string name="action_bar_turn_into_page">Turn into Page</string>
@@ -326,15 +273,7 @@
     <string name="page_nav_links_to">Links to</string>
     <string name="filter_view_search_hint">Search</string>
     <string name="filter_view_filter_hint">Filter</string>
-    <string name="content_desc_page_toolbar_search">Search pages</string>
-    <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
-    <string name="content_desc_page_toolbar_add_doc">Add new page</string>
-    <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
-    <string name="content_desc_link_to_remove_link">Remove link icon</string>
-    <string name="content_desc_link_to_copy_link">Copy link icon</string>
-    <string name="content_desc_object_icon">Object image or emoji</string>
-    <string name="content_desc_checkbox_icon">Checkbox icon</string>
-    <string name="content_desc_layout_icon">Layout icon</string>
+
     <string name="move">Move</string>
     <string name="move_to">Move to</string>
     <string name="preview">Preview</string>
@@ -425,89 +364,6 @@
     <string name="from_type">From type %1$s</string>
     <string name="hint_add_description">Add a description</string>
 
-    <string name="slash_widget_main_style">Style</string>
-    <string name="slash_widget_main_media">Media</string>
-    <string name="slash_widget_main_objects">Objects</string>
-    <string name="slash_widget_main_objects_subheader">Objects</string>
-    <string name="slash_widget_main_relations">Relations</string>
-    <string name="slash_widget_main_other">Other</string>
-    <string name="slash_widget_main_actions">Actions</string>
-    <string name="slash_widget_main_alignment">Alignment</string>
-    <string name="slash_widget_main_color">Color</string>
-    <string name="slash_widget_main_background">Background</string>
-
-    <string name="slash_widget_style_text">Text</string>
-    <string name="slash_widget_style_text_subtitle">Just start writing with a plain text</string>
-    <string name="slash_widget_style_title">Title</string>
-    <string name="slash_widget_style_title_subtitle">Big section heading</string>
-    <string name="slash_widget_style_heading">Heading</string>
-    <string name="slash_widget_style_heading_subtitle">Just start writing with a plain text</string>
-    <string name="slash_widget_style_subheading">Subheading</string>
-    <string name="slash_widget_style_subheading_subtitle">Just start writing with a plain text</string>
-    <string name="slash_widget_style_highlighted">Highlighted</string>
-    <string name="slash_widget_style_highlighted_subtitle">Small section heading</string>
-    <string name="slash_widget_style_callout">Callout</string>
-    <string name="slash_widget_style_callout_subtitle">Bordered text with icon</string>
-    <string name="slash_widget_style_checkbox">Checkbox</string>
-    <string name="slash_widget_style_checkbox_subtitle">Create and track task with to-do lsit</string>
-    <string name="slash_widget_style_bulleted">Bulleted</string>
-    <string name="slash_widget_style_bulleted_subtitle">Just start writing with a plain text</string>
-    <string name="slash_widget_style_numbered">Numbered list</string>
-    <string name="slash_widget_style_numbered_subtitle">List with numbering</string>
-    <string name="slash_widget_style_toggle">Toggle</string>
-    <string name="slash_widget_style_toggle_subtitle">Hide and show content inside</string>
-    <string name="slash_widget_style_bold">Bold</string>
-    <string name="slash_widget_style_italic">Italic</string>
-    <string name="slash_widget_style_strikethrough">Strikethrough</string>
-    <string name="slash_widget_style_code">Code</string>
-    <string name="slash_widget_style_link">Link</string>
-    <string name="slash_widget_style_underline">Underline</string>
-
-    <string name="slash_widget_media_file">File</string>
-    <string name="slash_widget_media_file_subtitle">Store file in original state</string>
-    <string name="slash_widget_media_picture">Picture</string>
-    <string name="slash_widget_media_picture_subtitle">Enrich your page with an image</string>
-    <string name="slash_widget_media_video">Video</string>
-    <string name="slash_widget_media_video_subtitle">Upload playable video</string>
-    <string name="slash_widget_media_bookmark">Bookmark</string>
-    <string name="slash_widget_media_bookmark_subtitle">Save your favorite link with summary</string>
-    <string name="slash_widget_media_code">Code snippet</string>
-    <string name="slash_widget_media_code_subtitle">Capture code snippet</string>
-
-    <string name="slash_widget_other_line">Line divider</string>
-    <string name="slash_widget_other_dots">Dots divider</string>
-    <string name="slash_widget_other_toc">Table of contents</string>
-    <string name="slash_widget_other_simple_table">Table 3x3</string>
-    <string name="slash_widgth_other_simple_table_rows_columns_count">Table %1$dx%2$d</string>
-    <string name="slash_widget_other_simple_table_subtitle">Create a simple table</string>
-
-    <string name="slash_widget_actions_delete">Delete</string>
-    <string name="slash_widget_actions_duplicate">Duplicate</string>
-    <string name="slash_widget_actions_copy">Copy</string>
-    <string name="slash_widget_actions_paste">Paste</string>
-    <string name="slash_widget_actions_link_to">Link to object</string>
-    <string name="slash_widget_actions_link_to_subtitle">Link to existing object</string>
-    <string name="slash_widget_actions_move">Move</string>
-    <string name="slash_widget_actions_moveto">Move to</string>
-    <string name="slash_widget_actions_clean_style">Clean style</string>
-    <string name="slash_widget_back">Back</string>
-
-    <string name="slash_widget_align_right">Right</string>
-    <string name="slash_widget_align_center">Center</string>
-    <string name="slash_widget_align_left">Left</string>
-
-    <string name="slash_widget_default_color_title">Default</string>
-    <string name="slash_widget_gray_color_title">Gray</string>
-    <string name="slash_widget_yellow_color_title">Yellow</string>
-    <string name="slash_widget_orange_color_title">Amber</string>
-    <string name="slash_widget_red_color_title">Red</string>
-    <string name="slash_widget_pink_color_title">Pink</string>
-    <string name="slash_widget_purple_color_title">Purple</string>
-    <string name="slash_widget_blue_color_title">Blue</string>
-    <string name="slash_widget_ice_color_title">Sky</string>
-    <string name="slash_widget_teal_color_title">Teal</string>
-    <string name="slash_widget_lime_color_title">Green</string>
-    <string name="slash_widget_background_item">%1$s background</string>
 
     <string name="dv_filter_checkbox_checked">checked</string>
     <string name="dv_filter_checkbox_not_checked">not checked</string>
@@ -589,7 +445,6 @@
     <string name="layout_todo_description">Action-focused layout with a checkbox</string>
     <string name="move_to_bin">To Bin</string>
     <string name="undoredo">Undo/Redo</string>
-    <string name="object_action_duplicate">Duplicate</string>
     <string name="object_removal_process">Object removal process</string>
     <string name="please_wait_your_object_deletion">Please wait a bit. Your objects will be deleted shortly.</string>
     <string name="large">Large</string>
@@ -706,7 +561,7 @@
     <string name="choose">Choose</string>
     <string name="attributes">Attributes</string>
     <string name="file_delete_alert_title">Are you sure you want to permanently delete the files?</string>
-    <string name="file_delete_alert_subtitle">You can’t undo this action.</string>
+    <string name="file_delete_alert_subtitle">You can\'t undo this action.</string>
     <string name="file_delete_cancel">Cancel</string>
     <string name="file_delete_delete">Delete</string>
     <string name="menu_type_change">Change type</string>
@@ -726,7 +581,7 @@
     <string name="set_as_default">Make default</string>
     <string name="default_object">Default object</string>
     <string name="default_template">Default template</string>
-    <string name="title_templates_not_allowed">This type doesn’t support templates</string>
+    <string name="title_templates_not_allowed">This type doesn\'t support templates</string>
     <string name="num_applied">%1$d applied</string>
     <string name="view_list">List</string>
     <string name="view_grid">Grid</string>
@@ -735,6 +590,8 @@
     <string name="page_cover">Page cover</string>
 
     <string name="editor_toolbar">button</string>
+
+    <string name="wait_a_bit_message">Please give us a moment. We\'re almost there…</string>
 
     <string name="confirm">Confirm</string>
     <string name="code_empty">Invitation code should not be null</string>
@@ -773,7 +630,7 @@
     <string name="other_settings">Other settings</string>
     <string name="your_page">Your public page</string>
     <string name="updates">Updates</string>
-    <string name="recovery_phrase_text">You’ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
+    <string name="recovery_phrase_text">You\'ll need it to sign in. Keep it in a safe place. If you lose it, you can no longer access your account.</string>
     <string name="back_up_your_recovery_phrase">Back up your recovery phrase</string>
     <string name="i_ve_written_it_down">i\'ve written it down</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
@@ -829,8 +686,6 @@
     <string name="move_into_this_page">Move into this page</string>
     <string name="move_into">Move into</string>
 
-    <string name="telegram_app">https://t.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
-    <string name="telegram_web">http://www.telegram.me/joinchat/BsRYeRURhKcXDOyDA7_NLw</string>
     <string name="fetching_your_account">Fetching your account…</string>
     <string name="search_on_page">Search on page</string>
     <string name="object_view_type">Object view type</string>
@@ -861,11 +716,7 @@
     <string name="edit_relations_title">Relations</string>
     <string name="edit_view">Edit view</string>
     <string name="relation_open_edit">Open to edit</string>
-    <string name="content_description_delete_button">Delete button</string>
-    <string name="content_description_duplicate_button">Duplicate button</string>
-    <string name="content_description_edit_view_button">Edit-view button</string>
-    <string name="content_description_open_to_edit_view_button">Open to edit relation button</string>
-    <string name="content_description_remove_from_set_button">Remove relation from this set</string>
+
     <string name="remove_from_set">Remove from this set</string>
     <string name="reset">Reset</string>
     <string name="search_a_relation">Search a relation</string>
@@ -917,7 +768,6 @@
     <string name="object_debug">Object Debug</string>
     <string name="object_diagnostics">Diagnostics</string>
     <string name="provide_name">Provide name for new object</string>
-    <string name="wait_a_bit_message">Please give us a moment. We’re almost there…</string>
     <string name="soon">Soon</string>
 
     <string name="are_you_sure_delete_one_object">Are you sure you want to delete 1 object?</string>
@@ -935,7 +785,7 @@
     <string name="shortcut_create_new">Create a new %1$s</string>
     <string name="close">Close</string>
     <string name="go_to_settings">Go to settings</string>
-    <string name="do_not_forget_mnemonic_phrase">Don’t forget to take and save your recovery phrase</string>
+    <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your recovery phrase</string>
     <string name="you_can_always_find_mnemonic_in_settings">You can always find the phrase in the settings on the dashboard screen.</string>
     <string name="if_you_lose_recovery_phrase_warning">If you lose the recovery phrase and get logged out you will not be able to ever access your data again. Save this recovery phrase outside of Anytype for data recovery.</string>
     <string name="card_size">Card size</string>
@@ -961,7 +811,7 @@
     <string name="swipe_to_choose">Use swipe to choose</string>
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Don’t forget to take and save your recovery phrase from settings</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Don\'t forget to take and save your recovery phrase from settings</string>
     <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new relation</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
 
@@ -981,43 +831,6 @@
     <string name="snack_move_to">moved to</string>
     <string name="recovery_phrase_copied">Recovery phrase copied</string>
 
-    <string name="library_title_types">Types</string>
-    <string name="library_title_relations">Relations</string>
-    <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
-    <string name="library_description_relations">All objects are connected. Use relations to build connections between objects.</string>
-    <string name="library_button_create_type">Create a type</string>
-    <string name="library_button_create_relation">Create a relation</string>
-    <string name="library_subtitle_types">My types</string>
-    <string name="library_subtitle_relations">My relations</string>
-    <string name="library_subtitle_library">Library</string>
-    <string name="library_create_new_type">Create a type \'%1$s\'</string>
-    <string name="library_create_new_relation">Create a relation \'%1$s\'</string>
-    <string name="library_objects_empty">There are no %1$s named \'%2$s\'</string>
-    <string name="library_objects_empty_action">Try creating new one or search for something else</string>
-    <string name="library_relations_empty">There are no types named \'%1$s\'</string>
-
-    <string name="create_widget">Create a widget</string>
-    <string name="edit_widgets">Edit widgets</string>
-    <string name="widget_source">Widget source</string>
-    <string name="widget_type">Widget type</string>
-    <string name="widget_add_below">Add Below</string>
-    <string name="widget_type_tree">Tree</string>
-    <string name="widget_type_tree_description">Hierarchical structure of object</string>
-    <string name="widget_type_link">Link</string>
-    <string name="widget_type_link_description">Compact version of the object</string>
-    <string name="widget_type_list_description">Widget with list view of set object</string>
-    <string name="widget_type_compact_list_description">Widget with list view of set object</string>
-    <string name="widget_type_list">List</string>
-    <string name="widget_type_compact_list">Compact list</string>
-    <string name="widget_change_source">Change Source</string>
-    <string name="widget_change_type">Change Type</string>
-    <string name="widget_remove_widget">Remove Widget</string>
-    <string name="widget_empty_bin">Empty Bin</string>
-    <string name="widget_edit_widgets">Edit Widgets</string>
-
-    <string name="type_creation_new_type">New type</string>
-    <string name="type_creation_done">Done</string>
-    <string name="type_creation_placeholder">Type name</string>
 
     <string name="type_editing_title">Type settings</string>
     <string name="relation_editing_title">Relation settings</string>
@@ -1029,8 +842,8 @@
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
     <string name="almost_there">Almost there!</string>
-    <string name="i_did_not_not_complete_migration">I didn’t complete migration</string>
-    <string name="not_completed_migration_steps">I didn’t complete migration</string>
+    <string name="i_did_not_not_complete_migration">I didn\'t complete migration</string>
+    <string name="not_completed_migration_steps">I didn\'t complete migration</string>
     <string name="almost_there_subtitle">To use this version of the app, please choose the correct option below to migrate your account.</string>
     <string name="i_completed_migration">I completed migration</string>
     <string name="here">here</string>
@@ -1039,34 +852,6 @@
     <string name="visit_forum">Visit forum</string>
     <string name="migration_error_msg">Something might have gone wrong. Please visit our forum, read the migration instructions, and ask questions to our team.</string>
 
-    <string name="onboarding_auth_title">the everything app</string>
-    <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
-    <string name="onboarding_auth_description">Anytype is your safe space to write, plan, think and organise everything that matters to you.</string>
-    <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
-    <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
-    <string name="onboarding_terms_and_policy_infix">" and "</string>
-    <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Create New Account</string>
-    <string name="onboarding_log_in_button_text">Login</string>
-    <string name="onboarding_invite_code_title">Enter your invite code</string>
-    <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
-    <string name="onboarding_void_title">This is your Void</string>
-    <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
-    <string name="onboarding_mnemonic_title">Save your Recovery Phrase</string>
-    <string name="onboarding_mnemonic_description">It’s a novel way of authentication that gives you full ownership over your account and data.</string>
-    <string name="onboarding_mnemonic_show_key">Show Recovery Phrase</string>
-    <string name="onboarding_mnemonic_key_saved">Go to the app</string>
-    <string name="onboarding_mnemonic_skip">Skip</string>
-    <string name="onboarding_mnemonic_copy">Copy to clipboard</string>
-    <string name="onboarding_set_your_name_title">Choose your name</string>
-    <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
-    <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
-    <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
-    <string name="onboarding_soul_creation_personal_space">Personal Space</string>
-    <string name="onboarding_type_recovery_phrase">Type your recovery phrase</string>
-    <string name="onboarding_login_or">OR</string>
-    <string name="onboarding_entering_void_title">Entering the Void</string>
     <string name="sync_status_incompatible">Incompatible version</string>
     <string name="base_add_options_empty_title">No tags found</string>
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
@@ -1087,38 +872,23 @@
     <string name="created_by">Created by</string>
     <string name="space_id">Space ID</string>
     <string name="network_id">Network ID</string>
-    <string name="delete_space_subtitle">This space will be deleted irrevocably. You can’t undo this action.</string>
+    <string name="delete_space_subtitle">This space will be deleted irrevocably. You can\'t undo this action.</string>
     <string name="delete_space_title_with_param">Delete \'%1$s\' space</string>
     <string name="delete_space_title">Are you sure to delete this space?</string>
     <string name="space_id_copied_toast_msg">Space ID copied</string>
     <string name="network_id_copied_toast_msg">Network ID copied</string>
     <string name="created_by_id_copied_toast_msg">Created-by ID copied</string>
-    <string name="onboarding_mnemonic_read_more">Read more</string>
-    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
-    <string name="onboqrding_what_is_recovery_phrase">What is Recovery Phrase?</string>
-    <string name="onboarding_recovery_phrase_description">Recovery Phrase is a random combination of 12 words from which your account is magically generated on this device.</string>
-    <string name="onboarding_recovery_phrase_description_2">Whomever knows Recovery Phrase, owns the account. </string>
-    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
-    <string name="onboarding_recovery_phrase_description_4">That\'s why it\'s essential to keep Recovery Phrase safe. As the sole owner, nobody can help you if it\'s lost.</string>
-    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
-    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Recovery Phrase is to save it in your password manager.</string>
-    <string name="onboarding_how_to_save_my_phrase_3">The most secure way is to write it down on paper and keep it offline, in a safe and secure place.</string>
+
     <string name="anytype_update_alert_description">Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features.</string>
-    <string name="anytype_update_alert_title">It’s time to update</string>
+    <string name="anytype_update_alert_title">It\'s time to update</string>
     <string name="download_anytype_url">https://download.anytype.io</string>
 
-    <string name="space_type_personal">Personal Space</string>
-    <string name="space_type_private">Private Space</string>
+    <string name="space_type_personal">Personal</string>
+    <string name="space_type_private">Private</string>
     <string name="space_type_unknown">Unknown</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_groups">Groups</string>
     <string name="create_object_section_objects">Objects</string>
-
-    <string name="library_type_added">Type `%1$s` added to your library"</string>
-    <string name="library_type_removed">Type `%1$s` removed from your library"</string>
-    <string name="library_relation_added">Relation `%1$s` added to your library"</string>
-    <string name="library_relation_removed">Relation `%1$s` removed from your library"</string>
-    <string name="library_something_went_wrong">Something went wrong. Please, try again later.</string>
 
     <string name="edit">Edit</string>
     <string name="unselect_all">Unselect all</string>
@@ -1129,4 +899,265 @@
     <string name="bin">Bin</string>
     <string name="synced_files">Synced files</string>
     <string name="log_in">Log In</string>
+    <string name="create_object_section_library">Anytype Library</string>
+
+
+    <!--region SLASH WIDGET -->
+
+    <string name="slash_widget_main_style">Style</string>
+    <string name="slash_widget_main_media">Media</string>
+    <string name="slash_widget_main_objects">Objects</string>
+    <string name="slash_widget_main_objects_subheader">Objects</string>
+    <string name="slash_widget_main_relations">Relations</string>
+    <string name="slash_widget_main_other">Other</string>
+    <string name="slash_widget_main_actions">Actions</string>
+    <string name="slash_widget_main_alignment">Alignment</string>
+    <string name="slash_widget_main_color">Color</string>
+    <string name="slash_widget_main_background">Background</string>
+
+    <string name="slash_widget_style_text">Text</string>
+    <string name="slash_widget_style_text_subtitle">Just start writing with a plain text</string>
+    <string name="slash_widget_style_title">Title</string>
+    <string name="slash_widget_style_title_subtitle">Big section heading</string>
+    <string name="slash_widget_style_heading">Heading</string>
+    <string name="slash_widget_style_heading_subtitle">Just start writing with a plain text</string>
+    <string name="slash_widget_style_subheading">Subheading</string>
+    <string name="slash_widget_style_subheading_subtitle">Just start writing with a plain text</string>
+    <string name="slash_widget_style_highlighted">Highlighted</string>
+    <string name="slash_widget_style_highlighted_subtitle">Small section heading</string>
+    <string name="slash_widget_style_callout">Callout</string>
+    <string name="slash_widget_style_callout_subtitle">Bordered text with icon</string>
+    <string name="slash_widget_style_checkbox">Checkbox</string>
+    <string name="slash_widget_style_checkbox_subtitle">Create and track task with to-do lsit</string>
+    <string name="slash_widget_style_bulleted">Bulleted</string>
+    <string name="slash_widget_style_bulleted_subtitle">Just start writing with a plain text</string>
+    <string name="slash_widget_style_numbered">Numbered list</string>
+    <string name="slash_widget_style_numbered_subtitle">List with numbering</string>
+    <string name="slash_widget_style_toggle">Toggle</string>
+    <string name="slash_widget_style_toggle_subtitle">Hide and show content inside</string>
+    <string name="slash_widget_style_bold">Bold</string>
+    <string name="slash_widget_style_italic">Italic</string>
+    <string name="slash_widget_style_strikethrough">Strikethrough</string>
+    <string name="slash_widget_style_code">Code</string>
+    <string name="slash_widget_style_link">Link</string>
+    <string name="slash_widget_style_underline">Underline</string>
+
+    <string name="slash_widget_media_file">File</string>
+    <string name="slash_widget_media_file_subtitle">Store file in original state</string>
+    <string name="slash_widget_media_picture">Picture</string>
+    <string name="slash_widget_media_picture_subtitle">Enrich your page with an image</string>
+    <string name="slash_widget_media_video">Video</string>
+    <string name="slash_widget_media_video_subtitle">Upload playable video</string>
+    <string name="slash_widget_media_bookmark">Bookmark</string>
+    <string name="slash_widget_media_bookmark_subtitle">Save your favorite link with summary</string>
+    <string name="slash_widget_media_code">Code snippet</string>
+    <string name="slash_widget_media_code_subtitle">Capture code snippet</string>
+
+    <string name="slash_widget_other_line">Line divider</string>
+    <string name="slash_widget_other_dots">Dots divider</string>
+    <string name="slash_widget_other_toc">Table of contents</string>
+    <string name="slash_widget_other_simple_table">Table 3x3</string>
+    <string name="slash_widgth_other_simple_table_rows_columns_count">Table %1$dx%2$d</string>
+    <string name="slash_widget_other_simple_table_subtitle">Create a simple table</string>
+
+    <string name="slash_widget_actions_delete">Delete</string>
+    <string name="slash_widget_actions_duplicate">Duplicate</string>
+    <string name="slash_widget_actions_copy">Copy</string>
+    <string name="slash_widget_actions_paste">Paste</string>
+    <string name="slash_widget_actions_link_to">Add link</string>
+    <string name="slash_widget_actions_link_to_subtitle">Link to existing object</string>
+    <string name="slash_widget_actions_move">Move</string>
+    <string name="slash_widget_actions_moveto">Move to</string>
+    <string name="slash_widget_actions_clean_style">Clean style</string>
+    <string name="slash_widget_back">Back</string>
+
+    <string name="slash_widget_align_right">Right</string>
+    <string name="slash_widget_align_center">Center</string>
+    <string name="slash_widget_align_left">Left</string>
+
+    <string name="slash_widget_default_color_title">Default</string>
+    <string name="slash_widget_gray_color_title">Gray</string>
+    <string name="slash_widget_yellow_color_title">Yellow</string>
+    <string name="slash_widget_orange_color_title">Amber</string>
+    <string name="slash_widget_red_color_title">Red</string>
+    <string name="slash_widget_pink_color_title">Pink</string>
+    <string name="slash_widget_purple_color_title">Purple</string>
+    <string name="slash_widget_blue_color_title">Blue</string>
+    <string name="slash_widget_ice_color_title">Sky</string>
+    <string name="slash_widget_teal_color_title">Teal</string>
+    <string name="slash_widget_lime_color_title">Green</string>
+    <string name="slash_widget_background_item">%1$s background</string>
+
+    <!--endregion-->
+
+    <!--region LIBRARY -->
+
+    <string name="create_widget">Create a widget</string>
+    <string name="edit_widgets">Edit widgets</string>
+    <string name="widget_source">Widget source</string>
+    <string name="widget_type">Widget type</string>
+    <string name="widget_add_below">Add Below</string>
+    <string name="widget_type_tree">Tree</string>
+    <string name="widget_type_tree_description">Hierarchical structure of object</string>
+    <string name="widget_type_link">Link</string>
+    <string name="widget_type_link_description">Compact version of the object</string>
+    <string name="widget_type_list_description">Widget with list view of set object</string>
+    <string name="widget_type_compact_list_description">Widget with list view of set object</string>
+    <string name="widget_type_list">List</string>
+    <string name="widget_type_compact_list">Compact list</string>
+    <string name="widget_change_source">Change Source</string>
+    <string name="widget_change_type">Change Type</string>
+    <string name="widget_remove_widget">Remove Widget</string>
+    <string name="widget_empty_bin">Empty Bin</string>
+    <string name="widget_edit_widgets">Edit Widgets</string>
+
+    <!--endregion-->
+
+    <!--region LIBRARY -->
+
+    <string name="library_title_types">Types</string>
+    <string name="library_title_relations">Relations</string>
+    <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
+    <string name="library_description_relations">All objects are connected. Use relations to build connections between objects.</string>
+    <string name="library_button_create_type">Create a type</string>
+    <string name="library_button_create_relation">Create a relation</string>
+    <string name="library_subtitle_types">My types</string>
+    <string name="library_subtitle_relations">My relations</string>
+    <string name="library_subtitle_library">Library</string>
+    <string name="library_create_new_type">Create a type \'%1$s\'</string>
+    <string name="library_create_new_relation">Create a relation \'%1$s\'</string>
+    <string name="library_objects_empty">There are no %1$s named \'%2$s\'</string>
+    <string name="library_objects_empty_action">Try creating new one or search for something else</string>
+    <string name="library_relations_empty">There are no types named \'%1$s\'</string>
+
+    <string name="library_type_added">Type `%1$s` added to your library"</string>
+    <string name="library_type_removed">Type `%1$s` removed from your library"</string>
+    <string name="library_relation_added">Relation `%1$s` added to your library"</string>
+    <string name="library_relation_removed">Relation `%1$s` removed from your library"</string>
+    <string name="library_something_went_wrong">Something went wrong. Please, try again later.</string>
+
+    <string name="type_creation_new_type">New type</string>
+    <string name="type_creation_done">Done</string>
+    <string name="type_creation_placeholder">Type name</string>
+
+    <!--endregion-->
+
+    <!--region ONBOARDING -->
+
+    <string name="onboarding_auth_title">the everything app</string>
+    <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
+    <string name="onboarding_auth_description">Anytype is your safe space to write, plan, think and organise everything that matters to you.</string>
+    <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
+    <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
+    <string name="onboarding_terms_and_policy_infix">" and "</string>
+    <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
+    <string name="onboarding_join_button_text">Create New Account</string>
+    <string name="onboarding_log_in_button_text">Login</string>
+    <string name="onboarding_invite_code_title">Enter your invite code</string>
+    <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
+    <string name="onboarding_void_title">This is your Void</string>
+    <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
+    <string name="onboarding_mnemonic_title">Save your Recovery Phrase</string>
+    <string name="onboarding_mnemonic_description">It\'s a novel way of authentication that gives you full ownership over your account and data.</string>
+    <string name="onboarding_mnemonic_show_key">Show Recovery Phrase</string>
+    <string name="onboarding_mnemonic_key_saved">Go to the app</string>
+    <string name="onboarding_mnemonic_skip">Skip</string>
+    <string name="onboarding_mnemonic_copy">Copy to clipboard</string>
+    <string name="onboarding_set_your_name_title">Choose your name</string>
+    <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
+    <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
+    <string name="onboarding_soul_creation">Creating your Identity…</string>
+    <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
+    <string name="onboarding_soul_creation_personal_space">Personal Space</string>
+    <string name="onboarding_type_recovery_phrase">Type your recovery phrase</string>
+    <string name="onboarding_login_or">OR</string>
+    <string name="onboarding_entering_void_title">Entering the Void</string>
+
+    <string name="onboarding_mnemonic_read_more">Read more</string>
+    <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
+    <string name="onboqrding_what_is_recovery_phrase">What is Recovery Phrase?</string>
+    <string name="onboarding_recovery_phrase_description">Recovery Phrase is a random combination of 12 words from which your account is magically generated on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2">Whoever knows Recovery Phrase, owns the account. </string>
+    <string name="onboarding_recovery_phrase_description_3">At this moment, you are the only person in the world who knows it.</string>
+    <string name="onboarding_recovery_phrase_description_4">That\'s why it\'s essential to keep Recovery Phrase safe. As the sole owner, nobody can help you if it\'s lost.</string>
+    <string name="onboarding_how_to_save_my_phrase">How to save my Phrase?</string>
+    <string name="onboarding_how_to_save_my_phrase_2">The easiest way to store your Recovery Phrase is to save it in your password manager.</string>
+    <string name="onboarding_how_to_save_my_phrase_3">The most secure way is to write it down on paper and keep it offline, in a safe and secure place.</string>
+
+    <!--endregion-->
+
+    <!--region OBJECT ACTIONS -->
+
+    <string name="object_action_duplicate">Duplicate</string>
+    <string name="object_action_to_widgets">To widgets</string>
+
+    <!--endregion-->
+
+    <!--region SEARCH -->
+    
+    <string name="nothing_found">Nothing found</string>
+    <string name="nothing_found_object_types">No object type found. Please try changing your request.</string>
+
+    <!--endregion-->
+
+    <!--region CONTENT DESCRIPTIONS FOR ACCESSIBILITY -->
+
+    <string name="content_description_add_block" translatable="false">Add block button</string>
+    <string name="content_description_hide_keyboard_button" translatable="false">Hide keyboard button</string>
+    <string name="content_description_show_actions" translatable="false">Show actions</string>
+    <string name="content_description_show_colors" translatable="false">Show colors</string>
+    <string name="content_description_bold_text" translatable="false">Bold text</string>
+    <string name="content_description_italic_text" translatable="false">Italic text</string>
+    <string name="content_description_strike_through_text" translatable="false">Strike-through text</string>
+    <string name="content_description_link" translatable="false">Link</string>
+    <string name="content_description_code" translatable="false">Code</string>
+    <string name="content_description_option_picture" translatable="false">Option picture</string>
+    <string name="content_description_action_picture" translatable="false">Action picture</string>
+    <string name="content_description_checkbox_pic" translatable="false">Checkbox pic</string>
+    <string name="content_description_task_pic" translatable="false">Task pic</string>
+    <string name="content_description_page_icon" translatable="false">Page icon</string>
+    <string name="content_description_more_button" translatable="false">More button</string>
+    <string name="content_description_avatar_image" translatable="false">Avatar image</string>
+    <string name="content_description_bookmark_image" translatable="false">Bookmark image</string>
+    <string name="content_description_filter_remove" translatable="false">Remove filter</string>
+    <string name="content_description_filter_format" translatable="false">Filter format</string>
+    <string name="content_description_qr_image" translatable="false">QR code</string>
+    <string name="content_description_toggle_icon" translatable="false">Toggle icon</string>
+    <string name="content_description_turn_into_arrow" translatable="false">Turn into arrow</string>
+    <string name="content_description_document_previous_search_result_icon" translatable="false">Document previous search result icon</string>
+    <string name="content_description_document_next_search_result_icon" translatable="false">Document next search result icon</string>
+    <string name="content_description_document_search_icon" translatable="false">Document search icon</string>
+    <string name="content_description_document_clear_search_icon" translatable="false">Document clear search icon</string>
+    <string name="content_description_delete_button">Delete button</string>
+    <string name="content_description_duplicate_button">Duplicate button</string>
+    <string name="content_description_edit_view_button">Edit-view button</string>
+    <string name="content_description_open_to_edit_view_button">Open to edit relation button</string>
+    <string name="content_description_remove_from_set_button">Remove relation from this set</string>
+
+    <string name="content_desc_page_toolbar_search">Search pages</string>
+    <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
+    <string name="content_desc_page_toolbar_add_doc">Add new page</string>
+    <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
+    <string name="content_desc_link_to_remove_link">Remove link icon</string>
+    <string name="content_desc_link_to_copy_link">Copy link icon</string>
+    <string name="content_desc_object_icon">Object image or emoji</string>
+    <string name="content_desc_checkbox_icon">Checkbox icon</string>
+    <string name="content_desc_layout_icon">Layout icon</string>
+
+    <!--endregion-->
+
+    <!--region BUTTONS -->
+
+    <string name="button_okay">Okay</string>
+    <string name="button_close">Close</string>
+
+    <!--endregion-->
+
+    <!--region ALERTS -->
+
+    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
+    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
+
+    <!--endregion-->
+
 </resources>

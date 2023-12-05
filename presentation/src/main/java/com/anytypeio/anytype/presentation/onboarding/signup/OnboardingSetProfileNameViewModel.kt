@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -25,7 +26,6 @@ import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
-import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -47,7 +47,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val crashReporter: CrashReporter,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+    private val localeProvider: LocaleProvider
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
@@ -87,7 +88,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         createAccount.invoke(
             scope = viewModelScope,
             params = CreateAccount.Params(
-                name = "",
+                name = name,
                 avatarPath = null,
                 iconGradientValue = spaceGradientProvider.randomId()
             )
@@ -139,6 +140,12 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 sendAnalyticsOnboardingScreenEvent(analytics,
                     EventsDictionary.ScreenOnboardingStep.SOUL_CREATING
                 )
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = SpaceId(config.space),
+                        details = mapOf(Relations.NAME to name)
+                    )
+                )
                 setObjectDetails.async(
                     SetObjectDetails.Params(
                         ctx = config.profile, details = mapOf(Relations.NAME to name)
@@ -168,41 +175,13 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         }
     }
 
-    private fun proceedWithSettingWorkspaceName(name: String) {
-        val config = configStorage.getOrNull()
-        if (config != null) {
-            viewModelScope.launch {
-                sendAnalyticsOnboardingScreenEvent(
-                    analytics = analytics,
-                    step = EventsDictionary.ScreenOnboardingStep.SPACE_CREATING
-                )
-                setSpaceDetails.async(
-                    SetSpaceDetails.Params(
-                        space = SpaceId(config.space),
-                        details = mapOf(Relations.NAME to name)
-                    )
-                ).fold(
-                    onFailure = {
-                        Timber.e(it, "Error while updating object details")
-                    },
-                    onSuccess = {
-                        analytics.sendOpenAccountEvent(analytics = config.analytics)
-                    }
-                )
-            }
-        } else {
-            Timber.e(CONFIG_NOT_FOUND_ERROR).also {
-                sendToast(CONFIG_NOT_FOUND_ERROR)
-            }
-        }
-    }
-
     private fun createAccountAnalytics(startTime: Long) {
         viewModelScope.launch {
             analytics.proceedWithAccountEvent(
                 startTime = startTime,
                 configStorage = configStorage,
-                eventName = EventsDictionary.createAccount
+                eventName = EventsDictionary.createAccount,
+                lang = localeProvider.language()
             )
         }
     }
@@ -239,7 +218,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val crashReporter: CrashReporter,
-        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+        private val localeProvider: LocaleProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -256,7 +236,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 relationsSubscriptionManager = relationsSubscriptionManager,
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
                 crashReporter = crashReporter,
-                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
+                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
+                localeProvider = localeProvider
             ) as T
         }
     }

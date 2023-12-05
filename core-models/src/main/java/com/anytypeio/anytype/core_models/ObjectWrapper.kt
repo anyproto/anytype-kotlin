@@ -160,9 +160,9 @@ sealed class ObjectWrapper {
     data class Type(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
         val id: Id by default
-        val uniqueKey: String? by default
+        val uniqueKey: String by default
         val name: String? by default
-        val sourceObject: Id? by default
+        val sourceObject: Id? get() = getSingleValue(Relations.SOURCE_OBJECT)
         val description: String? by default
         val isArchived: Boolean? by default
         val iconEmoji: String? by default
@@ -176,10 +176,6 @@ sealed class ObjectWrapper {
                 else -> ObjectType.Layout.BASIC
             }
         val defaultTemplateId: Id? by default
-
-        val key: String? get() = uniqueKey
-
-        val isValid get() = map.containsKey(Relations.UNIQUE_KEY)
     }
 
     data class Relation(override val map: Struct) : ObjectWrapper() {
@@ -264,6 +260,13 @@ sealed class ObjectWrapper {
         else
             null
     }
+
+    inline fun <reified T> getSingleValue(relation: Key): T? =
+        when (val value = map.getOrDefault(relation, null)) {
+            is T -> value
+            is List<*> -> value.typeOf<T>().firstOrNull()
+            else -> null
+        }
 
     inline fun <reified T> getValues(relation: Key): List<T> {
         return when (val value = map.getOrDefault(relation, emptyList<T>())) {

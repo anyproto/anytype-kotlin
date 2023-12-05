@@ -327,9 +327,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
                 eq(mockObjectSet.subscriptionId),
                 eq(listOf()),
                 eq(
-                    mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                        mockObjectSet.spaceId
-                    )
+                    mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(mockObjectSet.spaceId)
                 ),
                 eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
                 eq(listOf(type2.id)),
@@ -449,6 +447,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Set.NoItems>(item)
-        assertTrue(item.hasTemplates)
+        assertTrue(item.isCreateObjectAllowed)
     }
 }

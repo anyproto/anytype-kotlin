@@ -36,6 +36,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
@@ -87,6 +88,7 @@ import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -976,8 +978,19 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onStart() {
-        Timber.d("onStart")
+    fun onStart(deeplink: DeepLinkResolver.Action? = null) {
+        Timber.d("onStart, deep link:$deeplink")
+        when(deeplink) {
+            DeepLinkResolver.Action.Import.Experience -> {
+                viewModelScope.launch {
+                    delay(1000)
+                    commands.emit(Command.Deeplink.CannotImportExperience)
+                }
+            }
+            else -> {
+                // Do nothing
+            }
+        }
         widgetObjectPipelineJobs += viewModelScope.launch {
             if (!isWidgetSessionRestored) {
                 val session = withContext(appCoroutineDispatchers.io) {
@@ -1018,20 +1031,21 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
-        when (obj.layout) {
-            ObjectType.Layout.BASIC,
-            ObjectType.Layout.PROFILE,
-            ObjectType.Layout.NOTE,
-            ObjectType.Layout.TODO,
-            ObjectType.Layout.FILE,
-            ObjectType.Layout.BOOKMARK -> navigate(Navigation.OpenObject(obj.id))
-            ObjectType.Layout.SET -> navigate(Navigation.OpenSet(obj.id))
-            ObjectType.Layout.COLLECTION -> navigate(Navigation.OpenSet(obj.id))
-            else -> sendToast("Unexpected layout: ${obj.layout}")
+        when(val navigation = obj.navigation()) {
+            is OpenObjectNavigation.OpenDataView -> {
+                navigate(Navigation.OpenSet(navigation.target))
+            }
+            is OpenObjectNavigation.OpenEditor -> {
+                navigate(Navigation.OpenObject(navigation.target))
+            }
+            is OpenObjectNavigation.UnexpectedLayoutError -> {
+                sendToast("Unexpected layout: ${navigation.layout}")
+            }
         }
     }
 
     fun onCreateNewObjectClicked(type: Key? = null) {
+        Timber.d("onCreateNewObjectClicked, type:[$type]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateObject.Param(
@@ -1047,10 +1061,9 @@ class HomeScreenViewModel(
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
-                        // TODO Multispaces - Check analytics events
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = result.objectId,
+                            type = result.typeKey.key,
                             storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.navigation,
                             startTime = startTime,
@@ -1396,6 +1409,10 @@ sealed class Command {
             const val UNDEFINED_LAYOUT_CODE = -1
         }
     }
+
+    sealed class Deeplink : Command() {
+        object CannotImportExperience : Deeplink()
+    }
 }
 
 /**
@@ -1408,3 +1425,36 @@ typealias Widgets = List<Widget>?
  * Null means there are no info about containers — due to loading or error state.
  */
 typealias Containers = List<WidgetContainer>?
+
+sealed class OpenObjectNavigation {
+    data class OpenEditor(val target: Id) : OpenObjectNavigation()
+    data class OpenDataView(val target: Id): OpenObjectNavigation()
+    data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
+}
+
+fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
+    return when (layout) {
+        ObjectType.Layout.BASIC,
+        ObjectType.Layout.NOTE,
+        ObjectType.Layout.TODO,
+        ObjectType.Layout.FILE,
+        ObjectType.Layout.BOOKMARK -> {
+            OpenObjectNavigation.OpenEditor(id)
+        }
+        ObjectType.Layout.PROFILE -> {
+            val identityLink = getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
+            if (identityLink.isNullOrEmpty()) {
+                OpenObjectNavigation.OpenEditor(id)
+            } else {
+                OpenObjectNavigation.OpenEditor(identityLink)
+            }
+        }
+        ObjectType.Layout.SET,
+        ObjectType.Layout.COLLECTION -> {
+            OpenObjectNavigation.OpenDataView(id)
+        }
+        else -> {
+            OpenObjectNavigation.UnexpectedLayoutError(layout)
+        }
+    }
+}

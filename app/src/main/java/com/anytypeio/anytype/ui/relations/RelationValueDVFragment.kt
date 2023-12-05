@@ -116,7 +116,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
             }
             RelationValueBaseViewModel.ObjectRelationValueCommand.ShowFileActionsScreen -> {
                 val fr = FileActionsFragment()
-                fr.showChildFragment()
+                fr.show(childFragmentManager, null)
             }
             RelationValueBaseViewModel.ObjectRelationValueCommand.UploadFromGallery -> {
                 openGallery()
@@ -137,7 +137,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
             types = types,
             flow = flow
         )
-        fr.showChildFragment()
+        fr.show(childFragmentManager, null)
     }
 
     private fun showAddStatusOrTagScreen() {
@@ -147,7 +147,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
             relationKey = relationKey,
             isIntrinsic = isIntrinsic
         )
-        fr.showChildFragment()
+        fr.show(childFragmentManager, null)
     }
 
     private fun showAddFileScreen() {
@@ -157,7 +157,7 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
             flow = AddFileRelationFragment.FLOW_DATAVIEW,
             relationKey = relationKey
         )
-        fr.showChildFragment()
+        fr.show(childFragmentManager, null)
     }
 
     override fun onAddAction() {

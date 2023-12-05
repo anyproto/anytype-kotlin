@@ -326,7 +326,7 @@ abstract class RelationValueBaseViewModel(
                 }
                 Relation.Format.FILE -> {
                     viewModelScope.launch {
-                        commands.emit(ObjectRelationValueCommand.ShowFileValueActionScreen)
+                        commands.emit(ObjectRelationValueCommand.ShowFileActionsScreen)
                     }
                 }
                 Relation.Format.OBJECT -> {
@@ -471,9 +471,17 @@ abstract class RelationValueBaseViewModel(
         }
     }
 
-    fun onFileValueActionUploadFromGalleryClicked() {}
+    fun onFileValueActionUploadFromGalleryClicked() {
+        viewModelScope.launch {
+            commands.emit(ObjectRelationValueCommand.UploadFromGallery)
+        }
+    }
 
-    fun onFileValueActionUploadFromStorageClicked() {}
+    fun onFileValueActionUploadFromStorageClicked() {
+        viewModelScope.launch {
+            commands.emit(ObjectRelationValueCommand.UploadFromStorage)
+        }
+    }
 
     fun onObjectClicked(ctx: Id, id: Id, layout: ObjectType.Layout?) {
         if (id != ctx) {
@@ -585,8 +593,11 @@ abstract class RelationValueBaseViewModel(
     sealed class ObjectRelationValueCommand {
         object ShowAddStatusOrTagScreen : ObjectRelationValueCommand()
         object ShowAddObjectScreen : ObjectRelationValueCommand()
-        object ShowFileValueActionScreen : ObjectRelationValueCommand()
+
+        object UploadFromStorage : ObjectRelationValueCommand()
+        object UploadFromGallery : ObjectRelationValueCommand()
         object ShowAddFileScreen : ObjectRelationValueCommand()
+        object ShowFileActionsScreen : ObjectRelationValueCommand()
     }
 
     companion object {

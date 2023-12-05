@@ -13,4 +13,12 @@
         app:useSimpleSummaryProvider="true"
         android:entryValues="@array/settings_networks"/>
 
+    <Preference
+        android:key="edittext"
+        android:title="@string/settings_network_configuration_file"
+        android:inputType="text"
+        android:summary="Enter your name"
+        android:dialogTitle="Enter your name"
+        android:defaultValue="John Doe"/>
+
 </PreferenceScreen>

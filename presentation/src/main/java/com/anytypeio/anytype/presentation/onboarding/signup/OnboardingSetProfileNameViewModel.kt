@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -25,7 +26,6 @@ import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
-import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -47,7 +47,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val crashReporter: CrashReporter,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+    private val localeProvider: LocaleProvider
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
@@ -179,7 +180,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
             analytics.proceedWithAccountEvent(
                 startTime = startTime,
                 configStorage = configStorage,
-                eventName = EventsDictionary.createAccount
+                eventName = EventsDictionary.createAccount,
+                lang = localeProvider.language()
             )
         }
     }
@@ -216,7 +218,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val crashReporter: CrashReporter,
-        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+        private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+        private val localeProvider: LocaleProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -233,7 +236,8 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 relationsSubscriptionManager = relationsSubscriptionManager,
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
                 crashReporter = crashReporter,
-                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
+                spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
+                localeProvider = localeProvider
             ) as T
         }
     }

@@ -12,13 +12,13 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import dagger.Binds
@@ -101,7 +101,6 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun authRepository(): AuthRepository
     fun userSettings(): UserSettingsRepository
-    fun workspaceManager(): WorkspaceManager
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
     fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun pathProvider(): PathProvider
@@ -109,6 +108,7 @@ interface OnboardingSoulCreationDependencies : ComponentDependencies {
     fun crashReporter(): CrashReporter
     fun spaceManager(): SpaceManager
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
+    fun localeProvider(): LocaleProvider
 }
 
 @Scope

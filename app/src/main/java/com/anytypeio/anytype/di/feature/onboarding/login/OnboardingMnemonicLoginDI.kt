@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -60,4 +61,5 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
+    fun localeProvider(): LocaleProvider
 }

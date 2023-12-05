@@ -41,7 +41,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -1789,11 +1788,15 @@ suspend fun Analytics.sendSettingsStorageOffloadEvent() {
 suspend fun Analytics.proceedWithAccountEvent(
     configStorage: ConfigStorage,
     startTime: Long,
-    eventName: String
+    eventName: String,
+    lang: String? = null
 ) {
     val analyticsId = configStorage.get().analytics
     val userProperty = UserProperty.AccountId(analyticsId)
     updateUserProperty(userProperty)
+    if (lang != null) {
+        updateUserProperty(UserProperty.InterfaceLanguage(lang))
+    }
     sendEvent(
         startTime = startTime,
         middleTime = System.currentTimeMillis(),

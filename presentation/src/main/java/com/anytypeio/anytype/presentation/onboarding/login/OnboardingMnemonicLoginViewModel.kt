@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
-import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
@@ -57,9 +56,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     val sideEffects = MutableSharedFlow<SideEffect>()
     val state = MutableStateFlow<SetupState>(SetupState.Idle)
 
-    val navigation = MutableSharedFlow<OnboardingLoginSetupViewModel.Navigation>()
+    val navigation = MutableSharedFlow<Navigation>()
 
-    val error by lazy { MutableStateFlow(OnboardingLoginSetupViewModel.NO_ERROR) }
+    val error by lazy { MutableStateFlow(NO_ERROR) }
 
     init {
         viewModelScope.sendEvent(
@@ -173,7 +172,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     }
                     Timber.e(e, "Error while account loading")
                     // TODO refact
-                    viewModelScope.launch { navigation.emit(OnboardingLoginSetupViewModel.Navigation.Exit) }
+                    viewModelScope.launch { navigation.emit(Navigation.Exit) }
                 },
                 fnR = {
                     Timber.d("Account loading successfully finished")
@@ -219,7 +218,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                         }
                         else -> {
                             val msg = e.message ?: "Unknown error"
-                            error.value = "${SetupSelectedAccountViewModel.ERROR_MESSAGE}: $msg"
+                            error.value = "${ERROR_MESSAGE}: $msg"
                         }
                     }
                 },
@@ -240,7 +239,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     private fun navigateToMigrationErrorScreen() {
         viewModelScope.launch {
-            navigation.emit(OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen)
+            navigation.emit(Navigation.NavigateToMigrationErrorScreen)
         }
     }
 
@@ -252,7 +251,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     private fun navigateToDashboard() {
         viewModelScope.launch {
-            navigation.emit(OnboardingLoginSetupViewModel.Navigation.NavigateToHomeScreen)
+            navigation.emit(Navigation.NavigateToHomeScreen)
         }
     }
 
@@ -270,6 +269,12 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         object Idle : SetupState()
         object InProgress: SetupState()
         object Failed: SetupState()
+    }
+
+    sealed class Navigation {
+        object Exit : Navigation()
+        object NavigateToMigrationErrorScreen : Navigation()
+        object NavigateToHomeScreen: Navigation()
     }
 
     class Factory @Inject constructor(
@@ -307,5 +312,10 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 localeProvider = localeProvider
             ) as T
         }
+    }
+
+    companion object {
+        const val ERROR_MESSAGE = "An error occurred while starting account..."
+        const val NO_ERROR = ""
     }
 }

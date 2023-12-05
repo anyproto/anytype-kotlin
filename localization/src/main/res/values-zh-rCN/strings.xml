@@ -1006,11 +1006,11 @@
     <string name="content_desc_layout_icon">布局图标</string>
     <!--endregion-->
     <!--region BUTTONS -->
-    <string name="button_okay">Okay</string>
+    <string name="button_okay">好的</string>
     <string name="button_close">关闭</string>
     <!--endregion-->
     <!--region ALERTS -->
     <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
-    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
+    <string name="alert_gallery_unsupported_description">目前请使用桌面应用。</string>
     <!--endregion-->
 </resources>

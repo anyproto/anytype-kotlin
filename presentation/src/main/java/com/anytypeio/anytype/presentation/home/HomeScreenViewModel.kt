@@ -983,21 +983,8 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onStart(deeplink: DeepLinkResolver.Action? = null) {
-        Timber.d("onStart, deep link:$deeplink")
-        when(deeplink) {
-            DeepLinkResolver.Action.Import.Experience -> {
-                viewModelScope.launch {
-                    delay(1000)
-                    commands.emit(Command.Deeplink.CannotImportExperience)
-                }
-            }
-            else -> {
-                if (BuildConfig.DEBUG) {
-                    sendToast("Could not resolve deeplink")
-                }
-            }
-        }
+    fun onStart() {
+        Timber.d("onStart")
         widgetObjectPipelineJobs += viewModelScope.launch {
             if (!isWidgetSessionRestored) {
                 val session = withContext(appCoroutineDispatchers.io) {
@@ -1009,6 +996,26 @@ class HomeScreenViewModel(
             }
             widgetObjectPipeline.collect {
                 objectViewState.value = it
+            }
+        }
+    }
+
+    fun onResume(deeplink: DeepLinkResolver.Action? = null) {
+        Timber.d("onResume, deeplink: ${deeplink}")
+        when(deeplink) {
+            DeepLinkResolver.Action.Import.Experience -> {
+                viewModelScope.launch {
+                    delay(1000)
+                    commands.emit(Command.Deeplink.CannotImportExperience)
+                }
+            }
+            DeepLinkResolver.Action.Unknown -> {
+                if (BuildConfig.DEBUG) {
+                    sendToast("Could not resolve deeplink")
+                }
+            }
+            else -> {
+                Timber.d("No deep link")
             }
         }
     }

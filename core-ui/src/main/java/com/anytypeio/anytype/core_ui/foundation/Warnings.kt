@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.foundation
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -166,18 +167,21 @@ fun AlertIcon(icon: AlertConfig.Icon) {
             .padding(horizontal = 28.dp)
             .fillMaxWidth()
     ) {
-        BoxWithConstraints(
-            Modifier.fillMaxWidth()
-            .height(104.dp)
-        ) {
-            val aspectRatio = maxWidth / maxHeight
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .scale(maxOf(aspectRatio, 1f), maxOf(1 / aspectRatio, 1f))
-                    .background(Brush.radialGradient(gradientColors))
+        if (!isSystemInDarkTheme()) {
+            BoxWithConstraints(
+                Modifier
                     .fillMaxWidth()
-            )
+                    .height(104.dp)
+            ) {
+                val aspectRatio = maxWidth / maxHeight
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .scale(maxOf(aspectRatio, 1f), maxOf(1 / aspectRatio, 1f))
+                        .background(Brush.radialGradient(gradientColors))
+                        .fillMaxWidth()
+                )
+            }
         }
         Box(
             modifier = Modifier

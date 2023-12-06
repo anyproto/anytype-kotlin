@@ -25,9 +25,15 @@ class SelectAccount @Inject constructor(
             version = metricsProvider.getVersion(),
             platform = metricsProvider.getPlatform()
         )
+
+        val networkMode = repository.getNetworkMode()
+        val customConfigFilePath = repository.getNetworkConfigFilePath()
+
         val command = Command.AccountSelect(
             id = params.id,
-            path = params.path
+            path = params.path,
+            networkMode = networkMode,
+            customConfigFilePath = customConfigFilePath
         )
         val setup = repository.selectAccount(command)
         with(repository) {

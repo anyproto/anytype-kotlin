@@ -33,9 +33,15 @@ class LaunchAccount @Inject constructor(
             version = metricsProvider.getVersion(),
             platform = metricsProvider.getPlatform()
         )
+
+        val networkMode = repository.getNetworkMode()
+        val customConfigFilePath = repository.getNetworkConfigFilePath()
+
         val command = Command.AccountSelect(
             id = repository.getCurrentAccountId(),
-            path = pathProvider.providePath()
+            path = pathProvider.providePath(),
+            networkMode = networkMode,
+            customConfigFilePath = customConfigFilePath
         )
         repository.selectAccount(command).let { setup ->
             repository.updateAccount(setup.account)

@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
 import com.anytypeio.anytype.domain.auth.model.Wallet
@@ -84,4 +85,12 @@ class AuthDataRepository(
     override suspend fun saveLastOpenedObjectId(id: Id) { factory.cache.saveLastOpenedObject(id) }
     override suspend fun getLastOpenedObjectId(): Id? = factory.cache.getLastOpenedObject()
     override suspend fun clearLastOpenedObject() { factory.cache.clearLastOpenedObject() }
+
+    override suspend fun getNetworkMode(): NetworkMode {
+        return factory.cache.getNetworkMode()
+    }
+
+    override suspend fun getNetworkConfigFilePath(): String? {
+        return factory.cache.getNetworkConfigFilePath()
+    }
 }

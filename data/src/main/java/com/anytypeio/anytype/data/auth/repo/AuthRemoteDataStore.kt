@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 
@@ -94,6 +95,14 @@ class AuthRemoteDataStore(
     }
 
     override suspend fun clearLastOpenedObject() {
+        throw UnsupportedOperationException()
+    }
+
+    override suspend fun getNetworkMode(): NetworkMode {
+        throw UnsupportedOperationException()
+    }
+
+    override suspend fun getNetworkConfigFilePath(): String? {
         throw UnsupportedOperationException()
     }
 }

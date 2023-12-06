@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import kotlinx.coroutines.flow.Flow
 
@@ -60,4 +61,7 @@ interface AuthRepository {
     suspend fun saveLastOpenedObjectId(id: Id)
     suspend fun getLastOpenedObjectId() : Id?
     suspend fun clearLastOpenedObject()
+
+    suspend fun getNetworkMode(): NetworkMode
+    suspend fun getNetworkConfigFilePath(): String?
 }

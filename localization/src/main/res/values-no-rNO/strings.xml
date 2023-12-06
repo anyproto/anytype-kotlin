@@ -716,7 +716,6 @@
     <string name="go_back">Gå tilbake</string>
     <string name="snack_object_set_not_found">Set not found for this type.</string>
     <string name="create_new_set">Opprett</string>
-    <string name="shortcut_create_new">Create a new %1$s</string>
     <string name="close">Lukk</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your recovery phrase</string>

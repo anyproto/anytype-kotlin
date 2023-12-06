@@ -715,7 +715,6 @@
     <string name="go_back">回到</string>
     <string name="snack_object_set_not_found">未找到此类型的设置。</string>
     <string name="create_new_set">创建</string>
-    <string name="shortcut_create_new">创建新%1$s</string>
     <string name="close">关闭</string>
     <string name="go_to_settings">前往设置</string>
     <string name="do_not_forget_mnemonic_phrase">不要忘记保存您的恢复短语</string>

@@ -7,6 +7,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
@@ -23,7 +25,6 @@ import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
-import com.anytypeio.anytype.core_utils.ext.letNotNull
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -46,6 +47,7 @@ import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -100,6 +102,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
@@ -152,6 +155,7 @@ class HomeScreenViewModel(
     private val setWidgetActiveView: SetWidgetActiveView,
     private val setObjectDetails: SetObjectDetails,
     private val getSpaceView: GetSpaceView,
+    private val searchObjects: SearchObjects
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1116,23 +1120,69 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithSettingUpShortcuts() {
-        viewModelScope.launch {
-            getDefaultObjectType.async(Unit).fold(
-                onSuccess = {
-                    Pair(it.name, it.type).letNotNull { name, type ->
-                        appActionManager.setup(
-                            AppActionManager.Action.CreateNew(
-                                type = type,
-                                name = name
-                            )
-                        )
+        spaceManager
+            .observe()
+            .onEach { config ->
+                val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()
+                val keys = buildSet {
+                    if (defaultObjectType != null) {
+                        add(defaultObjectType.type.key)
                     }
-                },
-                onFailure = {
-                    Timber.d("Error while setting up app shortcuts")
+                    add(ObjectTypeUniqueKeys.NOTE)
+                    add(ObjectTypeUniqueKeys.PAGE)
+                    add(ObjectTypeUniqueKeys.TASK)
                 }
-            )
-        }
+                searchObjects(
+                    SearchObjects.Params(
+                        keys = buildList {
+                            add(Relations.ID)
+                            add(Relations.UNIQUE_KEY)
+                            add(Relations.NAME)
+                        },
+                        filters = buildList {
+                            add(
+                                DVFilter(
+                                    relation = Relations.SPACE_ID,
+                                    value = config.space,
+                                    condition = DVFilterCondition.EQUAL
+                                )
+                            )
+                            add(
+                                DVFilter(
+                                    relation = Relations.LAYOUT,
+                                    value = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+                                    condition = DVFilterCondition.EQUAL
+                                )
+                            )
+                            add(
+                                DVFilter(
+                                    relation = Relations.UNIQUE_KEY,
+                                    value = keys.toList(),
+                                    condition = DVFilterCondition.IN
+                                )
+                            )
+                        }
+                    )
+                ).process(
+                    success = { wrappers ->
+                        val types = wrappers
+                            .map { ObjectWrapper.Type(it.map) }
+                            .sortedBy { keys.indexOf(it.uniqueKey) }
+
+                        val actions = types.map { type ->
+                            AppActionManager.Action.CreateNew(
+                                type = TypeKey(type.uniqueKey),
+                                name = type.name.orEmpty()
+                            )
+                        }
+                        appActionManager.setup(actions = actions)
+                    },
+                    failure = {
+                        Timber.e(it, "Error while searching for types")
+                    }
+                )
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun dispatchDeleteWidgetAnalyticsEvent(target: Widget?) {
@@ -1304,7 +1354,8 @@ class HomeScreenViewModel(
         private val spaceManager: SpaceManager,
         private val spaceWidgetContainer: SpaceWidgetContainer,
         private val setObjectDetails: SetObjectDetails,
-        private val getSpaceView: GetSpaceView
+        private val getSpaceView: GetSpaceView,
+        private val searchObjects: SearchObjects
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1339,7 +1390,8 @@ class HomeScreenViewModel(
             spaceManager = spaceManager,
             spaceWidgetContainer = spaceWidgetContainer,
             setObjectDetails = setObjectDetails,
-            getSpaceView = getSpaceView
+            getSpaceView = getSpaceView,
+            searchObjects = searchObjects
         ) as T
     }
 

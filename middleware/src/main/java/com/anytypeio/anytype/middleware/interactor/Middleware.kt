@@ -67,7 +67,6 @@ class Middleware @Inject constructor(
             avatarLocalPath = command.avatarPath,
             icon = command.icon.toLong(),
             networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig,
-            disableLocalNetworkSync = command.disableLocalNetworkSync ?: false,
             networkCustomConfigFilePath = command.customConfigFilePath.orEmpty()
 
         )
@@ -83,7 +82,6 @@ class Middleware @Inject constructor(
             id = command.id,
             rootPath = command.path,
             networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig,
-            disableLocalNetworkSync = command.disableLocalNetworkSync ?: false,
             networkCustomConfigFilePath = command.customConfigFilePath.orEmpty()
         )
         if (BuildConfig.DEBUG) logRequest(request)

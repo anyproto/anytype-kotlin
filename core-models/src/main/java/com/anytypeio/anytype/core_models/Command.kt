@@ -10,16 +10,14 @@ sealed class Command {
         val avatarPath: String?,
         val icon: Int,
         val networkMode: NetworkMode? = null,
-        val customConfigFilePath: String? = null,
-        val disableLocalNetworkSync: Boolean? = null
+        val customConfigFilePath: String? = null
     ) : Command()
 
     data class AccountSelect(
         val id: String,
         val path: String,
         val networkMode: NetworkMode? = null,
-        val customConfigFilePath: String? = null,
-        val disableLocalNetworkSync: Boolean? = null
+        val customConfigFilePath: String? = null
     ) : Command()
 
     class UploadFile(

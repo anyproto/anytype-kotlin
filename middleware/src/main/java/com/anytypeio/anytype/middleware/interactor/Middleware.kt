@@ -78,11 +78,16 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun accountSelect(command: Command.AccountSelect): AccountSetup {
+
+        val networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig
+        val networkCustomConfigFilePath = if (networkMode == MNetworkMode.CustomConfig) {
+            command.customConfigFilePath.orEmpty()
+        } else ""
         val request = Rpc.Account.Select.Request(
             id = command.id,
             rootPath = command.path,
-            networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig,
-            networkCustomConfigFilePath = command.customConfigFilePath.orEmpty()
+            networkMode = networkMode,
+            networkCustomConfigFilePath = networkCustomConfigFilePath
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.accountSelect(request)

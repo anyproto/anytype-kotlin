@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.platform.MetricsProvider
@@ -243,11 +244,13 @@ object SetupNewAccountModule {
     fun provideCreateAccountUseCase(
         repository: AuthRepository,
         configStorage: ConfigStorage,
-        metricsProvider: MetricsProvider
+        metricsProvider: MetricsProvider,
+        dispatchers: AppCoroutineDispatchers
     ): CreateAccount = CreateAccount(
         repository = repository,
         configStorage = configStorage,
-        metricsProvider = metricsProvider
+        metricsProvider = metricsProvider,
+        dispatcher = dispatchers
     )
 
     @JvmStatic

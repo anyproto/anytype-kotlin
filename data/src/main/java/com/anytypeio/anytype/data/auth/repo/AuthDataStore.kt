@@ -2,6 +2,7 @@ package com.anytypeio.anytype.data.auth.repo
 
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -9,13 +10,8 @@ import kotlinx.coroutines.flow.Flow
 
 interface AuthDataStore {
 
-    suspend fun selectAccount(id: String, path: String): AccountSetup
-
-    suspend fun createAccount(
-        name: String,
-        avatarPath: String?,
-        iconGradientValue: Int
-    ): AccountSetup
+    suspend fun selectAccount(command: Command.AccountSelect): AccountSetup
+    suspend fun createAccount(command: Command.AccountCreate): AccountSetup
 
     suspend fun deleteAccount() : AccountStatus
     suspend fun restoreAccount() : AccountStatus

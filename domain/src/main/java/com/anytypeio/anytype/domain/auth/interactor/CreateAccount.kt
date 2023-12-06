@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
 import com.anytypeio.anytype.core_models.Account
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -20,11 +21,12 @@ open class CreateAccount(
             version = metricsProvider.getVersion(),
             platform = metricsProvider.getPlatform()
         )
-        val setup = repository.createAccount(
+        val command = Command.AccountCreate(
             name = params.name,
             avatarPath = params.avatarPath,
             icon = params.iconGradientValue
         )
+        val setup = repository.createAccount(command)
         with(repository) {
             saveAccount(setup.account)
             setCurrentAccount(setup.account.id)

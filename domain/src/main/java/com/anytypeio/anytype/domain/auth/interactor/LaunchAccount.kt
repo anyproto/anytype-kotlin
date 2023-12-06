@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
@@ -32,10 +33,11 @@ class LaunchAccount @Inject constructor(
             version = metricsProvider.getVersion(),
             platform = metricsProvider.getPlatform()
         )
-        repository.selectAccount(
+        val command = Command.AccountSelect(
             id = repository.getCurrentAccountId(),
             path = pathProvider.providePath()
-        ).let { setup ->
+        )
+        repository.selectAccount(command).let { setup ->
             repository.updateAccount(setup.account)
             featuresConfigProvider.set(
                 enableDataView = setup.features.enableDataView ?: false,

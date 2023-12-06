@@ -3,6 +3,7 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
@@ -22,21 +23,12 @@ class AuthDataRepository(
     }
 
     override suspend fun selectAccount(
-        id: String, path: String
-    ): AccountSetup = factory.remote.selectAccount(
-        id = id,
-        path = path
-    )
+        command: Command.AccountSelect
+    ): AccountSetup = factory.remote.selectAccount(command)
 
     override suspend fun createAccount(
-        name: String,
-        avatarPath: String?,
-        icon: Int
-    ): AccountSetup = factory.remote.createAccount(
-        name = name,
-        avatarPath = avatarPath,
-        iconGradientValue = icon
-    )
+        command: Command.AccountCreate
+    ): AccountSetup = factory.remote.createAccount(command)
 
     override suspend fun deleteAccount(): AccountStatus = factory.remote.deleteAccount()
     override suspend fun restoreAccount(): AccountStatus = factory.remote.restoreAccount()

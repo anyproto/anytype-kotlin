@@ -2,6 +2,7 @@ package com.anytypeio.anytype.data.auth.repo
 
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -11,21 +12,12 @@ class AuthRemoteDataStore(
 ) : AuthDataStore {
 
     override suspend fun selectAccount(
-        id: String, path: String
-    ) = authRemote.selectAccount(
-        id = id,
-        path = path
-    )
+        command: Command.AccountSelect
+    ) = authRemote.selectAccount(command)
 
     override suspend fun createAccount(
-        name: String,
-        avatarPath: String?,
-        iconGradientValue: Int
-    ) : AccountSetup = authRemote.createAccount(
-        name = name,
-        avatarPath = avatarPath,
-        iconGradientValue = iconGradientValue
-    )
+        command: Command.AccountCreate
+    ): AccountSetup = authRemote.createAccount(command)
 
     override suspend fun deleteAccount(): AccountStatus = authRemote.deleteAccount()
 

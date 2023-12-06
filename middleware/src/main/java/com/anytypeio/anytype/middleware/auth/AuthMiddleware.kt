@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.auth
 
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.data.auth.repo.AuthRemote
 import com.anytypeio.anytype.middleware.EventProxy
@@ -20,18 +21,12 @@ class AuthMiddleware(
 ) : AuthRemote {
 
     override suspend fun selectAccount(
-        id: String, path: String
-    ): AccountSetup = middleware.accountSelect(id, path)
+        command: Command.AccountSelect
+    ): AccountSetup = middleware.accountSelect(command)
 
     override suspend fun createAccount(
-        name: String,
-        avatarPath: String?,
-        iconGradientValue: Int,
-    ) : AccountSetup = middleware.accountCreate(
-        name = name,
-        path = avatarPath,
-        iconGradientValue = iconGradientValue
-    )
+        command: Command.AccountCreate
+    ) : AccountSetup = middleware.accountCreate(command)
 
     override suspend fun deleteAccount(): AccountStatus = middleware.accountDelete()
     override suspend fun restoreAccount(): AccountStatus = middleware.accountRestore()

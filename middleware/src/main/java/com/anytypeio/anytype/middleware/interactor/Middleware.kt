@@ -35,6 +35,7 @@ import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
+import com.anytypeio.anytype.middleware.mappers.MNetworkMode
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
 import com.anytypeio.anytype.middleware.mappers.config
 import com.anytypeio.anytype.middleware.mappers.core
@@ -59,18 +60,34 @@ class Middleware @Inject constructor(
 ) {
 
     @Throws(Exception::class)
-    fun accountCreate(
-        name: String,
-        path: String?,
-        iconGradientValue: Int
-    ): AccountSetup {
+    fun accountCreate(command: Command.AccountCreate): AccountSetup {
+
         val request = Rpc.Account.Create.Request(
-            name = name,
-            avatarLocalPath = path,
-            icon = iconGradientValue.toLong()
+            name = command.name,
+            avatarLocalPath = command.avatarPath,
+            icon = command.icon.toLong(),
+            networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig,
+            disableLocalNetworkSync = command.disableLocalNetworkSync ?: false,
+            networkCustomConfigFilePath = command.customConfigFilePath.orEmpty()
+
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.accountCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.toAccountSetup()
+    }
+
+    @Throws(Exception::class)
+    fun accountSelect(command: Command.AccountSelect): AccountSetup {
+        val request = Rpc.Account.Select.Request(
+            id = command.id,
+            rootPath = command.path,
+            networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig,
+            disableLocalNetworkSync = command.disableLocalNetworkSync ?: false,
+            networkCustomConfigFilePath = command.customConfigFilePath.orEmpty()
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.accountSelect(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.toAccountSetup()
     }
@@ -103,18 +120,6 @@ class Middleware @Inject constructor(
         val status = response.status
         checkNotNull(status) { "Account status was null" }
         return status.core()
-    }
-
-    @Throws(Exception::class)
-    fun accountSelect(id: String, path: String): AccountSetup {
-        val request = Rpc.Account.Select.Request(
-            id = id,
-            rootPath = path
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountSelect(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.toAccountSetup()
     }
 
     @Throws(Exception::class)

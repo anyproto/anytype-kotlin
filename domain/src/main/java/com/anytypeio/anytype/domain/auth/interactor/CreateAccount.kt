@@ -3,7 +3,8 @@ package com.anytypeio.anytype.domain.auth.interactor
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 
@@ -13,18 +14,25 @@ import com.anytypeio.anytype.domain.platform.MetricsProvider
 open class CreateAccount(
     private val repository: AuthRepository,
     private val configStorage: ConfigStorage,
-    private val metricsProvider: MetricsProvider
-) : BaseUseCase<Account, CreateAccount.Params>() {
+    private val metricsProvider: MetricsProvider,
+    dispatcher: AppCoroutineDispatchers
+) : ResultInteractor<CreateAccount.Params, Account>(dispatcher.io) {
 
-    override suspend fun run(params: Params) = safe {
+    override suspend fun doWork(params: Params): Account {
         repository.setMetrics(
             version = metricsProvider.getVersion(),
             platform = metricsProvider.getPlatform()
         )
+
+        val networkMode = repository.getNetworkMode()
+        val customConfigFilePath = repository.getNetworkConfigFilePath()
+
         val command = Command.AccountCreate(
             name = params.name,
             avatarPath = params.avatarPath,
-            icon = params.iconGradientValue
+            icon = params.iconGradientValue,
+            networkMode = networkMode,
+            customConfigFilePath = customConfigFilePath
         )
         val setup = repository.createAccount(command)
         with(repository) {
@@ -32,7 +40,7 @@ open class CreateAccount(
             setCurrentAccount(setup.account.id)
         }
         configStorage.set(setup.config)
-        setup.account
+        return setup.account
     }
 
     /**

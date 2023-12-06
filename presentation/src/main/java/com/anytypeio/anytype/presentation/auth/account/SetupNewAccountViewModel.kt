@@ -64,59 +64,6 @@ class SetupNewAccountViewModel(
 
     private fun proceedWithCreatingAccount() {
         Timber.d("Starting setting up new account")
-        val startTime = System.currentTimeMillis()
-        createAccount.invoke(
-            scope = viewModelScope,
-            params = CreateAccount.Params(
-                name = session.name ?: throw IllegalStateException("Name not set"),
-                avatarPath = session.avatarPath,
-                iconGradientValue = spaceGradientProvider.randomId()
-            )
-        ) { result ->
-            result.either(
-                fnL = { error ->
-                    when (error) {
-                        CreateAccountException.BadInviteCode -> {
-                            _state.postValue(SetupNewAccountViewState.InvalidCodeError("Invalid invitation code!"))
-                            viewModelScope.launch {
-                                delay(300)
-                                navigation.postValue(EventWrapper(AppNavigation.Command.ExitToInvitationCodeScreen))
-                            }
-                        }
-                        CreateAccountException.NetworkError -> {
-                            _state.postValue(
-                                SetupNewAccountViewState.ErrorNetwork(
-                                    "Failed to create your account due to a network error: ${error.message}"
-                                )
-                            )
-                        }
-                        CreateAccountException.OfflineDevice -> {
-                            _state.postValue(
-                                SetupNewAccountViewState.ErrorNetwork(
-                                    "Your device seems to be offline. Please, check your connection and try again."
-                                )
-                            )
-                        }
-                        else -> {
-                            _state.postValue(
-                                SetupNewAccountViewState.Error(
-                                    "Error while creating an account: ${error.message ?: "Unknown error"}"
-                                )
-                            )
-                        }
-                    }
-                    Timber.e(error, "Error while creating account")
-                },
-                fnR = {
-                    createAccountAnalytics(startTime)
-                    crashReporter.setUser(configStorage.get().analytics)
-                    _state.postValue(SetupNewAccountViewState.Success)
-                    relationsSubscriptionManager.onStart()
-                    objectTypesSubscriptionManager.onStart()
-                    setupUseCase()
-                }
-            )
-        }
     }
 
     private fun setupUseCase() {

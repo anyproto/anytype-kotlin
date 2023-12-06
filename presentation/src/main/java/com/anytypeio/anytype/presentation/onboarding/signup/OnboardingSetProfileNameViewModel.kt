@@ -25,7 +25,6 @@ import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
-import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import javax.inject.Inject
 import kotlinx.coroutines.delay
@@ -84,36 +83,33 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
 
     private fun proceedWithCreatingAccount(name: String) {
         val startTime = System.currentTimeMillis()
-        createAccount.invoke(
-            scope = viewModelScope,
-            params = CreateAccount.Params(
-                name = name,
-                avatarPath = null,
-                iconGradientValue = spaceGradientProvider.randomId()
-            )
-        ) { result ->
-            result.either(
-                fnL = { error ->
+        val params = CreateAccount.Params(
+            name = name,
+            avatarPath = null,
+            iconGradientValue = spaceGradientProvider.randomId()
+        )
+        viewModelScope.launch {
+            createAccount.async(params = params).fold(
+                onFailure = { error ->
                     Timber.d("Error while creating account: ${error.message ?: "Unknown error"}").also {
-                        when(error) {
-                            CreateAccountException.NetworkError -> {
-                                sendToast(
-                                    "Failed to create your account due to a network error: ${error.message ?: "Unknown error"}"
-                                )
-                            }
-                            CreateAccountException.OfflineDevice -> {
-                                sendToast("Your device seems to be offline. Please, check your connection and try again.")
-                            }
-                            else -> {
-                                sendToast("Error while creating an account: ${error.message ?: "Unknown error"}")
+                            when (error) {
+                                CreateAccountException.NetworkError -> {
+                                    sendToast(
+                                        "Failed to create your account due to a network error: ${error.message ?: "Unknown error"}"
+                                    )
+                                }
+                                CreateAccountException.OfflineDevice -> {
+                                    sendToast("Your device seems to be offline. Please, check your connection and try again.")
+                                }
+                                else -> {
+                                    sendToast("Error: ${error.message ?: "Unknown error"}")
+                                }
                             }
                         }
-                    }
+                    state.value = ScreenState.Idle
                 },
-                fnR = {
-                    viewModelScope.launch {
-                        analytics.sendEvent(eventName = EventsDictionary.createSpace)
-                    }
+                onSuccess = {
+                    analytics.sendEvent(eventName = EventsDictionary.createSpace)
                     createAccountAnalytics(startTime)
                     val config = configStorage.getOrNull()
                     if (config != null) {

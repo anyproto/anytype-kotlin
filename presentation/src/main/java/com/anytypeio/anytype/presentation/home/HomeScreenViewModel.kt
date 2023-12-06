@@ -322,7 +322,7 @@ class HomeScreenViewModel(
                         } else {
                             DataViewListWidgetContainer(
                                 widget = widget,
-                                space = config.space,
+                                config = config,
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),

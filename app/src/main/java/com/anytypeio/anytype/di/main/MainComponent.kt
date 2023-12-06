@@ -74,7 +74,8 @@ import javax.inject.Singleton
         LocalNetworkProviderModule::class,
         SubscriptionsModule::class,
         CrashReportingModule::class,
-        TemplatesModule::class
+        TemplatesModule::class,
+        NetworkModeModule::class
     ]
 )
 interface MainComponent :

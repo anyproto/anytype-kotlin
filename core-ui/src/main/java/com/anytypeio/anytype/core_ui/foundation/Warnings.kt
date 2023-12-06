@@ -4,9 +4,11 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,8 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Brush
@@ -165,20 +166,19 @@ fun AlertIcon(icon: AlertConfig.Icon) {
             .padding(horizontal = 28.dp)
             .fillMaxWidth()
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .blur(5.dp)
-                .clip(OvalCornerShape)
-                .background(
-                    Brush.radialGradient(
-                        colors = gradientColors,
-                        radius = 500f
-                    )
-                )
-                .fillMaxWidth()
-                .height(104.dp)
-        )
+        BoxWithConstraints(
+            Modifier.fillMaxWidth()
+            .height(104.dp)
+        ) {
+            val aspectRatio = maxWidth / maxHeight
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .scale(maxOf(aspectRatio, 1f), maxOf(1 / aspectRatio, 1f))
+                    .background(Brush.radialGradient(gradientColors))
+                    .fillMaxWidth()
+            )
+        }
         Box(
             modifier = Modifier
                 .padding(vertical = 16.dp)

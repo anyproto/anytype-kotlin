@@ -204,6 +204,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                 )
             }
             is Command.Deeplink.CannotImportExperience -> {
+                arguments?.putString(DEEP_LINK_KEY, null)
                 findNavController().navigate(R.id.alertImportExperienceUnsupported)
             }
         }

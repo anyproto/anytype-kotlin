@@ -56,6 +56,7 @@ import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
@@ -992,7 +993,9 @@ class HomeScreenViewModel(
                 }
             }
             else -> {
-                // Do nothing
+                if (BuildConfig.DEBUG) {
+                    sendToast("Could not resolve deeplink")
+                }
             }
         }
         widgetObjectPipelineJobs += viewModelScope.launch {

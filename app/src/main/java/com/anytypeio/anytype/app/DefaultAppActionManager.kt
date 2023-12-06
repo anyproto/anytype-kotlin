@@ -53,7 +53,7 @@ class DefaultAppActionManager(val context: Context) : AppActionManager {
         val name = action.name.ifEmpty {
             context.resources.getString(R.string.unknown_type)
         }
-        val label = context.resources.getString(R.string.shortcut_create_new, name)
+        val label = context.resources.getString(R.string.shortcut_create_new_object_of_type, name)
         val shortcut = ShortcutInfoCompat.Builder(context, id)
             .setShortLabel(label)
             .setLongLabel(label)

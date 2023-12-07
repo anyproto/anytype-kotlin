@@ -105,6 +105,9 @@ class DefaultAuthCache(
     }
 
     override suspend fun getNetworkMode(): NetworkModeConfig = networkModeProvider.get()
+    override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
+        networkModeProvider.set(modeConfig)
+    }
 
     companion object {
         const val MNEMONIC_KEY = "mnemonic"

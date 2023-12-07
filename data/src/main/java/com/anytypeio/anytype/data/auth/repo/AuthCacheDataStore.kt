@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -90,5 +89,9 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
 
     override suspend fun getNetworkMode(): NetworkModeConfig {
         return cache.getNetworkMode()
+    }
+
+    override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
+        cache.setNetworkMode(modeConfig)
     }
 }

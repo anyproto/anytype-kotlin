@@ -63,4 +63,5 @@ interface AuthRepository {
     suspend fun clearLastOpenedObject()
 
     suspend fun getNetworkMode(): NetworkModeConfig
+    suspend fun setNetworkMode(modeConfig: NetworkModeConfig)
 }

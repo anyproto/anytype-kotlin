@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkMode
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import kotlinx.coroutines.flow.Flow
@@ -87,11 +88,7 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
     override suspend fun getLastOpenedObject(): Id? = cache.getLastOpenedObject()
     override suspend fun clearLastOpenedObject() { cache.clearLastOpenedObject() }
 
-    override suspend fun getNetworkMode(): NetworkMode {
+    override suspend fun getNetworkMode(): NetworkModeConfig {
         return cache.getNetworkMode()
-    }
-
-    override suspend fun getNetworkConfigFilePath(): String? {
-        return cache.getNetworkConfigFilePath()
     }
 }

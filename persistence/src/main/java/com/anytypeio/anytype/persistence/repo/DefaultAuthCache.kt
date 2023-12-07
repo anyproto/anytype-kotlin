@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.persistence.repo
 
 import android.content.SharedPreferences
-import com.anytypeio.anytype.core_models.NetworkMode
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.repo.AuthCache
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
@@ -104,8 +104,7 @@ class DefaultAuthCache(
         encryptedPrefs.edit().remove(LAST_OPENED_OBJECT_KEY).apply()
     }
 
-    override suspend fun getNetworkMode(): NetworkMode = networkModeProvider.get()
-    override suspend fun getNetworkConfigFilePath(): String? = networkModeProvider.getPath()
+    override suspend fun getNetworkMode(): NetworkModeConfig = networkModeProvider.get()
 
     companion object {
         const val MNEMONIC_KEY = "mnemonic"

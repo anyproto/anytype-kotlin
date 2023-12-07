@@ -25,14 +25,13 @@ open class CreateAccount(
         )
 
         val networkMode = repository.getNetworkMode()
-        val customConfigFilePath = repository.getNetworkConfigFilePath()
 
         val command = Command.AccountCreate(
             name = params.name,
             avatarPath = params.avatarPath,
             icon = params.iconGradientValue,
-            networkMode = networkMode,
-            customConfigFilePath = customConfigFilePath
+            networkMode = networkMode.networkMode,
+            customConfigFilePath = networkMode.storedFilePath
         )
         val setup = repository.createAccount(command)
         with(repository) {

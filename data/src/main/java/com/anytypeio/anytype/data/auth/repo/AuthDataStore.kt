@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkMode
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import kotlinx.coroutines.flow.Flow
@@ -45,6 +46,5 @@ interface AuthDataStore {
     suspend fun getLastOpenedObject() : Id?
     suspend fun clearLastOpenedObject()
 
-    suspend fun getNetworkMode(): NetworkMode
-    suspend fun getNetworkConfigFilePath(): String?
+    suspend fun getNetworkMode(): NetworkModeConfig
 }

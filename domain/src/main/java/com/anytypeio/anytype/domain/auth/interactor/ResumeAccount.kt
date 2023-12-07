@@ -33,13 +33,12 @@ class ResumeAccount(
         )
 
         val networkMode = repository.getNetworkMode()
-        val customConfigFilePath = repository.getNetworkConfigFilePath()
 
         val command = Command.AccountSelect(
             id = repository.getCurrentAccountId(),
             path = pathProvider.providePath(),
-            networkMode = networkMode,
-            customConfigFilePath = customConfigFilePath
+            networkMode = networkMode.networkMode,
+            customConfigFilePath = networkMode.storedFilePath
         )
         repository.selectAccount(command).let { setup ->
             featuresConfigProvider.set(

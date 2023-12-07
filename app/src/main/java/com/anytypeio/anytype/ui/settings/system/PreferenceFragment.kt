@@ -41,15 +41,12 @@ class PreferenceFragment : PreferenceFragmentCompat() {
                 is PickerDelegate.Actions.OnProceedWithFilePath -> {
                     vm.onProceedWithFilePath(actions.filePath)
                 }
-
                 PickerDelegate.Actions.OnCancelCopyFileToCacheDir -> {
                     vm.onCancelCopyFileToCacheDir()
                 }
-
                 is PickerDelegate.Actions.OnPickedDocImageFromDevice -> {
                     vm.onPickedDocImageFromDevice(actions.ctx, actions.filePath)
                 }
-
                 is PickerDelegate.Actions.OnStartCopyFileToCacheDir -> {
                     vm.onStartCopyFileToCacheDir(actions.uri)
                 }
@@ -76,12 +73,10 @@ class PreferenceFragment : PreferenceFragmentCompat() {
                         networkModePreference.value = NETWORK_MODE_DEFAULT
                         filePathPreference.isVisible = false
                     }
-
                     NetworkMode.LOCAL -> {
                         networkModePreference.value = NETWORK_MODE_LOCAL
                         filePathPreference.isVisible = false
                     }
-
                     NetworkMode.CUSTOM -> {
                         networkModePreference.value = NETWORK_MODE_CUSTOM
                         filePathPreference.isVisible = true
@@ -124,7 +119,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     }
 
     private fun openFilePicker() {
-        pickerDelegate.openFilePicker(Mimetype.MIME_TEXT_YAML, REQUEST_NETWORK_MODE_CODE)
+        pickerDelegate.openFilePicker(Mimetype.MIME_TEXT_PLAIN, REQUEST_NETWORK_MODE_CODE)
     }
 
     override fun onDestroyView() {

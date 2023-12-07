@@ -165,18 +165,6 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
         job?.cancel()
     }
 
-    fun deleteTemporaryFolder() {
-        mContext?.get()?.let { context ->
-            context.getExternalCustomNetworkDirTemp()?.let { folder ->
-                if (folder.deleteRecursively()) {
-                    Timber.d("${folder.absolutePath} delete successfully")
-                } else {
-                    Timber.d("${folder.absolutePath} delete is unsuccessfully")
-                }
-            }
-        }
-    }
-
     private fun getNewPathInCacheDir(
         uri: Uri,
         scope: CoroutineScope,

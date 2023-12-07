@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.presentation.settings.PreferencesViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.NetworkModeCopyFileToCacheDirectory
 import com.anytypeio.anytype.ui.settings.system.PreferenceFragment
 import dagger.Component
 import dagger.Module
@@ -36,7 +36,7 @@ object AppPreferencesModule {
     @PerScreen
     fun provideCopyFileToCache(
         context: Context
-    ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
+    ): CopyFileToCacheDirectory = NetworkModeCopyFileToCacheDirectory(context)
 
     @JvmStatic
     @Provides

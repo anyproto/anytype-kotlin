@@ -77,7 +77,7 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         }
     }
 
-    fun copyFileToCacheDir(
+    private fun copyFileToCacheDir(
         uri: Uri,
         listener: OnCopyFileToCacheAction
     ): String? {
@@ -142,6 +142,99 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
     }
 }
 
+class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirectory {
+
+    private var mContext: WeakReference<Context>? = null
+    private var job: Job? = null
+
+    init {
+        mContext = WeakReference(context)
+    }
+
+    override fun isActive(): Boolean = job?.isActive == true
+
+    override fun execute(uri: Uri, scope: CoroutineScope, listener: OnCopyFileToCacheAction) {
+        getNewPathInCacheDir(
+            uri = uri,
+            scope = scope,
+            listener = listener,
+        )
+    }
+
+    override fun cancel() {
+        job?.cancel()
+    }
+
+    fun deleteTemporaryFolder() {
+        mContext?.get()?.let { context ->
+            context.getExternalCustomNetworkDirTemp()?.let { folder ->
+                if (folder.deleteRecursively()) {
+                    Timber.d("${folder.absolutePath} delete successfully")
+                } else {
+                    Timber.d("${folder.absolutePath} delete is unsuccessfully")
+                }
+            }
+        }
+    }
+
+    private fun getNewPathInCacheDir(
+        uri: Uri,
+        scope: CoroutineScope,
+        listener: OnCopyFileToCacheAction
+    ) {
+        var path: String? = null
+        job = scope.launch {
+            try {
+                withContext(Dispatchers.IO) {
+                    path = copyFileToCacheDir(uri, listener)
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error while getNewPathInCacheDir")
+                listener.onCopyFileError(e.localizedMessage ?: "Unknown error")
+            } finally {
+                if (scope.isActive) {
+                    listener.onCopyFileResult(path)
+                }
+            }
+        }
+    }
+
+    private fun copyFileToCacheDir(
+        uri: Uri,
+        listener: OnCopyFileToCacheAction
+    ): String? {
+        var newFile: File? = null
+        mContext?.get()?.let { context: Context ->
+            val cacheDir = context.getExternalCustomNetworkDirTemp()
+            if (cacheDir != null && !cacheDir.exists()) {
+                cacheDir.mkdirs()
+            }
+            try {
+                val inputStream = context.contentResolver.openInputStream(uri)
+                inputStream?.use { input ->
+                    newFile = File(cacheDir?.path + "/" + "configCustom.txt");
+                    listener.onCopyFileStart()
+                    Timber.d("Start copy file to cache : ${newFile?.path}")
+                    FileOutputStream(newFile).use { output ->
+                        val buffer = ByteArray(1024)
+                        var read: Int = input.read(buffer)
+                        while (read != -1) {
+                            output.write(buffer, 0, read)
+                            read = input.read(buffer)
+                        }
+                    }
+                    return newFile?.path
+                }
+            } catch (e: Exception) {
+                val deleteResult = newFile?.deleteRecursively()
+                Timber.d("Get exception while copying file, deleteRecursively success: $deleteResult")
+                Timber.e(e, "Error while coping file")
+            }
+        }
+        return null
+    }
+}
+
 /**
  * Delete the /storage/emulated/0/Android/data/package/files/$TEMPORARY_DIRECTORY_NAME folder.
  */
@@ -159,6 +252,11 @@ private fun Context.deleteTemporaryFolder() {
  * Return /storage/emulated/0/Android/data/package/files/$TEMPORARY_DIRECTORY_NAME directory
  */
 private fun Context.getExternalFilesDirTemp(): File? = getExternalFilesDir(TEMPORARY_DIRECTORY_NAME)
+
+/**
+ * Return /storage/emulated/0/Android/data/io.anytype.app/files/networkModeConfig directory
+ */
+private fun Context.getExternalCustomNetworkDirTemp(): File? = getExternalFilesDir("networkModeConfig")
 
 interface OnCopyFileToCacheAction {
     fun onCopyFileStart()

@@ -5,7 +5,7 @@ interface DebugConfig {
     val setTimeouts: Boolean
 
     companion object {
-        const val SELECT_ACCOUNT_TIMEOUT = 0L
+        const val SELECT_ACCOUNT_TIMEOUT = 5000L
         const val CREATE_ACCOUNT_TIMEOUT = 5000L
     }
 }

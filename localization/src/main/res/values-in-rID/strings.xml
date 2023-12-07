@@ -715,7 +715,7 @@
     <string name="go_back">Kembali</string>
     <string name="snack_object_set_not_found">Set not found for this type.</string>
     <string name="create_new_set">Buat</string>
-    <string name="shortcut_create_new_object_of_type">New %1$s</string>
+    <string name="shortcut_create_new_object_of_type">%1$s baru</string>
     <string name="close">Tutup</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="do_not_forget_mnemonic_phrase">Jangan lupa menyimpan frasa pemulihanmu</string>

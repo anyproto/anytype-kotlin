@@ -4,24 +4,37 @@ import android.content.SharedPreferences
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_APP_FILE_PATH_PREF
-import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_CUSTOM
-import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_DEFAULT
-import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_LOCAL
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_PREF
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_USER_FILE_PATH_PREF
 
 interface NetworkModeProvider {
+    fun set(networkModeConfig: NetworkModeConfig)
     fun get(): NetworkModeConfig
 }
 
 class DefaultNetworkModeProvider(private val sharedPreferences: SharedPreferences) :
     NetworkModeProvider {
 
+    override fun set(networkModeConfig: NetworkModeConfig) {
+        val (userFilePath, storedFilePath) = if (networkModeConfig.networkMode == NetworkMode.CUSTOM) {
+            networkModeConfig.userFilePath to networkModeConfig.storedFilePath
+        } else {
+            null to null
+        }
+
+        sharedPreferences.edit().apply {
+            putString(NETWORK_MODE_PREF, networkModeConfig.networkMode.value)
+            putString(NETWORK_MODE_USER_FILE_PATH_PREF, userFilePath)
+            putString(NETWORK_MODE_APP_FILE_PATH_PREF, storedFilePath)
+            apply()
+        }
+    }
+
     override fun get(): NetworkModeConfig {
-        val networkMode = when (sharedPreferences.getString(NETWORK_MODE_PREF, null)) {
-            NETWORK_MODE_DEFAULT -> NetworkMode.DEFAULT
-            NETWORK_MODE_LOCAL -> NetworkMode.LOCAL
-            NETWORK_MODE_CUSTOM -> NetworkMode.CUSTOM
+        val networkMode = when (sharedPreferences.getString(NETWORK_MODE_PREF, NetworkMode.DEFAULT.value)) {
+            NetworkMode.DEFAULT.value -> NetworkMode.DEFAULT
+            NetworkMode.LOCAL.value -> NetworkMode.LOCAL
+            NetworkMode.CUSTOM.value -> NetworkMode.CUSTOM
             else -> NetworkMode.DEFAULT
         }
         return if (networkMode == NetworkMode.CUSTOM) {

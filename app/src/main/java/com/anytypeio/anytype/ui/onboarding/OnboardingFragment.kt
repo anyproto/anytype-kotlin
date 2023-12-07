@@ -60,6 +60,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
@@ -299,6 +300,8 @@ class OnboardingFragment : Fragment() {
         val component = componentManager().onboardingMnemonicLoginComponent
         val vm = daggerViewModel { component.get().getViewModel() }
         val isQrWarningDialogVisible = remember { mutableStateOf(false) }
+        val errorText = remember { mutableStateOf(NO_VALUE) }
+        val isErrorDialogVisible = remember { mutableStateOf(false) }
 
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
@@ -327,7 +330,8 @@ class OnboardingFragment : Fragment() {
                         }
                     }
                     is OnboardingMnemonicLoginViewModel.SideEffect.Error -> {
-                        toast(effect.msg)
+                        errorText.value = effect.msg
+                        isErrorDialogVisible.value = true
                     }
                 }
             }
@@ -362,6 +366,20 @@ class OnboardingFragment : Fragment() {
                     proceedWithQrCodeActivity(launcher)
                 },
                 onDismissRequest = { isQrWarningDialogVisible.value = false }
+            )
+        }
+        if (isErrorDialogVisible.value) {
+            BaseAlertDialog(
+                dialogText = errorText.value,
+                buttonText = stringResource(id = R.string.alert_qr_camera_ok),
+                onButtonClick = {
+                    isErrorDialogVisible.value = false
+                    errorText.value = NO_VALUE
+                },
+                onDismissRequest = {
+                    isErrorDialogVisible.value = false
+                    errorText.value = NO_VALUE
+                }
             )
         }
         DisposableEffect(Unit) {

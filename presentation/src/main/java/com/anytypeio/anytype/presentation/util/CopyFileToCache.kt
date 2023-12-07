@@ -183,17 +183,20 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
         listener: OnCopyFileToCacheAction
     ) {
         var path: String? = null
+        var fileName: String? = null
         job = scope.launch {
             try {
                 withContext(Dispatchers.IO) {
-                    path = copyFileToCacheDir(uri, listener)
+                    val pair = copyFileToCacheDir(uri, listener)
+                    path = pair.first
+                    fileName = pair.second
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error while getNewPathInCacheDir")
                 listener.onCopyFileError(e.localizedMessage ?: "Unknown error")
             } finally {
                 if (scope.isActive) {
-                    listener.onCopyFileResult(path)
+                    listener.onCopyFileResult(path, fileName)
                 }
             }
         }
@@ -260,6 +263,6 @@ private fun Context.getExternalCustomNetworkDirTemp(): File? = getExternalFilesD
 
 interface OnCopyFileToCacheAction {
     fun onCopyFileStart()
-    fun onCopyFileResult(result: String?)
+    fun onCopyFileResult(result: String?, fileName: String? = null)
     fun onCopyFileError(msg: String)
 }

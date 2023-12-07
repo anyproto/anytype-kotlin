@@ -1,9 +1,12 @@
 package com.anytypeio.anytype.di.feature
 
 import android.content.Context
-import android.content.SharedPreferences
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
+import com.anytypeio.anytype.domain.networkmode.SetNetworkMode
 import com.anytypeio.anytype.presentation.settings.PreferencesViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.NetworkModeCopyFileToCacheDirectory
@@ -11,7 +14,6 @@ import com.anytypeio.anytype.ui.settings.system.PreferenceFragment
 import dagger.Component
 import dagger.Module
 import dagger.Provides
-import javax.inject.Named
 
 @Component(
     dependencies = [AppPreferencesDependencies::class],
@@ -43,15 +45,17 @@ object AppPreferencesModule {
     @PerScreen
     fun provideViewModelFactory(
         copyFileToCacheDirectory: CopyFileToCacheDirectory,
-        @Named("network_mode") sharedPreferences: SharedPreferences
+        getNetworkMode: GetNetworkMode,
+        setNetworkMode: SetNetworkMode
     ): PreferencesViewModel.Factory = PreferencesViewModel.Factory(
         copyFileToCacheDirectory = copyFileToCacheDirectory,
-        sharedPreferences = sharedPreferences
+        getNetworkMode = getNetworkMode,
+        setNetworkMode = setNetworkMode
     )
 }
 
 interface AppPreferencesDependencies : ComponentDependencies {
     fun context(): Context
-    @Named("network_mode")
-    fun sharedPreferences(): SharedPreferences
+    fun dispatchers(): AppCoroutineDispatchers
+    fun authRepository(): AuthRepository
 }

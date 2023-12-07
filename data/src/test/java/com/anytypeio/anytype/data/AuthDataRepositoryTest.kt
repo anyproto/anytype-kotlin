@@ -11,6 +11,7 @@ import com.anytypeio.anytype.data.auth.repo.AuthDataRepository
 import com.anytypeio.anytype.data.auth.repo.AuthDataStoreFactory
 import com.anytypeio.anytype.data.auth.repo.AuthRemote
 import com.anytypeio.anytype.data.auth.repo.AuthRemoteDataStore
+import com.anytypeio.anytype.domain.debugging.DebugConfig
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -34,6 +35,9 @@ class AuthDataRepositoryTest {
     @Mock
     lateinit var authCache: AuthCache
 
+    @Mock
+    lateinit var debugConfig: DebugConfig
+
     lateinit var repo: AuthDataRepository
 
     @Before
@@ -47,7 +51,8 @@ class AuthDataRepositoryTest {
                 remote = AuthRemoteDataStore(
                     authRemote = authRemote
                 )
-            )
+            ),
+            debugConfig = debugConfig
         )
     }
 

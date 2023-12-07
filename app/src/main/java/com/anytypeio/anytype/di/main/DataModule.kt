@@ -74,10 +74,12 @@ object DataModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        factory: AuthDataStoreFactory
+        factory: AuthDataStoreFactory,
+        debugConfig: DebugConfig
     ): AuthRepository {
         return AuthDataRepository(
-            factory = factory
+            factory = factory,
+            debugConfig = debugConfig
         )
     }
 

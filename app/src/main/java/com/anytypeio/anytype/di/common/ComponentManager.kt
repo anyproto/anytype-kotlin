@@ -13,6 +13,7 @@ import com.anytypeio.anytype.di.feature.CreateAccountModule
 import com.anytypeio.anytype.di.feature.CreateBookmarkModule
 import com.anytypeio.anytype.di.feature.CreateDataViewViewerModule
 import com.anytypeio.anytype.di.feature.CreateObjectModule
+import com.anytypeio.anytype.di.feature.DaggerAppPreferencesComponent
 import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerSplashComponent
 import com.anytypeio.anytype.di.feature.DataViewRelationValueModule
@@ -996,6 +997,12 @@ class ComponentManager(
 
     val createObjectOfTypeComponent = Component {
         DaggerCreateObjectOfTypeComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val appPreferencesComponent = Component {
+        DaggerAppPreferencesComponent
             .factory()
             .create(findComponentDependencies())
     }

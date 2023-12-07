@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.main
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
+import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
 import com.anytypeio.anytype.di.feature.AuthSubComponent
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
 import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
@@ -108,7 +109,8 @@ interface MainComponent :
     CreateSpaceDependencies,
     SpaceSettingsDependencies,
     CreateObjectOfTypeDependencies,
-    SpacesStorageDependencies
+    SpacesStorageDependencies,
+    AppPreferencesDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -294,4 +296,9 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(SpacesStorageDependencies::class)
     abstract fun provideSpacesStorageDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(AppPreferencesDependencies::class)
+    abstract fun providePreferencesDependencies(component: MainComponent): ComponentDependencies
 }

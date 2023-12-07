@@ -397,7 +397,15 @@ class ObjectSetViewModel(
                                 currentViewerId = view,
                                 offset = offset,
                                 context = context,
-                                space = spaceManager.get(),
+                                spaces = buildList {
+                                    val config = spaceManager.getConfig()
+                                    if (config != null) {
+                                        add(config.space)
+                                        add(config.techSpace)
+                                    } else {
+                                        add(spaceManager.get())
+                                    }
+                                },
                                 storeOfRelations = storeOfRelations
                             )
                         } else {
@@ -413,7 +421,15 @@ class ObjectSetViewModel(
                                 currentViewerId = view,
                                 offset = offset,
                                 context = context,
-                                space = spaceManager.get(),
+                                spaces = buildList {
+                                   val config = spaceManager.getConfig()
+                                   if (config != null) {
+                                       add(config.space)
+                                       add(config.techSpace)
+                                   } else {
+                                       add(spaceManager.get())
+                                   }
+                                },
                                 storeOfRelations = storeOfRelations
                             )
                         } else {
@@ -876,7 +892,8 @@ class ObjectSetViewModel(
         } else {
             proceedWithNavigation(
                 target = target,
-                layout = obj.layout
+                layout = obj.layout,
+                identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
             )
         }
     }
@@ -892,7 +909,8 @@ class ObjectSetViewModel(
             if (obj != null) {
                 proceedWithNavigation(
                     target = target,
-                    layout = obj.layout
+                    layout = obj.layout,
+                    identityProfileLink = obj.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
                 )
             } else {
                 toast("Record not found. Please, try again later.")
@@ -1298,7 +1316,11 @@ class ObjectSetViewModel(
         }
     }
 
-    private suspend fun proceedWithNavigation(target: Id, layout: ObjectType.Layout?) {
+    private suspend fun proceedWithNavigation(
+        target: Id,
+        layout: ObjectType.Layout?,
+        identityProfileLink: Id? = null
+    ) {
         if (target == context) {
             toast("You are already here")
             Timber.d("proceedWithOpeningObject, target == context")
@@ -1306,13 +1328,13 @@ class ObjectSetViewModel(
         }
         when (layout) {
             ObjectType.Layout.BASIC,
-            ObjectType.Layout.PROFILE,
             ObjectType.Layout.TODO,
             ObjectType.Layout.NOTE,
             ObjectType.Layout.IMAGE,
             ObjectType.Layout.FILE,
             ObjectType.Layout.VIDEO,
             ObjectType.Layout.BOOKMARK -> proceedWithOpeningObject(target)
+            ObjectType.Layout.PROFILE -> proceedWithOpeningObject(identityProfileLink ?: target)
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 closeBlock.async(context).fold(
                     onSuccess = {

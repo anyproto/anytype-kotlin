@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.settings.PersonalizationSettingsViewModel
 import com.anytypeio.anytype.ui.settings.PersonalizationSettingsFragment
@@ -75,13 +76,15 @@ object PersonalizationSettingsModule {
         clearFileCache: ClearFileCache,
         appActionManager: AppActionManager,
         analytics: Analytics,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        searchObjects: SearchObjects
     ): PersonalizationSettingsViewModel.Factory = PersonalizationSettingsViewModel.Factory(
         getDefaultObjectType = getDefaultObjectType,
         setDefaultObjectType = setDefaultObjectType,
         clearFileCache = clearFileCache,
         appActionManager = appActionManager,
         analytics = analytics,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        searchObjects = searchObjects
     )
 }

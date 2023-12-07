@@ -205,9 +205,12 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
     private fun copyFileToCacheDir(
         uri: Uri,
         listener: OnCopyFileToCacheAction
-    ): String? {
+    ): Pair<String?, String?> {
         var newFile: File? = null
         mContext?.get()?.let { context: Context ->
+
+            val fileName = getFileName(context, uri)
+
             val cacheDir = context.getExternalCustomNetworkDirTemp()
             if (cacheDir != null && !cacheDir.exists()) {
                 cacheDir.mkdirs()
@@ -226,7 +229,7 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
                             read = input.read(buffer)
                         }
                     }
-                    return newFile?.path
+                    return Pair(newFile?.path, fileName)
                 }
             } catch (e: Exception) {
                 val deleteResult = newFile?.deleteRecursively()
@@ -234,7 +237,28 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
                 Timber.e(e, "Error while coping file")
             }
         }
-        return null
+        return Pair(null, null)
+    }
+
+    private fun getFileName(context: Context, uri: Uri): String? {
+        var result: String? = null
+        if (uri.scheme == SCHEME_CONTENT) {
+            context.contentResolver.query(
+                uri,
+                null,
+                null,
+                null,
+                null
+            )?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                    if (index != -1) {
+                        result = cursor.getString(index)
+                    }
+                }
+            }
+        }
+        return result
     }
 }
 

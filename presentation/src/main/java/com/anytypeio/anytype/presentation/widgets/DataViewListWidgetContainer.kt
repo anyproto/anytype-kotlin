@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
@@ -27,7 +28,7 @@ import kotlinx.coroutines.flow.map
 
 class DataViewListWidgetContainer(
     private val widget: Widget.List,
-    private val space: Id,
+    private val config: Config,
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
@@ -159,7 +160,14 @@ class DataViewListWidgetContainer(
             }.distinct(),
             filters = buildList {
                 addAll(view.filters)
-                addAll(ObjectSearchConstants.defaultDataViewFilters(space = space))
+                addAll(
+                    ObjectSearchConstants.defaultDataViewFilters(
+                        spaces = buildList {
+                            add(config.space)
+                            add(config.techSpace)
+                        }
+                    )
+                )
                 add(
                     DVFilter(
                         relation = Relations.TYPE_UNIQUE_KEY,

@@ -47,6 +47,7 @@ import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -188,6 +189,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var spaceManager: SpaceManager
+
+    @Mock
+    lateinit var searchObjects: SearchObjects
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
@@ -2440,7 +2444,10 @@ class HomeScreenViewModelTest {
         val firstTimeParams = StoreSearchParams(
             subscription = widgetBlock.id,
             filters = buildList {
-                addAll(ObjectSearchConstants.defaultDataViewFilters(defaultSpaceConfig.space))
+                addAll(
+                    ObjectSearchConstants.defaultDataViewFilters(
+                        spaces = listOf(defaultSpaceConfig.space, defaultSpaceConfig.techSpace))
+                )
                 add(
                     DVFilter(
                         relation = Relations.TYPE_UNIQUE_KEY,
@@ -2806,7 +2813,8 @@ class HomeScreenViewModelTest {
         spaceWidgetContainer = spaceWidgetContainer,
         spaceManager = spaceManager,
         setObjectDetails = setObjectDetails,
-        getSpaceView = getSpaceView
+        getSpaceView = getSpaceView,
+        searchObjects = searchObjects
     )
 
     companion object {

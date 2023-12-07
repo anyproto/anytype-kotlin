@@ -20,7 +20,7 @@ interface DataViewSubscription {
 
     suspend fun startObjectSetSubscription(
         context: Id,
-        space: Id,
+        spaces: List<Id>,
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
@@ -30,7 +30,7 @@ interface DataViewSubscription {
     suspend fun startObjectCollectionSubscription(
         context: Id,
         collection: Id,
-        space: Id,
+        spaces: List<Id>,
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
@@ -45,7 +45,7 @@ class DefaultDataViewSubscription(
     override suspend fun startObjectCollectionSubscription(
         context: Id,
         collection: Id,
-        space: Id,
+        spaces: List<Id>,
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
@@ -62,7 +62,7 @@ class DefaultDataViewSubscription(
         }
         val filters = buildList {
             addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
-            addAll(defaultDataViewFilters(space = space))
+            addAll(defaultDataViewFilters(spaces = spaces))
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
@@ -82,7 +82,7 @@ class DefaultDataViewSubscription(
 
     override suspend fun startObjectSetSubscription(
         context: Id,
-        space: Id,
+        spaces: List<Id>,
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
@@ -115,7 +115,7 @@ class DefaultDataViewSubscription(
 
         val filters = buildList {
             addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
-            addAll(defaultDataViewFilters(space = space))
+            addAll(defaultDataViewFilters(spaces = spaces))
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys

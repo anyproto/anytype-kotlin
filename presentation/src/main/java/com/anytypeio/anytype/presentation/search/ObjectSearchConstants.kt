@@ -589,6 +589,7 @@ object ObjectSearchConstants {
 
     val defaultDataViewKeys = listOf(
         Relations.ID,
+        Relations.IDENTITY_PROFILE_LINK,
         Relations.NAME,
         Relations.ICON_IMAGE,
         Relations.ICON_EMOJI,
@@ -685,7 +686,7 @@ object ObjectSearchConstants {
         }
     }
 
-    fun defaultDataViewFilters(space: Id) = listOf(
+    fun defaultDataViewFilters(spaces: List<Id>) = listOf(
         DVFilter(
             relation = Relations.IS_HIDDEN,
             condition = Condition.NOT_EQUAL,
@@ -703,8 +704,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+            condition = DVFilterCondition.IN,
+            value = spaces
         )
     )
 

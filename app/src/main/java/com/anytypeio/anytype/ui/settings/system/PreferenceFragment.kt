@@ -3,40 +3,55 @@ package com.anytypeio.anytype.ui.settings.system
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import androidx.core.content.edit
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.DropDownPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.PreferenceManager
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_CUSTOM
+import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_DEFAULT
+import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_LOCAL
+import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_NETWORK_MODE_CODE
+import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.presentation.settings.PreferencesViewModel
 import com.anytypeio.anytype.ui.editor.PickerDelegate
+import javax.inject.Inject
 
 class PreferenceFragment : PreferenceFragmentCompat() {
 
     private lateinit var pickerDelegate: PickerDelegate
-    private lateinit var sharedPreferences: SharedPreferences
     private lateinit var filePathPreference: Preference
     private lateinit var networkModePreference: DropDownPreference
 
+    @Inject
+    lateinit var factory: PreferencesViewModel.Factory
+    private val vm by viewModels<PreferencesViewModel> { factory }
+
     override fun onAttach(context: Context) {
+        injectDependencies()
         super.onAttach(context)
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context)
         pickerDelegate = PickerDelegate.Impl(this) { actions ->
             when (actions) {
                 is PickerDelegate.Actions.OnProceedWithFilePath -> {
-                    sharedPreferences.edit {
-                        putString(NETWORK_CONFIG_FILE_PATH_PREF, actions.filePath)
-                        commit()
-                    }
-                    getCustomSettingsFromPrefs()
+                    vm.onProceedWithFilePath(actions.filePath)
                 }
 
-                else -> {
-                    //do nothing
+                PickerDelegate.Actions.OnCancelCopyFileToCacheDir -> {
+                    vm.onCancelCopyFileToCacheDir()
+                }
+
+                is PickerDelegate.Actions.OnPickedDocImageFromDevice -> {
+                    vm.onPickedDocImageFromDevice(actions.ctx, actions.filePath)
+                }
+
+                is PickerDelegate.Actions.OnStartCopyFileToCacheDir -> {
+                    vm.onStartCopyFileToCacheDir(actions.uri)
                 }
             }
         }
@@ -52,12 +67,36 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        with(lifecycleScope) {
+            subscribe(vm.networkModeState) { state ->
+                when (state.networkMode) {
+                    NetworkMode.DEFAULT -> {
+                        networkModePreference.value = NETWORK_MODE_DEFAULT
+                        filePathPreference.isVisible = false
+                    }
+
+                    NetworkMode.LOCAL -> {
+                        networkModePreference.value = NETWORK_MODE_LOCAL
+                        filePathPreference.isVisible = false
+                    }
+
+                    NetworkMode.CUSTOM -> {
+                        networkModePreference.value = NETWORK_MODE_CUSTOM
+                        filePathPreference.isVisible = true
+                        filePathPreference.summary = state.userFilePath
+                    }
+                }
+            }
+        }
+        vm.onStart()
+    }
+
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         val context = preferenceManager.context
         val screen = preferenceManager.createPreferenceScreen(context)
         networkModePreference = DropDownPreference(context).apply {
-            key = NETWORK_MODE_PREF
-            setDefaultValue(NETWORK_MODE_DEFAULT)
             summaryProvider = ListPreference.SimpleSummaryProvider.getInstance()
             isSingleLineTitle = true
             isIconSpaceReserved = false
@@ -65,20 +104,16 @@ class PreferenceFragment : PreferenceFragmentCompat() {
             setEntries(R.array.settings_networks_entries)
             setEntryValues(R.array.settings_networks_entries_values)
             onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                setFilePathVisibility(newValue as String)
-                sharedPreferences?.edit {
-                    putString(NETWORK_MODE_PREF, newValue)
-                    commit()
-                }
+                vm.proceedWithNetworkMode(newValue as String)
                 true
             }
         }
         screen.addPreference(networkModePreference)
         filePathPreference = Preference(context).apply {
-            key = NETWORK_CONFIG_FILE_PATH_PREF
             isIconSpaceReserved = false
             title = getString(R.string.settings_network_configuration_file)
             isSingleLineTitle = true
+            summary = getString(R.string.settings_network_configuration_file_choose)
         }
         filePathPreference.setOnPreferenceClickListener {
             openFilePicker()
@@ -86,37 +121,10 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         }
         screen.addPreference(filePathPreference)
         preferenceScreen = screen
-
-        setFilePathVisibility()
-        getCustomSettingsFromPrefs()
-    }
-
-    private fun getCustomSettingsFromPrefs() {
-        val filePath = sharedPreferences.getString(NETWORK_CONFIG_FILE_PATH_PREF, "")
-        if (filePath.isNullOrBlank()) {
-            filePathPreference.summary =
-                getString(R.string.settings_network_configuration_file_choose)
-        } else {
-            filePathPreference.summary = filePath
-        }
     }
 
     private fun openFilePicker() {
-        pickerDelegate.openFilePicker(Mimetype.MIME_TEXT_PLAIN)
-    }
-
-    private fun setFilePathVisibility(newValue: String? = null) {
-        when (newValue ?: sharedPreferences.getString(NETWORK_MODE_PREF, NETWORK_MODE_DEFAULT)) {
-            NETWORK_MODE_LOCAL -> {
-                filePathPreference.isVisible = false
-            }
-            NETWORK_MODE_DEFAULT -> {
-                filePathPreference.isVisible = false
-            }
-            NETWORK_MODE_CUSTOM -> {
-                filePathPreference.isVisible = true
-            }
-        }
+        pickerDelegate.openFilePicker(Mimetype.MIME_TEXT_YAML, REQUEST_NETWORK_MODE_CODE)
     }
 
     override fun onDestroyView() {
@@ -124,12 +132,16 @@ class PreferenceFragment : PreferenceFragmentCompat() {
         super.onDestroyView()
     }
 
-    companion object {
-        const val NETWORK_MODE_PREF = "pref.network_mode"
-        const val NETWORK_CONFIG_FILE_PATH_PREF = "pref.network_config_file_path"
+    override fun onDestroy() {
+        releaseDependencies()
+        super.onDestroy()
+    }
 
-        const val NETWORK_MODE_LOCAL = "local"
-        const val NETWORK_MODE_DEFAULT = "default"
-        const val NETWORK_MODE_CUSTOM = "custom"
+    private fun injectDependencies() {
+        componentManager().appPreferencesComponent.get().inject(this)
+    }
+
+    private fun releaseDependencies() {
+        componentManager().appPreferencesComponent.release()
     }
 }

@@ -716,6 +716,7 @@
     <string name="go_back">Indietro</string>
     <string name="snack_object_set_not_found">Set not found for this type.</string>
     <string name="create_new_set">Crea</string>
+    <string name="shortcut_create_new_object_of_type">New %1$s</string>
     <string name="close">Chiudi</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="do_not_forget_mnemonic_phrase">Non dimenticare di prendere e salvare la tua frase di recupero</string>

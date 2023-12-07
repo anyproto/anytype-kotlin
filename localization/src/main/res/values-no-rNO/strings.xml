@@ -325,7 +325,7 @@
     <string name="hint_add_description">Legg til en beskrivelse</string>
     <string name="dv_filter_checkbox_checked">checked</string>
     <string name="dv_filter_checkbox_not_checked">not checked</string>
-    <string name="paste_or_type_a_url">Paste or type a URL</string>
+    <string name="paste_or_type_a_url">Lim inn eller skriv en URL</string>
     <string name="callout">Utrop</string>
     <string name="highlight">Uthev</string>
     <string name="title">Tittel</string>
@@ -452,8 +452,8 @@
     <string name="simple_tables_widget_item_move_up">Flytt opp</string>
     <string name="simple_tables_widget_item_move_down">Flytt ned</string>
     <string name="simple_tables_widget_tab_cell">Cell</string>
-    <string name="simple_tables_widget_tab_row">Row</string>
-    <string name="simple_tables_widget_tab_column">Column</string>
+    <string name="simple_tables_widget_tab_row">Rad</string>
+    <string name="simple_tables_widget_tab_column">Kolonne</string>
     <string name="open_object">Åpne objekt</string>
     <string name="open_source">Åpne kilde</string>
     <string name="reload_object_content">Last objektinnhold på nytt</string>
@@ -461,7 +461,7 @@
     <string name="copy_email">Kopier e-post</string>
     <string name="copy_phone_number">Kopier telefonnummer</string>
     <string name="send_email">Send e-post</string>
-    <string name="call_phone_number">Call phone number</string>
+    <string name="call_phone_number">Ring telefonnummer</string>
     <string name="bookmark_icon">Bookmark icon</string>
     <string name="one_selected_cell">1 cell selected</string>
     <string name="number_selected_cells">%1$d cells selected</string>
@@ -590,7 +590,7 @@
     <string name="create_a_new_profile">Create a new profile</string>
     <string name="no_peers">No peers</string>
     <string name="content_description_back_button_icon">Back button icon</string>
-    <string name="hint_link">Paste or type a URL</string>
+    <string name="hint_link">Lim inn eller skriv en URL</string>
     <string name="button_unlink">Koble fra</string>
     <string name="button_link">Lenke</string>
     <string name="permission_read_rationale">Read permission is needed to load file to media block.</string>
@@ -606,7 +606,7 @@
     <string name="page_icon">Page icon</string>
     <string name="page_icon_picker_remove_text">Fjern</string>
     <string name="create_bookmark">Opprett</string>
-    <string name="hint_paste_or_type_a_url">Paste or type a URL</string>
+    <string name="hint_paste_or_type_a_url">Lim inn eller skriv en URL</string>
     <string name="content_description_menu_icon">Menu icon</string>
     <string name="failed_to_launch_wallet">Failed to launch wallet after retry.</string>
     <string name="pickit_drive">Drive file was selected</string>
@@ -716,6 +716,7 @@
     <string name="go_back">Gå tilbake</string>
     <string name="snack_object_set_not_found">Set not found for this type.</string>
     <string name="create_new_set">Opprett</string>
+    <string name="shortcut_create_new_object_of_type">New %1$s</string>
     <string name="close">Lukk</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your recovery phrase</string>

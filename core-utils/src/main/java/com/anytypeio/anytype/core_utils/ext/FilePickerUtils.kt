@@ -21,7 +21,6 @@ object FilePickerUtils {
                     context.isPermissionGranted(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
                 }
             }
-            else -> true
         }
     }
 
@@ -37,9 +36,6 @@ object FilePickerUtils {
             Mimetype.MIME_IMAGE_ALL -> getPermissionToRequestForImages()
             Mimetype.MIME_FILE_ALL -> getPermissionToRequestForFiles()
             Mimetype.MIME_IMAGE_AND_VIDEO -> getPermissionToRequestForImagesAndVideos()
-            else -> {
-                arrayOf()
-            }
         }
     }
 

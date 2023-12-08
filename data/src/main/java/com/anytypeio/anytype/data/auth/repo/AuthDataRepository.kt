@@ -10,10 +10,13 @@ import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.debugging.DebugConfig
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeout
 
 class AuthDataRepository(
-    private val factory: AuthDataStoreFactory
+    private val factory: AuthDataStoreFactory,
+    private val debugConfig: DebugConfig
 ) : AuthRepository {
 
     override suspend fun setMetrics(platform: String, version: String) {
@@ -25,11 +28,23 @@ class AuthDataRepository(
 
     override suspend fun selectAccount(
         command: Command.AccountSelect
-    ): AccountSetup = factory.remote.selectAccount(command)
+    ): AccountSetup {
+        return if (debugConfig.setTimeouts) {
+            withTimeout(DebugConfig.SELECT_ACCOUNT_TIMEOUT) {
+                factory.remote.selectAccount(command)
+            }
+        } else { factory.remote.selectAccount(command)}
+    }
 
     override suspend fun createAccount(
         command: Command.AccountCreate
-    ): AccountSetup = factory.remote.createAccount(command)
+    ): AccountSetup {
+        return if (debugConfig.setTimeouts) {
+            withTimeout(DebugConfig.CREATE_ACCOUNT_TIMEOUT) { factory.remote.createAccount(command)}
+        } else {
+            factory.remote.createAccount(command)
+        }
+    }
 
     override suspend fun deleteAccount(): AccountStatus = factory.remote.deleteAccount()
     override suspend fun restoreAccount(): AccountStatus = factory.remote.restoreAccount()
@@ -85,6 +100,8 @@ class AuthDataRepository(
     override suspend fun saveLastOpenedObjectId(id: Id) { factory.cache.saveLastOpenedObject(id) }
     override suspend fun getLastOpenedObjectId(): Id? = factory.cache.getLastOpenedObject()
     override suspend fun clearLastOpenedObject() { factory.cache.clearLastOpenedObject() }
+
+
 
     override suspend fun getNetworkMode(): NetworkModeConfig {
         return factory.cache.getNetworkMode()

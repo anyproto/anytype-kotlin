@@ -60,9 +60,4 @@ object SelectWidgetSourceModule {
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): GetObjectTypes = GetObjectTypes(repository, dispatchers)
-
-    @JvmStatic
-    @PerModal
-    @Provides
-    fun searchObjects(repo: BlockRepository): SearchObjects = SearchObjects(repo = repo)
 }

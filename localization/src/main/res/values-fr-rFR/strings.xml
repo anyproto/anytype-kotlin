@@ -69,11 +69,11 @@
     <string name="multi_select_turn_into">Transformer en</string>
     <string name="multi_select_move_to">Déplacer vers</string>
     <string name="option_toolbar_header_turn_into">Transformer en</string>
-    <string name="option_toolbar_header_add_block">Add block</string>
+    <string name="option_toolbar_header_add_block">Ajouter un bloc</string>
     <string name="option_text_text">Texte</string>
-    <string name="option_text_header_one">Header 1</string>
-    <string name="option_text_header_two">Header 2</string>
-    <string name="option_text_header_three">Header 3</string>
+    <string name="option_text_header_one">Titre 1</string>
+    <string name="option_text_header_two">Titre 2</string>
+    <string name="option_text_header_three">Titre 3</string>
     <string name="option_text_highlighted">Surligné</string>
     <string name="option_list_checkbox">Case à cocher</string>
     <string name="option_list_bulleted_list">Liste à puces</string>
@@ -716,7 +716,7 @@
     <string name="go_back">Retour</string>
     <string name="snack_object_set_not_found">Set not found for this type.</string>
     <string name="create_new_set">Créer</string>
-    <string name="shortcut_create_new">Create a new %1$s</string>
+    <string name="shortcut_create_new_object_of_type">Nouveau %1$s</string>
     <string name="close">Fermer</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="do_not_forget_mnemonic_phrase">N\'oubliez pas d\'enregistrer votre phrase de récupération</string>

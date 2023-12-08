@@ -11,25 +11,7 @@ class NavigationRouter(
         Timber.d("Navigate to $command")
         try {
             when (command) {
-                is AppNavigation.Command.StartSplashFromDesktop -> navigation.startSplashFromDesktop()
-                is AppNavigation.Command.StartDesktopFromLogin -> navigation.startDesktopFromLogin()
-                is AppNavigation.Command.StartDesktopFromSignUp -> navigation.startDesktopFromSignUp()
-                is AppNavigation.Command.StartDesktopFromSplash -> navigation.startDesktopFromSplash()
                 is AppNavigation.Command.ExitFromMigrationScreen -> navigation.exitFromMigrationScreen()
-                is AppNavigation.Command.OpenCreateAccount -> navigation.createProfile(command.invitationCode)
-                is AppNavigation.Command.ChoosePinCodeScreen -> navigation.choosePinCode()
-                is AppNavigation.Command.EnterKeyChainScreen -> navigation.enterKeychain()
-                is AppNavigation.Command.SelectAccountScreen -> navigation.chooseAccount()
-                is AppNavigation.Command.WorkspaceScreen -> navigation.workspace()
-                is AppNavigation.Command.InvitationCodeScreen -> navigation.enterInvitationCode()
-                is AppNavigation.Command.AboutAnalyticsScreen -> navigation.aboutAnalyticsScreen()
-                is AppNavigation.Command.ExitToInvitationCodeScreen -> navigation.exitToInvitationCodeScreen()
-                is AppNavigation.Command.SetupNewAccountScreen -> navigation.setupNewAccount()
-                is AppNavigation.Command.SetupSelectedAccountScreen -> navigation.setupSelectedAccount(
-                    command.id
-                )
-
-                is AppNavigation.Command.ConfirmPinCodeScreen -> navigation.confirmPinCode(command.code)
                 is AppNavigation.Command.OpenSettings -> navigation.openSpaceSettings()
                 is AppNavigation.Command.OpenObject -> navigation.openDocument(command.id)
                 is AppNavigation.Command.OpenModalTemplateSelect -> navigation.openModalTemplateSelect(
@@ -41,7 +23,6 @@ class NavigationRouter(
                     command.target,
                     command.isPopUpToDashboard
                 )
-
                 is AppNavigation.Command.LaunchObjectSet -> navigation.launchObjectSet(command.target)
                 is AppNavigation.Command.LaunchDocument -> navigation.launchDocument(command.id)
                 is AppNavigation.Command.LaunchObjectFromSplash -> navigation.launchObjectFromSplash(
@@ -52,13 +33,8 @@ class NavigationRouter(
                     command.target
                 )
 
-                is AppNavigation.Command.OpenDatabaseViewAddView -> navigation.openDatabaseViewAddView()
-                is AppNavigation.Command.OpenEditDatabase -> navigation.openEditDatabase()
-                is AppNavigation.Command.OpenKeychainScreen -> navigation.openKeychainScreen()
                 is AppNavigation.Command.OpenUserSettingsScreen -> navigation.openUserSettingsScreen()
-                is AppNavigation.Command.OpenContactsScreen -> navigation.openContacts()
-                is AppNavigation.Command.OpenSwitchDisplayView -> navigation.openSwitchDisplayView()
-                is AppNavigation.Command.OpenCustomizeDisplayView -> navigation.openCustomizeDisplayView()
+
                 is AppNavigation.Command.Exit -> navigation.exit()
                 is AppNavigation.Command.ExitToDesktop -> navigation.exitToDesktop()
                 is AppNavigation.Command.OpenDebugSettingsScreen -> navigation.openDebugSettings()

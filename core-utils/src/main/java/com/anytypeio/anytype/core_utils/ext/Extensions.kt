@@ -152,3 +152,5 @@ fun Long.readableFileSize(): String {
     val digitGroups = (log10(this.toDouble()) / log10(1024.0)).toInt()
     return DecimalFormat("#,##0.#").format(this / 1024.0.pow(digitGroups.toDouble())) + " " + units[digitGroups]
 }
+
+fun Throwable.msg(default: String = "Unknown error") = message ?: default

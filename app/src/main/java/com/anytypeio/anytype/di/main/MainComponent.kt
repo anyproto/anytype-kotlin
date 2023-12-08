@@ -25,12 +25,9 @@ import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.objects.CreateObjectOfTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
-import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingLoginSetupDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
-import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationAnimDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
-import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingVoidDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
@@ -96,13 +93,10 @@ interface MainComponent :
     FilesStorageDependencies,
     OnboardingDependencies,
     OnboardingStartDependencies,
-    OnboardingVoidDependencies,
     OnboardingMnemonicDependencies,
     OnboardingMnemonicLoginDependencies,
     OnboardingSoulCreationDependencies,
-    OnboardingLoginSetupDependencies,
     AboutAppDependencies,
-    OnboardingSoulCreationAnimDependencies,
     TemplateBlankDependencies,
     TemplateSelectDependencies,
     SelectSpaceDependencies,
@@ -127,10 +121,6 @@ interface MainComponent :
     fun createObjectComponent(): CreateObjectSubComponent.Builder
     fun templateComponentFactory(): TemplateSubComponent.Factory
 
-    //region Auth
-
-    fun authComponentBuilder(): AuthSubComponent.Builder
-    //endregion
 
     //region Settings
 
@@ -229,11 +219,6 @@ private abstract class ComponentDependenciesModule private constructor() {
 
     @Binds
     @IntoMap
-    @ComponentDependenciesKey(OnboardingVoidDependencies::class)
-    abstract fun provideOnboardingVoidDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
     @ComponentDependenciesKey(OnboardingMnemonicDependencies::class)
     abstract fun provideOnboardingMnemonicDependencies(component: MainComponent): ComponentDependencies
 
@@ -244,11 +229,6 @@ private abstract class ComponentDependenciesModule private constructor() {
 
     @Binds
     @IntoMap
-    @ComponentDependenciesKey(OnboardingLoginSetupDependencies::class)
-    abstract fun provideOnboardingLoginSetupDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
     @ComponentDependenciesKey(OnboardingSoulCreationDependencies::class)
     abstract fun provideOnboardingSoulCreationDependencies(component: MainComponent): ComponentDependencies
 
@@ -256,11 +236,6 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(AboutAppDependencies::class)
     abstract fun provideAboutAppDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(OnboardingSoulCreationAnimDependencies::class)
-    abstract fun provideOnboardingSoulCreationAnimDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

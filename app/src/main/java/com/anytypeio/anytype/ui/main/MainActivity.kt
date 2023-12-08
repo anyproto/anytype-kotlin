@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
 import com.anytypeio.anytype.navigation.Navigator
+import com.anytypeio.anytype.other.DEEP_LINK_PATTERN
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
@@ -41,6 +42,8 @@ import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
+
+    var deepLink: String? = null
 
     private val vm by viewModels<MainViewModel> { factory }
 
@@ -145,10 +148,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
         if (intent != null && intent.action == Intent.ACTION_VIEW) {
-            intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
-                vm.onIntentCreateObject(it)
+            val data = intent.dataString
+            if (data != null && data.contains(DEEP_LINK_PATTERN)) {
+                deepLink = data
+            } else {
+                intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
+                    vm.onIntentCreateObject(it)
+                }
             }
         }
+        if (BuildConfig.DEBUG) {
+            Timber.d("on NewIntent: $intent")
+        }
+
     }
 
     private fun setTheme(themeMode: ThemeMode) {

@@ -30,7 +30,7 @@ fun BaseAlertDialog(
     buttonText: String,
     onButtonClick: () -> Unit,
     onDismissRequest: () -> Unit
-): Unit {
+) {
     val modifier = Modifier
         .shadow(
             elevation = 40.dp, spotColor = Color(0x40000000), ambientColor = Color(0x40000000)

@@ -40,7 +40,7 @@ class LaunchAccount @Inject constructor(
             id = repository.getCurrentAccountId(),
             path = pathProvider.providePath(),
             networkMode = networkMode.networkMode,
-            customConfigFilePath = networkMode.storedFilePath
+            networkConfigFilePath = networkMode.storedFilePath
         )
         repository.selectAccount(command).let { setup ->
             repository.updateAccount(setup.account)

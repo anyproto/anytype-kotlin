@@ -67,7 +67,7 @@ class Middleware @Inject constructor(
             avatarLocalPath = command.avatarPath,
             icon = command.icon.toLong(),
             networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig,
-            networkCustomConfigFilePath = command.customConfigFilePath.orEmpty()
+            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty()
 
         )
         if (BuildConfig.DEBUG) logRequest(request)
@@ -81,7 +81,7 @@ class Middleware @Inject constructor(
 
         val networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig
         val networkCustomConfigFilePath = if (networkMode == MNetworkMode.CustomConfig) {
-            command.customConfigFilePath.orEmpty()
+            command.networkConfigFilePath.orEmpty()
         } else ""
         val request = Rpc.Account.Select.Request(
             id = command.id,

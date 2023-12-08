@@ -32,7 +32,7 @@ class SelectAccount @Inject constructor(
             id = params.id,
             path = params.path,
             networkMode = networkMode.networkMode,
-            customConfigFilePath = networkMode.storedFilePath
+            networkConfigFilePath = networkMode.storedFilePath
         )
         val setup = repository.selectAccount(command)
         with(repository) {

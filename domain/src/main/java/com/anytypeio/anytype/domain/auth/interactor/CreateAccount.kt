@@ -32,7 +32,7 @@ open class CreateAccount(
             avatarPath = params.avatarPath,
             icon = params.iconGradientValue,
             networkMode = networkMode.networkMode,
-            customConfigFilePath = networkMode.storedFilePath
+            networkConfigFilePath = networkMode.storedFilePath
         )
         val setup = repository.createAccount(command)
         with(repository) {

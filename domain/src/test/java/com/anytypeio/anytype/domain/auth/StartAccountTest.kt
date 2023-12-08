@@ -8,8 +8,6 @@ import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
-import com.anytypeio.anytype.core_models.StubAccount
-import com.anytypeio.anytype.core_models.StubAccountSetup
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -22,7 +20,6 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -32,7 +29,6 @@ import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
-import org.mockito.kotlin.verifyBlocking
 import org.mockito.kotlin.verifyNoMoreInteractions
 
 class StartAccountTest {
@@ -426,7 +422,7 @@ class StartAccountTest {
                     id = id,
                     path = path,
                     networkMode = NetworkMode.CUSTOM,
-                    customConfigFilePath = storedFilePath
+                    networkConfigFilePath = storedFilePath
                 )
                 selectAccount(command)
             } doReturn AccountSetup(

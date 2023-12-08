@@ -124,7 +124,10 @@ fun Menu(
         homeClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Back) },
         searchClick = { viewModel.eventStream(LibraryEvent.BottomMenu.Search) },
         addDocClick = { viewModel.eventStream(LibraryEvent.BottomMenu.CreateObject) },
-        onCreateObjectLongClicked = onCreateObjectLongClicked
+        onCreateObjectLongClicked = onCreateObjectLongClicked,
+        onProfileClicked = {
+            viewModel.eventStream(LibraryEvent.BottomMenu.OpenProfile)
+        }
     )
 }
 

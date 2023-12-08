@@ -782,6 +782,12 @@ class CollectionViewModel(
         }
     }
 
+    fun onProfileClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.SelectSpace)
+        }
+    }
+
     fun onAddClicked(type: Key? = null) {
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -906,6 +912,7 @@ class CollectionViewModel(
 
         object ToDesktop : Command()
         object ToSearch : Command()
+        object SelectSpace : Command()
         object Exit : Command()
     }
 }

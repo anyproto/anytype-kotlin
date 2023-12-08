@@ -29,7 +29,8 @@ fun BottomNavigationMenu(
     homeClick: () -> Unit = {},
     searchClick: () -> Unit = {},
     addDocClick: () -> Unit = {},
-    onCreateObjectLongClicked: () -> Unit = {}
+    onCreateObjectLongClicked: () -> Unit = {},
+    onProfileClicked: () -> Unit = {}
 ) {
     Row(
         modifier = modifier
@@ -45,12 +46,13 @@ fun BottomNavigationMenu(
     ) {
         MenuItem(BottomNavigationItem.BACK.res, onClick = backClick)
         MenuItem(BottomNavigationItem.HOME.res, onClick = homeClick)
-        MenuItem(BottomNavigationItem.SEARCH.res, onClick = searchClick)
         MenuItem(
             BottomNavigationItem.ADD_DOC.res,
             onClick = addDocClick,
             onLongClick = onCreateObjectLongClicked
         )
+        MenuItem(BottomNavigationItem.SEARCH.res, onClick = searchClick)
+        MenuItem(BottomNavigationItem.PROFILE.res, onClick = onProfileClicked)
     }
 }
 
@@ -81,7 +83,8 @@ private enum class BottomNavigationItem(@DrawableRes val res: Int) {
     BACK(R.drawable.ic_main_toolbar_back),
     HOME(R.drawable.ic_main_toolbar_home),
     SEARCH(R.drawable.ic_page_toolbar_search),
-    ADD_DOC(R.drawable.ic_page_toolbar_add_doc)
+    ADD_DOC(R.drawable.ic_page_toolbar_add_doc),
+    PROFILE(R.drawable.ic_circle_more)
 }
 
 @Immutable

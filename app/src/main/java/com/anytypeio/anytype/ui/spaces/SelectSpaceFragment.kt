@@ -9,10 +9,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -22,6 +24,8 @@ import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
 class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
+
+    private val exitToDesktopKey get() = argOrNull<Boolean>(EXIT_TO_DESKTOP_KEY)
 
     @Inject
     lateinit var factory: SelectSpaceViewModel.Factory
@@ -77,7 +81,11 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                 )
             }
             is Command.Dismiss -> {
-                findNavController().popBackStack()
+                if (exitToDesktopKey == true) {
+                    findNavController().popBackStack(R.id.homeScreen, false)
+                } else {
+                    findNavController().popBackStack()
+                }
             }
         }
     }
@@ -104,5 +112,12 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().selectSpaceComponent.release()
+    }
+
+    companion object {
+        const val EXIT_TO_DESKTOP_KEY = "select.space.screen.arg.exit-to-desktop"
+        fun args(exitToHomeWhenSpaceIsSelected: Boolean) = bundleOf(
+            EXIT_TO_DESKTOP_KEY to exitToHomeWhenSpaceIsSelected
+        )
     }
 }

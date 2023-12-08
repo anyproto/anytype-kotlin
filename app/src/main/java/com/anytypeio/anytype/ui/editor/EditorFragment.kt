@@ -143,13 +143,13 @@ import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
+import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -582,6 +582,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         binding.bottomToolbar
             .backClicks()
             .onEach { vm.onBackButtonPressed() }
+            .launchIn(lifecycleScope)
+
+        binding.bottomToolbar
+            .profileClicks()
+            .onEach {
+                findNavController().navigate(
+                    R.id.selectSpaceScreen,
+                    args = SelectSpaceFragment.args(true)
+                )
+            }
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar

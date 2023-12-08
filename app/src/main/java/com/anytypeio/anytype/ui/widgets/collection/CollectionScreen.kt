@@ -134,7 +134,8 @@ fun ScreenContent(
                     homeClick = { vm.onHomeClicked() },
                     searchClick = { vm.onSearchClicked() },
                     addDocClick = { vm.onAddClicked() },
-                    onCreateObjectLongClicked = onCreateObjectLongClicked
+                    onCreateObjectLongClicked = onCreateObjectLongClicked,
+                    onProfileClicked = vm::onProfileClicked
                 )
             }
         }

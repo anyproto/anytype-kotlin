@@ -25,4 +25,5 @@ class MainBottomToolbar @JvmOverloads constructor(
     fun addDocClicks() = binding.btnAddDoc.clicks()
     fun homeClicks() = binding.btnHome.clicks()
     fun backClicks() = binding.btnBack.clicks()
+    fun profileClicks() = binding.btnProfile.clicks()
 }

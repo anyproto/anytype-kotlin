@@ -113,12 +113,10 @@ class SetupSelectedAccountTest {
 
         pathProvider.stub { on { providePath() } doReturn path }
 
+        val command = SelectAccount.Params(id = id, path = path)
         authRepository.stub {
             onBlocking {
-                selectAccount(
-                    id = id,
-                    path = path
-                )
+                selectAccount(command)
             } doThrow IllegalStateException()
         }
 

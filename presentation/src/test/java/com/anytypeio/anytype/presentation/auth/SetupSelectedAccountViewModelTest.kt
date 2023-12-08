@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
@@ -129,10 +130,12 @@ class SetupSelectedAccountViewModelTest {
         stubProvidePath(path)
         authRepo.stub {
             onBlocking {
-                selectAccount(
+                val command = Command.AccountSelect(
                     id = any(),
-                    path = any()
+                    path = path,
+                    networkMode = any()
                 )
+                selectAccount(command)
             } doReturn AccountSetup(
                 account = Account(
                     id = MockDataFactory.randomUuid(),
@@ -177,10 +180,12 @@ class SetupSelectedAccountViewModelTest {
         stubProvidePath(path)
         authRepo.stub {
             onBlocking {
-                selectAccount(
-                    id = id,
-                    path = path
+                val command = Command.AccountSelect(
+                    id = any(),
+                    path = path,
+                    networkMode = any()
                 )
+                selectAccount(command)
             } doAnswer {
                 throw Exception("Could not start account")
             }

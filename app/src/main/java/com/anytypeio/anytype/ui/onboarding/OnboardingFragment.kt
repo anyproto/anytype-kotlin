@@ -60,6 +60,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.navOptions
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
@@ -71,7 +72,6 @@ import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.SideEffect
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
-import com.anytypeio.anytype.presentation.onboarding.login.OnboardingLoginSetupViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreenWrapper
@@ -300,6 +300,8 @@ class OnboardingFragment : Fragment() {
         val component = componentManager().onboardingMnemonicLoginComponent
         val vm = daggerViewModel { component.get().getViewModel() }
         val isQrWarningDialogVisible = remember { mutableStateOf(false) }
+        val errorText = remember { mutableStateOf(NO_VALUE) }
+        val isErrorDialogVisible = remember { mutableStateOf(false) }
 
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
@@ -328,7 +330,8 @@ class OnboardingFragment : Fragment() {
                         }
                     }
                     is OnboardingMnemonicLoginViewModel.SideEffect.Error -> {
-                        toast(effect.msg)
+                        errorText.value = effect.msg
+                        isErrorDialogVisible.value = true
                     }
                 }
             }
@@ -336,15 +339,15 @@ class OnboardingFragment : Fragment() {
         LaunchedEffect(Unit) {
             vm.navigation.collect { navigation ->
                 when (navigation) {
-                    OnboardingLoginSetupViewModel.Navigation.Exit -> {
+                    OnboardingMnemonicLoginViewModel.Navigation.Exit -> {
                         navController.popBackStack()
                     }
 
-                    OnboardingLoginSetupViewModel.Navigation.NavigateToHomeScreen -> {
+                    OnboardingMnemonicLoginViewModel.Navigation.NavigateToHomeScreen -> {
                         findNavController().navigate(R.id.action_openHome)
                     }
 
-                    OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen -> {
+                    OnboardingMnemonicLoginViewModel.Navigation.NavigateToMigrationErrorScreen -> {
                         findNavController().navigate(R.id.migrationNeededScreen, null, navOptions {
                             popUpTo(R.id.onboarding_nav) {
                                 inclusive = false
@@ -363,6 +366,20 @@ class OnboardingFragment : Fragment() {
                     proceedWithQrCodeActivity(launcher)
                 },
                 onDismissRequest = { isQrWarningDialogVisible.value = false }
+            )
+        }
+        if (isErrorDialogVisible.value) {
+            BaseAlertDialog(
+                dialogText = errorText.value,
+                buttonText = stringResource(id = R.string.alert_qr_camera_ok),
+                onButtonClick = {
+                    isErrorDialogVisible.value = false
+                    errorText.value = NO_VALUE
+                },
+                onDismissRequest = {
+                    isErrorDialogVisible.value = false
+                    errorText.value = NO_VALUE
+                }
             )
         }
         DisposableEffect(Unit) {
@@ -576,7 +593,6 @@ class OnboardingFragment : Fragment() {
             onboardingComponent.release()
             onboardingMnemonicComponent.release()
             onboardingMnemonicLoginComponent.release()
-            onboardingLoginSetupComponent.release()
             onboardingStartComponent.release()
         }
         componentManager().onboardingComponent.release()

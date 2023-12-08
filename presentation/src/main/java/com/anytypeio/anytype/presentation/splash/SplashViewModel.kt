@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -51,7 +52,8 @@ class SplashViewModel(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val featureToggles: FeatureToggles,
     private val crashReporter: CrashReporter,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+    private val localeProvider: LocaleProvider
 ) : ViewModel() {
 
     val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
@@ -75,11 +77,7 @@ class SplashViewModel(
                 failure = { e -> Timber.e(e, "Error while checking auth status") },
                 success = { status ->
                     if (status == AuthStatus.UNAUTHORIZED) {
-                        if (featureToggles.isNewOnBoardingEnabled) {
-                            commands.emit(Command.NavigateToAuthStart)
-                        } else {
-                            commands.emit(Command.NavigateToLogin)
-                        }
+                        commands.emit(Command.NavigateToAuthStart)
                     } else {
                         proceedWithLaunchingWallet()
                     }
@@ -219,6 +217,12 @@ class SplashViewModel(
             analytics = analytics,
             userProperty = UserProperty.AccountId(id)
         )
+        localeProvider.language()?.let { lang ->
+            viewModelScope.updateUserProperties(
+                analytics = analytics,
+                userProperty = UserProperty.InterfaceLanguage(lang)
+            )
+        }
     }
 
     private fun sendEvent(startTime: Long, event: String, props: Props) {
@@ -235,10 +239,7 @@ class SplashViewModel(
     sealed class Command {
         data class NavigateToDashboard(val deeplink: String? = null) : Command()
         object NavigateToWidgets : Command()
-        object NavigateToLogin : Command()
-
         object NavigateToAuthStart : Command()
-
         object NavigateToMigration: Command()
         object CheckAppStartIntent : Command()
         data class NavigateToObject(val id: Id) : Command()

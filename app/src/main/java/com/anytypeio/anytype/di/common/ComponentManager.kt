@@ -8,8 +8,6 @@ import com.anytypeio.anytype.di.feature.AddDataViewRelationOptionValueModule
 import com.anytypeio.anytype.di.feature.AddFileRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationModule
 import com.anytypeio.anytype.di.feature.AddObjectRelationValueModule
-import com.anytypeio.anytype.di.feature.AuthModule
-import com.anytypeio.anytype.di.feature.CreateAccountModule
 import com.anytypeio.anytype.di.feature.CreateBookmarkModule
 import com.anytypeio.anytype.di.feature.CreateDataViewViewerModule
 import com.anytypeio.anytype.di.feature.CreateObjectModule
@@ -21,7 +19,6 @@ import com.anytypeio.anytype.di.feature.DebugSettingsModule
 import com.anytypeio.anytype.di.feature.EditDataViewViewerModule
 import com.anytypeio.anytype.di.feature.EditorSessionModule
 import com.anytypeio.anytype.di.feature.EditorUseCaseModule
-import com.anytypeio.anytype.di.feature.KeychainLoginModule
 import com.anytypeio.anytype.di.feature.KeychainPhraseModule
 import com.anytypeio.anytype.di.feature.LinkToObjectModule
 import com.anytypeio.anytype.di.feature.LinkToObjectOrWebModule
@@ -52,14 +49,10 @@ import com.anytypeio.anytype.di.feature.RelationDataViewDateValueModule
 import com.anytypeio.anytype.di.feature.RelationDataViewTextValueModule
 import com.anytypeio.anytype.di.feature.RelationDateValueModule
 import com.anytypeio.anytype.di.feature.RelationTextValueModule
-import com.anytypeio.anytype.di.feature.SelectAccountModule
 import com.anytypeio.anytype.di.feature.SelectCoverObjectModule
 import com.anytypeio.anytype.di.feature.SelectCoverObjectSetModule
 import com.anytypeio.anytype.di.feature.SelectSortRelationModule
 import com.anytypeio.anytype.di.feature.SetOrCollectionRelationValueModule
-import com.anytypeio.anytype.di.feature.SetupNewAccountModule
-import com.anytypeio.anytype.di.feature.SetupSelectedAccountModule
-import com.anytypeio.anytype.di.feature.StartLoginModule
 import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
@@ -70,7 +63,6 @@ import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.objects.DaggerCreateObjectOfTypeComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponent
-import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingLoginSetupComponent
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
@@ -120,58 +112,6 @@ class ComponentManager(
 
     val mainEntryComponent = Component {
         main.mainEntryComponentBuilder().module(MainEntryModule).build()
-    }
-
-    val authComponent = Component {
-        main.authComponentBuilder().authModule(AuthModule).build()
-    }
-
-    val startLoginComponent = Component {
-        authComponent
-            .get()
-            .startLoginComponentBuilder()
-            .startLoginModule(StartLoginModule)
-            .build()
-    }
-
-    val createAccountComponent = Component {
-        authComponent
-            .get()
-            .createAccountComponentBuilder()
-            .createAccountModule(CreateAccountModule)
-            .build()
-    }
-
-    val setupNewAccountComponent = Component {
-        authComponent
-            .get()
-            .setupNewAccountComponentBuilder()
-            .setupNewAccountModule(SetupNewAccountModule)
-            .build()
-    }
-
-    val setupSelectedAccountComponent = Component {
-        authComponent
-            .get()
-            .setupSelectedAccountComponentBuilder()
-            .setupSelectedAccountModule(SetupSelectedAccountModule)
-            .build()
-    }
-
-    val selectAccountComponent = Component {
-        authComponent
-            .get()
-            .selectAccountComponentBuilder()
-            .selectAccountModule(SelectAccountModule)
-            .build()
-    }
-
-    val keychainLoginComponent = Component {
-        authComponent
-            .get()
-            .keychainLoginComponentBuilder()
-            .keychainLoginModule(KeychainLoginModule)
-            .build()
     }
 
     val debugSettingsComponent = Component {
@@ -967,12 +907,6 @@ class ComponentManager(
 
     val onboardingMnemonicLoginComponent = Component {
         DaggerOnboardingMnemonicLoginComponent
-            .factory()
-            .create(findComponentDependencies())
-    }
-
-    val onboardingLoginSetupComponent = Component {
-        DaggerOnboardingLoginSetupComponent
             .factory()
             .create(findComponentDependencies())
     }

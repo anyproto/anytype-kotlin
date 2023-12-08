@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -44,6 +45,7 @@ class OnboardingVoidViewModel @Inject constructor(
     private val analytics: Analytics,
     private val configStorage: ConfigStorage,
     private val crashReporter: CrashReporter,
+    private val localeProvider: LocaleProvider
 ): BaseViewModel() {
 
     val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
@@ -205,7 +207,8 @@ class OnboardingVoidViewModel @Inject constructor(
             analytics.proceedWithAccountEvent(
                 startTime = startTime,
                 configStorage = configStorage,
-                eventName = EventsDictionary.createAccount
+                eventName = EventsDictionary.createAccount,
+                lang = localeProvider.language()
             )
         }
     }
@@ -233,7 +236,8 @@ class OnboardingVoidViewModel @Inject constructor(
         private val logout: Logout,
         private val analytics: Analytics,
         private val configStorage: ConfigStorage,
-        private val crashReporter: CrashReporter
+        private val crashReporter: CrashReporter,
+        private val localeProvider: LocaleProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -249,7 +253,8 @@ class OnboardingVoidViewModel @Inject constructor(
                 checkAuthorizationStatus = checkAuthorizationStatus,
                 analytics = analytics,
                 crashReporter = crashReporter,
-                configStorage = configStorage
+                configStorage = configStorage,
+                localeProvider = localeProvider
             ) as T
         }
     }

@@ -114,11 +114,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.id),
                 )
             }
-            is SplashViewModel.Command.NavigateToLogin -> {
-                findNavController().navigate(
-                    R.id.action_splashFragment_to_login_nav
-                )
-            }
             is SplashViewModel.Command.NavigateToAuthStart -> {
                 findNavController().navigate(
                     R.id.action_splashFragment_to_authStart

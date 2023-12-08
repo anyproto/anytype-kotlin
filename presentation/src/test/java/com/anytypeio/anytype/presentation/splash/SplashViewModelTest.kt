@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -76,6 +77,9 @@ class SplashViewModelTest {
     @Mock
     private lateinit var crashReporter: CrashReporter
 
+    @Mock
+    lateinit var localeProvider: LocaleProvider
+
     lateinit var vm: SplashViewModel
 
     @Before
@@ -99,7 +103,8 @@ class SplashViewModelTest {
             objectTypesSubscriptionManager = objectTypesSubscriptionManager,
             featureToggles = featureToggles,
             crashReporter = crashReporter,
-            spaceDeletedStatusWatcher = spaceDeletedStatusWatcher
+            spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
+            localeProvider = localeProvider
         )
     }
 

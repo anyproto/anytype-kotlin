@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
@@ -130,8 +131,9 @@ class HomeScreenFragment : BaseComposeFragment() {
     }
 
     override fun onStart() {
+        Timber.d("onStart")
         super.onStart()
-        vm.onStart(deepLink?.let { DefaultDeepLinkResolver.resolve(it) })
+        vm.onStart()
     }
 
     override fun onStop() {
@@ -152,7 +154,25 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     override fun onResume() {
         super.onResume()
-        if (isMnemonicReminderDialogNeeded) showMnemonicReminderAlert()
+        if (isMnemonicReminderDialogNeeded)
+            showMnemonicReminderAlert()
+        proceedWithDeepLinks()
+    }
+
+    private fun proceedWithDeepLinks() {
+        val deepLinkFromFragment = deepLink
+        val deepLinkFromActivity = (requireActivity() as? MainActivity)?.deepLink
+
+        when {
+            deepLinkFromFragment != null -> {
+                vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragment))
+                arguments?.putString(DEEP_LINK_KEY, null)
+            }
+            deepLinkFromActivity != null -> {
+                vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromActivity))
+                (requireActivity() as? MainActivity)?.deepLink = null
+            }
+        }
     }
 
     private fun proceed(command: Command) {
@@ -204,6 +224,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                 )
             }
             is Command.Deeplink.CannotImportExperience -> {
+                arguments?.putString(DEEP_LINK_KEY, null)
                 findNavController().navigate(R.id.alertImportExperienceUnsupported)
             }
         }

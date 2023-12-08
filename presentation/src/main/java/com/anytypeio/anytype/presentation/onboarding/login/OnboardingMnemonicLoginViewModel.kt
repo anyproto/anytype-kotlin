@@ -19,10 +19,10 @@ import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.interactor.StartLoadingAccounts
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
-import com.anytypeio.anytype.presentation.auth.account.SetupSelectedAccountViewModel
 import com.anytypeio.anytype.presentation.extension.proceedWithAccountEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingLoginEvent
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
@@ -47,7 +47,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val crashReporter: CrashReporter,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val localeProvider: LocaleProvider
 ) : ViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -55,9 +56,9 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     val sideEffects = MutableSharedFlow<SideEffect>()
     val state = MutableStateFlow<SetupState>(SetupState.Idle)
 
-    val navigation = MutableSharedFlow<OnboardingLoginSetupViewModel.Navigation>()
+    val navigation = MutableSharedFlow<Navigation>()
 
-    val error by lazy { MutableStateFlow(OnboardingLoginSetupViewModel.NO_ERROR) }
+    val error by lazy { MutableStateFlow(NO_ERROR) }
 
     init {
         viewModelScope.sendEvent(
@@ -171,7 +172,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     }
                     Timber.e(e, "Error while account loading")
                     // TODO refact
-                    viewModelScope.launch { navigation.emit(OnboardingLoginSetupViewModel.Navigation.Exit) }
+                    viewModelScope.launch { navigation.emit(Navigation.Exit) }
                 },
                 fnR = {
                     Timber.d("Account loading successfully finished")
@@ -217,7 +218,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                         }
                         else -> {
                             val msg = e.message ?: "Unknown error"
-                            error.value = "${SetupSelectedAccountViewModel.ERROR_MESSAGE}: $msg"
+                            error.value = "${ERROR_MESSAGE}: $msg"
                         }
                     }
                 },
@@ -225,7 +226,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                     analytics.proceedWithAccountEvent(
                         configStorage = configStorage,
                         startTime = startTime,
-                        eventName = EventsDictionary.openAccount
+                        eventName = EventsDictionary.openAccount,
+                        lang = localeProvider.language()
                     )
                     crashReporter.setUser(analyticsId)
                     proceedWithGlobalSubscriptions()
@@ -237,7 +239,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     private fun navigateToMigrationErrorScreen() {
         viewModelScope.launch {
-            navigation.emit(OnboardingLoginSetupViewModel.Navigation.NavigateToMigrationErrorScreen)
+            navigation.emit(Navigation.NavigateToMigrationErrorScreen)
         }
     }
 
@@ -249,7 +251,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
 
     private fun navigateToDashboard() {
         viewModelScope.launch {
-            navigation.emit(OnboardingLoginSetupViewModel.Navigation.NavigateToHomeScreen)
+            navigation.emit(Navigation.NavigateToHomeScreen)
         }
     }
 
@@ -269,6 +271,12 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         object Failed: SetupState()
     }
 
+    sealed class Navigation {
+        object Exit : Navigation()
+        object NavigateToMigrationErrorScreen : Navigation()
+        object NavigateToHomeScreen: Navigation()
+    }
+
     class Factory @Inject constructor(
         private val pathProvider: PathProvider,
         private val convertWallet: ConvertWallet,
@@ -282,7 +290,8 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
         private val crashReporter: CrashReporter,
-        private val configStorage: ConfigStorage
+        private val configStorage: ConfigStorage,
+        private val localeProvider: LocaleProvider,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -299,8 +308,14 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 startLoadingAccounts = startLoadingAccounts,
                 observeAccounts = observeAccounts,
                 spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
-                selectAccount = selectAccount
+                selectAccount = selectAccount,
+                localeProvider = localeProvider
             ) as T
         }
+    }
+
+    companion object {
+        const val ERROR_MESSAGE = "An error occurred while starting account..."
+        const val NO_ERROR = ""
     }
 }

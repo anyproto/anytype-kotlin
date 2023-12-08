@@ -8,8 +8,14 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.defaultTypeChanged
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -20,7 +26,9 @@ import com.anytypeio.anytype.domain.device.ClearFileCache
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -32,7 +40,8 @@ class PersonalizationSettingsViewModel(
     private val clearFileCache: ClearFileCache,
     private val appActionManager: AppActionManager,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val searchObjects: SearchObjects
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -93,12 +102,63 @@ class PersonalizationSettingsViewModel(
 
     fun proceedWithUpdateType(type: Id, key: Key, name: String?) {
         viewModelScope.launch {
-            appActionManager.setup(
-                AppActionManager.Action.CreateNew(
-                    type = TypeKey(key),
-                    name = name.orEmpty()
+            val keys = buildSet {
+                add(key)
+                add(ObjectTypeUniqueKeys.NOTE)
+                add(ObjectTypeUniqueKeys.PAGE)
+                add(ObjectTypeUniqueKeys.TASK)
+            }
+            searchObjects(
+                SearchObjects.Params(
+                    keys = buildList {
+                        add(Relations.ID)
+                        add(Relations.UNIQUE_KEY)
+                        add(Relations.NAME)
+                    },
+                    filters = buildList {
+                        add(
+                            DVFilter(
+                                relation = Relations.SPACE_ID,
+                                value = spaceManager.get(),
+                                condition = DVFilterCondition.EQUAL
+                            )
+                        )
+                        add(
+                            DVFilter(
+                                relation = Relations.LAYOUT,
+                                value = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+                                condition = DVFilterCondition.EQUAL
+                            )
+                        )
+                        add(
+                            DVFilter(
+                                relation = Relations.UNIQUE_KEY,
+                                value = keys.toList(),
+                                condition = DVFilterCondition.IN
+                            )
+                        )
+                    }
                 )
+            ).process(
+                success = { wrappers ->
+                    val types = wrappers
+                        .map { ObjectWrapper.Type(it.map) }
+                        .sortedBy { keys.indexOf(it.uniqueKey) }
+
+                    val actions = types.map { type ->
+                        AppActionManager.Action.CreateNew(
+                            type = TypeKey(type.uniqueKey),
+                            name = type.name.orEmpty()
+                        )
+                    }
+                    appActionManager.setup(actions = actions)
+                },
+                failure = {
+                    Timber.e(it, "Error while searching for types")
+                }
             )
+        }
+        viewModelScope.launch {
             val params = SetDefaultObjectType.Params(
                 space = SpaceId(spaceManager.get()),
                 type = TypeId(type)
@@ -137,13 +197,14 @@ class PersonalizationSettingsViewModel(
         object Exit : Command()
     }
 
-    class Factory(
+    class Factory @Inject constructor(
         private val getDefaultObjectType: GetDefaultObjectType,
         private val setDefaultObjectType: SetDefaultObjectType,
         private val clearFileCache: ClearFileCache,
         private val appActionManager: AppActionManager,
         private val analytics: Analytics,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val searchObjects: SearchObjects
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -154,7 +215,8 @@ class PersonalizationSettingsViewModel(
             clearFileCache = clearFileCache,
             appActionManager = appActionManager,
             analytics = analytics,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            searchObjects = searchObjects
         ) as T
     }
 }

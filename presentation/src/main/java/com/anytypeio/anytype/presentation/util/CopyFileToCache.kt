@@ -143,113 +143,18 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
 }
 
 class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirectory {
-
-    private var mContext: WeakReference<Context>? = null
-    private var job: Job? = null
-
-    init {
-        mContext = WeakReference(context)
-    }
-
-    override fun isActive(): Boolean = job?.isActive == true
-
     override fun execute(uri: Uri, scope: CoroutineScope, listener: OnCopyFileToCacheAction) {
-        getNewPathInCacheDir(
-            uri = uri,
-            scope = scope,
-            listener = listener,
-        )
+        TODO("Not yet implemented")
     }
 
     override fun cancel() {
-        job?.cancel()
+        TODO("Not yet implemented")
     }
 
-    private fun getNewPathInCacheDir(
-        uri: Uri,
-        scope: CoroutineScope,
-        listener: OnCopyFileToCacheAction
-    ) {
-        var path: String? = null
-        var fileName: String? = null
-        job = scope.launch {
-            try {
-                withContext(Dispatchers.IO) {
-                    val pair = copyFileToCacheDir(uri, listener)
-                    path = pair.first
-                    fileName = pair.second
-                }
-            } catch (e: Exception) {
-                Timber.e(e, "Error while getNewPathInCacheDir")
-                listener.onCopyFileError(e.localizedMessage ?: "Unknown error")
-            } finally {
-                if (scope.isActive) {
-                    listener.onCopyFileResult(path, fileName)
-                }
-            }
-        }
-    }
-
-    private fun copyFileToCacheDir(
-        uri: Uri,
-        listener: OnCopyFileToCacheAction
-    ): Pair<String?, String?> {
-        var newFile: File? = null
-        mContext?.get()?.let { context: Context ->
-
-            val fileName = getFileName(context, uri)
-
-            val cacheDir = context.getExternalCustomNetworkDirTemp()
-            if (cacheDir != null && !cacheDir.exists()) {
-                cacheDir.mkdirs()
-            }
-            try {
-                val inputStream = context.contentResolver.openInputStream(uri)
-                inputStream?.use { input ->
-                    newFile = File(cacheDir?.path + "/" + "configCustom.txt");
-                    listener.onCopyFileStart()
-                    Timber.d("Start copy file to cache : ${newFile?.path}")
-                    FileOutputStream(newFile).use { output ->
-                        val buffer = ByteArray(1024)
-                        var read: Int = input.read(buffer)
-                        while (read != -1) {
-                            output.write(buffer, 0, read)
-                            read = input.read(buffer)
-                        }
-                    }
-                    return Pair(newFile?.path, fileName)
-                }
-            } catch (e: Exception) {
-                val deleteResult = newFile?.deleteRecursively()
-                Timber.d("Get exception while copying file, deleteRecursively success: $deleteResult")
-                Timber.e(e, "Error while coping file")
-            }
-        }
-        return Pair(null, null)
-    }
-
-    private fun getFileName(context: Context, uri: Uri): String? {
-        var result: String? = null
-        if (uri.scheme == SCHEME_CONTENT) {
-            context.contentResolver.query(
-                uri,
-                null,
-                null,
-                null,
-                null
-            )?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    if (index != -1) {
-                        result = cursor.getString(index)
-                    }
-                }
-            }
-        }
-        return result
+    override fun isActive(): Boolean {
+        TODO("Not yet implemented")
     }
 }
-
 /**
  * Delete the /storage/emulated/0/Android/data/package/files/$TEMPORARY_DIRECTORY_NAME folder.
  */

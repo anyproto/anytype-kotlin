@@ -815,6 +815,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // TODO
         }.launchIn(lifecycleScope)
 
+
+
         with(lifecycleScope) {
             launch {
                 vm.actions.collectLatest {
@@ -836,6 +838,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
                     behavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }
+            }
+            subscribe(vm.icon) { icon ->
+                binding.bottomToolbar.bind(icon)
             }
         }
     }

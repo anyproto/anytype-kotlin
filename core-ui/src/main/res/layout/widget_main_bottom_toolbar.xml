@@ -78,12 +78,21 @@
         android:background="@drawable/default_ripple">
 
         <ImageView
-            android:id="@+id/icProfile"
+            android:id="@+id/ivProfile"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_gravity="center"
+            android:contentDescription="Profile icon"
+            app:srcCompat="@drawable/ic_nav_profile_icon_placeholder_circle" />
+
+        <TextView
+            android:id="@+id/tvProfileInitial"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:contentDescription="@string/content_desc_add_doc_button"
-            app:srcCompat="@drawable/ic_circle_more" />
+            android:textColor="@color/white"
+            android:textAllCaps="true"
+            android:contentDescription="Profile icon initial" />
 
     </FrameLayout>
 

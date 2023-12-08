@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -108,8 +109,8 @@ private fun ProfileMenuItem(
                 contentDescription = "Custom image profile",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .size(32.dp)
-                    .clip(RoundedCornerShape(16.dp))
+                    .size(28.dp)
+                    .clip(CircleShape)
                     .noRippleClickable { onClick() }
             )
         }
@@ -122,7 +123,7 @@ private fun ProfileMenuItem(
             }
             Box(
                 modifier = Modifier
-                    .size(32.dp)
+                    .size(28.dp)
                     .clip(RoundedCornerShape(16.dp))
                     .background(colorResource(id = R.color.shape_primary))
                     .noRippleClickable { onClick() }
@@ -140,8 +141,8 @@ private fun ProfileMenuItem(
         else -> {
             Box(
                 modifier = Modifier
-                    .size(32.dp)
-                    .clip(RoundedCornerShape(16.dp))
+                    .size(28.dp)
+                    .clip(CircleShape)
                     .background(colorResource(id = R.color.shape_primary))
                     .noRippleClickable { onClick() }
             )
@@ -154,8 +155,7 @@ private enum class BottomNavigationItem(@DrawableRes val res: Int) {
     BACK(R.drawable.ic_main_toolbar_back),
     HOME(R.drawable.ic_main_toolbar_home),
     SEARCH(R.drawable.ic_page_toolbar_search),
-    ADD_DOC(R.drawable.ic_page_toolbar_add_doc),
-    PROFILE(R.drawable.ic_circle_more)
+    ADD_DOC(R.drawable.ic_page_toolbar_add_doc)
 }
 
 @Immutable

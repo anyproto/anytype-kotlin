@@ -16,7 +16,11 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.allUniqueBy
 import com.anytypeio.anytype.core_utils.ext.orNull
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
@@ -28,14 +32,20 @@ import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyTypesDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import javax.inject.Inject
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectIndexed
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -51,8 +61,13 @@ class LibraryViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val createObject: CreateObject,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val appCoroutineDispatchers: AppCoroutineDispatchers,
+    private val urlBuilder: UrlBuilder
 ) : NavigationViewModel<LibraryViewModel.Navigation>() {
+
+    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     private val uiEvents = MutableStateFlow<LibraryEvent>(LibraryEvent.Query.MyTypes(""))
     private val analyticsEvents = MutableStateFlow<LibraryAnalyticsEvent.Ui>(
@@ -98,6 +113,7 @@ class LibraryViewModel(
     )
 
     init {
+        proceedWithObservingProfileIcon()
         viewModelScope.launch {
             uiEvents.collect {
                 when (it) {
@@ -115,6 +131,34 @@ class LibraryViewModel(
                     val route = if (index == 0) ROUTE_OUTER else ROUTE_INNER
                     proceedWithViewAnalytics(it, route)
                 }
+        }
+    }
+
+    private fun proceedWithObservingProfileIcon() {
+        viewModelScope.launch {
+            spaceManager
+                .observe()
+                .flatMapLatest { config ->
+                    storelessSubscriptionContainer.subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = "${this::javaClass.name}-profile-icon",
+                            targets = listOf(config.profile),
+                            keys = listOf(
+                                Relations.ID,
+                                Relations.NAME,
+                                Relations.ICON_EMOJI,
+                                Relations.ICON_IMAGE,
+                                Relations.ICON_OPTION
+                            )
+                        )
+                    ).map { result ->
+                        val obj = result.firstOrNull()
+                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
+                    }
+                }
+                .catch { Timber.e(it, "Error while observing space icon") }
+                .flowOn(appCoroutineDispatchers.io)
+                .collect { icon.value = it }
         }
     }
 
@@ -430,7 +474,10 @@ class LibraryViewModel(
         private val setObjectDetails: SetObjectDetails,
         private val createObject: CreateObject,
         private val analytics: Analytics,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        private val appCoroutineDispatchers: AppCoroutineDispatchers,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -445,7 +492,10 @@ class LibraryViewModel(
                 setObjectDetails,
                 createObject,
                 analytics,
-                spaceManager
+                spaceManager,
+                storelessSubscriptionContainer = storelessSubscriptionContainer,
+                appCoroutineDispatchers = appCoroutineDispatchers,
+                urlBuilder = urlBuilder
             ) as T
         }
     }

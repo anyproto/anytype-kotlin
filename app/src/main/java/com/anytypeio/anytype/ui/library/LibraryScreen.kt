@@ -23,6 +23,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -127,7 +128,8 @@ fun Menu(
         onCreateObjectLongClicked = onCreateObjectLongClicked,
         onProfileClicked = {
             viewModel.eventStream(LibraryEvent.BottomMenu.OpenProfile)
-        }
+        },
+        profileIcon = viewModel.icon.collectAsState().value
     )
 }
 

@@ -1170,6 +1170,11 @@ open class ObjectSetFragment :
             }
         }
         jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
+
+        subscribe(vm.icon) { icon ->
+            binding.bottomToolbar.bind(icon)
+        }
+
         vm.onStart(ctx)
     }
 

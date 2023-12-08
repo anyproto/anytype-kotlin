@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -235,7 +236,9 @@ object ObjectSetModule {
         setObjectListIsArchived: SetObjectListIsArchived,
         createTemplate: CreateTemplate,
         viewerDelegate: ViewerDelegate,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        dispatchers: AppCoroutineDispatchers
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -271,7 +274,9 @@ object ObjectSetModule {
         setObjectListIsArchived = setObjectListIsArchived,
         viewerDelegate = viewerDelegate,
         spaceManager = spaceManager,
-        createTemplate = createTemplate
+        createTemplate = createTemplate,
+        storelessSubscriptionContainer = storelessSubscriptionContainer,
+        dispatchers = dispatchers
     )
 
     @JvmStatic

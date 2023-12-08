@@ -6228,7 +6228,7 @@ class EditorViewModel(
             }
         }
 
-        override fun onCopyFileResult(result: String?) {
+        override fun onCopyFileResult(result: String?, fileName: String?) {
             viewModelScope.launch {
                 copyFileStatus.emit(CopyFileStatus.Completed(result))
             }

@@ -77,7 +77,7 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         }
     }
 
-    fun copyFileToCacheDir(
+    private fun copyFileToCacheDir(
         uri: Uri,
         listener: OnCopyFileToCacheAction
     ): String? {
@@ -142,6 +142,19 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
     }
 }
 
+class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirectory {
+    override fun execute(uri: Uri, scope: CoroutineScope, listener: OnCopyFileToCacheAction) {
+        TODO("Not yet implemented")
+    }
+
+    override fun cancel() {
+        TODO("Not yet implemented")
+    }
+
+    override fun isActive(): Boolean {
+        TODO("Not yet implemented")
+    }
+}
 /**
  * Delete the /storage/emulated/0/Android/data/package/files/$TEMPORARY_DIRECTORY_NAME folder.
  */
@@ -160,8 +173,13 @@ private fun Context.deleteTemporaryFolder() {
  */
 private fun Context.getExternalFilesDirTemp(): File? = getExternalFilesDir(TEMPORARY_DIRECTORY_NAME)
 
+/**
+ * Return /storage/emulated/0/Android/data/io.anytype.app/files/networkModeConfig directory
+ */
+private fun Context.getExternalCustomNetworkDirTemp(): File? = getExternalFilesDir("networkModeConfig")
+
 interface OnCopyFileToCacheAction {
     fun onCopyFileStart()
-    fun onCopyFileResult(result: String?)
+    fun onCopyFileResult(result: String?, fileName: String? = null)
     fun onCopyFileError(msg: String)
 }

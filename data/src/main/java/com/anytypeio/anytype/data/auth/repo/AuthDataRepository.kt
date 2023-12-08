@@ -3,7 +3,9 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
 import com.anytypeio.anytype.domain.auth.model.Wallet
@@ -25,42 +27,22 @@ class AuthDataRepository(
     }
 
     override suspend fun selectAccount(
-        id: String, path: String
+        command: Command.AccountSelect
     ): AccountSetup {
         return if (debugConfig.setTimeouts) {
             withTimeout(DebugConfig.SELECT_ACCOUNT_TIMEOUT) {
-                factory.remote.selectAccount(
-                    id = id,
-                    path = path
-                )
+                factory.remote.selectAccount(command)
             }
-        } else {
-            factory.remote.selectAccount(
-                id = id,
-                path = path
-            )
-        }
+        } else { factory.remote.selectAccount(command)}
     }
 
     override suspend fun createAccount(
-        name: String,
-        avatarPath: String?,
-        icon: Int
+        command: Command.AccountCreate
     ): AccountSetup {
         return if (debugConfig.setTimeouts) {
-            withTimeout(DebugConfig.CREATE_ACCOUNT_TIMEOUT) {
-                factory.remote.createAccount(
-                    name = name,
-                    avatarPath = avatarPath,
-                    iconGradientValue = icon
-                )
-            }
+            withTimeout(DebugConfig.CREATE_ACCOUNT_TIMEOUT) { factory.remote.createAccount(command)}
         } else {
-            factory.remote.createAccount(
-                name = name,
-                avatarPath = avatarPath,
-                iconGradientValue = icon
-            )
+            factory.remote.createAccount(command)
         }
     }
 
@@ -120,4 +102,12 @@ class AuthDataRepository(
     override suspend fun clearLastOpenedObject() { factory.cache.clearLastOpenedObject() }
 
 
+
+    override suspend fun getNetworkMode(): NetworkModeConfig {
+        return factory.cache.getNetworkMode()
+    }
+
+    override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
+        factory.cache.setNetworkMode(modeConfig)
+    }
 }

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -24,10 +25,16 @@ class SelectAccount @Inject constructor(
             version = metricsProvider.getVersion(),
             platform = metricsProvider.getPlatform()
         )
-        val setup = repository.selectAccount(
+
+        val networkMode = repository.getNetworkMode()
+
+        val command = Command.AccountSelect(
             id = params.id,
-            path = params.path
+            path = params.path,
+            networkMode = networkMode.networkMode,
+            networkConfigFilePath = networkMode.storedFilePath
         )
+        val setup = repository.selectAccount(command)
         with(repository) {
             saveAccount(setup.account)
             setCurrentAccount(setup.account.id)

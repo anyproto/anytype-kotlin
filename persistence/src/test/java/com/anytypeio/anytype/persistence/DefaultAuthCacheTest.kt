@@ -5,6 +5,8 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.room.Room
 import androidx.test.platform.app.InstrumentationRegistry
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
+import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider
+import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
@@ -41,6 +43,8 @@ class DefaultAuthCacheTest {
         Context.MODE_PRIVATE
     )
 
+    lateinit var networkModeProvider: NetworkModeProvider
+
     @After
     fun after() {
         database.close()
@@ -51,10 +55,15 @@ class DefaultAuthCacheTest {
 
         val givenMnemonic = MockDataFactory.randomString()
 
+        val networkModeProvider = DefaultNetworkModeProvider(
+            sharedPreferences = defaultPrefs
+        )
+
         val cache = DefaultAuthCache(
             db = database,
             encryptedPrefs = encryptedPrefs,
-            defaultPrefs = defaultPrefs
+            defaultPrefs = defaultPrefs,
+            networkModeProvider = networkModeProvider
         )
 
         cache.saveMnemonic(mnemonic = givenMnemonic)

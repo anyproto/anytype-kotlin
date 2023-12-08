@@ -3,10 +3,10 @@ package com.anytypeio.anytype.persistence.networkmode
 import android.content.SharedPreferences
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
+import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_CUSTOM
+import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_DEFAULT
+import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_LOCAL
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_APP_FILE_PATH_PREF
-import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_CUSTOM
-import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_DEFAULT
-import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_LOCAL
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_PREF
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_USER_FILE_PATH_PREF
 
@@ -64,10 +64,6 @@ class DefaultNetworkModeProvider(private val sharedPreferences: SharedPreference
         const val NETWORK_MODE_PREF = "pref.network_mode"
         const val NETWORK_MODE_APP_FILE_PATH_PREF = "pref.network_config_file_path"
         const val NETWORK_MODE_USER_FILE_PATH_PREF = "pref.network_mode_user_config_file_path"
-
-        const val NETWORK_MODE_LOCAL = "local"
-        const val NETWORK_MODE_DEFAULT = "default"
-        const val NETWORK_MODE_CUSTOM = "custom"
 
         const val NAMED_NETWORK_MODE_PREFS = "network_mode"
     }

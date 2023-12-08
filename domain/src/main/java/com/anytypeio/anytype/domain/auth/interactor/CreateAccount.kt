@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.platform.MetricsProvider
  */
 open class CreateAccount(
     private val repository: AuthRepository,
+    // TODO rename config storage
     private val configStorage: ConfigStorage,
     private val metricsProvider: MetricsProvider,
     dispatcher: AppCoroutineDispatchers

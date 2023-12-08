@@ -78,6 +78,7 @@ class OnboardingVoidViewModel @Inject constructor(
         }
     }
 
+    @Deprecated("To be deleted")
     private fun proceedWithCreatingAccount() {
         val startTime = System.currentTimeMillis()
         val params = CreateAccount.Params(

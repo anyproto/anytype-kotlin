@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.Reducer
@@ -48,6 +49,8 @@ import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.mapFileObjectToView
 import com.anytypeio.anytype.presentation.objects.toViews
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.FavoritesView
@@ -103,6 +106,7 @@ class CollectionViewModel(
     val payloads: Flow<Payload>
 
     init {
+        proceedWithObservingProfileIcon()
         val externalChannelEvents: Flow<Payload> = spaceManager
             .observe()
             .flatMapLatest { config ->
@@ -120,6 +124,8 @@ class CollectionViewModel(
     }
 
     val commands = MutableSharedFlow<Command>()
+
+    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     private val jobs = mutableListOf<Job>()
     private val queryFlow: MutableStateFlow<String> = MutableStateFlow("")
@@ -161,6 +167,34 @@ class CollectionViewModel(
             started = SharingStarted.WhileSubscribed(),
             initialValue = Resultat.loading()
         )
+
+    private fun proceedWithObservingProfileIcon() {
+        viewModelScope.launch {
+            spaceManager
+                .observe()
+                .flatMapLatest { config ->
+                    container.subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = "${this::javaClass.name}-profile-icon",
+                            targets = listOf(config.profile),
+                            keys = listOf(
+                                Relations.ID,
+                                Relations.NAME,
+                                Relations.ICON_EMOJI,
+                                Relations.ICON_IMAGE,
+                                Relations.ICON_OPTION
+                            )
+                        )
+                    ).map { result ->
+                        val obj = result.firstOrNull()
+                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
+                    }
+                }
+                .catch { Timber.e(it, "Error while observing space icon") }
+                .flowOn(dispatchers.io)
+                .collect { icon.value = it }
+        }
+    }
 
     private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
         val params = GetObjectTypes.Params(

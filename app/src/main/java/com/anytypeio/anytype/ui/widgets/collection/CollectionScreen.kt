@@ -46,6 +46,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -135,7 +136,8 @@ fun ScreenContent(
                     searchClick = { vm.onSearchClicked() },
                     addDocClick = { vm.onAddClicked() },
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
-                    onProfileClicked = vm::onProfileClicked
+                    onProfileClicked = vm::onProfileClicked,
+                    profileIcon = vm.icon.collectAsState().value
                 )
             }
         }

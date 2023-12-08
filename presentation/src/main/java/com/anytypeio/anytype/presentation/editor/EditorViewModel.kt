@@ -238,7 +238,7 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
 import java.util.*
 import java.util.regex.Pattern
 import kotlinx.coroutines.Job
@@ -6221,7 +6221,7 @@ class EditorViewModel(
         copyFileToCache.cancel()
     }
 
-    private val copyFileListener = object : OnCopyFileToCacheAction {
+    private val copyFileListener = object : CopyFileToCacheStatus {
         override fun onCopyFileStart() {
             viewModelScope.launch {
                 copyFileStatus.emit(CopyFileStatus.Started)

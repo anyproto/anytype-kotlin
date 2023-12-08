@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.util
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import com.anytypeio.anytype.core_utils.ext.msg
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -24,9 +25,9 @@ interface CopyFileToCacheDirectory {
      *
      * @param uri The URI of the file to be copied.
      * @param scope The [CoroutineScope] used for the asynchronous operation.
-     * @param listener The [OnCopyFileToCacheAction] listener to handle events during the operation.
+     * @param listener The [CopyFileToCacheStatus] listener to handle events during the operation.
      */
-    fun execute(uri: Uri, scope: CoroutineScope, listener: OnCopyFileToCacheAction)
+    fun execute(uri: Uri, scope: CoroutineScope, listener: CopyFileToCacheStatus)
 
     /**
      * Cancels the ongoing file copying operation.
@@ -44,7 +45,7 @@ interface CopyFileToCacheDirectory {
 /**
  * Listener interface to handle events during the file copying operation.
  */
-interface OnCopyFileToCacheAction {
+interface CopyFileToCacheStatus {
     fun onCopyFileStart()
     fun onCopyFileResult(result: String?, fileName: String? = null)
     fun onCopyFileError(msg: String)
@@ -74,7 +75,7 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
 
     override fun isActive(): Boolean = job?.isActive == true
 
-    override fun execute(uri: Uri, scope: CoroutineScope, listener: OnCopyFileToCacheAction) {
+    override fun execute(uri: Uri, scope: CoroutineScope, listener: CopyFileToCacheStatus) {
         getNewPathInCacheDir(
             uri = uri,
             scope = scope,
@@ -90,7 +91,7 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
     private fun getNewPathInCacheDir(
         uri: Uri,
         scope: CoroutineScope,
-        listener: OnCopyFileToCacheAction
+        listener: CopyFileToCacheStatus
     ) {
         var path: String? = null
         job = scope.launch {
@@ -100,7 +101,7 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error while getNewPathInCacheDir")
-                listener.onCopyFileError(e.localizedMessage ?: "Unknown error")
+                listener.onCopyFileError(e.msg())
             } finally {
                 if (scope.isActive) {
                     listener.onCopyFileResult(path)
@@ -111,7 +112,7 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
 
     private fun copyFileToCacheDir(
         uri: Uri,
-        listener: OnCopyFileToCacheAction
+        listener: CopyFileToCacheStatus
     ): String? {
         var newFile: File? = null
         mContext?.get()?.let { context: Context ->
@@ -190,7 +191,7 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
 
     override fun isActive(): Boolean = job?.isActive == true
 
-    override fun execute(uri: Uri, scope: CoroutineScope, listener: OnCopyFileToCacheAction) {
+    override fun execute(uri: Uri, scope: CoroutineScope, listener: CopyFileToCacheStatus) {
         getNewPathInCacheDir(
             uri = uri,
             scope = scope,
@@ -205,7 +206,7 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
     private fun getNewPathInCacheDir(
         uri: Uri,
         scope: CoroutineScope,
-        listener: OnCopyFileToCacheAction
+        listener: CopyFileToCacheStatus
     ) {
         var path: String? = null
         var fileName: String? = null
@@ -218,7 +219,7 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error while getNewPathInCacheDir")
-                listener.onCopyFileError(e.localizedMessage ?: "Unknown error")
+                listener.onCopyFileError(e.msg())
             } finally {
                 if (scope.isActive) {
                     listener.onCopyFileResult(path, fileName)
@@ -229,7 +230,7 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
 
     private fun copyFileToCacheDir(
         uri: Uri,
-        listener: OnCopyFileToCacheAction
+        listener: CopyFileToCacheStatus
     ): Pair<String?, String?> {
         var newFile: File? = null
         mContext?.get()?.let { context: Context ->

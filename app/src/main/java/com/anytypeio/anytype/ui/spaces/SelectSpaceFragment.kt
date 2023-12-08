@@ -82,7 +82,7 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
             }
             is Command.Dismiss -> {
                 if (exitToDesktopKey == true) {
-                    findNavController().popBackStack(R.id.homeScreen, false)
+                    findNavController().navigate(R.id.switchHomeAction)
                 } else {
                     findNavController().popBackStack()
                 }

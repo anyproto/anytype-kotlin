@@ -9,14 +9,14 @@ sealed class Command {
         val name: String,
         val avatarPath: String?,
         val icon: Int,
-        val networkMode: NetworkMode? = null,
+        val networkMode: NetworkMode = NetworkMode.DEFAULT,
         val networkConfigFilePath: String? = null
     ) : Command()
 
     data class AccountSelect(
         val id: String,
         val path: String,
-        val networkMode: NetworkMode? = null,
+        val networkMode: NetworkMode = NetworkMode.DEFAULT,
         val networkConfigFilePath: String? = null
     ) : Command()
 

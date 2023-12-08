@@ -14,7 +14,7 @@ object FilePickerUtils {
             Mimetype.MIME_VIDEO_ALL -> context.isPermissionGranted(getPermissionToRequestForVideos())
             Mimetype.MIME_IMAGE_ALL -> context.isPermissionGranted(getPermissionToRequestForImages())
             Mimetype.MIME_IMAGE_AND_VIDEO -> context.isPermissionGranted(getPermissionToRequestForImagesAndVideos())
-            Mimetype.MIME_FILE_ALL -> {
+            Mimetype.MIME_FILE_ALL, Mimetype.MIME_TEXT_PLAIN -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     true
                 } else {
@@ -36,27 +36,28 @@ object FilePickerUtils {
             Mimetype.MIME_IMAGE_ALL -> getPermissionToRequestForImages()
             Mimetype.MIME_FILE_ALL -> getPermissionToRequestForFiles()
             Mimetype.MIME_IMAGE_AND_VIDEO -> getPermissionToRequestForImagesAndVideos()
+            Mimetype.MIME_TEXT_PLAIN -> getPermissionToRequestForFiles()
         }
     }
 
-    fun getPermissionToRequestForImages(): Array<String> =
+    private fun getPermissionToRequestForImages(): Array<String> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
         } else {
             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
-    fun getPermissionToRequestForVideos(): Array<String> =
+    private fun getPermissionToRequestForVideos(): Array<String> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arrayOf(Manifest.permission.READ_MEDIA_VIDEO)
         } else {
             arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
-    fun getPermissionToRequestForFiles(): Array<String> =
+    private fun getPermissionToRequestForFiles(): Array<String> =
         arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
 
-    fun getPermissionToRequestForImagesAndVideos(): Array<String> =
+    private fun getPermissionToRequestForImagesAndVideos(): Array<String> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             arrayOf(Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES)
         } else {

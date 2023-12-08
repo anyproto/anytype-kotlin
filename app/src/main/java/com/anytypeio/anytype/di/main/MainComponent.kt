@@ -4,7 +4,6 @@ import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
 import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
-import com.anytypeio.anytype.di.feature.AuthSubComponent
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
 import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
 import com.anytypeio.anytype.di.feature.CreateObjectSubComponent

@@ -1,12 +1,7 @@
 package com.anytypeio.anytype.core_models
 
-import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_CUSTOM
-import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_DEFAULT
-import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_LOCAL
-
-
-enum class NetworkMode(val value: String) {
-    DEFAULT(NETWORK_MODE_DEFAULT), LOCAL(NETWORK_MODE_LOCAL), CUSTOM(NETWORK_MODE_CUSTOM)
+enum class NetworkMode {
+    DEFAULT, LOCAL, CUSTOM
 }
 
 data class NetworkModeConfig(
@@ -14,13 +9,3 @@ data class NetworkModeConfig(
     val userFilePath: String? = null,
     val storedFilePath: String? = null
 )
-
-object NetworkModeConstants {
-    const val NETWORK_MODE_PREF = "pref.network_mode"
-    const val NETWORK_MODE_APP_FILE_PATH_PREF = "pref.network_config_file_path"
-    const val NETWORK_MODE_USER_FILE_PATH_PREF = "pref.network_mode_user_config_file_path"
-
-    const val NETWORK_MODE_LOCAL = "local"
-    const val NETWORK_MODE_DEFAULT = "default"
-    const val NETWORK_MODE_CUSTOM = "custom"
-}

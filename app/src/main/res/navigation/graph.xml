@@ -187,7 +187,14 @@
 
     <dialog
         android:id="@+id/createSpaceScreen"
-        android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment"/>
+        android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
+        <action
+            android:id="@+id/switchHomeAction"
+            app:destination="@+id/homeScreen"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/anim_switch_space_enter" />
+    </dialog>
 
     <dialog
         android:id="@+id/spaceSettingsScreen"

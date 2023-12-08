@@ -10,6 +10,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -43,7 +45,8 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 LaunchedEffect(Unit) { vm.toasts.collect() { toast(it) } }
                 LaunchedEffect(Unit) {
                     vm.isDismissed.collect { isDismissed ->
-                        if (isDismissed) dismiss()
+                        if (isDismissed)
+                            findNavController().navigate(R.id.switchHomeAction)
                     }
                 }
             }

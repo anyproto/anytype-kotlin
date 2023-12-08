@@ -39,6 +39,7 @@ class MainBottomToolbar @JvmOverloads constructor(
                     .load(icon.url)
                     .fitCenter()
                     .circleCrop()
+                    .placeholder(R.drawable.ic_nav_profile_icon_placeholder_circle)
                     .into(binding.ivProfile)
             }
             is ProfileIconView.Placeholder -> {

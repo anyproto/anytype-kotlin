@@ -243,7 +243,7 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
             try {
                 val inputStream = context.contentResolver.openInputStream(uri)
                 inputStream?.use { input ->
-                    newFile = File(cacheDir?.path + "/" + "configCustom.txt");
+                    newFile = File(cacheDir?.path + "/" + CONFIG_FILE_NAME);
                     listener.onCopyFileStart()
                     Timber.d("Start copy file to cache : ${newFile?.path}")
                     FileOutputStream(newFile).use { output ->
@@ -284,6 +284,10 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
             }
         }
         return result
+    }
+
+    companion object {
+        const val CONFIG_FILE_NAME = "configCustom.txt"
     }
 }
 

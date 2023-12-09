@@ -589,7 +589,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach {
                 findNavController().navigate(
                     R.id.selectSpaceScreen,
-                    args = SelectSpaceFragment.args(true)
+                    args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
                 )
             }
             .launchIn(lifecycleScope)

@@ -299,7 +299,7 @@ open class ObjectSetFragment :
                 .onEach {
                     findNavController().navigate(
                         R.id.selectSpaceScreen,
-                        args = SelectSpaceFragment.args(true)
+                        args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
                     )
                 }
                 .launchIn(lifecycleScope)

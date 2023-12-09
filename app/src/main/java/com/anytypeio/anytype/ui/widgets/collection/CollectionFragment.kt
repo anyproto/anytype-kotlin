@@ -86,7 +86,7 @@ class CollectionFragment : BaseComposeFragment() {
             is Command.SelectSpace -> {
                 findNavController().navigate(
                     R.id.selectSpaceScreen,
-                    args = SelectSpaceFragment.args(true)
+                    args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
                 )
             }
         }

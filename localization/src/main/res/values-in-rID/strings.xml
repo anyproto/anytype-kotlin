@@ -755,12 +755,12 @@
     <string name="debug_mode">debug_mode</string>
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Setelan</string>
-    <string name="settings_network_mode">Network mode</string>
-    <string name="settings_network_configuration_file">Network Configuration File</string>
-    <string name="settings_network_configuration_file_choose">Choose file</string>
+    <string name="settings_network_mode">Mode jaringan</string>
+    <string name="settings_network_configuration_file">Berkas Konfigurasi Jaringan</string>
+    <string name="settings_network_configuration_file_choose">Pilih berkas</string>
     <string-array name="settings_networks_entries">
         <item>Bawaan</item>
-        <item>Local-only Mode</item>
+        <item>Mode Hanya Lokal</item>
         <item>Custom</item>
     </string-array>
     <string name="snack_link_to">ditautkan pada</string>

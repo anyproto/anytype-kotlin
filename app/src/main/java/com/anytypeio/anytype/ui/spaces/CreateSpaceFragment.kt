@@ -45,8 +45,12 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 LaunchedEffect(Unit) { vm.toasts.collect() { toast(it) } }
                 LaunchedEffect(Unit) {
                     vm.isDismissed.collect { isDismissed ->
-                        if (isDismissed)
-                            findNavController().navigate(R.id.switchSpaceAction)
+                        if (isDismissed) findNavController().popBackStack()
+                    }
+                }
+                LaunchedEffect(Unit) {
+                    vm.isSucceeded.collect { isSucceeded ->
+                        if (isSucceeded) findNavController().navigate(R.id.switchSpaceAction)
                     }
                 }
             }

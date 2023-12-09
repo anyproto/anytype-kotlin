@@ -234,6 +234,8 @@ import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.sync.SyncStatusView
+import com.anytypeio.anytype.presentation.sync.toView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -312,7 +314,7 @@ class EditorViewModel(
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
 
     val isSyncStatusVisible = MutableStateFlow(true)
-    val syncStatus = MutableStateFlow<SyncStatus?>(null)
+    val syncStatus = MutableStateFlow<SyncStatusView?>(null)
 
     val isUndoEnabled = MutableStateFlow(false)
     val isRedoEnabled = MutableStateFlow(false)
@@ -950,7 +952,10 @@ class EditorViewModel(
         jobs += viewModelScope.launch {
             interceptThreadStatus
                 .build(InterceptThreadStatus.Params(context))
-                .collect { syncStatus.value = it }
+                .collect { status ->
+                    val statusView = status.toView(spaceManager.getConfig()?.network)
+                    syncStatus.value = statusView
+                }
         }
 
         jobs += viewModelScope.launch {

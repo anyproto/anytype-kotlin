@@ -83,6 +83,8 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerEvent
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
+import com.anytypeio.anytype.presentation.sync.SyncStatusView
+import com.anytypeio.anytype.presentation.sync.toView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
@@ -158,7 +160,7 @@ class ObjectSetViewModel(
     private val createTemplate: CreateTemplate
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
-    val status = MutableStateFlow(SyncStatus.UNKNOWN)
+    val status = MutableStateFlow<SyncStatusView?>(null)
     val error = MutableStateFlow<String?>(null)
 
     val featured = MutableStateFlow<BlockView.FeaturedRelation?>(null)
@@ -372,7 +374,7 @@ class ObjectSetViewModel(
         jobs += viewModelScope.launch {
             interceptThreadStatus
                 .build(InterceptThreadStatus.Params(ctx))
-                .collect { status.value = it }
+                .collect { status.value = it.toView(spaceManager.getConfig()?.network) }
         }
     }
 

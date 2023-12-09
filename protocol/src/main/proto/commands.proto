@@ -271,14 +271,15 @@ message Rpc {
                 option (no_auth) = true;
 
                 string name = 1; // Account name
-                oneof avatar { //TODO: Remove if not needed, GO-1926
+                oneof avatar {//TODO: Remove if not needed, GO-1926
                     string avatarLocalPath = 2; // Path to an image, that will be used as an avatar of this account
                 }
                 string storePath = 3; // Path to local storage
                 int64 icon = 4; // Option of pre-installed icon
                 bool disableLocalNetworkSync = 5; // Disable local network discovery
+                NetworkMode networkMode = 6; // optional, default is DefaultConfig
+                string networkCustomConfigFilePath = 7; // config path for the custom network mode            }
             }
-
             /**
             * Middleware-to-front-end response for an account creation request, that can contain a NULL error and created account or a non-NULL error and an empty account
             */
@@ -300,6 +301,10 @@ message Rpc {
                         FAILED_TO_STOP_RUNNING_NODE = 104;
                         FAILED_TO_WRITE_CONFIG = 105;
                         FAILED_TO_CREATE_LOCAL_REPO = 106;
+
+                        CONFIG_FILE_NOT_FOUND = 200;
+                        CONFIG_FILE_INVALID = 201;
+                        CONFIG_FILE_NETWORK_ID_MISMATCH = 202;
                     }
                 }
             }
@@ -391,6 +396,8 @@ message Rpc {
                 string id = 1; // Id of a selected account
                 string rootPath = 2; // Root path is optional, set if this is a first request
                 bool disableLocalNetworkSync = 3; // Disable local network discovery
+                NetworkMode networkMode = 4; // optional, default is DefaultConfig
+                string networkCustomConfigFilePath = 5; // config path for the custom network mode
             }
 
             /**
@@ -418,6 +425,10 @@ message Rpc {
                         ANOTHER_ANYTYPE_PROCESS_IS_RUNNING = 108;
                         FAILED_TO_FETCH_REMOTE_NODE_HAS_INCOMPATIBLE_PROTO_VERSION = 110;
                         ACCOUNT_IS_DELETED = 111;
+
+                        CONFIG_FILE_NOT_FOUND = 200;
+                        CONFIG_FILE_INVALID = 201;
+                        CONFIG_FILE_NETWORK_ID_MISMATCH = 202;
                     }
                 }
             }
@@ -486,7 +497,6 @@ message Rpc {
 
         message ConfigUpdate {
             message Request {
-                string timeZone = 1;
                 string IPFSStorageAddr = 2;
             }
 
@@ -540,7 +550,7 @@ message Rpc {
             }
         }
 
-        message GetConfig { //TODO: Remove this request if we do not need it, GO-1926
+        message GetConfig {//TODO: Remove this request if we do not need it, GO-1926
             message Get {
                 message Request {
                 }
@@ -594,6 +604,41 @@ message Rpc {
                 }
             }
 
+        }
+
+        message ChangeNetworkConfigAndRestart {
+            message Request {
+                NetworkMode networkMode = 1;
+                string networkCustomConfigFilePath = 2;
+            }
+            message Response {
+                Error error = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        ACCOUNT_IS_NOT_RUNNING = 4;
+
+                        ACCOUNT_FAILED_TO_STOP = 100;
+                        CONFIG_FILE_NOT_FOUND = 200;
+                        CONFIG_FILE_INVALID = 201;
+                        CONFIG_FILE_NETWORK_ID_MISMATCH = 202;
+
+                    }
+                }
+            }
+
+        }
+
+        enum NetworkMode {
+            DefaultConfig = 0; // use network config that embedded in binary
+            LocalOnly = 1;  // disable any-sync network and use only local p2p nodes
+            CustomConfig = 2; // use config provided in networkConfigFilePath
         }
     }
 
@@ -1878,7 +1923,7 @@ message Rpc {
                 // ids of documents for export, when empty - will export all available docs
                 repeated string objectIds = 2;
                 // export format
-                Format format = 3;
+                anytype.model.Export.Format format = 3;
                 // save as zip file
                 bool zip = 4;
                 // include all nested
@@ -1910,14 +1955,6 @@ message Rpc {
                 }
             }
 
-            enum Format {
-                Markdown = 0;
-                Protobuf = 1;
-                JSON = 2;
-                DOT = 3;
-                SVG = 4;
-                GRAPH_JSON = 5;
-            }
         }
 
         message Import {
@@ -1935,10 +1972,11 @@ message Rpc {
                 }
                 repeated Snapshot snapshots = 8; // optional, for external developers usage
                 bool updateExistingObjects = 9;
-                Type type = 10;
+                anytype.model.Import.Type type = 10;
                 Mode mode = 11;
                 bool noProgress = 12;
                 bool isMigration = 13;
+                bool isNewSpace = 15;
 
                 message NotionParams {
                     string apiKey = 1;
@@ -1963,6 +2001,12 @@ message Rpc {
                 message PbParams {
                     repeated string path = 1;
                     bool noCollection = 2;
+                    string collectionTitle = 3;
+                    Type importType = 4;
+                    enum Type {
+                        SPACE = 0;
+                        EXPERIENCE = 1;
+                    };
                 }
 
                 message CsvParams {
@@ -1983,19 +2027,9 @@ message Rpc {
                 };
 
                 message Snapshot {
-                    string id = 1; 
+                    string id = 1;
                     anytype.model.SmartBlockSnapshotBase snapshot = 2;
                 };
-                enum Type {
-                    Notion = 0;
-                    Markdown = 1; 
-                    External = 2; // external developers use it
-                    Pb = 3;
-                    Html = 4;
-                    Txt = 5;
-                    Csv = 6;
-                };
-
             }
 
             message Response {
@@ -2005,7 +2039,7 @@ message Rpc {
                 message Error {
                     Code code = 1;
                     string description = 2;
-                    
+
                     enum Code {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
@@ -2014,6 +2048,7 @@ message Rpc {
                         NO_OBJECTS_TO_IMPORT = 5;
                         IMPORT_IS_CANCELED = 6;
                         LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED = 7;
+                        FILE_LOAD_ERROR = 8;
                     }
                 }
             }
@@ -2057,7 +2092,7 @@ message Rpc {
                 message Error {
                     Code code = 1;
                     string description = 2;
-                    
+
                     enum Code {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
@@ -2065,10 +2100,10 @@ message Rpc {
                         INTERNAL_ERROR = 3;
                     }
                 }
-                
+
             }
             message ImportResponse {
-                Type type = 1; 
+                Type type = 1;
                 enum Type {
                     Notion = 0;
                     Markdown = 1;
@@ -2113,8 +2148,9 @@ message Rpc {
         message ImportExperience {
             message Request {
                 string spaceId = 1;
-                string source = 2;
-                bool isLocal = 3;
+                string url = 2;
+                string title = 3;
+                bool isNewSpace = 4;
             }
 
             message Response {
@@ -2374,7 +2410,7 @@ message Rpc {
     }
 
     message Relation {
-         message ListRemoveOption {
+        message ListRemoveOption {
             message Request {
                 repeated string optionIds = 1;
                 bool checkInObjects = 2;
@@ -2644,7 +2680,7 @@ message Rpc {
 
                 message Usage {
                     uint64 filesCount = 1;
-                    uint64 cidsCount  = 2;
+                    uint64 cidsCount = 2;
                     uint64 bytesUsage = 3;
                     uint64 bytesLeft = 4;
                     uint64 bytesLimit = 5;
@@ -2675,7 +2711,7 @@ message Rpc {
 
                 message Usage {
                     uint64 filesCount = 1;
-                    uint64 cidsCount  = 2;
+                    uint64 cidsCount = 2;
                     uint64 bytesUsage = 3;
                     uint64 bytesLeft = 4;
                     uint64 bytesLimit = 5;
@@ -2685,7 +2721,7 @@ message Rpc {
                 message Space {
                     string spaceId = 1;
                     uint64 filesCount = 2;
-                    uint64 cidsCount  = 3;
+                    uint64 cidsCount = 3;
                     uint64 bytesUsage = 4;
                 }
 
@@ -2956,6 +2992,7 @@ message Rpc {
                 string downloadLink = 9;
                 int32 fileSize = 10;
                 repeated string categories = 11;
+                string language = 12;
             }
         }
     }
@@ -3640,6 +3677,7 @@ message Rpc {
                 string contextId = 1;
                 string blockId = 2;
                 string text = 3;
+                model.Block.Content.Latex.Processor processor = 4;
             }
 
             message Response {
@@ -3659,6 +3697,31 @@ message Rpc {
                 }
             }
         }
+        message SetProcessor {
+            message Request {
+                string contextId = 1;
+                string blockId = 2;
+                model.Block.Content.Latex.Processor processor = 3;
+            }
+
+            message Response {
+                Error error = 1;
+                ResponseEvent event = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
     }
 
     message BlockText {
@@ -5717,12 +5780,35 @@ message Rpc {
         }
     }
 
-    message UserData {
-        message Dump {
+    message Notification {
+        message List {
             message Request {
-                string path = 1;
+                bool includeRead = 1;
+                int64 limit = 2;
             }
+            message Response {
+                Error error = 1;
+                repeated anytype.model.Notification notifications = 2;
 
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        INTERNAL_ERROR = 3;
+                    }
+                }
+            }
+        }
+
+        message Reply {
+            message Request {
+                repeated string ids = 1;
+                anytype.model.Notification.ActionType actionType = 2;
+            }
             message Response {
                 Error error = 1;
 
@@ -5734,6 +5820,7 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                        INTERNAL_ERROR = 3;
                     }
                 }
             }

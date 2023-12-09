@@ -20,3 +20,4 @@
 ktlint
 .idea/*.xml
 signing.properties
+network.properties

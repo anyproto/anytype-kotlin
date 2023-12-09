@@ -44,6 +44,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_ui.extensions.getLabelText
+import com.anytypeio.anytype.core_ui.extensions.getToastMsg
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
@@ -91,6 +93,7 @@ import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
 import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.sync.SyncStatusView
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -485,29 +488,12 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setStatus(status: SyncStatus) {
+    private fun setStatus(status: SyncStatusView?) {
         binding.topToolbar.root.findViewById<StatusBadgeWidget>(R.id.statusBadge).bind(status)
         val tvStatus = binding.topToolbar.root.findViewById<TextView>(R.id.tvStatus)
-        when (status) {
-            SyncStatus.UNKNOWN -> tvStatus.setText(R.string.sync_status_unknown)
-            SyncStatus.FAILED -> tvStatus.setText(R.string.sync_status_failed)
-            SyncStatus.OFFLINE -> tvStatus.setText(R.string.sync_status_offline)
-            SyncStatus.SYNCING -> tvStatus.setText(R.string.sync_status_syncing)
-            SyncStatus.SYNCED -> tvStatus.setText(R.string.sync_status_synced)
-            SyncStatus.INCOMPATIBLE_VERSION -> tvStatus.setText(R.string.sync_status_incompatible)
-        }
+        tvStatus.text = status?.getLabelText(requireContext())
         topToolbarStatusContainer.setOnClickListener {
-            when (status) {
-                SyncStatus.UNKNOWN -> toast(getString(R.string.sync_status_toast_unknown))
-                SyncStatus.FAILED -> toast(getString(R.string.sync_status_toast_failed))
-                SyncStatus.OFFLINE -> toast(getString(R.string.sync_status_toast_offline))
-                SyncStatus.SYNCING -> toast(getString(R.string.sync_status_toast_syncing))
-                SyncStatus.SYNCED -> toast(getString(R.string.sync_status_toast_synced))
-                SyncStatus.INCOMPATIBLE_VERSION -> toast(getString(R.string.sync_status_toast_incompatible))
-                else -> {
-                    Timber.i("Missed sync status")
-                }
-            }
+            toast(status.getToastMsg(requireContext()))
         }
     }
 

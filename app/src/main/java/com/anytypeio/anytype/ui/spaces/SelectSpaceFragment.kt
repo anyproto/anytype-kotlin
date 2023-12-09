@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
 
-    private val exitToDesktopWhenSpaceIsSelected get() = argOrNull<Boolean>(EXIT_TO_DESKTOP_WHEN_SPACE_IS_SELECTED_KEY)
+    private val exitToDesktopWhenSpaceIsSelected get() = argOrNull<Boolean>(EXIT_HOME_WHEN_SPACE_IS_SELECTED_KEY)
 
     @Inject
     lateinit var factory: SelectSpaceViewModel.Factory
@@ -118,9 +118,9 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
-        const val EXIT_TO_DESKTOP_WHEN_SPACE_IS_SELECTED_KEY = "select.space.screen.arg.exit-to-desktop"
-        fun args(exitToHomeWhenSpaceIsSelected: Boolean) = bundleOf(
-            EXIT_TO_DESKTOP_WHEN_SPACE_IS_SELECTED_KEY to exitToHomeWhenSpaceIsSelected
+        const val EXIT_HOME_WHEN_SPACE_IS_SELECTED_KEY = "select.space.screen.arg.exit-to-desktop"
+        fun args(exitHomeWhenSpaceIsSelected: Boolean) = bundleOf(
+            EXIT_HOME_WHEN_SPACE_IS_SELECTED_KEY to exitHomeWhenSpaceIsSelected
         )
     }
 }

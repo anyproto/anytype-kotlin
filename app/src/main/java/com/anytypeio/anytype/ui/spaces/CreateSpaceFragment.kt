@@ -46,7 +46,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 LaunchedEffect(Unit) {
                     vm.isDismissed.collect { isDismissed ->
                         if (isDismissed)
-                            findNavController().navigate(R.id.switchHomeAction)
+                            findNavController().navigate(R.id.switchSpaceAction)
                     }
                 }
             }

@@ -178,7 +178,7 @@
         android:id="@+id/selectSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.SelectSpaceFragment">
         <action
-            android:id="@+id/switchHomeAction"
+            android:id="@+id/switchSpaceAction"
             app:destination="@+id/homeScreen"
             app:popUpTo="@+id/homeScreen"
             app:popUpToInclusive="true"
@@ -189,7 +189,7 @@
         android:id="@+id/createSpaceScreen"
         android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
         <action
-            android:id="@+id/switchHomeAction"
+            android:id="@+id/switchSpaceAction"
             app:destination="@+id/homeScreen"
             app:popUpTo="@+id/homeScreen"
             app:popUpToInclusive="true"

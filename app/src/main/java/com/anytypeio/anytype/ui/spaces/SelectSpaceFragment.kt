@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
 
-    private val exitToDesktopKey get() = argOrNull<Boolean>(EXIT_TO_DESKTOP_KEY)
+    private val exitToDesktopWhenSpaceIsSelected get() = argOrNull<Boolean>(EXIT_TO_DESKTOP_WHEN_SPACE_IS_SELECTED_KEY)
 
     @Inject
     lateinit var factory: SelectSpaceViewModel.Factory
@@ -56,7 +56,7 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                     onAddClicked = throttledClick(
                         onClick = { vm.onCreateSpaceClicked() }
                     ),
-                    onSpaceSettingsClicked = throttledClick(
+                    onSettingsClicked = throttledClick(
                         onClick = { findNavController().navigate(R.id.profileScreen) }
                     ),
                     onProfileClicked = throttledClick(
@@ -81,8 +81,11 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                 )
             }
             is Command.Dismiss -> {
-                if (exitToDesktopKey == true) {
-                    findNavController().navigate(R.id.switchHomeAction)
+                findNavController().popBackStack()
+            }
+            is Command.SwitchToNewSpace -> {
+                if (exitToDesktopWhenSpaceIsSelected == true) {
+                    findNavController().navigate(R.id.switchSpaceAction)
                 } else {
                     findNavController().popBackStack()
                 }
@@ -115,9 +118,9 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
-        const val EXIT_TO_DESKTOP_KEY = "select.space.screen.arg.exit-to-desktop"
+        const val EXIT_TO_DESKTOP_WHEN_SPACE_IS_SELECTED_KEY = "select.space.screen.arg.exit-to-desktop"
         fun args(exitToHomeWhenSpaceIsSelected: Boolean) = bundleOf(
-            EXIT_TO_DESKTOP_KEY to exitToHomeWhenSpaceIsSelected
+            EXIT_TO_DESKTOP_WHEN_SPACE_IS_SELECTED_KEY to exitToHomeWhenSpaceIsSelected
         )
     }
 }

@@ -1,12 +1,16 @@
 package com.anytypeio.anytype.domain.auth
 
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.CoroutineTestRule
+import com.anytypeio.anytype.core_models.NetworkMode
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.StubAccountSetup
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
@@ -23,9 +27,8 @@ import org.mockito.kotlin.verifyNoMoreInteractions
 
 class CreateAccountTest {
 
-    @ExperimentalCoroutinesApi
     @get:Rule
-    var rule = CoroutineTestRule()
+    val rule = DefaultCoroutineTestRule()
 
     @Mock
     lateinit var repo: AuthRepository
@@ -33,8 +36,7 @@ class CreateAccountTest {
     @Mock
     lateinit var configStorage: ConfigStorage
 
-    @Mock
-    lateinit var workspaceManager: WorkspaceManager
+    lateinit var dispatchers: AppCoroutineDispatchers
 
     @Mock
     lateinit var metricsProvider: MetricsProvider
@@ -42,13 +44,20 @@ class CreateAccountTest {
     private lateinit var createAccount: CreateAccount
 
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
+        dispatchers = AppCoroutineDispatchers(
+            io = rule.dispatcher,
+            computation = rule.dispatcher,
+            main = rule.dispatcher
+        )
         createAccount = CreateAccount(
             repository = repo,
             configStorage = configStorage,
-            metricsProvider = metricsProvider
+            metricsProvider = metricsProvider,
+            dispatcher = dispatchers
         )
     }
 
@@ -66,7 +75,21 @@ class CreateAccountTest {
             )
 
             repo.stub {
-                onBlocking { createAccount(name, path, icon) } doReturn setup
+                onBlocking {
+                    getNetworkMode()
+                } doReturn NetworkModeConfig(
+                    networkMode = NetworkMode.DEFAULT
+                )
+            }
+
+            repo.stub {
+                val command = Command.AccountCreate(
+                    name = name,
+                    avatarPath = path,
+                    icon = icon,
+                    networkMode = NetworkMode.DEFAULT
+                )
+                onBlocking { createAccount(command) } doReturn setup
             }
 
             val version = MockDataFactory.randomString()
@@ -76,7 +99,14 @@ class CreateAccountTest {
 
             createAccount.run(param)
 
-            verify(repo, times(1)).createAccount(name, path, icon)
+            val command = Command.AccountCreate(
+                name = name,
+                avatarPath = path,
+                icon = icon,
+                networkMode = NetworkMode.DEFAULT
+            )
+            verify(repo, times(1)).getNetworkMode()
+            verify(repo, times(1)).createAccount(command)
             verify(repo, times(1)).saveAccount(setup.account)
             verify(repo, times(1)).setCurrentAccount(setup.account.id)
             verify(repo, times(1)).setMetrics(

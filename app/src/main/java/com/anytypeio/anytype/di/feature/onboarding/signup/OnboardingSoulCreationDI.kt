@@ -59,11 +59,13 @@ object OnboardingSoulCreationModule {
     fun provideCreateAccountUseCase(
         authRepository: AuthRepository,
         configStorage: ConfigStorage,
-        metricsProvider: MetricsProvider
+        metricsProvider: MetricsProvider,
+        dispatchers: AppCoroutineDispatchers
     ): CreateAccount = CreateAccount(
         repository = authRepository,
         configStorage = configStorage,
-        metricsProvider = metricsProvider
+        metricsProvider = metricsProvider,
+        dispatcher = dispatchers
     )
 
     @JvmStatic

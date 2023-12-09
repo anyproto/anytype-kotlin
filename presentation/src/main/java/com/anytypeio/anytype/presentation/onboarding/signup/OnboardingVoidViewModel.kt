@@ -78,18 +78,17 @@ class OnboardingVoidViewModel @Inject constructor(
         }
     }
 
+    @Deprecated("To be deleted")
     private fun proceedWithCreatingAccount() {
         val startTime = System.currentTimeMillis()
-        createAccount.invoke(
-            scope = viewModelScope,
-            params = CreateAccount.Params(
-                name = "",
-                avatarPath = null,
-                iconGradientValue = spaceGradientProvider.randomId()
-            )
-        ) { result ->
-            result.either(
-                fnL = { error ->
+        val params = CreateAccount.Params(
+            name = "",
+            avatarPath = null,
+            iconGradientValue = spaceGradientProvider.randomId()
+        )
+        viewModelScope.launch {
+            createAccount.async(params = params).fold(
+                onFailure = { error ->
                     Timber.d("Error while creating account: ${error.message ?: "Unknown error"}").also {
                         when(error) {
                             CreateAccountException.NetworkError -> {
@@ -101,12 +100,13 @@ class OnboardingVoidViewModel @Inject constructor(
                                 sendToast("Your device seems to be offline. Please, check your connection and try again.")
                             }
                             else -> {
-                                sendToast("Error while creating an account: ${error.message ?: "Unknown error"}")
+                                sendToast("Error: ${error.message ?: "Unknown error"}")
                             }
                         }
                     }
+                    state.value = ScreenState.Idle
                 },
-                fnR = {
+                onSuccess = {
                     createAccountAnalytics(startTime)
                     val config = configStorage.getOrNull()
                     if (config != null) {
@@ -115,7 +115,8 @@ class OnboardingVoidViewModel @Inject constructor(
                         objectTypesSubscriptionManager.onStart()
                         proceedWithSettingUpMobileUseCase(config.space)
                     }
-                }
+                },
+
             )
         }
     }

@@ -283,8 +283,8 @@ fun String.normalizeUrl(): String =
  */
 fun Fragment.startFilePicker(mime: Mimetype, requestCode: Int? = null) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
             type = mime.value
         }
         val code = if (mime == Mimetype.MIME_FILE_ALL) {

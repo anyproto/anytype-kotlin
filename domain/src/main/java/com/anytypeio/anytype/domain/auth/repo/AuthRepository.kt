@@ -3,7 +3,9 @@ package com.anytypeio.anytype.domain.auth.repo
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import kotlinx.coroutines.flow.Flow
 
@@ -16,13 +18,8 @@ interface AuthRepository {
      * @param id user account id
      * @param path wallet repository path
      */
-    suspend fun selectAccount(id: String, path: String): AccountSetup
-
-    suspend fun createAccount(
-        name: String,
-        avatarPath: String?,
-        icon: Int
-    ): AccountSetup
+    suspend fun selectAccount(command: Command.AccountSelect): AccountSetup
+    suspend fun createAccount(command: Command.AccountCreate): AccountSetup
 
     suspend fun deleteAccount() : AccountStatus
     suspend fun restoreAccount() : AccountStatus
@@ -64,4 +61,7 @@ interface AuthRepository {
     suspend fun saveLastOpenedObjectId(id: Id)
     suspend fun getLastOpenedObjectId() : Id?
     suspend fun clearLastOpenedObject()
+
+    suspend fun getNetworkMode(): NetworkModeConfig
+    suspend fun setNetworkMode(modeConfig: NetworkModeConfig)
 }

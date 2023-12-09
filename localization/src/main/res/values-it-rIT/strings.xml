@@ -716,7 +716,7 @@
     <string name="go_back">Indietro</string>
     <string name="snack_object_set_not_found">Set not found for this type.</string>
     <string name="create_new_set">Crea</string>
-    <string name="shortcut_create_new_object_of_type">New %1$s</string>
+    <string name="shortcut_create_new_object_of_type">Nuovo %1$s</string>
     <string name="close">Chiudi</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="do_not_forget_mnemonic_phrase">Non dimenticare di prendere e salvare la tua frase di recupero</string>
@@ -757,6 +757,14 @@
     <string name="debug_mode">debug_mode</string>
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Impostazioni</string>
+    <string name="settings_network_mode">Network mode</string>
+    <string name="settings_network_configuration_file">Network Configuration File</string>
+    <string name="settings_network_configuration_file_choose">Choose file</string>
+    <string-array name="settings_networks_entries">
+        <item>Default</item>
+        <item>Local-only Mode</item>
+        <item>Custom</item>
+    </string-array>
     <string name="snack_link_to">collegato a</string>
     <string name="snack_move_to">moved to</string>
     <string name="recovery_phrase_copied">Frase di recupero copiata</string>

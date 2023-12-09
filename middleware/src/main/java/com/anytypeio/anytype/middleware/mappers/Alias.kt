@@ -63,3 +63,4 @@ typealias MDVRestriction = anytype.model.Restrictions.DataviewRestriction
 
 typealias MWidget = anytype.model.Block.Content.Widget
 typealias MWidgetLayout = anytype.model.Block.Content.Widget.Layout
+typealias MNetworkMode = anytype.Rpc.Account.NetworkMode

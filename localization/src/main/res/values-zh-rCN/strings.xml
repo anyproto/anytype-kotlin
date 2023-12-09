@@ -755,6 +755,14 @@
     <string name="debug_mode">调试模式</string>
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">设置</string>
+    <string name="settings_network_mode">Network mode</string>
+    <string name="settings_network_configuration_file">Network Configuration File</string>
+    <string name="settings_network_configuration_file_choose">Choose file</string>
+    <string-array name="settings_networks_entries">
+        <item>默认</item>
+        <item>Local-only Mode</item>
+        <item>Custom</item>
+    </string-array>
     <string name="snack_link_to">链接到</string>
     <string name="snack_move_to">移动到</string>
     <string name="recovery_phrase_copied">已复制的恢复短语</string>

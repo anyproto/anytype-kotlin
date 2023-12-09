@@ -716,9 +716,7 @@
     <string name="go_back">Volver</string>
     <string name="snack_object_set_not_found">Set no encontrado para este tipo.</string>
     <string name="create_new_set">Crear</string>
-  
-    <string name="shortcut_create_new_object_of_type">Un nuevo %1$s</string>
-  
+    <string name="shortcut_create_new_object_of_type">New %1$s</string>
     <string name="close">Cerrar</string>
     <string name="go_to_settings">Ir a Ajustes</string>
     <string name="do_not_forget_mnemonic_phrase">No olvide guardar su frase de recuperación</string>

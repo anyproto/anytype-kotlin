@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.data
 
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.StubAccount
 import com.anytypeio.anytype.core_models.StubAccountSetup
 import com.anytypeio.anytype.core_models.StubFeatureConfig
@@ -68,22 +69,30 @@ class AuthDataRepositoryTest {
         val features = StubFeatureConfig()
 
         authRemote.stub {
-            onBlocking { selectAccount(id = id, path = path) } doReturn StubAccountSetup(
+            val command = Command.AccountSelect(
+                id = id,
+                path = path
+            )
+            onBlocking { selectAccount(command) } doReturn StubAccountSetup(
                 account = account,
                 features = features
             )
         }
 
         repo.selectAccount(
-            id = id,
-            path = path
+            command = Command.AccountSelect(
+                id = id,
+                path = path
+            )
         )
 
         verifyNoInteractions(authCache)
 
         verify(authRemote, times(1)).selectAccount(
-            id = id,
-            path = path
+            Command.AccountSelect(
+                id = id,
+                path = path
+            )
         )
 
         verifyNoMoreInteractions(authRemote)
@@ -102,26 +111,31 @@ class AuthDataRepositoryTest {
 
         authRemote.stub {
             onBlocking {
-                createAccount(
+                val command = Command.AccountCreate(
                     name = name,
                     avatarPath = path,
-                    iconGradientValue = icon
+                    icon = icon
                 )
+                createAccount(command)
             } doReturn setup
         }
 
         repo.createAccount(
-            name = name,
-            avatarPath = path,
-            icon = icon
+            Command.AccountCreate(
+                name = name,
+                avatarPath = path,
+                icon = icon
+            )
         )
 
         verifyNoInteractions(authCache)
 
         verify(authRemote, times(1)).createAccount(
-            name = name,
-            avatarPath = path,
-            iconGradientValue = icon
+            Command.AccountCreate(
+                name = name,
+                avatarPath = path,
+                icon = icon
+            )
         )
 
         verifyNoMoreInteractions(authRemote)

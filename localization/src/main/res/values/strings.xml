@@ -826,6 +826,21 @@
     <string name="debug_mode">debug_mode</string>
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Settings</string>
+    <string name="settings_network_mode">Network mode</string>
+    <string name="settings_network_configuration_file">Network Configuration File</string>
+    <string name="settings_network_configuration_file_choose">Choose file</string>
+
+    <string-array name="settings_networks_entries">
+        <item>Default</item>
+        <item>Local-only Mode</item>
+        <item>Custom</item>
+    </string-array>
+
+    <array name="settings_networks_entries_values">
+        <item>default</item>
+        <item>local</item>
+        <item>custom</item>
+    </array>
 
     <string name="snack_link_to">linked to</string>
     <string name="snack_move_to">moved to</string>

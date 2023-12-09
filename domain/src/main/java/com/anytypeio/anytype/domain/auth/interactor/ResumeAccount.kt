@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -30,10 +31,16 @@ class ResumeAccount(
             path = pathProvider.providePath(),
             mnemonic = repository.getMnemonic()
         )
-        repository.selectAccount(
+
+        val networkMode = repository.getNetworkMode()
+
+        val command = Command.AccountSelect(
             id = repository.getCurrentAccountId(),
-            path = pathProvider.providePath()
-        ).let { setup ->
+            path = pathProvider.providePath(),
+            networkMode = networkMode.networkMode,
+            networkConfigFilePath = networkMode.storedFilePath
+        )
+        repository.selectAccount(command).let { setup ->
             featuresConfigProvider.set(
                 enableDataView = setup.features.enableDataView ?: false,
                 enableDebug = setup.features.enableDebug ?: false,

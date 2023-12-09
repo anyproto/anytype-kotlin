@@ -41,7 +41,7 @@ interface PickerDelegate : PickiTCallbacks {
     fun clearOnCopyFile()
 
     sealed class Actions {
-        data class OnStartCopyFileToCacheDir(val uri: Uri) : Actions()
+        data class OnStartCopyFileToCacheDir(val uri: Uri, val path: String? = null) : Actions()
         object OnCancelCopyFileToCacheDir : Actions()
         data class OnProceedWithFilePath(val filePath: String) : Actions()
         data class OnPickedDocImageFromDevice(val ctx: String, val filePath: String) : Actions()
@@ -82,6 +82,14 @@ interface PickerDelegate : PickiTCallbacks {
                 FileConstants.REQUEST_PROFILE_IMAGE_CODE -> {
                     data?.data?.let { uri ->
                         pickiT.getPath(uri, Build.VERSION.SDK_INT)
+                    }
+                }
+                FileConstants.REQUEST_NETWORK_MODE_CODE -> {
+                    data?.data?.let { uri ->
+                        actions(Actions.OnStartCopyFileToCacheDir(uri))
+                    } ?: run {
+                        Timber.e("onActivityResult error, data is null")
+                        fragment.toast("Error while getting file")
                     }
                 }
                 else -> {

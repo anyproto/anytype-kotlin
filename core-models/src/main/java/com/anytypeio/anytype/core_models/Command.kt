@@ -5,6 +5,21 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 
 sealed class Command {
 
+    data class AccountCreate(
+        val name: String,
+        val avatarPath: String?,
+        val icon: Int,
+        val networkMode: NetworkMode = NetworkMode.DEFAULT,
+        val networkConfigFilePath: String? = null
+    ) : Command()
+
+    data class AccountSelect(
+        val id: String,
+        val path: String,
+        val networkMode: NetworkMode = NetworkMode.DEFAULT,
+        val networkConfigFilePath: String? = null
+    ) : Command()
+
     class UploadFile(
         val path: String,
         val type: Block.Content.File.Type?

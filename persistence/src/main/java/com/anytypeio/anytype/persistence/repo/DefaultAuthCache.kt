@@ -1,16 +1,19 @@
 package com.anytypeio.anytype.persistence.repo
 
 import android.content.SharedPreferences
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.repo.AuthCache
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.persistence.mapper.toEntity
 import com.anytypeio.anytype.persistence.mapper.toTable
+import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
 
 class DefaultAuthCache(
     private val db: AnytypeDatabase,
     private val defaultPrefs: SharedPreferences,
-    private val encryptedPrefs: SharedPreferences
+    private val encryptedPrefs: SharedPreferences,
+    private val networkModeProvider: NetworkModeProvider
 ) : AuthCache {
 
     override suspend fun saveAccount(account: AccountEntity) {
@@ -99,6 +102,11 @@ class DefaultAuthCache(
 
     override suspend fun clearLastOpenedObject() {
         encryptedPrefs.edit().remove(LAST_OPENED_OBJECT_KEY).apply()
+    }
+
+    override suspend fun getNetworkMode(): NetworkModeConfig = networkModeProvider.get()
+    override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
+        networkModeProvider.set(modeConfig)
     }
 
     companion object {

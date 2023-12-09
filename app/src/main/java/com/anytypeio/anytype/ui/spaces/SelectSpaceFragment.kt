@@ -25,7 +25,7 @@ import javax.inject.Inject
 
 class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
 
-    private val exitToDesktopWhenSpaceIsSelected get() = argOrNull<Boolean>(EXIT_HOME_WHEN_SPACE_IS_SELECTED_KEY)
+    private val exitHomeWhenSpaceIsSelected get() = argOrNull<Boolean>(EXIT_HOME_WHEN_SPACE_IS_SELECTED_KEY)
 
     @Inject
     lateinit var factory: SelectSpaceViewModel.Factory
@@ -84,7 +84,7 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                 findNavController().popBackStack()
             }
             is Command.SwitchToNewSpace -> {
-                if (exitToDesktopWhenSpaceIsSelected == true) {
+                if (exitHomeWhenSpaceIsSelected == true) {
                     findNavController().navigate(R.id.switchSpaceAction)
                 } else {
                     findNavController().popBackStack()

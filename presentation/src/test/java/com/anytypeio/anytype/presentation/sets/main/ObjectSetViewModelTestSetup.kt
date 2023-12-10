@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -181,6 +182,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var createTemplate: CreateTemplate
 
+    @Mock
+    lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
+
     lateinit var spaceConfig: Config
 
     var stateReducer = DefaultObjectStateReducer()
@@ -261,7 +265,9 @@ open class ObjectSetViewModelTestSetup {
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
             createTemplate = createTemplate,
-            getObjectTypes = getObjectTypes
+            getObjectTypes = getObjectTypes,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            dispatchers = dispatchers
         )
     }
 

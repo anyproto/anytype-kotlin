@@ -243,6 +243,8 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
+import java.util.*
 import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
 import java.util.LinkedList
 import java.util.Queue
@@ -6262,14 +6264,14 @@ class EditorViewModel(
         copyFileToCache.cancel()
     }
 
-    private val copyFileListener = object : OnCopyFileToCacheAction {
+    private val copyFileListener = object : CopyFileToCacheStatus {
         override fun onCopyFileStart() {
             viewModelScope.launch {
                 copyFileStatus.emit(CopyFileStatus.Started)
             }
         }
 
-        override fun onCopyFileResult(result: String?) {
+        override fun onCopyFileResult(result: String?, fileName: String?) {
             viewModelScope.launch {
                 copyFileStatus.emit(CopyFileStatus.Completed(result))
             }

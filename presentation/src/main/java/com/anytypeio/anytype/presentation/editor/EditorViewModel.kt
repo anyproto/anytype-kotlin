@@ -242,10 +242,8 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
-import java.util.*
-import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import java.util.LinkedList
 import java.util.Queue
 import java.util.regex.Pattern

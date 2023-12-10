@@ -58,6 +58,7 @@ import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -345,6 +346,9 @@ open class EditorViewModelTest {
     @Mock
     lateinit var fileLimitsEventChannel: FileLimitsEventChannel
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
+
+    @Mock
+    lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
     lateinit var vm: EditorViewModel
 
@@ -3892,7 +3896,9 @@ open class EditorViewModelTest {
             spaceManager = spaceManager,
             applyTemplate = applyTemplate,
             setObjectType = setObjectType,
-            templatesContainer = templatesContainer
+            templatesContainer = templatesContainer,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            dispatchers = dispatchers
         )
     }
 

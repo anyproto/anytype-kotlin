@@ -57,6 +57,7 @@ import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -189,6 +190,12 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var createObject: CreateObject
+
+    @Mock
+    lateinit var appCoroutineDispatchers: AppCoroutineDispatchers
+
+    @Mock
+    lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
     lateinit var getTemplates: GetTemplates
     lateinit var applyTemplate: ApplyTemplate
@@ -476,7 +483,9 @@ open class EditorTestSetup {
             spaceManager = spaceManager,
             applyTemplate = applyTemplate,
             setObjectType = setObjectType,
-            templatesContainer = templatesContainer
+            templatesContainer = templatesContainer,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            dispatchers = appCoroutineDispatchers
         )
     }
 

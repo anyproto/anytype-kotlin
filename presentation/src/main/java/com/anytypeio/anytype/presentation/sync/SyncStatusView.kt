@@ -19,12 +19,14 @@ sealed class SyncStatusView {
     object IncompatibleVersion : SyncStatusView()
 }
 
-fun SyncStatus.toView(networkId: Id?): SyncStatusView {
+fun SyncStatus.toView(networkId: Id?, networkMode: NetworkMode): SyncStatusView {
     return when (this) {
         SyncStatus.UNKNOWN -> SyncStatusView.Unknown
         SyncStatus.OFFLINE -> SyncStatusView.Offline
         SyncStatus.SYNCING -> SyncStatusView.Syncing
-        SyncStatus.SYNCED -> networkId.syncedStatus()
+        SyncStatus.SYNCED -> {
+            networkMode.syncedStatusToView(networkId ?: "")
+        }
         SyncStatus.FAILED -> SyncStatusView.Failed
         SyncStatus.INCOMPATIBLE_VERSION -> SyncStatusView.IncompatibleVersion
     }

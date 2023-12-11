@@ -80,6 +80,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -311,7 +312,8 @@ class EditorViewModel(
     private val setObjectType: SetObjectType,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -995,7 +997,10 @@ class EditorViewModel(
             interceptThreadStatus
                 .build(InterceptThreadStatus.Params(context))
                 .collect { status ->
-                    val statusView = status.toView(spaceManager.getConfig()?.network)
+                    val statusView = status.toView(
+                        networkId = spaceManager.getConfig()?.network,
+                        networkMode = getNetworkMode.run(Unit).networkMode
+                    )
                     syncStatus.value = statusView
                 }
         }

@@ -156,8 +156,7 @@
     <fragment
         android:id="@+id/homeScreenWidgets"
         android:name="com.anytypeio.anytype.ui.widgets.collection.CollectionFragment"
-        android:label="Home screen"
-        tools:layout="@layout/fragment_home" />
+        android:label="Home screen" />
 
     <dialog
         android:id="@+id/selectWidgetSourceScreen"
@@ -177,11 +176,25 @@
 
     <dialog
         android:id="@+id/selectSpaceScreen"
-        android:name="com.anytypeio.anytype.ui.spaces.SelectSpaceFragment"/>
+        android:name="com.anytypeio.anytype.ui.spaces.SelectSpaceFragment">
+        <action
+            android:id="@+id/switchSpaceAction"
+            app:destination="@+id/homeScreen"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/anim_switch_space_enter" />
+    </dialog>
 
     <dialog
         android:id="@+id/createSpaceScreen"
-        android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment"/>
+        android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
+        <action
+            android:id="@+id/switchSpaceAction"
+            app:destination="@+id/homeScreen"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/anim_switch_space_enter" />
+    </dialog>
 
     <dialog
         android:id="@+id/spaceSettingsScreen"

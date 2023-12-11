@@ -32,6 +32,7 @@ import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_NAME
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
 import com.anytypeio.anytype.ui.relations.RelationEditFragment
 import com.anytypeio.anytype.ui.settings.typography
+import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment
 import com.anytypeio.anytype.ui.types.create.REQUEST_CREATE_OBJECT
 import com.anytypeio.anytype.ui.types.edit.REQUEST_KEY_MODIFY_TYPE
@@ -145,6 +146,12 @@ class LibraryFragment : BaseComposeFragment() {
                         bundleOf(
                             EditorFragment.ID_KEY to it.id
                         )
+                    )
+                }
+                is LibraryViewModel.Navigation.SelectSpace -> {
+                    findNavController().navigate(
+                        R.id.selectSpaceScreen,
+                        args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
                     )
                 }
             }

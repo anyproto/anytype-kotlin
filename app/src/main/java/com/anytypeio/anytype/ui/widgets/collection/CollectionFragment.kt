@@ -8,6 +8,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
@@ -20,6 +22,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
 import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
+import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import javax.inject.Inject
 
 class CollectionFragment : BaseComposeFragment() {
@@ -80,6 +83,12 @@ class CollectionFragment : BaseComposeFragment() {
             is Command.OpenCollection -> navigation.launchCollections(command.subscription)
             is Command.ToDesktop -> navigation.exitToDesktop()
             is Command.ToSearch -> navigation.openPageSearch()
+            is Command.SelectSpace -> {
+                findNavController().navigate(
+                    R.id.selectSpaceScreen,
+                    args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
+                )
+            }
         }
     }
 

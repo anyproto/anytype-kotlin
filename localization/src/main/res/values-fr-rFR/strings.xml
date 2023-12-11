@@ -270,7 +270,10 @@
     <string name="sync_status_toast_unknown">Initialisation de la synchronisation</string>
     <string name="sync_status_toast_offline">Le nœud Anytype n\'est pas connecté</string>
     <string name="sync_status_toast_syncing">Téléchargement ou envoi de données vers un nœud</string>
-    <string name="sync_status_toast_synced">Sauvegardé sur au moins un nœud</string>
+    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Local only</string>
+    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
     <string name="sync_status_toast_incompatible">Version obsolète. Veuillez mettre à jour Anytype</string>
     <string name="relation_format_description">Description</string>

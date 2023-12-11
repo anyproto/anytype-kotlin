@@ -66,6 +66,8 @@ object Relations {
 
     const val UNIQUE_KEY = "uniqueKey"
 
+    const val BACKLINKS = "backlinks"
+
     /**
      * Transitive relation key.
      */

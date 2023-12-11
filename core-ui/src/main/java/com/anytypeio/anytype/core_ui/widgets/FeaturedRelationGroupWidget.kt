@@ -306,6 +306,45 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     addView(view)
                     ids.add(view.id)
                 }
+
+                is ObjectRelationView.Links.From -> {
+                    val count = context.resources.getQuantityString(
+                        R.plurals.links_from_count,
+                        relation.count,
+                        relation.count
+                    )
+                    val view = TextView(themeWrapper).apply {
+                        id = generateViewId()
+                        text = count
+                        isSingleLine = true
+                        maxLines = 1
+                        ellipsize = TextUtils.TruncateAt.END
+                    }
+                    if (relation.value == null) {
+                        view.alpha = 0.5f
+                    }
+                    addView(view)
+                    ids.add(view.id)
+                }
+                is ObjectRelationView.Links.To -> {
+                    val count = context.resources.getQuantityString(
+                        R.plurals.links_to_count,
+                        relation.count,
+                        relation.count
+                    )
+                    val view = TextView(themeWrapper).apply {
+                        id = generateViewId()
+                        text = count
+                        isSingleLine = true
+                        maxLines = 1
+                        ellipsize = TextUtils.TruncateAt.END
+                    }
+                    if (relation.value == null) {
+                        view.alpha = 0.5f
+                    }
+                    addView(view)
+                    ids.add(view.id)
+                }
             }
 
             if (index != item.relations.lastIndex) {

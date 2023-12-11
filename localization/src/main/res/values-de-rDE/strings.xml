@@ -1023,4 +1023,12 @@
     <string name="alert_gallery_unsupported_title">Galerie wird bald unterstützt</string>
     <string name="alert_gallery_unsupported_description">Bitte verwende die Desktop-App vorläufig.</string>
     <!--endregion-->
+    <plurals name="links_to_count">
+        <item quantity="one">%d link to</item>
+        <item quantity="other">%d links to</item>
+    </plurals>
+    <plurals name="links_from_count">
+        <item quantity="one">%d link from</item>
+        <item quantity="other">%d links from</item>
+    </plurals>
 </resources>

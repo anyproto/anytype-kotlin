@@ -756,12 +756,12 @@
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Setelan</string>
     <string name="settings_network_mode">Mode jaringan</string>
-    <string name="settings_network_configuration_file">Berkas Konfigurasi Jaringan</string>
+    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
     <string name="settings_network_configuration_file_choose">Pilih berkas</string>
     <string-array name="settings_networks_entries">
-        <item>Bawaan</item>
-        <item>Mode Hanya Lokal</item>
-        <item>Custom</item>
+        <item>Anytype</item>
+        <item>Hanya Lokal</item>
+        <item>Self-hosted</item>
     </string-array>
     <string name="snack_link_to">ditautkan pada</string>
     <string name="snack_move_to">moved to</string>

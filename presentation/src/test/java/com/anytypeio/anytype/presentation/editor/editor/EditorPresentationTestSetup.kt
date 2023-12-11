@@ -51,6 +51,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
@@ -355,6 +356,9 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
+    @Mock
+    lateinit var getNetworkMode: GetNetworkMode
+
     open fun buildViewModel(urlBuilder: UrlBuilder = builder): EditorViewModel {
 
         val storage = Editor.Storage()
@@ -470,7 +474,8 @@ open class EditorPresentationTestSetup {
             setObjectType = setObjectType,
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            getNetworkMode = getNetworkMode
         )
     }
 

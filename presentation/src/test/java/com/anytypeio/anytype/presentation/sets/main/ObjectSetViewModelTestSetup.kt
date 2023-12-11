@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -185,6 +186,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
 
+    @Mock
+    lateinit var getNetworkMode: GetNetworkMode
+
     lateinit var spaceConfig: Config
 
     var stateReducer = DefaultObjectStateReducer()
@@ -267,7 +271,8 @@ open class ObjectSetViewModelTestSetup {
             createTemplate = createTemplate,
             getObjectTypes = getObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            getNetworkMode = getNetworkMode
         )
     }
 

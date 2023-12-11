@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -164,6 +165,9 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var appCoroutineDispatchers: AppCoroutineDispatchers
 
+    @Mock
+    lateinit var getNetworkMode: GetNetworkMode
+
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultObjectType: GetDefaultObjectType
 
@@ -284,7 +288,8 @@ abstract class TestObjectSetSetup {
             createTemplate = createTemplate,
             getObjectTypes = getObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            dispatchers = appCoroutineDispatchers
+            dispatchers = appCoroutineDispatchers,
+            getNetworkMode = getNetworkMode,
         )
     }
 

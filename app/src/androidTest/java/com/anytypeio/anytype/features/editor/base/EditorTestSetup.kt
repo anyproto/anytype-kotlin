@@ -59,6 +59,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
@@ -285,6 +286,9 @@ open class EditorTestSetup {
     @Mock
     lateinit var templatesContainer: ObjectTypeTemplatesContainer
 
+    @Mock
+    lateinit var getNetworkMode: GetNetworkMode
+
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     lateinit var addRelationToObject: AddRelationToObject
@@ -485,7 +489,8 @@ open class EditorTestSetup {
             setObjectType = setObjectType,
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            dispatchers = appCoroutineDispatchers
+            dispatchers = appCoroutineDispatchers,
+            getNetworkMode = getNetworkMode
         )
     }
 

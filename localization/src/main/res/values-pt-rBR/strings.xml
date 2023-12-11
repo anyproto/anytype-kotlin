@@ -270,7 +270,10 @@
     <string name="sync_status_toast_unknown">Iniciando sincronização</string>
     <string name="sync_status_toast_offline">Nó Anytype não está conectado</string>
     <string name="sync_status_toast_syncing">Baixando ou carregando dados para algum nó</string>
-    <string name="sync_status_toast_synced">Backup feito em pelo menos um nó</string>
+    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Local only</string>
+    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
     <string name="sync_status_toast_incompatible">Versão desatualizada. Por favor, atualize Anytype</string>
     <string name="relation_format_description">Descrição</string>

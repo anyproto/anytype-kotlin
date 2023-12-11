@@ -758,12 +758,12 @@
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Innstillinger</string>
     <string name="settings_network_mode">Network mode</string>
-    <string name="settings_network_configuration_file">Network Configuration File</string>
+    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
     <string name="settings_network_configuration_file_choose">Choose file</string>
     <string-array name="settings_networks_entries">
-        <item>Default</item>
-        <item>Local-only Mode</item>
-        <item>Custom</item>
+        <item>Anytype</item>
+        <item>Local-only</item>
+        <item>Self-hosted</item>
     </string-array>
     <string name="snack_link_to">koblet til</string>
     <string name="snack_move_to">moved to</string>

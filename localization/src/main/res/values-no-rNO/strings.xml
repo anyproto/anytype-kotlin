@@ -270,7 +270,10 @@
     <string name="sync_status_toast_unknown">Initialiserer synkronisering</string>
     <string name="sync_status_toast_offline">Anytype-noden er ikke tilkoblet</string>
     <string name="sync_status_toast_syncing">Laster ned eller laster opp data til en node</string>
-    <string name="sync_status_toast_synced">Sikkerhetskopiert på minst én node</string>
+    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Local only</string>
+    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
     <string name="sync_status_toast_failed">Klarte ikke å synkronisere, prøver igjen…</string>
     <string name="sync_status_toast_incompatible">Versjonen er utdatert. Vennligst oppdater Anytype</string>
     <string name="relation_format_description">Beskrivelse</string>

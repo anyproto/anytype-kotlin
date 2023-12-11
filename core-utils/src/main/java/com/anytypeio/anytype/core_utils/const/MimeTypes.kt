@@ -105,4 +105,15 @@ object MimeTypes {
         PRESENTATION.contains(mime) -> Category.PRESENTATION
         else -> Category.OTHER
     }
+
+    val MIME_EXTRA_YAML = arrayOf(
+        "application/yaml",
+        "application/yml",
+        "text/yaml",
+        "text/yml",
+        "text/x-yaml",
+        "application/zip",
+        "application/x-zip",
+        "application/octet-stream"
+    )
 }

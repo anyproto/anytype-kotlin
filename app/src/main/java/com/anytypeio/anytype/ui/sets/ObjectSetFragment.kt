@@ -82,7 +82,6 @@ import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
-import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -117,6 +116,7 @@ import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
+import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_ID
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_KEY
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
@@ -296,6 +296,16 @@ open class ObjectSetFragment :
             subscribe(
                 binding.bottomToolbar.addDocClicks().throttleFirst()
             ) { vm.onAddNewDocumentClicked() }
+
+            binding.bottomToolbar
+                .profileClicks()
+                .onEach {
+                    findNavController().navigate(
+                        R.id.selectSpaceScreen,
+                        args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
+                    )
+                }
+                .launchIn(lifecycleScope)
 
             binding
                 .bottomToolbar
@@ -1146,6 +1156,11 @@ open class ObjectSetFragment :
             }
         }
         jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
+
+        subscribe(vm.icon) { icon ->
+            binding.bottomToolbar.bind(icon)
+        }
+
         vm.onStart(ctx)
     }
 

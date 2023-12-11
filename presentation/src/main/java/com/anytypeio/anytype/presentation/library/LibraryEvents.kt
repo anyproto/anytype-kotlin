@@ -6,6 +6,7 @@ sealed class LibraryEvent {
         object Back : BottomMenu()
         object Search : BottomMenu()
         object CreateObject : BottomMenu()
+        object OpenProfile : BottomMenu()
     }
 
     sealed class Query(open val query: String) : LibraryEvent() {

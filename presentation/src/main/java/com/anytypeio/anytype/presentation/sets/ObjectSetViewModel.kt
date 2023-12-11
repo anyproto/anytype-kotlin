@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
@@ -33,6 +34,8 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -63,12 +66,15 @@ import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
@@ -115,6 +121,7 @@ import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -157,8 +164,12 @@ class ObjectSetViewModel(
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val spaceManager: SpaceManager,
     private val viewerDelegate: ViewerDelegate,
-    private val createTemplate: CreateTemplate
+    private val createTemplate: CreateTemplate,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val dispatchers: AppCoroutineDispatchers
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
+
+    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     val status = MutableStateFlow<SyncStatusView?>(null)
     val error = MutableStateFlow<String?>(null)
@@ -208,6 +219,7 @@ class ObjectSetViewModel(
 
     init {
         Timber.d("ObjectSetViewModel, init")
+        proceedWithObservingProfileIcon()
         viewModelScope.launch {
             stateReducer.state
                 .filterIsInstance<ObjectState.DataView>()
@@ -325,6 +337,34 @@ class ObjectSetViewModel(
         }
 
         subscribeToSelectedType()
+    }
+
+    private fun proceedWithObservingProfileIcon() {
+        viewModelScope.launch {
+            spaceManager
+                .observe()
+                .flatMapLatest { config ->
+                    storelessSubscriptionContainer.subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+                            targets = listOf(config.profile),
+                            keys = listOf(
+                                Relations.ID,
+                                Relations.NAME,
+                                Relations.ICON_EMOJI,
+                                Relations.ICON_IMAGE,
+                                Relations.ICON_OPTION
+                            )
+                        )
+                    ).map { result ->
+                        val obj = result.firstOrNull()
+                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
+                    }
+                }
+                .catch { Timber.e(it, "Error while observing space icon") }
+                .flowOn(dispatchers.io)
+                .collect { icon.value = it }
+        }
     }
 
     private suspend fun proceedWithSettingUnsplashImage(

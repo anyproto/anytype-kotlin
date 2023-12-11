@@ -151,6 +151,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
+import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.snackbar.Snackbar
@@ -586,6 +587,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .launchIn(lifecycleScope)
 
         binding.bottomToolbar
+            .profileClicks()
+            .onEach {
+                findNavController().navigate(
+                    R.id.selectSpaceScreen,
+                    args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
+                )
+            }
+            .launchIn(lifecycleScope)
+
+        binding.bottomToolbar
             .searchClicks()
             .onEach { vm.onPageSearchClicked() }
             .launchIn(lifecycleScope)
@@ -806,6 +817,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // TODO
         }.launchIn(lifecycleScope)
 
+
+
         with(lifecycleScope) {
             launch {
                 vm.actions.collectLatest {
@@ -827,6 +840,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
                     behavior.state = BottomSheetBehavior.STATE_HIDDEN
                 }
+            }
+            subscribe(vm.icon) { icon ->
+                binding.bottomToolbar.bind(icon)
             }
         }
     }

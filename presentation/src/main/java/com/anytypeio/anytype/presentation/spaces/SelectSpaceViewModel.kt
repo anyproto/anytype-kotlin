@@ -203,7 +203,7 @@ class SelectSpaceViewModel(
                     },
                     onSuccess = {
                         resetDefaultObjectTypeForAppActions(
-                            onExit = { commands.emit(Command.Dismiss) }
+                            onExit = { commands.emit(Command.SwitchToNewSpace) }
                         )
                     }
                 )
@@ -306,4 +306,5 @@ sealed class SelectSpaceView {
 sealed class Command {
     object CreateSpace : Command()
     object Dismiss : Command()
+    object SwitchToNewSpace: Command()
 }

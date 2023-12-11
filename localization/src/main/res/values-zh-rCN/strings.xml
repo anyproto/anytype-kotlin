@@ -756,12 +756,12 @@
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">设置</string>
     <string name="settings_network_mode">网络模式</string>
-    <string name="settings_network_configuration_file">网络配置文件</string>
+    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
     <string name="settings_network_configuration_file_choose">选择文件</string>
     <string-array name="settings_networks_entries">
-        <item>默认</item>
-        <item>仅本地模式</item>
-        <item>自定义</item>
+        <item>Anytype</item>
+        <item>仅本地</item>
+        <item>Self-hosted</item>
     </string-array>
     <string name="snack_link_to">链接到</string>
     <string name="snack_move_to">移动到</string>

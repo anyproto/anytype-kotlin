@@ -61,6 +61,7 @@ import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.core_utils.tools.toPrettyString
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
@@ -76,6 +77,8 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
@@ -215,6 +218,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSlashMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -227,6 +231,8 @@ import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.objects.toView
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getNotIncludedRecommendedRelations
 import com.anytypeio.anytype.presentation.relations.getObjectRelations
@@ -239,9 +245,10 @@ import com.anytypeio.anytype.presentation.sync.toView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
-import java.util.*
+import com.anytypeio.anytype.presentation.util.Dispatcher
+import java.util.LinkedList
+import java.util.Queue
 import java.util.regex.Pattern
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -255,6 +262,8 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
@@ -300,7 +309,9 @@ class EditorViewModel(
     private val addRelationToObject: AddRelationToObject,
     private val applyTemplate: ApplyTemplate,
     private val setObjectType: SetObjectType,
-    private val templatesContainer: ObjectTypeTemplatesContainer
+    private val templatesContainer: ObjectTypeTemplatesContainer,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val dispatchers: AppCoroutineDispatchers
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -315,6 +326,8 @@ class EditorViewModel(
 
     val isSyncStatusVisible = MutableStateFlow(true)
     val syncStatus = MutableStateFlow<SyncStatusView?>(null)
+
+    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     val isUndoEnabled = MutableStateFlow(false)
     val isRedoEnabled = MutableStateFlow(false)
@@ -385,6 +398,7 @@ class EditorViewModel(
     override val commands = MutableLiveData<EventWrapper<Command>>()
 
     init {
+        proceedWithObservingProfileIcon()
         startHandlingTextChanges()
         startProcessingFocusChanges()
         startProcessingControlPanelViewState()
@@ -407,6 +421,34 @@ class EditorViewModel(
                     is Action.OpenCollection -> proceedWithOpeningDataViewObject(action.id)
                 }
             }
+        }
+    }
+
+    private fun proceedWithObservingProfileIcon() {
+        viewModelScope.launch {
+            spaceManager
+                .observe()
+                .flatMapLatest { config ->
+                    storelessSubscriptionContainer.subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+                            targets = listOf(config.profile),
+                            keys = listOf(
+                                Relations.ID,
+                                Relations.NAME,
+                                Relations.ICON_EMOJI,
+                                Relations.ICON_IMAGE,
+                                Relations.ICON_OPTION
+                            )
+                        )
+                    ).map { result ->
+                        val obj = result.firstOrNull()
+                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
+                    }
+                }
+                .catch { Timber.e(it, "Error while observing space icon") }
+                .flowOn(dispatchers.io)
+                .collect { icon.value = it }
         }
     }
 

@@ -159,4 +159,28 @@ sealed class ObjectRelationView : DefaultObjectDiffIdentifier {
             override val readOnly: Boolean = false
             ) : ObjectType()
     }
+
+    sealed class Links : ObjectRelationView() {
+        data class To(
+            override val id: Id,
+            override val key: Key,
+            override val name: String,
+            override val value: String? = null,
+            override val featured: Boolean = false,
+            override val system: Boolean,
+            override val readOnly: Boolean = false,
+            val count: Int
+        ) : Links()
+
+        data class From(
+            override val id: Id,
+            override val key: Key,
+            override val name: String,
+            override val value: String? = null,
+            override val featured: Boolean = false,
+            override val system: Boolean,
+            override val readOnly: Boolean = false,
+            val count: Int
+        ) : Links()
+    }
 }

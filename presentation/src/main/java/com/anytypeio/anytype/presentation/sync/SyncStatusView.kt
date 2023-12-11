@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sync
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.presentation.BuildConfig
 
@@ -26,6 +27,26 @@ fun SyncStatus.toView(networkId: Id?): SyncStatusView {
         SyncStatus.SYNCED -> networkId.syncedStatus()
         SyncStatus.FAILED -> SyncStatusView.Failed
         SyncStatus.INCOMPATIBLE_VERSION -> SyncStatusView.IncompatibleVersion
+    }
+}
+
+fun NetworkMode.syncedStatusToView(networkId: String): SyncStatusView {
+    when (this) {
+        NetworkMode.DEFAULT -> return SyncStatusView.Synced.AnyNetwork
+        NetworkMode.LOCAL -> {
+            return if (networkId.isEmpty()) {
+                SyncStatusView.Synced.LocalOnly
+            } else {
+                SyncStatusView.Unknown
+            }
+        }
+        NetworkMode.CUSTOM -> {
+            return if (networkId == BuildConfig.STAGING_NETWORK_ID) {
+                SyncStatusView.Synced.StagingNetwork
+            } else {
+                SyncStatusView.Synced.SelfHostedNetwork
+            }
+        }
     }
 }
 

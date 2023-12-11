@@ -535,7 +535,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.editorLayouts.map { it.code.toDouble() }
+            value = SupportedLayouts.addAsLinkToLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.ID,

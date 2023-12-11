@@ -48,6 +48,10 @@ object SupportedLayouts {
         ObjectType.Layout.BOOKMARK
     )
 
+    val addAsLinkToLayouts = editorLayouts + listOf(
+        ObjectType.Layout.COLLECTION
+    )
+
     fun isSupported(layout: ObjectType.Layout?) : Boolean {
         return layouts.contains(layout)
     }

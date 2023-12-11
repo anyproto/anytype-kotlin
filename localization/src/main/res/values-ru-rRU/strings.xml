@@ -1027,4 +1027,16 @@
     <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
     <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
     <!--endregion-->
+    <plurals name="links_to_count">
+        <item quantity="one">%d link to</item>
+        <item quantity="few">%d links to</item>
+        <item quantity="many">%d links to</item>
+        <item quantity="other">%d links to</item>
+    </plurals>
+    <plurals name="links_from_count">
+        <item quantity="one">%d link from</item>
+        <item quantity="few">%d links from</item>
+        <item quantity="many">%d links from</item>
+        <item quantity="other">%d links from</item>
+    </plurals>
 </resources>

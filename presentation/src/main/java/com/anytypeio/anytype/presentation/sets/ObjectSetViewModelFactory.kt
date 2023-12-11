@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -76,7 +77,8 @@ class ObjectSetViewModelFactory(
     private val viewerDelegate: ViewerDelegate,
     private val spaceManager: SpaceManager,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -117,7 +119,8 @@ class ObjectSetViewModelFactory(
             spaceManager = spaceManager,
             createTemplate = createTemplate,
             dispatchers = dispatchers,
-            storelessSubscriptionContainer = storelessSubscriptionContainer
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            getNetworkMode = getNetworkMode
         ) as T
     }
 }

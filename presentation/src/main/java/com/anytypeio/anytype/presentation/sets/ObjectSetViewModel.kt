@@ -37,6 +37,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -166,7 +167,8 @@ class ObjectSetViewModel(
     private val viewerDelegate: ViewerDelegate,
     private val createTemplate: CreateTemplate,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
@@ -412,9 +414,16 @@ class ObjectSetViewModel(
 
     private fun subscribeToThreadStatus(ctx: Id) {
         jobs += viewModelScope.launch {
+            val networkMode = getNetworkMode.run(Unit).networkMode
             interceptThreadStatus
                 .build(InterceptThreadStatus.Params(ctx))
-                .collect { status.value = it.toView(spaceManager.getConfig()?.network) }
+                .collect {
+                    val statusView = it.toView(
+                        networkId = spaceManager.getConfig()?.network,
+                        networkMode = networkMode
+                    )
+                    status.value = statusView
+                }
         }
     }
 

@@ -994,12 +994,13 @@ class EditorViewModel(
         }
 
         jobs += viewModelScope.launch {
+            val networkMode = getNetworkMode.run(Unit).networkMode
             interceptThreadStatus
                 .build(InterceptThreadStatus.Params(context))
                 .collect { status ->
                     val statusView = status.toView(
                         networkId = spaceManager.getConfig()?.network,
-                        networkMode = getNetworkMode.run(Unit).networkMode
+                        networkMode = networkMode
                     )
                     syncStatus.value = statusView
                 }

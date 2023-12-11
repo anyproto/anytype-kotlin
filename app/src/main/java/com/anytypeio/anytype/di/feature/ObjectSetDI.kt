@@ -37,6 +37,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
@@ -238,7 +239,8 @@ object ObjectSetModule {
         viewerDelegate: ViewerDelegate,
         spaceManager: SpaceManager,
         storelessSubscriptionContainer: StorelessSubscriptionContainer,
-        dispatchers: AppCoroutineDispatchers
+        dispatchers: AppCoroutineDispatchers,
+        getNetworkMode: GetNetworkMode
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         openObjectSet = openObjectSet,
         closeBlock = closeBlock,
@@ -276,7 +278,8 @@ object ObjectSetModule {
         spaceManager = spaceManager,
         createTemplate = createTemplate,
         storelessSubscriptionContainer = storelessSubscriptionContainer,
-        dispatchers = dispatchers
+        dispatchers = dispatchers,
+        getNetworkMode = getNetworkMode
     )
 
     @JvmStatic

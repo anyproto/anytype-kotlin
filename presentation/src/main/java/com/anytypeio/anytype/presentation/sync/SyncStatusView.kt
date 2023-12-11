@@ -25,18 +25,18 @@ fun SyncStatus.toView(networkId: Id?, networkMode: NetworkMode): SyncStatusView 
         SyncStatus.OFFLINE -> SyncStatusView.Offline
         SyncStatus.SYNCING -> SyncStatusView.Syncing
         SyncStatus.SYNCED -> {
-            networkMode.syncedStatusToView(networkId ?: "")
+            networkMode.syncedStatusToView(networkId)
         }
         SyncStatus.FAILED -> SyncStatusView.Failed
         SyncStatus.INCOMPATIBLE_VERSION -> SyncStatusView.IncompatibleVersion
     }
 }
 
-fun NetworkMode.syncedStatusToView(networkId: String): SyncStatusView {
+fun NetworkMode.syncedStatusToView(networkId: String?): SyncStatusView {
     when (this) {
         NetworkMode.DEFAULT -> return SyncStatusView.Synced.AnyNetwork
         NetworkMode.LOCAL -> {
-            return if (networkId.isEmpty()) {
+            return if (networkId.isNullOrEmpty()) {
                 SyncStatusView.Synced.LocalOnly
             } else {
                 SyncStatusView.Unknown

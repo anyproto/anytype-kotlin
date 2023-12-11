@@ -1180,4 +1180,16 @@
 
     <!--endregion-->
 
+    <plurals name="links_to_count">
+        <item quantity="zero">$d links to</item>
+        <item quantity="one">%d link to</item>
+        <item quantity="other">%d links to</item>
+    </plurals>
+
+    <plurals name="links_from_count">
+        <item quantity="zero">$d links from</item>
+        <item quantity="one">%d link from</item>
+        <item quantity="other">%d links from</item>
+    </plurals>
+
 </resources>

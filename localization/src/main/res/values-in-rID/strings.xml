@@ -1021,4 +1021,10 @@
     <string name="alert_gallery_unsupported_title">Galeri sedang dalam pengembangan</string>
     <string name="alert_gallery_unsupported_description">Fitur ini hanya tersedia di desktop untuk saat ini.</string>
     <!--endregion-->
+    <plurals name="links_to_count">
+        <item quantity="other">%d links to</item>
+    </plurals>
+    <plurals name="links_from_count">
+        <item quantity="other">%d links from</item>
+    </plurals>
 </resources>

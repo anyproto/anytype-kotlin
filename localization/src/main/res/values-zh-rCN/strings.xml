@@ -756,12 +756,12 @@
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">设置</string>
     <string name="settings_network_mode">网络模式</string>
-    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
+    <string name="settings_network_configuration_file">自托管设置</string>
     <string name="settings_network_configuration_file_choose">选择文件</string>
     <string-array name="settings_networks_entries">
         <item>Anytype</item>
         <item>仅本地</item>
-        <item>Self-hosted</item>
+        <item>自托管</item>
     </string-array>
     <string name="snack_link_to">链接到</string>
     <string name="snack_move_to">移动到</string>
@@ -1021,4 +1021,10 @@
     <string name="alert_gallery_unsupported_title">即将支持画廊</string>
     <string name="alert_gallery_unsupported_description">目前请使用桌面应用。</string>
     <!--endregion-->
+    <plurals name="links_to_count">
+        <item quantity="other">%d links to</item>
+    </plurals>
+    <plurals name="links_from_count">
+        <item quantity="other">%d links from</item>
+    </plurals>
 </resources>

@@ -37,6 +37,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -89,6 +90,8 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerEvent
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
+import com.anytypeio.anytype.presentation.sync.SyncStatusView
+import com.anytypeio.anytype.presentation.sync.toView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.templates.TemplateMenuClick
 import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
@@ -164,12 +167,13 @@ class ObjectSetViewModel(
     private val viewerDelegate: ViewerDelegate,
     private val createTemplate: CreateTemplate,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
-    val status = MutableStateFlow(SyncStatus.UNKNOWN)
+    val status = MutableStateFlow<SyncStatusView?>(null)
     val error = MutableStateFlow<String?>(null)
 
     val featured = MutableStateFlow<BlockView.FeaturedRelation?>(null)
@@ -410,9 +414,16 @@ class ObjectSetViewModel(
 
     private fun subscribeToThreadStatus(ctx: Id) {
         jobs += viewModelScope.launch {
+            val networkMode = getNetworkMode.run(Unit).networkMode
             interceptThreadStatus
                 .build(InterceptThreadStatus.Params(ctx))
-                .collect { status.value = it }
+                .collect {
+                    val statusView = it.toView(
+                        networkId = spaceManager.getConfig()?.network,
+                        networkMode = networkMode
+                    )
+                    status.value = statusView
+                }
         }
     }
 

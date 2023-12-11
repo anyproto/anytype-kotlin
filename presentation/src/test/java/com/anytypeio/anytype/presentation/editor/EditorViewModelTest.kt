@@ -60,6 +60,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
@@ -340,6 +341,9 @@ open class EditorViewModelTest {
 
     @Mock
     lateinit var spaceManager: SpaceManager
+
+    @Mock
+    lateinit var getNetworkMode: GetNetworkMode
 
     private lateinit var updateDetail: UpdateDetail
 
@@ -3898,7 +3902,8 @@ open class EditorViewModelTest {
             setObjectType = setObjectType,
             templatesContainer = templatesContainer,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            dispatchers = dispatchers
+            dispatchers = dispatchers,
+            getNetworkMode = getNetworkMode
         )
     }
 

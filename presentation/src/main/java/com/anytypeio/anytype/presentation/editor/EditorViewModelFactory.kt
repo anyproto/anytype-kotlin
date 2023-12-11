@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -88,7 +89,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val setObjectType: SetObjectType,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -133,7 +135,8 @@ open class EditorViewModelFactory @Inject constructor(
             setObjectType = setObjectType,
             templatesContainer = templatesContainer,
             dispatchers = dispatchers,
-            storelessSubscriptionContainer = storelessSubscriptionContainer
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            getNetworkMode = getNetworkMode
         ) as T
     }
 }

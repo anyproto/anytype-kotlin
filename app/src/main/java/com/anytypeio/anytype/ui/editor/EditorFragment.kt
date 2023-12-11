@@ -51,12 +51,13 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
+import com.anytypeio.anytype.core_ui.extensions.getLabelText
+import com.anytypeio.anytype.core_ui.extensions.getToastMsg
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
@@ -122,6 +123,7 @@ import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.sync.SyncStatusView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.base.navigation
@@ -845,7 +847,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
     }
 
-    private fun bindSyncStatus(status: SyncStatus?) {
+    private fun bindSyncStatus(status: SyncStatusView?) {
         binding.topToolbar.status.bind(status)
         if (status == null) {
             binding.topToolbar.hideStatusContainer()
@@ -854,29 +856,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         }
         val tvStatus = binding.topToolbar.statusText
         binding.topToolbar.statusContainer.setOnClickListener {
-            when (status) {
-                SyncStatus.UNKNOWN -> toast(getString(R.string.sync_status_toast_unknown))
-                SyncStatus.FAILED -> toast(getString(R.string.sync_status_toast_failed))
-                SyncStatus.OFFLINE -> toast(getString(R.string.sync_status_toast_offline))
-                SyncStatus.SYNCING -> toast(getString(R.string.sync_status_toast_syncing))
-                SyncStatus.SYNCED -> toast(getString(R.string.sync_status_toast_synced))
-                SyncStatus.INCOMPATIBLE_VERSION -> toast(getString(R.string.sync_status_toast_incompatible))
-                else -> {
-                    Timber.i("Missed sync status")
-                }
-            }
+            toast(status.getToastMsg(requireContext()))
         }
-        when (status) {
-            SyncStatus.UNKNOWN -> tvStatus.setText(R.string.sync_status_unknown)
-            SyncStatus.FAILED -> tvStatus.setText(R.string.sync_status_failed)
-            SyncStatus.OFFLINE -> tvStatus.setText(R.string.sync_status_offline)
-            SyncStatus.SYNCING -> tvStatus.setText(R.string.sync_status_syncing)
-            SyncStatus.SYNCED -> tvStatus.setText(R.string.sync_status_synced)
-            SyncStatus.INCOMPATIBLE_VERSION -> tvStatus.setText(R.string.sync_status_incompatible)
-            else -> {
-                // Do nothing
-            }
-        }
+        tvStatus.text = status?.getLabelText(requireContext())
     }
 
     override fun onDestroyView() {

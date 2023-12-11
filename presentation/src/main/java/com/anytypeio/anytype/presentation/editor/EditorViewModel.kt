@@ -80,6 +80,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -240,6 +241,8 @@ import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.sync.SyncStatusView
+import com.anytypeio.anytype.presentation.sync.toView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -309,7 +312,8 @@ class EditorViewModel(
     private val setObjectType: SetObjectType,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -323,7 +327,7 @@ class EditorViewModel(
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
 
     val isSyncStatusVisible = MutableStateFlow(true)
-    val syncStatus = MutableStateFlow<SyncStatus?>(null)
+    val syncStatus = MutableStateFlow<SyncStatusView?>(null)
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
@@ -990,9 +994,16 @@ class EditorViewModel(
         }
 
         jobs += viewModelScope.launch {
+            val networkMode = getNetworkMode.run(Unit).networkMode
             interceptThreadStatus
                 .build(InterceptThreadStatus.Params(context))
-                .collect { syncStatus.value = it }
+                .collect { status ->
+                    val statusView = status.toView(
+                        networkId = spaceManager.getConfig()?.network,
+                        networkMode = networkMode
+                    )
+                    syncStatus.value = statusView
+                }
         }
 
         jobs += viewModelScope.launch {

@@ -269,7 +269,10 @@
     <string name="sync_status_toast_unknown">Memulai sinkron</string>
     <string name="sync_status_toast_offline">Simpul Anytype tidak terhubung</string>
     <string name="sync_status_toast_syncing">Mengunduh atau mengunggah data ke simpul</string>
-    <string name="sync_status_toast_synced">Tercadangkan di minimal satu simpul</string>
+    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Local only</string>
+    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
     <string name="sync_status_toast_incompatible">Versi kadaluwarsa. Silahkan memperbahrui segala tipe</string>
     <string name="relation_format_description">Deskripsi</string>

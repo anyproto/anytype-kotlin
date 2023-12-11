@@ -272,7 +272,10 @@
     <string name="sync_status_toast_unknown">Инициализация синхронизации</string>
     <string name="sync_status_toast_offline">Узел Anytype не подключен</string>
     <string name="sync_status_toast_syncing">Загрузка или выгрузка данных в узел</string>
-    <string name="sync_status_toast_synced">Создана резервная копия по крайней мере на одном узле</string>
+    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Local only</string>
+    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
     <string name="sync_status_toast_incompatible">Версия устарела. Пожалуйста, обновите Anytype</string>
     <string name="relation_format_description">Описание</string>

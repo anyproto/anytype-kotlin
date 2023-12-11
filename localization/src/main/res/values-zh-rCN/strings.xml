@@ -269,7 +269,10 @@
     <string name="sync_status_toast_unknown">初始化同步中</string>
     <string name="sync_status_toast_offline">Anytype 节点未连接</string>
     <string name="sync_status_toast_syncing">向某个节点下载或上传数据</string>
-    <string name="sync_status_toast_synced">至少在一个节点上备份</string>
+    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Local only</string>
+    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
     <string name="sync_status_toast_failed">同步失败，正在重试...</string>
     <string name="sync_status_toast_incompatible">版本已过时。请更新 Anytype</string>
     <string name="relation_format_description">描述</string>

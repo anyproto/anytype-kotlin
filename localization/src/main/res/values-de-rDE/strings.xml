@@ -270,7 +270,10 @@
     <string name="sync_status_toast_unknown">Initialisiere Synchronisation</string>
     <string name="sync_status_toast_offline">Anytype Knoten ist nicht verbunden</string>
     <string name="sync_status_toast_syncing">Herunterladen oder Hochladen von Daten zu einem Knoten</string>
-    <string name="sync_status_toast_synced">Auf mindestens einem Knoten gesichert</string>
+    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Local only</string>
+    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
     <string name="sync_status_toast_failed">Synchronisierung fehlgeschlagen, versuche es erneut</string>
     <string name="sync_status_toast_incompatible">Version veraltet. Bitte aktualisieren Sie Anytype</string>
     <string name="relation_format_description">Beschreibung</string>

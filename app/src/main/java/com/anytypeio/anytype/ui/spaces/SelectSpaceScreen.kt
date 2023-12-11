@@ -50,7 +50,7 @@ fun SelectSpaceScreen(
     spaces: List<SelectSpaceView>,
     onAddClicked: () -> Unit,
     onSpaceClicked: (WorkspaceView) -> Unit,
-    onSpaceSettingsClicked: () -> Unit,
+    onSettingsClicked: () -> Unit,
     onProfileClicked: () -> Unit
 ) {
     Column {
@@ -77,7 +77,7 @@ fun SelectSpaceScreen(
                         ) {
                             SelectSpaceProfileHeader(
                                 profile = item,
-                                onSpaceSettingsClicked = onSpaceSettingsClicked,
+                                onSpaceSettingsClicked = onSettingsClicked,
                                 onProfileClicked = onProfileClicked
                             )
                         }

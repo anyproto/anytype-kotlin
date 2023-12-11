@@ -51,12 +51,12 @@ fun NetworkMode.syncedStatusToView(networkId: String): SyncStatusView {
         }
     }
 }
-
-private fun Id?.syncedStatus(): SyncStatusView.Synced {
-    return when (this) {
-        BuildConfig.NODE_NETWORK_ID -> SyncStatusView.Synced.AnyNetwork
-        BuildConfig.STAGING_NETWORK_ID -> SyncStatusView.Synced.StagingNetwork
-        "" -> SyncStatusView.Synced.LocalOnly
-        else -> SyncStatusView.Synced.SelfHostedNetwork
-    }
-}
+//
+//private fun Id?.syncedStatus(): SyncStatusView.Synced {
+//    return when (this) {
+//        BuildConfig.NODE_NETWORK_ID -> SyncStatusView.Synced.AnyNetwork
+//        BuildConfig.STAGING_NETWORK_ID -> SyncStatusView.Synced.StagingNetwork
+//        "" -> SyncStatusView.Synced.LocalOnly
+//        else -> SyncStatusView.Synced.SelfHostedNetwork
+//    }
+//}

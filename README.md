@@ -25,12 +25,6 @@ Your Github ID (starting with '#' character) can be found [here](https://caius.g
     sentry_dsn="SENTRY_DSN_KEY"
     ```
 
-- Create `network.properties` file in root project folder:
-    ```
-    node_network_id=ANYTYPE_NODE_NETWORK_ID
-    staging_network_id=ANYTYPE_STAGING_NETWORK_ID
-    ```
-
 Then build project.
 
 ### IDE setup (optional) 

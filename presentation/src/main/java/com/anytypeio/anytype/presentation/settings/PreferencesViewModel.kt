@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
@@ -13,6 +15,8 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.networkmode.SetNetworkMode
 import com.anytypeio.anytype.presentation.editor.picker.PickerListener
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectNetworkEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsUploadConfigFileEvent
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +26,8 @@ import timber.log.Timber
 class PreferencesViewModel(
     private val copyFileToCache: CopyFileToCacheDirectory,
     private val getNetworkMode: GetNetworkMode,
-    private val setNetworkMode: SetNetworkMode
+    private val setNetworkMode: SetNetworkMode,
+    private val analytics: Analytics
 ) : ViewModel(), PickerListener {
 
     val networkModeState = MutableStateFlow(NetworkModeConfig(NetworkMode.DEFAULT, "", ""))
@@ -45,9 +50,30 @@ class PreferencesViewModel(
     fun proceedWithNetworkMode(mode: String?) {
         viewModelScope.launch {
             val config = when (mode) {
-                NETWORK_MODE_LOCAL -> NetworkModeConfig(NetworkMode.LOCAL)
-                NETWORK_MODE_CUSTOM -> NetworkModeConfig(NetworkMode.CUSTOM)
-                else -> NetworkModeConfig()
+                NETWORK_MODE_LOCAL -> {
+                    sendAnalyticsSelectNetworkEvent(
+                        analytics = analytics,
+                        type = EventsDictionary.Type.localOnly,
+                        route = EventsDictionary.Routes.settings
+                    )
+                    NetworkModeConfig(NetworkMode.LOCAL)
+                }
+                NETWORK_MODE_CUSTOM -> {
+                    sendAnalyticsSelectNetworkEvent(
+                        analytics = analytics,
+                        type = EventsDictionary.Type.selfHost,
+                        route = EventsDictionary.Routes.settings
+                    )
+                    NetworkModeConfig(NetworkMode.CUSTOM)
+                }
+                else -> {
+                    sendAnalyticsSelectNetworkEvent(
+                        analytics = analytics,
+                        type = EventsDictionary.Type.anytype,
+                        route = EventsDictionary.Routes.settings
+                    )
+                    NetworkModeConfig()
+                }
             }
             networkModeState.value = config
             setNetworkMode.async(SetNetworkMode.Params(config)).fold(
@@ -68,6 +94,7 @@ class PreferencesViewModel(
             setNetworkMode.async(params).fold(
                 onSuccess = {
                     networkModeState.value = config
+                    sendAnalyticsUploadConfigFileEvent(analytics)
                     Timber.d("Successfully update network mode with config:$config")
                 },
                 onFailure = { Timber.e(it, "Failed to set network mode") }
@@ -106,7 +133,8 @@ class PreferencesViewModel(
     class Factory(
         private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
         private val getNetworkMode: GetNetworkMode,
-        private val setNetworkMode: SetNetworkMode
+        private val setNetworkMode: SetNetworkMode,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -114,7 +142,8 @@ class PreferencesViewModel(
         ): T = PreferencesViewModel(
             copyFileToCache = copyFileToCacheDirectory,
             getNetworkMode = getNetworkMode,
-            setNetworkMode = setNetworkMode
+            setNetworkMode = setNetworkMode,
+            analytics = analytics
         ) as T
     }
 }

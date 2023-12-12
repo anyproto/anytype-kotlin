@@ -94,7 +94,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                         onClick = {
                             val dialog = CreateObjectOfTypeFragment().apply {
                                 onTypeSelected = {
-                                    vm.onCreateNewObjectClicked(it.uniqueKey)
+                                    vm.onCreateNewObjectClicked(it)
                                     dismiss()
                                 }
                             }

@@ -59,6 +59,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
@@ -1058,19 +1059,19 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onCreateNewObjectClicked(type: Key? = null) {
-        Timber.d("onCreateNewObjectClicked, type:[$type]")
+    fun onCreateNewObjectClicked(objType: ObjectWrapper.Type? = null) {
+        Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateObject.Param(
                 internalFlags  = buildList {
                     add(InternalFlags.ShouldSelectTemplate)
                     add(InternalFlags.ShouldEmptyDelete)
-                    if (type.isNullOrBlank()) {
+                    if (objType == null) {
                         add(InternalFlags.ShouldSelectType)
                     }
                 },
-                type = if (type != null) TypeKey(key = type) else null
+                type = if (objType != null) TypeKey(key = objType.uniqueKey) else null
             )
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
@@ -1083,7 +1084,16 @@ class HomeScreenViewModel(
                             startTime = startTime,
                             view = EventsDictionary.View.viewHome
                         )
-                        if (type == ObjectTypeUniqueKeys.SET || type == ObjectTypeUniqueKeys.COLLECTION) {
+                        if (objType != null) {
+                            sendAnalyticsObjectTypeSelectOrChangeEvent(
+                                analytics = analytics,
+                                startTime = startTime,
+                                sourceObject = objType.sourceObject,
+                                containsFlagType = true,
+                                route = EventsDictionary.Routes.longTap
+                            )
+                        }
+                        if (objType?.uniqueKey == ObjectTypeUniqueKeys.SET || objType?.uniqueKey == ObjectTypeUniqueKeys.COLLECTION) {
                             navigate(Navigation.OpenSet(result.objectId))
                         } else {
                             navigate(Navigation.OpenObject(result.objectId))

@@ -201,7 +201,8 @@ class ObjectTypeChangeViewModel(
                 isWithCollection = setup.isWithCollection,
                 isWithBookmark = setup.isWithBookmark,
                 excludeTypes = setup.excludeTypes,
-                selectedTypes = setup.selectedTypes
+                selectedTypes = setup.selectedTypes,
+                useCustomComparator = false
             ).map {
                 ObjectTypeItemView.Type(it)
             }
@@ -215,7 +216,8 @@ class ObjectTypeChangeViewModel(
                 isWithCollection = setup.isWithCollection,
                 isWithBookmark = setup.isWithBookmark,
                 excludeTypes = setup.excludeTypes,
-                selectedTypes = setup.selectedTypes
+                selectedTypes = setup.selectedTypes,
+                useCustomComparator = false
             ).map {
                 ObjectTypeItemView.Type(it)
             }
@@ -259,7 +261,7 @@ class ObjectTypeChangeViewModel(
                         )
                     }
                 },
-                sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
+                sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                 query = query,
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )
@@ -275,7 +277,7 @@ class ObjectTypeChangeViewModel(
                 spaces = listOf(spaceManager.get()),
                 recommendedLayouts = SupportedLayouts.editorLayouts
             ),
-            sorts = ObjectSearchConstants.defaultObjectSearchSorts(),
+            sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
             query = query,
             keys = ObjectSearchConstants.defaultKeysObjectType
         )

@@ -24,7 +24,7 @@ object Relations {
     const val IS_HIDDEN = "isHidden"
     const val LAST_OPENED_DATE = "lastOpenedDate"
     const val LAST_MODIFIED_DATE = "lastModifiedDate"
-    const val LAST_USED = "lastUsed"
+    const val LAST_USED_DATE = "lastUsedDate"
     const val TYPE = "type"
     const val LINKS = "links"
     const val TARGET_OBJECT_TYPE = "targetObjectType"

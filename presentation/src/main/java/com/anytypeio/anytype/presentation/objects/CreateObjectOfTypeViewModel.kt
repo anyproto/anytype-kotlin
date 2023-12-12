@@ -3,8 +3,6 @@ package com.anytypeio.anytype.presentation.objects
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.DVSort
-import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -50,21 +48,7 @@ class CreateObjectOfTypeViewModel(
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 getObjectTypes.stream(
                     GetObjectTypes.Params(
-                        sorts = buildList {
-                            add(
-                                DVSort(
-                                    relationKey = Relations.LAST_USED,
-                                    type = DVSortType.DESC,
-                                    includeTime = true
-                                )
-                            )
-                            add(
-                                DVSort(
-                                    relationKey = Relations.NAME,
-                                    type = DVSortType.ASC
-                                )
-                            )
-                        },
+                        sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                         filters = ObjectSearchConstants.filterTypes(
                             spaces = buildList {
                                 add(space)

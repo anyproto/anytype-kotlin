@@ -736,6 +736,22 @@ object ObjectSearchConstants {
         )
     )
 
+    fun defaultObjectTypeSearchSorts() : List<DVSort> = buildList {
+        add(
+            DVSort(
+                relationKey = Relations.LAST_USED_DATE,
+                type = DVSortType.DESC,
+                includeTime = true
+            )
+        )
+        add(
+            DVSort(
+                relationKey = Relations.NAME,
+                type = DVSortType.ASC
+            )
+        )
+    }
+
     fun filterMyRelations() : List<DVFilter> = listOf(
         DVFilter(
             relation = Relations.LAYOUT,

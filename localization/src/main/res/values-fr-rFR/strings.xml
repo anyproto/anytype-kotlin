@@ -270,10 +270,10 @@
     <string name="sync_status_toast_unknown">Initialisation de la synchronisation</string>
     <string name="sync_status_toast_offline">Le nœud Anytype n\'est pas connecté</string>
     <string name="sync_status_toast_syncing">Téléchargement ou envoi de données vers un nœud</string>
-    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
-    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
-    <string name="sync_status_toast_synced_local">Local only</string>
-    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
+    <string name="sync_status_toast_synced">Sauvegardé sur le réseau Anytype </string>
+    <string name="sync_status_toast_synced_staging">Sauvegardé sur le réseau Anytype de pré-production</string>
+    <string name="sync_status_toast_synced_local">Local seulement</string>
+    <string name="sync_status_toast_synced_self_hosted">Sauvegarder vers votre réseau auto-hébergé</string>
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
     <string name="sync_status_toast_incompatible">Version obsolète. Veuillez mettre à jour Anytype</string>
     <string name="relation_format_description">Description</string>
@@ -760,13 +760,13 @@
     <string name="debug_mode">debug_mode</string>
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Paramètres</string>
-    <string name="settings_network_mode">Network mode</string>
-    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
-    <string name="settings_network_configuration_file_choose">Choose file</string>
+    <string name="settings_network_mode">Mode réseau</string>
+    <string name="settings_network_configuration_file">Configuration auto-hébergée</string>
+    <string name="settings_network_configuration_file_choose">Choisir un fichier</string>
     <string-array name="settings_networks_entries">
         <item>Anytype</item>
         <item>Local seulement</item>
-        <item>Self-hosted</item>
+        <item>Auto-hébergé</item>
     </string-array>
     <string name="snack_link_to">lié à</string>
     <string name="snack_move_to">moved to</string>
@@ -1027,11 +1027,11 @@
     <string name="alert_gallery_unsupported_description">Veuillez utiliser l\'application de bureau pour le moment.</string>
     <!--endregion-->
     <plurals name="links_to_count">
-        <item quantity="one">%d link to</item>
+        <item quantity="one">%d lien vers</item>
         <item quantity="other">%d links to</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d link from</item>
+        <item quantity="one">Lien %d depuis</item>
         <item quantity="other">%d links from</item>
     </plurals>
 </resources>

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.FileLimitsEvent
@@ -31,7 +32,6 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
@@ -4553,7 +4553,9 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(panelEvent)
                     return
                 }
-                proceedWithGettingObjectTypes { objectTypes ->
+                proceedWithGettingObjectTypes(
+                    sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts()
+                ) { objectTypes ->
                     getRelations { relations ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
@@ -4633,7 +4635,9 @@ class EditorViewModel(
                 getRelations { proceedWithRelations(it) }
             }
             is SlashItem.Main.Objects -> {
-                proceedWithGettingObjectTypes {
+                proceedWithGettingObjectTypes(
+                    sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts()
+                ) {
                     proceedWithObjectTypes(it)
                 }
             }
@@ -4906,11 +4910,12 @@ class EditorViewModel(
     }
 
     private fun proceedWithGettingObjectTypes(
+        sorts: List<DVSort> = emptyList(),
         action: (List<ObjectTypeView>) -> Unit
     ) {
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
-                sorts = emptyList(),
+                sorts = sorts,
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
                         add(spaceManager.get())

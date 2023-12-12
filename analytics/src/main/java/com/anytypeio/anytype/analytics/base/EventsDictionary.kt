@@ -222,6 +222,7 @@ object EventsDictionary {
         const val settings = "Settings"
         const val screenDeletion = "ScreenDeletion"
         const val navigation = "Navigation"
+        const val longTap = "LongTap"
     }
 
     object Type {

@@ -760,13 +760,13 @@
     <string name="debug_mode">debug_mode</string>
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Paramètres</string>
-    <string name="settings_network_mode">Network mode</string>
-    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
-    <string name="settings_network_configuration_file_choose">Choose file</string>
+    <string name="settings_network_mode">Mode réseau</string>
+    <string name="settings_network_configuration_file">Configuration auto-hébergée</string>
+    <string name="settings_network_configuration_file_choose">Choisir un fichier</string>
     <string-array name="settings_networks_entries">
         <item>Anytype</item>
         <item>Local seulement</item>
-        <item>Self-hosted</item>
+        <item>Auto-hébergé</item>
     </string-array>
     <string name="snack_link_to">lié à</string>
     <string name="snack_move_to">moved to</string>

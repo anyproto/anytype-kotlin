@@ -61,4 +61,5 @@ interface AppPreferencesDependencies : ComponentDependencies {
     fun context(): Context
     fun dispatchers(): AppCoroutineDispatchers
     fun authRepository(): AuthRepository
+    fun analytics(): Analytics
 }

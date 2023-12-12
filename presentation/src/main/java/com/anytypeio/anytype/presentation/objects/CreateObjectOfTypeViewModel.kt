@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.objects
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -11,8 +13,8 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -48,7 +50,21 @@ class CreateObjectOfTypeViewModel(
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 getObjectTypes.stream(
                     GetObjectTypes.Params(
-                        sorts = emptyList(),
+                        sorts = buildList {
+                            add(
+                                DVSort(
+                                    relationKey = Relations.LAST_USED,
+                                    type = DVSortType.DESC,
+                                    includeTime = true
+                                )
+                            )
+                            add(
+                                DVSort(
+                                    relationKey = Relations.NAME,
+                                    type = DVSortType.ASC
+                                )
+                            )
+                        },
                         filters = ObjectSearchConstants.filterTypes(
                             spaces = buildList {
                                 add(space)

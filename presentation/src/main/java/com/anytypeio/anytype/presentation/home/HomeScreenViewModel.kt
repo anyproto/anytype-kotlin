@@ -1079,7 +1079,7 @@ class HomeScreenViewModel(
                             analytics = analytics,
                             type = result.typeKey.key,
                             storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.navigation,
+                            route = if (type == null) EventsDictionary.Routes.navigation else EventsDictionary.Routes.longTap,
                             startTime = startTime,
                             view = EventsDictionary.View.viewHome
                         )

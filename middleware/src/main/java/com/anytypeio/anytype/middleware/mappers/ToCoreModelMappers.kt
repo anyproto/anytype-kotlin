@@ -183,15 +183,26 @@ fun List<MBlock>.toCoreModels(): List<Block> = mapNotNull { block ->
             )
         }
         block.latex != null -> {
-            Block(
-                id = block.id,
-                fields = block.toCoreModelsFields(),
-                children = block.childrenIds,
-                content = Block.Content.Latex(
-                    latex = block.latex?.text.orEmpty()
-                ),
-                backgroundColor = block.backgroundColor.ifEmpty { null }
-            )
+            val latex = checkNotNull(block.latex)
+            if (latex.processor.value == MBLatexProcessor.Latex.value) {
+                Block(
+                    id = block.id,
+                    fields = block.toCoreModelsFields(),
+                    children = block.childrenIds,
+                    content = Block.Content.Latex(
+                        latex = block.latex?.text.orEmpty()
+                    ),
+                    backgroundColor = block.backgroundColor.ifEmpty { null }
+                )
+            } else {
+                Block(
+                    id = block.id,
+                    fields = block.toCoreModelsFields(),
+                    children = block.childrenIds,
+                    content = Block.Content.Unsupported,
+                    backgroundColor = block.backgroundColor.ifEmpty { null }
+                )
+            }
         }
         block.tableOfContents != null -> {
             Block(

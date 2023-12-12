@@ -638,12 +638,14 @@ fun CoroutineScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
     analytics: Analytics,
     startTime: Long,
     sourceObject: Id? = null,
-    containsFlagType: Boolean
+    containsFlagType: Boolean,
+    route: String? = null
 ) {
     val objType = sourceObject ?: OBJ_TYPE_CUSTOM
     val props = Props(
         mapOf(
-            EventsPropertiesKey.objectType to objType
+            EventsPropertiesKey.objectType to objType,
+            EventsPropertiesKey.route to route
         )
     )
     val event = if (containsFlagType) {
@@ -742,8 +744,6 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
             eventName = objectCreate,
             props = propsForObjectEvents(
                 route = route,
-                context = analytics.getContext(),
-                originalId = analytics.getOriginalId(),
                 sourceObject = objType?.sourceObject,
                 view = view
             ),

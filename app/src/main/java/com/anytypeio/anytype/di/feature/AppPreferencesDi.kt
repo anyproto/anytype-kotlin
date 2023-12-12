@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import android.content.Context
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -46,11 +47,13 @@ object AppPreferencesModule {
     fun provideViewModelFactory(
         copyFileToCacheDirectory: CopyFileToCacheDirectory,
         getNetworkMode: GetNetworkMode,
-        setNetworkMode: SetNetworkMode
+        setNetworkMode: SetNetworkMode,
+        analytics: Analytics
     ): PreferencesViewModel.Factory = PreferencesViewModel.Factory(
         copyFileToCacheDirectory = copyFileToCacheDirectory,
         getNetworkMode = getNetworkMode,
-        setNetworkMode = setNetworkMode
+        setNetworkMode = setNetworkMode,
+        analytics = analytics
     )
 }
 

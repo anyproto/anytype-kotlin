@@ -1960,3 +1960,24 @@ private fun getAnalyticsObjectType(
     val objType = typeStruct?.mapToObjectWrapperType()
     return objType?.sourceObject ?: OBJ_TYPE_CUSTOM
 }
+
+
+//region Self-Hosting
+fun CoroutineScope.sendAnalyticsSelectNetworkEvent(
+    analytics: Analytics,
+    type: String,
+    route: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.relationChangeValue,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to type,
+                EventsPropertiesKey.route to route
+            )
+        )
+    )
+}
+
+//endregion

@@ -228,6 +228,9 @@ object EventsDictionary {
         const val dataView = "dataview"
         const val block = "block"
         const val bookmark = "bookmark"
+        const val anytype = "Anytype"
+        const val localOnly = "LocalOnly"
+        const val selfHost = "SelfHost"
     }
 
     object BlockAction {

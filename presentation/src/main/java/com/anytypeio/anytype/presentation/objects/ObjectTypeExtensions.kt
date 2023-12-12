@@ -26,7 +26,8 @@ fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
     isWithCollection: Boolean = false,
     isWithBookmark: Boolean = false,
     excludeTypes: List<String> = emptyList(),
-    selectedTypes: List<String> = emptyList()
+    selectedTypes: List<String> = emptyList(),
+    useCustomComparator: Boolean = true
 ): List<ObjectTypeView> {
     val result = mutableListOf<ObjectTypeView>()
     forEach { obj ->
@@ -54,7 +55,10 @@ fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
         result.add(objTypeView)
         return@forEach
     }
-    return result.sortedWith(ObjectTypeViewComparator())
+    return if (useCustomComparator)
+        result.sortedWith(ObjectTypeViewComparator())
+    else
+        result
 }
 
 /**

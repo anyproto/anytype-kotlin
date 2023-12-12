@@ -11,8 +11,8 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -48,7 +48,7 @@ class CreateObjectOfTypeViewModel(
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 getObjectTypes.stream(
                     GetObjectTypes.Params(
-                        sorts = emptyList(),
+                        sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                         filters = ObjectSearchConstants.filterTypes(
                             spaces = buildList {
                                 add(space)

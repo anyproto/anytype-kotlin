@@ -1970,13 +1970,22 @@ fun CoroutineScope.sendAnalyticsSelectNetworkEvent(
 ) {
     sendEvent(
         analytics = analytics,
-        eventName = EventsDictionary.relationChangeValue,
+        eventName = EventsDictionary.selectNetwork,
         props = Props(
             mapOf(
                 EventsPropertiesKey.type to type,
                 EventsPropertiesKey.route to route
             )
         )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsUploadConfigFileEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.uploadNetworkConfiguration
     )
 }
 

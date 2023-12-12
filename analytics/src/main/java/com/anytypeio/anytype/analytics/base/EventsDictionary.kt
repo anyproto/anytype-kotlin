@@ -184,6 +184,10 @@ object EventsDictionary {
     const val MENU_HELP_PRIVACY = "MenuHelpPrivacy"
     const val MENU_HELP_CONTACT_US = "MenuHelpContact"
 
+    // Network mode
+    const val selectNetwork = "SelectNetwork"
+    const val uploadNetworkConfiguration = "UploadNetworkConfiguration"
+
     enum class ScreenOnboardingStep(val value: String) {
         VOID("Void"),
         PHRASE("Phrase"),

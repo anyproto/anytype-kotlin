@@ -4412,7 +4412,8 @@ class EditorViewModel(
                     analytics = analytics,
                     startTime = startTime,
                     sourceObject = SET_MARKETPLACE_ID,
-                    containsFlagType = true
+                    containsFlagType = true,
+                    route = EventsDictionary.Routes.navigation,
                 )
             }
         )
@@ -4429,7 +4430,8 @@ class EditorViewModel(
                     analytics = analytics,
                     startTime = startTime,
                     sourceObject = COLLECTION_MARKETPLACE_ID,
-                    containsFlagType = true
+                    containsFlagType = true,
+                    route = EventsDictionary.Routes.navigation
                 )
             }
         )
@@ -6061,7 +6063,8 @@ class EditorViewModel(
                         analytics = analytics,
                         startTime = startTime,
                         sourceObject = objType.sourceObject,
-                        containsFlagType = containsTypeFlag
+                        containsFlagType = containsTypeFlag,
+                        route = EventsDictionary.Routes.navigation
                     )
                     onSuccess?.invoke()
                 }

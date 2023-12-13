@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
-import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -18,7 +17,6 @@ import timber.log.Timber
 
 class AddToAnytypeViewModel(
     private val createBookmarkObject: CreateBookmarkObject,
-    private val createObject: CreateObject,
     private val createPrefilledNote: CreatePrefilledNote,
     private val spaceManager: SpaceManager
 ) : BaseViewModel() {
@@ -57,35 +55,17 @@ class AddToAnytypeViewModel(
                     sendToast("Error while creating note: ${it.msg()}")
                 }
             )
-//            createObject.async(
-//                CreateObject.Param(
-//                    type = TypeKey(ObjectTypeUniqueKeys.NOTE),
-//                    prefilled = mapOf(
-//                        Relations.DESCRIPTION to text
-//                    )
-//                )
-//            ).fold(
-//                onSuccess = { result ->
-//                    navigation.emit(OpenObjectNavigation.OpenEditor(result.objectId))
-//                },
-//                onFailure = {
-//                    Timber.d(it, "Error while creating note")
-//                    sendToast("Error while creating note: ${it.msg()}")
-//                }
-//            )
         }
     }
 
     class Factory @Inject constructor(
         private val createBookmarkObject: CreateBookmarkObject,
         private val createPrefilledNote: CreatePrefilledNote,
-        private val spaceManager: SpaceManager,
-        private val createObject: CreateObject
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return AddToAnytypeViewModel(
-                createObject = createObject,
                 createBookmarkObject = createBookmarkObject,
                 spaceManager = spaceManager,
                 createPrefilledNote = createPrefilledNote

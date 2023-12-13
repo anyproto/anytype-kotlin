@@ -59,7 +59,7 @@ abstract class RelationValueBaseViewModel(
     private val jobs = mutableListOf<Job>()
     private var relationFormat: Relation.Format? = null
 
-    val isReadOnly = MutableStateFlow(false)
+    val isReadOnlyValue = MutableStateFlow(false)
     val isEditing = MutableStateFlow(false)
     val isDismissed = MutableStateFlow(false)
     val name = MutableStateFlow("")
@@ -103,7 +103,7 @@ abstract class RelationValueBaseViewModel(
     ) {
         val result = mutableListOf<RelationValueView>()
         val items = mutableListOf<RelationValueView>()
-        isReadOnly.value = relation.isReadonlyValue
+        isReadOnlyValue.value = relation.isReadonlyValue
 
         when (relation.format) {
             Relation.Format.TAG -> {

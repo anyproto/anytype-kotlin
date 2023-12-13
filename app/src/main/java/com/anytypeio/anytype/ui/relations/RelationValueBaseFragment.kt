@@ -160,7 +160,7 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
         jobs += lifecycleScope.subscribe(vm.copyFileStatus) { command ->
             pickerDelegate.onCopyFileCommand(command)
         }
-        jobs += lifecycleScope.subscribe(vm.isReadOnly) { isReadOnly ->
+        jobs += lifecycleScope.subscribe(vm.isReadOnlyValue) { isReadOnly ->
             if (isReadOnly) {
                 btnAddValue.gone()
                 btnEditOrDone.gone()

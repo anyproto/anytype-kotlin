@@ -45,15 +45,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = listOf(
-                ObjectType.Layout.BASIC.code.toDouble(),
-                ObjectType.Layout.PROFILE.code.toDouble(),
-                ObjectType.Layout.SET.code.toDouble(),
-                ObjectType.Layout.COLLECTION.code.toDouble(),
-                ObjectType.Layout.TODO.code.toDouble(),
-                ObjectType.Layout.NOTE.code.toDouble(),
-                ObjectType.Layout.BOOKMARK.code.toDouble()
-            )
+            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
@@ -98,7 +90,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.layouts.map { it.code.toDouble() }
+            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.ID,
@@ -280,7 +272,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB FAVORITES
-    fun filterTabFavorites(space: Id) = listOf(
+    fun filterTabFavorites(spaces: List<Id>) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL ,
@@ -299,7 +291,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.layouts.map { it.code.toDouble() }
+            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.TYPE_UNIQUE_KEY,
@@ -308,8 +300,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+            condition = DVFilterCondition.IN,
+            value = spaces
         ),
         DVFilter(
             relation = Relations.IS_FAVORITE,
@@ -324,7 +316,7 @@ object ObjectSearchConstants {
 
     //region TAB RECENT
     fun filterTabRecent(
-        space: Id,
+        spaces: List<Id>,
         spaceCreationDateInSeconds: Long? = null
     ) = buildList {
         add(
@@ -382,8 +374,8 @@ object ObjectSearchConstants {
         add(
             DVFilter(
                 relation = Relations.SPACE_ID,
-                condition = DVFilterCondition.EQUAL,
-                value = space
+                condition = DVFilterCondition.IN,
+                value = spaces
             )
         )
     }
@@ -396,7 +388,9 @@ object ObjectSearchConstants {
         )
     )
 
-    fun filterTabRecentLocal(space: Id) = listOf(
+    fun filterTabRecentLocal(
+        spaces: List<Id>
+    ) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -420,7 +414,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.layouts.map { it.code.toDouble() }
+            value = SupportedLayouts.createObjectLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.LAST_OPENED_DATE,
@@ -429,8 +423,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+            condition = DVFilterCondition.IN,
+            value = spaces
         )
     )
 
@@ -447,7 +441,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB SETS
-    fun filterTabSets(space: Id) = listOf(
+    fun filterTabSets(spaces: List<Id>) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -470,8 +464,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+            condition = DVFilterCondition.IN,
+            value = spaces
         )
     )
 
@@ -485,7 +479,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region TAB ARCHIVE
-    fun filterTabArchive(space: Id) = listOf(
+    fun filterTabArchive(spaces: List<Id>) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.EQUAL,
@@ -503,8 +497,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+            condition = DVFilterCondition.IN,
+            value = spaces
         )
     )
 
@@ -541,7 +535,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.editorLayouts.map { it.code.toDouble() }
+            value = SupportedLayouts.addAsLinkToLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.ID,
@@ -578,7 +572,8 @@ object ObjectSearchConstants {
         Relations.IS_DELETED,
         Relations.IS_HIDDEN,
         Relations.SNIPPET,
-        Relations.DONE
+        Relations.DONE,
+        Relations.IDENTITY_PROFILE_LINK
     )
 
     val defaultOptionKeys = listOf(
@@ -594,6 +589,7 @@ object ObjectSearchConstants {
 
     val defaultDataViewKeys = listOf(
         Relations.ID,
+        Relations.IDENTITY_PROFILE_LINK,
         Relations.NAME,
         Relations.ICON_IMAGE,
         Relations.ICON_EMOJI,
@@ -640,35 +636,57 @@ object ObjectSearchConstants {
 
     //region OBJECT TYPES
 
-    fun filterObjectTypeLibrary(space: Id) = listOf(
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.EQUAL,
-            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
-        ),
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
-        )
-    )
+    fun filterTypes(
+        spaces: List<Id>,
+        recommendedLayouts: List<ObjectType.Layout> = emptyList()
+    ): List<DVFilter> {
+        return buildList {
+            addAll(
+                listOf(
+                    DVFilter(
+                        relation = Relations.IS_ARCHIVED,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
+                        relation = Relations.IS_DELETED,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
+                        relation = Relations.IS_HIDDEN,
+                        condition = DVFilterCondition.NOT_EQUAL,
+                        value = true
+                    ),
+                    DVFilter(
+                        relation = Relations.LAYOUT,
+                        condition = DVFilterCondition.EQUAL,
+                        value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
+                    ),
+                    DVFilter(
+                        relation = Relations.SPACE_ID,
+                        condition = DVFilterCondition.IN,
+                        value = spaces
+                    ),
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_EMPTY
+                    )
+                )
+            )
+            if (recommendedLayouts.isNotEmpty()) {
+                add(
+                    DVFilter(
+                        relation = Relations.RECOMMENDED_LAYOUT,
+                        condition = DVFilterCondition.IN,
+                        value = recommendedLayouts.map { it.code.toDouble() }
+                    )
+                )
+            }
+        }
+    }
 
-    fun defaultDataViewFilters() = listOf(
+    fun defaultDataViewFilters(spaces: List<Id>) = listOf(
         DVFilter(
             relation = Relations.IS_HIDDEN,
             condition = Condition.NOT_EQUAL,
@@ -683,57 +701,11 @@ object ObjectSearchConstants {
             relation = Relations.IS_ARCHIVED,
             condition = Condition.NOT_EQUAL,
             value = true
-        )
-    )
-
-    fun defaultDataViewFilters(space: Id) = listOf(
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = Condition.NOT_EQUAL,
-            value = true,
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = Condition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = Condition.NOT_EQUAL,
-            value = true
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
-        )
-    )
-
-    val filterObjectTypeMarketplace = listOf(
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.EQUAL,
-            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
-        ),
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = MARKETPLACE_SPACE_ID
+            condition = DVFilterCondition.IN,
+            value = spaces
         )
     )
 
@@ -751,7 +723,8 @@ object ObjectSearchConstants {
         Relations.SMARTBLOCKTYPES,
         Relations.SOURCE_OBJECT,
         Relations.RECOMMENDED_LAYOUT,
-        Relations.DEFAULT_TEMPLATE_ID
+        Relations.DEFAULT_TEMPLATE_ID,
+        Relations.SPACE_ID
     )
 
     //endregion
@@ -762,6 +735,22 @@ object ObjectSearchConstants {
             type = DVSortType.ASC
         )
     )
+
+    fun defaultObjectTypeSearchSorts() : List<DVSort> = buildList {
+        add(
+            DVSort(
+                relationKey = Relations.LAST_USED_DATE,
+                type = DVSortType.DESC,
+                includeTime = true
+            )
+        )
+        add(
+            DVSort(
+                relationKey = Relations.NAME,
+                type = DVSortType.ASC
+            )
+        )
+    }
 
     fun filterMyRelations() : List<DVFilter> = listOf(
         DVFilter(
@@ -814,30 +803,17 @@ object ObjectSearchConstants {
         )
     )
 
-    fun filterTypes() : List<DVFilter> = listOf(
+    fun collectionFilters(spaces: List<Id>) = listOf(
         DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
+            relation = Relations.SPACE_ID,
+            condition = DVFilterCondition.IN,
+            value = spaces
         ),
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.EQUAL,
-            value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
-        )
-    )
-
-    fun collectionFilters(space: Id) = listOf(
+            value = ObjectType.Layout.COLLECTION.code.toDouble()
+        ),
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL ,
@@ -852,16 +828,6 @@ object ObjectSearchConstants {
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
-        ),
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.EQUAL,
-            value = ObjectType.Layout.COLLECTION.code.toDouble()
         )
     )
 
@@ -873,7 +839,7 @@ object ObjectSearchConstants {
         )
     )
 
-    fun filesFilters(space: Id) = listOf(
+    fun filesFilters(spaces: List<Id>) = listOf(
         DVFilter(
             relation = Relations.IS_DELETED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -896,8 +862,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+            condition = DVFilterCondition.IN,
+            value = spaces
         ),
         DVFilter(
             relation = Relations.FILE_SYNC_STATUS,

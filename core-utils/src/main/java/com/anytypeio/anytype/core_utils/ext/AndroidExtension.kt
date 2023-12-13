@@ -1,12 +1,10 @@
 package com.anytypeio.anytype.core_utils.ext
 
-import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Point
 import android.graphics.Rect
@@ -34,8 +32,6 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.DimenRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.updateLayoutParams
@@ -45,6 +41,7 @@ import androidx.navigation.NavDirections
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
+import com.anytypeio.anytype.core_utils.const.MimeTypes.MIME_EXTRA_YAML
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -283,9 +280,12 @@ fun String.normalizeUrl(): String =
  */
 fun Fragment.startFilePicker(mime: Mimetype, requestCode: Int? = null) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val intent = Intent(Intent.ACTION_GET_CONTENT).apply {
-            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, false)
+        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+            addCategory(Intent.CATEGORY_OPENABLE)
             type = mime.value
+            if (mime == Mimetype.MIME_YAML) {
+                putExtra(Intent.EXTRA_MIME_TYPES, MIME_EXTRA_YAML)
+            }
         }
         val code = if (mime == Mimetype.MIME_FILE_ALL) {
             REQUEST_FILE_SAF_CODE

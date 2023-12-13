@@ -52,8 +52,18 @@ class AmplitudeTracker(
 
     private suspend fun startRegisteringUserProps() {
         analytics.observeUserProperties().collect { prop: UserProperty ->
-            if (BuildConfig.SEND_EVENTS && prop is UserProperty.AccountId) {
-                tracker.setUserId(prop.id, true)
+            Timber.d("Setting user property: $prop")
+            if (BuildConfig.SEND_EVENTS) {
+                when(prop) {
+                    is UserProperty.AccountId -> {
+                        tracker.setUserId(prop.id, true)
+                    }
+                    is UserProperty.InterfaceLanguage -> {
+                        tracker.setUserProperties(
+                            JSONObject(mapOf(UserProperty.INTERFACE_LANG_KEY to prop.lang))
+                        )
+                    }
+                }
             }
         }
     }

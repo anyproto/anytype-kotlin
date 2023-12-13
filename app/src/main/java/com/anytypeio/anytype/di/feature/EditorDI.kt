@@ -53,7 +53,9 @@ import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
@@ -273,7 +275,10 @@ object EditorSessionModule {
         addRelationToObject: AddRelationToObject,
         applyTemplate: ApplyTemplate,
         setObjectType: SetObjectType,
-        templatesContainer: ObjectTypeTemplatesContainer
+        templatesContainer: ObjectTypeTemplatesContainer,
+        storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        dispatchers: AppCoroutineDispatchers,
+        getNetworkMode: GetNetworkMode
     ): EditorViewModelFactory = EditorViewModelFactory(
         openPage = openPage,
         closeObject = closePage,
@@ -312,7 +317,10 @@ object EditorSessionModule {
         addRelationToObject = addRelationToObject,
         applyTemplate = applyTemplate,
         setObjectType = setObjectType,
-        templatesContainer = templatesContainer
+        templatesContainer = templatesContainer,
+        dispatchers = dispatchers,
+        storelessSubscriptionContainer = storelessSubscriptionContainer,
+        getNetworkMode = getNetworkMode
     )
 
     @JvmStatic

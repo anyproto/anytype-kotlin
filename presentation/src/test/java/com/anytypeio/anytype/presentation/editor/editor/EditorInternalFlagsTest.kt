@@ -272,9 +272,6 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         vm.onStart(root)
 
         advanceUntilIdle()
-        vm.onObjectTypesWidgetDoneClicked()
-
-        advanceUntilIdle()
 
         verifyNoInteractions(setObjectInternalFlags)
 

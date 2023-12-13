@@ -109,12 +109,10 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         vm.onStart(root)
 
-        val state = vm.controlPanelViewState.value
-
-        val objectTypesWidget = state?.objectTypesToolbar
+        val objectTypesWidget = vm.typesWidgetState.value
 
         assertNotNull(objectTypesWidget)
-        assertTrue(objectTypesWidget.isVisible)
+        assertTrue(objectTypesWidget.visible)
     }
 
     @Test
@@ -178,11 +176,9 @@ class EditorObjectTypeChangeWidgetTest : EditorPresentationTestSetup() {
 
         vm.onStart(root)
 
-        val state = vm.controlPanelViewState.value
-
-        val objectTypesWidget = state?.objectTypesToolbar
+        val objectTypesWidget = vm.typesWidgetState.value
 
         assertNotNull(objectTypesWidget)
-        assertFalse(objectTypesWidget.isVisible)
+        assertFalse(objectTypesWidget.visible)
     }
 }

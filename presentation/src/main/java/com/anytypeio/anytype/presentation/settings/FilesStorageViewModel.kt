@@ -11,11 +11,11 @@ import com.anytypeio.anytype.core_models.FileLimitsEvent
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.bytesToHumanReadableSizeLocal
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.anytypeio.anytype.device.BuildProvider
 import com.anytypeio.anytype.domain.account.DeleteAccount
-import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
@@ -300,9 +300,9 @@ class FilesStorageViewModel(
                     )
                     Timber.d("Successfully deleted account, status")
                 },
-                failure = {
-                    Timber.e(it, "Error while deleting account").also {
-                        sendToast("Error while deleting account")
+                failure = { e ->
+                    Timber.e(e, "Error while deleting account").also {
+                        sendToast("Error while deleting account: ${e.msg()}")
                     }
                 }
             )

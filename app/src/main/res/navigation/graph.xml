@@ -156,12 +156,15 @@
     <fragment
         android:id="@+id/homeScreenWidgets"
         android:name="com.anytypeio.anytype.ui.widgets.collection.CollectionFragment"
-        android:label="Home screen"
-        tools:layout="@layout/fragment_home" />
+        android:label="Home screen" />
 
     <dialog
         android:id="@+id/selectWidgetSourceScreen"
         android:name="com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment" />
+
+    <dialog
+        android:id="@+id/alertImportExperienceUnsupported"
+        android:name="com.anytypeio.anytype.ui.alert.AlertImportExperienceUnsupported" />
 
     <dialog
         android:id="@+id/remoteStorageFragment"
@@ -173,11 +176,25 @@
 
     <dialog
         android:id="@+id/selectSpaceScreen"
-        android:name="com.anytypeio.anytype.ui.spaces.SelectSpaceFragment"/>
+        android:name="com.anytypeio.anytype.ui.spaces.SelectSpaceFragment">
+        <action
+            android:id="@+id/switchSpaceAction"
+            app:destination="@+id/homeScreen"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/anim_switch_space_enter" />
+    </dialog>
 
     <dialog
         android:id="@+id/createSpaceScreen"
-        android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment"/>
+        android:name="com.anytypeio.anytype.ui.spaces.CreateSpaceFragment">
+        <action
+            android:id="@+id/switchSpaceAction"
+            app:destination="@+id/homeScreen"
+            app:popUpTo="@+id/homeScreen"
+            app:popUpToInclusive="true"
+            app:enterAnim="@anim/anim_switch_space_enter" />
+    </dialog>
 
     <dialog
         android:id="@+id/spaceSettingsScreen"
@@ -199,13 +216,6 @@
             app:destination="@+id/main_navigation"
             app:popUpTo="@+id/main_navigation"
             app:popUpToInclusive="true" />
-        <action
-            android:id="@+id/action_create_profile"
-            app:destination="@id/createAccountScreen"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right" />
         <action
             android:id="@+id/action_open_keychain"
             app:destination="@id/keychainDialog" />
@@ -256,26 +266,6 @@
         android:name="com.anytypeio.anytype.ui.auth.account.DeleteAccountWarning"/>
 
     <fragment
-        android:id="@+id/createAccountScreen"
-        android:name="com.anytypeio.anytype.ui.auth.account.CreateAccountFragment"
-        android:label="StartLoginFragment"
-        tools:layout="@layout/fragment_create_account">
-        <action
-            android:id="@+id/action_setup_new_account"
-            app:destination="@id/setupNewAccountScreen"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@+id/startLoginScreen"
-            app:popUpToInclusive="true" />
-    </fragment>
-    <fragment
-        android:id="@+id/setupNewAccountScreen"
-        android:name="com.anytypeio.anytype.ui.auth.account.SetupNewAccountFragment"
-        android:label="SetupAccount"
-        tools:layout="@layout/fragment_setup_new_account" />
-    <fragment
         android:id="@+id/splashScreen"
         android:name="com.anytypeio.anytype.ui.splash.SplashFragment"
         android:label="SplashFragment"
@@ -317,15 +307,6 @@
             app:popUpTo="@+id/main_navigation"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_splashFragment_to_login_nav"
-            app:destination="@id/login_nav"
-            app:enterAnim="@anim/nav_default_enter_anim"
-            app:exitAnim="@anim/nav_default_exit_anim"
-            app:popEnterAnim="@anim/nav_default_pop_enter_anim"
-            app:popExitAnim="@anim/nav_default_pop_exit_anim"
-            app:popUpTo="@+id/splashScreen"
-            app:popUpToInclusive="true" />
-        <action
             android:id="@+id/action_splashFragment_to_authStart"
             app:destination="@id/onboarding_nav"
             app:enterAnim="@anim/nav_default_enter_anim"
@@ -365,153 +346,6 @@
             app:popUpTo="@id/authStartScreen"
             app:popUpToInclusive="true" />
 
-    </navigation>
-
-    <navigation
-        android:id="@+id/login_nav"
-        app:startDestination="@id/startLoginScreen">
-        <fragment
-            android:id="@+id/selectAccountScreen"
-            android:name="com.anytypeio.anytype.ui.auth.account.SelectAccountFragment"
-            android:label="ChooseProfileScreen"
-            tools:layout="@layout/fragment_select_account">
-            <action
-                android:id="@+id/action_setup_selected_account"
-                app:destination="@id/setupSelectedAccountScreen"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"
-                app:popUpTo="@+id/startLoginScreen"
-                app:popUpToInclusive="true" />
-        </fragment>
-        <fragment
-            android:id="@+id/setupNewAccountScreen"
-            android:name="com.anytypeio.anytype.ui.auth.account.SetupNewAccountFragment"
-            android:label="SetupAccount"
-            tools:layout="@layout/fragment_setup_new_account">
-            <action
-                android:id="@+id/action_setupNewAccountScreen_to_invitationFragment"
-                app:destination="@id/invitationFragment"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popUpTo="@+id/invitationFragment"
-                app:popUpToInclusive="true" />
-        </fragment>
-
-        <fragment
-            android:id="@+id/keychainLoginScreen"
-            android:name="com.anytypeio.anytype.ui.auth.KeychainLoginFragment"
-            android:label="KeychainLogin"
-            tools:layout="@layout/fragment_keychain_login">
-            <action
-                android:id="@+id/action_select_account"
-                app:destination="@id/selectAccountScreen"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right" />
-        </fragment>
-
-        <fragment
-            android:id="@+id/createAccountScreen"
-            android:name="com.anytypeio.anytype.ui.auth.account.CreateAccountFragment"
-            android:label="StartLoginFragment"
-            tools:layout="@layout/fragment_create_account">
-            <action
-                android:id="@+id/action_setup_new_account"
-                app:destination="@id/setupNewAccountScreen"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right" />
-        </fragment>
-        <fragment
-            android:id="@+id/setupSelectedAccountScreen"
-            android:name="com.anytypeio.anytype.ui.auth.account.SetupSelectedAccountFragment"
-            android:label="SetupAccount"
-            tools:layout="@layout/fragment_setup_selected_account">
-            <argument
-                android:name="selected_account_id"
-                android:defaultValue="0"
-                app:argType="integer"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right" />
-        </fragment>
-        <fragment
-            android:id="@+id/startLoginScreen"
-            android:name="com.anytypeio.anytype.ui.auth.StartLoginFragment"
-            android:label="StartLoginFragment"
-            tools:layout="@layout/fragment_start_login">
-            <action
-                android:id="@+id/action_open_sign_in"
-                app:destination="@id/keychainLoginScreen"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right"
-                app:popUpToInclusive="false" />
-            <action
-                android:id="@+id/action_create_profile"
-                app:destination="@id/createAccountScreen"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right" />
-            <action
-                android:id="@+id/openAboutAnalyticsScreen"
-                app:destination="@id/aboutAnalyticsScreen"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right" />
-        </fragment>
-        <action
-            android:id="@+id/action_global_desktopScreen"
-            app:destination="@+id/homeScreen"
-            app:enterAnim="@anim/slide_in_right"
-            app:exitAnim="@anim/slide_out_left"
-            app:popEnterAnim="@anim/slide_in_left"
-            app:popExitAnim="@anim/slide_out_right"
-            app:popUpTo="@+id/login_nav"
-            app:popUpToInclusive="true" />
-        <fragment
-            android:id="@+id/choosePinCodeScreen"
-            android:name="com.anytypeio.anytype.ui.auth.pin.ChoosePinCodeFragment"
-            android:label="StartLoginFragment"
-            tools:layout="@layout/fragment_choose_pin_code" />
-        <fragment
-            android:id="@+id/confirmPinCodeScreen"
-            android:name="com.anytypeio.anytype.feature_login.ui.login.presentation.ui.pin.ConfirmPinCodeFragment"
-            android:label="StartLoginFragment"
-            tools:layout="@layout/fragment_confirm_pin_code" />
-        <fragment
-            android:id="@+id/invitationFragment"
-            android:name="com.anytypeio.anytype.ui.auth.InvitationFragment"
-            android:label="InvitationFragment"
-            tools:layout="@layout/fragment_invitation">
-            <action
-                android:id="@+id/action_invitationFragment_to_createAccountScreen"
-                app:destination="@id/createAccountScreen"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right" />
-        </fragment>
-        <fragment
-            android:id="@+id/aboutAnalyticsScreen"
-            android:name="com.anytypeio.anytype.ui.auth.AboutAnalyticsFragment"
-            android:label="About analytics">
-            <action
-                android:id="@+id/openInviteCodeScreen"
-                app:destination="@id/invitationFragment"
-                app:enterAnim="@anim/slide_in_right"
-                app:exitAnim="@anim/slide_out_left"
-                app:popEnterAnim="@anim/slide_in_left"
-                app:popExitAnim="@anim/slide_out_right" />
-        </fragment>
     </navigation>
 
     <fragment

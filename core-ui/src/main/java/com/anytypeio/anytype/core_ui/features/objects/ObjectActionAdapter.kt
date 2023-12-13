@@ -84,6 +84,10 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_set_as_default_24)
                     tvActionTitle.setText(R.string.set_as_default)
                 }
+                ObjectAction.CREATE_WIDGET -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_to_widgets_24)
+                    tvActionTitle.setText(R.string.object_action_to_widgets)
+                }
                 else -> {}
             }
         }

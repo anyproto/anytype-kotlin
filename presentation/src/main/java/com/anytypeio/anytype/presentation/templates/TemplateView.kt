@@ -69,7 +69,7 @@ sealed class TemplateObjectTypeView {
 
     data class Item(
         val type: ObjectWrapper.Type,
-        val isDefault: Boolean = false
+        val isSelected: Boolean = false
     ) : TemplateObjectTypeView()
 
     object Search : TemplateObjectTypeView()

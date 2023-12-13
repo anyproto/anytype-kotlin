@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
+import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -29,7 +30,9 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -155,6 +158,9 @@ open class ObjectSetViewModelTestSetup {
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
 
     @Mock
+    lateinit var getObjectTypes: GetObjectTypes
+
+    @Mock
     lateinit var getDefaultObjectType: GetDefaultObjectType
 
     @Mock
@@ -176,6 +182,12 @@ open class ObjectSetViewModelTestSetup {
 
     @Mock
     lateinit var createTemplate: CreateTemplate
+
+    @Mock
+    lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
+
+    @Mock
+    lateinit var getNetworkMode: GetNetworkMode
 
     lateinit var spaceConfig: Config
 
@@ -251,14 +263,16 @@ open class ObjectSetViewModelTestSetup {
             objectToCollection = objectToCollection,
             setQueryToObjectSet = setQueryToObjectSet,
             storeOfObjectTypes = storeOfObjectTypes,
-            getDefaultObjectType = getDefaultObjectType,
-            updateDataViewViewer = updateDataViewViewer,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
             duplicateObjects = duplicateObjects,
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
-            createTemplate = createTemplate
+            createTemplate = createTemplate,
+            getObjectTypes = getObjectTypes,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            dispatchers = dispatchers,
+            getNetworkMode = getNetworkMode
         )
     }
 
@@ -338,7 +352,7 @@ open class ObjectSetViewModelTestSetup {
             subscription = subscription,
             collection = collection,
             filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = spaceId
+                spaces = listOf(spaceConfig.space, spaceConfig.techSpace)
             ),
             sorts = dvSorts,
             keys = dvKeys,
@@ -406,18 +420,11 @@ open class ObjectSetViewModelTestSetup {
 
     fun stubTemplatesForTemplatesContainer(
         type: String = MockDataFactory.randomString(),
-        templates: List<ObjectWrapper.Basic> = emptyList()
+        templates: List<ObjectWrapper.Basic> = emptyList(),
+        subId: Id = MockDataFactory.randomString()
     ) {
         templatesContainer.stub {
-            onBlocking { subscribeToTemplates(type) }.thenReturn(flowOf(templates))
-        }
-    }
-
-    fun stubTypesForTemplatesContainer(
-        objTypes: List<ObjectWrapper.Basic> = emptyList()
-    ) {
-        templatesContainer.stub {
-            onBlocking { subscribeToTypes() }.thenReturn(flowOf(objTypes))
+            onBlocking { subscribeToTemplates(type, subId) }.thenReturn(flowOf(templates))
         }
     }
 

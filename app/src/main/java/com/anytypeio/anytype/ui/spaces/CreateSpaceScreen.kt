@@ -62,6 +62,7 @@ fun CreateSpaceScreen(
     val input = remember {
         mutableStateOf("")
     }
+    val focusManager = LocalFocusManager.current
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -84,7 +85,13 @@ fun CreateSpaceScreen(
                 onSpaceIconClicked = onSpaceIconClicked
             )
             Spacer(modifier = Modifier.height(10.dp))
-            SpaceNameInput(input = input)
+            SpaceNameInput(
+                input = input,
+                onActionDone = {
+                    focusManager.clearFocus()
+                    onCreate(input.value)
+                }
+            )
             Divider()
             Section(title = stringResource(id = R.string.type))
             TypeOfSpace(spaceType = PRIVATE_SPACE_TYPE)
@@ -95,7 +102,10 @@ fun CreateSpaceScreen(
             Spacer(modifier = Modifier.height(78.dp))
         }
         CreateSpaceButton(
-            onCreate = onCreate,
+            onCreate = { name ->
+                focusManager.clearFocus()
+                onCreate(name)
+            },
             input = input,
             modifier = Modifier.align(Alignment.BottomCenter),
             isLoading = isLoading
@@ -165,9 +175,9 @@ fun SpaceIcon(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SpaceNameInput(
-    input: MutableState<String>
+    input: MutableState<String>,
+    onActionDone: () -> Unit
 ) {
-    val focusManager = LocalFocusManager.current
     val focusRequester = FocusRequester()
     Box(
         modifier = Modifier
@@ -178,9 +188,7 @@ fun SpaceNameInput(
             value = input.value,
             onValueChange = { input.value = it },
             keyboardActions = KeyboardActions(
-                onDone = {
-                    focusManager.clearFocus()
-                }
+                onDone = { onActionDone() }
             ),
             modifier = Modifier
                 .fillMaxWidth()
@@ -260,7 +268,8 @@ fun Section(
                 )
                 .align(Alignment.BottomStart),
             text = title,
-            color = colorResource(id = R.color.text_secondary)
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption1Regular
         )
     }
 }

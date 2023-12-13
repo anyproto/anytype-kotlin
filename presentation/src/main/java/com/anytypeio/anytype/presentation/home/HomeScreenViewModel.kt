@@ -7,6 +7,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
@@ -23,7 +25,6 @@ import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
-import com.anytypeio.anytype.core_utils.ext.letNotNull
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -36,6 +37,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
@@ -45,6 +47,7 @@ import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -53,8 +56,10 @@ import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.extension.sendAddWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
@@ -87,6 +92,7 @@ import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import javax.inject.Inject
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -98,6 +104,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
@@ -150,6 +157,7 @@ class HomeScreenViewModel(
     private val setWidgetActiveView: SetWidgetActiveView,
     private val setObjectDetails: SetObjectDetails,
     private val getSpaceView: GetSpaceView,
+    private val searchObjects: SearchObjects
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -316,7 +324,7 @@ class HomeScreenViewModel(
                         } else {
                             DataViewListWidgetContainer(
                                 widget = widget,
-                                space = config.space,
+                                config = config,
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
@@ -993,6 +1001,26 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onResume(deeplink: DeepLinkResolver.Action? = null) {
+        Timber.d("onResume, deeplink: ${deeplink}")
+        when(deeplink) {
+            DeepLinkResolver.Action.Import.Experience -> {
+                viewModelScope.launch {
+                    delay(1000)
+                    commands.emit(Command.Deeplink.CannotImportExperience)
+                }
+            }
+            DeepLinkResolver.Action.Unknown -> {
+                if (BuildConfig.DEBUG) {
+                    sendToast("Could not resolve deeplink")
+                }
+            }
+            else -> {
+                Timber.d("No deep link")
+            }
+        }
+    }
+
     fun onStop() {
         Timber.d("onStop")
         // Temporary workaround for app crash when user is logged out and config storage is not initialized.
@@ -1018,45 +1046,54 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
-        when (obj.layout) {
-            ObjectType.Layout.BASIC,
-            ObjectType.Layout.PROFILE,
-            ObjectType.Layout.NOTE,
-            ObjectType.Layout.TODO,
-            ObjectType.Layout.FILE,
-            ObjectType.Layout.BOOKMARK -> navigate(Navigation.OpenObject(obj.id))
-            ObjectType.Layout.SET -> navigate(Navigation.OpenSet(obj.id))
-            ObjectType.Layout.COLLECTION -> navigate(Navigation.OpenSet(obj.id))
-            else -> sendToast("Unexpected layout: ${obj.layout}")
+        when(val navigation = obj.navigation()) {
+            is OpenObjectNavigation.OpenDataView -> {
+                navigate(Navigation.OpenSet(navigation.target))
+            }
+            is OpenObjectNavigation.OpenEditor -> {
+                navigate(Navigation.OpenObject(navigation.target))
+            }
+            is OpenObjectNavigation.UnexpectedLayoutError -> {
+                sendToast("Unexpected layout: ${navigation.layout}")
+            }
         }
     }
 
-    fun onCreateNewObjectClicked(type: Key? = null) {
+    fun onCreateNewObjectClicked(objType: ObjectWrapper.Type? = null) {
+        Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = CreateObject.Param(
                 internalFlags  = buildList {
                     add(InternalFlags.ShouldSelectTemplate)
                     add(InternalFlags.ShouldEmptyDelete)
-                    if (type.isNullOrBlank()) {
+                    if (objType == null) {
                         add(InternalFlags.ShouldSelectType)
                     }
                 },
-                type = if (type != null) TypeKey(key = type) else null
+                type = if (objType != null) TypeKey(key = objType.uniqueKey) else null
             )
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
-                        // TODO Multispaces - Check analytics events
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = result.objectId,
+                            type = result.typeKey.key,
                             storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.navigation,
                             startTime = startTime,
                             view = EventsDictionary.View.viewHome
                         )
-                        if (type == ObjectTypeUniqueKeys.SET || type == ObjectTypeUniqueKeys.COLLECTION) {
+                        if (objType != null) {
+                            sendAnalyticsObjectTypeSelectOrChangeEvent(
+                                analytics = analytics,
+                                startTime = startTime,
+                                sourceObject = objType.sourceObject,
+                                containsFlagType = true,
+                                route = EventsDictionary.Routes.longTap
+                            )
+                        }
+                        if (objType?.uniqueKey == ObjectTypeUniqueKeys.SET || objType?.uniqueKey == ObjectTypeUniqueKeys.COLLECTION) {
                             navigate(Navigation.OpenSet(result.objectId))
                         } else {
                             navigate(Navigation.OpenObject(result.objectId))
@@ -1103,23 +1140,69 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithSettingUpShortcuts() {
-        viewModelScope.launch {
-            getDefaultObjectType.async(Unit).fold(
-                onSuccess = {
-                    Pair(it.name, it.type).letNotNull { name, type ->
-                        appActionManager.setup(
-                            AppActionManager.Action.CreateNew(
-                                type = type,
-                                name = name
-                            )
-                        )
+        spaceManager
+            .observe()
+            .onEach { config ->
+                val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()
+                val keys = buildSet {
+                    if (defaultObjectType != null) {
+                        add(defaultObjectType.type.key)
                     }
-                },
-                onFailure = {
-                    Timber.d("Error while setting up app shortcuts")
+                    add(ObjectTypeUniqueKeys.NOTE)
+                    add(ObjectTypeUniqueKeys.PAGE)
+                    add(ObjectTypeUniqueKeys.TASK)
                 }
-            )
-        }
+                searchObjects(
+                    SearchObjects.Params(
+                        keys = buildList {
+                            add(Relations.ID)
+                            add(Relations.UNIQUE_KEY)
+                            add(Relations.NAME)
+                        },
+                        filters = buildList {
+                            add(
+                                DVFilter(
+                                    relation = Relations.SPACE_ID,
+                                    value = config.space,
+                                    condition = DVFilterCondition.EQUAL
+                                )
+                            )
+                            add(
+                                DVFilter(
+                                    relation = Relations.LAYOUT,
+                                    value = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+                                    condition = DVFilterCondition.EQUAL
+                                )
+                            )
+                            add(
+                                DVFilter(
+                                    relation = Relations.UNIQUE_KEY,
+                                    value = keys.toList(),
+                                    condition = DVFilterCondition.IN
+                                )
+                            )
+                        }
+                    )
+                ).process(
+                    success = { wrappers ->
+                        val types = wrappers
+                            .map { ObjectWrapper.Type(it.map) }
+                            .sortedBy { keys.indexOf(it.uniqueKey) }
+
+                        val actions = types.map { type ->
+                            AppActionManager.Action.CreateNew(
+                                type = TypeKey(type.uniqueKey),
+                                name = type.name.orEmpty()
+                            )
+                        }
+                        appActionManager.setup(actions = actions)
+                    },
+                    failure = {
+                        Timber.e(it, "Error while searching for types")
+                    }
+                )
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun dispatchDeleteWidgetAnalyticsEvent(target: Widget?) {
@@ -1291,7 +1374,8 @@ class HomeScreenViewModel(
         private val spaceManager: SpaceManager,
         private val spaceWidgetContainer: SpaceWidgetContainer,
         private val setObjectDetails: SetObjectDetails,
-        private val getSpaceView: GetSpaceView
+        private val getSpaceView: GetSpaceView,
+        private val searchObjects: SearchObjects
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1326,7 +1410,8 @@ class HomeScreenViewModel(
             spaceManager = spaceManager,
             spaceWidgetContainer = spaceWidgetContainer,
             setObjectDetails = setObjectDetails,
-            getSpaceView = getSpaceView
+            getSpaceView = getSpaceView,
+            searchObjects = searchObjects
         ) as T
     }
 
@@ -1396,6 +1481,10 @@ sealed class Command {
             const val UNDEFINED_LAYOUT_CODE = -1
         }
     }
+
+    sealed class Deeplink : Command() {
+        object CannotImportExperience : Deeplink()
+    }
 }
 
 /**
@@ -1408,3 +1497,36 @@ typealias Widgets = List<Widget>?
  * Null means there are no info about containers — due to loading or error state.
  */
 typealias Containers = List<WidgetContainer>?
+
+sealed class OpenObjectNavigation {
+    data class OpenEditor(val target: Id) : OpenObjectNavigation()
+    data class OpenDataView(val target: Id): OpenObjectNavigation()
+    data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
+}
+
+fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
+    return when (layout) {
+        ObjectType.Layout.BASIC,
+        ObjectType.Layout.NOTE,
+        ObjectType.Layout.TODO,
+        ObjectType.Layout.FILE,
+        ObjectType.Layout.BOOKMARK -> {
+            OpenObjectNavigation.OpenEditor(id)
+        }
+        ObjectType.Layout.PROFILE -> {
+            val identityLink = getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
+            if (identityLink.isNullOrEmpty()) {
+                OpenObjectNavigation.OpenEditor(id)
+            } else {
+                OpenObjectNavigation.OpenEditor(identityLink)
+            }
+        }
+        ObjectType.Layout.SET,
+        ObjectType.Layout.COLLECTION -> {
+            OpenObjectNavigation.OpenDataView(id)
+        }
+        else -> {
+            OpenObjectNavigation.UnexpectedLayoutError(layout)
+        }
+    }
+}

@@ -164,7 +164,7 @@ class RelationAddToObjectFragment : RelationAddBaseFragment() {
             query = createFromScratchAdapter.query,
             isSetOrCollection = isSetOrCollection
         )
-        fr.showChildFragment()
+        fr.show(childFragmentManager, null)
     }
 
     override fun injectDependencies() {
@@ -227,7 +227,7 @@ class RelationAddToDataViewFragment : RelationAddBaseFragment() {
             dv = dv,
             query = createFromScratchAdapter.query
         )
-        fr.showChildFragment()
+        fr.show(childFragmentManager, null)
     }
 
     override fun injectDependencies() {
@@ -299,7 +299,7 @@ class RelationAddToObjectBlockFragment : RelationAddBaseFragment(),
             target = target,
             query = createFromScratchAdapter.query
         )
-        fr.showChildFragment()
+        fr.show(childFragmentManager, null)
     }
 
     override fun onCreateRelation(target: Id, relation: Key) {

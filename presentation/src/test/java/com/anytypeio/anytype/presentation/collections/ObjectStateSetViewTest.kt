@@ -16,7 +16,6 @@ import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -30,7 +29,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.eq
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
-import org.mockito.kotlin.verifyNoInteractions
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
@@ -328,7 +326,7 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
                 eq(listOf()),
                 eq(
                     mockObjectSet.filters + ObjectSearchConstants.defaultDataViewFilters(
-                        mockObjectSet.spaceId
+                        spaces = listOf(spaceConfig.space, spaceConfig.techSpace)
                     )
                 ),
                 eq(ObjectSearchConstants.defaultDataViewKeys + mockObjectSet.dvKeys),
@@ -449,6 +447,6 @@ class ObjectStateSetViewTest : ObjectSetViewModelTestSetup() {
 
         val item = viewerFlow.awaitItem()
         assertIs<DataViewViewState.Set.NoItems>(item)
-        assertTrue(item.hasTemplates)
+        assertTrue(item.isCreateObjectAllowed)
     }
 }

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.RemoveLinkMark
 import com.anytypeio.anytype.domain.block.interactor.SetObjectType
 import com.anytypeio.anytype.domain.block.interactor.UpdateLinkMarks
@@ -16,7 +17,9 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -44,8 +47,9 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import javax.inject.Inject
 
-open class  EditorViewModelFactory(
+open class EditorViewModelFactory @Inject constructor(
     private val openPage: OpenPage,
     private val closeObject: CloseBlock,
     private val createObjectSet: CreateObjectSet,
@@ -83,7 +87,10 @@ open class  EditorViewModelFactory(
     private val addRelationToObject: AddRelationToObject,
     private val applyTemplate: ApplyTemplate,
     private val setObjectType: SetObjectType,
-    private val templatesContainer: ObjectTypeTemplatesContainer
+    private val templatesContainer: ObjectTypeTemplatesContainer,
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -126,7 +133,10 @@ open class  EditorViewModelFactory(
             addRelationToObject = addRelationToObject,
             applyTemplate = applyTemplate,
             setObjectType = setObjectType,
-            templatesContainer = templatesContainer
+            templatesContainer = templatesContainer,
+            dispatchers = dispatchers,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            getNetworkMode = getNetworkMode
         ) as T
     }
 }

@@ -42,8 +42,7 @@ fun List<ObjectWrapper.Basic>.toView(
             icon = ObjectIcon.from(
                 obj = obj,
                 layout = layout,
-                builder = urlBuilder,
-                gradientProvider = gradientProvider
+                builder = urlBuilder
             )
         )
     }

@@ -51,6 +51,7 @@ import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
 import com.anytypeio.anytype.middleware.service.MiddlewareService
 import com.anytypeio.anytype.middleware.service.MiddlewareServiceImplementation
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
+import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
 import com.anytypeio.anytype.persistence.repo.DefaultAuthCache
 import com.anytypeio.anytype.persistence.repo.DefaultDebugSettingsCache
 import com.anytypeio.anytype.persistence.repo.DefaultUserSettingsCache
@@ -74,10 +75,12 @@ object DataModule {
     @Provides
     @Singleton
     fun provideAuthRepository(
-        factory: AuthDataStoreFactory
+        factory: AuthDataStoreFactory,
+        debugConfig: DebugConfig
     ): AuthRepository {
         return AuthDataRepository(
-            factory = factory
+            factory = factory,
+            debugConfig = debugConfig
         )
     }
 
@@ -111,12 +114,14 @@ object DataModule {
     fun provideAuthCache(
         db: AnytypeDatabase,
         @Named("default") defaultPrefs: SharedPreferences,
-        @Named("encrypted") encryptedPrefs: SharedPreferences
+        @Named("encrypted") encryptedPrefs: SharedPreferences,
+        networkModeProvider: NetworkModeProvider
     ): AuthCache {
         return DefaultAuthCache(
             db = db,
             defaultPrefs = defaultPrefs,
-            encryptedPrefs = encryptedPrefs
+            encryptedPrefs = encryptedPrefs,
+            networkModeProvider = networkModeProvider
         )
     }
 

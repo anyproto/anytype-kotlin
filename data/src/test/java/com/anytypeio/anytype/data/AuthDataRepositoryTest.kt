@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.data
 
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.StubAccount
 import com.anytypeio.anytype.core_models.StubAccountSetup
 import com.anytypeio.anytype.core_models.StubFeatureConfig
@@ -11,6 +12,7 @@ import com.anytypeio.anytype.data.auth.repo.AuthDataRepository
 import com.anytypeio.anytype.data.auth.repo.AuthDataStoreFactory
 import com.anytypeio.anytype.data.auth.repo.AuthRemote
 import com.anytypeio.anytype.data.auth.repo.AuthRemoteDataStore
+import com.anytypeio.anytype.domain.debugging.DebugConfig
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -34,6 +36,9 @@ class AuthDataRepositoryTest {
     @Mock
     lateinit var authCache: AuthCache
 
+    @Mock
+    lateinit var debugConfig: DebugConfig
+
     lateinit var repo: AuthDataRepository
 
     @Before
@@ -47,7 +52,8 @@ class AuthDataRepositoryTest {
                 remote = AuthRemoteDataStore(
                     authRemote = authRemote
                 )
-            )
+            ),
+            debugConfig = debugConfig
         )
     }
 
@@ -63,22 +69,30 @@ class AuthDataRepositoryTest {
         val features = StubFeatureConfig()
 
         authRemote.stub {
-            onBlocking { selectAccount(id = id, path = path) } doReturn StubAccountSetup(
+            val command = Command.AccountSelect(
+                id = id,
+                path = path
+            )
+            onBlocking { selectAccount(command) } doReturn StubAccountSetup(
                 account = account,
                 features = features
             )
         }
 
         repo.selectAccount(
-            id = id,
-            path = path
+            command = Command.AccountSelect(
+                id = id,
+                path = path
+            )
         )
 
         verifyNoInteractions(authCache)
 
         verify(authRemote, times(1)).selectAccount(
-            id = id,
-            path = path
+            Command.AccountSelect(
+                id = id,
+                path = path
+            )
         )
 
         verifyNoMoreInteractions(authRemote)
@@ -97,26 +111,31 @@ class AuthDataRepositoryTest {
 
         authRemote.stub {
             onBlocking {
-                createAccount(
+                val command = Command.AccountCreate(
                     name = name,
                     avatarPath = path,
-                    iconGradientValue = icon
+                    icon = icon
                 )
+                createAccount(command)
             } doReturn setup
         }
 
         repo.createAccount(
-            name = name,
-            avatarPath = path,
-            icon = icon
+            Command.AccountCreate(
+                name = name,
+                avatarPath = path,
+                icon = icon
+            )
         )
 
         verifyNoInteractions(authCache)
 
         verify(authRemote, times(1)).createAccount(
-            name = name,
-            avatarPath = path,
-            iconGradientValue = icon
+            Command.AccountCreate(
+                name = name,
+                avatarPath = path,
+                icon = icon
+            )
         )
 
         verifyNoMoreInteractions(authRemote)

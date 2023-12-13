@@ -24,6 +24,7 @@ object Relations {
     const val IS_HIDDEN = "isHidden"
     const val LAST_OPENED_DATE = "lastOpenedDate"
     const val LAST_MODIFIED_DATE = "lastModifiedDate"
+    const val LAST_USED_DATE = "lastUsedDate"
     const val TYPE = "type"
     const val LINKS = "links"
     const val TARGET_OBJECT_TYPE = "targetObjectType"
@@ -65,6 +66,8 @@ object Relations {
     const val DEFAULT_TEMPLATE_ID = "defaultTemplateId"
 
     const val UNIQUE_KEY = "uniqueKey"
+
+    const val BACKLINKS = "backlinks"
 
     /**
      * Transitive relation key.

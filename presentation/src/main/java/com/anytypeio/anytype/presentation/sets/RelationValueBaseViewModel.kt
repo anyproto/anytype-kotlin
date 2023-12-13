@@ -32,7 +32,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.presentation.util.OnCopyFileToCacheAction
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -326,7 +326,7 @@ abstract class RelationValueBaseViewModel(
                 }
                 Relation.Format.FILE -> {
                     viewModelScope.launch {
-                        commands.emit(ObjectRelationValueCommand.ShowFileValueActionScreen)
+                        commands.emit(ObjectRelationValueCommand.ShowFileActionsScreen)
                     }
                 }
                 Relation.Format.OBJECT -> {
@@ -471,9 +471,17 @@ abstract class RelationValueBaseViewModel(
         }
     }
 
-    fun onFileValueActionUploadFromGalleryClicked() {}
+    fun onFileValueActionUploadFromGalleryClicked() {
+        viewModelScope.launch {
+            commands.emit(ObjectRelationValueCommand.UploadFromGallery)
+        }
+    }
 
-    fun onFileValueActionUploadFromStorageClicked() {}
+    fun onFileValueActionUploadFromStorageClicked() {
+        viewModelScope.launch {
+            commands.emit(ObjectRelationValueCommand.UploadFromStorage)
+        }
+    }
 
     fun onObjectClicked(ctx: Id, id: Id, layout: ObjectType.Layout?) {
         if (id != ctx) {
@@ -561,14 +569,14 @@ abstract class RelationValueBaseViewModel(
         copyFileToCache.cancel()
     }
 
-    private val copyFileListener = object : OnCopyFileToCacheAction {
+    private val copyFileListener = object : CopyFileToCacheStatus {
         override fun onCopyFileStart() {
             viewModelScope.launch {
                 copyFileStatus.emit(CopyFileStatus.Started)
             }
         }
 
-        override fun onCopyFileResult(result: String?) {
+        override fun onCopyFileResult(result: String?, fileName: String?) {
             viewModelScope.launch {
                 copyFileStatus.emit(CopyFileStatus.Completed(result))
             }
@@ -585,8 +593,11 @@ abstract class RelationValueBaseViewModel(
     sealed class ObjectRelationValueCommand {
         object ShowAddStatusOrTagScreen : ObjectRelationValueCommand()
         object ShowAddObjectScreen : ObjectRelationValueCommand()
-        object ShowFileValueActionScreen : ObjectRelationValueCommand()
+
+        object UploadFromStorage : ObjectRelationValueCommand()
+        object UploadFromGallery : ObjectRelationValueCommand()
         object ShowAddFileScreen : ObjectRelationValueCommand()
+        object ShowFileActionsScreen : ObjectRelationValueCommand()
     }
 
     companion object {

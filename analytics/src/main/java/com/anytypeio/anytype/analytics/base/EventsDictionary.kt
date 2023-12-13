@@ -184,6 +184,10 @@ object EventsDictionary {
     const val MENU_HELP_PRIVACY = "MenuHelpPrivacy"
     const val MENU_HELP_CONTACT_US = "MenuHelpContact"
 
+    // Network mode
+    const val selectNetwork = "SelectNetwork"
+    const val uploadNetworkConfiguration = "UploadNetworkConfiguration"
+
     enum class ScreenOnboardingStep(val value: String) {
         VOID("Void"),
         PHRASE("Phrase"),
@@ -218,6 +222,7 @@ object EventsDictionary {
         const val settings = "Settings"
         const val screenDeletion = "ScreenDeletion"
         const val navigation = "Navigation"
+        const val longTap = "LongTap"
     }
 
     object Type {
@@ -228,6 +233,9 @@ object EventsDictionary {
         const val dataView = "dataview"
         const val block = "block"
         const val bookmark = "bookmark"
+        const val anytype = "Anytype"
+        const val localOnly = "LocalOnly"
+        const val selfHost = "SelfHost"
     }
 
     object BlockAction {

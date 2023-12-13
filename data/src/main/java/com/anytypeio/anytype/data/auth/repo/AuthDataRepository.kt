@@ -3,15 +3,20 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.mapper.toDomain
 import com.anytypeio.anytype.data.auth.mapper.toEntity
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.debugging.DebugConfig
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.withTimeout
 
 class AuthDataRepository(
-    private val factory: AuthDataStoreFactory
+    private val factory: AuthDataStoreFactory,
+    private val debugConfig: DebugConfig
 ) : AuthRepository {
 
     override suspend fun setMetrics(platform: String, version: String) {
@@ -22,21 +27,24 @@ class AuthDataRepository(
     }
 
     override suspend fun selectAccount(
-        id: String, path: String
-    ): AccountSetup = factory.remote.selectAccount(
-        id = id,
-        path = path
-    )
+        command: Command.AccountSelect
+    ): AccountSetup {
+        return if (debugConfig.setTimeouts) {
+            withTimeout(DebugConfig.SELECT_ACCOUNT_TIMEOUT) {
+                factory.remote.selectAccount(command)
+            }
+        } else { factory.remote.selectAccount(command)}
+    }
 
     override suspend fun createAccount(
-        name: String,
-        avatarPath: String?,
-        icon: Int
-    ): AccountSetup = factory.remote.createAccount(
-        name = name,
-        avatarPath = avatarPath,
-        iconGradientValue = icon
-    )
+        command: Command.AccountCreate
+    ): AccountSetup {
+        return if (debugConfig.setTimeouts) {
+            withTimeout(DebugConfig.CREATE_ACCOUNT_TIMEOUT) { factory.remote.createAccount(command)}
+        } else {
+            factory.remote.createAccount(command)
+        }
+    }
 
     override suspend fun deleteAccount(): AccountStatus = factory.remote.deleteAccount()
     override suspend fun restoreAccount(): AccountStatus = factory.remote.restoreAccount()
@@ -92,4 +100,14 @@ class AuthDataRepository(
     override suspend fun saveLastOpenedObjectId(id: Id) { factory.cache.saveLastOpenedObject(id) }
     override suspend fun getLastOpenedObjectId(): Id? = factory.cache.getLastOpenedObject()
     override suspend fun clearLastOpenedObject() { factory.cache.clearLastOpenedObject() }
+
+
+
+    override suspend fun getNetworkMode(): NetworkModeConfig {
+        return factory.cache.getNetworkMode()
+    }
+
+    override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
+        factory.cache.setNetworkMode(modeConfig)
+    }
 }

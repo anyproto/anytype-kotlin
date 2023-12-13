@@ -20,32 +20,52 @@ class DefaultAppActionManager(val context: Context) : AppActionManager {
         try {
             when (action) {
                 is AppActionManager.Action.CreateNew -> {
-                    val name = action.name.ifEmpty {
-                        context.resources.getString(R.string.unknown_type)
-                    }
-                    val label = context.resources.getString(R.string.shortcut_create_new, name)
-                    val shortcut = ShortcutInfoCompat.Builder(context, ACTION_CREATE_NEW_ID)
-                        .setShortLabel(label)
-                        .setLongLabel(label)
-                        .setIcon(IconCompat.createWithResource(context, R.mipmap.ic_launcher))
-                        .setIntent(
-                            Intent(Intent.ACTION_VIEW, null).apply {
-                                setClass(context, MainActivity::class.java)
-                                putExtra(ACTION_CREATE_NEW_TYPE_KEY, action.type.key)
-                            }
-                        )
-                        .build()
-                    ShortcutManagerCompat.pushDynamicShortcut(context, shortcut)
+                    val id = "$ACTION_CREATE_NEW_ID-${action.type}"
+                    setupCreateNewObjectAction(action, id)
                 }
                 is AppActionManager.Action.ClearAll -> {
-                    val shortcuts = ShortcutManagerCompat.getDynamicShortcuts(context).map { it.id }
-                    ShortcutManagerCompat.removeLongLivedShortcuts(context, shortcuts)
-                    ShortcutManagerCompat.removeAllDynamicShortcuts(context)
+                    clearShortcuts()
                 }
             }
         } catch (e: Exception) {
             Timber.e(e, "Error while setting up an app action: $action")
         }
+    }
+
+    override fun setup(actions: List<AppActionManager.Action.CreateNew>) {
+        clearShortcuts()
+        actions.forEach { action ->
+            val id = "$ACTION_CREATE_NEW_ID-${action.type}"
+            setupCreateNewObjectAction(action, id)
+        }
+    }
+
+    private fun clearShortcuts() {
+        val shortcuts = ShortcutManagerCompat.getDynamicShortcuts(context).map { it.id }
+        ShortcutManagerCompat.removeLongLivedShortcuts(context, shortcuts)
+        ShortcutManagerCompat.removeAllDynamicShortcuts(context)
+    }
+
+    private fun setupCreateNewObjectAction(
+        action: AppActionManager.Action.CreateNew,
+        id: String
+    ) {
+        val name = action.name.ifEmpty {
+            context.resources.getString(R.string.unknown_type)
+        }
+        val label = context.resources.getString(R.string.shortcut_create_new_object_of_type, name)
+        val shortcut = ShortcutInfoCompat.Builder(context, id)
+            .setShortLabel(label)
+            .setLongLabel(label)
+            .setIcon(IconCompat.createWithResource(context, R.mipmap.ic_launcher))
+            .setIntent(
+                Intent(Intent.ACTION_VIEW, null).apply {
+                    setClass(context, MainActivity::class.java)
+                    putExtra(ACTION_CREATE_NEW_TYPE_KEY, action.type.key)
+                }
+            )
+            .build()
+        ShortcutManagerCompat.pushDynamicShortcut(context, shortcut)
     }
 
     companion object {

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDataViewFilters
 import com.anytypeio.anytype.presentation.sets.filterOutDeletedAndMissingObjects
 import com.anytypeio.anytype.presentation.sets.getSetOfValue
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -19,7 +20,7 @@ interface DataViewSubscription {
 
     suspend fun startObjectSetSubscription(
         context: Id,
-        space: Id,
+        spaces: List<Id>,
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
@@ -29,7 +30,7 @@ interface DataViewSubscription {
     suspend fun startObjectCollectionSubscription(
         context: Id,
         collection: Id,
-        space: Id,
+        spaces: List<Id>,
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
@@ -44,7 +45,7 @@ class DefaultDataViewSubscription(
     override suspend fun startObjectCollectionSubscription(
         context: Id,
         collection: Id,
-        space: Id,
+        spaces: List<Id>,
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
@@ -59,10 +60,10 @@ class DefaultDataViewSubscription(
             Timber.w("Data view collection subscription: active viewer is null")
             return emptyFlow()
         }
-        val filters =
-            activeViewer.filters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = space
-            )
+        val filters = buildList {
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
+            addAll(defaultDataViewFilters(spaces = spaces))
+        }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
 
@@ -81,7 +82,7 @@ class DefaultDataViewSubscription(
 
     override suspend fun startObjectSetSubscription(
         context: Id,
-        space: Id,
+        spaces: List<Id>,
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
@@ -112,10 +113,10 @@ class DefaultDataViewSubscription(
             return emptyFlow()
         }
 
-        val filters =
-            activeViewer.filters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
-                space = space
-            )
+        val filters = buildList {
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
+            addAll(defaultDataViewFilters(spaces = spaces))
+        }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
 

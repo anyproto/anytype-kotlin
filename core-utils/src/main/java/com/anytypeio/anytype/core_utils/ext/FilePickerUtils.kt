@@ -13,44 +13,54 @@ object FilePickerUtils {
         return when (this) {
             Mimetype.MIME_VIDEO_ALL -> context.isPermissionGranted(getPermissionToRequestForVideos())
             Mimetype.MIME_IMAGE_ALL -> context.isPermissionGranted(getPermissionToRequestForImages())
-            Mimetype.MIME_FILE_ALL -> {
+            Mimetype.MIME_IMAGE_AND_VIDEO -> context.isPermissionGranted(getPermissionToRequestForImagesAndVideos())
+            Mimetype.MIME_FILE_ALL, Mimetype.MIME_YAML -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     true
                 } else {
-                    context.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)
+                    context.isPermissionGranted(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE))
                 }
             }
         }
     }
 
-    fun Context.isPermissionGranted(permission: String): Boolean {
-        val hasPermission = ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+    private fun Context.isPermissionGranted(permission: Array<String>): Boolean {
+        val hasPermission = permission.isNotEmpty() && ContextCompat.checkSelfPermission(this, permission[0]) == PackageManager.PERMISSION_GRANTED
         Timber.d("hasExternalStoragePermission, hasPermission:$hasPermission for permission:$permission")
         return hasPermission
     }
 
-    fun Mimetype.getPermissionToRequestByMime(): String {
+    fun Mimetype.getPermissionToRequestByMime(): Array<String> {
         return when (this) {
             Mimetype.MIME_VIDEO_ALL -> getPermissionToRequestForVideos()
             Mimetype.MIME_IMAGE_ALL -> getPermissionToRequestForImages()
             Mimetype.MIME_FILE_ALL -> getPermissionToRequestForFiles()
+            Mimetype.MIME_IMAGE_AND_VIDEO -> getPermissionToRequestForImagesAndVideos()
+            Mimetype.MIME_YAML -> getPermissionToRequestForFiles()
         }
     }
 
-    fun getPermissionToRequestForImages(): String =
+    private fun getPermissionToRequestForImages(): Array<String> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_IMAGES
+            arrayOf(Manifest.permission.READ_MEDIA_IMAGES)
         } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
-    fun getPermissionToRequestForVideos(): String =
+    private fun getPermissionToRequestForVideos(): Array<String> =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            Manifest.permission.READ_MEDIA_VIDEO
+            arrayOf(Manifest.permission.READ_MEDIA_VIDEO)
         } else {
-            Manifest.permission.READ_EXTERNAL_STORAGE
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
 
-    fun getPermissionToRequestForFiles(): String =
-        Manifest.permission.READ_EXTERNAL_STORAGE
+    private fun getPermissionToRequestForFiles(): Array<String> =
+        arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+
+    private fun getPermissionToRequestForImagesAndVideos(): Array<String> =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(Manifest.permission.READ_MEDIA_VIDEO, Manifest.permission.READ_MEDIA_IMAGES)
+        } else {
+            arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
 }

@@ -57,7 +57,9 @@ import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.SetObjectInternalFlags
@@ -190,6 +192,12 @@ open class EditorTestSetup {
     @Mock
     lateinit var createObject: CreateObject
 
+    @Mock
+    lateinit var appCoroutineDispatchers: AppCoroutineDispatchers
+
+    @Mock
+    lateinit var storelessSubscriptionContainer: StorelessSubscriptionContainer
+
     lateinit var getTemplates: GetTemplates
     lateinit var applyTemplate: ApplyTemplate
 
@@ -277,6 +285,9 @@ open class EditorTestSetup {
 
     @Mock
     lateinit var templatesContainer: ObjectTypeTemplatesContainer
+
+    @Mock
+    lateinit var getNetworkMode: GetNetworkMode
 
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
@@ -476,7 +487,10 @@ open class EditorTestSetup {
             spaceManager = spaceManager,
             applyTemplate = applyTemplate,
             setObjectType = setObjectType,
-            templatesContainer = templatesContainer
+            templatesContainer = templatesContainer,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            dispatchers = appCoroutineDispatchers,
+            getNetworkMode = getNetworkMode
         )
     }
 
@@ -559,7 +573,9 @@ open class EditorTestSetup {
         repo.stub {
             onBlocking {
                 searchObjects(
-                    filters = ObjectSearchConstants.filterObjectTypeLibrary(workspaceId),
+                    filters = ObjectSearchConstants.filterTypes(
+                        spaces = listOf(workspaceId)
+                    ),
                     keys = ObjectSearchConstants.defaultKeysObjectType,
                     sorts = emptyList(),
                     limit = 0,

@@ -44,9 +44,10 @@ class CreateSpaceViewModel(
     }
 
     val isDismissed = MutableStateFlow(false)
+    val isSucceeded = MutableStateFlow(false)
 
     fun onCreateSpace(name: String) {
-        if (isDismissed.value) {
+        if (isDismissed.value || isSucceeded.value) {
             return
         }
         if (isInProgress.value) {
@@ -68,7 +69,7 @@ class CreateSpaceViewModel(
                         analytics.sendEvent(eventName = EventsDictionary.createSpace)
                         setNewSpaceAsCurrentSpace(space)
                         Timber.d("Successfully created space: $space").also {
-                            isDismissed.value = true
+                            isSucceeded.value = true
                             isInProgress.value = false
                         }
                     },

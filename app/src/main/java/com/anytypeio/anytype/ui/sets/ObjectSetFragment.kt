@@ -42,7 +42,10 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_ui.extensions.getLabelText
+import com.anytypeio.anytype.core_ui.extensions.getToastMsg
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
@@ -79,7 +82,6 @@ import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
-import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -90,6 +92,7 @@ import com.anytypeio.anytype.presentation.sets.ViewerLayoutWidgetUi
 import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
 import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
+import com.anytypeio.anytype.presentation.sync.SyncStatusView
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
@@ -113,6 +116,7 @@ import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ObjectSetSettingsFragment
 import com.anytypeio.anytype.ui.sets.modals.SetObjectCreateRecordFragmentBase
 import com.anytypeio.anytype.ui.sets.modals.sort.ViewerSortFragment
+import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_ID
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_KEY
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
@@ -293,6 +297,16 @@ open class ObjectSetFragment :
                 binding.bottomToolbar.addDocClicks().throttleFirst()
             ) { vm.onAddNewDocumentClicked() }
 
+            binding.bottomToolbar
+                .profileClicks()
+                .onEach {
+                    findNavController().navigate(
+                        R.id.selectSpaceScreen,
+                        args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
+                    )
+                }
+                .launchIn(lifecycleScope)
+
             binding
                 .bottomToolbar
                 .binding
@@ -301,7 +315,7 @@ open class ObjectSetFragment :
                 .onEach {
                     val dialog = CreateObjectOfTypeFragment().apply {
                         onTypeSelected = {
-                            vm.onAddNewDocumentClicked(it)
+                            vm.onAddNewDocumentClicked(it.uniqueKey)
                         }
                     }
                     dialog.show(childFragmentManager, "set-create-object-of-type-dialog")
@@ -478,36 +492,18 @@ open class ObjectSetFragment :
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         vm.navigation.observe(viewLifecycleOwner, navObserver)
-        lifecycleScope.subscribe(vm.toasts) { toast(it) }
         lifecycleScope.subscribe(vm.status) { setStatus(it) }
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
         }
     }
 
-    private fun setStatus(status: SyncStatus) {
+    private fun setStatus(status: SyncStatusView?) {
         binding.topToolbar.root.findViewById<StatusBadgeWidget>(R.id.statusBadge).bind(status)
         val tvStatus = binding.topToolbar.root.findViewById<TextView>(R.id.tvStatus)
-        when (status) {
-            SyncStatus.UNKNOWN -> tvStatus.setText(R.string.sync_status_unknown)
-            SyncStatus.FAILED -> tvStatus.setText(R.string.sync_status_failed)
-            SyncStatus.OFFLINE -> tvStatus.setText(R.string.sync_status_offline)
-            SyncStatus.SYNCING -> tvStatus.setText(R.string.sync_status_syncing)
-            SyncStatus.SYNCED -> tvStatus.setText(R.string.sync_status_synced)
-            SyncStatus.INCOMPATIBLE_VERSION -> tvStatus.setText(R.string.sync_status_incompatible)
-        }
+        tvStatus.text = status?.getLabelText(requireContext())
         topToolbarStatusContainer.setOnClickListener {
-            when (status) {
-                SyncStatus.UNKNOWN -> toast(getString(R.string.sync_status_toast_unknown))
-                SyncStatus.FAILED -> toast(getString(R.string.sync_status_toast_failed))
-                SyncStatus.OFFLINE -> toast(getString(R.string.sync_status_toast_offline))
-                SyncStatus.SYNCING -> toast(getString(R.string.sync_status_toast_syncing))
-                SyncStatus.SYNCED -> toast(getString(R.string.sync_status_toast_synced))
-                SyncStatus.INCOMPATIBLE_VERSION -> toast(getString(R.string.sync_status_toast_incompatible))
-                else -> {
-                    Timber.i("Missed sync status")
-                }
-            }
+            toast(status.getToastMsg(requireContext()))
         }
     }
 
@@ -530,7 +526,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(DataViewInfo.TYPE.COLLECTION_NO_ITEMS)
@@ -543,7 +539,7 @@ open class ObjectSetFragment :
                 initView.gone()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 dataViewInfo.hide()
@@ -569,7 +565,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.title)
                 dataViewInfo.show(type = DataViewInfo.TYPE.SET_NO_ITEMS)
@@ -582,7 +578,7 @@ open class ObjectSetFragment :
                 header.visible()
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
-                setupNewButtons(state.hasTemplates)
+                setupNewButtons(state.isCreateObjectAllowed)
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)
@@ -618,9 +614,14 @@ open class ObjectSetFragment :
         }
     }
 
-    private fun setupNewButtons(isTemplatesAllowed: Boolean) {
-        addNewButton.gone()
-        addNewIconButton.visible()
+    private fun setupNewButtons(isCreateObjectAllowed: Boolean) {
+        if (isCreateObjectAllowed) {
+            addNewButton.gone()
+            addNewIconButton.visible()
+        } else {
+            addNewButton.gone()
+            addNewIconButton.gone()
+        }
     }
 
     private fun setViewer(viewer: Viewer?) {
@@ -1154,6 +1155,12 @@ open class ObjectSetFragment :
                 featuredRelations.gone()
             }
         }
+        jobs += lifecycleScope.subscribe(vm.toasts) { toast(it) }
+
+        subscribe(vm.icon) { icon ->
+            binding.bottomToolbar.bind(icon)
+        }
+
         vm.onStart(ctx)
     }
 
@@ -1246,14 +1253,9 @@ open class ObjectSetFragment :
         inflater, container, false
     )
 
-    override fun onProceedWithUpdateType(item: ObjectTypeView) {
-        vm.onNewTypeForViewerClicked(item.id)
+    override fun onProceedWithUpdateType(objType: ObjectWrapper.Type) {
+        vm.onNewTypeForViewerClicked(objType)
     }
-
-    override fun onProceedWithDraftUpdateType(item: ObjectTypeView) {
-        // Do nothing.
-    }
-
 
     private fun observeSelectingTemplate() {
         val navController = findNavController()

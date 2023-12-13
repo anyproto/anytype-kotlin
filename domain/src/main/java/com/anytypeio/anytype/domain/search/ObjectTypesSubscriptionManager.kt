@@ -50,6 +50,15 @@ class ObjectTypesSubscriptionManager (
                     condition = DVFilterCondition.NOT_EQUAL,
                     value = true
                 ),
+                DVFilter(
+                    relation = Relations.IS_ARCHIVED,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                ),
+                DVFilter(
+                    relation = Relations.UNIQUE_KEY,
+                    condition = DVFilterCondition.NOT_EMPTY
+                ),
             ),
             limit = 0,
             offset = 0L,

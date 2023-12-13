@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -23,11 +24,13 @@ import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
@@ -37,6 +40,8 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class HomeScreenFragment : BaseComposeFragment() {
+
+    private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
 
     private var isMnemonicReminderDialogNeeded: Boolean
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) ?: false
@@ -126,6 +131,7 @@ class HomeScreenFragment : BaseComposeFragment() {
     }
 
     override fun onStart() {
+        Timber.d("onStart")
         super.onStart()
         vm.onStart()
     }
@@ -148,7 +154,25 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     override fun onResume() {
         super.onResume()
-        if (isMnemonicReminderDialogNeeded) showMnemonicReminderAlert()
+        if (isMnemonicReminderDialogNeeded)
+            showMnemonicReminderAlert()
+        proceedWithDeepLinks()
+    }
+
+    private fun proceedWithDeepLinks() {
+        val deepLinkFromFragment = deepLink
+        val deepLinkFromActivity = (requireActivity() as? MainActivity)?.deepLink
+
+        when {
+            deepLinkFromFragment != null -> {
+                vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromFragment))
+                arguments?.putString(DEEP_LINK_KEY, null)
+            }
+            deepLinkFromActivity != null -> {
+                vm.onResume(DefaultDeepLinkResolver.resolve(deepLinkFromActivity))
+                (requireActivity() as? MainActivity)?.deepLink = null
+            }
+        }
     }
 
     private fun proceed(command: Command) {
@@ -199,6 +223,10 @@ class HomeScreenFragment : BaseComposeFragment() {
                     )
                 )
             }
+            is Command.Deeplink.CannotImportExperience -> {
+                arguments?.putString(DEEP_LINK_KEY, null)
+                findNavController().navigate(R.id.alertImportExperienceUnsupported)
+            }
         }
     }
 
@@ -226,5 +254,9 @@ class HomeScreenFragment : BaseComposeFragment() {
 
     companion object {
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
+        const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
+        fun args(deeplink: String?) : Bundle = bundleOf(
+            DEEP_LINK_KEY to deeplink
+        )
     }
 }

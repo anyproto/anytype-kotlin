@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
@@ -40,7 +41,8 @@ class MainViewModel(
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val checkAuthorizationStatus: CheckAuthorizationStatus,
     private val configStorage: ConfigStorage,
-    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
+    private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
+    private val localeProvider: LocaleProvider
 ) : ViewModel() {
 
     val wallpaper = MutableStateFlow<Wallpaper>(Wallpaper.Default)
@@ -125,6 +127,12 @@ class MainViewModel(
                             analytics = analytics,
                             userProperty = UserProperty.AccountId(analyticsID)
                         )
+                        localeProvider.language()?.let { lang ->
+                            updateUserProperties(
+                                analytics,
+                                userProperty = UserProperty.InterfaceLanguage(lang)
+                            )
+                        }
                     }
                     Timber.d("Restored account after activity recreation")
                 },

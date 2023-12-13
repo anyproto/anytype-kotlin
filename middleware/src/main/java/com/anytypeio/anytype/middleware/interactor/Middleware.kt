@@ -35,6 +35,7 @@ import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
+import com.anytypeio.anytype.middleware.mappers.MNetworkMode
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
 import com.anytypeio.anytype.middleware.mappers.config
 import com.anytypeio.anytype.middleware.mappers.core
@@ -59,18 +60,37 @@ class Middleware @Inject constructor(
 ) {
 
     @Throws(Exception::class)
-    fun accountCreate(
-        name: String,
-        path: String?,
-        iconGradientValue: Int
-    ): AccountSetup {
+    fun accountCreate(command: Command.AccountCreate): AccountSetup {
+
         val request = Rpc.Account.Create.Request(
-            name = name,
-            avatarLocalPath = path,
-            icon = iconGradientValue.toLong()
+            name = command.name,
+            avatarLocalPath = command.avatarPath,
+            icon = command.icon.toLong(),
+            networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig,
+            networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty()
+
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.accountCreate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.toAccountSetup()
+    }
+
+    @Throws(Exception::class)
+    fun accountSelect(command: Command.AccountSelect): AccountSetup {
+
+        val networkMode = command.networkMode?.toMiddlewareModel() ?: MNetworkMode.DefaultConfig
+        val networkCustomConfigFilePath = if (networkMode == MNetworkMode.CustomConfig) {
+            command.networkConfigFilePath.orEmpty()
+        } else ""
+        val request = Rpc.Account.Select.Request(
+            id = command.id,
+            rootPath = command.path,
+            networkMode = networkMode,
+            networkCustomConfigFilePath = networkCustomConfigFilePath
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.accountSelect(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return response.toAccountSetup()
     }
@@ -103,18 +123,6 @@ class Middleware @Inject constructor(
         val status = response.status
         checkNotNull(status) { "Account status was null" }
         return status.core()
-    }
-
-    @Throws(Exception::class)
-    fun accountSelect(id: String, path: String): AccountSetup {
-        val request = Rpc.Account.Select.Request(
-            id = id,
-            rootPath = path
-        )
-        if (BuildConfig.DEBUG) logRequest(request)
-        val response = service.accountSelect(request)
-        if (BuildConfig.DEBUG) logResponse(response)
-        return response.toAccountSetup()
     }
 
     @Throws(Exception::class)
@@ -952,7 +960,7 @@ class Middleware @Inject constructor(
         space: Id,
         name: String,
         emojiUnicode: String?
-    ): ObjectWrapper.Type {
+    ): Struct {
         val request = Rpc.Object.CreateObjectType.Request(
             details = buildMap {
                 put(Relations.NAME, name)
@@ -965,9 +973,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.objectCreateObjectType(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return ObjectWrapper.Type(
-            response.details ?: throw IllegalStateException("Missing details")
-        )
+        return response.details ?: throw IllegalStateException("Null object type struct")
     }
 
     @Throws(Exception::class)
@@ -1995,7 +2001,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceObjectAdd(command: Command.AddObjectToSpace): Pair<Id, ObjectWrapper.Type> {
+    fun workspaceObjectAdd(command: Command.AddObjectToSpace): Pair<Id, Struct?> {
         val request = Rpc.Workspace.Object.Add.Request(
             objectId = command.objectId,
             spaceId = command.space
@@ -2003,7 +2009,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.workspaceObjectAdd(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return Pair(response.objectId, ObjectWrapper.Type(response.details ?: emptyMap()))
+        return Pair(response.objectId, response.details)
     }
 
     @Throws(Exception::class)

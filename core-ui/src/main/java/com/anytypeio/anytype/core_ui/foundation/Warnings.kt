@@ -3,10 +3,13 @@ package com.anytypeio.anytype.core_ui.foundation
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,8 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
-import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.geometry.toRect
 import androidx.compose.ui.graphics.Brush
@@ -106,8 +108,8 @@ fun AlertWithWarningButton() {
 
 @Composable
 fun GenericAlert(
-    onFirstButtonClicked: () -> Unit,
-    onSecondButtonClicked: () -> Unit,
+    onFirstButtonClicked: () -> Unit = {},
+    onSecondButtonClicked: () -> Unit = {},
     config: AlertConfig
 ) {
     val icon = config.icon
@@ -115,9 +117,9 @@ fun GenericAlert(
         Spacer(modifier = Modifier.height(20.dp))
         if (icon != null) { AlertIcon(icon) }
         Spacer(modifier = Modifier.height(16.dp))
-        AlertTitle(config)
+        AlertTitle(config.title)
         Spacer(modifier = Modifier.height(8.dp))
-        AlertDescription(config)
+        AlertDescription(config.description)
         Spacer(modifier = Modifier.height(20.dp))
         AlertButtons(
             config = config,
@@ -128,21 +130,22 @@ fun GenericAlert(
 }
 
 @Composable
-private fun AlertDescription(config: AlertConfig) {
+fun AlertDescription(description: String) {
     Text(
-        text = config.description,
+        text = description,
         style = BodyRegular,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
-        color = colorResource(id = R.color.text_primary)
+        color = colorResource(id = R.color.text_primary),
+        textAlign = TextAlign.Center
     )
 }
 
 @Composable
-private fun AlertTitle(config: AlertConfig) {
+fun AlertTitle(title: String) {
     Text(
-        text = config.title,
+        text = title,
         style = HeadlineHeading,
         modifier = Modifier
             .fillMaxWidth()
@@ -153,7 +156,7 @@ private fun AlertTitle(config: AlertConfig) {
 }
 
 @Composable
-private fun AlertIcon(icon: AlertConfig.Icon) {
+fun AlertIcon(icon: AlertConfig.Icon) {
     val gradientColors = when(icon.gradient) {
         GRADIENT_TYPE_GREEN -> listOf(GREEN_FROM, GREEN_TO)
         GRADIENT_TYPE_RED -> listOf(RED_FROM, RED_TO)
@@ -164,20 +167,22 @@ private fun AlertIcon(icon: AlertConfig.Icon) {
             .padding(horizontal = 28.dp)
             .fillMaxWidth()
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .blur(5.dp)
-                .clip(OvalCornerShape)
-                .background(
-                    Brush.radialGradient(
-                        colors = gradientColors,
-                        radius = 500f
-                    )
+        if (!isSystemInDarkTheme()) {
+            BoxWithConstraints(
+                Modifier
+                    .fillMaxWidth()
+                    .height(104.dp)
+            ) {
+                val aspectRatio = maxWidth / maxHeight
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .scale(maxOf(aspectRatio, 1f), maxOf(1 / aspectRatio, 1f))
+                        .background(Brush.radialGradient(gradientColors))
+                        .fillMaxWidth()
                 )
-                .fillMaxWidth()
-                .height(104.dp)
-        )
+            }
+        }
         Box(
             modifier = Modifier
                 .padding(vertical = 16.dp)

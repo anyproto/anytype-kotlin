@@ -115,10 +115,6 @@ sealed class Command {
         val excludedTypes: List<Id>
     ) : Command()
 
-    data class OpenDraftObjectSelectTypeScreen(
-        val excludedTypes: List<Id>
-    ) : Command()
-
     data class OpenMoveToScreen(
         val ctx: Id,
         val blocks: List<Id>,

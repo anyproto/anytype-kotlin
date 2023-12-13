@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -14,6 +15,8 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.objects.ObjectAction
@@ -21,6 +24,7 @@ import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
+import javax.inject.Inject
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
@@ -34,6 +38,8 @@ class ObjectSetMenuViewModel(
     urlBuilder: UrlBuilder,
     dispatcher: Dispatcher<Payload>,
     menuOptionsProvider: ObjectMenuOptionsProvider,
+    createWidget: CreateWidget,
+    spaceManager: SpaceManager,
     private val objectState: StateFlow<ObjectState>,
     private val analytics: Analytics,
     private val addObjectToCollection: AddObjectToCollection,
@@ -50,11 +56,13 @@ class ObjectSetMenuViewModel(
     analytics = analytics,
     menuOptionsProvider = menuOptionsProvider,
     addObjectToCollection = addObjectToCollection,
-    debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
+    debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
+    createWidget = createWidget,
+    spaceManager = spaceManager
 ) {
 
     @Suppress("UNCHECKED_CAST")
-    class Factory(
+    class Factory @Inject constructor(
         private val setObjectIsArchived: SetObjectIsArchived,
         private val addToFavorite: AddToFavorite,
         private val removeFromFavorite: RemoveFromFavorite,
@@ -67,7 +75,9 @@ class ObjectSetMenuViewModel(
         private val objectState: StateFlow<ObjectState>,
         private val menuOptionsProvider: ObjectMenuOptionsProvider,
         private val addObjectToCollection: AddObjectToCollection,
-        private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader
+        private val debugGoroutinesShareDownloader: DebugGoroutinesShareDownloader,
+        private val createWidget: CreateWidget,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -83,7 +93,9 @@ class ObjectSetMenuViewModel(
                 dispatcher = dispatcher,
                 menuOptionsProvider = menuOptionsProvider,
                 addObjectToCollection = addObjectToCollection,
-                debugGoroutinesShareDownloader = debugGoroutinesShareDownloader
+                debugGoroutinesShareDownloader = debugGoroutinesShareDownloader,
+                createWidget = createWidget,
+                spaceManager = spaceManager
             ) as T
         }
     }
@@ -148,6 +160,7 @@ class ObjectSetMenuViewModel(
         } else {
             add(ObjectAction.ADD_TO_FAVOURITE)
         }
+        add(ObjectAction.CREATE_WIDGET)
         val dataViewState = objectState.value.dataViewState()
         if (dataViewState != null && !dataViewState.objectRestrictions.contains(ObjectRestriction.DUPLICATE)) {
             add(ObjectAction.DUPLICATE)
@@ -174,6 +187,11 @@ class ObjectSetMenuViewModel(
             }
             ObjectAction.DUPLICATE -> {
                 proceedWithDuplication(ctx = ctx, details = objectState.value.dataViewState()?.details)
+            }
+            ObjectAction.CREATE_WIDGET -> {
+                val details = objectState.value.dataViewState()?.details?.get(ctx)
+                val wrapper = ObjectWrapper.Basic(details?.map ?: emptyMap())
+                proceedWithCreatingWidget(obj = wrapper)
             }
             ObjectAction.MOVE_TO,
             ObjectAction.SEARCH_ON_PAGE,

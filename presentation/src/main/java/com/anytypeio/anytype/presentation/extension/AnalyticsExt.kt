@@ -41,13 +41,14 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -637,12 +638,14 @@ fun CoroutineScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
     analytics: Analytics,
     startTime: Long,
     sourceObject: Id? = null,
-    containsFlagType: Boolean
+    containsFlagType: Boolean,
+    route: String? = null
 ) {
     val objType = sourceObject ?: OBJ_TYPE_CUSTOM
     val props = Props(
         mapOf(
-            EventsPropertiesKey.objectType to objType
+            EventsPropertiesKey.objectType to objType,
+            EventsPropertiesKey.route to route
         )
     )
     val event = if (containsFlagType) {
@@ -654,7 +657,8 @@ fun CoroutineScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
         analytics = analytics,
         eventName = event,
         props = props,
-        startTime = startTime
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
     )
 }
 
@@ -729,20 +733,17 @@ fun CoroutineScope.sendAnalyticsRelationDeleteEvent(
 fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     analytics: Analytics,
     storeOfObjectTypes: StoreOfObjectTypes,
-    type: String?,
+    type: Key?,
     route: String,
     startTime: Long? = null,
     view: String? = null
 ) {
-    // TODO Multispaces check this analytics event
     this.launch {
-        val objType = type?.let { storeOfObjectTypes.get(it) }
+        val objType = type?.let { storeOfObjectTypes.getByKey(it) }
         analytics.sendEvent(
             eventName = objectCreate,
             props = propsForObjectEvents(
                 route = route,
-                context = analytics.getContext(),
-                originalId = analytics.getOriginalId(),
                 sourceObject = objType?.sourceObject,
                 view = view
             ),
@@ -1787,11 +1788,15 @@ suspend fun Analytics.sendSettingsStorageOffloadEvent() {
 suspend fun Analytics.proceedWithAccountEvent(
     configStorage: ConfigStorage,
     startTime: Long,
-    eventName: String
+    eventName: String,
+    lang: String? = null
 ) {
     val analyticsId = configStorage.get().analytics
     val userProperty = UserProperty.AccountId(analyticsId)
     updateUserProperty(userProperty)
+    if (lang != null) {
+        updateUserProperty(UserProperty.InterfaceLanguage(lang))
+    }
     sendEvent(
         startTime = startTime,
         middleTime = System.currentTimeMillis(),
@@ -1951,8 +1956,37 @@ private fun getAnalyticsObjectType(
     ctx: Id
 ): String {
     val objTypeId = details[ctx]?.type?.firstOrNull()
-    val sourceObject = if (objTypeId != null) {
-        ObjectWrapper.Type(details[objTypeId]?.map ?: emptyMap()).sourceObject
-    } else null
-    return sourceObject ?: OBJ_TYPE_CUSTOM
+    val typeStruct = details[objTypeId]?.map
+    val objType = typeStruct?.mapToObjectWrapperType()
+    return objType?.sourceObject ?: OBJ_TYPE_CUSTOM
 }
+
+
+//region Self-Hosting
+fun CoroutineScope.sendAnalyticsSelectNetworkEvent(
+    analytics: Analytics,
+    type: String,
+    route: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.selectNetwork,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to type,
+                EventsPropertiesKey.route to route
+            )
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsUploadConfigFileEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.uploadNetworkConfiguration
+    )
+}
+
+//endregion

@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
+import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.Reducer
@@ -43,11 +44,14 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.mapFileObjectToView
 import com.anytypeio.anytype.presentation.objects.toViews
+import com.anytypeio.anytype.presentation.profile.ProfileIconView
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.FavoritesView
@@ -103,6 +107,7 @@ class CollectionViewModel(
     val payloads: Flow<Payload>
 
     init {
+        proceedWithObservingProfileIcon()
         val externalChannelEvents: Flow<Payload> = spaceManager
             .observe()
             .flatMapLatest { config ->
@@ -120,6 +125,8 @@ class CollectionViewModel(
     }
 
     val commands = MutableSharedFlow<Command>()
+
+    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     private val jobs = mutableListOf<Job>()
     private val queryFlow: MutableStateFlow<String> = MutableStateFlow("")
@@ -162,11 +169,39 @@ class CollectionViewModel(
             initialValue = Resultat.loading()
         )
 
+    private fun proceedWithObservingProfileIcon() {
+        viewModelScope.launch {
+            spaceManager
+                .observe()
+                .flatMapLatest { config ->
+                    container.subscribe(
+                        StoreSearchByIdsParams(
+                            subscription = HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION,
+                            targets = listOf(config.profile),
+                            keys = listOf(
+                                Relations.ID,
+                                Relations.NAME,
+                                Relations.ICON_EMOJI,
+                                Relations.ICON_IMAGE,
+                                Relations.ICON_OPTION
+                            )
+                        )
+                    ).map { result ->
+                        val obj = result.firstOrNull()
+                        obj?.profileIcon(urlBuilder) ?: ProfileIconView.Placeholder(null)
+                    }
+                }
+                .catch { Timber.e(it, "Error while observing space icon") }
+                .flowOn(dispatchers.io)
+                .collect { icon.value = it }
+        }
+    }
+
     private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
         val params = GetObjectTypes.Params(
             sorts = emptyList(),
-            filters = ObjectSearchConstants.filterObjectTypeLibrary(
-                space = spaceManager.get()
+            filters = ObjectSearchConstants.filterTypes(
+                spaces = listOf(spaceManager.get())
             ),
             keys = ObjectSearchConstants.defaultKeysObjectType
         )
@@ -207,7 +242,17 @@ class CollectionViewModel(
         return StoreSearchParams(
             subscription = subscription.id,
             keys = subscription.keys,
-            filters = subscription.filters(spaceManager.get()),
+            filters = subscription.filters(
+                buildList {
+                    val config = spaceManager.getConfig()
+                    if (config != null) {
+                        add(config.space)
+                        add(config.techSpace)
+                    } else {
+                        add(spaceManager.get())
+                    }
+                }
+            ),
             sorts = subscription.sorts,
             limit = subscription.limit
         )
@@ -232,7 +277,10 @@ class CollectionViewModel(
                                 subscription = subscription.id,
                                 keys = subscription.keys,
                                 filters = ObjectSearchConstants.filterTabRecent(
-                                    space = spaceManager.get(),
+                                    spaces = buildList {
+                                        add(config.space)
+                                        add(config.techSpace)
+                                    },
                                     spaceCreationDateInSeconds = spaceCreationDateInSeconds
                                 ),
                                 sorts = subscription.sorts,
@@ -316,18 +364,7 @@ class CollectionViewModel(
         if (favs.size != this.size) {
             Timber.e("Favorite order size is not equal to the list size")
         }
-        val orderedFavorites = MutableList<ObjectWrapper.Basic?>(this.size) { null }
-        for (item in this) {
-            val order = favs[item.id]?.order
-            if (order == null) {
-                Timber.e("Favorite order is null for ${item.id}")
-            } else if (order < 0 || order >= this.size) {
-                Timber.e("Favorite order is out of bounds for ${item.id}")
-            } else {
-                orderedFavorites[order] = item
-            }
-        }
-        return orderedFavorites.filterNotNull()
+        return sortedBy { obj -> favs[obj.id]?.order }
     }
 
     @OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
@@ -361,9 +398,8 @@ class CollectionViewModel(
             root = favoritesObj.root,
             details = favoritesObj.details
         )
-
         return objs.toOrder(favs).filter { obj ->
-            obj.getProperName().lowercase().contains(query.lowercase())
+            obj.getProperName().lowercase().contains(query.lowercase(), true)
         }
             .toViews(urlBuilder, types)
             .map { FavoritesView(it, favs[it.id]?.blockId ?: "") }
@@ -781,6 +817,12 @@ class CollectionViewModel(
         }
     }
 
+    fun onProfileClicked() {
+        viewModelScope.launch {
+            commands.emit(Command.SelectSpace)
+        }
+    }
+
     fun onAddClicked(type: Key? = null) {
         viewModelScope.sendEvent(
             analytics = analytics,
@@ -805,7 +847,7 @@ class CollectionViewModel(
                 onSuccess = { result ->
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = result.objectId,
+                        type = result.typeKey.key,
                         storeOfObjectTypes = storeOfObjectTypes,
                         route = EventsDictionary.Routes.objCreateHome,
                         startTime = startTime
@@ -905,6 +947,7 @@ class CollectionViewModel(
 
         object ToDesktop : Command()
         object ToSearch : Command()
+        object SelectSpace : Command()
         object Exit : Command()
     }
 }

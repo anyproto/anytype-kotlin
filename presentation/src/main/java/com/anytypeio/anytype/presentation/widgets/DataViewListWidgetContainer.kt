@@ -1,9 +1,11 @@
 package com.anytypeio.anytype.presentation.widgets
 
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -26,7 +28,7 @@ import kotlinx.coroutines.flow.map
 
 class DataViewListWidgetContainer(
     private val widget: Widget.List,
-    private val space: Id,
+    private val config: Config,
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
@@ -158,10 +160,17 @@ class DataViewListWidgetContainer(
             }.distinct(),
             filters = buildList {
                 addAll(view.filters)
-                addAll(ObjectSearchConstants.defaultDataViewFilters(space))
+                addAll(
+                    ObjectSearchConstants.defaultDataViewFilters(
+                        spaces = buildList {
+                            add(config.space)
+                            add(config.techSpace)
+                        }
+                    )
+                )
                 add(
                     DVFilter(
-                        relation = Relations.TYPE,
+                        relation = Relations.TYPE_UNIQUE_KEY,
                         condition = DVFilterCondition.NOT_IN,
                         value = listOf(
                             ObjectTypeIds.OBJECT_TYPE,
@@ -181,8 +190,8 @@ class DataViewListWidgetContainer(
             },
             limit = resolveLimit(),
             source = source.setOf,
-            collection = if (source.type.contains(ObjectTypeIds.COLLECTION))
-                source.id
+            collection = if (isCollection())
+                root
             else
                 null
         )
@@ -192,4 +201,9 @@ class DataViewListWidgetContainer(
         isCompact = widget.isCompact,
         limit = widget.limit
     )
+}
+
+fun ObjectView.isCollection(): Boolean {
+    val wrapper = ObjectWrapper.Basic(details.getOrDefault(root, emptyMap()))
+    return wrapper.layout == ObjectType.Layout.COLLECTION
 }

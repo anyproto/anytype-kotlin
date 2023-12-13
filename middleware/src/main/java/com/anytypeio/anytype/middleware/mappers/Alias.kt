@@ -14,6 +14,8 @@ typealias MBFile = anytype.model.Block.Content.File
 typealias MBFileState = anytype.model.Block.Content.File.State
 typealias MBFileType = anytype.model.Block.Content.File.Type
 typealias MBLink = anytype.model.Block.Content.Link
+typealias MBLatex = anytype.model.Block.Content.Latex
+typealias MBLatexProcessor = anytype.model.Block.Content.Latex.Processor
 typealias MBLinkIconSize = anytype.model.Block.Content.Link.IconSize
 typealias MBLinkCardStyle = anytype.model.Block.Content.Link.CardStyle
 typealias MBLinkDescription = anytype.model.Block.Content.Link.Description
@@ -63,3 +65,4 @@ typealias MDVRestriction = anytype.model.Restrictions.DataviewRestriction
 
 typealias MWidget = anytype.model.Block.Content.Widget
 typealias MWidgetLayout = anytype.model.Block.Content.Widget.Layout
+typealias MNetworkMode = anytype.Rpc.Account.NetworkMode

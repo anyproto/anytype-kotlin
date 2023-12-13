@@ -21,9 +21,11 @@ import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.databinding.FragmentSplashBinding
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.other.DEEP_LINK_PATTERN
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -79,17 +81,18 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
 
     private fun observe(command: SplashViewModel.Command) {
         when (command) {
-            SplashViewModel.Command.NavigateToDashboard -> {
+            is SplashViewModel.Command.NavigateToDashboard -> {
                 try {
                     findNavController().navigate(
-                        R.id.action_splashScreen_to_homeScreen
+                        R.id.action_splashScreen_to_homeScreen,
+                        args = HomeScreenFragment.args(command.deeplink)
                     )
                 } catch (e: Exception) {
                     Timber.e(e, "Error while opening dashboard from splash screen")
                     toast("Error while navigating to desktop: ${e.message}")
                 }
             }
-            SplashViewModel.Command.NavigateToWidgets -> {
+            is SplashViewModel.Command.NavigateToWidgets -> {
                 try {
                     findNavController().navigate(
                         R.id.action_splashScreen_to_widgets
@@ -111,11 +114,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                     bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.id),
                 )
             }
-            is SplashViewModel.Command.NavigateToLogin -> {
-                findNavController().navigate(
-                    R.id.action_splashFragment_to_login_nav
-                )
-            }
             is SplashViewModel.Command.NavigateToAuthStart -> {
                 findNavController().navigate(
                     R.id.action_splashFragment_to_authStart
@@ -128,17 +126,23 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             }
             is SplashViewModel.Command.CheckAppStartIntent -> {
                 val intent = requireActivity().intent
+                Timber.d("Timber intent: ${intent}")
                 if (intent != null && intent.action == Intent.ACTION_VIEW) {
-                    val bundle = intent.extras
-                    if (bundle != null) {
-                        val type = bundle.getString(ACTION_CREATE_NEW_TYPE_KEY)
-                        if (type != null) {
-                            vm.onIntentCreateNewObject(type = type)
+                    val data = intent.dataString
+                    if (data != null && data.contains(DEEP_LINK_PATTERN)) {
+                        vm.onDeepLink(data)
+                    } else {
+                        val bundle = intent.extras
+                        if (bundle != null) {
+                            val type = bundle.getString(ACTION_CREATE_NEW_TYPE_KEY)
+                            if (type != null) {
+                                vm.onIntentCreateNewObject(type = type)
+                            } else {
+                                vm.onIntentActionNotFound()
+                            }
                         } else {
                             vm.onIntentActionNotFound()
                         }
-                    } else {
-                        vm.onIntentActionNotFound()
                     }
                 }
                 else {

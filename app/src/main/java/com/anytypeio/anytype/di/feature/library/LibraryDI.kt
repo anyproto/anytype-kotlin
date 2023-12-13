@@ -198,10 +198,6 @@ object LibraryModule {
 
         @PerScreen
         @Binds
-        fun bindContainer(container: StorelessSubscriptionContainer.Impl): StorelessSubscriptionContainer
-
-        @PerScreen
-        @Binds
         fun bindResourceManager(manager: LibraryResourceManager.Impl): LibraryResourceManager
 
     }
@@ -219,4 +215,5 @@ interface LibraryDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun config(): ConfigStorage
     fun logger(): Logger
+    fun container(): StorelessSubscriptionContainer
 }

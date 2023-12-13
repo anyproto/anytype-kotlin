@@ -37,13 +37,17 @@ import com.anytypeio.anytype.core_ui.views.TitleInter15
 @Composable
 fun AddToAnytypeScreenPreview() {
     AddToAnytypeScreen(
-        data = "https://en.wikipedia.org/wiki/Walter_Benjaminhttps://en.wikipedia.org/wiki/Walter_Benjaminhttps://en.wikipedia.org/wiki/Walter_Benjaminhttps://en.wikipedia.org/wiki/Walter_Benjamin"
+        data = "https://en.wikipedia.org/wiki/Walter_Benjamin",
+        onCancelClicked = {},
+        onDoneClicked = {}
     )
 }
 
 @Composable
 fun AddToAnytypeScreen(
-    data: String
+    data: String,
+    onCancelClicked: () -> Unit,
+    onDoneClicked: () -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
     val items = listOf("Save as Note", "Save as Bookmark")
@@ -172,14 +176,14 @@ fun AddToAnytypeScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             ButtonSecondary(
-                onClick = { /*TODO*/ },
+                onClick = onCancelClicked,
                 size = ButtonSize.Large,
                 text = "Cancel",
                 modifier = Modifier.weight(1.0f)
             )
             Spacer(modifier = Modifier.width(12.dp))
             ButtonPrimary(
-                onClick = { /*TODO*/ },
+                onClick = onDoneClicked,
                 size = ButtonSize.Large,
                 text = "Done",
                 modifier = Modifier.weight(1.0f)

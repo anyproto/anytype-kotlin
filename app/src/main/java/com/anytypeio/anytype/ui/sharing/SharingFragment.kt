@@ -5,14 +5,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
+import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
@@ -32,11 +37,39 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            vm
             MaterialTheme(
                 typography = typography
             ) {
-                AddToAnytypeScreen(sharedData)
+                AddToAnytypeScreen(
+                    data = sharedData,
+                    onDoneClicked = {
+                        vm.onCreateBookmark(url = sharedData)
+                    },
+                    onCancelClicked = {
+                        dismiss()
+                    }
+                )
+                LaunchedEffect(Unit) {
+                    vm.navigation.collect { nav ->
+                        when(nav) {
+                            is OpenObjectNavigation.OpenDataView -> {
+
+                            }
+                            is OpenObjectNavigation.OpenEditor -> {
+                                dismiss()
+                                findNavController().navigate(
+                                    R.id.objectNavigation,
+                                    bundleOf(
+                                        EditorFragment.ID_KEY to nav.target
+                                    )
+                                )
+                            }
+                            is OpenObjectNavigation.UnexpectedLayoutError -> {
+
+                            }
+                        }
+                    }
+                }
             }
         }
     }

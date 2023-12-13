@@ -468,6 +468,7 @@ abstract class RelationValueBaseViewModel(
     }
 
     fun onFileValueActionAddClicked() {
+        Timber.d("onFileValueActionAddClicked")
         viewModelScope.launch {
             commands.emit(ObjectRelationValueCommand.ShowAddFileScreen)
         }

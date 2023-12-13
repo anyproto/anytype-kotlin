@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.sharing
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -84,10 +83,7 @@ fun AddToAnytypeScreen(
             Text(
                 text = stringResource(R.string.sharing_menu_save_as_section_name),
                 modifier = Modifier
-                    .padding(top = 14.dp, start = 20.dp)
-                    .clickable {
-                        isSaveAsMenuExpanded = !isSaveAsMenuExpanded
-                    },
+                    .padding(top = 14.dp, start = 20.dp),
                 style = Caption1Medium,
                 color = colorResource(id = R.color.text_secondary)
             )
@@ -136,7 +132,6 @@ fun AddToAnytypeScreen(
                 }
             }
         }
-        CurrentSpaceSection(isSaveAsMenuExpanded)
         Spacer(modifier = Modifier.height(20.dp))
         Buttons(onCancelClicked, onDoneClicked, selectedIndex)
     }
@@ -210,8 +205,7 @@ private fun Buttons(
 }
 
 @Composable
-private fun CurrentSpaceSection(isSaveAsMenuExpanded: Boolean) {
-    var isSaveAsMenuExpanded1 = isSaveAsMenuExpanded
+private fun CurrentSpaceSection() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -220,10 +214,7 @@ private fun CurrentSpaceSection(isSaveAsMenuExpanded: Boolean) {
         Text(
             text = "Space",
             modifier = Modifier
-                .padding(top = 14.dp, start = 20.dp)
-                .clickable {
-                    isSaveAsMenuExpanded1 = !isSaveAsMenuExpanded1
-                },
+                .padding(top = 14.dp, start = 20.dp),
             style = Caption1Medium,
             color = colorResource(id = R.color.text_secondary)
         )
@@ -231,10 +222,7 @@ private fun CurrentSpaceSection(isSaveAsMenuExpanded: Boolean) {
             text = "Main",
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(bottom = 14.dp, start = 20.dp)
-                .clickable {
-                    isSaveAsMenuExpanded1 = !isSaveAsMenuExpanded1
-                },
+                .padding(bottom = 14.dp, start = 20.dp),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary)
         )

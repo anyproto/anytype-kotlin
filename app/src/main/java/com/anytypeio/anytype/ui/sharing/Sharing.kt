@@ -191,14 +191,14 @@ private fun Buttons(
         ButtonSecondary(
             onClick = onCancelClicked,
             size = ButtonSize.Large,
-            text = "Cancel",
+            text = stringResource(id = R.string.cancel),
             modifier = Modifier.weight(1.0f)
         )
         Spacer(modifier = Modifier.width(12.dp))
         ButtonPrimary(
             onClick = { onDoneClicked(selectedIndex) },
             size = ButtonSize.Large,
-            text = "Done",
+            text = stringResource(id = R.string.done),
             modifier = Modifier.weight(1.0f)
         )
     }
@@ -237,7 +237,7 @@ private fun Header() {
             .height(48.dp)
     ) {
         Text(
-            text = "Add to Anytype",
+            text = stringResource(R.string.sharing_menu_add_to_anytype_header_title),
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier.align(Alignment.Center),
             style = TitleInter15

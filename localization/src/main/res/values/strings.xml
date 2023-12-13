@@ -1186,6 +1186,7 @@
     <string name="sharing_menu_save_as_note_option">Note</string>
     <string name="sharing_menu_save_as_bookmark_option">Bookmark</string>
     <string name="sharing_menu_data">Data</string>
+    <string name="sharing_menu_add_to_anytype_header_title">Add to Anytype</string>
 
     <!--endregion-->
 

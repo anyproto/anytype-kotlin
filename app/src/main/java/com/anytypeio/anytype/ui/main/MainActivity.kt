@@ -33,6 +33,7 @@ import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
+import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.github.javiersantos.appupdater.AppUpdater
 import com.github.javiersantos.appupdater.enums.UpdateFrom
@@ -156,6 +157,14 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     vm.onIntentCreateObject(it)
                 }
             }
+        }
+        if (intent != null && intent.action == Intent.ACTION_SEND) {
+            Timber.d("New send intent: ${intent.extras}")
+            val txt = intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+                Timber.d("New intent text: $it")
+                SharingFragment.new(it).show(supportFragmentManager, "test-sharing")
+            }
+
         }
         if (BuildConfig.DEBUG) {
             Timber.d("on NewIntent: $intent")

@@ -115,13 +115,15 @@ fun AddToAnytypeScreen(
                             SAVE_AS_BOOKMARK -> {
                                 Text(
                                     text = stringResource(id = R.string.sharing_menu_save_as_bookmark_option),
-                                    style = BodyRegular
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary)
                                 )
                             }
                             SAVE_AS_NOTE -> {
                                 Text(
                                     text = stringResource(id = R.string.sharing_menu_save_as_note_option),
-                                    style = BodyRegular
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary)
                                 )
                             }
                             else -> {

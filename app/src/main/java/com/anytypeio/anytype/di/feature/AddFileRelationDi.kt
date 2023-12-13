@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.add.AddFileRelationViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
@@ -36,8 +37,9 @@ object AddFileRelationModule {
         @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         searchObjects: SearchObjects,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        spaceManager: SpaceManager
     ): AddFileRelationViewModel.Factory = AddFileRelationViewModel.Factory(
-            relations, values, searchObjects, urlBuilder
+            relations, values, searchObjects, urlBuilder, spaceManager
     )
 }

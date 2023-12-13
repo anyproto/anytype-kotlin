@@ -116,4 +116,23 @@ object MimeTypes {
         "application/x-zip",
         "application/octet-stream"
     )
+
+    val MIME_EXTRA_IMAGE_VIDEO = arrayOf(
+        "video/mp4",
+        "video/3gpp",
+        "video/3gpp2",
+        "video/H261",
+        "video/H263",
+        "video/mpv",
+        "video/ogg",
+        "video/x-msvideo",
+        "image/jpeg",
+        "image/png",
+        "image/svg+xml",
+        "image/webp",
+        "image/gif",
+        "image/avif",
+        "image/apng",
+        "image/bmp"
+    )
 }

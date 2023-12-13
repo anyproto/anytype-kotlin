@@ -30,7 +30,6 @@ class CreatePrefilledNote @Inject constructor(
                 prefilled = emptyMap()
             )
         )
-        repo.openObject(obj.id)
         repo.create(
             command = Command.Create(
                 context = obj.id,
@@ -42,7 +41,6 @@ class CreatePrefilledNote @Inject constructor(
                 target = NO_VALUE
             )
         )
-        repo.closePage(obj.id)
         return obj.id
     }
 

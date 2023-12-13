@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
@@ -73,44 +74,12 @@ fun AddToAnytypeScreen(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Header()
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-                .border(
-                    width = 1.dp,
-                    color = colorResource(id = R.color.shape_primary),
-                    shape = RoundedCornerShape(10.dp)
-                )
-        ) {
-            Text(
-                text = stringResource(R.string.sharing_menu_data),
-                style = Caption1Medium,
-                color = colorResource(id = R.color.text_secondary),
-                modifier = Modifier
-                    .padding(
-                        top = 10.dp,
-                        start = 16.dp,
-                        end = 16.dp
-                    )
-            )
-            Text(
-                text = data.data,
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary),
-                modifier = Modifier.padding(
-                    top = 30.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 10.dp
-                ),
-                maxLines = 5
-            )
-        }
+        DataSection(data)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(76.dp)
+                .noRippleClickable { isSaveAsMenuExpanded = !isSaveAsMenuExpanded }
         ) {
             Text(
                 text = stringResource(R.string.sharing_menu_save_as_section_name),
@@ -130,10 +99,7 @@ fun AddToAnytypeScreen(
                     stringResource(id = R.string.sharing_menu_save_as_note_option),
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .padding(bottom = 14.dp, start = 20.dp)
-                    .clickable {
-                        isSaveAsMenuExpanded = !isSaveAsMenuExpanded
-                    },
+                    .padding(bottom = 14.dp, start = 20.dp),
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_primary)
             )
@@ -170,55 +136,108 @@ fun AddToAnytypeScreen(
                 }
             }
         }
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(76.dp)
-        ) {
-            Text(
-                text = "Space",
-                modifier = Modifier
-                    .padding(top = 14.dp, start = 20.dp)
-                    .clickable {
-                        isSaveAsMenuExpanded = !isSaveAsMenuExpanded
-                    },
-                style = Caption1Medium,
-                color = colorResource(id = R.color.text_secondary)
-            )
-            Text(
-                text = "Main",
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(bottom = 14.dp, start = 20.dp)
-                    .clickable {
-                        isSaveAsMenuExpanded = !isSaveAsMenuExpanded
-                    },
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_primary)
-            )
-        }
+        CurrentSpaceSection(isSaveAsMenuExpanded)
         Spacer(modifier = Modifier.height(20.dp))
-        Row(
+        Buttons(onCancelClicked, onDoneClicked, selectedIndex)
+    }
+}
+
+@Composable
+private fun DataSection(data: SharingData) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.shape_primary),
+                shape = RoundedCornerShape(10.dp)
+            )
+    ) {
+        Text(
+            text = stringResource(R.string.sharing_menu_data),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_secondary),
             modifier = Modifier
-                .fillMaxWidth()
-                .height(68.dp)
-                .padding(horizontal = 20.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ButtonSecondary(
-                onClick = onCancelClicked,
-                size = ButtonSize.Large,
-                text = "Cancel",
-                modifier = Modifier.weight(1.0f)
-            )
-            Spacer(modifier = Modifier.width(12.dp))
-            ButtonPrimary(
-                onClick = { onDoneClicked(selectedIndex) },
-                size = ButtonSize.Large,
-                text = "Done",
-                modifier = Modifier.weight(1.0f)
-            )
-        }
+                .padding(
+                    top = 10.dp,
+                    start = 16.dp,
+                    end = 16.dp
+                )
+        )
+        Text(
+            text = data.data,
+            style = BodyRegular,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier.padding(
+                top = 30.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 10.dp
+            ),
+            maxLines = 5
+        )
+    }
+}
+
+@Composable
+private fun Buttons(
+    onCancelClicked: () -> Unit,
+    onDoneClicked: (SaveAsOption) -> Unit,
+    selectedIndex: Int
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(68.dp)
+            .padding(horizontal = 20.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ButtonSecondary(
+            onClick = onCancelClicked,
+            size = ButtonSize.Large,
+            text = "Cancel",
+            modifier = Modifier.weight(1.0f)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        ButtonPrimary(
+            onClick = { onDoneClicked(selectedIndex) },
+            size = ButtonSize.Large,
+            text = "Done",
+            modifier = Modifier.weight(1.0f)
+        )
+    }
+}
+
+@Composable
+private fun CurrentSpaceSection(isSaveAsMenuExpanded: Boolean) {
+    var isSaveAsMenuExpanded1 = isSaveAsMenuExpanded
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(76.dp)
+    ) {
+        Text(
+            text = "Space",
+            modifier = Modifier
+                .padding(top = 14.dp, start = 20.dp)
+                .clickable {
+                    isSaveAsMenuExpanded1 = !isSaveAsMenuExpanded1
+                },
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_secondary)
+        )
+        Text(
+            text = "Main",
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(bottom = 14.dp, start = 20.dp)
+                .clickable {
+                    isSaveAsMenuExpanded1 = !isSaveAsMenuExpanded1
+                },
+            style = BodyRegular,
+            color = colorResource(id = R.color.text_primary)
+        )
     }
 }
 

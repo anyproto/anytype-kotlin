@@ -71,7 +71,7 @@ abstract class RelationValueBaseViewModel(
         objectId: Id,
         relationKey: Key
     ) {
-        Timber.d("onStart")
+        Timber.d("onStart, ctx: $ctx, objectId: $objectId, relationKey: $relationKey")
         jobs += viewModelScope.launch {
             combine(
                 relations.observe(relationKey),

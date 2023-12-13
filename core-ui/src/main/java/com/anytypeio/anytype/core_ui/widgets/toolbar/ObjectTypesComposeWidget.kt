@@ -43,7 +43,8 @@ fun ChooseTypeHorizontalWidget(
             modifier = Modifier
                 .height(52.dp)
                 .fillMaxWidth()
-                .background(color = colorResource(id = R.color.background_primary))
+                .background(color = colorResource(id = R.color.background_primary)),
+            contentAlignment = Alignment.CenterStart
         ) {
             LazyRow(
                 contentPadding = PaddingValues(

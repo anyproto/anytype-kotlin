@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_ui.R
@@ -31,7 +32,29 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
+import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 
+
+@Preview(showBackground = true, apiLevel = 33)
+@Composable
+fun MyChooseTypeHorizontalWidget() {
+    val state = EditorViewModel.TypesWidgetState(
+        visible = true,
+        items = listOf(
+            EditorViewModel.TypesWidgetItem.Search,
+            EditorViewModel.TypesWidgetItem.Type(
+                item = ObjectTypeView(
+                    emoji = "👍",
+                    name = "Like",
+                    id = "12312",
+                    description = null,
+                    key = "dd"
+                )
+            )
+        )
+    )
+    ChooseTypeHorizontalWidget(state = state, onTypeClicked = {})
+}
 
 @Composable
 fun ChooseTypeHorizontalWidget(

@@ -107,6 +107,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         )
                                     )
                             }
+                            is Command.AddToAnytype -> {
+                                SharingFragment.new(command.data).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
                             is Command.Error -> {
                                 toast(command.msg)
                             }
@@ -159,17 +165,13 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             }
         }
         if (intent != null && intent.action == Intent.ACTION_SEND) {
-            Timber.d("New send intent: ${intent.extras}")
-            val txt = intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-                Timber.d("New intent text: $it")
-                SharingFragment.new(it).show(supportFragmentManager, "test-sharing")
+            intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+                vm.onIntentShare(it)
             }
-
         }
         if (BuildConfig.DEBUG) {
             Timber.d("on NewIntent: $intent")
         }
-
     }
 
     private fun setTheme(themeMode: ThemeMode) {
@@ -235,5 +237,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     companion object {
         const val AUTO_UPDATE_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"
+        const val SHARE_DIALOG_LABEL = "anytype.dialog.share.label"
     }
 }

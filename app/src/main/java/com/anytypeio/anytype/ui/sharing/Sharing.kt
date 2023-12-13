@@ -33,6 +33,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.TitleInter15
+import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
 
 @Preview
 @Composable
@@ -40,7 +41,9 @@ fun AddToAnytypeScreenUrlPreview() {
     AddToAnytypeScreen(
         data = SharingData.Url("https://en.wikipedia.org/wiki/Walter_Benjamin"),
         onCancelClicked = {},
-        onDoneClicked = {}
+        onDoneClicked = {},
+        spaces = emptyList(),
+        onSelectSpaceClicked = {}
     )
 }
 
@@ -50,15 +53,19 @@ fun AddToAnytypeScreenNotePreview() {
     AddToAnytypeScreen(
         data = SharingData.Raw("The Work of Art in the Age of its Technological Reproducibility"),
         onCancelClicked = {},
-        onDoneClicked = {}
+        onDoneClicked = {},
+        spaces = emptyList(),
+        onSelectSpaceClicked = {}
     )
 }
 
 @Composable
 fun AddToAnytypeScreen(
+    spaces: List<AddToAnytypeViewModel.SpaceView>,
     data: SharingData,
     onCancelClicked: () -> Unit,
-    onDoneClicked: (SaveAsOption) -> Unit
+    onDoneClicked: (SaveAsOption) -> Unit,
+    onSelectSpaceClicked: (AddToAnytypeViewModel.SpaceView) -> Unit
 ) {
     var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
     val items = listOf(SAVE_AS_NOTE, SAVE_AS_BOOKMARK)
@@ -134,6 +141,20 @@ fun AddToAnytypeScreen(
                 }
             }
         }
+        val selected = spaces.firstOrNull { it.isSelected }
+        if (selected != null) {
+            CurrentSpaceSection(
+                name = selected.obj.name.orEmpty(),
+                spaces = spaces,
+                onSelectSpaceClicked = onSelectSpaceClicked
+            )
+        } else {
+            CurrentSpaceSection(
+                name = "...",
+                spaces = spaces,
+                onSelectSpaceClicked = onSelectSpaceClicked
+            )
+        }
         Spacer(modifier = Modifier.height(20.dp))
         Buttons(onCancelClicked, onDoneClicked, selectedIndex)
     }
@@ -207,11 +228,19 @@ private fun Buttons(
 }
 
 @Composable
-private fun CurrentSpaceSection() {
+private fun CurrentSpaceSection(
+    name: String,
+    spaces: List<AddToAnytypeViewModel.SpaceView>,
+    onSelectSpaceClicked: (AddToAnytypeViewModel.SpaceView) -> Unit
+) {
+    var isSpaceSelectMenuExpanded by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(76.dp)
+            .noRippleClickable {
+                isSpaceSelectMenuExpanded = true
+            }
     ) {
         Text(
             text = "Space",
@@ -221,13 +250,35 @@ private fun CurrentSpaceSection() {
             color = colorResource(id = R.color.text_secondary)
         )
         Text(
-            text = "Main",
+            text = name,
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(bottom = 14.dp, start = 20.dp),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary)
         )
+        DropdownMenu(
+            expanded = isSpaceSelectMenuExpanded,
+            onDismissRequest = { isSpaceSelectMenuExpanded = false },
+            modifier = Modifier.background(
+                color = colorResource(id = R.color.background_secondary)
+            )
+        ) {
+            spaces.forEach { view ->
+                DropdownMenuItem(
+                    onClick = {
+                        onSelectSpaceClicked(view)
+                        isSpaceSelectMenuExpanded = false
+                    }
+                ) {
+                    Text(
+                        text = view.obj.name.orEmpty(),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+            }
+        }
     }
 }
 

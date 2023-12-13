@@ -11,12 +11,10 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
 class CreatePrefilledNote @Inject constructor(
     private val repo: BlockRepository,
-    private val spaceManager: SpaceManager,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreatePrefilledNote.Params, Id>(dispatchers.io) {
 
@@ -24,7 +22,7 @@ class CreatePrefilledNote @Inject constructor(
         val obj = repo.createObject(
             Command.CreateObject(
                 typeKey = TypeKey(ObjectTypeUniqueKeys.NOTE),
-                space = SpaceId(spaceManager.get()),
+                space = SpaceId(params.space),
                 template = null,
                 internalFlags = emptyList(),
                 prefilled = emptyMap()
@@ -44,5 +42,5 @@ class CreatePrefilledNote @Inject constructor(
         return obj.id
     }
 
-    data class Params(val text: String)
+    data class Params(val space: Id, val text: String)
 }

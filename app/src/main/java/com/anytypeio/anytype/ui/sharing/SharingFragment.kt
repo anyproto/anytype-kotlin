@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -59,7 +60,9 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                     },
                     onCancelClicked = {
                         dismiss()
-                    }
+                    },
+                    spaces = vm.spaceViews.collectAsStateWithLifecycle().value,
+                    onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) }
                 )
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->
@@ -87,6 +90,24 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         toast(toast)
                     }
                 }
+                LaunchedEffect(Unit) {
+                    vm.commands.collect { command ->
+                        proceedWithCommand(command)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun proceedWithCommand(command: AddToAnytypeViewModel.Command) {
+        when (command) {
+            AddToAnytypeViewModel.Command.Dismiss -> {
+                dismiss()
+            }
+            is AddToAnytypeViewModel.Command.ObjectAddToSpaceToast -> {
+                val name = command.spaceName ?: resources.getString(R.string.untitled)
+                val msg = resources.getString(R.string.sharing_menu_toast_object_added, name)
+                toast(msg = msg)
             }
         }
     }

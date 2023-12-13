@@ -632,6 +632,14 @@ object ObjectSearchConstants {
         Relations.RELATION_READ_ONLY_VALUE
     )
 
+    val defaultFilesKeys = defaultKeys + listOf(
+        Relations.DESCRIPTION,
+        Relations.SIZE_IN_BYTES,
+        Relations.FILE_MIME_TYPE,
+        Relations.FILE_EXT,
+        Relations.FILE_SYNC_STATUS
+    )
+
     //endregion
 
     //region OBJECT TYPES
@@ -847,6 +855,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),

@@ -1180,6 +1180,15 @@
 
     <!--endregion-->
 
+    <!--region SHARING MENU -->
+
+    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_note_option">Note</string>
+    <string name="sharing_menu_save_as_bookmark_option">Bookmark</string>
+    <string name="sharing_menu_data">Data</string>
+
+    <!--endregion-->
+
     <plurals name="links_to_count">
         <item quantity="zero">$d links to</item>
         <item quantity="one">%d link to</item>

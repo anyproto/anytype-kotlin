@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.URLUtil
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
@@ -13,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -23,7 +25,14 @@ import javax.inject.Inject
 
 class SharingFragment : BaseBottomSheetComposeFragment() {
 
-    private val sharedData get() = arg<String>(SHARING_DATE_KEY)
+    private val sharedData : SharingData get() {
+        val result = arg<String>(SHARING_DATE_KEY)
+        return if (URLUtil.isValidUrl(result)) {
+            SharingData.Url(result)
+        } else {
+            SharingData.Raw(result)
+        }
+    }
 
     @Inject
     lateinit var factory: AddToAnytypeViewModel.Factory
@@ -42,8 +51,11 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
             ) {
                 AddToAnytypeScreen(
                     data = sharedData,
-                    onDoneClicked = {
-                        vm.onCreateBookmark(url = sharedData)
+                    onDoneClicked = { option ->
+                        when(option) {
+                            SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
+                            SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
+                        }
                     },
                     onCancelClicked = {
                         dismiss()
@@ -68,6 +80,11 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
 
                             }
                         }
+                    }
+                }
+                LaunchedEffect(Unit) {
+                    vm.toasts.collect { toast ->
+                        toast(toast)
                     }
                 }
             }

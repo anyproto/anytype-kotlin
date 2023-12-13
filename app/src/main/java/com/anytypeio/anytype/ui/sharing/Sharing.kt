@@ -23,6 +23,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -35,9 +36,19 @@ import com.anytypeio.anytype.core_ui.views.TitleInter15
 
 @Preview
 @Composable
-fun AddToAnytypeScreenPreview() {
+fun AddToAnytypeScreenUrlPreview() {
     AddToAnytypeScreen(
-        data = "https://en.wikipedia.org/wiki/Walter_Benjamin",
+        data = SharingData.Url("https://en.wikipedia.org/wiki/Walter_Benjamin"),
+        onCancelClicked = {},
+        onDoneClicked = {}
+    )
+}
+
+@Preview
+@Composable
+fun AddToAnytypeScreenNotePreview() {
+    AddToAnytypeScreen(
+        data = SharingData.Raw("The Work of Art in the Age of its Technological Reproducibility"),
         onCancelClicked = {},
         onDoneClicked = {}
     )
@@ -45,14 +56,21 @@ fun AddToAnytypeScreenPreview() {
 
 @Composable
 fun AddToAnytypeScreen(
-    data: String,
+    data: SharingData,
     onCancelClicked: () -> Unit,
-    onDoneClicked: () -> Unit
+    onDoneClicked: (SaveAsOption) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
-    val items = listOf("Save as Note", "Save as Bookmark")
-    var selectedIndex by remember { mutableStateOf(0) }
-    val disabledValue = "B"
+    var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
+    val items = listOf(SAVE_AS_NOTE, SAVE_AS_BOOKMARK)
+    var selectedIndex by remember {
+        mutableStateOf(
+            when(data) {
+                is SharingData.Url -> SAVE_AS_BOOKMARK
+                else -> SAVE_AS_NOTE
+            }
+        )
+    }
+
     Column(modifier = Modifier.fillMaxWidth()) {
         Header()
         Box(
@@ -66,7 +84,7 @@ fun AddToAnytypeScreen(
                 )
         ) {
             Text(
-                text = "Data",
+                text = stringResource(R.string.sharing_menu_data),
                 style = Caption1Medium,
                 color = colorResource(id = R.color.text_secondary),
                 modifier = Modifier
@@ -77,7 +95,7 @@ fun AddToAnytypeScreen(
                     )
             )
             Text(
-                text = data,
+                text = data.data,
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_primary),
                 modifier = Modifier.padding(
@@ -95,29 +113,33 @@ fun AddToAnytypeScreen(
                 .height(76.dp)
         ) {
             Text(
-                text = "Save as",
+                text = stringResource(R.string.sharing_menu_save_as_section_name),
                 modifier = Modifier
                     .padding(top = 14.dp, start = 20.dp)
                     .clickable {
-                        expanded = !expanded
+                        isSaveAsMenuExpanded = !isSaveAsMenuExpanded
                     },
                 style = Caption1Medium,
                 color = colorResource(id = R.color.text_secondary)
             )
+
             Text(
-                text = "Bookmark",
+                text = if (selectedIndex == SAVE_AS_BOOKMARK)
+                    stringResource(id = R.string.sharing_menu_save_as_bookmark_option)
+                else
+                    stringResource(id = R.string.sharing_menu_save_as_note_option),
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(bottom = 14.dp, start = 20.dp)
                     .clickable {
-                        expanded = !expanded
+                        isSaveAsMenuExpanded = !isSaveAsMenuExpanded
                     },
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_primary)
             )
             DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
+                expanded = isSaveAsMenuExpanded,
+                onDismissRequest = { isSaveAsMenuExpanded = false },
                 modifier = Modifier.background(
                     color = colorResource(id = R.color.background_secondary)
                 )
@@ -125,17 +147,25 @@ fun AddToAnytypeScreen(
                 items.forEachIndexed { index, s ->
                     DropdownMenuItem(onClick = {
                         selectedIndex = index
-                        expanded = false
+                        isSaveAsMenuExpanded = false
                     }) {
-                        val disabledText = if (s == disabledValue) {
-                            " (Disabled)"
-                        } else {
-                            ""
+                        when(s) {
+                            SAVE_AS_BOOKMARK -> {
+                                Text(
+                                    text = stringResource(id = R.string.sharing_menu_save_as_bookmark_option),
+                                    style = BodyRegular
+                                )
+                            }
+                            SAVE_AS_NOTE -> {
+                                Text(
+                                    text = stringResource(id = R.string.sharing_menu_save_as_note_option),
+                                    style = BodyRegular
+                                )
+                            }
+                            else -> {
+                                // Draw nothing
+                            }
                         }
-                        Text(
-                            text = s,
-                            style = BodyRegular
-                        )
                     }
                 }
             }
@@ -150,7 +180,7 @@ fun AddToAnytypeScreen(
                 modifier = Modifier
                     .padding(top = 14.dp, start = 20.dp)
                     .clickable {
-                        expanded = !expanded
+                        isSaveAsMenuExpanded = !isSaveAsMenuExpanded
                     },
                 style = Caption1Medium,
                 color = colorResource(id = R.color.text_secondary)
@@ -161,7 +191,7 @@ fun AddToAnytypeScreen(
                     .align(Alignment.BottomStart)
                     .padding(bottom = 14.dp, start = 20.dp)
                     .clickable {
-                        expanded = !expanded
+                        isSaveAsMenuExpanded = !isSaveAsMenuExpanded
                     },
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_primary)
@@ -183,7 +213,7 @@ fun AddToAnytypeScreen(
             )
             Spacer(modifier = Modifier.width(12.dp))
             ButtonPrimary(
-                onClick = onDoneClicked,
+                onClick = { onDoneClicked(selectedIndex) },
                 size = ButtonSize.Large,
                 text = "Done",
                 modifier = Modifier.weight(1.0f)
@@ -205,5 +235,21 @@ private fun Header() {
             modifier = Modifier.align(Alignment.Center),
             style = TitleInter15
         )
+    }
+}
+
+const val SAVE_AS_NOTE = 0
+const val SAVE_AS_BOOKMARK = 1
+typealias SaveAsOption = Int
+
+sealed class SharingData {
+    abstract val data: String
+    data class Url(val url: String) : SharingData() {
+        override val data: String
+            get() = url
+    }
+    data class Raw(val raw: String) : SharingData() {
+        override val data: String
+            get() = raw
     }
 }

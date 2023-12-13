@@ -29,7 +29,11 @@ class FileActionsFragment : BaseBottomSheetFragment<FragmentRelationFileValueAct
                 )
             }
         }
-        binding.btnUploadFromGallery.setOnClickListener {
+        binding.btnAdd.setOnClickListener {
+            withParent<FileActionReceiver> { onAddAction() }
+            dismiss()
+        }
+            binding.btnUploadFromGallery.setOnClickListener {
             withParent<FileActionReceiver> { onUploadFromGalleryAction() }
             dismiss()
         }

@@ -18,11 +18,11 @@ class FileActionsFragment : BaseBottomSheetFragment<FragmentRelationFileValueAct
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        sheet.apply {
-            this?.setBackgroundResource(android.R.color.transparent)
-            this?.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+        sheet?.apply {
+            setBackgroundResource(android.R.color.transparent)
+            updateLayoutParams<CoordinatorLayout.LayoutParams> {
                 setMargins(
-                    resources.getDimensionPixelSize(R.dimen.dp_8).toInt(),
+                    resources.getDimensionPixelSize(R.dimen.dp_8),
                     0,
                     resources.getDimensionPixelSize(R.dimen.dp_8),
                     resources.getDimensionPixelSize(R.dimen.dp_102)

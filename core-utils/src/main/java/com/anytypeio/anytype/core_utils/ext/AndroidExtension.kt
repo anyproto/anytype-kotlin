@@ -41,6 +41,7 @@ import androidx.navigation.NavDirections
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
+import com.anytypeio.anytype.core_utils.const.MimeTypes.MIME_EXTRA_IMAGE_VIDEO
 import com.anytypeio.anytype.core_utils.const.MimeTypes.MIME_EXTRA_YAML
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -283,8 +284,16 @@ fun Fragment.startFilePicker(mime: Mimetype, requestCode: Int? = null) {
         val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
             addCategory(Intent.CATEGORY_OPENABLE)
             type = mime.value
-            if (mime == Mimetype.MIME_YAML) {
-                putExtra(Intent.EXTRA_MIME_TYPES, MIME_EXTRA_YAML)
+            when (mime) {
+                Mimetype.MIME_IMAGE_AND_VIDEO -> {
+                    putExtra(Intent.EXTRA_MIME_TYPES, MIME_EXTRA_IMAGE_VIDEO)
+                }
+                Mimetype.MIME_YAML -> {
+                    putExtra(Intent.EXTRA_MIME_TYPES, MIME_EXTRA_YAML)
+                }
+                else -> {
+                    //do nothing
+                }
             }
         }
         val code = if (mime == Mimetype.MIME_FILE_ALL) {

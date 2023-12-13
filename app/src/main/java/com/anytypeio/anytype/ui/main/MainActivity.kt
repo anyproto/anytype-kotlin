@@ -121,6 +121,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
             }
         }
+        if (savedInstanceState == null && intent.action == Intent.ACTION_SEND) {
+            proceedWithShareIntent(intent)
+        }
     }
 
     private fun startAppUpdater() {
@@ -154,23 +157,31 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        if (intent != null && intent.action == Intent.ACTION_VIEW) {
-            val data = intent.dataString
-            if (data != null && data.contains(DEEP_LINK_PATTERN)) {
-                deepLink = data
-            } else {
-                intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
-                    vm.onIntentCreateObject(it)
+        if (intent != null) {
+            when(intent.action) {
+                Intent.ACTION_VIEW -> {
+                    val data = intent.dataString
+                    if (data != null && data.contains(DEEP_LINK_PATTERN)) {
+                        deepLink = data
+                    } else {
+                        intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
+                            vm.onIntentCreateObject(it)
+                        }
+                    }
                 }
-            }
-        }
-        if (intent != null && intent.action == Intent.ACTION_SEND) {
-            intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-                vm.onIntentShare(it)
+                Intent.ACTION_SEND -> {
+                    proceedWithShareIntent(intent)
+                }
             }
         }
         if (BuildConfig.DEBUG) {
             Timber.d("on NewIntent: $intent")
+        }
+    }
+
+    private fun proceedWithShareIntent(intent: Intent) {
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+            vm.onIntentShare(it)
         }
     }
 

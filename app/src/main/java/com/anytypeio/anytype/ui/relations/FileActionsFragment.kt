@@ -1,25 +1,33 @@
 package com.anytypeio.anytype.ui.relations
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.withParent
-import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentRelationFileValueActionBinding
 
-class FileActionsFragment : BaseDialogFragment<FragmentRelationFileValueActionBinding>() {
+class FileActionsFragment : BaseBottomSheetFragment<FragmentRelationFileValueActionBinding>() {
 
     override fun injectDependencies() {}
     override fun releaseDependencies() {}
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnAdd.setOnClickListener {
-            withParent<FileActionReceiver> { onAddAction() }
-            dismiss()
+        sheet.apply {
+            this?.setBackgroundResource(android.R.color.transparent)
+            this?.updateLayoutParams<CoordinatorLayout.LayoutParams> {
+                setMargins(
+                    resources.getDimensionPixelSize(R.dimen.dp_8).toInt(),
+                    0,
+                    resources.getDimensionPixelSize(R.dimen.dp_8),
+                    resources.getDimensionPixelSize(R.dimen.dp_102)
+                )
+            }
         }
         binding.btnUploadFromGallery.setOnClickListener {
             withParent<FileActionReceiver> { onUploadFromGalleryAction() }
@@ -28,20 +36,6 @@ class FileActionsFragment : BaseDialogFragment<FragmentRelationFileValueActionBi
         binding.btnUploadFromStorage.setOnClickListener {
             withParent<FileActionReceiver> { onUploadFromStorageAction() }
             dismiss()
-        }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        setupAppearance()
-    }
-
-    private fun setupAppearance() {
-        dialog?.window?.apply {
-            setGravity(Gravity.BOTTOM)
-            setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-            setBackgroundDrawableResource(android.R.color.transparent)
-            setWindowAnimations(R.style.DefaultBottomDialogAnimation)
         }
     }
 

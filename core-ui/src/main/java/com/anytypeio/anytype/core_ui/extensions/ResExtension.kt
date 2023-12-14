@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
+import com.anytypeio.anytype.presentation.sync.SyncStatusView
 
 fun Context.drawable(
     @DrawableRes id: Int
@@ -291,4 +292,27 @@ fun RelationFormat.getPrettyName(): Int = when (this) {
     RelationFormat.OBJECT -> R.string.relation_format_object
     RelationFormat.RELATIONS -> R.string.relation_format_relation
     RelationFormat.UNDEFINED -> R.string.undefined
+}
+
+fun SyncStatusView?.getLabelText(context: Context): String = when (this) {
+    SyncStatusView.Unknown -> context.getString(R.string.sync_status_unknown)
+    SyncStatusView.Offline -> context.getString(R.string.sync_status_offline)
+    SyncStatusView.Syncing -> context.getString(R.string.sync_status_syncing)
+    is SyncStatusView.Synced -> context.getString(R.string.sync_status_synced)
+    SyncStatusView.Failed -> context.getString(R.string.sync_status_failed)
+    SyncStatusView.IncompatibleVersion -> context.getString(R.string.sync_status_incompatible)
+    else -> ""
+}
+
+fun SyncStatusView?.getToastMsg(context: Context): String = when (this) {
+    SyncStatusView.Failed -> context.getString(R.string.sync_status_toast_failed)
+    SyncStatusView.IncompatibleVersion -> context.getString(R.string.sync_status_toast_incompatible)
+    SyncStatusView.Offline -> context.getString(R.string.sync_status_toast_offline)
+    SyncStatusView.Synced.AnyNetwork -> context.getString(R.string.sync_status_toast_synced)
+    SyncStatusView.Synced.LocalOnly -> context.getString(R.string.sync_status_toast_synced_local)
+    SyncStatusView.Synced.SelfHostedNetwork -> context.getString(R.string.sync_status_toast_synced_self_hosted)
+    SyncStatusView.Synced.StagingNetwork -> context.getString(R.string.sync_status_toast_synced_staging)
+    SyncStatusView.Syncing -> context.getString(R.string.sync_status_toast_syncing)
+    SyncStatusView.Unknown -> context.getString(R.string.sync_status_toast_unknown)
+    else -> ""
 }

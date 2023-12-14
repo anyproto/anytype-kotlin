@@ -535,7 +535,7 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = SupportedLayouts.editorLayouts.map { it.code.toDouble() }
+            value = SupportedLayouts.addAsLinkToLayouts.map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.ID,
@@ -630,6 +630,14 @@ object ObjectSearchConstants {
         Relations.RELATION_DEFAULT_VALUE,
         Relations.RELATION_FORMAT_OBJECT_TYPES,
         Relations.RELATION_READ_ONLY_VALUE
+    )
+
+    val defaultFilesKeys = defaultKeys + listOf(
+        Relations.DESCRIPTION,
+        Relations.SIZE_IN_BYTES,
+        Relations.FILE_MIME_TYPE,
+        Relations.FILE_EXT,
+        Relations.FILE_SYNC_STATUS
     )
 
     //endregion
@@ -736,6 +744,22 @@ object ObjectSearchConstants {
         )
     )
 
+    fun defaultObjectTypeSearchSorts() : List<DVSort> = buildList {
+        add(
+            DVSort(
+                relationKey = Relations.LAST_USED_DATE,
+                type = DVSortType.DESC,
+                includeTime = true
+            )
+        )
+        add(
+            DVSort(
+                relationKey = Relations.NAME,
+                type = DVSortType.ASC
+            )
+        )
+    }
+
     fun filterMyRelations() : List<DVFilter> = listOf(
         DVFilter(
             relation = Relations.LAYOUT,
@@ -831,6 +855,11 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),

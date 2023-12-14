@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
@@ -251,6 +252,40 @@ fun Block.Details.objectTypeRelation(
             type = objectTypeId,
             system = relationKey.isSystemKey()
         )
+    }
+}
+
+fun Block.Details.linksRelation(
+    relationKey: Key,
+    context: Id,
+    details: Block.Details,
+    values: Map<String, Any?>,
+    isFeatured: Boolean = false,
+): ObjectRelationView? {
+    return when (relationKey) {
+        Relations.BACKLINKS -> {
+            ObjectRelationView.Default(
+                id = relationKey,
+                key = relationKey,
+                name = "Backlinks",
+                featured = isFeatured,
+                readOnly = true,
+                system = relationKey.isSystemKey(),
+                format = RelationFormat.SHORT_TEXT
+            )
+        }
+        Relations.LINKS -> {
+            ObjectRelationView.Default(
+                id = relationKey,
+                key = relationKey,
+                name = "Links",
+                featured = isFeatured,
+                readOnly = true,
+                system = relationKey.isSystemKey(),
+                format = RelationFormat.SHORT_TEXT
+            )
+        }
+        else -> null
     }
 }
 

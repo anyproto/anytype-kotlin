@@ -11,7 +11,7 @@
     <string name="file_storage">Penyimpanan berkas</string>
     <string name="recovery_phrase">Frasa pemulihan</string>
     <string name="clear_file_cache">Bersihkan tembolok</string>
-    <string name="debug_sync_report">Debug Sync Report</string>
+    <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Awakutu</string>
     <string name="account">Akun</string>
     <string name="reset_account">Setel ulang akun</string>
@@ -23,7 +23,7 @@
     <string name="pin_code">Kode PIN</string>
     <string name="access">Akses</string>
     <string name="wallpaper">Latar belakang</string>
-    <string name="tech_info">Tech info</string>
+    <string name="tech_info">Informasi Tekhnologi</string>
     <string name="light">Cahaya</string>
     <string name="dark">Gelap</string>
     <string name="system">Sistem</string>
@@ -38,14 +38,15 @@
     <string name="about_legal">Legal</string>
     <string name="about_terms_of_use">Ketentuan Penggunaan</string>
     <string name="about_privacy_policy">Kebijakan Privasi</string>
-    <string name="about_acknowledgements">Acknowledgments</string>
+    <string name="about_acknowledgements">Pengakuan</string>
     <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
     <string name="about_anytype_community_link">https://community.anytype.io</string>
     <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
     <string name="about_terms_and_conditions_link">https://anytype.io/terms_of_use/</string>
     <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
-    <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
-    <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
+    <string name="about_meta_info">Versi Aplikasi: %1$s\nNomor Pembuatan: %2$d\nVersi Pustaka: %3$s\nAkun\u00A0ID:\u00A0%4$s\nPerangkat\u00A0ID:\u00A0%5$s\nAnalisis\u00A0ID:\u00A0%6$s</string>
+    <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
+    <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
     <string name="personal_space">Setelan</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -269,7 +270,10 @@
     <string name="sync_status_toast_unknown">Memulai sinkron</string>
     <string name="sync_status_toast_offline">Simpul Anytype tidak terhubung</string>
     <string name="sync_status_toast_syncing">Mengunduh atau mengunggah data ke simpul</string>
-    <string name="sync_status_toast_synced">Tercadangkan di minimal satu simpul</string>
+    <string name="sync_status_toast_synced">Tercadangkan ke Jaringan Anytype</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Hanya lokal</string>
+    <string name="sync_status_toast_synced_self_hosted">Tercadangkan ke Jaringan Swaladen</string>
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
     <string name="sync_status_toast_incompatible">Versi kadaluwarsa. Silahkan memperbahrui segala tipe</string>
     <string name="relation_format_description">Deskripsi</string>
@@ -756,12 +760,12 @@
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Setelan</string>
     <string name="settings_network_mode">Mode jaringan</string>
-    <string name="settings_network_configuration_file">Berkas Konfigurasi Jaringan</string>
+    <string name="settings_network_configuration_file">Konfigurasi Swaladen (Self-Hosted)</string>
     <string name="settings_network_configuration_file_choose">Pilih berkas</string>
     <string-array name="settings_networks_entries">
-        <item>Bawaan</item>
-        <item>Mode Hanya Lokal</item>
-        <item>Custom</item>
+        <item>Anytype</item>
+        <item>Hanya Lokal</item>
+        <item>Swaladen</item>
     </string-array>
     <string name="snack_link_to">ditautkan pada</string>
     <string name="snack_move_to">moved to</string>
@@ -884,7 +888,7 @@
     <string name="slash_widget_actions_copy">Salin</string>
     <string name="slash_widget_actions_paste">Tempel</string>
     <string name="slash_widget_actions_link_to">Tambahkan tautan</string>
-    <string name="slash_widget_actions_link_to_subtitle">Tautkan ke objek yang telah ada</string>
+    <string name="slash_widget_actions_link_to_subtitle">Buat tautan ke objek lain</string>
     <string name="slash_widget_actions_move">Pindahkan</string>
     <string name="slash_widget_actions_moveto">Pindahkan ke</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>
@@ -991,7 +995,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Gandakan</string>
-    <string name="object_action_to_widgets">To widgets</string>
+    <string name="object_action_to_widgets">Ke widget</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">Nothing found</string>
@@ -1021,4 +1025,18 @@
     <string name="alert_gallery_unsupported_title">Galeri sedang dalam pengembangan</string>
     <string name="alert_gallery_unsupported_description">Fitur ini hanya tersedia di desktop untuk saat ini.</string>
     <!--endregion-->
+    <!--region SHARING MENU -->
+    <string name="sharing_menu_save_as_section_name">Simpan sebagai</string>
+    <string name="sharing_menu_save_as_note_option">Catatan</string>
+    <string name="sharing_menu_save_as_bookmark_option">Markah</string>
+    <string name="sharing_menu_data">Data</string>
+    <string name="sharing_menu_add_to_anytype_header_title">Tambah ke Anytype</string>
+    <string name="sharing_menu_toast_object_added">Objek baru ditambahkan ke ruang \'%1$s\'</string>
+    <!--endregion-->
+    <plurals name="links_to_count">
+        <item quantity="other">%d links to</item>
+    </plurals>
+    <plurals name="links_from_count">
+        <item quantity="other">%d links from</item>
+    </plurals>
 </resources>

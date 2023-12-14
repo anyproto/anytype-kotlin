@@ -1,12 +1,10 @@
 package com.anytypeio.anytype.core_utils.ext
 
-import android.Manifest
 import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Point
 import android.graphics.Rect
@@ -34,8 +32,6 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.DimenRes
 import androidx.annotation.IdRes
 import androidx.annotation.StringRes
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.updateLayoutParams
@@ -45,6 +41,8 @@ import androidx.navigation.NavDirections
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
+import com.anytypeio.anytype.core_utils.const.MimeTypes.MIME_EXTRA_IMAGE_VIDEO
+import com.anytypeio.anytype.core_utils.const.MimeTypes.MIME_EXTRA_YAML
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -282,32 +280,49 @@ fun String.normalizeUrl(): String =
  * https://app.clickup.com/t/2cbqneb
  */
 fun Fragment.startFilePicker(mime: Mimetype, requestCode: Int? = null) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-            addCategory(Intent.CATEGORY_OPENABLE)
-            type = mime.value
-        }
-        val code = if (mime == Mimetype.MIME_FILE_ALL) {
-            REQUEST_FILE_SAF_CODE
-        } else {
-            REQUEST_MEDIA_CODE
-        }
-        startActivityForResult(intent, requestCode ?: code)
-    } else {
-        val intent =
-            if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
-                Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+    when (mime) {
+        Mimetype.MIME_IMAGE_AND_VIDEO -> startMediaPicker(mime, requestCode)
+        else -> {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    addCategory(Intent.CATEGORY_OPENABLE)
+                    type = mime.value
+                    if (mime == Mimetype.MIME_YAML) {
+                        putExtra(Intent.EXTRA_MIME_TYPES, MIME_EXTRA_YAML)
+                    }
+                }
+                val code = if (mime == Mimetype.MIME_FILE_ALL) {
+                    REQUEST_FILE_SAF_CODE
+                } else {
+                    REQUEST_MEDIA_CODE
+                }
+                startActivityForResult(intent, requestCode ?: code)
             } else {
-                Intent(Intent.ACTION_PICK, MediaStore.Video.Media.INTERNAL_CONTENT_URI)
+                val intent =
+                    if (Environment.getExternalStorageState() == Environment.MEDIA_MOUNTED) {
+                        Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+                    } else {
+                        Intent(Intent.ACTION_PICK, MediaStore.Video.Media.INTERNAL_CONTENT_URI)
+                    }
+                intent.apply {
+                    type = mime.value
+                    action = Intent.ACTION_GET_CONTENT
+                    putExtra("return-data", true)
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                startActivityForResult(intent, requestCode ?: REQUEST_MEDIA_CODE)
             }
-        intent.apply {
-            type = mime.value
-            action = Intent.ACTION_GET_CONTENT
-            putExtra("return-data", true)
-            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         }
-        startActivityForResult(intent, requestCode ?: REQUEST_MEDIA_CODE)
     }
+}
+
+private fun Fragment.startMediaPicker(mime: Mimetype, requestCode: Int? = null) {
+    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+        addCategory(Intent.CATEGORY_OPENABLE)
+        type = mime.value
+        putExtra(Intent.EXTRA_MIME_TYPES, MIME_EXTRA_IMAGE_VIDEO)
+    }
+    startActivityForResult(intent, requestCode ?: REQUEST_MEDIA_CODE)
 }
 
 /**

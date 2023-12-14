@@ -5,6 +5,12 @@ plugins {
     id "kotlin-parcelize"
 }
 
+def networkConfigFile = rootProject.file("network.properties")
+def networkConfigProps = new Properties()
+if (networkConfigFile.exists()) {
+    networkConfigProps.load(new FileInputStream(networkConfigFile))
+}
+
 android {
 
     defaultConfig {
@@ -12,6 +18,7 @@ android {
         buildConfigField "boolean", "USE_SIMPLE_TABLES_IN_EDITOR_EDDITING", "true"
         buildConfigField "boolean", "ENABLE_WIDGETS", "false"
         buildConfigField "boolean", "ENABLE_VIEWS_MENU", "true"
+        buildConfigField("String", "STAGING_NETWORK_ID", networkConfigProps.getProperty('staging_network_id', 'null'))
     }
     namespace 'com.anytypeio.anytype.presentation'
 }

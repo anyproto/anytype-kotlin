@@ -56,6 +56,7 @@
 
     <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
+    <string name="space">Space</string>
     <string name="space_name">Space name</string>
     <string name="personal_space">Personal Space</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -305,7 +306,12 @@
     <string name="sync_status_toast_unknown">Initializing sync</string>
     <string name="sync_status_toast_offline">Anytype node is not connected</string>
     <string name="sync_status_toast_syncing">Downloading or uploading data to some node</string>
-    <string name="sync_status_toast_synced">Backed up on one node at least</string>
+    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Local only</string>
+    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
+
+
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
     <string name="sync_status_toast_incompatible">Version outdated. Please update Anytype</string>
 
@@ -827,13 +833,13 @@
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Settings</string>
     <string name="settings_network_mode">Network mode</string>
-    <string name="settings_network_configuration_file">Network Configuration File</string>
+    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
     <string name="settings_network_configuration_file_choose">Choose file</string>
 
     <string-array name="settings_networks_entries">
-        <item>Default</item>
-        <item>Local-only Mode</item>
-        <item>Custom</item>
+        <item>Anytype</item>
+        <item>Local-only</item>
+        <item>Self-hosted</item>
     </string-array>
 
     <array name="settings_networks_entries_values">
@@ -980,7 +986,7 @@
     <string name="slash_widget_actions_copy">Copy</string>
     <string name="slash_widget_actions_paste">Paste</string>
     <string name="slash_widget_actions_link_to">Add link</string>
-    <string name="slash_widget_actions_link_to_subtitle">Link to existing object</string>
+    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
     <string name="slash_widget_actions_move">Move</string>
     <string name="slash_widget_actions_moveto">Move to</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>
@@ -1174,5 +1180,28 @@
     <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
 
     <!--endregion-->
+
+    <!--region SHARING MENU -->
+
+    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_note_option">Note</string>
+    <string name="sharing_menu_save_as_bookmark_option">Bookmark</string>
+    <string name="sharing_menu_data">Data</string>
+    <string name="sharing_menu_add_to_anytype_header_title">Add to Anytype</string>
+    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
+
+    <!--endregion-->
+
+    <plurals name="links_to_count">
+        <item quantity="zero">$d links to</item>
+        <item quantity="one">%d link to</item>
+        <item quantity="other">%d links to</item>
+    </plurals>
+
+    <plurals name="links_from_count">
+        <item quantity="zero">$d links from</item>
+        <item quantity="one">%d link from</item>
+        <item quantity="other">%d links from</item>
+    </plurals>
 
 </resources>

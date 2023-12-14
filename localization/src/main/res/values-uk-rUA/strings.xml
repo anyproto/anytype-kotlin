@@ -46,6 +46,7 @@
     <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
+    <string name="space">Простір</string>
     <string name="space_name">Назва простору</string>
     <string name="personal_space">Особистий простір</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -272,7 +273,10 @@
     <string name="sync_status_toast_unknown">Ініціалізація синхронізації</string>
     <string name="sync_status_toast_offline">Вузол Anytype не під\'єднано</string>
     <string name="sync_status_toast_syncing">Завантаження даних на деякий вузол</string>
-    <string name="sync_status_toast_synced">Резервна копія принаймні на одному вузлі</string>
+    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Local only</string>
+    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
     <string name="sync_status_toast_incompatible">Застаріла версія. Будь ласка, оновіть Anytype</string>
     <string name="relation_format_description">Опис</string>
@@ -762,12 +766,12 @@
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Налаштування</string>
     <string name="settings_network_mode">Network mode</string>
-    <string name="settings_network_configuration_file">Network Configuration File</string>
+    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
     <string name="settings_network_configuration_file_choose">Choose file</string>
     <string-array name="settings_networks_entries">
-        <item>Default</item>
-        <item>Local-only Mode</item>
-        <item>Custom</item>
+        <item>Anytype</item>
+        <item>Local-only</item>
+        <item>Self-hosted</item>
     </string-array>
     <string name="snack_link_to">пов\'язаний з</string>
     <string name="snack_move_to">moved to</string>
@@ -890,7 +894,7 @@
     <string name="slash_widget_actions_copy">Копіювати</string>
     <string name="slash_widget_actions_paste">Вставити</string>
     <string name="slash_widget_actions_link_to">Додайте посилання</string>
-    <string name="slash_widget_actions_link_to_subtitle">Зв\'язати з наявним об\'єктом</string>
+    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
     <string name="slash_widget_actions_move">Перемістити</string>
     <string name="slash_widget_actions_moveto">Перемістити до</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>
@@ -1027,4 +1031,24 @@
     <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
     <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
     <!--endregion-->
+    <!--region SHARING MENU -->
+    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_note_option">Нотатка</string>
+    <string name="sharing_menu_save_as_bookmark_option">Закладка</string>
+    <string name="sharing_menu_data">Data</string>
+    <string name="sharing_menu_add_to_anytype_header_title">Додати до Anytype</string>
+    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
+    <!--endregion-->
+    <plurals name="links_to_count">
+        <item quantity="one">%d link to</item>
+        <item quantity="few">%d links to</item>
+        <item quantity="many">%d links to</item>
+        <item quantity="other">%d links to</item>
+    </plurals>
+    <plurals name="links_from_count">
+        <item quantity="one">%d link from</item>
+        <item quantity="few">%d links from</item>
+        <item quantity="many">%d links from</item>
+        <item quantity="other">%d links from</item>
+    </plurals>
 </resources>

@@ -33,6 +33,7 @@ import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
+import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.github.javiersantos.appupdater.AppUpdater
 import com.github.javiersantos.appupdater.enums.UpdateFrom
@@ -106,6 +107,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         )
                                     )
                             }
+                            is Command.AddToAnytype -> {
+                                SharingFragment.new(command.data).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
                             is Command.Error -> {
                                 toast(command.msg)
                             }
@@ -113,6 +120,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     }
                 }
             }
+        }
+        if (savedInstanceState == null && intent.action == Intent.ACTION_SEND) {
+            proceedWithShareIntent(intent)
         }
     }
 
@@ -147,20 +157,32 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        if (intent != null && intent.action == Intent.ACTION_VIEW) {
-            val data = intent.dataString
-            if (data != null && data.contains(DEEP_LINK_PATTERN)) {
-                deepLink = data
-            } else {
-                intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
-                    vm.onIntentCreateObject(it)
+        if (intent != null) {
+            when(intent.action) {
+                Intent.ACTION_VIEW -> {
+                    val data = intent.dataString
+                    if (data != null && data.contains(DEEP_LINK_PATTERN)) {
+                        deepLink = data
+                    } else {
+                        intent.extras?.getString(DefaultAppActionManager.ACTION_CREATE_NEW_TYPE_KEY)?.let {
+                            vm.onIntentCreateObject(it)
+                        }
+                    }
+                }
+                Intent.ACTION_SEND -> {
+                    proceedWithShareIntent(intent)
                 }
             }
         }
         if (BuildConfig.DEBUG) {
             Timber.d("on NewIntent: $intent")
         }
+    }
 
+    private fun proceedWithShareIntent(intent: Intent) {
+        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
+            vm.onIntentShare(it)
+        }
     }
 
     private fun setTheme(themeMode: ThemeMode) {
@@ -226,5 +248,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     companion object {
         const val AUTO_UPDATE_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"
+        const val SHARE_DIALOG_LABEL = "anytype.dialog.share.label"
     }
 }

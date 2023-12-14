@@ -137,6 +137,8 @@ sealed class ObjectWrapper {
         val notDeletedNorArchived get() = (isDeleted != true && isArchived != true)
 
         val targetSpaceId: String? by default
+
+        val backlinks get() = getValues<Id>(Relations.BACKLINKS)
     }
 
     /**
@@ -240,9 +242,13 @@ sealed class ObjectWrapper {
 
     data class SpaceView(override val map: Struct) : ObjectWrapper() {
         private val default = map.withDefault { null }
+
         val id: Id by default
         val name: String? by default
+        val iconImage: String? get() = getValue(Relations.ICON_IMAGE)
+        val iconOption: Double? by default
         val targetSpaceId: String? by default
+
         val spaceAccountStatus: SpaceStatus
             get() {
                 val code = getValue<Double?>(Relations.SPACE_ACCOUNT_STATUS)

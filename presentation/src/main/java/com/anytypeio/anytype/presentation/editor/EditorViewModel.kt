@@ -13,6 +13,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
+import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.FileLimitsEvent
@@ -31,7 +32,6 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.TextBlock
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
@@ -80,6 +80,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToSet
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
@@ -240,6 +241,8 @@ import com.anytypeio.anytype.presentation.relations.views
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.sync.SyncStatusView
+import com.anytypeio.anytype.presentation.sync.toView
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -309,7 +312,8 @@ class EditorViewModel(
     private val setObjectType: SetObjectType,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
-    private val dispatchers: AppCoroutineDispatchers
+    private val dispatchers: AppCoroutineDispatchers,
+    private val getNetworkMode: GetNetworkMode
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -323,7 +327,7 @@ class EditorViewModel(
     val actions = MutableStateFlow(ActionItemType.defaultSorting)
 
     val isSyncStatusVisible = MutableStateFlow(true)
-    val syncStatus = MutableStateFlow<SyncStatus?>(null)
+    val syncStatus = MutableStateFlow<SyncStatusView?>(null)
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
@@ -990,9 +994,16 @@ class EditorViewModel(
         }
 
         jobs += viewModelScope.launch {
+            val networkMode = getNetworkMode.run(Unit).networkMode
             interceptThreadStatus
                 .build(InterceptThreadStatus.Params(context))
-                .collect { syncStatus.value = it }
+                .collect { status ->
+                    val statusView = status.toView(
+                        networkId = spaceManager.getConfig()?.network,
+                        networkMode = networkMode
+                    )
+                    syncStatus.value = statusView
+                }
         }
 
         jobs += viewModelScope.launch {
@@ -3875,7 +3886,7 @@ class EditorViewModel(
                             val relationId = clicked.relation.id
                             val relation = storeOfRelations.getById(relationId)
                             if (relation != null) {
-                                if (relation.isReadOnly == true || relation.isReadonlyValue) {
+                                if (relation.format != RelationFormat.OBJECT && relation.isReadonlyValue) {
                                     sendToast(NOT_ALLOWED_FOR_RELATION)
                                     return@launch
                                 }
@@ -4401,7 +4412,8 @@ class EditorViewModel(
                     analytics = analytics,
                     startTime = startTime,
                     sourceObject = SET_MARKETPLACE_ID,
-                    containsFlagType = true
+                    containsFlagType = true,
+                    route = EventsDictionary.Routes.navigation,
                 )
             }
         )
@@ -4418,7 +4430,8 @@ class EditorViewModel(
                     analytics = analytics,
                     startTime = startTime,
                     sourceObject = COLLECTION_MARKETPLACE_ID,
-                    containsFlagType = true
+                    containsFlagType = true,
+                    route = EventsDictionary.Routes.navigation
                 )
             }
         )
@@ -4540,7 +4553,9 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(panelEvent)
                     return
                 }
-                proceedWithGettingObjectTypes { objectTypes ->
+                proceedWithGettingObjectTypes(
+                    sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts()
+                ) { objectTypes ->
                     getRelations { relations ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
@@ -4620,7 +4635,9 @@ class EditorViewModel(
                 getRelations { proceedWithRelations(it) }
             }
             is SlashItem.Main.Objects -> {
-                proceedWithGettingObjectTypes {
+                proceedWithGettingObjectTypes(
+                    sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts()
+                ) {
                     proceedWithObjectTypes(it)
                 }
             }
@@ -4893,11 +4910,12 @@ class EditorViewModel(
     }
 
     private fun proceedWithGettingObjectTypes(
+        sorts: List<DVSort> = emptyList(),
         action: (List<ObjectTypeView>) -> Unit
     ) {
         viewModelScope.launch {
             val params = GetObjectTypes.Params(
-                sorts = emptyList(),
+                sorts = sorts,
                 filters = ObjectSearchConstants.filterTypes(
                     spaces = buildList {
                         add(spaceManager.get())
@@ -6050,7 +6068,8 @@ class EditorViewModel(
                         analytics = analytics,
                         startTime = startTime,
                         sourceObject = objType.sourceObject,
-                        containsFlagType = containsTypeFlag
+                        containsFlagType = containsTypeFlag,
+                        route = EventsDictionary.Routes.navigation
                     )
                     onSuccess?.invoke()
                 }
@@ -6948,7 +6967,7 @@ class EditorViewModel(
                 Timber.w("Couldn't find relation in store by id:${relationId}")
                 return@launch
             }
-            if (relation.isReadonlyValue) {
+            if (relation.format != RelationFormat.OBJECT && relation.isReadonlyValue) {
                 _toasts.emit(NOT_ALLOWED_FOR_RELATION)
                 Timber.d("No interaction allowed with this relation")
                 return@launch

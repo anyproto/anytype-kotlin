@@ -391,7 +391,8 @@ data class Block(
          * @param style style for a block to create
          */
         data class Text(
-            val style: Style
+            val style: Style,
+            val text: String? = null
         ) : Prototype()
 
         data class File(

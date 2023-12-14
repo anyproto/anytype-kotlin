@@ -638,12 +638,14 @@ fun CoroutineScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
     analytics: Analytics,
     startTime: Long,
     sourceObject: Id? = null,
-    containsFlagType: Boolean
+    containsFlagType: Boolean,
+    route: String? = null
 ) {
     val objType = sourceObject ?: OBJ_TYPE_CUSTOM
     val props = Props(
         mapOf(
-            EventsPropertiesKey.objectType to objType
+            EventsPropertiesKey.objectType to objType,
+            EventsPropertiesKey.route to route
         )
     )
     val event = if (containsFlagType) {
@@ -742,8 +744,6 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
             eventName = objectCreate,
             props = propsForObjectEvents(
                 route = route,
-                context = analytics.getContext(),
-                originalId = analytics.getOriginalId(),
                 sourceObject = objType?.sourceObject,
                 view = view
             ),
@@ -1960,3 +1960,33 @@ private fun getAnalyticsObjectType(
     val objType = typeStruct?.mapToObjectWrapperType()
     return objType?.sourceObject ?: OBJ_TYPE_CUSTOM
 }
+
+
+//region Self-Hosting
+fun CoroutineScope.sendAnalyticsSelectNetworkEvent(
+    analytics: Analytics,
+    type: String,
+    route: String
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.selectNetwork,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.type to type,
+                EventsPropertiesKey.route to route
+            )
+        )
+    )
+}
+
+fun CoroutineScope.sendAnalyticsUploadConfigFileEvent(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.uploadNetworkConfiguration
+    )
+}
+
+//endregion

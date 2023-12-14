@@ -46,6 +46,7 @@
     <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
+    <string name="space">Space</string>
     <string name="space_name">Nome dello Spazio</string>
     <string name="personal_space">Impostazioni</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -270,7 +271,10 @@
     <string name="sync_status_toast_unknown">Inizializzazione sincronizzazione</string>
     <string name="sync_status_toast_offline">Nodo di Anytype non connesso</string>
     <string name="sync_status_toast_syncing">Scaricamento o caricamento dati su qualche nodo</string>
-    <string name="sync_status_toast_synced">Salvato su almeno un nodo</string>
+    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
+    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Local only</string>
+    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
     <string name="sync_status_toast_failed">Failed to sync, trying again…</string>
     <string name="sync_status_toast_incompatible">Versione obsoleta. Si prega di aggiornare Anytype</string>
     <string name="relation_format_description">Descrizione</string>
@@ -758,12 +762,12 @@
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Impostazioni</string>
     <string name="settings_network_mode">Network mode</string>
-    <string name="settings_network_configuration_file">Network Configuration File</string>
+    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
     <string name="settings_network_configuration_file_choose">Choose file</string>
     <string-array name="settings_networks_entries">
-        <item>Default</item>
-        <item>Local-only Mode</item>
-        <item>Custom</item>
+        <item>Anytype</item>
+        <item>Local-only</item>
+        <item>Self-hosted</item>
     </string-array>
     <string name="snack_link_to">collegato a</string>
     <string name="snack_move_to">moved to</string>
@@ -886,7 +890,7 @@
     <string name="slash_widget_actions_copy">Copia</string>
     <string name="slash_widget_actions_paste">Incolla</string>
     <string name="slash_widget_actions_link_to">Aggiungi link</string>
-    <string name="slash_widget_actions_link_to_subtitle">Collega a un oggetto esistente</string>
+    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
     <string name="slash_widget_actions_move">Sposta</string>
     <string name="slash_widget_actions_moveto">Sposta in</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>
@@ -1023,4 +1027,20 @@
     <string name="alert_gallery_unsupported_title">La galleria sarà supportata presto</string>
     <string name="alert_gallery_unsupported_description">Per favore usa l\'applicazione desktop per ora.</string>
     <!--endregion-->
+    <!--region SHARING MENU -->
+    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_note_option">Nota</string>
+    <string name="sharing_menu_save_as_bookmark_option">Segnalibro</string>
+    <string name="sharing_menu_data">Data</string>
+    <string name="sharing_menu_add_to_anytype_header_title">Add to Anytype</string>
+    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
+    <!--endregion-->
+    <plurals name="links_to_count">
+        <item quantity="one">%d link to</item>
+        <item quantity="other">%d links to</item>
+    </plurals>
+    <plurals name="links_from_count">
+        <item quantity="one">%d link from</item>
+        <item quantity="other">%d links from</item>
+    </plurals>
 </resources>

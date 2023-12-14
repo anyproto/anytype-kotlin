@@ -7,18 +7,19 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.toRelationFileValueView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
-import com.anytypeio.anytype.presentation.relations.addIsHiddenFilter
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.searchObjectsFilter
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultFilesKeys
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filesFilters
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +33,8 @@ class AddFileRelationViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val searchObjects: SearchObjects,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val spaceManager: SpaceManager
 ) : ViewModel() {
 
     private val _views =
@@ -50,6 +52,7 @@ class AddFileRelationViewModel(
         relationKey: Key,
         objectId: String
     ) {
+        Timber.d("onStart, ctx: $ctx, relationKey: $relationKey, objectId: $objectId")
         processingViewsSelectionsAndFilter()
         jobs += viewModelScope.launch {
             val pipeline = combine(
@@ -57,24 +60,9 @@ class AddFileRelationViewModel(
                 values.subscribe(ctx = ctx, target = objectId)
             ) { relation, value ->
                 when (val ids = value[relation.key]) {
-                    is List<*> -> {
-                        proceedWithSearchFiles(
-                            ids = ids.typeOf(),
-                            relation = relation
-                        )
-                    }
-                    is Id -> {
-                        proceedWithSearchFiles(
-                            ids = listOf(ids),
-                            relation = relation
-                        )
-                    }
-                    null -> {
-                        proceedWithSearchFiles(
-                            ids = emptyList(),
-                            relation = relation
-                        )
-                    }
+                    is List<*> -> proceedWithSearchFiles(ids = ids.typeOf())
+                    is Id -> proceedWithSearchFiles(ids = listOf(ids))
+                    null -> proceedWithSearchFiles(ids = emptyList())
                 }
             }
             pipeline.collect()
@@ -140,15 +128,12 @@ class AddFileRelationViewModel(
         }
     }
 
-    private fun proceedWithSearchFiles(ids: List<String>, relation: ObjectWrapper.Relation) {
-        val filters = relation
-            .searchObjectsFilter()
-            .addIsHiddenFilter()
+    private suspend fun proceedWithSearchFiles(ids: List<String>) {
+        val filters = filesFilters(spaces = listOf(spaceManager.get()))
         val sorts = arrayListOf(
             DVSort(
-                relationKey = Relations.LAST_MODIFIED_DATE,
-                type = Block.Content.DataView.Sort.Type.DESC,
-                includeTime = true
+                relationKey = Relations.NAME,
+                type = Block.Content.DataView.Sort.Type.ASC
             )
         )
         viewModelScope.launch {
@@ -156,8 +141,7 @@ class AddFileRelationViewModel(
                 SearchObjects.Params(
                     sorts = sorts,
                     filters = filters,
-                    fulltext = SearchObjects.EMPTY_TEXT,
-                    offset = SearchObjects.INIT_OFFSET,
+                    keys = defaultFilesKeys,
                     limit = SearchObjects.LIMIT
                 )
             ).process(
@@ -176,7 +160,8 @@ class AddFileRelationViewModel(
         private val relations: ObjectRelationProvider,
         private val values: ObjectValueProvider,
         private val searchObjects: SearchObjects,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -184,7 +169,8 @@ class AddFileRelationViewModel(
                 relations = relations,
                 values = values,
                 searchObjects = searchObjects,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                spaceManager = spaceManager
             ) as T
         }
     }

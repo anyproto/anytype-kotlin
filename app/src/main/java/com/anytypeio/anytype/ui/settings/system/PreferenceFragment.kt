@@ -119,7 +119,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     }
 
     private fun openFilePicker() {
-        pickerDelegate.openFilePicker(Mimetype.MIME_TEXT_PLAIN, REQUEST_NETWORK_MODE_CODE)
+        pickerDelegate.openFilePicker(Mimetype.MIME_YAML, REQUEST_NETWORK_MODE_CODE)
     }
 
     override fun onDestroyView() {

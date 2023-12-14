@@ -46,6 +46,7 @@
     <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">Versi Aplikasi: %1$s\nNomor Pembuatan: %2$d\nVersi Pustaka: %3$s\nAkun\u00A0ID:\u00A0%4$s\nPerangkat\u00A0ID:\u00A0%5$s\nAnalisis\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
+    <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
     <string name="personal_space">Setelan</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -1023,6 +1024,14 @@
     <!--region ALERTS -->
     <string name="alert_gallery_unsupported_title">Galeri sedang dalam pengembangan</string>
     <string name="alert_gallery_unsupported_description">Fitur ini hanya tersedia di desktop untuk saat ini.</string>
+    <!--endregion-->
+    <!--region SHARING MENU -->
+    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_note_option">Catatan</string>
+    <string name="sharing_menu_save_as_bookmark_option">Markah</string>
+    <string name="sharing_menu_data">Data</string>
+    <string name="sharing_menu_add_to_anytype_header_title">Tambah ke Anytype</string>
+    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="other">%d links to</item>

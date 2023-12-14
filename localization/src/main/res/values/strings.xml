@@ -1194,6 +1194,7 @@
 
     <!--region ORIGIN RELATION VALUES -->
 
+    <string name="relation_origin_none">None</string>
     <string name="relation_origin_clipboard">Clipboard</string>
     <string name="relation_origin_dnd">Drag &amp; Drop</string>
     <string name="relation_origin_imported_object">Imported object</string>

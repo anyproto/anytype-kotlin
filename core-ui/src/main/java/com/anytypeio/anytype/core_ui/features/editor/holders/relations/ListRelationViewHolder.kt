@@ -4,6 +4,8 @@ import android.view.View
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemRelationListRelationDefaultBinding
@@ -18,7 +20,6 @@ import com.anytypeio.anytype.core_ui.widgets.RelationObjectItem
 import com.anytypeio.anytype.core_ui.widgets.text.TagWidget
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 
@@ -37,7 +38,12 @@ sealed class ListRelationViewHolder(
         fun bind(item: ObjectRelationView) {
             tvTitle.text = item.name
             tvValue.apply {
-                text = item.value
+                if (item.key == Relations.ORIGIN) {
+                    val code = item.value?.toInt() ?: -1
+                    setText(code.resRelationOrigin())
+                } else {
+                    text = item.value
+                }
                 if (item is ObjectRelationView.Default) {
                     when (item.format) {
                         Relation.Format.SHORT_TEXT -> setHint(R.string.enter_text)
@@ -244,5 +250,19 @@ sealed class ListRelationViewHolder(
         } else {
             view.setCompoundDrawablesWithIntrinsicBounds(null, null, null, null)
         }
+    }
+}
+
+fun Int.resRelationOrigin() : Int {
+    return when(this) {
+        0 -> R.string.relation_origin_none
+        1 -> R.string.relation_origin_clipboard
+        2 -> R.string.relation_origin_dnd
+        3 -> R.string.relation_origin_imported_object
+        4 -> R.string.relation_origin_web_clipper
+        5 -> R.string.relation_origin_mobile_sharing_extension
+        6 -> R.string.relation_origin_use_case
+        7 -> R.string.relation_origin_library_installed
+        else -> R.string.unknown
     }
 }

@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
@@ -125,10 +126,12 @@ fun AddToAnytypeScreen(
                 )
             ) {
                 items.forEachIndexed { index, s ->
-                    DropdownMenuItem(onClick = {
-                        selectedIndex = index
-                        isSaveAsMenuExpanded = false
-                    }) {
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedIndex = index
+                            isSaveAsMenuExpanded = false
+                        }
+                    ) {
                         when(s) {
                             SAVE_AS_BOOKMARK -> {
                                 Text(
@@ -148,6 +151,12 @@ fun AddToAnytypeScreen(
                                 // Draw nothing
                             }
                         }
+                    }
+                    if (index != items.lastIndex) {
+                        Divider(
+                            thickness = 0.5.dp,
+                            color = colorResource(id = R.color.shape_primary)
+                        )
                     }
                 }
             }
@@ -292,7 +301,7 @@ private fun CurrentSpaceSection(
                 color = colorResource(id = R.color.background_secondary)
             )
         ) {
-            spaces.forEach { view ->
+            spaces.forEachIndexed { index, view ->
                 DropdownMenuItem(
                     onClick = {
                         onSelectSpaceClicked(view)
@@ -303,6 +312,12 @@ private fun CurrentSpaceSection(
                         text = view.obj.name.orEmpty(),
                         style = BodyRegular,
                         color = colorResource(id = R.color.text_primary)
+                    )
+                }
+                if (index != spaces.lastIndex) {
+                    Divider(
+                        thickness = 0.5.dp,
+                        color = colorResource(id = R.color.shape_primary)
                     )
                 }
             }

@@ -11,7 +11,7 @@
     <string name="file_storage">Penyimpanan berkas</string>
     <string name="recovery_phrase">Frasa pemulihan</string>
     <string name="clear_file_cache">Bersihkan tembolok</string>
-    <string name="debug_sync_report">Debug Sync Report</string>
+    <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Awakutu</string>
     <string name="account">Akun</string>
     <string name="reset_account">Setel ulang akun</string>
@@ -23,7 +23,7 @@
     <string name="pin_code">Kode PIN</string>
     <string name="access">Akses</string>
     <string name="wallpaper">Latar belakang</string>
-    <string name="tech_info">Tech info</string>
+    <string name="tech_info">Informasi Tekhnologi</string>
     <string name="light">Cahaya</string>
     <string name="dark">Gelap</string>
     <string name="system">Sistem</string>
@@ -38,14 +38,14 @@
     <string name="about_legal">Legal</string>
     <string name="about_terms_of_use">Ketentuan Penggunaan</string>
     <string name="about_privacy_policy">Kebijakan Privasi</string>
-    <string name="about_acknowledgements">Acknowledgments</string>
+    <string name="about_acknowledgements">Pengakuan</string>
     <string name="about_what_is_new_link">https://anytype.io/release-notes/android</string>
     <string name="about_anytype_community_link">https://community.anytype.io</string>
     <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
     <string name="about_terms_and_conditions_link">https://anytype.io/terms_of_use/</string>
     <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
-    <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
-    <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
+    <string name="about_meta_info">Versi Aplikasi: %1$s\nNomor Pembuatan: %2$d\nVersi Pustaka: %3$s\nAkun\u00A0ID:\u00A0%4$s\nPerangkat\u00A0ID:\u00A0%5$s\nAnalisis\u00A0ID:\u00A0%6$s</string>
+    <string name="about_meta_info_for_copy">Perangkat: %1$s\nVersi Android: %2$d\nVersi Aplikasi: %3$s\nPembuatan Nomor: %4$d\nVersi Pustaka: %5$s\nAkun\u00A0ID:\u00A0%6$s\nPerangkat\u00A0ID:\u00A0%7$s\nAnalisis\u00A0ID:\u00A0%8$s</string>
     <string name="space_name">Nama Ruang</string>
     <string name="personal_space">Setelan</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
@@ -994,7 +994,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Gandakan</string>
-    <string name="object_action_to_widgets">To widgets</string>
+    <string name="object_action_to_widgets">Ke widget</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">Nothing found</string>

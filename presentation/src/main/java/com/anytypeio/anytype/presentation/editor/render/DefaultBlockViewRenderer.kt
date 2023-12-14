@@ -2146,31 +2146,39 @@ class DefaultBlockViewRenderer @Inject constructor(
                 val relation = storeOfRelations.getByKey(key)
                 val objectDetails = ObjectWrapper.Basic(details.details[ctx]?.map ?: emptyMap())
                 val backlinks = objectDetails.backlinks
-                val count = backlinks.size
-                ObjectRelationView.Links.To(
-                    id = relation?.id.orEmpty(),
-                    key = relation?.key.orEmpty(),
-                    name = relation?.name.orEmpty(),
-                    featured = true,
-                    system = relation?.key?.isSystemKey() ?: false,
-                    readOnly = relation?.isReadOnly ?: false,
-                    count = count
-                )
+                if (backlinks.isEmpty()) {
+                    return@mapNotNull null
+                } else {
+                    val count = backlinks.size
+                    ObjectRelationView.Links.To(
+                        id = relation?.id.orEmpty(),
+                        key = relation?.key.orEmpty(),
+                        name = relation?.name.orEmpty(),
+                        featured = true,
+                        system = relation?.key?.isSystemKey() ?: false,
+                        readOnly = relation?.isReadOnly ?: false,
+                        count = count
+                    )
+                }
             }
             Relations.LINKS -> {
                 val relation = storeOfRelations.getByKey(key)
                 val objectDetails = ObjectWrapper.Basic(details.details[ctx]?.map ?: emptyMap())
                 val backlinks = objectDetails.links
-                val count = backlinks.size
-                ObjectRelationView.Links.From(
-                    id = relation?.id.orEmpty(),
-                    key = relation?.key.orEmpty(),
-                    name = relation?.name.orEmpty(),
-                    featured = true,
-                    system = relation?.key?.isSystemKey() ?: false,
-                    readOnly = relation?.isReadOnly ?: false,
-                    count = count
-                )
+                if (backlinks.isEmpty()) {
+                    return@mapNotNull null
+                } else {
+                    val count = backlinks.size
+                    ObjectRelationView.Links.From(
+                        id = relation?.id.orEmpty(),
+                        key = relation?.key.orEmpty(),
+                        name = relation?.name.orEmpty(),
+                        featured = true,
+                        system = relation?.key?.isSystemKey() ?: false,
+                        readOnly = relation?.isReadOnly ?: false,
+                        count = count
+                    )
+                }
             }
             else -> {
                 val relation = storeOfRelations.getByKey(key)

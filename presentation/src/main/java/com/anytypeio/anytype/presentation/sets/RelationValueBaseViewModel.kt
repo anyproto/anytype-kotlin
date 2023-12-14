@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.addIds
+import com.anytypeio.anytype.core_models.ext.getValues
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -146,17 +147,19 @@ abstract class RelationValueBaseViewModel(
             Relation.Format.OBJECT -> {
                 val isRemovable = isEditing.value
                 relationFormat = Relation.Format.OBJECT
-                val value = record.getOrDefault(relationKey, null)
-                // TODO remove code duplication below
-                if (value is List<*>) {
-                    value.typeOf<Id>().forEach { id ->
-                        val wrapper = if (ctx == target) {
-                            ObjectWrapper.Basic(
-                                details.provide()[id]?.map ?: emptyMap()
-                            )
+                record.getValues<Id>(relationKey).forEach { id ->
+                    val wrapper = if (ctx == target) {
+                        val detail = details.provide()[id]
+                        if (detail != null && detail.map.isNotEmpty()) {
+                            ObjectWrapper.Basic(detail.map)
                         } else {
-                            resolveWrapperForObject(ctx = ctx, target = id)
+                            Timber.w("Details not found for object")
+                            null
                         }
+                    } else {
+                        resolveWrapperForObject(ctx = ctx, target = id)
+                    }
+                    if (wrapper != null) {
                         val type = wrapper.type.firstOrNull()
                         val objectType = if (type != null) {
                             if (type == MarketplaceObjectTypeIds.PROFILE) {
@@ -194,70 +197,23 @@ abstract class RelationValueBaseViewModel(
                             )
                         }
                     }
-                } else if (value is Id) {
-                    val wrapper = if (ctx == target) {
-                        ObjectWrapper.Basic(
-                            details.provide()[value]?.map ?: emptyMap()
-                        )
-                    } else {
-                        resolveWrapperForObject(ctx = ctx, target = value)
-                    }
-                    val type = wrapper.type.firstOrNull()
-                    val objectType = if (type != null) {
-                        if (type == MarketplaceObjectTypeIds.PROFILE) {
-                            storeOfObjectTypes.getByKey(ObjectTypeUniqueKeys.PROFILE)
-                        } else {
-                            storeOfObjectTypes.get(type)
-                        }
-                    } else {
-                        null
-                    }
-                    if (wrapper.isDeleted == true) {
-                        items.add(
-                            RelationValueView.Object.NonExistent(
-                                id = value,
-                                removable = isRemovable
-                            )
-                        )
-                    } else {
-                        items.add(
-                            RelationValueView.Object.Default(
-                                id = value,
-                                name = wrapper.getProperName(),
-                                typeName = objectType?.name,
-                                type = type,
-                                icon = ObjectIcon.from(
-                                    obj = wrapper,
-                                    layout = wrapper.layout,
-                                    builder = urlBuilder
-                                ),
-                                removable = isRemovable,
-                                layout = wrapper.layout,
-                                profileLinkIdentity = wrapper.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
-                            )
-                        )
-                    }
                 }
             }
             RelationFormat.FILE -> {
                 relationFormat = RelationFormat.FILE
                 val isRemovable = isEditing.value
-                val value = record.getOrDefault(relation.key, null)
-                if (value != null) {
-                    val ids = buildList {
-                        when (value) {
-                            is List<*> -> addAll(value.typeOf())
-                            is Id -> add(value)
-                        }
-                    }
-                    ids.forEach { id ->
-                        val wrapper = if (ctx == target) {
-                            ObjectWrapper.Basic(
-                                details.provide()[id]?.map ?: emptyMap()
-                            )
+                record.getValues<Id>(relation.key).forEach { id ->
+                    val wrapper = if (ctx == target) {
+                        val detail = details.provide()[id]
+                        if (detail != null && detail.map.isNotEmpty()) {
+                            ObjectWrapper.Basic(detail.map)
                         } else {
-                            resolveWrapperForObject(ctx = ctx, target = id)
+                            null
                         }
+                    } else {
+                        resolveWrapperForObject(ctx = ctx, target = id)
+                    }
+                    if (wrapper != null) {
                         items.add(
                             RelationValueView.File(
                                 id = id,
@@ -311,12 +267,14 @@ abstract class RelationValueBaseViewModel(
 
     open suspend fun resolveWrapperForObject(
         ctx: Id, target: Id
-    ): ObjectWrapper.Basic {
+    ): ObjectWrapper.Basic? {
         val detail = details.provide()[target]
-        if (detail == null || detail.map.isEmpty()) {
+        return if (detail != null && detail.map.isNotEmpty()) {
+            ObjectWrapper.Basic(detail.map)
+        } else {
             Timber.w("Could not found data for object: $target")
+            null
         }
-        return ObjectWrapper.Basic(detail?.map ?: emptyMap())
     }
 
     fun onEditOrDoneClicked(isLocked: Boolean) {

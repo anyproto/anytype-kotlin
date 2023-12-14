@@ -7,11 +7,14 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.addIds
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
@@ -31,8 +34,8 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
+import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -155,7 +158,15 @@ abstract class RelationValueBaseViewModel(
                             resolveWrapperForObject(ctx = ctx, target = id)
                         }
                         val type = wrapper.type.firstOrNull()
-                        val objectType = type?.let { storeOfObjectTypes.get(it) }
+                        val objectType = if (type != null) {
+                            if (type == MarketplaceObjectTypeIds.PROFILE) {
+                                storeOfObjectTypes.getByKey(ObjectTypeUniqueKeys.PROFILE)
+                            } else {
+                                storeOfObjectTypes.get(type)
+                            }
+                        } else {
+                            null
+                        }
                         if (wrapper.isDeleted == true) {
                             items.add(
                                 RelationValueView.Object.NonExistent(
@@ -176,7 +187,9 @@ abstract class RelationValueBaseViewModel(
                                         builder = urlBuilder
                                     ),
                                     removable = isRemovable,
-                                    layout = wrapper.layout
+                                    layout = wrapper.layout,
+                                    profileLinkIdentity = wrapper
+                                        .getSingleValue(Relations.IDENTITY_PROFILE_LINK)
                                 )
                             )
                         }
@@ -190,7 +203,15 @@ abstract class RelationValueBaseViewModel(
                         resolveWrapperForObject(ctx = ctx, target = value)
                     }
                     val type = wrapper.type.firstOrNull()
-                    val objectType = type?.let { storeOfObjectTypes.get(it) }
+                    val objectType = if (type != null) {
+                        if (type == MarketplaceObjectTypeIds.PROFILE) {
+                            storeOfObjectTypes.getByKey(ObjectTypeUniqueKeys.PROFILE)
+                        } else {
+                            storeOfObjectTypes.get(type)
+                        }
+                    } else {
+                        null
+                    }
                     if (wrapper.isDeleted == true) {
                         items.add(
                             RelationValueView.Object.NonExistent(
@@ -211,7 +232,8 @@ abstract class RelationValueBaseViewModel(
                                     builder = urlBuilder
                                 ),
                                 removable = isRemovable,
-                                layout = wrapper.layout
+                                layout = wrapper.layout,
+                                profileLinkIdentity = wrapper.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
                             )
                         )
                     }
@@ -486,11 +508,15 @@ abstract class RelationValueBaseViewModel(
         }
     }
 
-    fun onObjectClicked(ctx: Id, id: Id, layout: ObjectType.Layout?) {
+    fun onObjectClicked(
+        ctx: Id,
+        id: Id,
+        layout: ObjectType.Layout?,
+        profileLinkIdentity: Id? = null
+    ) {
         if (id != ctx) {
             when (layout) {
                 ObjectType.Layout.BASIC,
-                ObjectType.Layout.PROFILE,
                 ObjectType.Layout.TODO,
                 ObjectType.Layout.FILE,
                 ObjectType.Layout.IMAGE,
@@ -498,6 +524,13 @@ abstract class RelationValueBaseViewModel(
                 ObjectType.Layout.BOOKMARK -> {
                     viewModelScope.launch {
                         navigation.emit(AppNavigation.Command.OpenObject(id))
+                    }
+                }
+                ObjectType.Layout.PROFILE -> {
+                    viewModelScope.launch {
+                        navigation.emit(
+                            AppNavigation.Command.OpenObject(profileLinkIdentity ?: id)
+                        )
                     }
                 }
                 ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {

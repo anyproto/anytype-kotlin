@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -156,7 +158,15 @@ abstract class RelationValueBaseViewModel(
                             resolveWrapperForObject(ctx = ctx, target = id)
                         }
                         val type = wrapper.type.firstOrNull()
-                        val objectType = type?.let { storeOfObjectTypes.get(it) }
+                        val objectType = if (type != null) {
+                            if (type == MarketplaceObjectTypeIds.PROFILE) {
+                                storeOfObjectTypes.getByKey(ObjectTypeUniqueKeys.PROFILE)
+                            } else {
+                                storeOfObjectTypes.get(type)
+                            }
+                        } else {
+                            null
+                        }
                         if (wrapper.isDeleted == true) {
                             items.add(
                                 RelationValueView.Object.NonExistent(
@@ -193,7 +203,15 @@ abstract class RelationValueBaseViewModel(
                         resolveWrapperForObject(ctx = ctx, target = value)
                     }
                     val type = wrapper.type.firstOrNull()
-                    val objectType = type?.let { storeOfObjectTypes.get(it) }
+                    val objectType = if (type != null) {
+                        if (type == MarketplaceObjectTypeIds.PROFILE) {
+                            storeOfObjectTypes.getByKey(ObjectTypeUniqueKeys.PROFILE)
+                        } else {
+                            storeOfObjectTypes.get(type)
+                        }
+                    } else {
+                        null
+                    }
                     if (wrapper.isDeleted == true) {
                         items.add(
                             RelationValueView.Object.NonExistent(

@@ -114,7 +114,8 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
                     vm.onObjectClicked(
                         ctx = ctx,
                         id = o.id,
-                        layout = o.layout
+                        layout = o.layout,
+                        profileLinkIdentity = o.profileLinkIdentity
                     )
                 } else {
                     vm.onNonExistentObjectClicked(

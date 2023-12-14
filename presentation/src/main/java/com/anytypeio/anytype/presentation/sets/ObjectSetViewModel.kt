@@ -72,7 +72,9 @@ import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
+import com.anytypeio.anytype.presentation.objects.isSetOrCollection
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
@@ -1307,6 +1309,7 @@ class ObjectSetViewModel(
     //region NAVIGATION
 
     private suspend fun proceedWithOpeningObject(target: Id, layout: ObjectType.Layout? = null) {
+        Timber.d("proceedWithOpeningObject, target:[$target], layout:[$layout]")
         if (target == context) {
             toast("You are already here")
             Timber.d("proceedWithOpeningObject, target == context")
@@ -1434,25 +1437,18 @@ class ObjectSetViewModel(
         proceedWithExiting()
     }
 
-    fun onAddNewDocumentClicked(type: Key? = null) {
+    fun onAddNewDocumentClicked(objType: ObjectWrapper.Type? = null) {
         Timber.d("onAddNewDocumentClicked, ")
 
         val startTime = System.currentTimeMillis()
+        val params = objType.getCreateObjectParams()
         jobs += viewModelScope.launch {
-            createObject.async(
-                CreateObject.Param(
-                    type = type?.let { TypeKey(it) },
-                    internalFlags = buildList {
-                        add(InternalFlags.ShouldSelectTemplate)
-                        add(InternalFlags.ShouldEmptyDelete)
-                        if (type.isNullOrBlank()) {
-                            add(InternalFlags.ShouldSelectType)
-                        }
-                    }
-                )
-            ).fold(
+            createObject.async(params).fold(
                 onSuccess = { result ->
-                    proceedWithOpeningObject(result.objectId)
+                    proceedWithOpeningObject(
+                        target = result.objectId,
+                        layout = result.obj.layout
+                    )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         startTime = startTime,

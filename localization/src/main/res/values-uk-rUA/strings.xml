@@ -893,7 +893,7 @@
     <string name="slash_widget_actions_copy">Копіювати</string>
     <string name="slash_widget_actions_paste">Вставити</string>
     <string name="slash_widget_actions_link_to">Додайте посилання</string>
-    <string name="slash_widget_actions_link_to_subtitle">Зв\'язати з наявним об\'єктом</string>
+    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
     <string name="slash_widget_actions_move">Перемістити</string>
     <string name="slash_widget_actions_moveto">Перемістити до</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>

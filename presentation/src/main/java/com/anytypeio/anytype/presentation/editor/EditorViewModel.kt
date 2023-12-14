@@ -220,6 +220,8 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -3241,7 +3243,7 @@ class EditorViewModel(
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime
                     )
-                    proceedWithOpeningObject(result.objectId)
+                    proceedWithCloseCurrentAndOpenObject(result.obj)
                 },
                 onFailure = { e -> Timber.e(e, "Error while creating a new object") }
             )
@@ -4228,6 +4230,32 @@ class EditorViewModel(
                     navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
                 }
             )
+        }
+    }
+
+    private fun proceedWithCloseCurrentAndOpenObject(obj: ObjectWrapper.Basic) {
+        jobs += viewModelScope.launch {
+            closePage.async(context).fold(
+                onSuccess = { proceedWithOpeningObject(obj) },
+                onFailure = {
+                    Timber.e(it, "Error while closing object: $context")
+                    proceedWithOpeningObject(obj)
+                }
+            )
+        }
+    }
+
+    private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
+        when (val navigation = obj.navigation()) {
+            is OpenObjectNavigation.OpenDataView -> {
+                navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(navigation.target)))
+            }
+            is OpenObjectNavigation.OpenEditor -> {
+                navigate(EventWrapper(AppNavigation.Command.OpenObject(navigation.target)))
+            }
+            is OpenObjectNavigation.UnexpectedLayoutError -> {
+                sendToast("Unexpected layout: ${navigation.layout}")
+            }
         }
     }
 

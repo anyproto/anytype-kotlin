@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.sharing
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -9,7 +10,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
@@ -21,10 +24,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.toColorInt
+import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -33,7 +43,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.TitleInter15
-import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
+import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel.SpaceView
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Preview
 @Composable
@@ -61,11 +72,11 @@ fun AddToAnytypeScreenNotePreview() {
 
 @Composable
 fun AddToAnytypeScreen(
-    spaces: List<AddToAnytypeViewModel.SpaceView>,
+    spaces: List<SpaceView>,
     data: SharingData,
     onCancelClicked: () -> Unit,
     onDoneClicked: (SaveAsOption) -> Unit,
-    onSelectSpaceClicked: (AddToAnytypeViewModel.SpaceView) -> Unit
+    onSelectSpaceClicked: (SpaceView) -> Unit
 ) {
     var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
     val items = listOf(SAVE_AS_NOTE, SAVE_AS_BOOKMARK)
@@ -146,7 +157,8 @@ fun AddToAnytypeScreen(
             CurrentSpaceSection(
                 name = selected.obj.name.orEmpty(),
                 spaces = spaces,
-                onSelectSpaceClicked = onSelectSpaceClicked
+                onSelectSpaceClicked = onSelectSpaceClicked,
+                icon = selected.icon
             )
         } else {
             CurrentSpaceSection(
@@ -229,9 +241,10 @@ private fun Buttons(
 
 @Composable
 private fun CurrentSpaceSection(
+    icon: SpaceIconView? = null,
     name: String,
-    spaces: List<AddToAnytypeViewModel.SpaceView>,
-    onSelectSpaceClicked: (AddToAnytypeViewModel.SpaceView) -> Unit
+    spaces: List<SpaceView>,
+    onSelectSpaceClicked: (SpaceView) -> Unit
 ) {
     var isSpaceSelectMenuExpanded by remember { mutableStateOf(false) }
     Box(
@@ -243,17 +256,32 @@ private fun CurrentSpaceSection(
             }
     ) {
         Text(
-            text = "Space",
+            text = stringResource(R.string.space),
             modifier = Modifier
                 .padding(top = 14.dp, start = 20.dp),
             style = Caption1Medium,
             color = colorResource(id = R.color.text_secondary)
         )
+        val hasIcon = icon is SpaceIconView.Gradient || icon is SpaceIconView.Image
+        if (icon != null && hasIcon) {
+            SmallSpaceIcon(
+                icon = icon,
+                modifier = Modifier
+                    .padding(
+                        start = 20.dp,
+                        bottom = 17.dp
+                    )
+                    .align(Alignment.BottomStart)
+            )
+        }
         Text(
             text = name,
             modifier = Modifier
                 .align(Alignment.BottomStart)
-                .padding(bottom = 14.dp, start = 20.dp),
+                .padding(
+                    bottom = 14.dp,
+                    start = if (hasIcon) 44.dp else 20.dp
+                ),
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary)
         )
@@ -295,6 +323,48 @@ private fun Header() {
             modifier = Modifier.align(Alignment.Center),
             style = TitleInter15
         )
+    }
+}
+
+
+@Composable
+private fun SmallSpaceIcon(
+    icon: SpaceIconView,
+    modifier: Modifier
+) {
+   val size = 18.dp
+    when (icon) {
+        is SpaceIconView.Image -> {
+            Image(
+                painter = rememberAsyncImagePainter(
+                    model = icon.url,
+                    error = painterResource(id = com.anytypeio.anytype.ui_settings.R.drawable.ic_home_widget_space)
+                ),
+                contentDescription = "Custom image space icon",
+                contentScale = ContentScale.Crop,
+                modifier = modifier
+                    .size(size)
+                    .clip(RoundedCornerShape(4.dp))
+            )
+        }
+
+        is SpaceIconView.Gradient -> {
+            val gradient = Brush.radialGradient(
+                colors = listOf(
+                    Color(icon.from.toColorInt()),
+                    Color(icon.to.toColorInt())
+                )
+            )
+            Box(
+                modifier = modifier
+                    .size(size)
+                    .clip(CircleShape)
+                    .background(gradient)
+            )
+        }
+        else -> {
+            // Draw nothing.
+        }
     }
 }
 

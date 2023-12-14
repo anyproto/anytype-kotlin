@@ -887,7 +887,7 @@
     <string name="slash_widget_actions_copy">拷贝</string>
     <string name="slash_widget_actions_paste">粘贴</string>
     <string name="slash_widget_actions_link_to">添加链接</string>
-    <string name="slash_widget_actions_link_to_subtitle">链接到现有对象</string>
+    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
     <string name="slash_widget_actions_move">移动</string>
     <string name="slash_widget_actions_moveto">移至</string>
     <string name="slash_widget_actions_clean_style">清除样式</string>

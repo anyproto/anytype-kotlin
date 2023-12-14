@@ -889,7 +889,7 @@
     <string name="slash_widget_actions_copy">Kopieren</string>
     <string name="slash_widget_actions_paste">Einfügen</string>
     <string name="slash_widget_actions_link_to">Link hinzufügen</string>
-    <string name="slash_widget_actions_link_to_subtitle">Link zu vorhandenem Objekt</string>
+    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
     <string name="slash_widget_actions_move">Verschieben</string>
     <string name="slash_widget_actions_moveto">Verschieben nach</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>

@@ -893,7 +893,7 @@
     <string name="slash_widget_actions_copy">Копировать</string>
     <string name="slash_widget_actions_paste">Вставить</string>
     <string name="slash_widget_actions_link_to">Добавить ссылку</string>
-    <string name="slash_widget_actions_link_to_subtitle">Link to existing object</string>
+    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
     <string name="slash_widget_actions_move">Переместить</string>
     <string name="slash_widget_actions_moveto">Переместить в</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>

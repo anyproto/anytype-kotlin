@@ -20,6 +20,14 @@ android {
         buildConfigField "boolean", "ENABLE_VIEWS_MENU", "true"
         buildConfigField("String", "STAGING_NETWORK_ID", networkConfigProps.getProperty('staging_network_id', 'null'))
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
+    }
     namespace 'com.anytypeio.anytype.presentation'
 }
 

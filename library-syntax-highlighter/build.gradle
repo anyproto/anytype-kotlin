@@ -21,4 +21,12 @@ dependencies {
 
 android {
     namespace 'com.anytypeio.anytype.library_syntax_highlighter'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
+    }
 }

@@ -16,4 +16,12 @@ dependencies {
 
 android {
     namespace 'com.anytypeio.anytype.test_utils'
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
+    }
 }

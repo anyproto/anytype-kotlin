@@ -19,6 +19,11 @@ android {
         compose true
     }
     namespace 'com.anytypeio.anytype.core_ui'
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 }
 
 dependencies {

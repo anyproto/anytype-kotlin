@@ -13,6 +13,18 @@ android {
         viewBinding true
     }
     namespace 'com.anytypeio.anytype.core_utils'
+    buildTypes {
+        applicationVariants {
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
+    }
 }
 
 dependencies {

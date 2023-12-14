@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
 import com.anytypeio.anytype.ui.sharing.SharingFragment
@@ -49,4 +50,5 @@ interface AddToAnytypeDependencies : ComponentDependencies {
     fun userSettings(): UserSettingsRepository
     fun configStorage(): ConfigStorage
     fun container(): StorelessSubscriptionContainer
+    fun urlBuilder(): UrlBuilder
 }

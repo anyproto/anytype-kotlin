@@ -32,3 +32,20 @@ fun ObjectWrapper.Basic.spaceIcon(
     }
     else -> SpaceIconView.Placeholder
 }
+
+fun ObjectWrapper.SpaceView.spaceIcon(
+    builder: UrlBuilder,
+    spaceGradientProvider: SpaceGradientProvider
+) = when {
+    !iconImage.isNullOrEmpty() -> {
+        val hash = checkNotNull(iconImage)
+        SpaceIconView.Image(builder.thumbnail(hash))
+    }
+    iconOption != null -> {
+        iconOption?.let {
+            val gradient = spaceGradientProvider.get(it)
+            SpaceIconView.Gradient(gradient.from, gradient.to)
+        } ?: SpaceIconView.Placeholder
+    }
+    else -> SpaceIconView.Placeholder
+}

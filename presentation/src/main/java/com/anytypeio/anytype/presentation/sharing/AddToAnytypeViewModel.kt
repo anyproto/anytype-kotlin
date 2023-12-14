@@ -7,12 +7,16 @@ import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +29,8 @@ class AddToAnytypeViewModel(
     private val createBookmarkObject: CreateBookmarkObject,
     private val createPrefilledNote: CreatePrefilledNote,
     private val spaceManager: SpaceManager,
-    private val getSpaceViews: GetSpaceViews
+    private val getSpaceViews: GetSpaceViews,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -45,10 +50,14 @@ class AddToAnytypeViewModel(
                 spaces,
                 selectedSpaceId
             ) { spaces, selected ->
-                spaces.map {
+                spaces.map { space ->
                     SpaceView(
-                        obj = it,
-                        isSelected = it.targetSpaceId == selected
+                        obj = space,
+                        isSelected = space.targetSpaceId == selected,
+                        icon = space.spaceIcon(
+                            builder = urlBuilder,
+                            spaceGradientProvider = SpaceGradientProvider.Default
+                        )
                     )
                 }
             }.collect { views ->
@@ -132,7 +141,8 @@ class AddToAnytypeViewModel(
         private val createBookmarkObject: CreateBookmarkObject,
         private val createPrefilledNote: CreatePrefilledNote,
         private val spaceManager: SpaceManager,
-        private val getSpaceViews: GetSpaceViews
+        private val getSpaceViews: GetSpaceViews,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -140,14 +150,16 @@ class AddToAnytypeViewModel(
                 createBookmarkObject = createBookmarkObject,
                 spaceManager = spaceManager,
                 createPrefilledNote = createPrefilledNote,
-                getSpaceViews = getSpaceViews
+                getSpaceViews = getSpaceViews,
+                urlBuilder = urlBuilder
             ) as T
         }
     }
 
     data class SpaceView(
         val obj: ObjectWrapper.SpaceView,
-        val isSelected: Boolean
+        val isSelected: Boolean,
+        val icon: SpaceIconView
     )
 
     sealed class Command {

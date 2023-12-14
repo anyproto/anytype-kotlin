@@ -49,6 +49,7 @@ sealed class RelationValueView {
             val removable: Boolean,
             val icon: ObjectIcon,
             val layout: ObjectType.Layout?,
+            val profileLinkIdentity: Id? = null,
             override val isSelected: Boolean? = null,
             val selectedNumber: String? = null
         ) : Object(), Selectable

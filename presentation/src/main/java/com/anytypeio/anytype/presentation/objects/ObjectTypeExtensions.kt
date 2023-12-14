@@ -91,10 +91,6 @@ fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? =
     return !skipLayouts.contains(objectType?.recommendedLayout)
 }
 
-fun ObjectWrapper.Type?.isSetOrCollection(): Boolean {
-    return this?.uniqueKey == COLLECTION || this?.uniqueKey == SET
-}
-
 /**
  * This method is used to get the parameters for creating an object from + button(single click).
  *

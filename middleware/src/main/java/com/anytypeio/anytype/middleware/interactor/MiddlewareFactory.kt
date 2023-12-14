@@ -29,7 +29,10 @@ class MiddlewareFactory {
                 MBlock(bookmark = bookmark)
             }
             is Block.Prototype.Text -> {
-                val text = MBText(style = prototype.style.toMiddlewareModel())
+                val text = MBText(
+                    style = prototype.style.toMiddlewareModel(),
+                    text = prototype.text.orEmpty()
+                )
                 MBlock(text = text)
             }
             is Block.Prototype.DividerLine -> {

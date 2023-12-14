@@ -10,8 +10,8 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryView
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.allUniqueBy
@@ -28,11 +28,14 @@ import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.library.delegates.LibraryRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.LibraryTypesDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyRelationsDelegate
 import com.anytypeio.anytype.presentation.library.delegates.MyTypesDelegate
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import javax.inject.Inject
@@ -195,24 +198,26 @@ class LibraryViewModel(
     private fun proceedWithCreateDoc(
         typeKey: TypeKey? = null
     ) {
+        val params = typeKey?.key.getCreateObjectParams()
         viewModelScope.launch {
-            createObject.async(
-                CreateObject.Param(
-                    type = typeKey,
-                    internalFlags = buildList {
-                        add(InternalFlags.ShouldSelectTemplate)
-                        add(InternalFlags.ShouldEmptyDelete)
-                        if (typeKey == null) {
-                            add(InternalFlags.ShouldSelectType)
-                        }
-                    }
-                )
-            ).fold(
-                onSuccess = { result ->
-                    navigate(Navigation.CreateDoc(result.objectId))
-                },
-                onFailure = { e -> Timber.e(e, "Error while creating a new page") }
+            createObject.async(params).fold(
+                onSuccess = { result -> proceedWithOpeningObject(result.obj) },
+                onFailure = { e -> Timber.e(e, "Error while creating a new object") }
             )
+        }
+    }
+
+    private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
+        when (val navigation = obj.navigation()) {
+            is OpenObjectNavigation.OpenDataView -> {
+                navigate(Navigation.OpenSetOrCollection(navigation.target))
+            }
+            is OpenObjectNavigation.OpenEditor -> {
+                navigate(Navigation.OpenEditor(navigation.target))
+            }
+            is OpenObjectNavigation.UnexpectedLayoutError -> {
+                sendToast("Unexpected layout: ${navigation.layout}")
+            }
         }
     }
 
@@ -524,7 +529,9 @@ class LibraryViewModel(
 
         class Search : Navigation()
 
-        class CreateDoc(val id: Id) : Navigation()
+        class OpenEditor(val id: Id) : Navigation()
+
+        class OpenSetOrCollection(val id: Id) : Navigation()
     }
 
     sealed class Effect {

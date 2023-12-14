@@ -196,33 +196,24 @@ abstract class RelationValueBaseViewModel(
             RelationFormat.FILE -> {
                 relationFormat = RelationFormat.FILE
                 val isRemovable = isEditing.value
-                val value = record.getOrDefault(relation.key, null)
-                if (value != null) {
-                    val ids = buildList {
-                        when (value) {
-                            is List<*> -> addAll(value.typeOf())
-                            is Id -> add(value)
-                        }
-                    }
-                    ids.forEach { id ->
-                        val wrapper = if (ctx == target) {
-                            ObjectWrapper.Basic(
-                                details.provide()[id]?.map ?: emptyMap()
-                            )
-                        } else {
-                            resolveWrapperForObject(ctx = ctx, target = id)
-                        }
-                        items.add(
-                            RelationValueView.File(
-                                id = id,
-                                name = wrapper.name.orEmpty(),
-                                mime = wrapper.fileMimeType.orEmpty(),
-                                ext = wrapper.fileExt.orEmpty(),
-                                image = wrapper.iconImage,
-                                removable = isRemovable
-                            )
+                record.getValues<Id>(relation.key).forEach { id ->
+                    val wrapper = if (ctx == target) {
+                        ObjectWrapper.Basic(
+                            details.provide()[id]?.map ?: emptyMap()
                         )
+                    } else {
+                        resolveWrapperForObject(ctx = ctx, target = id)
                     }
+                    items.add(
+                        RelationValueView.File(
+                            id = id,
+                            name = wrapper.name.orEmpty(),
+                            mime = wrapper.fileMimeType.orEmpty(),
+                            ext = wrapper.fileExt.orEmpty(),
+                            image = wrapper.iconImage,
+                            removable = isRemovable
+                        )
+                    )
                 }
             }
             else -> throw IllegalStateException("Unsupported format: ${relation.format}")

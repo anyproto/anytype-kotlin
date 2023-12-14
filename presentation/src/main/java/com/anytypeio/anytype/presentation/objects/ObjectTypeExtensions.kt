@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
@@ -99,22 +100,23 @@ fun ObjectWrapper.Type?.isSetOrCollection(): Boolean {
  *
  * @return [CreateObject.Param] with the necessary parameters for creating an object.
  */
-fun ObjectWrapper.Type?.getCreateObjectParams(): CreateObject.Param {
-    val objTypeKey = this?.let { TypeKey(uniqueKey) }
+fun Key?.getCreateObjectParams(): CreateObject.Param {
+    val key = this
+    val objTypeKey = this
     val flags = buildList {
         add(InternalFlags.ShouldEmptyDelete)
 
-        if (this@getCreateObjectParams?.isSetOrCollection() == false) {
+        if (key != SET && key != COLLECTION) {
             add(InternalFlags.ShouldSelectTemplate)
         }
 
-        if (this@getCreateObjectParams == null) {
+        if (objTypeKey == null) {
             add(InternalFlags.ShouldSelectType)
         }
     }
 
     return CreateObject.Param(
-        type = objTypeKey,
+        type = key?.let { TypeKey(it) },
         internalFlags = flags
     )
 }

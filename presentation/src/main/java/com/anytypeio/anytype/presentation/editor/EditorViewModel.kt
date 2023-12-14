@@ -3232,7 +3232,7 @@ class EditorViewModel(
         objType: ObjectWrapper.Type?
     ) {
         val startTime = System.currentTimeMillis()
-        val params = objType.getCreateObjectParams()
+        val params = objType?.uniqueKey.getCreateObjectParams()
         viewModelScope.launch {
             createObject.async(params = params).fold(
                 onSuccess = { result ->

@@ -74,7 +74,6 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
-import com.anytypeio.anytype.presentation.objects.isSetOrCollection
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
@@ -1441,7 +1440,7 @@ class ObjectSetViewModel(
         Timber.d("onAddNewDocumentClicked, ")
 
         val startTime = System.currentTimeMillis()
-        val params = objType.getCreateObjectParams()
+        val params = objType?.uniqueKey.getCreateObjectParams()
         jobs += viewModelScope.launch {
             createObject.async(params).fold(
                 onSuccess = { result ->

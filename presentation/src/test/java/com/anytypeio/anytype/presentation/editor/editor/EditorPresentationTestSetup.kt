@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -477,6 +478,12 @@ open class EditorPresentationTestSetup {
             dispatchers = dispatchers,
             getNetworkMode = getNetworkMode
         )
+    }
+
+    fun stubGetNetworkMode() {
+        getNetworkMode.stub {
+            onBlocking { run(Unit) } doReturn NetworkModeConfig()
+        }
     }
 
     fun stubOpenDocument(

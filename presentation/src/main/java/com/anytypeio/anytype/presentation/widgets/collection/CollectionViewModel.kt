@@ -10,7 +10,6 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -18,7 +17,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.process
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -45,8 +43,11 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectAction
+import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.objects.mapFileObjectToView
 import com.anytypeio.anytype.presentation.objects.toViews
@@ -831,19 +832,9 @@ class CollectionViewModel(
         )
 
         val startTime = System.currentTimeMillis()
-        launch {
-            createObject.execute(
-                CreateObject.Param(
-                    type = type?.let { TypeKey(it) },
-                    internalFlags = buildList {
-                        add(InternalFlags.ShouldSelectTemplate)
-                        add(InternalFlags.ShouldEmptyDelete)
-                        if (type.isNullOrEmpty()) {
-                            add(InternalFlags.ShouldSelectType)
-                        }
-                    }
-                )
-            ).fold(
+        val params = type.getCreateObjectParams()
+        viewModelScope.launch {
+            createObject.execute(params).fold(
                 onSuccess = { result ->
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
@@ -852,10 +843,24 @@ class CollectionViewModel(
                         route = EventsDictionary.Routes.objCreateHome,
                         startTime = startTime
                     )
-                    commands.emit(Command.LaunchDocument(result.objectId))
+                    proceedWithOpeningObject(result.obj)
                 },
                 onFailure = { e -> Timber.e(e, "Error while creating a new page") }
             )
+        }
+    }
+
+    private suspend fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
+        when (val navigation = obj.navigation()) {
+            is OpenObjectNavigation.OpenDataView -> {
+                commands.emit(Command.LaunchObjectSet(navigation.target))
+            }
+            is OpenObjectNavigation.OpenEditor -> {
+                commands.emit(Command.LaunchDocument(navigation.target))
+            }
+            is OpenObjectNavigation.UnexpectedLayoutError -> {
+                toasts.emit("Unexpected layout: ${navigation.layout}")
+            }
         }
     }
 

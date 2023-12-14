@@ -149,47 +149,53 @@ abstract class RelationValueBaseViewModel(
                 relationFormat = Relation.Format.OBJECT
                 record.getValues<Id>(relationKey).forEach { id ->
                     val wrapper = if (ctx == target) {
-                        ObjectWrapper.Basic(
-                            details.provide()[id]?.map ?: emptyMap()
-                        )
+                        val detail = details.provide()[id]
+                        if (detail != null && detail.map.isNotEmpty()) {
+                            ObjectWrapper.Basic(detail.map)
+                        } else {
+                            Timber.w("Details not found for object")
+                            null
+                        }
                     } else {
                         resolveWrapperForObject(ctx = ctx, target = id)
                     }
-                    val type = wrapper.type.firstOrNull()
-                    val objectType = if (type != null) {
-                        if (type == MarketplaceObjectTypeIds.PROFILE) {
-                            storeOfObjectTypes.getByKey(ObjectTypeUniqueKeys.PROFILE)
+                    if (wrapper != null) {
+                        val type = wrapper.type.firstOrNull()
+                        val objectType = if (type != null) {
+                            if (type == MarketplaceObjectTypeIds.PROFILE) {
+                                storeOfObjectTypes.getByKey(ObjectTypeUniqueKeys.PROFILE)
+                            } else {
+                                storeOfObjectTypes.get(type)
+                            }
                         } else {
-                            storeOfObjectTypes.get(type)
+                            null
                         }
-                    } else {
-                        null
-                    }
-                    if (wrapper.isDeleted == true) {
-                        items.add(
-                            RelationValueView.Object.NonExistent(
-                                id = id,
-                                removable = isRemovable
+                        if (wrapper.isDeleted == true) {
+                            items.add(
+                                RelationValueView.Object.NonExistent(
+                                    id = id,
+                                    removable = isRemovable
+                                )
                             )
-                        )
-                    } else {
-                        items.add(
-                            RelationValueView.Object.Default(
-                                id = id,
-                                name = wrapper.getProperName(),
-                                typeName = objectType?.name,
-                                type = type,
-                                icon = ObjectIcon.from(
-                                    obj = wrapper,
+                        } else {
+                            items.add(
+                                RelationValueView.Object.Default(
+                                    id = id,
+                                    name = wrapper.getProperName(),
+                                    typeName = objectType?.name,
+                                    type = type,
+                                    icon = ObjectIcon.from(
+                                        obj = wrapper,
+                                        layout = wrapper.layout,
+                                        builder = urlBuilder
+                                    ),
+                                    removable = isRemovable,
                                     layout = wrapper.layout,
-                                    builder = urlBuilder
-                                ),
-                                removable = isRemovable,
-                                layout = wrapper.layout,
-                                profileLinkIdentity = wrapper
-                                    .getSingleValue(Relations.IDENTITY_PROFILE_LINK)
+                                    profileLinkIdentity = wrapper
+                                        .getSingleValue(Relations.IDENTITY_PROFILE_LINK)
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -198,22 +204,27 @@ abstract class RelationValueBaseViewModel(
                 val isRemovable = isEditing.value
                 record.getValues<Id>(relation.key).forEach { id ->
                     val wrapper = if (ctx == target) {
-                        ObjectWrapper.Basic(
-                            details.provide()[id]?.map ?: emptyMap()
-                        )
+                        val detail = details.provide()[id]
+                        if (detail != null && detail.map.isNotEmpty()) {
+                            ObjectWrapper.Basic(detail.map)
+                        } else {
+                            null
+                        }
                     } else {
                         resolveWrapperForObject(ctx = ctx, target = id)
                     }
-                    items.add(
-                        RelationValueView.File(
-                            id = id,
-                            name = wrapper.name.orEmpty(),
-                            mime = wrapper.fileMimeType.orEmpty(),
-                            ext = wrapper.fileExt.orEmpty(),
-                            image = wrapper.iconImage,
-                            removable = isRemovable
+                    if (wrapper != null) {
+                        items.add(
+                            RelationValueView.File(
+                                id = id,
+                                name = wrapper.name.orEmpty(),
+                                mime = wrapper.fileMimeType.orEmpty(),
+                                ext = wrapper.fileExt.orEmpty(),
+                                image = wrapper.iconImage,
+                                removable = isRemovable
+                            )
                         )
-                    )
+                    }
                 }
             }
             else -> throw IllegalStateException("Unsupported format: ${relation.format}")
@@ -256,12 +267,14 @@ abstract class RelationValueBaseViewModel(
 
     open suspend fun resolveWrapperForObject(
         ctx: Id, target: Id
-    ): ObjectWrapper.Basic {
+    ): ObjectWrapper.Basic? {
         val detail = details.provide()[target]
-        if (detail == null || detail.map.isEmpty()) {
+        return if (detail != null && detail.map.isNotEmpty()) {
+            ObjectWrapper.Basic(detail.map)
+        } else {
             Timber.w("Could not found data for object: $target")
+            null
         }
-        return ObjectWrapper.Basic(detail?.map ?: emptyMap())
     }
 
     fun onEditOrDoneClicked(isLocked: Boolean) {

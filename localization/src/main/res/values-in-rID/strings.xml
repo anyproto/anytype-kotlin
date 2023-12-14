@@ -1026,12 +1026,12 @@
     <string name="alert_gallery_unsupported_description">Fitur ini hanya tersedia di desktop untuk saat ini.</string>
     <!--endregion-->
     <!--region SHARING MENU -->
-    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_section_name">Simpan sebagai</string>
     <string name="sharing_menu_save_as_note_option">Catatan</string>
     <string name="sharing_menu_save_as_bookmark_option">Markah</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Tambah ke Anytype</string>
-    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
+    <string name="sharing_menu_toast_object_added">Objek baru ditambahkan ke ruang \'%1$s\'</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="other">%d links to</item>

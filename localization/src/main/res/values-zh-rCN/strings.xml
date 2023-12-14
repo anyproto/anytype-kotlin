@@ -46,6 +46,7 @@
     <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">应用版本号： %1$s\n构建号： %2$d\n库版本： %3$s\n账户\u00A0 ID：\u00A0%4$s\n设备\u00A0 ID：\u00A0%5$s\n分析\u00A0 ID：\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">设备：%1$s\nAndroid 版本：%2$d\n应用版本：%3$s\n构建号：%4$d\n库版本：%5$s\n账户\u00A0 ID：\u00A0%6$s\n设备\u00A0 ID：\u00A0%7$s\n分析\u00A0 ID：\u00A0%8$s</string>
+    <string name="space">空间</string>
     <string name="space_name">空间名称</string>
     <string name="personal_space">设置</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
@@ -887,7 +888,7 @@
     <string name="slash_widget_actions_copy">拷贝</string>
     <string name="slash_widget_actions_paste">粘贴</string>
     <string name="slash_widget_actions_link_to">添加链接</string>
-    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
+    <string name="slash_widget_actions_link_to_subtitle">创建链接到另一个对象</string>
     <string name="slash_widget_actions_move">移动</string>
     <string name="slash_widget_actions_moveto">移至</string>
     <string name="slash_widget_actions_clean_style">清除样式</string>
@@ -1023,6 +1024,14 @@
     <!--region ALERTS -->
     <string name="alert_gallery_unsupported_title">即将支持画廊</string>
     <string name="alert_gallery_unsupported_description">目前请使用桌面应用。</string>
+    <!--endregion-->
+    <!--region SHARING MENU -->
+    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_note_option">笔记</string>
+    <string name="sharing_menu_save_as_bookmark_option">书签</string>
+    <string name="sharing_menu_data">数据</string>
+    <string name="sharing_menu_add_to_anytype_header_title">添加至 Anytype</string>
+    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="other">%d links to</item>

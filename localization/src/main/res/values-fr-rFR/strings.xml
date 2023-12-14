@@ -46,6 +46,7 @@
     <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
     <string name="about_meta_info">Version de l\'application: %1$s\nNuméro de build : %2$d\nVersion de la bibliothèque : %3$s\nCompte\u00A0ID :\u00A0%4$s\nAppareil\u00A0ID :\u00A0%5$s\nAnalytiques\u00A0ID :\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
+    <string name="space">Espace</string>
     <string name="space_name">Nom de l\'espace</string>
     <string name="personal_space">Paramètres</string>
     <string name="you_can_store">Vous pouvez stocker gratuitement jusqu\'à %1$s de vos fichiers sur notre nœud de sauvegarde chiffré. Si vous atteignez la limite, les fichiers ne seront stockés que localement.</string>
@@ -1025,6 +1026,14 @@
     <!--region ALERTS -->
     <string name="alert_gallery_unsupported_title">La galerie sera bientôt prise en charge</string>
     <string name="alert_gallery_unsupported_description">Veuillez utiliser l\'application de bureau pour le moment.</string>
+    <!--endregion-->
+    <!--region SHARING MENU -->
+    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_note_option">Note</string>
+    <string name="sharing_menu_save_as_bookmark_option">Marque-page</string>
+    <string name="sharing_menu_data">Données</string>
+    <string name="sharing_menu_add_to_anytype_header_title">Ajouter à Anytype</string>
+    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="one">%d lien vers</item>

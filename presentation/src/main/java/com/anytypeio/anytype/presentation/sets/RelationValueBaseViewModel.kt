@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.addIds
+import com.anytypeio.anytype.core_models.ext.getValues
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -146,61 +147,13 @@ abstract class RelationValueBaseViewModel(
             Relation.Format.OBJECT -> {
                 val isRemovable = isEditing.value
                 relationFormat = Relation.Format.OBJECT
-                val value = record.getOrDefault(relationKey, null)
-                // TODO remove code duplication below
-                if (value is List<*>) {
-                    value.typeOf<Id>().forEach { id ->
-                        val wrapper = if (ctx == target) {
-                            ObjectWrapper.Basic(
-                                details.provide()[id]?.map ?: emptyMap()
-                            )
-                        } else {
-                            resolveWrapperForObject(ctx = ctx, target = id)
-                        }
-                        val type = wrapper.type.firstOrNull()
-                        val objectType = if (type != null) {
-                            if (type == MarketplaceObjectTypeIds.PROFILE) {
-                                storeOfObjectTypes.getByKey(ObjectTypeUniqueKeys.PROFILE)
-                            } else {
-                                storeOfObjectTypes.get(type)
-                            }
-                        } else {
-                            null
-                        }
-                        if (wrapper.isDeleted == true) {
-                            items.add(
-                                RelationValueView.Object.NonExistent(
-                                    id = id,
-                                    removable = isRemovable
-                                )
-                            )
-                        } else {
-                            items.add(
-                                RelationValueView.Object.Default(
-                                    id = id,
-                                    name = wrapper.getProperName(),
-                                    typeName = objectType?.name,
-                                    type = type,
-                                    icon = ObjectIcon.from(
-                                        obj = wrapper,
-                                        layout = wrapper.layout,
-                                        builder = urlBuilder
-                                    ),
-                                    removable = isRemovable,
-                                    layout = wrapper.layout,
-                                    profileLinkIdentity = wrapper
-                                        .getSingleValue(Relations.IDENTITY_PROFILE_LINK)
-                                )
-                            )
-                        }
-                    }
-                } else if (value is Id) {
+                record.getValues<Id>(relationKey).forEach { id ->
                     val wrapper = if (ctx == target) {
                         ObjectWrapper.Basic(
-                            details.provide()[value]?.map ?: emptyMap()
+                            details.provide()[id]?.map ?: emptyMap()
                         )
                     } else {
-                        resolveWrapperForObject(ctx = ctx, target = value)
+                        resolveWrapperForObject(ctx = ctx, target = id)
                     }
                     val type = wrapper.type.firstOrNull()
                     val objectType = if (type != null) {
@@ -215,14 +168,14 @@ abstract class RelationValueBaseViewModel(
                     if (wrapper.isDeleted == true) {
                         items.add(
                             RelationValueView.Object.NonExistent(
-                                id = value,
+                                id = id,
                                 removable = isRemovable
                             )
                         )
                     } else {
                         items.add(
                             RelationValueView.Object.Default(
-                                id = value,
+                                id = id,
                                 name = wrapper.getProperName(),
                                 typeName = objectType?.name,
                                 type = type,
@@ -233,7 +186,8 @@ abstract class RelationValueBaseViewModel(
                                 ),
                                 removable = isRemovable,
                                 layout = wrapper.layout,
-                                profileLinkIdentity = wrapper.getSingleValue(Relations.IDENTITY_PROFILE_LINK)
+                                profileLinkIdentity = wrapper
+                                    .getSingleValue(Relations.IDENTITY_PROFILE_LINK)
                             )
                         )
                     }

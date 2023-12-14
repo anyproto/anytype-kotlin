@@ -887,7 +887,7 @@
     <string name="slash_widget_actions_copy">Salin</string>
     <string name="slash_widget_actions_paste">Tempel</string>
     <string name="slash_widget_actions_link_to">Tambahkan tautan</string>
-    <string name="slash_widget_actions_link_to_subtitle">Tautkan ke objek yang telah ada</string>
+    <string name="slash_widget_actions_link_to_subtitle">Buat tautan ke objek lain</string>
     <string name="slash_widget_actions_move">Pindahkan</string>
     <string name="slash_widget_actions_moveto">Pindahkan ke</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>

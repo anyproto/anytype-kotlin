@@ -59,6 +59,7 @@ abstract class RelationValueBaseViewModel(
     private val jobs = mutableListOf<Job>()
     private var relationFormat: Relation.Format? = null
 
+    val isReadOnlyValue = MutableStateFlow(false)
     val isEditing = MutableStateFlow(false)
     val isDismissed = MutableStateFlow(false)
     val name = MutableStateFlow("")
@@ -71,7 +72,7 @@ abstract class RelationValueBaseViewModel(
         objectId: Id,
         relationKey: Key
     ) {
-        Timber.d("onStart")
+        Timber.d("onStart, ctx: $ctx, objectId: $objectId, relationKey: $relationKey")
         jobs += viewModelScope.launch {
             combine(
                 relations.observe(relationKey),
@@ -102,6 +103,7 @@ abstract class RelationValueBaseViewModel(
     ) {
         val result = mutableListOf<RelationValueView>()
         val items = mutableListOf<RelationValueView>()
+        isReadOnlyValue.value = relation.isReadonlyValue
 
         when (relation.format) {
             Relation.Format.TAG -> {
@@ -466,6 +468,7 @@ abstract class RelationValueBaseViewModel(
     }
 
     fun onFileValueActionAddClicked() {
+        Timber.d("onFileValueActionAddClicked")
         viewModelScope.launch {
             commands.emit(ObjectRelationValueCommand.ShowAddFileScreen)
         }

@@ -889,7 +889,7 @@
     <string name="slash_widget_actions_copy">Kopier</string>
     <string name="slash_widget_actions_paste">Lim inn</string>
     <string name="slash_widget_actions_link_to">Legg til lenke</string>
-    <string name="slash_widget_actions_link_to_subtitle">Lenke til eksisterende objekt</string>
+    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
     <string name="slash_widget_actions_move">Flytt</string>
     <string name="slash_widget_actions_moveto">Flytt til</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>

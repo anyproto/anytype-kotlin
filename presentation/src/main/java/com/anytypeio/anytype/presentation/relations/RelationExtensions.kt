@@ -209,48 +209,6 @@ fun ObjectWrapper.Relation.view(
     }
 }
 
-@Deprecated("To be deleted")
-fun Relation.searchObjectsFilter(): List<DVFilter> {
-    val filter = arrayListOf<DVFilter>()
-    if (objectTypes.isNotEmpty()) {
-        filter.add(
-            DVFilter(
-                relation = ObjectSetConfig.TYPE_KEY,
-                operator = DVFilterOperator.AND,
-                condition = DVFilterCondition.IN,
-                value = objectTypes
-            )
-        )
-    }
-    return filter.toList()
-}
-
-fun ObjectWrapper.Relation.searchObjectsFilter(): List<DVFilter> {
-    val filter = arrayListOf<DVFilter>()
-    if (relationFormatObjectTypes.isNotEmpty()) {
-        filter.add(
-            DVFilter(
-                relation = ObjectSetConfig.TYPE_KEY,
-                operator = DVFilterOperator.AND,
-                condition = DVFilterCondition.IN,
-                value = relationFormatObjectTypes
-            )
-        )
-    }
-    return filter.toList()
-}
-
-fun List<DVFilter>.addIsHiddenFilter(): List<DVFilter> =
-    this.toMutableList().apply {
-        add(
-            DVFilter(
-                relation = Relations.IS_HIDDEN,
-                condition = DVFilterCondition.NOT_EQUAL,
-                value = true
-            )
-        )
-    }
-
 object FilterInputValueParser {
     fun parse(
         value: String?,

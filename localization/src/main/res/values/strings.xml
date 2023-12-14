@@ -986,7 +986,7 @@
     <string name="slash_widget_actions_copy">Copy</string>
     <string name="slash_widget_actions_paste">Paste</string>
     <string name="slash_widget_actions_link_to">Add link</string>
-    <string name="slash_widget_actions_link_to_subtitle">Link to existing object</string>
+    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
     <string name="slash_widget_actions_move">Move</string>
     <string name="slash_widget_actions_moveto">Move to</string>
     <string name="slash_widget_actions_clean_style">Clean style</string>

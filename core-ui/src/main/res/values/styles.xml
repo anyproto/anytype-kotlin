@@ -463,6 +463,14 @@
         <item name="android:background">@drawable/ic_tag_selected_selector</item>
     </style>
 
+    <style name="RelationCircleBadgeStyle" parent="TextView.UXStyle.Body">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/button_text</item>
+        <item name="android:layout_gravity">center_vertical|end</item>
+        <item name="android:gravity">center</item>
+        <item name="android:background">@drawable/ic_variant_selector</item>
+    </style>
+
     <style name="GridCellTagStyle" parent="TextView.ContentStyle.Relations.2">
         <item name="android:background">@drawable/rect_dv_cell_tag_item</item>
         <item name="android:singleLine">true</item>

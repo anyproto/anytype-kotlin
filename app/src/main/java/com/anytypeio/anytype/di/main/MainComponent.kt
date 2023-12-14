@@ -36,6 +36,7 @@ import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.SpacesStorageDependencies
+import com.anytypeio.anytype.di.feature.sharing.AddToAnytypeDependencies
 import com.anytypeio.anytype.di.feature.spaces.CreateSpaceDependencies
 import com.anytypeio.anytype.di.feature.spaces.SelectSpaceDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
@@ -103,8 +104,8 @@ interface MainComponent :
     SpaceSettingsDependencies,
     CreateObjectOfTypeDependencies,
     SpacesStorageDependencies,
-    AppPreferencesDependencies
-{
+    AppPreferencesDependencies,
+    AddToAnytypeDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -275,4 +276,9 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(AppPreferencesDependencies::class)
     abstract fun providePreferencesDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(AddToAnytypeDependencies::class)
+    abstract fun provideAddToAnytypeDependencies(component: MainComponent): ComponentDependencies
 }

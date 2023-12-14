@@ -164,11 +164,24 @@ class MainViewModel(
         }
     }
 
+    fun onIntentShare(data: String) {
+        viewModelScope.launch {
+            checkAuthorizationStatus(Unit).process(
+                failure = { e -> Timber.e(e, "Error while checking auth status") },
+                success = { status ->
+                    if (status == AuthStatus.AUTHORIZED) {
+                        commands.emit(Command.AddToAnytype(data))
+                    }
+                }
+            )
+        }
+    }
+
     sealed class Command {
         data class ShowDeletedAccountScreen(val deadline: Long) : Command()
         object LogoutDueToAccountDeletion : Command()
-
         class OpenCreateNewType(val type: Id) : Command()
         data class Error(val msg: String) : Command()
+        data class AddToAnytype(val data: String): Command()
     }
 }

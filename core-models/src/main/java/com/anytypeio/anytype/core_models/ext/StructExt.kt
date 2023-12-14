@@ -44,3 +44,11 @@ fun Map<Id, Struct>.unset(
 fun Struct.mapToObjectWrapperType(): ObjectWrapper.Type? =
     if (containsKey(Relations.ID) && containsKey(Relations.UNIQUE_KEY)) ObjectWrapper.Type(this)
     else null
+
+inline fun <reified T> Struct.getValues(key: String): List<T> {
+    return when (val value = getOrDefault(key, emptyList<T>())) {
+        is T -> listOf(value)
+        is List<*> -> value.typeOf()
+        else -> emptyList()
+    }
+}

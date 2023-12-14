@@ -228,6 +228,7 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
@@ -3202,18 +3203,9 @@ class EditorViewModel(
     }
 
 
-    fun onAddNewDocumentClicked(type: Key? = null) {
-        Timber.d("onAddNewDocumentClicked, ")
-        proceedWithCreatingNewObject(
-            internalFlags = buildList {
-                add(InternalFlags.ShouldSelectTemplate)
-                add(InternalFlags.ShouldEmptyDelete)
-                if (type.isNullOrEmpty()) {
-                    add(InternalFlags.ShouldSelectType)
-                }
-            },
-            typeKey = type?.let { TypeKey(it) }
-        )
+    fun onAddNewDocumentClicked(objType: ObjectWrapper.Type? = null) {
+        Timber.d("onAddNewDocumentClicked, objType:[$objType]")
+        proceedWithCreatingNewObject(objType)
     }
 
     fun onProceedWithApplyingTemplateByObjectId(template: Id?) {
@@ -3235,29 +3227,24 @@ class EditorViewModel(
     }
 
     private fun proceedWithCreatingNewObject(
-        internalFlags: List<InternalFlags> = emptyList(),
-        typeKey: TypeKey? = null
+        objType: ObjectWrapper.Type?
     ) {
         val startTime = System.currentTimeMillis()
+        val params = objType.getCreateObjectParams()
         viewModelScope.launch {
-            val params = CreateObject.Param(
-                internalFlags = internalFlags,
-                type = typeKey
+            createObject.async(params = params).fold(
+                onSuccess = { result ->
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        type = result.typeKey.key,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        route = EventsDictionary.Routes.objPowerTool,
+                        startTime = startTime
+                    )
+                    proceedWithOpeningObject(result.objectId)
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new object") }
             )
-            createObject.async(params = params)
-                .fold(
-                    onSuccess = { result ->
-                        sendAnalyticsObjectCreateEvent(
-                            analytics = analytics,
-                            type = result.typeKey.key,
-                            storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.objPowerTool,
-                            startTime = startTime
-                        )
-                        proceedWithOpeningObject(result.objectId)
-                    },
-                    onFailure = { e -> Timber.e(e, "Error while creating a new object") }
-                )
         }
     }
 

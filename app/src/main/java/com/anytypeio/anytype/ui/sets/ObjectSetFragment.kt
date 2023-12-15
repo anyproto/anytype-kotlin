@@ -315,7 +315,7 @@ open class ObjectSetFragment :
                 .onEach {
                     val dialog = CreateObjectOfTypeFragment().apply {
                         onTypeSelected = {
-                            vm.onAddNewDocumentClicked(it.uniqueKey)
+                            vm.onAddNewDocumentClicked(it)
                         }
                     }
                     dialog.show(childFragmentManager, "set-create-object-of-type-dialog")

@@ -31,6 +31,7 @@ import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
 import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_NAME
 import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
 import com.anytypeio.anytype.ui.relations.RelationEditFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.types.create.CreateObjectTypeFragment
@@ -139,7 +140,7 @@ class LibraryFragment : BaseComposeFragment() {
                         R.id.pageSearchFragment
                     )
                 }
-                is LibraryViewModel.Navigation.CreateDoc -> {
+                is LibraryViewModel.Navigation.OpenEditor -> {
                     findNavController().safeNavigate(
                         R.id.libraryFragment,
                         R.id.objectNavigation,
@@ -152,6 +153,16 @@ class LibraryFragment : BaseComposeFragment() {
                     findNavController().navigate(
                         R.id.selectSpaceScreen,
                         args = SelectSpaceFragment.args(exitHomeWhenSpaceIsSelected = true)
+                    )
+                }
+
+                is LibraryViewModel.Navigation.OpenSetOrCollection -> {
+                    findNavController().safeNavigate(
+                        R.id.libraryFragment,
+                        R.id.dataViewNavigation,
+                        bundleOf(
+                            ObjectSetFragment.CONTEXT_ID_KEY to it.id
+                        )
                     )
                 }
             }

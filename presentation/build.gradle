@@ -57,7 +57,6 @@ dependencies {
     testImplementation libs.junit
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
-    testImplementation "net.bytebuddy:byte-buddy:1.12.20"
     testImplementation libs.coroutineTesting
     testImplementation libs.liveDataTesting
     testImplementation libs.archCoreTesting

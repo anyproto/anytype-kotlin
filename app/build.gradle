@@ -118,15 +118,6 @@ android {
         }
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
-
     composeOptions {
         kotlinCompilerExtensionVersion libs.versions.composeKotlinCompilerVersion.get()
     }
@@ -134,6 +125,15 @@ android {
     buildFeatures {
         viewBinding true
         compose true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
     }
 
     splits {
@@ -149,16 +149,6 @@ android {
 
     ndkVersion "23.2.8568313"
     namespace 'com.anytypeio.anytype'
-}
-
-kotlin {
-    jvmToolchain {
-        languageVersion.set(JavaLanguageVersion.of(11))
-    }
-}
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(11))
 }
 
 dependencies {

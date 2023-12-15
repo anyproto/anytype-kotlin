@@ -20,6 +20,14 @@ android {
         buildConfigField "boolean", "ENABLE_VIEWS_MENU", "true"
         buildConfigField("String", "STAGING_NETWORK_ID", networkConfigProps.getProperty('staging_network_id', 'null'))
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    kotlin {
+        jvmToolchain(17)
+    }
     namespace 'com.anytypeio.anytype.presentation'
 }
 
@@ -49,7 +57,6 @@ dependencies {
     testImplementation libs.junit
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
-    testImplementation "net.bytebuddy:byte-buddy:1.12.20"
     testImplementation libs.coroutineTesting
     testImplementation libs.liveDataTesting
     testImplementation libs.archCoreTesting

@@ -1026,17 +1026,17 @@
     <string name="alert_gallery_unsupported_description">目前请使用桌面应用。</string>
     <!--endregion-->
     <!--region SHARING MENU -->
-    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_section_name">另存为</string>
     <string name="sharing_menu_save_as_note_option">笔记</string>
     <string name="sharing_menu_save_as_bookmark_option">书签</string>
     <string name="sharing_menu_data">数据</string>
     <string name="sharing_menu_add_to_anytype_header_title">添加至 Anytype</string>
-    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
+    <string name="sharing_menu_toast_object_added">新对象已添加到空间 ”%1$s“</string>
     <!--endregion-->
     <plurals name="links_to_count">
-        <item quantity="other">%d links to</item>
+        <item quantity="other">%d 链接至</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="other">%d links from</item>
+        <item quantity="other">%d 链接自</item>
     </plurals>
 </resources>

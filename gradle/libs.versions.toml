@@ -1,14 +1,16 @@
 [versions]
 middlewareVersion = "v0.30.0-rc5"
-kotlinVersion = '1.8.20'
+kotlinVersion = '1.8.22'
 
 androidxCoreVersion = "1.12.0"
 
 androidxComposeVersion = '1.5.0'
-composeKotlinCompilerVersion = '1.4.6'
+composeKotlinCompilerVersion = '1.4.8'
 composeMaterial3Version = '1.1.1'
 composeMaterialVersion = '1.5.0'
 composeConstraintLayoutVersion = '1.0.1'
+
+dokkaVersion = '1.8.20'
 
 activityComposeVersion = '1.7.2'
 composeReorderableVersion = '0.9.6'
@@ -165,7 +167,7 @@ appUpdater = { module = "com.github.PLPsiSoft:AndroidAppUpdater", version = "991
 application = { id = "com.android.application", version = "8.2.0" }
 library = { id = "com.android.library", version = "8.2.0" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
-dokka = { id = "org.jetbrains.dokka", version.ref = "kotlinVersion" }
+dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
 wire = { id = "com.squareup.wire", version = "4.4.3" }
 firebaseDistribution = { id = "com.google.firebase.appdistribution", version = "4.0.1" }

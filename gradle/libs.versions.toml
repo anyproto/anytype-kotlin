@@ -6,13 +6,13 @@ androidxCoreVersion = "1.12.0"
 
 androidxComposeVersion = '1.5.0'
 composeKotlinCompilerVersion = '1.4.8'
-composeMaterial3Version = '1.1.1'
+composeMaterial3Version = '1.1.2'
 composeMaterialVersion = '1.5.0'
 composeConstraintLayoutVersion = '1.0.1'
 
 dokkaVersion = '1.8.20'
 
-activityComposeVersion = '1.7.2'
+activityComposeVersion = '1.8.1'
 composeReorderableVersion = '0.9.6'
 accompanistVersion = "0.30.0"
 appcompatVersion = '1.6.1'

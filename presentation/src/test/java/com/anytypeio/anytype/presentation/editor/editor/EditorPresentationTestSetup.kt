@@ -346,6 +346,8 @@ open class EditorPresentationTestSetup {
 
     @Mock
     lateinit var fileLimitsEventChannel: FileLimitsEventChannel
+
+    @Mock
     lateinit var interceptFileLimitEvents: InterceptFileLimitEvents
 
     @Mock
@@ -428,7 +430,6 @@ open class EditorPresentationTestSetup {
             moveTableRow, moveTableColumn, setTableRowHeader
         )
 
-        interceptFileLimitEvents = InterceptFileLimitEvents(fileLimitsEventChannel, dispatchers)
         return EditorViewModel(
             openPage = openPage,
             closePage = closePage,

@@ -27,11 +27,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".search.SearchOnPageActivity"
-            android:windowSoftInputMode="stateHidden|adjustResize"/>
-        <activity android:name=".DisabledAnimationActivity" />
-        <activity android:name=".ScrollAndMove" />
         <activity android:name=".StyleActivity" />
         <activity android:name=".MainActivity" />
         <activity android:name=".StyleToolbarActivity"/>

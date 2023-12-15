@@ -2,16 +2,13 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asFlow
 import timber.log.Timber
 
 /**
@@ -50,17 +47,6 @@ interface Store<T> {
         override fun cancel() {}
     }
 
-    open class Conflated<T>(default: T) : Store<T> {
-
-        private val channel = ConflatedBroadcastChannel(default)
-        private val stream = channel.asFlow()
-
-        override fun stream(): Flow<T> = stream
-        override fun current(): T = channel.value
-        override suspend fun update(t: T) = channel.send(t)
-        override fun cancel() = channel.cancel()
-    }
-
     class Focus : State<Editor.Focus>(Editor.Focus.empty()) {
         override suspend fun update(t: Editor.Focus) {
             Timber.d("Update focus in store: $t")
@@ -68,7 +54,6 @@ interface Store<T> {
         }
     }
 
-    class Context : Conflated<String>("")
     class Screen : State<List<BlockView>>(emptyList())
 
     class Details : State<Block.Details>(Block.Details()) {
@@ -78,7 +63,6 @@ interface Store<T> {
     }
 
     class Relations : State<List<Relation>>(emptyList())
-    class ObjectTypes : State<List<ObjectType>>(emptyList())
     class ObjectRestrictions : State<List<ObjectRestriction>>(emptyList())
     class TextSelection : State<Editor.TextSelection>(Editor.TextSelection.empty())
     class RelationLinks : State<List<RelationLink>>(emptyList())

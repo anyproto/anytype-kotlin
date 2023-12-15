@@ -16,6 +16,7 @@ activityComposeVersion = '1.8.1'
 composeReorderableVersion = '0.9.6'
 accompanistVersion = "0.30.0"
 appcompatVersion = '1.6.1'
+androidXAnnotationVersion = '1.7.0'
 fragmentVersion = "1.6.2"
 exoplayerVersion = "2.19.1"
 wireVersion = "4.5.2"
@@ -86,7 +87,7 @@ composeReorderable = { module = "org.burnoutcrew.composereorderable:reorderable"
 composeConstraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "composeConstraintLayoutVersion" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.4.1" }
 appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompatVersion" }
-androidAnnotations = { module = "androidx.annotation:annotation", version.ref = "appcompatVersion" }
+androidAnnotations = { module = "androidx.annotation:annotation", version.ref = "androidXAnnotationVersion" }
 design = { module = "com.google.android.material:material", version = "1.7.0" }
 fragment = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentVersion" }
 fragmentTesting = { module = "androidx.fragment:fragment-testing", version.ref = "fragmentVersion" }

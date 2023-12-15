@@ -11,8 +11,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
@@ -66,6 +64,7 @@ import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendSelectHomeTabEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.search.Subscriptions
@@ -1063,16 +1062,7 @@ class HomeScreenViewModel(
         Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val params = CreateObject.Param(
-                internalFlags  = buildList {
-                    add(InternalFlags.ShouldSelectTemplate)
-                    add(InternalFlags.ShouldEmptyDelete)
-                    if (objType == null) {
-                        add(InternalFlags.ShouldSelectType)
-                    }
-                },
-                type = if (objType != null) TypeKey(key = objType.uniqueKey) else null
-            )
+            val params = objType?.uniqueKey.getCreateObjectParams()
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
@@ -1093,11 +1083,7 @@ class HomeScreenViewModel(
                                 route = EventsDictionary.Routes.longTap
                             )
                         }
-                        if (objType?.uniqueKey == ObjectTypeUniqueKeys.SET || objType?.uniqueKey == ObjectTypeUniqueKeys.COLLECTION) {
-                            navigate(Navigation.OpenSet(result.objectId))
-                        } else {
-                            navigate(Navigation.OpenObject(result.objectId))
-                        }
+                        proceedWithOpeningObject(result.obj)
                     },
                     onFailure = {
                         Timber.e(it, "Error while creating object")

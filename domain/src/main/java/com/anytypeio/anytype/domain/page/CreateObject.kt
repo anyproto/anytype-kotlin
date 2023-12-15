@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.page
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -66,7 +67,8 @@ class CreateObject @Inject constructor(
             objectId = result.id,
             event = result.event,
             appliedTemplate = template,
-            typeKey = typeKey
+            typeKey = typeKey,
+            obj = ObjectWrapper.Basic(result.details)
         )
     }
 
@@ -81,6 +83,7 @@ class CreateObject @Inject constructor(
         val objectId: Id,
         val event: Payload,
         val appliedTemplate: String? = null,
-        val typeKey: TypeKey
+        val typeKey: TypeKey,
+        val obj: ObjectWrapper.Basic
     )
 }

@@ -614,7 +614,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .onEach {
                 val dialog = CreateObjectOfTypeFragment().apply {
                     onTypeSelected = {
-                        vm.onAddNewDocumentClicked(it.uniqueKey)
+                        vm.onAddNewDocumentClicked(it)
                     }
                 }
                 dialog.show(childFragmentManager, "editor-create-object-of-type-dialog")

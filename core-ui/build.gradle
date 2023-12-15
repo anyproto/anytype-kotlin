@@ -18,7 +18,6 @@ android {
         viewBinding true
         compose true
     }
-    namespace 'com.anytypeio.anytype.core_ui'
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -28,6 +27,8 @@ android {
     kotlin {
         jvmToolchain(17)
     }
+
+    namespace 'com.anytypeio.anytype.core_ui'
 }
 
 dependencies {

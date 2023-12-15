@@ -13,7 +13,6 @@ android {
             buildConfigField "boolean", "SEND_EVENTS", getProperty('config.enableAnalyticsForDebugBuilds')
         }
     }
-    namespace 'com.anytypeio.anytype.analytics'
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
@@ -23,6 +22,8 @@ android {
     kotlin {
         jvmToolchain(17)
     }
+
+    namespace 'com.anytypeio.anytype.analytics'
 }
 
 dependencies {

@@ -12,11 +12,7 @@ android {
     buildFeatures {
         viewBinding true
     }
-    namespace 'com.anytypeio.anytype.core_utils'
-    buildTypes {
-        applicationVariants {
-        }
-    }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
@@ -25,6 +21,8 @@ android {
     kotlin {
         jvmToolchain(17)
     }
+
+    namespace 'com.anytypeio.anytype.core_utils'
 }
 
 dependencies {

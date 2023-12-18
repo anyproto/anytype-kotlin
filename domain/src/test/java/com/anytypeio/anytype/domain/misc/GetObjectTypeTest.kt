@@ -211,9 +211,9 @@ class GetObjectTypeTest {
     }
 
     private fun stubGetObjectTypes(types: List<ObjectWrapper.Type>) {
-        usecase.stub {
+        repo.stub {
             onBlocking {
-                repo.searchObjects(
+                searchObjects(
                     filters = emptyList(),
                     keys = listOf(Relations.ID),
                     sorts = emptyList(),

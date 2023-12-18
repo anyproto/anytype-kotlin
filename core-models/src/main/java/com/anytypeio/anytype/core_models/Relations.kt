@@ -69,6 +69,8 @@ object Relations {
 
     const val BACKLINKS = "backlinks"
 
+    const val ORIGIN = "origin"
+
     /**
      * Transitive relation key.
      */

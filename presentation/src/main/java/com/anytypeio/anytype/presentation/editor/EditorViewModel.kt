@@ -220,6 +220,8 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -228,6 +230,7 @@ import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
@@ -3202,18 +3205,9 @@ class EditorViewModel(
     }
 
 
-    fun onAddNewDocumentClicked(type: Key? = null) {
-        Timber.d("onAddNewDocumentClicked, ")
-        proceedWithCreatingNewObject(
-            internalFlags = buildList {
-                add(InternalFlags.ShouldSelectTemplate)
-                add(InternalFlags.ShouldEmptyDelete)
-                if (type.isNullOrEmpty()) {
-                    add(InternalFlags.ShouldSelectType)
-                }
-            },
-            typeKey = type?.let { TypeKey(it) }
-        )
+    fun onAddNewDocumentClicked(objType: ObjectWrapper.Type? = null) {
+        Timber.d("onAddNewDocumentClicked, objType:[$objType]")
+        proceedWithCreatingNewObject(objType)
     }
 
     fun onProceedWithApplyingTemplateByObjectId(template: Id?) {
@@ -3235,29 +3229,24 @@ class EditorViewModel(
     }
 
     private fun proceedWithCreatingNewObject(
-        internalFlags: List<InternalFlags> = emptyList(),
-        typeKey: TypeKey? = null
+        objType: ObjectWrapper.Type?
     ) {
         val startTime = System.currentTimeMillis()
+        val params = objType?.uniqueKey.getCreateObjectParams()
         viewModelScope.launch {
-            val params = CreateObject.Param(
-                internalFlags = internalFlags,
-                type = typeKey
+            createObject.async(params = params).fold(
+                onSuccess = { result ->
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        type = result.typeKey.key,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        route = EventsDictionary.Routes.objPowerTool,
+                        startTime = startTime
+                    )
+                    proceedWithCloseCurrentAndOpenObject(result.obj)
+                },
+                onFailure = { e -> Timber.e(e, "Error while creating a new object") }
             )
-            createObject.async(params = params)
-                .fold(
-                    onSuccess = { result ->
-                        sendAnalyticsObjectCreateEvent(
-                            analytics = analytics,
-                            type = result.typeKey.key,
-                            storeOfObjectTypes = storeOfObjectTypes,
-                            route = EventsDictionary.Routes.objPowerTool,
-                            startTime = startTime
-                        )
-                        proceedWithOpeningObject(result.objectId)
-                    },
-                    onFailure = { e -> Timber.e(e, "Error while creating a new object") }
-                )
         }
     }
 
@@ -4241,6 +4230,32 @@ class EditorViewModel(
                     navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
                 }
             )
+        }
+    }
+
+    private fun proceedWithCloseCurrentAndOpenObject(obj: ObjectWrapper.Basic) {
+        jobs += viewModelScope.launch {
+            closePage.async(context).fold(
+                onSuccess = { proceedWithOpeningObject(obj) },
+                onFailure = {
+                    Timber.e(it, "Error while closing object: $context")
+                    proceedWithOpeningObject(obj)
+                }
+            )
+        }
+    }
+
+    private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
+        when (val navigation = obj.navigation()) {
+            is OpenObjectNavigation.OpenDataView -> {
+                navigate(EventWrapper(AppNavigation.Command.OpenSetOrCollection(navigation.target)))
+            }
+            is OpenObjectNavigation.OpenEditor -> {
+                navigate(EventWrapper(AppNavigation.Command.OpenObject(navigation.target)))
+            }
+            is OpenObjectNavigation.UnexpectedLayoutError -> {
+                sendToast("Unexpected layout: ${navigation.layout}")
+            }
         }
     }
 

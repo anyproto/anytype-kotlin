@@ -1,11 +1,15 @@
 package com.anytypeio.anytype.presentation.objects
 
+import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
+import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts.editorLayouts
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts.fileLayouts
@@ -85,4 +89,30 @@ fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? =
 
     val skipLayouts = fileLayouts + systemLayouts
     return !skipLayouts.contains(objectType?.recommendedLayout)
+}
+
+/**
+ * This method is used to get the parameters for creating an object from + button(single click).
+ *
+ * @return [CreateObject.Param] with the necessary parameters for creating an object.
+ */
+fun Key?.getCreateObjectParams(): CreateObject.Param {
+    val key = this
+    val objTypeKey = this
+    val flags = buildList {
+        add(InternalFlags.ShouldEmptyDelete)
+
+        if (key != SET && key != COLLECTION) {
+            add(InternalFlags.ShouldSelectTemplate)
+        }
+
+        if (objTypeKey == null) {
+            add(InternalFlags.ShouldSelectType)
+        }
+    }
+
+    return CreateObject.Param(
+        type = key?.let { TypeKey(it) },
+        internalFlags = flags
+    )
 }

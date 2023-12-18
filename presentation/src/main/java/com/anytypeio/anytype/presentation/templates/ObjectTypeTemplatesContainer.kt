@@ -14,8 +14,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
 
-sealed interface ObjectTypeTemplatesContainer {
-
+interface ObjectTypeTemplatesContainer {
     suspend fun subscribeToTemplates(type: Id, subId: String): Flow<List<ObjectWrapper.Basic>>
     suspend fun unsubscribeFromTemplates(subId: Id)
 }

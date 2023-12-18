@@ -1033,6 +1033,16 @@
     <string name="sharing_menu_add_to_anytype_header_title">Tambah ke Anytype</string>
     <string name="sharing_menu_toast_object_added">Objek baru ditambahkan ke ruang \'%1$s\'</string>
     <!--endregion-->
+    <!--region ORIGIN RELATION VALUES -->
+    <string name="relation_origin_none">Tidak ada</string>
+    <string name="relation_origin_clipboard">Clipboard</string>
+    <string name="relation_origin_dnd">Drag &amp; Drop</string>
+    <string name="relation_origin_imported_object">Imported object</string>
+    <string name="relation_origin_web_clipper">Web clipper</string>
+    <string name="relation_origin_mobile_sharing_extension">Mobile sharing extension</string>
+    <string name="relation_origin_use_case">Use case</string>
+    <string name="relation_origin_library_installed">Library installed</string>
+    <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="other">%d links to</item>
     </plurals>

@@ -838,29 +838,10 @@ class ObjectSetViewModel(
                 return@launch
             }
 
-            if (relation.isReadonlyValue) {
-                if (relation.format == Relation.Format.OBJECT) {
-
-                    if (relation.key == Relations.TYPE) {
-                        Timber.w("Cannot open Object Type from here.")
-                        toast(NOT_ALLOWED_CELL)
-                        return@launch
-                    }
-
-                    // TODO terrible workaround, which must be removed in the future!
-                    if (cell is CellView.Object && cell.objects.isNotEmpty()) {
-                        val obj = cell.objects.first()
-                        onRelationObjectClicked(target = obj.id)
-                        return@launch
-                    } else {
-                        toast(NOT_ALLOWED_CELL)
-                        return@launch
-                    }
-                } else {
-                    Timber.d("onGridCellClicked, relation is ReadOnly")
-                    toast(NOT_ALLOWED_CELL)
-                    return@launch
-                }
+            if (relation.format != RelationFormat.OBJECT && relation.isReadonlyValue) {
+                Timber.d("onGridCellClicked, relation is ReadOnly")
+                toast(NOT_ALLOWED_CELL)
+                return@launch
             }
 
             when (cell) {

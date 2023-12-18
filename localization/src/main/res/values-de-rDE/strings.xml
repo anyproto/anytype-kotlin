@@ -232,6 +232,7 @@
     <string name="paste">Einfügen</string>
     <string name="select">Auswählen</string>
     <string name="search">Suchen</string>
+    <string name="search_hint">Search...</string>
     <string name="relations">Verknüpfungen</string>
     <string name="relation">Verhältnis</string>
     <string name="download">Herunterladen</string>
@@ -349,6 +350,7 @@
     <string name="select_tags">Tags auswählen</string>
     <string name="select_status">Status auswählen</string>
     <string name="select_objects">Objekte auswählen</string>
+    <string name="no_value">No value</string>
     <string name="source">Quelle</string>
     <string name="query">Abfrage</string>
     <string name="select_query">Abfrage auswählen</string>

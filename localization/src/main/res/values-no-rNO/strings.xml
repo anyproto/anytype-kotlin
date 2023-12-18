@@ -232,6 +232,7 @@
     <string name="paste">Lim inn</string>
     <string name="select">Velg</string>
     <string name="search">Søk</string>
+    <string name="search_hint">Search...</string>
     <string name="relations">Relasjoner</string>
     <string name="relation">Relasjon</string>
     <string name="download">Last ned</string>
@@ -349,6 +350,7 @@
     <string name="select_tags">Velg merkelapper</string>
     <string name="select_status">Velg status</string>
     <string name="select_objects">Velg objekter</string>
+    <string name="no_value">No value</string>
     <string name="source">Kilde</string>
     <string name="query">Spørring</string>
     <string name="select_query">Velg spørring</string>

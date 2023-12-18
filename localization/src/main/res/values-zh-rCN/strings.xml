@@ -232,6 +232,7 @@
     <string name="paste">粘贴</string>
     <string name="select">选择</string>
     <string name="search">搜索</string>
+    <string name="search_hint">Search...</string>
     <string name="relations">关联</string>
     <string name="relation">关联</string>
     <string name="download">下载</string>
@@ -348,6 +349,7 @@
     <string name="select_tags">选择标签</string>
     <string name="select_status">选择状态</string>
     <string name="select_objects">选择对象</string>
+    <string name="no_value">No value</string>
     <string name="source">来源</string>
     <string name="query">查询</string>
     <string name="select_query">选择查询</string>

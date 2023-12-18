@@ -271,7 +271,7 @@
     <string name="sync_status_toast_offline">Anytype 节点未连接</string>
     <string name="sync_status_toast_syncing">向某个节点下载或上传数据</string>
     <string name="sync_status_toast_synced">备份到 Anytype 网络</string>
-    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
+    <string name="sync_status_toast_synced_staging">备份到 Anytype Staging</string>
     <string name="sync_status_toast_synced_local">仅本地</string>
     <string name="sync_status_toast_synced_self_hosted">备份到自托管网络</string>
     <string name="sync_status_toast_failed">同步失败，正在重试...</string>
@@ -1032,6 +1032,16 @@
     <string name="sharing_menu_data">数据</string>
     <string name="sharing_menu_add_to_anytype_header_title">添加至 Anytype</string>
     <string name="sharing_menu_toast_object_added">新对象已添加到空间 ”%1$s“</string>
+    <!--endregion-->
+    <!--region ORIGIN RELATION VALUES -->
+    <string name="relation_origin_none">无</string>
+    <string name="relation_origin_clipboard">剪贴板</string>
+    <string name="relation_origin_dnd">拖拽</string>
+    <string name="relation_origin_imported_object">导入的对象</string>
+    <string name="relation_origin_web_clipper">网页剪藏器</string>
+    <string name="relation_origin_mobile_sharing_extension">手机共享扩展</string>
+    <string name="relation_origin_use_case">使用案例</string>
+    <string name="relation_origin_library_installed">库已安装</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="other">%d 链接至</item>

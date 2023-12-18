@@ -244,7 +244,7 @@ sealed class ListRelationViewHolder(
     }
 
     fun setLockIcon(view: TextView, item: ObjectRelationView) {
-        if (item.readOnly || item.system) {
+        if (item.readOnly) {
             view.setCompoundDrawablesWithIntrinsicBounds(systemIconDrawable, null, null, null)
             view.visible()
         } else {

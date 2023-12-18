@@ -394,6 +394,7 @@
     <string name="select_tags">Select tags</string>
     <string name="select_status">Select status</string>
     <string name="select_objects">Select objects</string>
+    <string name="no_value">No value</string>
     <string name="source">Source</string>
     <string name="query">Query</string>
     <string name="select_query">Select query</string>

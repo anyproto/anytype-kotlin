@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.number.NumberParser
 import com.anytypeio.anytype.presentation.sets.buildFileViews
 import com.anytypeio.anytype.presentation.sets.buildRelationValueObjectViews
@@ -255,35 +256,54 @@ fun Block.Details.objectTypeRelation(
     }
 }
 
-fun Block.Details.linksRelation(
+fun Block.Details.linksFeaturedRelation(
+    relations: List<ObjectWrapper.Relation>,
     relationKey: Key,
-    context: Id,
-    details: Block.Details,
-    values: Map<String, Any?>,
-    isFeatured: Boolean = false,
+    ctx: Id,
+    isFeatured: Boolean
 ): ObjectRelationView? {
     return when (relationKey) {
         Relations.BACKLINKS -> {
-            ObjectRelationView.Default(
-                id = relationKey,
-                key = relationKey,
-                name = "Backlinks",
-                featured = isFeatured,
-                readOnly = true,
-                system = relationKey.isSystemKey(),
-                format = RelationFormat.SHORT_TEXT
-            )
+            val relation = relations.firstOrNull { it.key == relationKey } ?: return null
+            val objectDetails = ObjectWrapper.Basic(details[ctx]?.map ?: return null)
+            val backlinks = objectDetails.backlinks.filter {
+                details.containsKey(it)
+            }
+            if (backlinks.isEmpty()) {
+                return null
+            } else {
+                val count = backlinks.size
+                ObjectRelationView.Links.To(
+                    id = relation.id,
+                    key = relation.key,
+                    name = relation.name.orEmpty(),
+                    featured = isFeatured,
+                    system = relation.key.isSystemKey(),
+                    readOnly = relation.isReadOnly ?: false,
+                    count = count
+                )
+            }
         }
         Relations.LINKS -> {
-            ObjectRelationView.Default(
-                id = relationKey,
-                key = relationKey,
-                name = "Links",
-                featured = isFeatured,
-                readOnly = true,
-                system = relationKey.isSystemKey(),
-                format = RelationFormat.SHORT_TEXT
-            )
+            val relation = relations.firstOrNull { it.key == relationKey } ?: return null
+            val objectDetails = ObjectWrapper.Basic(details[ctx]?.map ?: return null)
+            val links = objectDetails.links.filter {
+                details.containsKey(it)
+            }
+            if (links.isEmpty()) {
+                return null
+            } else {
+                val count = links.size
+                ObjectRelationView.Links.From(
+                    id = relation.id,
+                    key = relation.key,
+                    name = relation.name.orEmpty(),
+                    featured = isFeatured,
+                    system = relation.key.isSystemKey(),
+                    readOnly = relation.isReadOnly ?: false,
+                    count = count
+                )
+            }
         }
         else -> null
     }

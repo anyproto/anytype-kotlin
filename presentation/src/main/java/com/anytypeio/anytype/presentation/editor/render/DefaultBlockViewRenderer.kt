@@ -7,7 +7,6 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -39,6 +38,7 @@ import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.isSystemKey
+import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
 import javax.inject.Inject
@@ -2142,43 +2142,13 @@ class DefaultBlockViewRenderer @Inject constructor(
                     null
                 }
             }
-            Relations.BACKLINKS -> {
-                val relation = storeOfRelations.getByKey(key)
-                val objectDetails = ObjectWrapper.Basic(details.details[ctx]?.map ?: emptyMap())
-                val backlinks = objectDetails.backlinks
-                if (backlinks.isEmpty()) {
-                    return@mapNotNull null
-                } else {
-                    val count = backlinks.size
-                    ObjectRelationView.Links.To(
-                        id = relation?.id.orEmpty(),
-                        key = relation?.key.orEmpty(),
-                        name = relation?.name.orEmpty(),
-                        featured = true,
-                        system = relation?.key?.isSystemKey() ?: false,
-                        readOnly = relation?.isReadOnly ?: false,
-                        count = count
-                    )
-                }
-            }
-            Relations.LINKS -> {
-                val relation = storeOfRelations.getByKey(key)
-                val objectDetails = ObjectWrapper.Basic(details.details[ctx]?.map ?: emptyMap())
-                val backlinks = objectDetails.links
-                if (backlinks.isEmpty()) {
-                    return@mapNotNull null
-                } else {
-                    val count = backlinks.size
-                    ObjectRelationView.Links.From(
-                        id = relation?.id.orEmpty(),
-                        key = relation?.key.orEmpty(),
-                        name = relation?.name.orEmpty(),
-                        featured = true,
-                        system = relation?.key?.isSystemKey() ?: false,
-                        readOnly = relation?.isReadOnly ?: false,
-                        count = count
-                    )
-                }
+            Relations.BACKLINKS, Relations.LINKS -> {
+                details.linksFeaturedRelation(
+                    relations = storeOfRelations.getAll(),
+                    ctx = ctx,
+                    relationKey = key,
+                    isFeatured = true
+                )
             }
             else -> {
                 val relation = storeOfRelations.getByKey(key)

@@ -34,7 +34,7 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:gravity="center_vertical"
-        android:text="@string/select_objects"
+        android:text="@string/no_value"
         android:visibility="gone"
         android:paddingEnd="@dimen/dp_12"
         app:layout_constraintBottom_toBottomOf="parent"

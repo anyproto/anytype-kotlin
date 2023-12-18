@@ -262,6 +262,7 @@
     <string name="paste">Paste</string>
     <string name="select">Select</string>
     <string name="search">Search</string>
+    <string name="search_hint">Search...</string>
     <string name="relations">Relations</string>
     <string name="relation">Relation</string>
     <string name="download">Download</string>

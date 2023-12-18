@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.diff.DefaultObjectDiffIdentifier
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -134,7 +133,7 @@ class RelationListViewModel(
         ).map { view ->
             Model.Item(
                 view = view,
-                isRemovable = isPossibleToRemoveRelation(relationKey = view.key)
+                isRemovable = isPossibleToRemoveRelation(view)
             )
         }
     }
@@ -330,7 +329,7 @@ class RelationListViewModel(
             isEditMode.value = !isEditMode.value
             views.value = views.value.map { view ->
                 if (view is Model.Item && !view.isRecommended) {
-                    view.copy(isRemovable = isPossibleToRemoveRelation(relationKey = view.view.key))
+                    view.copy(isRemovable = isPossibleToRemoveRelation(view.view))
                 } else {
                     view
                 }
@@ -338,8 +337,8 @@ class RelationListViewModel(
         }
     }
 
-    private fun isPossibleToRemoveRelation(relationKey: Key): Boolean {
-        return isEditMode.value && !Relations.systemRelationKeys.contains(relationKey)
+    private fun isPossibleToRemoveRelation(view: ObjectRelationView): Boolean {
+        return isEditMode.value && !view.system
     }
 
     private suspend fun onRelationClickedAddMode(

@@ -56,12 +56,14 @@ class AddFileRelationFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        setFullHeightSheet()
         binding.rvFiles.layoutManager = LinearLayoutManager(requireContext())
         binding.rvFiles.adapter = adapter
         binding.btnAdd.setOnClickListener { vm.onActionButtonClicked() }
         searchRelationInput = binding.searchBar.root.findViewById(R.id.filterInputField)
         searchRelationInput.apply {
-            hint = getString(R.string.choose_options)
+            hint = getString(R.string.search_hint)
         }
         clearSearchText = binding.searchBar.root.findViewById(R.id.clearSearchText)
         clearSearchText.setOnClickListener {
@@ -71,6 +73,7 @@ class AddFileRelationFragment :
     }
 
     override fun onStart() {
+        expand()
         jobs += lifecycleScope.subscribe(vm.viewsFiltered) { observeState(it) }
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(searchRelationInput.textChanges())

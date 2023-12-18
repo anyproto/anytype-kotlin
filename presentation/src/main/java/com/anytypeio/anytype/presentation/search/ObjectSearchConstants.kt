@@ -877,11 +877,6 @@ object ObjectSearchConstants {
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.IN,
             value = spaces
-        ),
-        DVFilter(
-            relation = Relations.FILE_SYNC_STATUS,
-            condition = DVFilterCondition.EQUAL,
-            value = FileSyncStatus.SYNCED.value.toDouble()
         )
     )
 

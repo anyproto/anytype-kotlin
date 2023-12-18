@@ -1037,13 +1037,13 @@
     <!--endregion-->
     <!--region ORIGIN RELATION VALUES -->
     <string name="relation_origin_none">Ninguno</string>
-    <string name="relation_origin_clipboard">Clipboard</string>
-    <string name="relation_origin_dnd">Drag &amp; Drop</string>
-    <string name="relation_origin_imported_object">Imported object</string>
-    <string name="relation_origin_web_clipper">Web clipper</string>
-    <string name="relation_origin_mobile_sharing_extension">Mobile sharing extension</string>
-    <string name="relation_origin_use_case">Use case</string>
-    <string name="relation_origin_library_installed">Library installed</string>
+    <string name="relation_origin_clipboard">Portapapeles</string>
+    <string name="relation_origin_dnd">Arrastrar &amp; Soltar</string>
+    <string name="relation_origin_imported_object">Objeto importado</string>
+    <string name="relation_origin_web_clipper">Web Clipper</string>
+    <string name="relation_origin_mobile_sharing_extension">Extensión para compartir móvil</string>
+    <string name="relation_origin_use_case">Caso de uso</string>
+    <string name="relation_origin_library_installed">Librería instalada</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="one">%d link to</item>

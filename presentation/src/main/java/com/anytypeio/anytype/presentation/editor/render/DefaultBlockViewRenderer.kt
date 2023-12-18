@@ -2145,7 +2145,9 @@ class DefaultBlockViewRenderer @Inject constructor(
             Relations.BACKLINKS -> {
                 val relation = storeOfRelations.getByKey(key)
                 val objectDetails = ObjectWrapper.Basic(details.details[ctx]?.map ?: emptyMap())
-                val backlinks = objectDetails.backlinks
+                val backlinks = objectDetails.backlinks.filter {
+                    details.details.containsKey(it)
+                }
                 if (backlinks.isEmpty()) {
                     return@mapNotNull null
                 } else {
@@ -2164,7 +2166,9 @@ class DefaultBlockViewRenderer @Inject constructor(
             Relations.LINKS -> {
                 val relation = storeOfRelations.getByKey(key)
                 val objectDetails = ObjectWrapper.Basic(details.details[ctx]?.map ?: emptyMap())
-                val backlinks = objectDetails.links
+                val backlinks = objectDetails.backlinks.filter {
+                    details.details.containsKey(it)
+                }
                 if (backlinks.isEmpty()) {
                     return@mapNotNull null
                 } else {

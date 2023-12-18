@@ -271,10 +271,10 @@
     <string name="sync_status_toast_unknown">Initialisiere Synchronisation</string>
     <string name="sync_status_toast_offline">Anytype Knoten ist nicht verbunden</string>
     <string name="sync_status_toast_syncing">Herunterladen oder Hochladen von Daten zu einem Knoten</string>
-    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
-    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
-    <string name="sync_status_toast_synced_local">Local only</string>
-    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
+    <string name="sync_status_toast_synced">Im Anytype-Netzwerk gesichert</string>
+    <string name="sync_status_toast_synced_staging">In Anytype Staging gesichert</string>
+    <string name="sync_status_toast_synced_local">Nur lokal</string>
+    <string name="sync_status_toast_synced_self_hosted">Im selbst gehosteten Netzwerk gesichert</string>
     <string name="sync_status_toast_failed">Synchronisierung fehlgeschlagen, versuche es erneut</string>
     <string name="sync_status_toast_incompatible">Version veraltet. Bitte aktualisieren Sie Anytype</string>
     <string name="relation_format_description">Beschreibung</string>
@@ -372,7 +372,7 @@
     <string name="new_relation">Neue Relation</string>
     <string name="copy_link">Link kopieren</string>
     <string name="edit_link">Link bearbeiten</string>
-    <string name="unlink">Unlink</string>
+    <string name="unlink">Link entfernen</string>
     <string name="choose_layout_type">Wähle einen Ansichtstyp</string>
     <string name="user_settings_title">Benutzereinstellungen</string>
     <string name="default_object_type_title">Standard Objekttyp</string>
@@ -595,7 +595,7 @@
     <string name="no_peers">keine Gesprächspartner</string>
     <string name="content_description_back_button_icon">Back button icon</string>
     <string name="hint_link">URL einfügen oder eingeben</string>
-    <string name="button_unlink">Unlink</string>
+    <string name="button_unlink">Link entfernen</string>
     <string name="button_link">Link</string>
     <string name="permission_read_rationale">Leseberechtigung wird benötigt, um die Datei in den Medienblock zu laden.</string>
     <string name="permission_read_denied">Benutzer verweigert die Berechtigung. Bitte genehmigen Sie diese Berechtigung in den App-Einstellungen auf Ihrem Gerät.</string>
@@ -762,12 +762,12 @@
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Einstellungen</string>
     <string name="settings_network_mode">Netzwerkmodus</string>
-    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
+    <string name="settings_network_configuration_file">Selbst gehostete Konfiguration</string>
     <string name="settings_network_configuration_file_choose">Datei auswählen</string>
     <string-array name="settings_networks_entries">
         <item>Anytype</item>
         <item>Nur lokal</item>
-        <item>Self-hosted</item>
+        <item>Selbst gehostet</item>
     </string-array>
     <string name="snack_link_to">verlinkt mit</string>
     <string name="snack_move_to">verschoben nach</string>
@@ -890,10 +890,10 @@
     <string name="slash_widget_actions_copy">Kopieren</string>
     <string name="slash_widget_actions_paste">Einfügen</string>
     <string name="slash_widget_actions_link_to">Link hinzufügen</string>
-    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
+    <string name="slash_widget_actions_link_to_subtitle">Link zu einem anderen Objekt erstellen</string>
     <string name="slash_widget_actions_move">Verschieben</string>
     <string name="slash_widget_actions_moveto">Verschieben nach</string>
-    <string name="slash_widget_actions_clean_style">Clean style</string>
+    <string name="slash_widget_actions_clean_style">Sauberer Stil</string>
     <string name="slash_widget_back">Zurück</string>
     <string name="slash_widget_align_right">Rechts</string>
     <string name="slash_widget_align_center">Zentriert</string>
@@ -956,7 +956,7 @@
     <string name="type_creation_placeholder">Typname</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">the everything app</string>
+    <string name="onboarding_auth_title">die Alles-App</string>
     <string name="onboarding_auth_subtitle">Für diejenigen\ndie eines feiern:\n Vertrauen &amp; Autonomie</string>
     <string name="onboarding_auth_description">Anytype ist dein sicherer Ort zum Schreiben, Planen, Denken und Organisieren von allem, was dir wichtig ist.</string>
     <string name="onboarding_terms_and_policy_prefix">"Indem Sie fortfahren, stimmen Sie unseren"</string>
@@ -1028,19 +1028,19 @@
     <string name="alert_gallery_unsupported_description">Bitte verwende die Desktop-App vorläufig.</string>
     <!--endregion-->
     <!--region SHARING MENU -->
-    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_section_name">Speichern als</string>
     <string name="sharing_menu_save_as_note_option">Notiz</string>
     <string name="sharing_menu_save_as_bookmark_option">Lesezeichen</string>
     <string name="sharing_menu_data">Daten</string>
     <string name="sharing_menu_add_to_anytype_header_title">Zu Anytype hinzufügen</string>
-    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
+    <string name="sharing_menu_toast_object_added">Neues Objekt wird dem Space ‚%1$s‘ hinzugefügt</string>
     <!--endregion-->
     <plurals name="links_to_count">
-        <item quantity="one">%d link to</item>
+        <item quantity="one">%d Link zu</item>
         <item quantity="other">%d links to</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d link from</item>
-        <item quantity="other">%d links from</item>
+        <item quantity="one">%d Link von</item>
+        <item quantity="other">%d Links von</item>
     </plurals>
 </resources>

@@ -37,6 +37,7 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.ID_KEY
 import com.anytypeio.anytype.presentation.relations.getCover
 import com.anytypeio.anytype.presentation.relations.isSystemKey
+import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.relations.view
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -147,7 +148,6 @@ private fun ObjectState.DataView.mapFeaturedRelations(
                         type = typeId,
                         system = key.isSystemKey()
                     )
-                    else -> null
                 }
             }
         }
@@ -201,6 +201,14 @@ private fun ObjectState.DataView.mapFeaturedRelations(
                     system = key.isSystemKey()
                 )
             }
+        }
+        Relations.BACKLINKS, Relations.LINKS -> {
+            details.linksFeaturedRelation(
+                relations = relations,
+                ctx = ctx,
+                relationKey = key,
+                isFeatured = true
+            )
         }
         else -> {
             val relation = relations.firstOrNull { it.key == key }

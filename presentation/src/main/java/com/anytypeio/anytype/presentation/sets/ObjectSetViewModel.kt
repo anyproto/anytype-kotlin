@@ -1545,7 +1545,7 @@ class ObjectSetViewModel(
                 Timber.w("Couldn't find relation in store by id:${view.id}")
                 return@launch
             }
-            if (relation.isReadonlyValue) {
+            if (relation.format != RelationFormat.OBJECT && relation.isReadonlyValue) {
                 toast(RelationListViewModel.NOT_ALLOWED_FOR_RELATION)
                 Timber.d("No interaction allowed with this relation")
                 return@launch

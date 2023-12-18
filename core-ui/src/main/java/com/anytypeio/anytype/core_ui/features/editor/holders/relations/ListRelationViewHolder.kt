@@ -57,7 +57,7 @@ sealed class ListRelationViewHolder(
                     }
                 }
             }
-            setLockIcon(tvTitle, item.readOnly)
+            setLockIcon(tvTitle, item)
         }
     }
 
@@ -70,7 +70,7 @@ sealed class ListRelationViewHolder(
         fun bind(item: ObjectRelationView.Checkbox) = with(itemView) {
             tvTitle.text = item.name
             ivCheckbox.isSelected = item.isChecked
-            setLockIcon(tvTitle, item.system)
+            setLockIcon(tvTitle, item)
         }
     }
 
@@ -97,7 +97,7 @@ sealed class ListRelationViewHolder(
                     text = null
                 }
             }
-            setLockIcon(tvTitle, item.system)
+            setLockIcon(tvTitle, item)
         }
     }
 
@@ -114,7 +114,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
-            setLockIcon(tvTitle, item.system)
+            setLockIcon(tvTitle, item)
             for (i in 0..MAX_VISIBLE_TAGS_INDEX) getViewByIndex(i)?.gone()
             item.tags.forEachIndexed { index, tagView ->
                 when (index) {
@@ -156,7 +156,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
-            setLockIcon(tvTitle, item.system)
+            setLockIcon(tvTitle, item)
             for (i in 0..MAX_VISIBLE_OBJECTS_INDEX) getViewByIndex(i)?.gone()
             item.objects.forEachIndexed { index, objectView ->
                 when (index) {
@@ -202,7 +202,7 @@ sealed class ListRelationViewHolder(
             } else {
                 placeholder.gone()
             }
-            setLockIcon(tvTitle, item.system)
+            setLockIcon(tvTitle, item)
             item.files.forEachIndexed { index, fileView ->
                 when (index) {
                     in 0..MAX_VISIBLE_FILES_INDEX -> {
@@ -243,8 +243,8 @@ sealed class ListRelationViewHolder(
         itemView.setBlockBackgroundColor(color)
     }
 
-    fun setLockIcon(view: TextView, isReadOnly: Boolean) {
-        if (isReadOnly) {
+    fun setLockIcon(view: TextView, item: ObjectRelationView) {
+        if (item.readOnly || item.system) {
             view.setCompoundDrawablesWithIntrinsicBounds(systemIconDrawable, null, null, null)
             view.visible()
         } else {

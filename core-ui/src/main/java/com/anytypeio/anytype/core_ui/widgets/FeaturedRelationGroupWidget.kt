@@ -323,6 +323,9 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     if (relation.value == null) {
                         view.alpha = 0.5f
                     }
+                    view.setOnClickListener {
+                        click(ListenerType.Relation.Featured(relation))
+                    }
                     addView(view)
                     ids.add(view.id)
                 }
@@ -341,6 +344,9 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     }
                     if (relation.value == null) {
                         view.alpha = 0.5f
+                    }
+                    view.setOnClickListener {
+                        click(ListenerType.Relation.Featured(relation))
                     }
                     addView(view)
                     ids.add(view.id)

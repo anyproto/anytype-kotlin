@@ -1035,6 +1035,16 @@
     <string name="sharing_menu_add_to_anytype_header_title">Añadir a Anytype</string>
     <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
     <!--endregion-->
+    <!--region ORIGIN RELATION VALUES -->
+    <string name="relation_origin_none">Ninguno</string>
+    <string name="relation_origin_clipboard">Portapapeles</string>
+    <string name="relation_origin_dnd">Arrastrar &amp; Soltar</string>
+    <string name="relation_origin_imported_object">Objeto importado</string>
+    <string name="relation_origin_web_clipper">Web Clipper</string>
+    <string name="relation_origin_mobile_sharing_extension">Extensión para compartir móvil</string>
+    <string name="relation_origin_use_case">Caso de uso</string>
+    <string name="relation_origin_library_installed">Librería instalada</string>
+    <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="one">%d link to</item>
         <item quantity="other">%d links to</item>

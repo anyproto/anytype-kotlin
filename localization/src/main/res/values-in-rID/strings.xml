@@ -232,6 +232,7 @@
     <string name="paste">Tempel</string>
     <string name="select">Pilih</string>
     <string name="search">Telusuri</string>
+    <string name="search_hint">Search...</string>
     <string name="relations">Relasi</string>
     <string name="relation">Relasi</string>
     <string name="download">Unduh</string>
@@ -348,6 +349,7 @@
     <string name="select_tags">Pilih label</string>
     <string name="select_status">Pilih status</string>
     <string name="select_objects">Pilih objek</string>
+    <string name="no_value">No value</string>
     <string name="source">Sumber</string>
     <string name="query">Pertanyaan</string>
     <string name="select_query">Pilih kueri</string>

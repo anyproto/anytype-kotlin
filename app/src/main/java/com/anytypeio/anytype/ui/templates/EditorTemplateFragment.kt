@@ -71,7 +71,6 @@ class EditorTemplateFragment : EditorFragment() {
 
     private fun initializeBinding() {
         with(binding) {
-            root.background = null
             if (fragmentType == TYPE_TEMPLATE_SELECT || fragmentType == TYPE_TEMPLATE_EDIT) {
                 recycler.updateLayoutParams<ConstraintLayout.LayoutParams> {
                     topMargin = dimen(R.dimen.default_toolbar_height)

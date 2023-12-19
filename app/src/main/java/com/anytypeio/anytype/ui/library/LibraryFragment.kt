@@ -74,7 +74,7 @@ class LibraryFragment : BaseComposeFragment() {
                         onCreateObjectLongClicked = {
                             val dialog = CreateObjectOfTypeFragment().apply {
                                 onTypeSelected = {
-                                    vm.onCreateObjectOfTypeClicked(it.uniqueKey)
+                                    vm.onCreateObjectOfTypeClicked(it)
                                 }
                             }
                             dialog.show(childFragmentManager, "library-create-object-of-type-dialog")

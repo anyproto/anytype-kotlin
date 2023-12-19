@@ -232,7 +232,7 @@
     <string name="paste">Einfügen</string>
     <string name="select">Auswählen</string>
     <string name="search">Suchen</string>
-    <string name="search_hint">Search...</string>
+    <string name="search_hint">Suche...</string>
     <string name="relations">Verknüpfungen</string>
     <string name="relation">Verhältnis</string>
     <string name="download">Herunterladen</string>
@@ -291,7 +291,7 @@
     <string name="relation_format_emoji">Emoji</string>
     <string name="relation_format_object">Objekt</string>
     <string name="relation_format_relation">Verhältnis</string>
-    <string name="viewer_sorting_prefix">Then</string>
+    <string name="viewer_sorting_prefix">Dann</string>
     <string name="enter_value">Wert eingeben</string>
     <string name="ityem_relations">Verknüpfungen</string>
     <string name="add_sort">Sortierung hinzufügen</string>
@@ -350,7 +350,7 @@
     <string name="select_tags">Tags auswählen</string>
     <string name="select_status">Status auswählen</string>
     <string name="select_objects">Objekte auswählen</string>
-    <string name="no_value">No value</string>
+    <string name="no_value">Kein Wert</string>
     <string name="source">Quelle</string>
     <string name="query">Abfrage</string>
     <string name="select_query">Abfrage auswählen</string>
@@ -795,6 +795,7 @@
     <string name="sync_status_incompatible">Inkompatible Version</string>
     <string name="base_add_options_empty_title">Keine Tags gefunden</string>
     <string name="base_add_options_empty_subtitle">Beginne mit dem Schreiben, um ein neues zu erstellen</string>
+    <string name="sync_status_local_only">Nur lokal</string>
     <string name="mail_more_space_body">Liebes Anytype Team, wäre es möglich den Speicherplatz zu erweitern, da mir der Speicher ausgegangen ist? Mein aktuelles Limit ist %1$s. Meine Account-ID ist %2$s. LG %3$s</string>
     <string name="your_recovery_phrase_can_t_be_empty">Ihre Wiederherstellungsphrase darf nicht leer sein</string>
     <string name="go_to_the_app">Zur App gehen</string>

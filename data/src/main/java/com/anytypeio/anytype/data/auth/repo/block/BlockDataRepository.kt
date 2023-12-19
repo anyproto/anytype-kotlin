@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -209,10 +208,12 @@ class BlockDataRepository(
 
     override suspend fun createBookmarkObject(
         space: Id,
-        url: Url
+        url: Url,
+        details: Struct
     ): Id = remote.createBookmarkObject(
         space = space,
-        url = url
+        url = url,
+        details = details
     )
 
     override suspend fun fetchBookmarkObject(ctx: Id, url: Url) = remote.fetchBookmarkObject(

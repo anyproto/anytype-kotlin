@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.NO_VALUE
+import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -75,7 +77,10 @@ class AddToAnytypeViewModel(
             createBookmarkObject(
                 CreateBookmarkObject.Params(
                     space = targetSpace,
-                    url = url
+                    url = url,
+                    details = mapOf(
+                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                    )
                 )
             ).process(
                 success = { obj ->
@@ -107,7 +112,10 @@ class AddToAnytypeViewModel(
             createPrefilledNote.async(
                 CreatePrefilledNote.Params(
                     text = text,
-                    space = targetSpace
+                    space = targetSpace,
+                    details = mapOf(
+                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                    )
                 )
             ).fold(
                 onSuccess = { result ->

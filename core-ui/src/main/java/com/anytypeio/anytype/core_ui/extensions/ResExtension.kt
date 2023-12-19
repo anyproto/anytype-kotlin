@@ -298,9 +298,12 @@ fun SyncStatusView?.getLabelText(context: Context): String = when (this) {
     SyncStatusView.Unknown -> context.getString(R.string.sync_status_unknown)
     SyncStatusView.Offline -> context.getString(R.string.sync_status_offline)
     SyncStatusView.Syncing -> context.getString(R.string.sync_status_syncing)
-    is SyncStatusView.Synced -> context.getString(R.string.sync_status_synced)
     SyncStatusView.Failed -> context.getString(R.string.sync_status_failed)
     SyncStatusView.IncompatibleVersion -> context.getString(R.string.sync_status_incompatible)
+    SyncStatusView.Synced.LocalOnly -> context.getString(R.string.sync_status_local_only)
+    SyncStatusView.Synced.AnyNetwork -> context.getString(R.string.sync_status_synced)
+    SyncStatusView.Synced.SelfHostedNetwork -> context.getString(R.string.sync_status_synced)
+    SyncStatusView.Synced.StagingNetwork -> context.getString(R.string.sync_status_synced)
     else -> ""
 }
 

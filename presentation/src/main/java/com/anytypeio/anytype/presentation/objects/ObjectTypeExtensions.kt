@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.objects
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -96,9 +97,8 @@ fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? =
  *
  * @return [CreateObject.Param] with the necessary parameters for creating an object.
  */
-fun Key?.getCreateObjectParams(): CreateObject.Param {
+fun Key?.getCreateObjectParams(defaultTemplate: Id?): CreateObject.Param {
     val key = this
-    val objTypeKey = this
     val flags = buildList {
         add(InternalFlags.ShouldEmptyDelete)
 
@@ -106,13 +106,14 @@ fun Key?.getCreateObjectParams(): CreateObject.Param {
             add(InternalFlags.ShouldSelectTemplate)
         }
 
-        if (objTypeKey == null) {
+        if (key == null) {
             add(InternalFlags.ShouldSelectType)
         }
     }
 
     return CreateObject.Param(
         type = key?.let { TypeKey(it) },
-        internalFlags = flags
+        internalFlags = flags,
+        template = defaultTemplate
     )
 }

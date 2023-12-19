@@ -824,7 +824,7 @@ class CollectionViewModel(
         }
     }
 
-    fun onAddClicked(type: Key? = null) {
+    fun onAddClicked(objType: ObjectWrapper.Type?) {
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.createObjectCollectionsNavBar,
@@ -832,7 +832,7 @@ class CollectionViewModel(
         )
 
         val startTime = System.currentTimeMillis()
-        val params = type.getCreateObjectParams()
+        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         viewModelScope.launch {
             createObject.execute(params).fold(
                 onSuccess = { result ->

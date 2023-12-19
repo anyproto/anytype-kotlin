@@ -280,16 +280,20 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 val focus = LocalFocusManager.current
+                val onBackClicked = {
+                    val lastDestination = navController.currentBackStackEntry
+                    if (lastDestination?.destination?.route == OnboardingNavigation.setProfileName) {
+                        focus.clearFocus(true)
+                        navController.popBackStack()
+                    }
+                }
                 currentPage.value = OnboardingPage.SET_PROFILE_NAME
-                backButtonCallback.value = {
-                    focus.clearFocus(true)
-                    navController.popBackStack()
-                }
-                SetProfileName(navController = navController)
-                BackHandler {
-                    focus.clearFocus(true)
-                    navController.popBackStack()
-                }
+                backButtonCallback.value = onBackClicked
+                SetProfileName(
+                    navController = navController,
+                    onBackClicked = onBackClicked
+                )
+                BackHandler { onBackClicked() }
             }
         }
     }
@@ -403,7 +407,8 @@ class OnboardingFragment : Fragment() {
 
     @Composable
     private fun SetProfileName(
-        navController: NavHostController
+        navController: NavHostController,
+        onBackClicked: () -> Unit
     ) {
         val component = componentManager().onboardingSoulCreationComponent
         val vm = daggerViewModel { component.get().getViewModel() }
@@ -414,7 +419,7 @@ class OnboardingFragment : Fragment() {
 
         SetProfileNameWrapper(
             viewModel = vm,
-            onBackClicked = { navController.popBackStack() }
+            onBackClicked = onBackClicked
         )
 
         LaunchedEffect(Unit) {

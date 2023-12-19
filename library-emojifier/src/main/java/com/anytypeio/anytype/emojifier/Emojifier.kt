@@ -42,7 +42,7 @@ object Emojifier {
        try {
             var result = search(unicode)
             if (result == null) {
-                if (unicode.last() == SEPARATOR) {
+                if (unicode.lastOrNull() == SEPARATOR) {
                     val sb = StringBuilder()
                     unicode.forEachIndexed { index, char ->
                         if (index < unicode.length.dec()) sb.append(char)

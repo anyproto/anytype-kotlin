@@ -10,7 +10,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.NodeUsageInfo
@@ -174,10 +173,11 @@ class BlockMiddleware(
     ): Payload = middleware.blockBookmarkCreateAndFetch(command)
 
     override suspend fun createBookmarkObject(
-        space: Id, url: Url
+        space: Id, url: Url, details: Struct
     ): Id = middleware.objectCreateBookmark(
         space = space,
-        url = url
+        url = url,
+        details = details
     )
 
     override suspend fun fetchBookmarkObject(

@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -127,7 +126,7 @@ interface BlockRepository {
     /**
      * Creates bookmark object from url and returns its id.
      */
-    suspend fun createBookmarkObject(space: Id, url: Url): Id
+    suspend fun createBookmarkObject(space: Id, url: Url, details: Struct): Id
 
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
 

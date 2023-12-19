@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -25,7 +26,7 @@ class CreatePrefilledNote @Inject constructor(
                 space = SpaceId(params.space),
                 template = null,
                 internalFlags = emptyList(),
-                prefilled = emptyMap()
+                prefilled = params.details
             )
         )
         repo.create(
@@ -42,5 +43,9 @@ class CreatePrefilledNote @Inject constructor(
         return obj.id
     }
 
-    data class Params(val space: Id, val text: String)
+    data class Params(
+        val space: Id,
+        val text: String,
+        val details: Struct
+    )
 }

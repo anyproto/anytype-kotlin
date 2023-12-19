@@ -9,3 +9,7 @@ data class NetworkModeConfig(
     val userFilePath: String? = null,
     val storedFilePath: String? = null
 )
+
+object NetworkModeConst {
+    const val NODE_STAGING_ID = "N9DU6hLkTAbvcpji3TCKPPd3UQWKGyzUxGmgJEyvhByqAjfD"
+}

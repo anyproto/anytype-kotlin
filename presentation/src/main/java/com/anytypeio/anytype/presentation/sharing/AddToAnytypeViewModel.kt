@@ -52,14 +52,18 @@ class AddToAnytypeViewModel(
                 spaces,
                 selectedSpaceId
             ) { spaces, selected ->
-                spaces.map { space ->
+                spaces.mapIndexed { index, space ->
                     SpaceView(
                         obj = space,
-                        isSelected = space.targetSpaceId == selected,
                         icon = space.spaceIcon(
                             builder = urlBuilder,
                             spaceGradientProvider = SpaceGradientProvider.Default
-                        )
+                        ),
+                        isSelected = if (selected.isEmpty()) {
+                            index == 0
+                        } else {
+                            space.targetSpaceId == selected
+                        }
                     )
                 }
             }.collect { views ->
@@ -70,78 +74,81 @@ class AddToAnytypeViewModel(
 
     fun onCreateBookmark(url: String) {
         viewModelScope.launch {
-            val targetSpace = selectedSpaceId.value
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
-                view.obj.targetSpaceId == targetSpace
+                view.isSelected
             }
-            createBookmarkObject(
-                CreateBookmarkObject.Params(
-                    space = targetSpace,
-                    url = url,
-                    details = mapOf(
-                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+            val targetSpaceId = targetSpaceView?.obj?.targetSpaceId
+            if (targetSpaceView != null && targetSpaceId != null) {
+                createBookmarkObject(
+                    CreateBookmarkObject.Params(
+                        space = targetSpaceId,
+                        url = url,
+                        details = mapOf(
+                            Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                        )
                     )
-                )
-            ).process(
-                success = { obj ->
-                    if (targetSpace == spaceManager.get()) {
-                        navigation.emit(OpenObjectNavigation.OpenEditor(obj))
-                    } else {
-                        with(commands) {
-                            if (targetSpaceView != null) {
+                ).process(
+                    success = { obj ->
+                        if (targetSpaceId == spaceManager.get()) {
+                            navigation.emit(OpenObjectNavigation.OpenEditor(obj))
+                        } else {
+                            with(commands) {
                                 emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
+                                emit(Command.Dismiss)
                             }
-                            emit(Command.Dismiss)
                         }
+                    },
+                    failure = {
+                        Timber.d(it, "Error while creating bookmark")
+                        sendToast("Error while creating bookmark: ${it.msg()}")
                     }
-                },
-                failure = {
-                    Timber.d(it, "Error while creating bookmark")
-                    sendToast("Error while creating bookmark: ${it.msg()}")
-                }
-            )
+                )
+            }
         }
     }
 
     fun onCreateNote(text: String) {
         viewModelScope.launch {
-            val targetSpace = selectedSpaceId.value
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
-                view.obj.targetSpaceId == targetSpace
+                view.isSelected
             }
-            createPrefilledNote.async(
-                CreatePrefilledNote.Params(
-                    text = text,
-                    space = targetSpace,
-                    details = mapOf(
-                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+            val targetSpaceId = targetSpaceView?.obj?.targetSpaceId
+            if (targetSpaceView != null && targetSpaceId != null) {
+                createPrefilledNote.async(
+                    CreatePrefilledNote.Params(
+                        text = text,
+                        space = targetSpaceId,
+                        details = mapOf(
+                            Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                        )
                     )
-                )
-            ).fold(
-                onSuccess = { result ->
-                    if (targetSpace == spaceManager.get()) {
-                        navigation.emit(OpenObjectNavigation.OpenEditor(result))
-                    } else {
-                        with(commands) {
-                            if (targetSpaceView != null) {
+                ).fold(
+                    onSuccess = { result ->
+                        if (targetSpaceId == spaceManager.get()) {
+                            navigation.emit(OpenObjectNavigation.OpenEditor(result))
+                        } else {
+                            with(commands) {
                                 emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
+                                emit(Command.Dismiss)
                             }
-                            emit(Command.Dismiss)
                         }
+                    },
+                    onFailure = {
+                        Timber.d(it, "Error while creating note")
+                        sendToast("Error while creating note: ${it.msg()}")
                     }
-                },
-                onFailure = {
-                    Timber.d(it, "Error while creating note")
-                    sendToast("Error while creating note: ${it.msg()}")
-                }
-            )
+                )
+            }
         }
     }
 
     fun onSelectSpaceClicked(view: SpaceView) {
         Timber.d("onSelectSpaceClicked: ${view.obj.targetSpaceId}")
         viewModelScope.launch {
-            selectedSpaceId.value = view.obj.targetSpaceId!!
+            val targetSpaceId = view.obj.targetSpaceId
+            if (targetSpaceId != null) {
+                selectedSpaceId.value = targetSpaceId
+            }
         }
     }
 

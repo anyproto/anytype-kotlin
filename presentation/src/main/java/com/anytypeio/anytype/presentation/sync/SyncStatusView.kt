@@ -21,7 +21,12 @@ sealed class SyncStatusView {
 
 fun SyncStatus.toView(networkId: Id?, networkMode: NetworkMode): SyncStatusView {
     return when (this) {
-        SyncStatus.UNKNOWN -> SyncStatusView.Unknown
+        SyncStatus.UNKNOWN -> {
+            when (networkMode) {
+                NetworkMode.LOCAL -> SyncStatusView.Synced.LocalOnly
+                else -> SyncStatusView.Unknown
+            }
+        }
         SyncStatus.OFFLINE -> SyncStatusView.Offline
         SyncStatus.SYNCING -> SyncStatusView.Syncing
         SyncStatus.SYNCED -> {

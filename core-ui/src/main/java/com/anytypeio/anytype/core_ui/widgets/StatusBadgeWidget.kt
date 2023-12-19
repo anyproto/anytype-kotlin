@@ -27,16 +27,21 @@ class StatusBadgeWidget @JvmOverloads constructor(
                 visible()
                 tint(color = context.color(R.color.palette_system_red))
             }
-            is SyncStatusView.Synced -> {
-                visible()
-                tint(color = context.color(R.color.palette_system_green))
-            }
             SyncStatusView.Syncing -> {
                 visible()
                 tint(color = context.color(R.color.palette_system_amber_100))
             }
             SyncStatusView.Unknown, SyncStatusView.Offline, null -> {
                 gone()
+            }
+            SyncStatusView.Synced.LocalOnly -> {
+                gone()
+            }
+            SyncStatusView.Synced.AnyNetwork,
+            SyncStatusView.Synced.SelfHostedNetwork,
+            SyncStatusView.Synced.StagingNetwork -> {
+                visible()
+                tint(color = context.color(R.color.palette_system_green))
             }
         }
     }

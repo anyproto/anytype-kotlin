@@ -134,7 +134,7 @@ fun ScreenContent(
                     backClick = { vm.onPrevClicked() },
                     homeClick = { vm.onHomeClicked() },
                     searchClick = { vm.onSearchClicked() },
-                    addDocClick = { vm.onAddClicked() },
+                    addDocClick = { vm.onAddClicked(null) },
                     onCreateObjectLongClicked = onCreateObjectLongClicked,
                     onProfileClicked = vm::onProfileClicked,
                     profileIcon = vm.icon.collectAsState().value

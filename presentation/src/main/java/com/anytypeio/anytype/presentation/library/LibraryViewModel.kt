@@ -189,16 +189,14 @@ class LibraryViewModel(
         }
     }
 
-    fun onCreateObjectOfTypeClicked(type: Key) {
-        proceedWithCreateDoc(
-            typeKey = TypeKey(type)
-        )
+    fun onCreateObjectOfTypeClicked(objType: ObjectWrapper.Type) {
+        proceedWithCreateDoc(objType)
     }
 
     private fun proceedWithCreateDoc(
-        typeKey: TypeKey? = null
+        objType: ObjectWrapper.Type? = null
     ) {
-        val params = typeKey?.key.getCreateObjectParams()
+        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         viewModelScope.launch {
             createObject.async(params).fold(
                 onSuccess = { result -> proceedWithOpeningObject(result.obj) },

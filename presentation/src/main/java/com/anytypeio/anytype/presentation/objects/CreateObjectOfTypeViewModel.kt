@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -34,7 +35,7 @@ class CreateObjectOfTypeViewModel(
     private val addObjectToSpace: AddObjectToSpace,
 ) : BaseViewModel() {
 
-    val views = MutableStateFlow<List<SelectTypeView>>(emptyList())
+    val viewState = MutableStateFlow<SelectTypeViewState>(SelectTypeViewState.Loading)
     val commands = MutableSharedFlow<Command>()
     private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
 
@@ -44,6 +45,7 @@ class CreateObjectOfTypeViewModel(
 
     init {
         viewModelScope.launch {
+            delay(400)
             space = spaceManager.get()
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 getObjectTypes.stream(
@@ -122,7 +124,12 @@ class CreateObjectOfTypeViewModel(
                     }
                 }
             }.collect {
-                views.value = it
+                val state = if (it.isEmpty()) {
+                    SelectTypeViewState.Empty
+                } else {
+                    SelectTypeViewState.Content(it)
+                }
+                viewState.value = state
             }
         }
     }
@@ -180,6 +187,12 @@ class CreateObjectOfTypeViewModel(
             addObjectToSpace = addObjectToSpace
         ) as T
     }
+}
+
+sealed class SelectTypeViewState{
+    object Loading : SelectTypeViewState()
+    object Empty : SelectTypeViewState()
+    data class Content(val views: List<SelectTypeView>) : SelectTypeViewState()
 }
 
 sealed class SelectTypeView {

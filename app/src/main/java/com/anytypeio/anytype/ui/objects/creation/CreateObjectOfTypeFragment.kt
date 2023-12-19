@@ -40,7 +40,7 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 CreateObjectOfTypeScreen(
-                    views = vm.views.collectAsStateWithLifecycle().value,
+                    state = vm.viewState.collectAsStateWithLifecycle().value,
                     onTypeClicked = vm::onTypeClicked,
                     onQueryChanged = vm::onQueryChanged,
                     onFocused = { expand() }

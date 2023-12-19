@@ -33,6 +33,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -69,13 +70,14 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
+import com.anytypeio.anytype.presentation.objects.SelectTypeViewState
 
 @Preview
 @Composable
 fun PreviewScreen() {
     CreateObjectOfTypeScreen(
         onTypeClicked = {},
-        views = emptyList(),
+        state = SelectTypeViewState.Loading,
         onQueryChanged = {},
         onFocused = {}
     )
@@ -86,49 +88,60 @@ fun CreateObjectOfTypeScreen(
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
-    views: List<SelectTypeView>
+    state: SelectTypeViewState
 ) {
-    Column(
-        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
-
+    Surface(
+        
     ) {
-        Dragger(
-            Modifier
-                .align(Alignment.CenterHorizontally)
-                .padding(vertical = 6.dp)
-        )
-        SearchField(
-            onQueryChanged = onQueryChanged,
-            onFocused = onFocused
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-        ScreenContent(views, onTypeClicked)
+        Column(
+            modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+
+        ) {
+            Dragger(
+                Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(vertical = 6.dp)
+            )
+            SearchField(
+                onQueryChanged = onQueryChanged,
+                onFocused = onFocused
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            ScreenContent(state, onTypeClicked)
+        }
     }
 }
 
 @Composable
 private fun ScreenContent(
-    views: List<SelectTypeView>,
+    state: SelectTypeViewState,
     onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
-    if (views.isNotEmpty()) {
-        FlowRowContent(views, onTypeClicked)
-    }
-    AnimatedVisibility(
-        visible = views.isEmpty(),
-        enter = fadeIn(animationSpec = tween(500)),
-        exit = fadeOut(animationSpec = tween(500))
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            EmptyState(
-                modifier = Modifier.align(Alignment.Center),
-                title = stringResource(id = R.string.nothing_found),
-                description = stringResource(id = R.string.nothing_found_object_types),
-                icon = AlertConfig.Icon(
-                    gradient = GRADIENT_TYPE_RED,
-                    icon = R.drawable.ic_alert_error
-                )
-            )
+    when (state) {
+        is SelectTypeViewState.Content -> {
+            FlowRowContent(state.views, onTypeClicked)
+        }
+        SelectTypeViewState.Empty -> {
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn(animationSpec = tween(500)),
+                exit = fadeOut(animationSpec = tween(500))
+            ) {
+                Box(modifier = Modifier.fillMaxSize()) {
+                    EmptyState(
+                        modifier = Modifier.align(Alignment.Center),
+                        title = stringResource(id = R.string.nothing_found),
+                        description = stringResource(id = R.string.nothing_found_object_types),
+                        icon = AlertConfig.Icon(
+                            gradient = GRADIENT_TYPE_RED,
+                            icon = R.drawable.ic_alert_error
+                        )
+                    )
+                }
+            }
+        }
+        SelectTypeViewState.Loading -> {
+
         }
     }
 }

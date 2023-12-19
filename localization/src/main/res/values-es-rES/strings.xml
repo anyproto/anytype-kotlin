@@ -795,6 +795,7 @@
     <string name="sync_status_incompatible">Versión incompatible</string>
     <string name="base_add_options_empty_title">No se encontró ningún tag</string>
     <string name="base_add_options_empty_subtitle">Empieza a escribir para crear uno nuevo</string>
+    <string name="sync_status_local_only">Sólo local</string>
     <string name="mail_more_space_body">Hola, equipo de Anytype. Me comunico para solicitar un aumento de la capacidad de almacenamiento de mis archivos porque me he quedado sin almacenamiento. Mi límite actual es %1$s. Mi ID de cuenta es %2$s. Saludos, %3$s</string>
     <string name="your_recovery_phrase_can_t_be_empty">Su frase de recuperación no puede estar vacía</string>
     <string name="go_to_the_app">Ir a la aplicación</string>

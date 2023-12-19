@@ -280,11 +280,13 @@ class OnboardingFragment : Fragment() {
                 }
             ) {
                 val focus = LocalFocusManager.current
-                val onBackClicked = {
+                val onBackClicked : () -> Unit = {
                     val lastDestination = navController.currentBackStackEntry
                     if (lastDestination?.destination?.route == OnboardingNavigation.setProfileName) {
                         focus.clearFocus(true)
                         navController.popBackStack()
+                    }  else {
+                        Timber.d("Skipping exit click...")
                     }
                 }
                 currentPage.value = OnboardingPage.SET_PROFILE_NAME

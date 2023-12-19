@@ -232,7 +232,7 @@
     <string name="paste">粘贴</string>
     <string name="select">选择</string>
     <string name="search">搜索</string>
-    <string name="search_hint">Search...</string>
+    <string name="search_hint">搜索</string>
     <string name="relations">关联</string>
     <string name="relation">关联</string>
     <string name="download">下载</string>
@@ -349,7 +349,7 @@
     <string name="select_tags">选择标签</string>
     <string name="select_status">选择状态</string>
     <string name="select_objects">选择对象</string>
-    <string name="no_value">No value</string>
+    <string name="no_value">输入为空</string>
     <string name="source">来源</string>
     <string name="query">查询</string>
     <string name="select_query">选择查询</string>
@@ -793,6 +793,7 @@
     <string name="sync_status_incompatible">不兼容版本</string>
     <string name="base_add_options_empty_title">没有找到标签</string>
     <string name="base_add_options_empty_subtitle">开始输入创建一个新的</string>
+    <string name="sync_status_local_only">仅本地</string>
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
     <string name="your_recovery_phrase_can_t_be_empty">您的恢复短语不能为空</string>
     <string name="go_to_the_app">进入应用</string>

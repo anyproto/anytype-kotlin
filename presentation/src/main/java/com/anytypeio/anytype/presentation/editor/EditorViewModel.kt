@@ -396,9 +396,6 @@ class EditorViewModel(
     var currentMediaUploadDescription: Media.Upload.Description? = null
         private set
 
-    private var analyticsContext: String? = null
-    private var analyticsOriginalId: String? = null
-
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
 
@@ -1037,15 +1034,11 @@ class EditorViewModel(
                                         isSyncStatusVisible.value = false
                                     }
                                     val block = event.blocks.firstOrNull { it.id == context }
-                                    analytics.setContext(block?.fields?.analyticsContext)
-                                    analytics.setOriginalId(block?.fields?.analyticsOriginalId)
-                                    analyticsContext = block?.fields?.analyticsContext
-                                    if (analyticsContext != null) {
-                                        analyticsOriginalId = block?.fields?.analyticsOriginalId
-                                    }
                                     sendAnalyticsObjectShowEvent(
                                         analytics = analytics,
-                                        startTime = startTime
+                                        startTime = startTime,
+                                        details = orchestrator.stores.details.current().details,
+                                        ctx = context,
                                     )
                                 }
                             }
@@ -1951,7 +1944,6 @@ class EditorViewModel(
             )
             sendAnalyticsBlockAlignEvent(
                 analytics = analytics,
-                context = analyticsContext,
                 count = targets.size,
                 align = alignment
             )
@@ -3193,8 +3185,8 @@ class EditorViewModel(
                     orchestrator.proxies.payloads.send(result.payload)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = objectTypeView.key,
-                        storeOfObjectTypes = storeOfObjectTypes,
+                        details = orchestrator.stores.details.current().details,
+                        ctx = context,
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime
                     )
@@ -3238,8 +3230,8 @@ class EditorViewModel(
                 onSuccess = { result ->
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = result.typeKey.key,
-                        storeOfObjectTypes = storeOfObjectTypes,
+                        details = orchestrator.stores.details.current().details,
+                        ctx = context,
                         route = EventsDictionary.Routes.objPowerTool,
                         startTime = startTime
                     )
@@ -5829,8 +5821,8 @@ class EditorViewModel(
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = typeKey.key,
-                        storeOfObjectTypes = storeOfObjectTypes,
+                        details = orchestrator.stores.details.current().details,
+                        ctx = context,
                         route = EventsDictionary.Routes.objCreateMention,
                         startTime = startTime
                     )
@@ -6194,8 +6186,8 @@ class EditorViewModel(
                 proceedToAddObjectToTextAsLink(id = result.id)
                 viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
-                    type = typeKey.key,
-                    storeOfObjectTypes = storeOfObjectTypes,
+                    details = orchestrator.stores.details.current().details,
+                    ctx = context,
                     route = EventsDictionary.Routes.objTurnInto,
                     startTime = startTime
                 )

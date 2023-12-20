@@ -250,18 +250,31 @@ fun Relation.Format.getPropName() = when (this) {
     Relation.Format.UNDEFINED -> "undefined"
 }
 
-/**
- *  ScreenObject - event code
- *  type - ObjectType
- */
 fun CoroutineScope.sendAnalyticsObjectShowEvent(
+    ctx: Id,
+    details: Map<Id, Block.Fields>?,
     analytics: Analytics,
     startTime: Long
 ) {
+    val objType = getAnalyticsObjectType(
+        details = details,
+        ctx = ctx
+    )
+    val layout = layoutCode?.toInt()?.let { code ->
+        ObjectType.Layout.values().find { layout ->
+            layout.code == code
+        }
+    }?.name ?: OBJ_LAYOUT_NONE
+    val props =  Props(
+        mapOf(
+            EventsPropertiesKey.type to objType,
+            EventsPropertiesKey.layout to layout
+        )
+    )
     sendEvent(
         analytics = analytics,
         eventName = objectScreenShow,
-        props = propsForObjectEvents(),
+        props = propsForObjectEvents(details = details, context = ctx),
         startTime = startTime,
         middleTime = System.currentTimeMillis(),
         renderTime = System.currentTimeMillis()
@@ -269,14 +282,16 @@ fun CoroutineScope.sendAnalyticsObjectShowEvent(
 }
 
 private fun propsForObjectEvents(
+    details: Map<Id, Block.Fields>?,
     layoutCode: Double? = null,
     route: String? = null,
-    context: String? = null,
-    originalId: String? = null,
-    sourceObject: String? = null,
+    context: String,
     view: String? = null
 ): Props {
-    val objType = sourceObject ?: OBJ_TYPE_CUSTOM
+    val objType = getAnalyticsObjectType(
+        details = details,
+        ctx = context
+    )
     val layout = layoutCode?.toInt()?.let { code ->
         ObjectType.Layout.values().find { layout ->
             layout.code == code
@@ -287,8 +302,6 @@ private fun propsForObjectEvents(
             EventsPropertiesKey.objectType to objType,
             EventsPropertiesKey.layout to layout,
             EventsPropertiesKey.route to route,
-            EventsPropertiesKey.context to context,
-            EventsPropertiesKey.originalId to originalId,
             EventsPropertiesKey.view to view
         )
     )
@@ -302,8 +315,7 @@ private fun propsForObjectEvents(
 fun CoroutineScope.sendAnalyticsSearchResultEvent(
     analytics: Analytics,
     pos: Int,
-    length: Int,
-    context: String? = null
+    length: Int
 ) {
     sendEvent(
         analytics = analytics,
@@ -311,8 +323,7 @@ fun CoroutineScope.sendAnalyticsSearchResultEvent(
         props = Props(
             mapOf(
                 EventsPropertiesKey.index to pos,
-                EventsPropertiesKey.length to length,
-                EventsPropertiesKey.context to context
+                EventsPropertiesKey.length to length
             )
         )
     )
@@ -320,16 +331,14 @@ fun CoroutineScope.sendAnalyticsSearchResultEvent(
 
 fun CoroutineScope.sendAnalyticsSearchWordsEvent(
     analytics: Analytics,
-    length: Int,
-    context: String? = null
+    length: Int
 ) {
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.searchWords,
         props = Props(
             mapOf(
-                EventsPropertiesKey.length to length,
-                EventsPropertiesKey.context to context
+                EventsPropertiesKey.length to length
             )
         )
     )
@@ -427,7 +436,10 @@ fun CoroutineScope.sendAnalyticsDuplicateEvent(
     startTime: Long,
     count: Int = 1
 ) {
-    val objType = if (details != null) getAnalyticsObjectType(details, ctx) else null
+    val objType = getAnalyticsObjectType(
+        details = details,
+        ctx = ctx
+    )
     val props = Props(
         mapOf(
             EventsPropertiesKey.count to count,
@@ -515,8 +527,7 @@ suspend fun Analytics.sendAnalyticsUpdateTextMarkupEvent(type: Block.Content.Tex
 
 suspend fun Analytics.sendAnalyticsChangeTextBlockStyleEvent(
     style: Block.Content.Text.Style,
-    count: Int,
-    analyticsContext: String?
+    count: Int
 ) {
     val event = EventAnalytics.Anytype(
         name = EventsDictionary.blockChangeBlockStyle,
@@ -524,8 +535,7 @@ suspend fun Analytics.sendAnalyticsChangeTextBlockStyleEvent(
             mapOf(
                 EventsPropertiesKey.type to "Text",
                 EventsPropertiesKey.style to style.getStyleName(),
-                EventsPropertiesKey.count to count,
-                EventsPropertiesKey.context to analyticsContext
+                EventsPropertiesKey.count to count
             )
         )
     )
@@ -600,7 +610,6 @@ suspend fun Analytics.sendAnalyticsRedoEvent() {
 
 fun CoroutineScope.sendAnalyticsBlockAlignEvent(
     analytics: Analytics,
-    context: String?,
     count: Int,
     align: Block.Align
 ) {
@@ -610,27 +619,9 @@ fun CoroutineScope.sendAnalyticsBlockAlignEvent(
         props = Props(
             mapOf(
                 EventsPropertiesKey.align to align.getPropName(),
-                EventsPropertiesKey.context to context,
                 EventsPropertiesKey.count to count
             )
         )
-    )
-}
-
-fun CoroutineScope.sendAnalyticsObjectTypeChangeEvent(
-    analytics: Analytics,
-    objType: ObjectWrapper.Type?,
-    startTime: Long
-) {
-    sendEvent(
-        analytics = analytics,
-        eventName = EventsDictionary.objectTypeChanged,
-        props = propsForObjectEvents(
-            context = analytics.getContext(),
-            originalId = analytics.getOriginalId(),
-            sourceObject = objType?.sourceObject
-        ),
-        startTime = startTime
     )
 }
 
@@ -706,16 +697,14 @@ fun CoroutineScope.sendAnalyticsAddRelationEvent(
 
 fun CoroutineScope.sendAnalyticsRelationValueEvent(
     analytics: Analytics,
-    type: String = "",
-    context: String? = null
+    type: String = ""
 ) {
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.relationChangeValue,
         props = Props(
             mapOf(
-                EventsPropertiesKey.type to type,
-                EventsPropertiesKey.context to context
+                EventsPropertiesKey.type to type
             )
         )
     )
@@ -732,40 +721,33 @@ fun CoroutineScope.sendAnalyticsRelationDeleteEvent(
 
 fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     analytics: Analytics,
-    storeOfObjectTypes: StoreOfObjectTypes,
-    type: Key?,
     route: String,
     startTime: Long? = null,
-    view: String? = null
+    view: String? = null,
+    details: Map<Id, Block.Fields>,
+    ctx: Id
 ) {
-    this.launch {
-        val objType = type?.let { storeOfObjectTypes.getByKey(it) }
-        analytics.sendEvent(
-            eventName = objectCreate,
-            props = propsForObjectEvents(
-                route = route,
-                sourceObject = objType?.sourceObject,
-                view = view
-            ),
-            startTime = startTime,
-            middleTime = System.currentTimeMillis()
-        )
-    }
+    sendEvent(
+        analytics = analytics,
+        eventName = objectCreate,
+        props = propsForObjectEvents(
+            details = details,
+            context = ctx,
+            route = route,
+            view = view
+        ),
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
+    )
 }
 
 fun CoroutineScope.sendAnalyticsSetTitleEvent(
-    analytics: Analytics,
-    context: String? = null
+    analytics: Analytics
 ) {
-    val props = if (context != null) {
-        Props(mapOf(EventsPropertiesKey.context to context))
-    } else {
-        Props.empty()
-    }
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.objectSetTitle,
-        props = props
+        props = Props.empty()
     )
 }
 
@@ -781,33 +763,24 @@ fun CoroutineScope.sendAnalyticsBlockMoveToEvent(
 }
 
 fun CoroutineScope.sendAnalyticsSetDescriptionEvent(
-    analytics: Analytics,
-    context: String? = null
+    analytics: Analytics
 ) {
-    val props = if (context != null) {
-        Props(mapOf(EventsPropertiesKey.context to context))
-    } else {
-        Props.empty()
-    }
     sendEvent(
         analytics = analytics,
-        eventName = EventsDictionary.objectSetDescription,
-        props = props
+        eventName = EventsDictionary.objectSetDescription
     )
 }
 
 fun CoroutineScope.sendAnalyticsUpdateTextMarkupEvent(
     analytics: Analytics,
-    type: Block.Content.Text.Mark.Type,
-    context: String? = null
+    type: Block.Content.Text.Mark.Type
 ) {
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.blockChangeTextStyle,
         props = Props(
             mapOf(
-                EventsPropertiesKey.type to type.getPropName(),
-                EventsPropertiesKey.context to context
+                EventsPropertiesKey.type to type.getPropName()
             )
         )
     )
@@ -815,16 +788,14 @@ fun CoroutineScope.sendAnalyticsUpdateTextMarkupEvent(
 
 fun CoroutineScope.sendAnalyticsUpdateTextMarkupEvent(
     analytics: Analytics,
-    type: Markup.Type,
-    context: String? = null
+    type: Markup.Type
 ) {
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.blockChangeTextStyle,
         props = Props(
             mapOf(
-                EventsPropertiesKey.type to type.getPropName(),
-                EventsPropertiesKey.context to context
+                EventsPropertiesKey.type to type.getPropName()
             )
         )
     )
@@ -832,16 +803,14 @@ fun CoroutineScope.sendAnalyticsUpdateTextMarkupEvent(
 
 fun CoroutineScope.sendAnalyticsBlockReorder(
     analytics: Analytics,
-    count: Int,
-    context: String? = null
+    count: Int
 ) {
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.blockReorder,
         props = Props(
             mapOf(
-                EventsPropertiesKey.count to "$count",
-                EventsPropertiesKey.context to context
+                EventsPropertiesKey.count to "$count"
             )
         )
     )
@@ -868,7 +837,6 @@ fun CoroutineScope.sendAnalyticsBlockBackgroundEvent(
 
 fun CoroutineScope.sendAnalyticsGoBackEvent(
     analytics: Analytics,
-    context: String? = null
 ) {
     sendEvent(
         analytics = analytics,
@@ -1915,7 +1883,10 @@ fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
     ctx: Id,
     startTime: Long
 ) {
-    val objType = getAnalyticsObjectType(details, ctx)
+    val objType = getAnalyticsObjectType(
+        details = details,
+        ctx = ctx
+    )
     sendEvent(
         analytics = analytics,
         eventName = createTemplate,
@@ -1952,9 +1923,10 @@ fun CoroutineScope.sendAnalyticsDefaultTemplateEvent(
 }
 
 private fun getAnalyticsObjectType(
-    details: Map<Id, Block.Fields>,
+    details: Map<Id, Block.Fields>?,
     ctx: Id
-): String {
+): String? {
+    if (details == null) return null
     val objTypeId = details[ctx]?.type?.firstOrNull()
     val typeStruct = details[objTypeId]?.map
     val objType = typeStruct?.mapToObjectWrapperType()

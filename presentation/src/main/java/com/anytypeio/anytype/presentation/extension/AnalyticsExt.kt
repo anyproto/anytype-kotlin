@@ -1961,6 +1961,15 @@ private fun getAnalyticsObjectType(
     return objType?.sourceObject ?: OBJ_TYPE_CUSTOM
 }
 
+fun CoroutineScope.sendAnalyticsCreateLink(
+    analytics: Analytics
+) {
+    sendEvent(
+        analytics = analytics,
+        eventName = EventsDictionary.objectCreateLink
+    )
+}
+
 
 //region Self-Hosting
 fun CoroutineScope.sendAnalyticsSelectNetworkEvent(

@@ -684,10 +684,12 @@ object ObjectSearchConstants {
                 )
             )
             if (excludedTypeKeys.isNotEmpty()) {
-                DVFilter(
-                    relation = Relations.UNIQUE_KEY,
-                    condition = DVFilterCondition.NOT_IN,
-                    value = excludedTypeKeys
+                add(
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_IN,
+                        value = excludedTypeKeys.map { it.key }
+                    )
                 )
             }
             if (recommendedLayouts.isNotEmpty()) {

@@ -15,7 +15,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.TypeKey
-import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -29,7 +29,7 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
     @Inject
     lateinit var factory: CreateObjectOfTypeViewModel.Factory
 
-    private val excludedTypeKeys get() = arg<List<Key>>(EXCLUDED_TYPE_KEYS_ARG_KEY)
+    private val excludedTypeKeys get() = argOrNull<List<Key>>(EXCLUDED_TYPE_KEYS_ARG_KEY)
 
     private val vm by viewModels<CreateObjectOfTypeViewModel> { factory }
 
@@ -70,6 +70,7 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
         when (command) {
             is Command.DispatchObjectType -> {
                 onTypeSelected(command.type)
+                dismiss()
             }
             is Command.ShowTypeInstalledToast -> {
                 toast(resources.getString(R.string.library_type_added, command.typeName))
@@ -80,7 +81,7 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
     override fun injectDependencies() {
         componentManager()
             .createObjectOfTypeComponent.get(
-                params = excludedTypeKeys.map { TypeKey(it) }
+                params = excludedTypeKeys?.map { TypeKey(it) } ?: emptyList()
             )
             .inject(this)
     }
@@ -91,10 +92,16 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val EXCLUDED_TYPE_KEYS_ARG_KEY = "arg.create-object-of-type.excluded-type-keys"
-        fun args(
-            excludedTypeKeys: List<Key>
-        ) : Bundle = bundleOf(
-            EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys
-        )
+
+        fun newInstance(
+            excludedTypeKeys: List<Key>,
+            onTypeSelected: (ObjectWrapper.Type) -> Unit
+        ): CreateObjectOfTypeFragment = CreateObjectOfTypeFragment().apply {
+            this.onTypeSelected = onTypeSelected
+            arguments =
+                bundleOf(
+                    EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys
+                )
+        }
     }
 }

@@ -1036,12 +1036,10 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenObjectSelectTypeScreen -> {
                     hideKeyboard()
-                    val dialog = CreateObjectOfTypeFragment().apply {
-                        onTypeSelected = {
-                            vm.onObjectTypeChanged(it)
-                            dismiss()
-                        }
-                    }
+                    val dialog = CreateObjectOfTypeFragment.newInstance(
+                        excludedTypeKeys = command.excludedTypes,
+                        onTypeSelected = vm::onObjectTypeChanged
+                    )
                     dialog.show(childFragmentManager, null)
                 }
                 is Command.OpenMoveToScreen -> {

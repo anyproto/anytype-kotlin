@@ -112,7 +112,7 @@ sealed class Command {
     object AddMentionWidgetTriggerToFocusedBlock : Command()
 
     data class OpenObjectSelectTypeScreen(
-        val excludedTypes: List<Id>
+        val excludedTypes: List<Key>
     ) : Command()
 
     data class OpenMoveToScreen(

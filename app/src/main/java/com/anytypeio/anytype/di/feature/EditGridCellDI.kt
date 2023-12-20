@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.`object`.ReloadObject
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
@@ -39,12 +40,14 @@ object RelationTextValueModule {
         @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         reloadObject: ReloadObject,
-        analytics: Analytics
+        analytics: Analytics,
+        storeOfObjectTypes: StoreOfObjectTypes
     ) = RelationTextValueViewModel.Factory(
         relations = relations,
         values = values,
         reloadObject = reloadObject,
-        analytics = analytics
+        analytics = analytics,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 
     @JvmStatic
@@ -77,12 +80,14 @@ object RelationDataViewTextValueModule {
         @Named(DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
         reloadObject: ReloadObject,
-        analytics: Analytics
+        analytics: Analytics,
+        storeOfObjectTypes: StoreOfObjectTypes
     ) = RelationTextValueViewModel.Factory(
         relations = relations,
         values = values,
         reloadObject = reloadObject,
-        analytics = analytics
+        analytics = analytics,
+        storeOfObjectTypes = storeOfObjectTypes
     )
 
     @JvmStatic

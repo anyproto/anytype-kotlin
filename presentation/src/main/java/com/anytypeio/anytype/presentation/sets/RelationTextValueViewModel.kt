@@ -6,7 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.intents.SystemAction
 import com.anytypeio.anytype.domain.`object`.ReloadObject
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectReload
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationUrlCopy
@@ -35,7 +36,8 @@ class RelationTextValueViewModel(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val reloadObject: ReloadObject,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<RelationTextValueView>>(emptyList())
@@ -113,9 +115,14 @@ class RelationTextValueViewModel(
                             actions.value = buildList {
                                 add(RelationValueAction.Url.Browse(value))
                                 add(RelationValueAction.Url.Copy(value))
-                                if (relation.key == Relations.SOURCE && obj.type.contains(
-                                        ObjectTypeIds.BOOKMARK)) {
-                                    add(RelationValueAction.Url.Reload(value))
+                                if (relation.key == Relations.SOURCE) {
+                                    val type = obj.type.firstOrNull()
+                                    if (type != null) {
+                                        val wrapper = storeOfObjectTypes.get(type)
+                                        if (wrapper?.uniqueKey == ObjectTypeUniqueKeys.BOOKMARK) {
+                                            add(RelationValueAction.Url.Reload(value))
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -263,7 +270,8 @@ class RelationTextValueViewModel(
         private val relations: ObjectRelationProvider,
         private val values: ObjectValueProvider,
         private val reloadObject: ReloadObject,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val storeOfObjectTypes: StoreOfObjectTypes
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -271,7 +279,8 @@ class RelationTextValueViewModel(
                 relations = relations,
                 values = values,
                 reloadObject = reloadObject,
-                analytics = analytics
+                analytics = analytics,
+                storeOfObjectTypes = storeOfObjectTypes
             ) as T
         }
     }

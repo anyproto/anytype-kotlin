@@ -33,7 +33,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -90,25 +89,22 @@ fun CreateObjectOfTypeScreen(
     onFocused: () -> Unit,
     state: SelectTypeViewState
 ) {
-    Surface(
-        
-    ) {
-        Column(
-            modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
+    Column(
+        modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
 
-        ) {
-            Dragger(
-                Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(vertical = 6.dp)
-            )
-            SearchField(
-                onQueryChanged = onQueryChanged,
-                onFocused = onFocused
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            ScreenContent(state, onTypeClicked)
-        }
+    ) {
+        Dragger(
+            Modifier
+                .align(Alignment.CenterHorizontally)
+                .padding(vertical = 6.dp)
+                .verticalScroll(rememberScrollState())
+        )
+        SearchField(
+            onQueryChanged = onQueryChanged,
+            onFocused = onFocused
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        ScreenContent(state, onTypeClicked)
     }
 }
 
@@ -127,7 +123,11 @@ private fun ScreenContent(
                 enter = fadeIn(animationSpec = tween(500)),
                 exit = fadeOut(animationSpec = tween(500))
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
                     EmptyState(
                         modifier = Modifier.align(Alignment.Center),
                         title = stringResource(id = R.string.nothing_found),
@@ -140,9 +140,8 @@ private fun ScreenContent(
                 }
             }
         }
-        SelectTypeViewState.Loading -> {
 
-        }
+        SelectTypeViewState.Loading -> {}
     }
 }
 
@@ -156,8 +155,7 @@ private fun FlowRowContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp)
-            .verticalScroll(rememberScrollState())
-        ,
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -280,8 +278,7 @@ fun ObjectTypeItem(
                 shape = RoundedCornerShape(12.dp)
             )
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onItemClicked() }
-        ,
+            .clickable { onItemClicked() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(
@@ -319,6 +316,7 @@ private fun SearchField(
         modifier = Modifier
             .height(48.dp)
             .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
     ) {
         val focusManager = LocalFocusManager.current
         val focusRequester = FocusRequester()
@@ -369,8 +367,7 @@ private fun SearchField(
                     .onFocusChanged { state ->
                         if (state.isFocused)
                             onFocused()
-                    }
-                ,
+                    },
                 maxLines = 1,
                 singleLine = true,
                 textStyle = BodyRegular.copy(
@@ -387,7 +384,7 @@ private fun SearchField(
                         enabled = true,
                         placeholder = {
                             Text(
-                                text = stringResource(R.string.search),
+                                text = stringResource(R.string.search_hint),
                                 style = BodyRegular
                             )
                         },
@@ -418,9 +415,11 @@ private fun SearchField(
 
 @Composable
 private fun Section(title: String) {
-    Box(modifier = Modifier
-        .height(44.dp)
-        .fillMaxWidth()) {
+    Box(
+        modifier = Modifier
+            .height(44.dp)
+            .fillMaxWidth()
+    ) {
         Text(
             modifier = Modifier
                 .align(Alignment.BottomStart),

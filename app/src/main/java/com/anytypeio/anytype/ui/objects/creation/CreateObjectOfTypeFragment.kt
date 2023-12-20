@@ -54,6 +54,12 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        expand()
+        skipCollapsed()
+    }
+
     private fun proceedWithCommand(command: Command) {
         when (command) {
             is Command.DispatchObjectType -> {

@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
-import com.anytypeio.anytype.core_models.FileSyncStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
@@ -13,6 +12,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 /**
@@ -646,7 +646,8 @@ object ObjectSearchConstants {
 
     fun filterTypes(
         spaces: List<Id>,
-        recommendedLayouts: List<ObjectType.Layout> = emptyList()
+        recommendedLayouts: List<ObjectType.Layout> = emptyList(),
+        excludedTypeKeys: List<TypeKey> = emptyList()
     ): List<DVFilter> {
         return buildList {
             addAll(
@@ -682,6 +683,13 @@ object ObjectSearchConstants {
                     )
                 )
             )
+            if (excludedTypeKeys.isNotEmpty()) {
+                DVFilter(
+                    relation = Relations.UNIQUE_KEY,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = excludedTypeKeys
+                )
+            }
             if (recommendedLayouts.isNotEmpty()) {
                 add(
                     DVFilter(

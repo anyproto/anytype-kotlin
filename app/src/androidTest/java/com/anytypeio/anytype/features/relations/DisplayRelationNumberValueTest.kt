@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
@@ -59,6 +60,9 @@ class DisplayRelationNumberValueTest {
     @Mock
     lateinit var analytics: Analytics
 
+    @Mock
+    lateinit var storeOfObjectTypes: StoreOfObjectTypes
+
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
@@ -81,7 +85,8 @@ class DisplayRelationNumberValueTest {
             ),
             values = DataViewObjectValueProvider(db = db, objectState = state),
             reloadObject = reloadObject,
-            analytics = analytics
+            analytics = analytics,
+            storeOfObjectTypes = storeOfObjectTypes
         )
     }
 

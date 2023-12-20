@@ -67,9 +67,6 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->
                         when(nav) {
-                            is OpenObjectNavigation.OpenDataView -> {
-
-                            }
                             is OpenObjectNavigation.OpenEditor -> {
                                 dismiss()
                                 findNavController().navigate(
@@ -79,8 +76,8 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                                     )
                                 )
                             }
-                            is OpenObjectNavigation.UnexpectedLayoutError -> {
-
+                            else -> {
+                                // Do nothing.
                             }
                         }
                     }

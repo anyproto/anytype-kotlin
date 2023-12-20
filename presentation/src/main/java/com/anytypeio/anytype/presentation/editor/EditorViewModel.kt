@@ -4060,7 +4060,8 @@ class EditorViewModel(
                 Timber.d("No interaction allowed with this object type")
                 return
             }
-            proceedWithOpeningSelectingObjectTypeScreen()
+            val exclude = listOf(ObjectTypeIds.SET, ObjectTypeIds.COLLECTION)
+            proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude)
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")
         }
@@ -6053,10 +6054,18 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOpeningSelectingObjectTypeScreen() {
-        val excludeTypes = orchestrator.stores.details.current().details[context]?.type
+    private fun proceedWithOpeningSelectingObjectTypeScreen(exclude: List<Id> = emptyList()) {
+        val list = buildList {
+            val types = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
+            if (types.isNotEmpty()) {
+                addAll(types)
+            }
+            if (exclude.isNotEmpty()) {
+                addAll(exclude)
+            }
+        }
         val command = Command.OpenObjectSelectTypeScreen(
-            excludedTypes = excludeTypes ?: emptyList()
+            excludedTypes = list
         )
         dispatch(command)
     }

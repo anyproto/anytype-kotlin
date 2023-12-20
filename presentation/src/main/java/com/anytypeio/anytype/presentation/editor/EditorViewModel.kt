@@ -202,6 +202,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackground
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockMoveToEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockReorder
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBookmarkOpen
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateLink
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMentionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
@@ -3191,6 +3192,7 @@ class EditorViewModel(
                 },
                 onSuccess = { result ->
                     orchestrator.proxies.payloads.send(result.payload)
+                    sendAnalyticsCreateLink(analytics)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         type = objectTypeView.key,

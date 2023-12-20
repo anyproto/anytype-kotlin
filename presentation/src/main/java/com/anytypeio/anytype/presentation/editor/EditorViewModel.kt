@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.Marketplace.COLLECTION_MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.Marketplace.SET_MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
@@ -4060,7 +4061,7 @@ class EditorViewModel(
                 Timber.d("No interaction allowed with this object type")
                 return
             }
-            val exclude = listOf(ObjectTypeIds.SET, ObjectTypeIds.COLLECTION)
+            val exclude = listOf(ObjectTypeUniqueKeys.SET, ObjectTypeUniqueKeys.COLLECTION)
             proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude)
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")

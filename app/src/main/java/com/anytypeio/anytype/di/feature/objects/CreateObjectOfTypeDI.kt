@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 
@@ -22,12 +23,14 @@ import dagger.Module
 )
 @PerScreen
 interface CreateObjectOfTypeComponent {
+    fun inject(fragment: CreateObjectOfTypeFragment)
     @Component.Factory
-    interface Builder {
-        fun create(dependencies: CreateObjectOfTypeDependencies): CreateObjectOfTypeComponent
+    interface Factory {
+        fun create(
+            @BindsInstance params: CreateObjectOfTypeViewModel.Params,
+            dependencies: CreateObjectOfTypeDependencies
+        ): CreateObjectOfTypeComponent
     }
-
-        fun inject(fragment: CreateObjectOfTypeFragment)
 }
 
 @Module

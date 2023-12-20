@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.common
 import android.content.Context
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.di.feature.AddDataViewRelationObjectValueModule
 import com.anytypeio.anytype.di.feature.AddDataViewRelationOptionValueModule
 import com.anytypeio.anytype.di.feature.AddFileRelationModule
@@ -101,6 +102,7 @@ import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
+import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
@@ -930,10 +932,13 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val createObjectOfTypeComponent = Component {
+    val createObjectOfTypeComponent = ComponentWithParams { excludedTypeKeys: List<TypeKey> ->
         DaggerCreateObjectOfTypeComponent
             .factory()
-            .create(findComponentDependencies())
+            .create(
+                params = CreateObjectOfTypeViewModel.Params(excludedTypeKeys),
+                dependencies = findComponentDependencies()
+            )
     }
 
     val appPreferencesComponent = Component {

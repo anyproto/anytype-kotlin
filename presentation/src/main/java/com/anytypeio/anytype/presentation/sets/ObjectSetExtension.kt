@@ -221,6 +221,8 @@ private fun ObjectState.DataView.mapFeaturedRelations(
         }
     }
 }
+    .sortedByDescending { it.key == Relations.SET_OF }
+    .sortedByDescending { it.key == Relations.TYPE }
 
 fun List<DVRecord>.update(new: List<DVRecord>): List<DVRecord> {
     val update = new.associateBy { rec -> rec[ID_KEY] as String }

@@ -45,7 +45,6 @@ class CreateObjectOfTypeViewModel(
 
     init {
         viewModelScope.launch {
-            delay(400)
             space = spaceManager.get()
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
                 getObjectTypes.stream(

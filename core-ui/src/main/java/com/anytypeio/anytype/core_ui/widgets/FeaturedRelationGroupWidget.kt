@@ -320,9 +320,6 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
                     }
-                    if (relation.value == null) {
-                        view.alpha = 0.5f
-                    }
                     view.setOnClickListener {
                         click(ListenerType.Relation.Featured(relation))
                     }
@@ -341,9 +338,6 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
-                    }
-                    if (relation.value == null) {
-                        view.alpha = 0.5f
                     }
                     view.setOnClickListener {
                         click(ListenerType.Relation.Featured(relation))

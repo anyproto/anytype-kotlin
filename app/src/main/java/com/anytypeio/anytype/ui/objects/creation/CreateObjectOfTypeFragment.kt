@@ -49,7 +49,10 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
                     state = vm.viewState.collectAsStateWithLifecycle().value,
                     onTypeClicked = vm::onTypeClicked,
                     onQueryChanged = vm::onQueryChanged,
-                    onFocused = { expand() }
+                    onFocused = {
+                        skipCollapsed()
+                        expand()
+                    }
                 )
             }
             LaunchedEffect(Unit) {
@@ -58,12 +61,6 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
                 }
             }
         }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        expand()
-        skipCollapsed()
     }
 
     private fun proceedWithCommand(command: Command) {

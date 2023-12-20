@@ -40,7 +40,7 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 CreateObjectOfTypeScreen(
-                    views = vm.views.collectAsStateWithLifecycle().value,
+                    state = vm.viewState.collectAsStateWithLifecycle().value,
                     onTypeClicked = vm::onTypeClicked,
                     onQueryChanged = vm::onQueryChanged,
                     onFocused = { expand() }
@@ -52,6 +52,12 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        expand()
+        skipCollapsed()
     }
 
     private fun proceedWithCommand(command: Command) {

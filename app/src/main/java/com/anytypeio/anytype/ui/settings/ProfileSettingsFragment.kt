@@ -164,6 +164,6 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
     }
 }
 
-private const val PADDING_TOP = 54
+private const val PADDING_TOP = 28
 
 private const val SELECT_IMAGE_CODE = 1

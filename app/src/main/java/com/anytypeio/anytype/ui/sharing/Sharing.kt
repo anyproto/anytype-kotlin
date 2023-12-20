@@ -80,7 +80,10 @@ fun AddToAnytypeScreen(
     onSelectSpaceClicked: (SpaceView) -> Unit
 ) {
     var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
-    val items = listOf(SAVE_AS_NOTE, SAVE_AS_BOOKMARK)
+    val items = if (data is SharingData.Url)
+        listOf(SAVE_AS_NOTE, SAVE_AS_BOOKMARK)
+    else
+        listOf(SAVE_AS_NOTE)
     var selectedIndex by remember {
         mutableStateOf(
             when(data) {

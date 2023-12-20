@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.sync
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.SyncStatus
-import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.core_models.NetworkModeConst.NODE_STAGING_ID
 
 sealed class SyncStatusView {
     object Unknown : SyncStatusView()
@@ -21,7 +21,12 @@ sealed class SyncStatusView {
 
 fun SyncStatus.toView(networkId: Id?, networkMode: NetworkMode): SyncStatusView {
     return when (this) {
-        SyncStatus.UNKNOWN -> SyncStatusView.Unknown
+        SyncStatus.UNKNOWN -> {
+            when (networkMode) {
+                NetworkMode.LOCAL -> SyncStatusView.Synced.LocalOnly
+                else -> SyncStatusView.Unknown
+            }
+        }
         SyncStatus.OFFLINE -> SyncStatusView.Offline
         SyncStatus.SYNCING -> SyncStatusView.Syncing
         SyncStatus.SYNCED -> {
@@ -43,7 +48,7 @@ fun NetworkMode.syncedStatusToView(networkId: String?): SyncStatusView {
             }
         }
         NetworkMode.CUSTOM -> {
-            return if (networkId == BuildConfig.STAGING_NETWORK_ID) {
+            return if (networkId == NODE_STAGING_ID) {
                 SyncStatusView.Synced.StagingNetwork
             } else {
                 SyncStatusView.Synced.SelfHostedNetwork

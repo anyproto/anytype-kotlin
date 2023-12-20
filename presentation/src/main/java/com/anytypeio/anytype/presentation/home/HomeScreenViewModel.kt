@@ -1062,7 +1062,7 @@ class HomeScreenViewModel(
         Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            val params = objType?.uniqueKey.getCreateObjectParams()
+            val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->

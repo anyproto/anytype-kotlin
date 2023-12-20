@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.objects
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -16,12 +17,14 @@ class CreateBookmarkObject @Inject constructor(
     override suspend fun run(params: Params) = safe {
         repo.createBookmarkObject(
             space = params.space,
-            url = params.url
+            url = params.url,
+            details = params.details
         )
     }
 
     data class Params(
         val space: Id,
-        val url: Url
+        val url: Url,
+        val details: Struct = emptyMap()
     )
 }

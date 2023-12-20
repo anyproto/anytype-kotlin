@@ -1421,7 +1421,7 @@ class ObjectSetViewModel(
         Timber.d("onAddNewDocumentClicked, ")
 
         val startTime = System.currentTimeMillis()
-        val params = objType?.uniqueKey.getCreateObjectParams()
+        val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         jobs += viewModelScope.launch {
             createObject.async(params).fold(
                 onSuccess = { result ->

@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.FileLimits
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.NodeUsageInfo
@@ -72,7 +71,7 @@ interface BlockRemote {
     suspend fun uploadBlock(command: Command.UploadBlock): Payload
     suspend fun setupBookmark(command: Command.SetupBookmark): Payload
     suspend fun createAndFetchBookmarkBlock(command: Command.CreateBookmark): Payload
-    suspend fun createBookmarkObject(space: Id, url: Url): Id
+    suspend fun createBookmarkObject(space: Id, url: Url, details: Struct): Id
     suspend fun fetchBookmarkObject(ctx: Id, url: Url)
     suspend fun undo(command: Command.Undo): Payload
     suspend fun importUseCaseSkip(space: Id)

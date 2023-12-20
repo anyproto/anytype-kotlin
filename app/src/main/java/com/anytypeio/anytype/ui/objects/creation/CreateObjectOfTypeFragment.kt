@@ -8,10 +8,14 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -24,6 +28,8 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
     lateinit var factory: CreateObjectOfTypeViewModel.Factory
+
+    private val excludedTypeKeys get() = arg<List<Key>>(EXCLUDED_TYPE_KEYS_ARG_KEY)
 
     private val vm by viewModels<CreateObjectOfTypeViewModel> { factory }
 
@@ -72,10 +78,23 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().createObjectOfTypeComponent.get().inject(this)
+        componentManager()
+            .createObjectOfTypeComponent.get(
+                params = excludedTypeKeys.map { TypeKey(it) }
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {
         componentManager().createObjectOfTypeComponent.release()
+    }
+
+    companion object {
+        const val EXCLUDED_TYPE_KEYS_ARG_KEY = "arg.create-object-of-type.excluded-type-keys"
+        fun args(
+            excludedTypeKeys: List<Key>
+        ) : Bundle = bundleOf(
+            EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys
+        )
     }
 }

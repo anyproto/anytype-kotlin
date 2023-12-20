@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -19,7 +20,6 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.filterIsInstance
@@ -30,6 +30,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class CreateObjectOfTypeViewModel(
+    private val params: Params,
     private val getObjectTypes: GetObjectTypes,
     private val spaceManager: SpaceManager,
     private val addObjectToSpace: AddObjectToSpace,
@@ -44,6 +45,7 @@ class CreateObjectOfTypeViewModel(
     lateinit var space: Id
 
     init {
+        Timber.d("Params: ${params}")
         viewModelScope.launch {
             space = spaceManager.get()
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
@@ -57,7 +59,8 @@ class CreateObjectOfTypeViewModel(
                                     add(Marketplace.MARKETPLACE_SPACE_ID)
                                 }
                             },
-                            recommendedLayouts = SupportedLayouts.createObjectLayouts
+                            recommendedLayouts = SupportedLayouts.createObjectLayouts,
+                            excludedTypeKeys = params.excludedTypeKeys
                         ),
                         keys = ObjectSearchConstants.defaultKeysObjectType,
                         query = query
@@ -173,6 +176,7 @@ class CreateObjectOfTypeViewModel(
     }
 
     class Factory @Inject constructor(
+        private val params: Params,
         private val getObjectTypes: GetObjectTypes,
         private val spaceManager: SpaceManager,
         private val addObjectToSpace: AddObjectToSpace
@@ -181,11 +185,16 @@ class CreateObjectOfTypeViewModel(
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ) = CreateObjectOfTypeViewModel(
+            params = params,
             getObjectTypes = getObjectTypes,
             spaceManager = spaceManager,
             addObjectToSpace = addObjectToSpace
         ) as T
     }
+
+    data class Params(
+        val excludedTypeKeys: List<TypeKey>
+    )
 }
 
 sealed class SelectTypeViewState{

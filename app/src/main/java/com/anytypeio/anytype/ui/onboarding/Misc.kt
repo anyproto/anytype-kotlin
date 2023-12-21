@@ -216,7 +216,6 @@ fun OnboardingMnemonicInput(
         modifier = modifier,
         textStyle = UXBody
             .copy(
-                color = ColorTextInput,
                 lineHeight = 34.sp
             )
         ,

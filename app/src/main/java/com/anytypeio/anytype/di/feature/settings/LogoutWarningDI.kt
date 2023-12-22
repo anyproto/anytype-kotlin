@@ -2,6 +2,7 @@ package com.anytypeio.anytype.di.feature.settings
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -61,12 +62,14 @@ object LogoutWarningModule {
         provider: ConfigStorage,
         user: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        awaitAccountStartManager: AwaitAccountStartManager
     ): Logout = Logout(
         repo = repo,
         config = provider,
         user = user,
         dispatchers = dispatchers,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        awaitAccountStartManager = awaitAccountStartManager
     )
 }

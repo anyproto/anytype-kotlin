@@ -9,16 +9,13 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
@@ -1105,8 +1102,9 @@ class ObjectSetViewModel(
 
         val validTemplateId = templateChosenBy ?: defaultTemplate
         val createObjectParams = CreateDataViewObject.Params.Collection(
-            templateId = validTemplateId,
-            type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
+            template = validTemplateId,
+            type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!,
+            filters = viewer.filters
         )
         proceedWithCreatingDataViewObject(createObjectParams) { result ->
             val params = AddObjectToCollection.Params(

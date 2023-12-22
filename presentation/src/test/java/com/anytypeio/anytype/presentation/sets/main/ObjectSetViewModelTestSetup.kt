@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -197,13 +198,13 @@ open class ObjectSetViewModelTestSetup {
     lateinit var dataViewSubscription: DataViewSubscription
 
     val dispatcher = Dispatcher.Default<Payload>()
-    private val delegator = Delegator.Default<Action>()
+    val delegator = Delegator.Default<Action>()
     val session = ObjectSetSession()
-    private val paginator = ObjectSetPaginator()
+    val paginator = ObjectSetPaginator()
 
     val objectStore: ObjectStore = DefaultObjectStore()
     protected val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
-    private val database = ObjectSetDatabase(objectStore)
+    val database = ObjectSetDatabase(objectStore)
 
     val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
 
@@ -443,6 +444,12 @@ open class ObjectSetViewModelTestSetup {
                     )
                 )
             )
+        }
+    }
+
+    fun stubNetworkMode() {
+        getNetworkMode.stub {
+            onBlocking { run(Unit) } doReturn NetworkModeConfig()
         }
     }
 }

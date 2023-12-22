@@ -59,7 +59,9 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         }
                     },
                     onCancelClicked = {
-                        dismiss()
+                        vm.onCancelClicked().also {
+                            dismiss()
+                        }
                     },
                     spaces = vm.spaceViews.collectAsStateWithLifecycle().value,
                     onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) }

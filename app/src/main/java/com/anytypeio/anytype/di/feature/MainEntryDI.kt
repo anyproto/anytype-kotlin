@@ -149,13 +149,15 @@ object MainEntryModule {
         provider: ConfigStorage,
         user: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        awaitAccountStartManager: AwaitAccountStartManager
     ): Logout = Logout(
         repo = repo,
         user = user,
         config = provider,
         dispatchers = dispatchers,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        awaitAccountStartManager = awaitAccountStartManager
     )
 
     @JvmStatic

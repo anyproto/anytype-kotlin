@@ -42,6 +42,7 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
         viewModel = givenViewModel()
         mockObjectCollection = MockCollection(context = root)
         stubGetDefaultPageType()
+        stubNetworkMode()
     }
 
     @After

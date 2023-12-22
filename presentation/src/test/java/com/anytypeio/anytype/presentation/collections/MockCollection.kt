@@ -1,12 +1,14 @@
 package com.anytypeio.anytype.presentation.collections
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.ObjectOrder
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubDataView
 import com.anytypeio.anytype.core_models.StubDataViewView
@@ -107,11 +109,37 @@ class MockCollection(context: String) {
     )
     val sorts = listOf(sort1)
 
+    // VIEW FILTERS
+    val filters = listOf(
+        DVFilter(
+            id = "dvFilter-${RandomString.make()}",
+            relation = relationObject1.key,
+            relationFormat = RelationFormat.LONG_TEXT,
+            condition = Block.Content.DataView.Filter.Condition.EQUAL,
+            value = "dvFilterValue-${RandomString.make()}"
+        ),
+        DVFilter(
+            id = "dvFilter-${RandomString.make()}",
+            relation = relationObject3.key,
+            relationFormat = RelationFormat.TAG,
+            condition = Block.Content.DataView.Filter.Condition.IN,
+            value = "dvFilterValue-${RandomString.make()}"
+        )
+    )
+
+
     val viewerList = StubDataViewView(
         id = "dvViewerList-${RandomString.make()}",
         viewerRelations = listOf(dvViewerRelation1, dvViewerRelation2, dvViewerRelation3),
         type = DVViewerType.LIST,
         sorts = sorts
+    )
+    val viewerListWithFilters = StubDataViewView(
+        id = "dvViewerList-${RandomString.make()}",
+        viewerRelations = listOf(dvViewerRelation1, dvViewerRelation2, dvViewerRelation3),
+        type = DVViewerType.LIST,
+        sorts = sorts,
+        filters = filters
     )
     val viewerGrid = StubDataViewView(
         id = "dvViewerGrid-${RandomString.make()}",
@@ -192,6 +220,14 @@ class MockCollection(context: String) {
         relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5, relationLink6),
         objectOrder = listOf(objectOrderList, objectOrderGrid, objectOrderGallery),
         isCollection = true
+    )
+
+    val dataViewWithFilters = StubDataView(
+        id = "dv-${RandomString.make()}",
+        views = listOf(viewerListWithFilters),
+        relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5, relationLink6),
+        isCollection = true,
+        objectOrder = emptyList()
     )
     val spaceId = "space-${RandomString.make()}"
 

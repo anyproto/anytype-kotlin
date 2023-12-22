@@ -317,8 +317,9 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.Collection(
-                templateId = null,
-                type = TypeKey(pageTypeId)
+                template = null,
+                type = TypeKey(pageTypeId),
+                filters = emptyList()
             )
         )
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
@@ -336,7 +337,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             async(
                 CreateDataViewObject.Params.Collection(
                     type = TypeKey(pageTypeId),
-                    templateId = null
+                    template = null,
+                    filters = emptyList()
                 )
             )
         }

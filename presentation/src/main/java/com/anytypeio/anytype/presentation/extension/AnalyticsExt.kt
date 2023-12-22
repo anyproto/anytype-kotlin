@@ -753,6 +753,27 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     }
 }
 
+fun CoroutineScope.sendAnalyticsObjectCreateEvent(
+    analytics: Analytics,
+    type: Key?,
+    route: String,
+    startTime: Long? = null,
+    view: String? = null
+) {
+    launch {
+        analytics.sendEvent(
+            eventName = objectCreate,
+            props = propsForObjectEvents(
+                route = route,
+                sourceObject = type,
+                view = view
+            ),
+            startTime = startTime,
+            middleTime = System.currentTimeMillis()
+        )
+    }
+}
+
 fun CoroutineScope.sendAnalyticsSetTitleEvent(
     analytics: Analytics,
     context: String? = null

@@ -3,6 +3,15 @@ package com.anytypeio.anytype.presentation.sharing
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.CLICK_ONBOARDING_TOOLTIP_ID_SHARING_EXTENSION
+import com.anytypeio.anytype.analytics.base.EventsDictionary.CLICK_ONBOARDING_TOOLTIP_TYPE_CLOSE
+import com.anytypeio.anytype.analytics.base.EventsDictionary.CLICK_ONBOARDING_TOOLTIP_TYPE_SHARING_MENU
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.event.EventAnalytics
+import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -16,6 +25,7 @@ import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -37,7 +47,8 @@ class AddToAnytypeViewModel(
     private val spaceManager: SpaceManager,
     private val getSpaceViews: GetSpaceViews,
     private val urlBuilder: UrlBuilder,
-    private val awaitAccountStartManager: AwaitAccountStartManager
+    private val awaitAccountStartManager: AwaitAccountStartManager,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -49,6 +60,19 @@ class AddToAnytypeViewModel(
     val commands = MutableSharedFlow<Command>()
 
     init {
+        viewModelScope.launch {
+            analytics.registerEvent(
+                EventAnalytics.Anytype(
+                    name = EventsDictionary.CLICK_ONBOARDING_TOOLTIP,
+                    props = Props(
+                        mapOf(
+                            EventsPropertiesKey.id to CLICK_ONBOARDING_TOOLTIP_ID_SHARING_EXTENSION,
+                            EventsPropertiesKey.type to CLICK_ONBOARDING_TOOLTIP_TYPE_SHARING_MENU,
+                        )
+                    )
+                )
+            )
+        }
         viewModelScope.launch {
             selectedSpaceId.value = spaceManager.get()
         }
@@ -91,6 +115,7 @@ class AddToAnytypeViewModel(
             }
             val targetSpaceId = targetSpaceView?.obj?.targetSpaceId
             if (targetSpaceView != null && targetSpaceId != null) {
+                val startTime = System.currentTimeMillis()
                 createBookmarkObject(
                     CreateBookmarkObject.Params(
                         space = targetSpaceId,
@@ -101,6 +126,12 @@ class AddToAnytypeViewModel(
                     )
                 ).process(
                     success = { obj ->
+                        sendAnalyticsObjectCreateEvent(
+                            analytics = analytics,
+                            type = MarketplaceObjectTypeIds.BOOKMARK,
+                            route = EventsDictionary.Routes.sharingExtension,
+                            startTime = startTime
+                        )
                         if (targetSpaceId == spaceManager.get()) {
                             navigation.emit(OpenObjectNavigation.OpenEditor(obj))
                         } else {
@@ -126,6 +157,7 @@ class AddToAnytypeViewModel(
             }
             val targetSpaceId = targetSpaceView?.obj?.targetSpaceId
             if (targetSpaceView != null && targetSpaceId != null) {
+                val startTime = System.currentTimeMillis()
                 createPrefilledNote.async(
                     CreatePrefilledNote.Params(
                         text = text,
@@ -136,6 +168,12 @@ class AddToAnytypeViewModel(
                     )
                 ).fold(
                     onSuccess = { result ->
+                        sendAnalyticsObjectCreateEvent(
+                            analytics = analytics,
+                            type = MarketplaceObjectTypeIds.NOTE,
+                            route = EventsDictionary.Routes.sharingExtension,
+                            startTime = startTime
+                        )
                         if (targetSpaceId == spaceManager.get()) {
                             navigation.emit(OpenObjectNavigation.OpenEditor(result))
                         } else {
@@ -164,13 +202,30 @@ class AddToAnytypeViewModel(
         }
     }
 
+    fun onCancelClicked() {
+        viewModelScope.launch {
+            analytics.registerEvent(
+                EventAnalytics.Anytype(
+                    name = EventsDictionary.CLICK_ONBOARDING_TOOLTIP,
+                    props = Props(
+                        mapOf(
+                            EventsPropertiesKey.id to CLICK_ONBOARDING_TOOLTIP_ID_SHARING_EXTENSION,
+                            EventsPropertiesKey.type to CLICK_ONBOARDING_TOOLTIP_TYPE_CLOSE,
+                        )
+                    )
+                )
+            )
+        }
+    }
+
     class Factory @Inject constructor(
         private val createBookmarkObject: CreateBookmarkObject,
         private val createPrefilledNote: CreatePrefilledNote,
         private val spaceManager: SpaceManager,
         private val getSpaceViews: GetSpaceViews,
         private val urlBuilder: UrlBuilder,
-        private val awaitAccountStartManager: AwaitAccountStartManager
+        private val awaitAccountStartManager: AwaitAccountStartManager,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -180,7 +235,8 @@ class AddToAnytypeViewModel(
                 createPrefilledNote = createPrefilledNote,
                 getSpaceViews = getSpaceViews,
                 urlBuilder = urlBuilder,
-                awaitAccountStartManager = awaitAccountStartManager
+                awaitAccountStartManager = awaitAccountStartManager,
+                analytics = analytics
             ) as T
         }
     }

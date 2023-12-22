@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="about">Sobre</string>
-    <string name="app_version">App version</string>
+    <string name="app_version">Versão do aplicativo</string>
     <string name="library">Biblioteca</string>
     <string name="user_id">ID de usuário</string>
     <string name="account_and_data"><![CDATA[Account & Data]]></string>

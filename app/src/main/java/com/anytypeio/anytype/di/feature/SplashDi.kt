@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -75,7 +76,8 @@ object SplashModule {
         configStorage: ConfigStorage,
         spaceManager: SpaceManager,
         metricsProvider: MetricsProvider,
-        userSettings: UserSettingsRepository
+        userSettings: UserSettingsRepository,
+        awaitAccountStartManager: AwaitAccountStartManager
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
@@ -83,7 +85,8 @@ object SplashModule {
         configStorage = configStorage,
         spaceManager = spaceManager,
         metricsProvider = metricsProvider,
-        settings = userSettings
+        settings = userSettings,
+        awaitAccountStartManager = awaitAccountStartManager
     )
 
     @JvmStatic
@@ -192,4 +195,5 @@ interface SplashDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
     fun localeProvider(): LocaleProvider
+    fun awaitAccountStartManager(): AwaitAccountStartManager
 }

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Interactor
@@ -16,6 +17,7 @@ class Logout @Inject constructor(
     private val config: ConfigStorage,
     private val user: UserSettingsRepository,
     private val spaceManager: SpaceManager,
+    private val awaitAccountStartManager: AwaitAccountStartManager,
     dispatchers: AppCoroutineDispatchers,
 ) : Interactor<Logout.Params>(context = dispatchers.io) {
 
@@ -24,6 +26,7 @@ class Logout @Inject constructor(
         user.clear()
         config.clear()
         spaceManager.clear()
+        awaitAccountStartManager.setIsStarted(false)
     }
 
     class Params(

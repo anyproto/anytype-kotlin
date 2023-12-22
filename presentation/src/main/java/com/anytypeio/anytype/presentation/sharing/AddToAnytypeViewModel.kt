@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.msg
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
@@ -23,7 +24,10 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -32,7 +36,8 @@ class AddToAnytypeViewModel(
     private val createPrefilledNote: CreatePrefilledNote,
     private val spaceManager: SpaceManager,
     private val getSpaceViews: GetSpaceViews,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val awaitAccountStartManager: AwaitAccountStartManager
 ) : BaseViewModel() {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -48,27 +53,34 @@ class AddToAnytypeViewModel(
             selectedSpaceId.value = spaceManager.get()
         }
         viewModelScope.launch {
-            combine(
-                spaces,
-                selectedSpaceId
-            ) { spaces, selected ->
-                spaces.mapIndexed { index, space ->
-                    SpaceView(
-                        obj = space,
-                        icon = space.spaceIcon(
-                            builder = urlBuilder,
-                            spaceGradientProvider = SpaceGradientProvider.Default
-                        ),
-                        isSelected = if (selected.isEmpty()) {
-                            index == 0
-                        } else {
-                            space.targetSpaceId == selected
+            awaitAccountStartManager
+                .isStarted()
+                .filter { isStarted -> isStarted }
+                .flatMapLatest {
+                    combine(
+                        spaces,
+                        selectedSpaceId
+                    ) { spaces, selected ->
+                        spaces.mapIndexed { index, space ->
+                            SpaceView(
+                                obj = space,
+                                icon = space.spaceIcon(
+                                    builder = urlBuilder,
+                                    spaceGradientProvider = SpaceGradientProvider.Default
+                                ),
+                                isSelected = if (selected.isEmpty()) {
+                                    index == 0
+                                } else {
+                                    space.targetSpaceId == selected
+                                }
+                            )
                         }
-                    )
+                    }
+                }.catch {
+                    Timber.e(it, "Error while searching for spaces")
+                }.collect { views ->
+                    spaceViews.value = views
                 }
-            }.collect { views ->
-                spaceViews.value = views
-            }
         }
     }
 
@@ -157,7 +169,8 @@ class AddToAnytypeViewModel(
         private val createPrefilledNote: CreatePrefilledNote,
         private val spaceManager: SpaceManager,
         private val getSpaceViews: GetSpaceViews,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val awaitAccountStartManager: AwaitAccountStartManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -166,7 +179,8 @@ class AddToAnytypeViewModel(
                 spaceManager = spaceManager,
                 createPrefilledNote = createPrefilledNote,
                 getSpaceViews = getSpaceViews,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                awaitAccountStartManager = awaitAccountStartManager
             ) as T
         }
     }

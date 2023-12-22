@@ -184,6 +184,13 @@ object EventsDictionary {
     const val MENU_HELP_PRIVACY = "MenuHelpPrivacy"
     const val MENU_HELP_CONTACT_US = "MenuHelpContact"
 
+    // Sharing extension
+
+    const val CLICK_ONBOARDING_TOOLTIP = "ClickOnboardingTooltip"
+    const val CLICK_ONBOARDING_TOOLTIP_ID_SHARING_EXTENSION = "SharingExtension"
+    const val CLICK_ONBOARDING_TOOLTIP_TYPE_SHARING_MENU = "ShareMenu"
+    const val CLICK_ONBOARDING_TOOLTIP_TYPE_CLOSE = "Close"
+
     // Network mode
     const val selectNetwork = "SelectNetwork"
     const val uploadNetworkConfiguration = "UploadNetworkConfiguration"
@@ -223,6 +230,7 @@ object EventsDictionary {
         const val screenDeletion = "ScreenDeletion"
         const val navigation = "Navigation"
         const val longTap = "LongTap"
+        const val sharingExtension = "SharingExtension"
     }
 
     object Type {
@@ -262,6 +270,7 @@ object EventsDictionary {
 }
 
 object EventsPropertiesKey {
+    const val id = "id"
     const val tab = "tab"
     const val route = "route"
     const val type = "type"

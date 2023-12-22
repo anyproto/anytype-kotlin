@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature.sharing
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
@@ -53,4 +54,5 @@ interface AddToAnytypeDependencies : ComponentDependencies {
     fun container(): StorelessSubscriptionContainer
     fun urlBuilder(): UrlBuilder
     fun awaitAccountStartedManager(): AwaitAccountStartManager
+    fun analytics(): Analytics
 }

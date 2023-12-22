@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -87,13 +88,15 @@ object MainEntryModule {
         pathProvider: PathProvider,
         configStorage: ConfigStorage,
         featuresConfigProvider: FeaturesConfigProvider,
-        metricsProvider: MetricsProvider
+        metricsProvider: MetricsProvider,
+        awaitAccountStartManager: AwaitAccountStartManager
     ): ResumeAccount = ResumeAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         configStorage = configStorage,
         featuresConfigProvider = featuresConfigProvider,
-        metricsProvider = metricsProvider
+        metricsProvider = metricsProvider,
+        awaitAccountStartManager = awaitAccountStartManager
     )
 
     @JvmStatic

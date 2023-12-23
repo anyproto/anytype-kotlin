@@ -82,11 +82,11 @@
     <string name="option_list_toggle_list">Переключаемый список</string>
     <string name="option_tool_task">Задача</string>
     <string name="option_tool_page">Страница</string>
-    <string name="option_tool_link_to_object">Link to object</string>
+    <string name="option_tool_link_to_object">Ссылка на объект</string>
     <string name="option_tool_database">База данных</string>
     <string name="option_tool_set">Набор</string>
     <string name="option_tool_contact">Контакт</string>
-    <string name="option_tool_existing_tool">Existing Tool</string>
+    <string name="option_tool_existing_tool">Существующие инструменты</string>
     <string name="option_media_file">Файл</string>
     <string name="option_media_picture">Изображение</string>
     <string name="option_media_video">Видео</string>
@@ -129,7 +129,7 @@
     <string name="sort">Сортировка</string>
     <string name="sort_empty_state">Здесь нет сортировки. Вы можете добавить несколько</string>
     <string name="filter_empty_state">Здесь нет фильтров. Вы можете добавить свои</string>
-    <string name="relation_status_value_empty_state">No related options here. You can add some</string>
+    <string name="relation_status_value_empty_state">Здесь нет фильтров. Вы можете добавить свои</string>
     <string name="filter_by">Filter by</string>
     <string name="filter">Filter</string>
     <string name="modal_view">Вид</string>
@@ -341,10 +341,10 @@
     <string name="create_from_scratch">Create from scratch</string>
     <string name="create_relation_with_name">Create relation \"%1$s\"</string>
     <string name="name_is_required">Name is required</string>
-    <string name="favourite">Favorite</string>
+    <string name="favourite">Избранное</string>
     <string name="template">Шаблон</string>
     <string name="templates">Templates</string>
-    <string name="lock">Lock</string>
+    <string name="lock">Заблокировать</string>
     <string name="unlock">Разблокировать</string>
     <string name="restore">Восстановить</string>
     <string name="unfavorite">Удалить из избранного</string>
@@ -408,7 +408,7 @@
     <string name="layout_profile_name">Профиль</string>
     <string name="layout_profile_description">Companies, contacts, friends, and family</string>
     <string name="layout_todo_name">Задача</string>
-    <string name="layout_todo_description">Action-focused layout with a checkbox</string>
+    <string name="layout_todo_description">Действующий макет с галочкой</string>
     <string name="move_to_bin">В корзину</string>
     <string name="undoredo">Отменить/Повторить</string>
     <string name="object_removal_process">Object removal process</string>
@@ -850,13 +850,13 @@
     <string name="slash_widget_main_color">Цвет</string>
     <string name="slash_widget_main_background">Фон</string>
     <string name="slash_widget_style_text">Текст</string>
-    <string name="slash_widget_style_text_subtitle">Просто начните писать с обычного текста</string>
+    <string name="slash_widget_style_text_subtitle">Начните писать с обычного текста</string>
     <string name="slash_widget_style_title">Название</string>
     <string name="slash_widget_style_title_subtitle">Заголовок большого раздела</string>
     <string name="slash_widget_style_heading">Заголовок</string>
-    <string name="slash_widget_style_heading_subtitle">Просто начните писать с обычного текста</string>
+    <string name="slash_widget_style_heading_subtitle">Начните писать с обычного текста</string>
     <string name="slash_widget_style_subheading">Подзаголовок</string>
-    <string name="slash_widget_style_subheading_subtitle">Просто начните писать с обычного текста</string>
+    <string name="slash_widget_style_subheading_subtitle">Начните писать с обычного текста</string>
     <string name="slash_widget_style_highlighted">Выделенный</string>
     <string name="slash_widget_style_highlighted_subtitle">Small section heading</string>
     <string name="slash_widget_style_callout">Врезка</string>
@@ -864,7 +864,7 @@
     <string name="slash_widget_style_checkbox">Флажок</string>
     <string name="slash_widget_style_checkbox_subtitle">Create and track task with to-do lsit</string>
     <string name="slash_widget_style_bulleted">Маркирован</string>
-    <string name="slash_widget_style_bulleted_subtitle">Просто начните писать с обычного текста</string>
+    <string name="slash_widget_style_bulleted_subtitle">Начните писать с обычного текста</string>
     <string name="slash_widget_style_numbered">Нумерованный список</string>
     <string name="slash_widget_style_numbered_subtitle">List with numbering</string>
     <string name="slash_widget_style_toggle">Переключить</string>
@@ -919,7 +919,7 @@
     <!--endregion-->
     <!--region LIBRARY -->
     <string name="create_widget">Create a widget</string>
-    <string name="edit_widgets">Edit widgets</string>
+    <string name="edit_widgets">Редактировать виджеты</string>
     <string name="widget_source">Widget source</string>
     <string name="widget_type">Тип виджета</string>
     <string name="widget_add_below">Добавить ниже</string>
@@ -927,8 +927,8 @@
     <string name="widget_type_tree_description">Hierarchical structure of object</string>
     <string name="widget_type_link">Ссылка</string>
     <string name="widget_type_link_description">Compact version of the object</string>
-    <string name="widget_type_list_description">Widget with list view of set object</string>
-    <string name="widget_type_compact_list_description">Widget with list view of set object</string>
+    <string name="widget_type_list_description">Виджет со списком объектов из набора</string>
+    <string name="widget_type_compact_list_description">Виджет со списком объектов из набора</string>
     <string name="widget_type_list">Список</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Изменить источник</string>
@@ -1003,7 +1003,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Дублировать</string>
-    <string name="object_action_to_widgets">To widgets</string>
+    <string name="object_action_to_widgets">В виджеты</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">Nothing found</string>

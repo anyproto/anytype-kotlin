@@ -35,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -154,7 +155,9 @@ private fun SelectSpaceSpaceItem(
         ) {
             SpaceImageBlock(
                 icon = item.view.icon,
-                onSpaceIconClick = { onSpaceClicked(item.view) },
+                onSpaceIconClick = throttledClick(
+                    onClick = { onSpaceClicked(item.view) }
+                ),
                 gradientBackground = colorResource(id = R.color.default_gradient_background),
                 gradientCornerRadius = 4.dp
             )

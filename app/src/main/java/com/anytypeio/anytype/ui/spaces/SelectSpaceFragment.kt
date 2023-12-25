@@ -22,6 +22,7 @@ import com.anytypeio.anytype.presentation.spaces.Command
 import com.anytypeio.anytype.presentation.spaces.SelectSpaceViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import timber.log.Timber
 
 class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
 
@@ -84,10 +85,14 @@ class SelectSpaceFragment : BaseBottomSheetComposeFragment() {
                 findNavController().popBackStack()
             }
             is Command.SwitchToNewSpace -> {
-                if (exitHomeWhenSpaceIsSelected == true) {
-                    findNavController().navigate(R.id.switchSpaceAction)
-                } else {
-                    findNavController().popBackStack()
+                try {
+                    if (exitHomeWhenSpaceIsSelected == true) {
+                        findNavController().navigate(R.id.switchSpaceAction)
+                    } else {
+                        findNavController().popBackStack()
+                    }
+                } catch (e: Exception) {
+                    Timber.e(e, "Navigation error")
                 }
             }
         }

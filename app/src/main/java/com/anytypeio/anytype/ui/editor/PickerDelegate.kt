@@ -100,7 +100,11 @@ interface PickerDelegate : PickiTCallbacks {
         }
 
         override fun openFilePicker(mimeType: Mimetype, requestCode: Int?) {
-            permissionHelper.openFilePicker(mimeType, requestCode)
+            try {
+                permissionHelper.openFilePicker(mimeType, requestCode)
+            } catch (e: Exception) {
+                Timber.e(e, "Error while opening file picker")
+            }
         }
 
         override fun initPicker(ctx: Id) {

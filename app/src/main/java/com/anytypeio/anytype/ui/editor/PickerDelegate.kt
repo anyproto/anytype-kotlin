@@ -5,7 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.view.LayoutInflater
-import android.widget.Button
+import android.view.View
 import android.widget.ProgressBar
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
@@ -188,8 +188,8 @@ interface PickerDelegate : PickiTCallbacks {
                         LayoutInflater.from(fragment.requireContext())
                             .inflate(R.layout.dialog_layout, null)
                     setView(view)
-                    view.findViewById<Button>(R.id.btnCancel).setOnClickListener {
-                        pickiT.cancelTask()
+                    view.findViewById<View>(R.id.btnCancel).setOnClickListener {
+                         pickiT.cancelTask()
                         if (pickitAlertDialog?.isShowing == true) {
                             pickitAlertDialog?.cancel()
                         }

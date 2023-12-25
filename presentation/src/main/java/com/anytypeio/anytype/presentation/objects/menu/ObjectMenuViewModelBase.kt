@@ -378,6 +378,13 @@ abstract class ObjectMenuViewModelBase(
                         }
                     )
                 }
+            } else {
+                if (!obj.isValid) {
+                    sendToast("Could not create widget: object is not valid.")
+                }
+                if (config == null) {
+                    sendToast("Could not create widget: config is missing.")
+                }
             }
         }
     }

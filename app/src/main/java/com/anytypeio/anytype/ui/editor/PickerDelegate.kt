@@ -194,7 +194,7 @@ interface PickerDelegate : PickiTCallbacks {
                             .inflate(R.layout.dialog_layout, null)
                     setView(view)
                     view.findViewById<View>(R.id.btnCancel).setOnClickListener {
-                         pickiT.cancelTask()
+                        pickiT.cancelTask()
                         if (pickitAlertDialog?.isShowing == true) {
                             pickitAlertDialog?.cancel()
                         }

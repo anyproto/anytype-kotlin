@@ -842,7 +842,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
             subscribe(vm.icon) { icon ->
-                binding.bottomToolbar.bind(icon)
+                if (hasBinding) binding.bottomToolbar.bind(icon)
             }
         }
     }

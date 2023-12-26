@@ -4,7 +4,7 @@
     <string name="app_version">Versão do aplicativo</string>
     <string name="library">Biblioteca</string>
     <string name="user_id">ID de usuário</string>
-    <string name="account_and_data"><![CDATA[Account & Data]]></string>
+    <string name="account_and_data"><![CDATA[Conta & Dados]]></string>
     <string name="profile">Perfil</string>
     <string name="personalization">Personalização</string>
     <string name="appearance">Aparência</string>
@@ -16,7 +16,7 @@
     <string name="account">Conta</string>
     <string name="reset_account">Redefinir conta</string>
     <string name="delete_account">Apagar conta</string>
-    <string name="space_debug">Space debug</string>
+    <string name="space_debug">Depuração do Espaço</string>
     <string name="data">Dados</string>
     <string name="mode">Modo</string>
     <string name="log_out">Sair</string>
@@ -44,7 +44,7 @@
     <string name="about_help_and_tutorials_link">https://doc.anytype.io</string>
     <string name="about_terms_and_conditions_link">https://anytype.io/terms_of_use/</string>
     <string name="about_privacy_policy_link">https://anytype.io/privacy_policy.html</string>
-    <string name="about_meta_info">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
+    <string name="about_meta_info">Versão do app: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDispositivo\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="space">Espaço</string>
     <string name="space_name">Nome do espaço</string>
@@ -768,7 +768,7 @@
     <string name="settings_network_configuration_file_choose">Choose file</string>
     <string-array name="settings_networks_entries">
         <item>Anytype</item>
-        <item>Local-only</item>
+        <item>Somente local</item>
         <item>Self-hosted</item>
     </string-array>
     <string name="snack_link_to">vinculado a</string>
@@ -795,7 +795,7 @@
     <string name="sync_status_incompatible">Incompatible version</string>
     <string name="base_add_options_empty_title">No tags found</string>
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
-    <string name="sync_status_local_only">Local-only</string>
+    <string name="sync_status_local_only">Somente local</string>
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
     <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
     <string name="go_to_the_app">Ir para o aplicativo</string>
@@ -1000,7 +1000,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Duplicar</string>
-    <string name="object_action_to_widgets">To widgets</string>
+    <string name="object_action_to_widgets">Criar widget</string>
     <!--endregion-->
     <!--region SEARCH -->
     <string name="nothing_found">Nothing found</string>

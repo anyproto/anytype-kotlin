@@ -154,12 +154,12 @@
     <string name="modal_property_type">Tipo da propriedade</string>
     <string name="modal_hide">Ocultar</string>
     <string name="modal_show">Exibir</string>
-    <string name="modal_view_name">View name</string>
-    <string name="modal_details">Details</string>
-    <string name="modal_detail_name">Detail name</string>
+    <string name="modal_view_name">Nome da Visualização</string>
+    <string name="modal_details">Detalhes</string>
+    <string name="modal_detail_name">Detalhe do nome</string>
     <string name="modal_detail_type">Detail type</string>
     <string name="hint_title">Título</string>
-    <string name="hint_profile_title">Name Surname</string>
+    <string name="hint_profile_title">Nome Sobrenome</string>
     <string name="hint_header_one">Título</string>
     <string name="hint_quote">Quote</string>
     <string name="hint_header_two">Cabeçalho</string>
@@ -653,7 +653,7 @@
     <string name="filter_text_cancel_button">Cancelar</string>
     <string name="filter_text_value_hint">Inserir texto</string>
     <string name="filter_number_value_hint">Enter a numeric value</string>
-    <string name="view_name">View name</string>
+    <string name="view_name">Nome da Visualização</string>
     <string name="delete">Excluir</string>
     <string name="view_relations">View relations</string>
     <string name="create">Criar</string>

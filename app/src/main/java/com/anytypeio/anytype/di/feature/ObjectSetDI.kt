@@ -344,23 +344,6 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideCreateDataViewRecordUseCase(
-        repo: BlockRepository,
-        storeOfRelations: StoreOfRelations,
-        getDefaultObjectType: GetDefaultObjectType,
-        getTemplates: GetTemplates,
-        spaceManager: SpaceManager,
-        dispatchers: AppCoroutineDispatchers
-    ): CreateDataViewObject = CreateDataViewObject(
-        repo = repo,
-        storeOfRelations = storeOfRelations,
-        dispatchers = dispatchers,
-        spaceManager = spaceManager
-    )
-
-    @JvmStatic
-    @Provides
-    @PerScreen
     fun provideUpdateTextUseCase(
         repo: BlockRepository
     ): UpdateText = UpdateText(repo = repo)

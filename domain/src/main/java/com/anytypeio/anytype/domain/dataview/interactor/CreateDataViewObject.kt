@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -202,6 +201,4 @@ class CreateDataViewObject @Inject constructor(
     }
 }
 
-private fun ObjectWrapper.Relation.isCanBeAddedToObject(): Boolean {
-    return !isReadonlyValue
-}
+private fun ObjectWrapper.Relation.isCanBeAddedToObject(): Boolean = !isReadonlyValue

@@ -203,5 +203,5 @@ class CreateDataViewObject @Inject constructor(
 }
 
 private fun ObjectWrapper.Relation.isCanBeAddedToObject(): Boolean {
-    return !isReadonlyValue && !Relations.systemRelationKeys.contains(key)
+    return !isReadonlyValue
 }

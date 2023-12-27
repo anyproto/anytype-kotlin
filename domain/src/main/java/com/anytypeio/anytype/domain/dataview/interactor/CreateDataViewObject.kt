@@ -5,8 +5,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
-import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Struct
@@ -35,7 +33,7 @@ class CreateDataViewObject @Inject constructor(
             is Params.SetByType -> {
                 val command = Command.CreateObject(
                     template = params.template,
-                    prefilled = resolveSetByTypePrefilledObjectData(
+                    prefilled = prefillObjectDetails(
                         filters = params.filters
                     ),
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
@@ -50,12 +48,13 @@ class CreateDataViewObject @Inject constructor(
                 )
             }
             is Params.SetByRelation -> {
+                val prefilled = resolveSetByRelationPrefilledObjectData(
+                    filters = params.filters,
+                    setOfIds = params.relations
+                )
                 val command = Command.CreateObject(
                     template = params.template,
-                    prefilled = resolveSetByRelationPrefilledObjectData(
-                        filters = params.filters,
-                        relations = params.relations
-                    ),
+                    prefilled = prefilled,
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
                     typeKey = params.type
@@ -70,7 +69,7 @@ class CreateDataViewObject @Inject constructor(
             is Params.Collection -> {
                 val command = Command.CreateObject(
                     template = params.template,
-                    prefilled = resolveCollectionPrefilledObjectData(
+                    prefilled = prefillObjectDetails(
                         filters = params.filters
                     ),
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
@@ -87,62 +86,26 @@ class CreateDataViewObject @Inject constructor(
         }
     }
 
-    private suspend fun resolveSetByTypePrefilledObjectData(
-        filters: List<DVFilter>
-    ): Struct = buildMap {
-        filters.forEach { filter ->
-            val relation = storeOfRelations.getByKey(filter.relation) ?: return@forEach
-            if (relation.isCanBeAddedToObject()) {
-                if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
-                    filter.value?.let { put(filter.relation, it) }
-                }
-            }
-        }
-    }
-
-
     private suspend fun resolveSetByRelationPrefilledObjectData(
         filters: List<DVFilter>,
-        relations: List<Key>
-    ): Struct = try {
-        buildMap {
-            filters.forEach { filter ->
-                val relation = storeOfRelations.getByKey(filter.relation)
-                if (relation != null && !relation.isReadonlyValue) {
-                    if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
-                        val value = filter.value
-                        if (value != null) {
-                            put(filter.relation, value)
-                        }
-                    } else {
-                        put(relation.key, resolveDefaultValueByFormat(relation.relationFormat))
-                    }
-                }
-            }
-            relations.forEach { id ->
-                val relation = storeOfRelations.getById(id)
-                if (relation != null && !containsKey(relation.key)) {
-                    put(relation.key, resolveDefaultValueByFormat(relation.relationFormat))
-                }
+        setOfIds: List<Id>
+    ): Struct {
+        val prefillWithSetOf = buildMap {
+            setOfIds.forEach { relation ->
+                val relationObject = storeOfRelations.getById(relation) ?: return@forEach
+                put(relationObject.key, resolveDefaultValueByFormat(relationObject.relationFormat))
             }
         }
-    } catch (e: Exception) {
-        emptyMap()
+        return prefillWithSetOf + prefillObjectDetails(filters)
     }
 
-    private suspend fun resolveCollectionPrefilledObjectData(
+    private suspend fun prefillObjectDetails(
         filters: List<DVFilter>
     ): Struct = buildMap {
         filters.forEach { filter ->
-            val relation = storeOfRelations.getByKey(filter.relation) ?: return@forEach
-            if (relation.isCanBeAddedToObject()) {
-                if (
-                    filter.condition == DVFilterCondition.ALL_IN
-                    || filter.condition == DVFilterCondition.IN
-                    || filter.condition == DVFilterCondition.EQUAL
-                ) {
-                    filter.value?.let { put(filter.relation, it) }
-                }
+            val relationObject = storeOfRelations.getByKey(filter.relation) ?: return@forEach
+            if (!relationObject.isReadonlyValue && permittedConditions.contains(filter.condition)) {
+                filter.value?.let { put(filter.relation, it) }
             }
         }
     }
@@ -198,7 +161,13 @@ class CreateDataViewObject @Inject constructor(
 
     companion object {
         const val EMPTY_STRING_VALUE = ""
+
+        val permittedConditions = listOf(
+            DVFilterCondition.ALL_IN,
+            DVFilterCondition.IN,
+            DVFilterCondition.EQUAL,
+            DVFilterCondition.GREATER_OR_EQUAL,
+            DVFilterCondition.LESS_OR_EQUAL
+        )
     }
 }
-
-private fun ObjectWrapper.Relation.isCanBeAddedToObject(): Boolean = !isReadonlyValue

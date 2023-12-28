@@ -373,10 +373,10 @@
     <string name="unsupported_block">Bloco não suportado</string>
     <string name="new_relation">Nova relação</string>
     <string name="copy_link">Copiar link</string>
-    <string name="edit_link">Edit link</string>
-    <string name="unlink">Unlink</string>
+    <string name="edit_link">Editar link</string>
+    <string name="unlink">Desvincular</string>
     <string name="choose_layout_type">Escolha o tipo de layout</string>
-    <string name="user_settings_title">User settings</string>
+    <string name="user_settings_title">Configurações do usuário</string>
     <string name="default_object_type_title">Tipo de objeto padrão</string>
     <string name="name_layout_basic">Básico</string>
     <string name="name_layout_profile">Perfil</string>
@@ -577,7 +577,7 @@
     <string name="switch_profile">Switch profile</string>
     <string name="description_profile_picture">Profile picture</string>
     <string name="description_arrow_icon">Arrow icon</string>
-    <string name="user_settings">User settings</string>
+    <string name="user_settings">Configurações do usuário</string>
     <string name="other_settings">Other settings</string>
     <string name="your_page">Your public page</string>
     <string name="updates">Updates</string>
@@ -597,7 +597,7 @@
     <string name="no_peers">No peers</string>
     <string name="content_description_back_button_icon">Back button icon</string>
     <string name="hint_link">Colar ou digitar um URL</string>
-    <string name="button_unlink">Unlink</string>
+    <string name="button_unlink">Desvincular</string>
     <string name="button_link">Link</string>
     <string name="permission_read_rationale">Read permission is needed to load file to media block.</string>
     <string name="permission_read_denied">User denied permission. Please, approve this permission in \"Permissions\" in the app settings on your device.</string>

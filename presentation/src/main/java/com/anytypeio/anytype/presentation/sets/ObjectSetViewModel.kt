@@ -455,7 +455,7 @@ class ObjectSetViewModel(
                                         add(spaceManager.get())
                                     }
                                 },
-                                storeOfRelations = storeOfRelations
+                                dataViewRelationLinks = state.dataViewContent.relationLinks
                             )
                         } else {
                             emptyFlow()
@@ -479,7 +479,7 @@ class ObjectSetViewModel(
                                        add(spaceManager.get())
                                    }
                                 },
-                                storeOfRelations = storeOfRelations
+                                dataViewRelationLinks = state.dataViewContent.relationLinks
                             )
                         } else {
                             emptyFlow()
@@ -1045,11 +1045,13 @@ class ObjectSetViewModel(
                                 )
                             } else {
                                 val validTemplateId = templateChosenBy ?: defaultTemplate
+                                val dvRelationLinks = currentState.dataViewContent.relationLinks
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = TypeKey(uniqueKey),
                                         filters = viewer.filters,
-                                        template = validTemplateId
+                                        template = validTemplateId,
+                                        dvRelationLinks = dvRelationLinks
                                     )
                                 )
                             }
@@ -1059,9 +1061,10 @@ class ObjectSetViewModel(
                             proceedWithCreatingDataViewObject(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
-                                    relations = setObject.setOf,
                                     template = validTemplateId,
-                                    type = TypeKey(objectTypeUniqueKey)
+                                    type = TypeKey(objectTypeUniqueKey),
+                                    objSetByRelation = ObjectWrapper.Relation(sourceDetails.map),
+                                    dvRelationLinks = currentState.dataViewContent.relationLinks
                                 )
                             )
                         }
@@ -1104,7 +1107,8 @@ class ObjectSetViewModel(
         val createObjectParams = CreateDataViewObject.Params.Collection(
             template = validTemplateId,
             type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!,
-            filters = viewer.filters
+            filters = viewer.filters,
+            dvRelationLinks = state.dataViewContent.relationLinks
         )
         proceedWithCreatingDataViewObject(createObjectParams) { result ->
             val params = AddObjectToCollection.Params(

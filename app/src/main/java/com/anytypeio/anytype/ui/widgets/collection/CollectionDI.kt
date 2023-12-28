@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.event.interactor.EventChannel
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.objects.DeleteObjects
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
+import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import dagger.Binds
 import dagger.Component
@@ -218,4 +220,5 @@ interface CollectionDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun spaceManager(): SpaceManager
     fun logger(): Logger
+    fun dateProvider(): DateProvider
 }

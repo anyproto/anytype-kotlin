@@ -6,8 +6,10 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -38,7 +40,8 @@ class CreateDataViewObject @Inject constructor(
                 val command = Command.CreateObject(
                     template = params.template,
                     prefilled = prefillObjectDetails(
-                        filters = params.filters
+                        filters = params.filters,
+                        dataViewRelationLinks = params.dvRelationLinks
                     ),
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
@@ -53,8 +56,9 @@ class CreateDataViewObject @Inject constructor(
             }
             is Params.SetByRelation -> {
                 val prefilled = resolveSetByRelationPrefilledObjectData(
-                    filters = params.filters,
-                    setOfIds = params.relations
+                    viewerFilters = params.filters,
+                    objSetByRelation = params.objSetByRelation,
+                    dataViewRelationLinks = params.dvRelationLinks
                 )
                 val command = Command.CreateObject(
                     template = params.template,
@@ -74,7 +78,8 @@ class CreateDataViewObject @Inject constructor(
                 val command = Command.CreateObject(
                     template = params.template,
                     prefilled = prefillObjectDetails(
-                        filters = params.filters
+                        filters = params.filters,
+                        dataViewRelationLinks = params.dvRelationLinks
                     ),
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
@@ -91,25 +96,28 @@ class CreateDataViewObject @Inject constructor(
     }
 
     private suspend fun resolveSetByRelationPrefilledObjectData(
-        filters: List<DVFilter>,
-        setOfIds: List<Id>
+        objSetByRelation: ObjectWrapper.Relation,
+        viewerFilters: List<DVFilter>,
+        dataViewRelationLinks: List<RelationLink>
     ): Struct {
         val prefillWithSetOf = buildMap {
-            setOfIds.forEach { relation ->
-                val relationObject = storeOfRelations.getById(relation) ?: return@forEach
-                put(relationObject.key, resolveDefaultValueByFormat(relationObject.relationFormat))
-            }
+            val relationFormat = objSetByRelation.relationFormat
+            val defaultValue = resolveDefaultValueByFormat(relationFormat)
+            put(objSetByRelation.key, defaultValue)
         }
-        return prefillWithSetOf + prefillObjectDetails(filters)
+        return prefillWithSetOf + prefillObjectDetails(viewerFilters, dataViewRelationLinks)
     }
 
     private suspend fun prefillObjectDetails(
-        filters: List<DVFilter>
+        filters: List<DVFilter>,
+        dataViewRelationLinks: List<RelationLink>
     ): Struct = buildMap {
         filters.forEach { filter ->
             val relationObject = storeOfRelations.getByKey(filter.relation) ?: return@forEach
             if (!relationObject.isReadonlyValue && permittedConditions.contains(filter.condition)) {
-                when (filter.relationFormat) {
+                //Relation format should be taken from DataView relation links
+                val filterRelationFormat = dataViewRelationLinks.firstOrNull { it.key == filter.relation }?.format
+                when (filterRelationFormat) {
                     Relation.Format.DATE -> {
                         val value = DateParser.parse(filter.value)
                         val updatedValue = filter.quickOption.getTimestampForQuickOption(
@@ -117,7 +125,7 @@ class CreateDataViewObject @Inject constructor(
                             dateProvider = dateProvider
                         )
                         if (updatedValue != null)  {
-                            put(filter.relation, updatedValue)
+                            put(filter.relation, "$updatedValue")
                         }
                     }
                     else -> {
@@ -154,20 +162,23 @@ class CreateDataViewObject @Inject constructor(
         data class SetByType(
             val type: TypeKey,
             val filters: List<DVFilter>,
-            val template: Id?
+            val template: Id?,
+            val dvRelationLinks: List<RelationLink>
         ) : Params()
 
         data class SetByRelation(
             val type: TypeKey,
             val filters: List<DVFilter>,
-            val relations: List<Id>,
-            val template: Id?
+            val template: Id?,
+            val dvRelationLinks: List<RelationLink>,
+            val objSetByRelation: ObjectWrapper.Relation
         ) : Params()
 
         data class Collection(
             val type: TypeKey,
             val filters: List<DVFilter>,
-            val template: Id?
+            val template: Id?,
+            val dvRelationLinks: List<RelationLink>
         ) : Params()
     }
 

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.sets.subscription
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -24,7 +24,7 @@ interface DataViewSubscription {
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
-        storeOfRelations: StoreOfRelations
+        dataViewRelationLinks: List<RelationLink>
     ): Flow<DataViewState>
 
     suspend fun startObjectCollectionSubscription(
@@ -34,7 +34,7 @@ interface DataViewSubscription {
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
-        storeOfRelations: StoreOfRelations
+        dataViewRelationLinks: List<RelationLink>
     ): Flow<DataViewState>
 }
 
@@ -49,7 +49,7 @@ class DefaultDataViewSubscription(
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
-        storeOfRelations: StoreOfRelations
+        dataViewRelationLinks: List<RelationLink>
     ): Flow<DataViewState> {
         if (context.isEmpty() || collection.isEmpty()) {
             Timber.w("Data view collection subscription: context or collection is empty")
@@ -61,7 +61,7 @@ class DefaultDataViewSubscription(
             return emptyFlow()
         }
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
+            addAll(activeViewer.filters.updateFormatForSubscription(relationLinks = dataViewRelationLinks))
             addAll(defaultDataViewFilters(spaces = spaces))
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
@@ -86,7 +86,7 @@ class DefaultDataViewSubscription(
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
-        storeOfRelations: StoreOfRelations
+        dataViewRelationLinks: List<RelationLink>
     ): Flow<DataViewState> {
         if (context.isEmpty()) {
             Timber.w("Data view set subscription: context is empty")
@@ -114,7 +114,7 @@ class DefaultDataViewSubscription(
         }
 
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
+            addAll(activeViewer.filters.updateFormatForSubscription(relationLinks = dataViewRelationLinks))
             addAll(defaultDataViewFilters(spaces = spaces))
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }

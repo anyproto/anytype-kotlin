@@ -534,7 +534,7 @@
     <string name="templates_menu_edit">Изменить шаблон</string>
     <string name="templates_menu_duplicate">Дублировать</string>
     <string name="templates_menu_delete">Удалить</string>
-    <string name="unsupported">Не поддерживается</string>
+    <string name="unsupported">Unsupported</string>
     <string name="set_as_default">Установить по умолчанию</string>
     <string name="default_object">Тип объекта по умолчанию</string>
     <string name="default_template">Шаблон по умолчанию</string>

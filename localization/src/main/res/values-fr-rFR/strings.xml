@@ -532,7 +532,7 @@
     <string name="templates_menu_edit">Modifier le modèle</string>
     <string name="templates_menu_duplicate">Dupliquer</string>
     <string name="templates_menu_delete">Supprimer</string>
-    <string name="unsupported">Non pris en charge</string>
+    <string name="unsupported">Unsupported</string>
     <string name="set_as_default">Make default</string>
     <string name="default_object">Default object</string>
     <string name="default_template">Default template</string>

@@ -532,7 +532,7 @@
     <string name="templates_menu_edit">Editar plantilla</string>
     <string name="templates_menu_duplicate">Duplicar</string>
     <string name="templates_menu_delete">Borrar</string>
-    <string name="unsupported">No soportado</string>
+    <string name="unsupported">Unsupported</string>
     <string name="set_as_default">Establecer como predeterminado</string>
     <string name="default_object">Objeto predeterminado</string>
     <string name="default_template">Plantilla predeterminada</string>

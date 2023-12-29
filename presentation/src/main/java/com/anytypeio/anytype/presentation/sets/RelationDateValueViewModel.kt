@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_utils.ext.getTodayTimeUnit
 import com.anytypeio.anytype.core_utils.ext.getTomorrowTimeUnit
 import com.anytypeio.anytype.core_utils.ext.getYesterdayTimeUnit
 import com.anytypeio.anytype.core_utils.ext.isSameDay
-import com.anytypeio.anytype.presentation.relations.DateParser
+import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import java.util.*

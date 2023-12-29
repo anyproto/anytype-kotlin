@@ -532,7 +532,7 @@
     <string name="templates_menu_edit">Vorlage bearbeiten</string>
     <string name="templates_menu_duplicate">Duplizieren</string>
     <string name="templates_menu_delete">Löschen</string>
-    <string name="unsupported">Nicht unterstützt</string>
+    <string name="unsupported">Unsupported</string>
     <string name="set_as_default">Als Standard festlegen</string>
     <string name="default_object">Standardobjekt</string>
     <string name="default_template">Standardvorlage</string>

@@ -532,7 +532,7 @@
     <string name="templates_menu_edit">Rediger mal</string>
     <string name="templates_menu_duplicate">Dupliser</string>
     <string name="templates_menu_delete">Slett</string>
-    <string name="unsupported">Ikke støttet</string>
+    <string name="unsupported">Unsupported</string>
     <string name="set_as_default">Make default</string>
     <string name="default_object">Default object</string>
     <string name="default_template">Default template</string>

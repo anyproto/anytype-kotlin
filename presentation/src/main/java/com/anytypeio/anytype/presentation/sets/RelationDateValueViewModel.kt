@@ -23,6 +23,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class RelationDateValueViewModel(
     private val relations: ObjectRelationProvider,
@@ -40,6 +41,7 @@ class RelationDateValueViewModel(
         relationKey: Key,
         objectId: String
     ) {
+        Timber.d("RelationDateValueViewModel, onStart: ctx:[%s], relationKey:[%s], objectId:[%s]", ctx, relationKey, objectId)
         jobs += viewModelScope.launch {
             val pipeline = combine(
                 relations.observe(relationKey),

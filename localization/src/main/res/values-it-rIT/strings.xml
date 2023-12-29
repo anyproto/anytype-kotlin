@@ -232,7 +232,7 @@
     <string name="paste">Incolla</string>
     <string name="select">Select</string>
     <string name="search">Cerca</string>
-    <string name="search_hint">Search...</string>
+    <string name="search_hint">Cerca...</string>
     <string name="relations">Relazioni</string>
     <string name="relation">Relation</string>
     <string name="download">Scarica</string>
@@ -350,7 +350,7 @@
     <string name="select_tags">Select tags</string>
     <string name="select_status">Seleziona stato</string>
     <string name="select_objects">Select objects</string>
-    <string name="no_value">No value</string>
+    <string name="no_value">Nessun valore</string>
     <string name="source">Source</string>
     <string name="query">Query</string>
     <string name="select_query">Seleziona query</string>
@@ -532,7 +532,7 @@
     <string name="templates_menu_edit">Modifica modello</string>
     <string name="templates_menu_duplicate">Duplica</string>
     <string name="templates_menu_delete">Elimina</string>
-    <string name="unsupported">Non supportato</string>
+    <string name="unsupported">Unsupported</string>
     <string name="set_as_default">Make default</string>
     <string name="default_object">Default object</string>
     <string name="default_template">Default template</string>
@@ -1040,13 +1040,13 @@
     <!--endregion-->
     <!--region ORIGIN RELATION VALUES -->
     <string name="relation_origin_none">Nessuno</string>
-    <string name="relation_origin_clipboard">Clipboard</string>
-    <string name="relation_origin_dnd">Drag &amp; Drop</string>
-    <string name="relation_origin_imported_object">Imported object</string>
-    <string name="relation_origin_web_clipper">Web clipper</string>
+    <string name="relation_origin_clipboard">Appunti</string>
+    <string name="relation_origin_dnd">Trascina &amp; Rilascia</string>
+    <string name="relation_origin_imported_object">Oggetto importato</string>
+    <string name="relation_origin_web_clipper">Clipper web</string>
     <string name="relation_origin_mobile_sharing_extension">Mobile sharing extension</string>
     <string name="relation_origin_use_case">Use case</string>
-    <string name="relation_origin_library_installed">Library installed</string>
+    <string name="relation_origin_library_installed">Libreria installata</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="one">%d collegamento a </item>

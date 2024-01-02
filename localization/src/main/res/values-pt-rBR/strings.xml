@@ -157,7 +157,7 @@
     <string name="modal_view_name">Nome da Visualização</string>
     <string name="modal_details">Detalhes</string>
     <string name="modal_detail_name">Detalhe do nome</string>
-    <string name="modal_detail_type">Detail type</string>
+    <string name="modal_detail_type">Detalhe o tipo</string>
     <string name="hint_title">Título</string>
     <string name="hint_profile_title">Nome Sobrenome</string>
     <string name="hint_header_one">Título</string>
@@ -364,7 +364,7 @@
     <string name="enter_url">Insira a URL</string>
     <string name="enter_email">Insira o e-mail</string>
     <string name="enter_phone">Insira o telefone</string>
-    <string name="scroll_to_select_position">Scroll to select new position</string>
+    <string name="scroll_to_select_position">Role para selecionar uma nova posição</string>
     <string name="block_action_add_below">Adicionar abaixo</string>
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_home_button">Home button</string>
@@ -394,7 +394,7 @@
     <string name="no_data">Sem dados</string>
     <string name="no_source">Não há fonte</string>
     <string name="deleted_object">Objeto excluído</string>
-    <string name="open_set">Open set</string>
+    <string name="open_set">Abrir conjunto</string>
     <string name="deleted">Apagado</string>
     <string name="paste_link_or_search">Colar link ou pesquisar Objetos</string>
     <string name="paste_from_clipboard">Colar da área de transferência</string>
@@ -421,7 +421,7 @@
     <string name="visible">Visível</string>
     <string name="card">Cartão</string>
     <string name="inline">Inline</string>
-    <string name="set_view">Set View</string>
+    <string name="set_view">Configurar Visualização</string>
     <string name="inline_set">Conjunto em linha</string>
     <string name="inline_collection">Coleção em linha</string>
     <string name="fit_image">Ajustar imagem</string>

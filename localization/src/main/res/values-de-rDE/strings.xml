@@ -400,7 +400,7 @@
     <string name="paste_from_clipboard">Aus Zwischenspeicher einfügen</string>
     <string name="create_object_with_name">Erstelle Objekt „%1$s“</string>
     <string name="layout_basic_name">Einfach</string>
-    <string name="layout_basic_description">Standardlayout für Leinenblöcke</string>
+    <string name="layout_basic_description">Standardlayout für Leinwandblöcke</string>
     <string name="layout_note_name">Notiz</string>
     <string name="layout_note_description">Entwickelt um schnell Gedanken zu erfassen</string>
     <string name="layout_profile_name">Profil</string>
@@ -532,7 +532,7 @@
     <string name="templates_menu_edit">Vorlage bearbeiten</string>
     <string name="templates_menu_duplicate">Duplizieren</string>
     <string name="templates_menu_delete">Löschen</string>
-    <string name="unsupported">Unsupported</string>
+    <string name="unsupported">Nicht unterstützt</string>
     <string name="set_as_default">Als Standard festlegen</string>
     <string name="default_object">Standardobjekt</string>
     <string name="default_template">Standardvorlage</string>
@@ -847,13 +847,13 @@
     <string name="slash_widget_main_color">Farbe</string>
     <string name="slash_widget_main_background">Hintergrund</string>
     <string name="slash_widget_style_text">Text</string>
-    <string name="slash_widget_style_text_subtitle">Einfach mit einem reinen Text beginnen</string>
+    <string name="slash_widget_style_text_subtitle">Einfach mit dem Schreiben eines reinen Textes beginnen</string>
     <string name="slash_widget_style_title">Titel</string>
     <string name="slash_widget_style_title_subtitle">Große Abschnittsüberschrift</string>
     <string name="slash_widget_style_heading">Überschrift</string>
-    <string name="slash_widget_style_heading_subtitle">Einfach mit einem reinen Text beginnen</string>
+    <string name="slash_widget_style_heading_subtitle">Einfach mit dem Schreiben eines reinen Textes beginnen</string>
     <string name="slash_widget_style_subheading">Unterüberschrift</string>
-    <string name="slash_widget_style_subheading_subtitle">Einfach mit einem reinen Text beginnen</string>
+    <string name="slash_widget_style_subheading_subtitle">Einfach mit dem Schreiben eines reinen Textes beginnen</string>
     <string name="slash_widget_style_highlighted">Hervorhebung</string>
     <string name="slash_widget_style_highlighted_subtitle">Kleinabschnitt Überschrift</string>
     <string name="slash_widget_style_callout">Textbox</string>
@@ -861,7 +861,7 @@
     <string name="slash_widget_style_checkbox">Checkbox</string>
     <string name="slash_widget_style_checkbox_subtitle">Aufgabe mit To-do-Liste erstellen und verwalten</string>
     <string name="slash_widget_style_bulleted">Aufzählung</string>
-    <string name="slash_widget_style_bulleted_subtitle">Einfach mit einem reinen Text beginnen</string>
+    <string name="slash_widget_style_bulleted_subtitle">Einfach mit dem Schreiben eines reinen Textes beginnen</string>
     <string name="slash_widget_style_numbered">Nummerierung</string>
     <string name="slash_widget_style_numbered_subtitle">Liste mit Nummerierung</string>
     <string name="slash_widget_style_toggle">Ein-/Ausblenden</string>
@@ -1040,13 +1040,13 @@
     <!--endregion-->
     <!--region ORIGIN RELATION VALUES -->
     <string name="relation_origin_none">Keine</string>
-    <string name="relation_origin_clipboard">Clipboard</string>
+    <string name="relation_origin_clipboard">Zwischenablage</string>
     <string name="relation_origin_dnd">Drag &amp; Drop</string>
-    <string name="relation_origin_imported_object">Imported object</string>
+    <string name="relation_origin_imported_object">Importiertes Objekt</string>
     <string name="relation_origin_web_clipper">Web clipper</string>
-    <string name="relation_origin_mobile_sharing_extension">Mobile sharing extension</string>
-    <string name="relation_origin_use_case">Use case</string>
-    <string name="relation_origin_library_installed">Library installed</string>
+    <string name="relation_origin_mobile_sharing_extension">Erweiterung für mobiles Teilen</string>
+    <string name="relation_origin_use_case">Anwendungsfall</string>
+    <string name="relation_origin_library_installed">Bibliothek installiert</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="one">%d Link zu</item>

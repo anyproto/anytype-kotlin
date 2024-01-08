@@ -33,7 +33,7 @@ object MentionConst {
 fun Block.Content.Text.Mark.createMentionMarkup(
     obj: ObjectWrapper.Basic?,
     urlBuilder: UrlBuilder
-): Markup.Mark.Mention? {
+): Markup.Mark? {
 
     val p = param
 

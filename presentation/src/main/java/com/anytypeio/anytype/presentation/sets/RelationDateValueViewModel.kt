@@ -8,14 +8,11 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
-import com.anytypeio.anytype.core_utils.ext.getTodayTimeUnit
-import com.anytypeio.anytype.core_utils.ext.getTomorrowTimeUnit
-import com.anytypeio.anytype.core_utils.ext.getYesterdayTimeUnit
-import com.anytypeio.anytype.core_utils.ext.isSameDay
 import com.anytypeio.anytype.core_models.ext.DateParser
+import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.DateType
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import java.util.*
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,10 +20,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class RelationDateValueViewModel(
     private val relations: ObjectRelationProvider,
-    private val values: ObjectValueProvider
+    private val values: ObjectValueProvider,
+    private val dateProvider: DateProvider
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<DateValueCommand>(0)
@@ -40,6 +39,7 @@ class RelationDateValueViewModel(
         relationKey: Key,
         objectId: String
     ) {
+        Timber.d("onStart: ctx:[$ctx], relationKey:[$relationKey], objectId:[$objectId]")
         jobs += viewModelScope.launch {
             val pipeline = combine(
                 relations.observe(relationKey),
@@ -57,21 +57,15 @@ class RelationDateValueViewModel(
     }
 
     fun onTodayClicked() {
-        val calendar = Calendar.getInstance()
-        val timeInSeconds = calendar.timeInMillis / 1000
-        setDate(timeInSeconds = timeInSeconds)
+        setDate(timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay())
     }
 
     fun onTomorrowClicked() {
-        val calendar = Calendar.getInstance().apply { add(Calendar.DATE, 1) }
-        val timeInSeconds = calendar.timeInMillis / 1000
-        setDate(timeInSeconds = timeInSeconds)
+        setDate(timeInSeconds = dateProvider.getTimestampForTomorrowAtStartOfDay())
     }
 
     fun onYesterdayClicked() {
-        val calendar = Calendar.getInstance().apply { add(Calendar.DATE, -1) }
-        val timeInSeconds = calendar.timeInMillis / 1000
-        setDate(timeInSeconds = timeInSeconds)
+        setDate(timeInSeconds = dateProvider.getTimestampForYesterdayAtStartOfDay())
     }
 
     fun onExactDayClicked() {
@@ -106,17 +100,14 @@ class RelationDateValueViewModel(
 
     fun setDate(timeInSeconds: Long?) {
         if (timeInSeconds != null) {
-            val exactDay = Calendar.getInstance()
-            exactDay.timeInMillis = timeInSeconds * 1000
-            val today = getTodayTimeUnit()
-            val tomorrow = getTomorrowTimeUnit()
-            val yesterday = getYesterdayTimeUnit()
-            val isToday = exactDay.isSameDay(today)
-            val isTomorrow = exactDay.isSameDay(tomorrow)
-            val isYesterday = exactDay.isSameDay(yesterday)
+            val dateType = dateProvider.calculateDateType(timeInSeconds)
+            val isToday = dateType == DateType.TODAY
+            val isTomorrow = dateType == DateType.TOMORROW
+            val isYesterday = dateType == DateType.YESTERDAY
+
             var exactDayFormat: String? = null
             if (!isToday && !isTomorrow && !isYesterday) {
-                exactDayFormat = exactDay.timeInMillis.formatTimeInMillis(DEFAULT_DATE_FORMAT)
+                exactDayFormat = (timeInSeconds * 1000).formatTimeInMillis(DEFAULT_DATE_FORMAT)
             }
             _views.value = views.value.copy(
                 isToday = isToday,
@@ -136,20 +127,14 @@ class RelationDateValueViewModel(
         }
     }
 
-    private fun getTimestampFromValue(value: Any?): Long? = when (value) {
-        is Double -> value.toLong()
-        is Long -> value
-        null -> null
-        else -> throw IllegalArgumentException("Relation date value wrong format:$this")
-    }
-
     class Factory(
         private val relations: ObjectRelationProvider,
-        private val values: ObjectValueProvider
+        private val values: ObjectValueProvider,
+        private val dateProvider: DateProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return RelationDateValueViewModel(relations, values) as T
+            return RelationDateValueViewModel(relations, values, dateProvider) as T
         }
     }
 }

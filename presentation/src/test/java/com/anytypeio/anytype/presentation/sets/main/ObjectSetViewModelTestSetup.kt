@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -341,7 +342,8 @@ open class ObjectSetViewModelTestSetup {
         dvSorts: List<Block.Content.DataView.Sort> = emptyList(),
         storeOfRelations: StoreOfRelations,
         keys: List<Key> = emptyList(),
-        sources: List<Id> = emptyList()
+        sources: List<Id> = emptyList(),
+        dvRelationLinks: List<RelationLink> = emptyList()
     ) {
         val dvKeys = ObjectSearchConstants.defaultDataViewKeys + keys
         doReturn(
@@ -352,7 +354,7 @@ open class ObjectSetViewModelTestSetup {
         ).`when`(repo).searchObjectsWithSubscription(
             subscription = subscription,
             collection = collection,
-            filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
+            filters = dvFilters.updateFormatForSubscription(dvRelationLinks) + ObjectSearchConstants.defaultDataViewFilters(
                 spaces = listOf(spaceConfig.space, spaceConfig.techSpace)
             ),
             sorts = dvSorts,

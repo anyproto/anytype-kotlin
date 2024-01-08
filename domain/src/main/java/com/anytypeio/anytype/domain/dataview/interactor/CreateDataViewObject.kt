@@ -203,7 +203,7 @@ class CreateDataViewObject @Inject constructor(
 
 private fun DVFilterQuickOption.getTimestampForQuickOption(value: Long?, dateProvider: DateProvider): Long? {
     val option = this
-    val time = dateProvider.getNowInSeconds()
+    val time = dateProvider.getCurrentTimestampInSeconds()
     return when (option) {
         DVFilterQuickOption.DAYS_AGO -> {
             if (value == null) return null

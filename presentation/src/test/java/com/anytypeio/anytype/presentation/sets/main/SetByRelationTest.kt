@@ -65,7 +65,8 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
             CreateDataViewObject.Params.SetByType(
                 type = TypeKey(setOfKey),
                 filters = mockObjectSet.filters,
-                template = null
+                template = null,
+                dvRelationLinks = mockObjectSet.relationLinks
             )
         )
 
@@ -88,7 +89,8 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
                     CreateDataViewObject.Params.SetByType(
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
-                        template = null
+                        template = null,
+                        dvRelationLinks = mockObjectSet.relationLinks
                     )
                 )
             }

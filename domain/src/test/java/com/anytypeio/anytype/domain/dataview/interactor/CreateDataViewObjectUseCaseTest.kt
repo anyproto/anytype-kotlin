@@ -89,7 +89,7 @@ class CreateDataViewObjectUseCaseTest {
         storeOfRelations.merge(listOf(filterDate))
         spaceManager.set(spaceId)
         dateProvider.stub {
-            on { getNowInSeconds() } doReturn timestamp
+            on { getCurrentTimestampInSeconds() } doReturn timestamp
         }
     }
 

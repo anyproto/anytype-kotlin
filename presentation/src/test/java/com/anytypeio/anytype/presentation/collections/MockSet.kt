@@ -86,6 +86,8 @@ class MockSet(context: String,
     val relationLink4 = StubRelationLink(relationObject4.key)
     val relationLink5 = StubRelationLink(relationObject5.key)
 
+    val relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5)
+
     // SEARCH OBJECTS COMMAND, RELATION KEYS
     val dvKeys = listOf(
         relationObject1.key,

@@ -44,6 +44,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey)
         mockObjectCollection = MockCollection(context = root)
+        stubNetworkMode()
     }
 
     @After
@@ -74,7 +75,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             CreateDataViewObject.Params.SetByType(
                 type = TypeKey(setOfKey),
                 filters = mockObjectSet.filters,
-                template = null
+                template = null,
+                dvRelationLinks = listOf()
             )
         )
 
@@ -97,7 +99,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
                     CreateDataViewObject.Params.SetByType(
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
-                        template = null
+                        template = null,
+                        dvRelationLinks = mockObjectSet.relationLinks
                     )
                 )
             }

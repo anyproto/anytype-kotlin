@@ -338,17 +338,19 @@ fun Editable.proceedWithSettingMentionSpan(
         }
         is Markup.Mark.Mention.Base -> {
             setSpan(
-                Span.ObjectLink(
+                MentionSpan(
+                    onImageResourceReady = {},
                     context = context,
-                    link = mark.param,
-                    color = textColor,
-                    click = click,
+                    imageSize = mentionImageSize,
+                    imagePadding = mentionImagePadding,
+                    param = mark.param,
                     isArchived = mark.isArchived
                 ),
                 mark.from,
                 mark.to,
-                Markup.DEFAULT_SPANNABLE_FLAG
+                Markup.MENTION_SPANNABLE_FLAG
             )
+            if (!mark.isArchived) setClickableSpan(click, mark)
         }
         is Markup.Mark.Mention.WithEmoji -> {
             setSpan(

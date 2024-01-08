@@ -1052,6 +1052,6 @@
     <plurals name="links_from_count">
         <item quantity="other">%d links from</item>
     </plurals>
-    <string name="dates_days_ago">%1$s days ago</string>
-    <string name="dates_days_from">%1$s days from now</string>
+    <string name="dates_days_ago">%1$s hari yang lalu</string>
+    <string name="dates_days_from">%1$s hari dari sekarang</string>
 </resources>

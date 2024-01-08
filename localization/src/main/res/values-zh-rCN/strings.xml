@@ -531,7 +531,7 @@
     <string name="templates_menu_edit">编辑模板</string>
     <string name="templates_menu_duplicate">生成副本</string>
     <string name="templates_menu_delete">删除</string>
-    <string name="unsupported">Unsupported</string>
+    <string name="unsupported">暂不支持</string>
     <string name="set_as_default">设为默认</string>
     <string name="default_object">默认对象</string>
     <string name="default_template">默认模板</string>
@@ -1052,6 +1052,6 @@
     <plurals name="links_from_count">
         <item quantity="other">%d 链接自</item>
     </plurals>
-    <string name="dates_days_ago">%1$s days ago</string>
-    <string name="dates_days_from">%1$s days from now</string>
+    <string name="dates_days_ago">%1$s 天前</string>
+    <string name="dates_days_from">%1$s 天后</string>
 </resources>

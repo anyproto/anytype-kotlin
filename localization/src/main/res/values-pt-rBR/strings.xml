@@ -602,8 +602,8 @@
     <string name="permission_read_rationale">A permissão de leitura é necessária para carregar o arquivo para o bloco de mídia.</string>
     <string name="permission_read_denied">Permissão negada pelo usuário. Por favor, aprove esta permissão em \"Permissões\" nas configurações do aplicativo no seu dispositivo.</string>
     <string name="permission_read_never_ask_again">Read permission was denied with never ask again.\n You must approve this permission in \"Permissions\" in the app settings on your device.</string>
-    <string name="permission_write_rationale">Write permission is needed to load file to device.</string>
-    <string name="permission_write_denied">Write permission was denied. Please consider granting it in order to load files to device!</string>
+    <string name="permission_write_rationale">A permissão para Escrever é necessária para carregar o arquivo para o dispositivo.</string>
+    <string name="permission_write_denied">A permissão para Escrever foi negada. Conceda a permissão para poder carregar o arquivo no dispositivo!</string>
     <string name="permission_write_never_ask_again">Write permission was denied with never ask again.</string>
     <string name="button_allow">Permitir</string>
     <string name="button_deny">Rejeitar</string>
@@ -1056,4 +1056,6 @@
         <item quantity="one">%d link from</item>
         <item quantity="other">%d links from</item>
     </plurals>
+    <string name="dates_days_ago">%1$s days ago</string>
+    <string name="dates_days_from">%1$s days from now</string>
 </resources>

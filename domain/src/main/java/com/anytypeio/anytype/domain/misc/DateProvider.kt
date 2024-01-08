@@ -10,6 +10,8 @@ interface DateProvider {
     fun getTimestampForYesterday(): Long
     fun getTimestampForWeekAhead(): Long
     fun getTimestampForWeekAgo(): Long
+
+    fun getRelativeTimeSpanString(date: Long): CharSequence
 }
 
 enum class DateType {

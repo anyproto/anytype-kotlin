@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets.collection
 
+import android.text.format.DateUtils
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
 import java.time.Instant
@@ -19,12 +20,6 @@ class DateProviderImpl @Inject constructor() : DateProvider {
             LocalDate.now().plusDays(1) -> DateType.TOMORROW
             LocalDate.now().minusDays(1) -> DateType.YESTERDAY
             else -> DateType.EXACT_DAY
-//            else -> DateUtils.getRelativeTimeSpanString(
-//                date,
-//                currentTime,
-//                DateUtils.DAY_IN_MILLIS,
-//                DateUtils.FORMAT_ABBREV_RELATIVE
-//            )
         }
     }
 
@@ -61,4 +56,11 @@ class DateProviderImpl @Inject constructor() : DateProvider {
         val weekAgoWithZeroTime = weekAgo.atStartOfDay().toLocalDate()
         return weekAgoWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
     }
+
+    override fun getRelativeTimeSpanString(date: Long): CharSequence = DateUtils.getRelativeTimeSpanString(
+        date,
+        System.currentTimeMillis(),
+        DateUtils.DAY_IN_MILLIS,
+        DateUtils.FORMAT_ABBREV_RELATIVE
+    )
 }

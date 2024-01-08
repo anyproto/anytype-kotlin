@@ -81,6 +81,8 @@ class MockCollection(context: String) {
     val relationLink5 = StubRelationLink(relationObject5.key)
     val relationLink6 = StubRelationLink(relationObject6.key)
 
+    val relationLinks = listOf(relationLink1, relationLink2, relationLink3, relationLink4, relationLink5, relationLink6)
+
     // SEARCH OBJECTS COMMAND, RELATION KEYS
     val dvKeys = listOf(
         relationObject1.key,

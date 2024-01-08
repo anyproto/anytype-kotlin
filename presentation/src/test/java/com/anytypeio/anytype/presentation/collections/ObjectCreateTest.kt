@@ -36,6 +36,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
+        stubNetworkMode()
     }
 
     @After
@@ -88,7 +89,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 CreateDataViewObject.Params.SetByType(
                     type = TypeKey(setOfKey),
                     filters = mockObjectSet.filters,
-                    template = null
+                    template = null,
+                    dvRelationLinks = mockObjectSet.relationLinks
                 )
             )
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -107,7 +109,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     CreateDataViewObject.Params.SetByType(
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
-                        template = null
+                        template = null,
+                        dvRelationLinks = mockObjectSet.relationLinks
                     )
                 )
             }
@@ -154,7 +157,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 CreateDataViewObject.Params.SetByType(
                     type = TypeKey(setOfKey),
                     filters = mockObjectSet.filters,
-                    template = null
+                    template = null,
+                    dvRelationLinks = emptyList()
                 )
             )
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -174,7 +178,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     CreateDataViewObject.Params.SetByType(
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
-                        template = null
+                        template = null,
+                        dvRelationLinks = mockObjectSet.relationLinks
                     )
                 )
             }
@@ -236,10 +241,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             )
             doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
                 CreateDataViewObject.Params.SetByRelation(
-                    relations = listOf(setByRelationValue),
                     filters = mockObjectSet.filters,
                     template = null,
-                    type = TypeKey(pageTypeId)
+                    type = TypeKey(pageTypeId),
+                    objSetByRelation = relationSetBy,
+                    dvRelationLinks = mockObjectSet.relationLinks
                 )
             )
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -256,10 +262,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByRelation(
-                        relations = listOf(relationSetBy.id),
                         filters = mockObjectSet.filters,
                         template = null,
-                        type = TypeKey(pageTypeId)
+                        type = TypeKey(pageTypeId),
+                        objSetByRelation = relationSetBy,
+                        dvRelationLinks = mockObjectSet.relationLinks
                     )
                 )
             }
@@ -319,7 +326,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             CreateDataViewObject.Params.Collection(
                 template = null,
                 type = TypeKey(pageTypeId),
-                filters = emptyList()
+                filters = emptyList(),
+                dvRelationLinks = objectCollection.relationLinks
             )
         )
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
@@ -338,7 +346,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 CreateDataViewObject.Params.Collection(
                     type = TypeKey(pageTypeId),
                     template = null,
-                    filters = emptyList()
+                    filters = emptyList(),
+                    dvRelationLinks = objectCollection.relationLinks
                 )
             )
         }

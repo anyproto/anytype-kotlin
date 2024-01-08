@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.collections
 import app.cash.turbine.testIn
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
@@ -190,17 +191,17 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         runTest {
 
             val setByRelationValue = "setByRelation-${RandomString.make()}"
+
             val relationKey = "relationKey-${RandomString.make()}"
             val relationUniqueKeys = "relationUniqueKeys-${RandomString.make()}"
             mockObjectSet = MockSet(context = root, setOfValue = setByRelationValue)
-            val relationSetBy = StubRelationObject(
-                id = setByRelationValue,
-                key = relationKey,
-                uniqueKey = relationUniqueKeys,
-                isReadOnlyValue = false,
-                format = Relation.Format.LONG_TEXT,
-                spaceId = mockObjectSet.spaceId
+            val setByRelationMap = mapOf(
+                Relations.ID to setByRelationValue,
+                Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble(),
+                Relations.RELATION_KEY to relationKey,
+                Relations.UNIQUE_KEY to relationUniqueKeys,
             )
+            val relationSetBy = ObjectWrapper.Relation(map = setByRelationMap)
             val pageTypeId = ObjectState.VIEW_DEFAULT_OBJECT_TYPE
             val pageTypeMap = mapOf(
                 Relations.ID to MockDataFactory.randomString(),

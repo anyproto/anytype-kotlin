@@ -1056,6 +1056,6 @@
         <item quantity="one">%d link from</item>
         <item quantity="other">%d links from</item>
     </plurals>
-    <string name="dates_days_ago">%1$s days ago</string>
-    <string name="dates_days_from">%1$s days from now</string>
+    <string name="dates_days_ago">Há %1$s dias</string>
+    <string name="dates_days_from">Daqui a %1$s dias</string>
 </resources>

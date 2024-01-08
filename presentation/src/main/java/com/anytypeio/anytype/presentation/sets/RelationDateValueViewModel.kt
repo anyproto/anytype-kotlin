@@ -110,9 +110,9 @@ class RelationDateValueViewModel(
                 exactDayFormat = (timeInSeconds * 1000).formatTimeInMillis(DEFAULT_DATE_FORMAT)
             }
             _views.value = views.value.copy(
-                isToday = dateType == DateType.TODAY,
-                isYesterday = dateType == DateType.YESTERDAY,
-                isTomorrow = dateType == DateType.TOMORROW,
+                isToday = isToday,
+                isYesterday = isYesterday,
+                isTomorrow = isTomorrow,
                 exactDayFormat = exactDayFormat,
                 timeInSeconds = timeInSeconds
             )

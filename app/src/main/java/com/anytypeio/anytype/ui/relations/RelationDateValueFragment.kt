@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -69,11 +70,11 @@ open class RelationDateValueFragment : BaseBottomSheetFragment<FragmentRelationD
     private fun observeState(state: DateValueView) {
         with(binding) {
             tvRelationHeader.text = state.title
-            ivNoDateCheck.invisible()
-            ivTodayCheck.invisible()
-            ivYesterdayCheck.invisible()
-            ivTomorrowCheck.invisible()
-            ivExactDayCheck.invisible()
+            ivNoDateCheck.gone()
+            ivTodayCheck.gone()
+            ivYesterdayCheck.gone()
+            ivTomorrowCheck.gone()
+            ivExactDayCheck.gone()
             tvDate.text = null
             if (state.isToday) {
                 ivTodayCheck.visible()

@@ -49,12 +49,13 @@ object UtilModule {
     @Singleton
     fun provideAppInfo(): AppInfo = DefaultAppInfo(BuildConfig.VERSION_NAME)
 
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideDateProvider(): DateProvider = DateProviderImpl()
+
     @Module
     interface Bindings {
-
-        @Binds
-        @Singleton
-        fun bindDateProvider(provider: DateProviderImpl): DateProvider
 
         @Binds
         @Singleton

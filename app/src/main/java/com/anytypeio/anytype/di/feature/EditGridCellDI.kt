@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.feature;
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -118,8 +119,9 @@ object RelationDateValueModule {
     @PerModal
     fun provideEditGridCellViewModelFactory(
         @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider
-    ) = RelationDateValueViewModel.Factory(relations, values)
+        @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
+        dateProvider: DateProvider
+    ) = RelationDateValueViewModel.Factory(relations, values, dateProvider)
 }
 
 @Subcomponent(modules = [RelationDataViewDateValueModule::class])
@@ -142,6 +144,7 @@ object RelationDataViewDateValueModule {
     @PerModal
     fun provideEditGridCellViewModelFactory(
         @Named(DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
-        @Named(DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider
-    ) = RelationDateValueViewModel.Factory(relations, values)
+        @Named(DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
+        dateProvider: DateProvider
+    ) = RelationDateValueViewModel.Factory(relations, values, dateProvider)
 }

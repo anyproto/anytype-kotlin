@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -27,6 +28,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
@@ -37,6 +39,9 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
 
     private lateinit var viewModel: ObjectSetViewModel
     private lateinit var mockObjectCollection: MockCollection
+
+    @Mock
+    lateinit var dateProvider: DateProvider
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -81,7 +86,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
                 repo = repo,
                 spaceManager = spaceManager,
                 dispatchers = dispatchers,
-                storeOfRelations = storeOfRelations
+                storeOfRelations = storeOfRelations,
+                dateProvider = dateProvider
             ),
             dispatcher = dispatcher,
             delegator = delegator,

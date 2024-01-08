@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class DateProviderImpl @Inject constructor() : DateProvider {
 
-    override fun getFormattedDateType(date: Long): DateType {
+    override fun calculateDateType(date: Long): DateType {
         val dateInstant = Instant.ofEpochSecond(date)
         val currentDate = dateInstant.atZone(ZoneId.systemDefault()).toLocalDate()
         val currentDateWithZeroTime = currentDate.atStartOfDay().toLocalDate()
@@ -23,35 +23,35 @@ class DateProviderImpl @Inject constructor() : DateProvider {
         }
     }
 
-    override fun getNowInSeconds(): Long {
+    override fun getCurrentTimestampInSeconds(): Long {
         return System.currentTimeMillis() / 1000
     }
 
-    override fun getTimestampForToday(): Long {
+    override fun getTimestampForTodayAtStartOfDay(): Long {
         val today = LocalDate.now()
         val todayWithZeroTime = today.atStartOfDay().toLocalDate()
         return todayWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
     }
 
-    override fun getTimestampForTomorrow(): Long {
+    override fun getTimestampForTomorrowAtStartOfDay(): Long {
         val tomorrow = LocalDate.now().plusDays(1)
         val tomorrowWithZeroTime = tomorrow.atStartOfDay().toLocalDate()
         return tomorrowWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
     }
 
-    override fun getTimestampForYesterday(): Long {
+    override fun getTimestampForYesterdayAtStartOfDay(): Long {
         val yesterday = LocalDate.now().minusDays(1)
         val yesterdayWithZeroTime = yesterday.atStartOfDay().toLocalDate()
         return yesterdayWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
     }
 
-    override fun getTimestampForWeekAhead(): Long {
+    override fun getTimestampForWeekAheadAtStartOfDay(): Long {
         val weekAfter = LocalDate.now().plusWeeks(1)
         val weekAfterWithZeroTime = weekAfter.atStartOfDay().toLocalDate()
         return weekAfterWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()
     }
 
-    override fun getTimestampForWeekAgo(): Long {
+    override fun getTimestampForWeekAgoAtStartOfDay(): Long {
         val weekAgo = LocalDate.now().minusWeeks(1)
         val weekAgoWithZeroTime = weekAgo.atStartOfDay().toLocalDate()
         return weekAgoWithZeroTime.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()

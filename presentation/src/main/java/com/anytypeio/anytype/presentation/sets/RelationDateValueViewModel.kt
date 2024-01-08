@@ -57,15 +57,15 @@ class RelationDateValueViewModel(
     }
 
     fun onTodayClicked() {
-        setDate(timeInSeconds = dateProvider.getTimestampForToday())
+        setDate(timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay())
     }
 
     fun onTomorrowClicked() {
-        setDate(timeInSeconds = dateProvider.getTimestampForTomorrow())
+        setDate(timeInSeconds = dateProvider.getTimestampForTomorrowAtStartOfDay())
     }
 
     fun onYesterdayClicked() {
-        setDate(timeInSeconds = dateProvider.getTimestampForYesterday())
+        setDate(timeInSeconds = dateProvider.getTimestampForYesterdayAtStartOfDay())
     }
 
     fun onExactDayClicked() {
@@ -100,7 +100,7 @@ class RelationDateValueViewModel(
 
     fun setDate(timeInSeconds: Long?) {
         if (timeInSeconds != null) {
-            val dateType = dateProvider.getFormattedDateType(timeInSeconds)
+            val dateType = dateProvider.calculateDateType(timeInSeconds)
             val isToday = dateType == DateType.TODAY
             val isTomorrow = dateType == DateType.TOMORROW
             val isYesterday = dateType == DateType.YESTERDAY

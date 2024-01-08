@@ -106,7 +106,7 @@ class RelationDateValueViewModelTest {
     @Test
     fun `should be yesterday`() {
 
-        val yesterdayTimestamp = dateProvider.getTimestampForYesterday()
+        val yesterdayTimestamp = dateProvider.getTimestampForYesterdayAtStartOfDay()
 
         viewModel.setDate(yesterdayTimestamp)
 
@@ -128,7 +128,7 @@ class RelationDateValueViewModelTest {
     @Test
     fun `should be yesterday when it's 12 o'clock`() {
 
-        val yesterdayTimestamp = dateProvider.getTimestampForYesterday() + 43200
+        val yesterdayTimestamp = dateProvider.getTimestampForYesterdayAtStartOfDay() + 43200
         Timber.d("yesterdayTimestamp: $yesterdayTimestamp")
 
         viewModel.setDate(yesterdayTimestamp)
@@ -151,7 +151,7 @@ class RelationDateValueViewModelTest {
     @Test
     fun `should be yesterday when it's 23 59 99 o'clock`() {
 
-        val yesterdayTimestamp = dateProvider.getTimestampForYesterday() + 86399
+        val yesterdayTimestamp = dateProvider.getTimestampForYesterdayAtStartOfDay() + 86399
         Timber.d("yesterdayTimestamp: $yesterdayTimestamp")
 
         viewModel.setDate(yesterdayTimestamp)
@@ -174,7 +174,7 @@ class RelationDateValueViewModelTest {
     @Test
     fun `should be today`() {
 
-        val todayTimestamp = dateProvider.getTimestampForToday()
+        val todayTimestamp = dateProvider.getTimestampForTodayAtStartOfDay()
 
         viewModel.setDate(todayTimestamp)
 
@@ -196,7 +196,7 @@ class RelationDateValueViewModelTest {
     @Test
     fun `should be today when it's 12 o'clock`() {
 
-        val todayTimestamp = dateProvider.getTimestampForToday() + 43200
+        val todayTimestamp = dateProvider.getTimestampForTodayAtStartOfDay() + 43200
 
         viewModel.setDate(todayTimestamp)
 
@@ -218,7 +218,7 @@ class RelationDateValueViewModelTest {
     @Test
     fun `should be today when it's 23 59 59 o'clock`() {
 
-        val todayTimestamp = dateProvider.getTimestampForToday() + 86399
+        val todayTimestamp = dateProvider.getTimestampForTodayAtStartOfDay() + 86399
 
         viewModel.setDate(todayTimestamp)
 
@@ -240,7 +240,7 @@ class RelationDateValueViewModelTest {
     @Test
     fun `should be tomorrow`() {
 
-        val tomorrowTimestamp = dateProvider.getTimestampForTomorrow()
+        val tomorrowTimestamp = dateProvider.getTimestampForTomorrowAtStartOfDay()
 
         viewModel.setDate(tomorrowTimestamp)
 
@@ -262,7 +262,7 @@ class RelationDateValueViewModelTest {
     @Test
     fun `should be tomorrow when it's 12 o'clock`() {
 
-        val tomorrowTimestamp = dateProvider.getTimestampForTomorrow() + 43200
+        val tomorrowTimestamp = dateProvider.getTimestampForTomorrowAtStartOfDay() + 43200
 
         viewModel.setDate(tomorrowTimestamp)
 
@@ -284,7 +284,7 @@ class RelationDateValueViewModelTest {
     @Test
     fun `should be tomorrow when it's 23 59 59 o'clock`() {
 
-        val tomorrowTimestamp = dateProvider.getTimestampForTomorrow() + 86399
+        val tomorrowTimestamp = dateProvider.getTimestampForTomorrowAtStartOfDay() + 86399
 
         viewModel.setDate(tomorrowTimestamp)
 

@@ -3,17 +3,10 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.media
 import android.graphics.drawable.Drawable
 import android.view.View
 import android.widget.FrameLayout
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
-import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.BuildConfig
-import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
-import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.core_utils.ext.indentize
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
@@ -49,7 +42,7 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
             isFirstResource: Boolean
         ): Boolean {
             error.visible()
-            Timber.e(e, "Error while loading picture")
+            Timber.w(e, "Error while loading picture")
             return false
         }
 

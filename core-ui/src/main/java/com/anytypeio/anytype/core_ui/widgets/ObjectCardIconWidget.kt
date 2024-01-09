@@ -43,7 +43,7 @@ class ObjectCardIconWidget @JvmOverloads constructor(
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
                         .into(ivIcon)
                 } catch (e: Throwable) {
-                    Timber.e(e, "Error while setting emoji icon for: ${icon.unicode}")
+                    Timber.w(e, "Error while setting emoji icon for: ${icon.unicode}")
                 }
             }
             is ObjectIcon.Basic.Image -> {

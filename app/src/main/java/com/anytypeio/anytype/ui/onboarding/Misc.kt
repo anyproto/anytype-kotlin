@@ -37,6 +37,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorMnemonicStub
 import com.anytypeio.anytype.core_ui.ColorPagerIndicator
@@ -50,6 +51,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.ui.onboarding.screens.signin.MnemonicPhraseFormatter
 
 @Composable
 fun PagerIndicator(
@@ -202,6 +204,45 @@ fun MnemonicPhraseWidgetPreview() {
 }
 
 @Composable
+fun OnboardingMnemonicInput(
+    modifier: Modifier = Modifier,
+    text: MutableState<String>,
+    placeholder: String? = null,
+    singleLine: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions()
+) {
+    TextField(
+        modifier = modifier,
+        textStyle = UXBody
+            .copy(
+                lineHeight = 34.sp
+            )
+        ,
+        value = text.value,
+        onValueChange = {
+            text.value = it
+        },
+        colors = TextFieldDefaults.outlinedTextFieldColors(
+            disabledBorderColor = Color.Transparent,
+            errorBorderColor = Color.Transparent,
+            focusedBorderColor = Color.Transparent,
+            unfocusedBorderColor = Color.Transparent,
+            cursorColor = ColorTextInputCursor
+        ),
+        placeholder = {
+            placeholder?.let {
+                Text(text = it, style = UXBody.copy(color = ColorPlaceholderText))
+            }
+        },
+        singleLine = singleLine,
+        keyboardActions = keyboardActions,
+        keyboardOptions = keyboardOptions,
+        visualTransformation = MnemonicPhraseFormatter
+    )
+}
+
+@Composable
 fun OnboardingInput(
     modifier: Modifier = Modifier,
     text: MutableState<String>,
@@ -215,9 +256,11 @@ fun OnboardingInput(
         modifier = modifier.then(
             Modifier
                 .background(
-                    Color(0x26DAD7CA), RoundedCornerShape(24.dp)
+                    color = Color(0x26DAD7CA),
+                    shape = RoundedCornerShape(24.dp)
                 )
                 .height(68.dp)
+                .padding(horizontal = 8.dp)
         ),
         textStyle = UXBody.copy(color = ColorTextInput),
         value = text.value,

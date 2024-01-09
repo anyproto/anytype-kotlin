@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.ext.title
@@ -221,6 +222,8 @@ private fun ObjectState.DataView.mapFeaturedRelations(
         }
     }
 }
+    .sortedByDescending { it.key == Relations.SET_OF }
+    .sortedByDescending { it.key == Relations.TYPE }
 
 fun List<DVRecord>.update(new: List<DVRecord>): List<DVRecord> {
     val update = new.associateBy { rec -> rec[ID_KEY] as String }
@@ -270,15 +273,15 @@ fun ObjectState.DataView.Collection.getObjectOrderIds(currentViewerId: String): 
     return dataViewContent.objectOrders.find { it.view == currentViewerId }?.ids ?: emptyList()
 }
 
-suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
+fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>): List<DVFilter> {
     return map { f: DVFilter ->
-        val r = storeOfRelations.getByKey(f.relation)
-        if (r != null && r.relationFormat == RelationFormat.DATE) {
-            f.copy(relationFormat = r.relationFormat)
-        } else if (r != null && r.relationFormat == RelationFormat.OBJECT) {
+        val r = relationLinks.firstOrNull { it.key == f.relation }
+        if (r != null && r.format == RelationFormat.DATE) {
+            f.copy(relationFormat = r.format)
+        } else if (r != null && r.format == RelationFormat.OBJECT) {
             // Temporary workaround for normalizing filter condition for object filters
             f.copy(
-                relationFormat = r.relationFormat,
+                relationFormat = r.format,
                 condition = if (f.condition == DVFilterCondition.EQUAL) {
                     DVFilterCondition.IN
                 } else {

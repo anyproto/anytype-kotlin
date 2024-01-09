@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
-import com.anytypeio.anytype.core_models.FileSyncStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
@@ -13,6 +12,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 /**
@@ -646,7 +646,8 @@ object ObjectSearchConstants {
 
     fun filterTypes(
         spaces: List<Id>,
-        recommendedLayouts: List<ObjectType.Layout> = emptyList()
+        recommendedLayouts: List<ObjectType.Layout> = emptyList(),
+        excludedTypeKeys: List<TypeKey> = emptyList()
     ): List<DVFilter> {
         return buildList {
             addAll(
@@ -682,6 +683,15 @@ object ObjectSearchConstants {
                     )
                 )
             )
+            if (excludedTypeKeys.isNotEmpty()) {
+                add(
+                    DVFilter(
+                        relation = Relations.UNIQUE_KEY,
+                        condition = DVFilterCondition.NOT_IN,
+                        value = excludedTypeKeys.map { it.key }
+                    )
+                )
+            }
             if (recommendedLayouts.isNotEmpty()) {
                 add(
                     DVFilter(
@@ -694,28 +704,45 @@ object ObjectSearchConstants {
         }
     }
 
-    fun defaultDataViewFilters(spaces: List<Id>) = listOf(
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = Condition.NOT_EQUAL,
-            value = true,
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = Condition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = Condition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.IN,
-            value = spaces
+    fun defaultDataViewFilters(spaces: List<Id>) = buildList {
+        add(
+            DVFilter(
+                relation = Relations.SPACE_ID,
+                condition = DVFilterCondition.IN,
+                value = spaces
+            )
         )
-    )
+        add(
+            DVFilter(
+                relation = Relations.LAYOUT,
+                condition = DVFilterCondition.NOT_IN,
+                value = SupportedLayouts.systemLayouts.map { layout ->
+                    layout.code.toDouble()
+                }
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN,
+                condition = Condition.NOT_EQUAL,
+                value = true,
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = Condition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = Condition.NOT_EQUAL,
+                value = true
+            )
+        )
+    }
 
     val defaultKeysObjectType = listOf(
         Relations.ID,

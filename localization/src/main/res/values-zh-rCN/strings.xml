@@ -48,7 +48,7 @@
     <string name="about_meta_info_for_copy">设备：%1$s\nAndroid 版本：%2$d\n应用版本：%3$s\n构建号：%4$d\n库版本：%5$s\n账户\u00A0 ID：\u00A0%6$s\n设备\u00A0 ID：\u00A0%7$s\n分析\u00A0 ID：\u00A0%8$s</string>
     <string name="space">空间</string>
     <string name="space_name">空间名称</string>
-    <string name="personal_space">设置</string>
+    <string name="personal_space">个人空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
     <string name="in_order_to_save">为了节省本地设备上的空间，您可以将所有文件卸载到我们的加密备份节点。打开文件时，文件将被重新加载。</string>
     <string name="manage_files">管理文件</string>
@@ -421,7 +421,7 @@
     <string name="card">卡片</string>
     <string name="inline">内嵌</string>
     <string name="set_view">设置视图</string>
-    <string name="inline_set">关联设置</string>
+    <string name="inline_set">内联集合</string>
     <string name="inline_collection">关联集锦</string>
     <string name="fit_image">图像自适应</string>
     <string name="image_preview">图像预览</string>
@@ -981,7 +981,7 @@
     <string name="onboarding_soul_creation_placeholder">Anytype 身份标识</string>
     <string name="onboarding_soul_creation">创建您的身份…</string>
     <string name="onboarding_soul_space_creation">设置个人空间…</string>
-    <string name="onboarding_soul_creation_personal_space">设置</string>
+    <string name="onboarding_soul_creation_personal_space">个人空间</string>
     <string name="onboarding_type_recovery_phrase">输入恢复短语</string>
     <string name="onboarding_login_or">或者</string>
     <string name="onboarding_entering_void_title">无效的输入</string>
@@ -1052,4 +1052,6 @@
     <plurals name="links_from_count">
         <item quantity="other">%d 链接自</item>
     </plurals>
+    <string name="dates_days_ago">%1$s 天前</string>
+    <string name="dates_days_from">%1$s 天后</string>
 </resources>

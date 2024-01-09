@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -29,12 +30,13 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class CreateObjectOfTypeViewModel(
+    private val params: Params,
     private val getObjectTypes: GetObjectTypes,
     private val spaceManager: SpaceManager,
     private val addObjectToSpace: AddObjectToSpace,
 ) : BaseViewModel() {
 
-    val views = MutableStateFlow<List<SelectTypeView>>(emptyList())
+    val viewState = MutableStateFlow<SelectTypeViewState>(SelectTypeViewState.Loading)
     val commands = MutableSharedFlow<Command>()
     private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
 
@@ -43,6 +45,7 @@ class CreateObjectOfTypeViewModel(
     lateinit var space: Id
 
     init {
+        Timber.d("Params: ${params}")
         viewModelScope.launch {
             space = spaceManager.get()
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
@@ -56,7 +59,8 @@ class CreateObjectOfTypeViewModel(
                                     add(Marketplace.MARKETPLACE_SPACE_ID)
                                 }
                             },
-                            recommendedLayouts = SupportedLayouts.createObjectLayouts
+                            recommendedLayouts = SupportedLayouts.createObjectLayouts,
+                            excludedTypeKeys = params.excludedTypeKeys
                         ),
                         keys = ObjectSearchConstants.defaultKeysObjectType,
                         query = query
@@ -122,7 +126,12 @@ class CreateObjectOfTypeViewModel(
                     }
                 }
             }.collect {
-                views.value = it
+                val state = if (it.isEmpty()) {
+                    SelectTypeViewState.Empty
+                } else {
+                    SelectTypeViewState.Content(it)
+                }
+                viewState.value = state
             }
         }
     }
@@ -167,6 +176,7 @@ class CreateObjectOfTypeViewModel(
     }
 
     class Factory @Inject constructor(
+        private val params: Params,
         private val getObjectTypes: GetObjectTypes,
         private val spaceManager: SpaceManager,
         private val addObjectToSpace: AddObjectToSpace
@@ -175,11 +185,22 @@ class CreateObjectOfTypeViewModel(
         override fun <T : ViewModel> create(
             modelClass: Class<T>
         ) = CreateObjectOfTypeViewModel(
+            params = params,
             getObjectTypes = getObjectTypes,
             spaceManager = spaceManager,
             addObjectToSpace = addObjectToSpace
         ) as T
     }
+
+    data class Params(
+        val excludedTypeKeys: List<TypeKey>
+    )
+}
+
+sealed class SelectTypeViewState{
+    object Loading : SelectTypeViewState()
+    object Empty : SelectTypeViewState()
+    data class Content(val views: List<SelectTypeView>) : SelectTypeViewState()
 }
 
 sealed class SelectTypeView {

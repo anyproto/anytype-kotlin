@@ -3,7 +3,6 @@ package com.anytypeio.anytype.ui.onboarding.screens.signup
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -122,7 +121,6 @@ fun SetProfileNameTitle(modifier: Modifier) {
     }
 }
 
-@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun SetProfileNameInput(
     text: MutableState<String>,

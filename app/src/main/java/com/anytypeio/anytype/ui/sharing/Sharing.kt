@@ -121,45 +121,47 @@ fun AddToAnytypeScreen(
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_primary)
             )
-            DropdownMenu(
-                expanded = isSaveAsMenuExpanded,
-                onDismissRequest = { isSaveAsMenuExpanded = false },
-                modifier = Modifier.background(
-                    color = colorResource(id = R.color.background_secondary)
-                )
-            ) {
-                items.forEachIndexed { index, s ->
-                    DropdownMenuItem(
-                        onClick = {
-                            selectedIndex = index
-                            isSaveAsMenuExpanded = false
+            if (items.size > 1) {
+                DropdownMenu(
+                    expanded = isSaveAsMenuExpanded,
+                    onDismissRequest = { isSaveAsMenuExpanded = false },
+                    modifier = Modifier.background(
+                        color = colorResource(id = R.color.background_secondary)
+                    )
+                ) {
+                    items.forEachIndexed { index, s ->
+                        DropdownMenuItem(
+                            onClick = {
+                                selectedIndex = index
+                                isSaveAsMenuExpanded = false
+                            }
+                        ) {
+                            when(s) {
+                                SAVE_AS_BOOKMARK -> {
+                                    Text(
+                                        text = stringResource(id = R.string.sharing_menu_save_as_bookmark_option),
+                                        style = BodyRegular,
+                                        color = colorResource(id = R.color.text_primary)
+                                    )
+                                }
+                                SAVE_AS_NOTE -> {
+                                    Text(
+                                        text = stringResource(id = R.string.sharing_menu_save_as_note_option),
+                                        style = BodyRegular,
+                                        color = colorResource(id = R.color.text_primary)
+                                    )
+                                }
+                                else -> {
+                                    // Draw nothing
+                                }
+                            }
                         }
-                    ) {
-                        when(s) {
-                            SAVE_AS_BOOKMARK -> {
-                                Text(
-                                    text = stringResource(id = R.string.sharing_menu_save_as_bookmark_option),
-                                    style = BodyRegular,
-                                    color = colorResource(id = R.color.text_primary)
-                                )
-                            }
-                            SAVE_AS_NOTE -> {
-                                Text(
-                                    text = stringResource(id = R.string.sharing_menu_save_as_note_option),
-                                    style = BodyRegular,
-                                    color = colorResource(id = R.color.text_primary)
-                                )
-                            }
-                            else -> {
-                                // Draw nothing
-                            }
+                        if (index != items.lastIndex) {
+                            Divider(
+                                thickness = 0.5.dp,
+                                color = colorResource(id = R.color.shape_primary)
+                            )
                         }
-                    }
-                    if (index != items.lastIndex) {
-                        Divider(
-                            thickness = 0.5.dp,
-                            color = colorResource(id = R.color.shape_primary)
-                        )
                     }
                 }
             }
@@ -174,7 +176,7 @@ fun AddToAnytypeScreen(
             )
         } else {
             CurrentSpaceSection(
-                name = "...",
+                name = stringResource(id = R.string.unknown),
                 spaces = spaces,
                 onSelectSpaceClicked = onSelectSpaceClicked
             )

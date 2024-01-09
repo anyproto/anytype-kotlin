@@ -9,16 +9,13 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
@@ -458,7 +455,7 @@ class ObjectSetViewModel(
                                         add(spaceManager.get())
                                     }
                                 },
-                                storeOfRelations = storeOfRelations
+                                dataViewRelationLinks = state.dataViewContent.relationLinks
                             )
                         } else {
                             emptyFlow()
@@ -482,7 +479,7 @@ class ObjectSetViewModel(
                                        add(spaceManager.get())
                                    }
                                 },
-                                storeOfRelations = storeOfRelations
+                                dataViewRelationLinks = state.dataViewContent.relationLinks
                             )
                         } else {
                             emptyFlow()
@@ -1048,11 +1045,13 @@ class ObjectSetViewModel(
                                 )
                             } else {
                                 val validTemplateId = templateChosenBy ?: defaultTemplate
+                                val dvRelationLinks = currentState.dataViewContent.relationLinks
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = TypeKey(uniqueKey),
                                         filters = viewer.filters,
-                                        template = validTemplateId
+                                        template = validTemplateId,
+                                        dvRelationLinks = dvRelationLinks
                                     )
                                 )
                             }
@@ -1062,9 +1061,10 @@ class ObjectSetViewModel(
                             proceedWithCreatingDataViewObject(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
-                                    relations = setObject.setOf,
                                     template = validTemplateId,
-                                    type = TypeKey(objectTypeUniqueKey)
+                                    type = TypeKey(objectTypeUniqueKey),
+                                    objSetByRelation = ObjectWrapper.Relation(sourceDetails.map),
+                                    dvRelationLinks = currentState.dataViewContent.relationLinks
                                 )
                             )
                         }
@@ -1105,8 +1105,10 @@ class ObjectSetViewModel(
 
         val validTemplateId = templateChosenBy ?: defaultTemplate
         val createObjectParams = CreateDataViewObject.Params.Collection(
-            templateId = validTemplateId,
-            type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
+            template = validTemplateId,
+            type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!,
+            filters = viewer.filters,
+            dvRelationLinks = state.dataViewContent.relationLinks
         )
         proceedWithCreatingDataViewObject(createObjectParams) { result ->
             val params = AddObjectToCollection.Params(

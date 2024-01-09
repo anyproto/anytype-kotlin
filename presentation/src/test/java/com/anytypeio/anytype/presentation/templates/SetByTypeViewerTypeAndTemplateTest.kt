@@ -151,6 +151,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 filters = listOf(),
                 type = customType1Key,
                 template = null,
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }
@@ -239,6 +240,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 filters = listOf(),
                 type = customType1Key,
                 template = DEFAULT_TEMPLATE_ID_BLANK,
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }
@@ -327,6 +329,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 filters = listOf(),
                 type = customType1Key,
                 template = template2.id,
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }
@@ -429,6 +432,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                     filters = listOf(),
                     type = customType1Key,
                     template = template1.id,
+                    dvRelationLinks = listOf(relationLink1)
                 )
                 async(params)
             }
@@ -517,6 +521,7 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 filters = listOf(),
                 type = customType1Key,
                 template = template1.id,
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }
@@ -604,7 +609,8 @@ class SetByTypeViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
             val params = CreateDataViewObject.Params.SetByType(
                 filters = listOf(),
                 type = customType1Key,
-                template = DEFAULT_TEMPLATE_ID_BLANK
+                template = DEFAULT_TEMPLATE_ID_BLANK,
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }

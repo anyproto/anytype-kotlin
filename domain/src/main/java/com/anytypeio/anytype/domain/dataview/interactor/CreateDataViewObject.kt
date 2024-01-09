@@ -3,17 +3,21 @@ package com.anytypeio.anytype.domain.dataview.interactor
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
-import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
@@ -25,6 +29,7 @@ class CreateDataViewObject @Inject constructor(
     private val repo: BlockRepository,
     private val storeOfRelations: StoreOfRelations,
     private val spaceManager: SpaceManager,
+    private  val dateProvider: DateProvider,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<CreateDataViewObject.Params, CreateDataViewObject.Result>(dispatchers.io) {
 
@@ -34,8 +39,9 @@ class CreateDataViewObject @Inject constructor(
             is Params.SetByType -> {
                 val command = Command.CreateObject(
                     template = params.template,
-                    prefilled = resolveSetByTypePrefilledObjectData(
-                        filters = params.filters
+                    prefilled = prefillObjectDetails(
+                        filters = params.filters,
+                        dataViewRelationLinks = params.dvRelationLinks
                     ),
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
@@ -49,12 +55,14 @@ class CreateDataViewObject @Inject constructor(
                 )
             }
             is Params.SetByRelation -> {
+                val prefilled = resolveSetByRelationPrefilledObjectData(
+                    viewerFilters = params.filters,
+                    objSetByRelation = params.objSetByRelation,
+                    dataViewRelationLinks = params.dvRelationLinks
+                )
                 val command = Command.CreateObject(
                     template = params.template,
-                    prefilled = resolveSetByRelationPrefilledObjectData(
-                        filters = params.filters,
-                        relations = params.relations
-                    ),
+                    prefilled = prefilled,
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
                     typeKey = params.type
@@ -68,10 +76,10 @@ class CreateDataViewObject @Inject constructor(
             }
             is Params.Collection -> {
                 val command = Command.CreateObject(
-                    template = params.templateId,
-                    prefilled = resolveSetByRelationPrefilledObjectData(
-                        filters = emptyList(),
-                        relations = emptyList()
+                    template = params.template,
+                    prefilled = prefillObjectDetails(
+                        filters = params.filters,
+                        dataViewRelationLinks = params.dvRelationLinks
                     ),
                     internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
                     space = space,
@@ -87,47 +95,45 @@ class CreateDataViewObject @Inject constructor(
         }
     }
 
-    private suspend fun resolveSetByTypePrefilledObjectData(
-        filters: List<DVFilter>
-    ): Struct = buildMap {
-        filters.forEach { filter ->
-            val relation = storeOfRelations.getByKey(filter.relation)
-            if (relation != null && relation.isReadOnly == false) {
-                if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
-                    filter.value?.let { put(filter.relation, it) }
-                }
-            }
+    private suspend fun resolveSetByRelationPrefilledObjectData(
+        objSetByRelation: ObjectWrapper.Relation,
+        viewerFilters: List<DVFilter>,
+        dataViewRelationLinks: List<RelationLink>
+    ): Struct {
+        val prefillWithSetOf = buildMap {
+            val relationFormat = objSetByRelation.relationFormat
+            val defaultValue = resolveDefaultValueByFormat(relationFormat)
+            put(objSetByRelation.key, defaultValue)
         }
+        return prefillWithSetOf + prefillObjectDetails(viewerFilters, dataViewRelationLinks)
     }
 
-
-    private suspend fun resolveSetByRelationPrefilledObjectData(
+    private suspend fun prefillObjectDetails(
         filters: List<DVFilter>,
-        relations: List<Key>
-    ): Struct = try {
-        buildMap {
-            filters.forEach { filter ->
-                val relation = storeOfRelations.getByKey(filter.relation)
-                if (relation != null && !relation.isReadonlyValue) {
-                    if (filter.condition == DVFilterCondition.ALL_IN || filter.condition == DVFilterCondition.IN || filter.condition == DVFilterCondition.EQUAL) {
-                        val value = filter.value
-                        if (value != null) {
-                            put(filter.relation, value)
+        dataViewRelationLinks: List<RelationLink>
+    ): Struct = buildMap {
+        filters.forEach { filter ->
+            val relationObject = storeOfRelations.getByKey(filter.relation) ?: return@forEach
+            if (!relationObject.isReadonlyValue && permittedConditions.contains(filter.condition)) {
+                //Relation format should be taken from DataView relation links
+                val filterRelationFormat = dataViewRelationLinks.firstOrNull { it.key == filter.relation }?.format
+                when (filterRelationFormat) {
+                    Relation.Format.DATE -> {
+                        val value = DateParser.parse(filter.value)
+                        val updatedValue = filter.quickOption.getTimestampForQuickOption(
+                            value = value,
+                            dateProvider = dateProvider
+                        )
+                        if (updatedValue != null)  {
+                            put(filter.relation, "$updatedValue")
                         }
-                    } else {
-                        put(relation.key, resolveDefaultValueByFormat(relation.relationFormat))
+                    }
+                    else -> {
+                        filter.value?.let { put(filter.relation, it) }
                     }
                 }
             }
-            relations.forEach { id ->
-                val relation = storeOfRelations.getById(id)
-                if (relation != null && !containsKey(relation.key)) {
-                    put(relation.key, resolveDefaultValueByFormat(relation.relationFormat))
-                }
-            }
         }
-    } catch (e: Exception) {
-        emptyMap()
     }
 
     private fun resolveDefaultValueByFormat(format: RelationFormat): Any? {
@@ -156,19 +162,23 @@ class CreateDataViewObject @Inject constructor(
         data class SetByType(
             val type: TypeKey,
             val filters: List<DVFilter>,
-            val template: Id?
+            val template: Id?,
+            val dvRelationLinks: List<RelationLink>
         ) : Params()
 
         data class SetByRelation(
             val type: TypeKey,
             val filters: List<DVFilter>,
-            val relations: List<Id>,
-            val template: Id?
+            val template: Id?,
+            val dvRelationLinks: List<RelationLink>,
+            val objSetByRelation: ObjectWrapper.Relation
         ) : Params()
 
         data class Collection(
             val type: TypeKey,
-            val templateId: Id?
+            val filters: List<DVFilter>,
+            val template: Id?,
+            val dvRelationLinks: List<RelationLink>
         ) : Params()
     }
 
@@ -180,5 +190,42 @@ class CreateDataViewObject @Inject constructor(
 
     companion object {
         const val EMPTY_STRING_VALUE = ""
+
+        val permittedConditions = listOf(
+            DVFilterCondition.ALL_IN,
+            DVFilterCondition.IN,
+            DVFilterCondition.EQUAL,
+            DVFilterCondition.GREATER_OR_EQUAL,
+            DVFilterCondition.LESS_OR_EQUAL
+        )
     }
 }
+
+private fun DVFilterQuickOption.getTimestampForQuickOption(value: Long?, dateProvider: DateProvider): Long? {
+    val option = this
+    val time = dateProvider.getCurrentTimestampInSeconds()
+    return when (option) {
+        DVFilterQuickOption.DAYS_AGO -> {
+            if (value == null) return null
+            time - SECONDS_IN_DAY * value
+        }
+        DVFilterQuickOption.LAST_MONTH -> time - SECONDS_IN_DAY * DAYS_IN_MONTH
+        DVFilterQuickOption.LAST_WEEK -> time - SECONDS_IN_DAY * DAYS_IN_WEEK
+        DVFilterQuickOption.YESTERDAY -> time - SECONDS_IN_DAY
+        DVFilterQuickOption.CURRENT_WEEK,
+        DVFilterQuickOption.CURRENT_MONTH,
+        DVFilterQuickOption.TODAY -> time
+        DVFilterQuickOption.TOMORROW -> time + SECONDS_IN_DAY
+        DVFilterQuickOption.NEXT_WEEK -> time + SECONDS_IN_DAY * DAYS_IN_WEEK
+        DVFilterQuickOption.NEXT_MONTH -> time + SECONDS_IN_DAY * DAYS_IN_MONTH
+        DVFilterQuickOption.DAYS_AHEAD -> {
+            if (value == null) return null
+            time + SECONDS_IN_DAY * value
+        }
+        DVFilterQuickOption.EXACT_DATE -> value
+    }
+}
+
+const val SECONDS_IN_DAY = 86400
+const val DAYS_IN_MONTH = 30
+const val DAYS_IN_WEEK = 7

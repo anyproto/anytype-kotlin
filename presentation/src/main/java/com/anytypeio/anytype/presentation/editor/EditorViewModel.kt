@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.Marketplace.COLLECTION_MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.Marketplace.SET_MARKETPLACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
@@ -202,6 +203,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackground
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockMoveToEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockReorder
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBookmarkOpen
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateLink
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsGoBackEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMentionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
@@ -3183,6 +3185,7 @@ class EditorViewModel(
                 },
                 onSuccess = { result ->
                     orchestrator.proxies.payloads.send(result.payload)
+                    sendAnalyticsCreateLink(analytics)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
                         details = orchestrator.stores.details.current().details,
@@ -4052,7 +4055,8 @@ class EditorViewModel(
                 Timber.d("No interaction allowed with this object type")
                 return
             }
-            proceedWithOpeningSelectingObjectTypeScreen()
+            val exclude = listOf(ObjectTypeUniqueKeys.SET, ObjectTypeUniqueKeys.COLLECTION)
+            proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude)
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")
         }
@@ -6045,10 +6049,18 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOpeningSelectingObjectTypeScreen() {
-        val excludeTypes = orchestrator.stores.details.current().details[context]?.type
+    private fun proceedWithOpeningSelectingObjectTypeScreen(exclude: List<Id> = emptyList()) {
+        val list = buildList {
+            val types = orchestrator.stores.details.current().details[context]?.type ?: emptyList()
+            if (types.isNotEmpty()) {
+                addAll(types)
+            }
+            if (exclude.isNotEmpty()) {
+                addAll(exclude)
+            }
+        }
         val command = Command.OpenObjectSelectTypeScreen(
-            excludedTypes = excludeTypes ?: emptyList()
+            excludedTypes = list
         )
         dispatch(command)
     }

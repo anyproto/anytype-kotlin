@@ -10,7 +10,6 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
@@ -30,6 +29,7 @@ import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -107,6 +107,8 @@ class CollectionViewModel(
 
     val payloads: Flow<Payload>
 
+    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
+
     init {
         proceedWithObservingProfileIcon()
         val externalChannelEvents: Flow<Payload> = spaceManager
@@ -126,8 +128,6 @@ class CollectionViewModel(
     }
 
     val commands = MutableSharedFlow<Command>()
-
-    val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
     private val jobs = mutableListOf<Job>()
     private val queryFlow: MutableStateFlow<String> = MutableStateFlow("")

@@ -30,6 +30,10 @@ class DatePickerFragment : BaseDialogFragment<FragmentDatePickerBinding>() {
             set(Calendar.YEAR, binding.picker.year)
             set(Calendar.MONTH, binding.picker.month)
             set(Calendar.DAY_OF_MONTH, binding.picker.dayOfMonth)
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
         }
         withParent<DatePickerReceiver> { onPickDate(calendar.timeInSeconds()) }
         dismiss()

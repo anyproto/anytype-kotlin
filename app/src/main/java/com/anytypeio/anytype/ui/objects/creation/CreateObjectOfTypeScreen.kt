@@ -69,13 +69,14 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
+import com.anytypeio.anytype.presentation.objects.SelectTypeViewState
 
 @Preview
 @Composable
 fun PreviewScreen() {
     CreateObjectOfTypeScreen(
         onTypeClicked = {},
-        views = emptyList(),
+        state = SelectTypeViewState.Loading,
         onQueryChanged = {},
         onFocused = {}
     )
@@ -86,7 +87,7 @@ fun CreateObjectOfTypeScreen(
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
-    views: List<SelectTypeView>
+    state: SelectTypeViewState
 ) {
     Column(
         modifier = Modifier.nestedScroll(rememberNestedScrollInteropConnection())
@@ -96,40 +97,51 @@ fun CreateObjectOfTypeScreen(
             Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(vertical = 6.dp)
+                .verticalScroll(rememberScrollState())
         )
         SearchField(
             onQueryChanged = onQueryChanged,
             onFocused = onFocused
         )
         Spacer(modifier = Modifier.height(8.dp))
-        ScreenContent(views, onTypeClicked)
+        ScreenContent(state, onTypeClicked)
     }
 }
 
 @Composable
 private fun ScreenContent(
-    views: List<SelectTypeView>,
+    state: SelectTypeViewState,
     onTypeClicked: (SelectTypeView.Type) -> Unit
 ) {
-    if (views.isNotEmpty()) {
-        FlowRowContent(views, onTypeClicked)
-    }
-    AnimatedVisibility(
-        visible = views.isEmpty(),
-        enter = fadeIn(animationSpec = tween(500)),
-        exit = fadeOut(animationSpec = tween(500))
-    ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            EmptyState(
-                modifier = Modifier.align(Alignment.Center),
-                title = stringResource(id = R.string.nothing_found),
-                description = stringResource(id = R.string.nothing_found_object_types),
-                icon = AlertConfig.Icon(
-                    gradient = GRADIENT_TYPE_RED,
-                    icon = R.drawable.ic_alert_error
-                )
-            )
+    when (state) {
+        is SelectTypeViewState.Content -> {
+            FlowRowContent(state.views, onTypeClicked)
         }
+        SelectTypeViewState.Empty -> {
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn(animationSpec = tween(500)),
+                exit = fadeOut(animationSpec = tween(500))
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
+                ) {
+                    EmptyState(
+                        modifier = Modifier.align(Alignment.Center),
+                        title = stringResource(id = R.string.nothing_found),
+                        description = stringResource(id = R.string.nothing_found_object_types),
+                        icon = AlertConfig.Icon(
+                            gradient = GRADIENT_TYPE_RED,
+                            icon = R.drawable.ic_alert_error
+                        )
+                    )
+                }
+            }
+        }
+
+        SelectTypeViewState.Loading -> {}
     }
 }
 
@@ -143,8 +155,7 @@ private fun FlowRowContent(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp)
-            .verticalScroll(rememberScrollState())
-        ,
+            .verticalScroll(rememberScrollState()),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
@@ -267,8 +278,7 @@ fun ObjectTypeItem(
                 shape = RoundedCornerShape(12.dp)
             )
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onItemClicked() }
-        ,
+            .clickable { onItemClicked() },
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(
@@ -306,6 +316,7 @@ private fun SearchField(
         modifier = Modifier
             .height(48.dp)
             .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
     ) {
         val focusManager = LocalFocusManager.current
         val focusRequester = FocusRequester()
@@ -356,8 +367,7 @@ private fun SearchField(
                     .onFocusChanged { state ->
                         if (state.isFocused)
                             onFocused()
-                    }
-                ,
+                    },
                 maxLines = 1,
                 singleLine = true,
                 textStyle = BodyRegular.copy(
@@ -374,7 +384,7 @@ private fun SearchField(
                         enabled = true,
                         placeholder = {
                             Text(
-                                text = stringResource(R.string.search),
+                                text = stringResource(R.string.search_hint),
                                 style = BodyRegular
                             )
                         },
@@ -405,9 +415,11 @@ private fun SearchField(
 
 @Composable
 private fun Section(title: String) {
-    Box(modifier = Modifier
-        .height(44.dp)
-        .fillMaxWidth()) {
+    Box(
+        modifier = Modifier
+            .height(44.dp)
+            .fillMaxWidth()
+    ) {
         Text(
             modifier = Modifier
                 .align(Alignment.BottomStart),

@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -168,6 +169,9 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
+    @Mock
+    lateinit var dateProvider: DateProvider
+
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultObjectType: GetDefaultObjectType
 
@@ -230,7 +234,8 @@ abstract class TestObjectSetSetup {
             repo = repo,
             storeOfRelations = storeOfRelations,
             dispatchers = dispatchers,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            dateProvider = dateProvider
         )
         setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.dataview.modals
 import android.widget.ImageView
 import android.widget.TextView
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterDateBinding
 import com.anytypeio.anytype.core_ui.widgets.RelationFormatIconWidget
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
@@ -33,9 +34,16 @@ class FilterDateViewHolder(val binding: ItemDvViewerFilterDateBinding) :
         if (item.condition.hasValue()) {
             binding.tvValue.visible()
 
+            val value = item.filterValue.value.toString()
             binding.tvValue.text = when (item.quickOption) {
-                DVFilterQuickOption.DAYS_AGO -> "${item.filterValue.value?.toString()} days ago"
-                DVFilterQuickOption.DAYS_AHEAD -> "${item.filterValue.value?.toString()} days from now"
+                DVFilterQuickOption.DAYS_AGO -> resources.getString(
+                    R.string.dates_days_ago,
+                    value
+                )
+                DVFilterQuickOption.DAYS_AHEAD -> resources.getString(
+                    R.string.dates_days_from,
+                    value
+                )
                 DVFilterQuickOption.EXACT_DATE -> item.filterValue.value?.formatTimestamp(isMillis = false)
                 else -> item.quickOption.toName()
             }

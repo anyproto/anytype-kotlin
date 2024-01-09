@@ -7,9 +7,11 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -197,13 +199,13 @@ open class ObjectSetViewModelTestSetup {
     lateinit var dataViewSubscription: DataViewSubscription
 
     val dispatcher = Dispatcher.Default<Payload>()
-    private val delegator = Delegator.Default<Action>()
+    val delegator = Delegator.Default<Action>()
     val session = ObjectSetSession()
-    private val paginator = ObjectSetPaginator()
+    val paginator = ObjectSetPaginator()
 
     val objectStore: ObjectStore = DefaultObjectStore()
     protected val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
-    private val database = ObjectSetDatabase(objectStore)
+    val database = ObjectSetDatabase(objectStore)
 
     val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
 
@@ -340,7 +342,8 @@ open class ObjectSetViewModelTestSetup {
         dvSorts: List<Block.Content.DataView.Sort> = emptyList(),
         storeOfRelations: StoreOfRelations,
         keys: List<Key> = emptyList(),
-        sources: List<Id> = emptyList()
+        sources: List<Id> = emptyList(),
+        dvRelationLinks: List<RelationLink> = emptyList()
     ) {
         val dvKeys = ObjectSearchConstants.defaultDataViewKeys + keys
         doReturn(
@@ -351,7 +354,7 @@ open class ObjectSetViewModelTestSetup {
         ).`when`(repo).searchObjectsWithSubscription(
             subscription = subscription,
             collection = collection,
-            filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(
+            filters = dvFilters.updateFormatForSubscription(dvRelationLinks) + ObjectSearchConstants.defaultDataViewFilters(
                 spaces = listOf(spaceConfig.space, spaceConfig.techSpace)
             ),
             sorts = dvSorts,
@@ -443,6 +446,12 @@ open class ObjectSetViewModelTestSetup {
                     )
                 )
             )
+        }
+    }
+
+    fun stubNetworkMode() {
+        getNetworkMode.stub {
+            onBlocking { run(Unit) } doReturn NetworkModeConfig()
         }
     }
 }

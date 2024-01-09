@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
@@ -52,6 +53,9 @@ class StartAccountTest {
     @Mock
     lateinit var metricsProvider: MetricsProvider
 
+    @Mock
+    lateinit var awaitAccountStartManager: AwaitAccountStartManager
+
     lateinit var selectAccount: SelectAccount
 
     private val config = StubConfig()
@@ -66,7 +70,8 @@ class StartAccountTest {
             repository = repo,
             configStorage = configStorage,
             featuresConfigProvider = featuresConfigProvider,
-            metricsProvider = metricsProvider
+            metricsProvider = metricsProvider,
+            awaitAccountStartManager = awaitAccountStartManager
         )
     }
 

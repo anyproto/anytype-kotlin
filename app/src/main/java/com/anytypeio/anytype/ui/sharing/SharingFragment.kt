@@ -59,7 +59,9 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         }
                     },
                     onCancelClicked = {
-                        dismiss()
+                        vm.onCancelClicked().also {
+                            dismiss()
+                        }
                     },
                     spaces = vm.spaceViews.collectAsStateWithLifecycle().value,
                     onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) }
@@ -67,9 +69,6 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                 LaunchedEffect(Unit) {
                     vm.navigation.collect { nav ->
                         when(nav) {
-                            is OpenObjectNavigation.OpenDataView -> {
-
-                            }
                             is OpenObjectNavigation.OpenEditor -> {
                                 dismiss()
                                 findNavController().navigate(
@@ -79,8 +78,8 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                                     )
                                 )
                             }
-                            is OpenObjectNavigation.UnexpectedLayoutError -> {
-
+                            else -> {
+                                // Do nothing.
                             }
                         }
                     }

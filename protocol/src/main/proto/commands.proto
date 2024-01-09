@@ -2119,12 +2119,13 @@ message Rpc {
                 UseCase useCase = 1;
 
                 enum UseCase {
-                    EMPTY = 0;
-                    SKIP = 1;
+                    NONE = 0;
+                    GET_STARTED = 1;
                     PERSONAL_PROJECTS = 2;
                     KNOWLEDGE_BASE = 3;
                     NOTES_DIARY = 4;
                     STRATEGIC_WRITING = 5;
+                    EMPTY = 6;
                 }
             }
 

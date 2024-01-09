@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.DateHelper
 import com.anytypeio.anytype.domain.account.RestoreAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -64,13 +65,15 @@ object DeletedAccountModule {
         provider: ConfigStorage,
         dispatchers: AppCoroutineDispatchers,
         user: UserSettingsRepository,
-        spaceManager: SpaceManager
+        spaceManager: SpaceManager,
+        awaitAccountStartManager: AwaitAccountStartManager
     ): Logout = Logout(
         repo = repo,
         config = provider,
         user = user,
         dispatchers = dispatchers,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        awaitAccountStartManager = awaitAccountStartManager
     )
 
     @JvmStatic
@@ -102,4 +105,5 @@ interface DeletedAccountDependencies : ComponentDependencies {
     fun relationsSubscriptionManager(): RelationsSubscriptionManager
     fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun spaceDeletedStatusWatcher(): SpaceDeletedStatusWatcher
+    fun awaitAccountStartManager(): AwaitAccountStartManager
 }

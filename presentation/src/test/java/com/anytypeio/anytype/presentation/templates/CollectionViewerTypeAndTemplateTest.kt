@@ -168,7 +168,9 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.Collection(
                 type = pageTypeKey,
-                templateId = null
+                template = null,
+                filters = emptyList(),
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }
@@ -258,7 +260,9 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.Collection(
                 type = pageTypeKey,
-                templateId = null
+                template = null,
+                filters = emptyList(),
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }
@@ -348,7 +352,9 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.Collection(
                 type = pageTypeKey,
-                templateId = pageTemplate2.id
+                template = pageTemplate2.id,
+                filters = emptyList(),
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }
@@ -438,7 +444,9 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.Collection(
                 type = TypeKey(customType1Key.key),
-                templateId = template1.id
+                template = template1.id,
+                filters = emptyList(),
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }
@@ -528,7 +536,9 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.Collection(
                 type = TypeKey(customType1Key.key),
-                templateId = DEFAULT_TEMPLATE_ID_BLANK
+                template = DEFAULT_TEMPLATE_ID_BLANK,
+                filters = emptyList(),
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }
@@ -618,7 +628,9 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
         verifyBlocking(createDataViewObject, times(1)) {
             val params = CreateDataViewObject.Params.Collection(
                 type = TypeKey(customType1Key.key),
-                templateId = template2.id
+                template = template2.id,
+                filters = emptyList(),
+                dvRelationLinks = listOf(relationLink1)
             )
             async(params)
         }

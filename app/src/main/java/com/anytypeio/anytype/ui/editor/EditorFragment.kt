@@ -832,13 +832,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
             }
             subscribe(vm.isUndoRedoToolbarIsVisible) { isVisible ->
-                val behavior = BottomSheetBehavior.from(binding.undoRedoToolbar)
-                if (isVisible) {
-                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                    behavior.addBottomSheetCallback(onHideBottomSheetCallback)
-                } else {
-                    behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
-                    behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                if (hasBinding) {
+                    val behavior = BottomSheetBehavior.from(binding.undoRedoToolbar)
+                    if (isVisible) {
+                        behavior.state = BottomSheetBehavior.STATE_EXPANDED
+                        behavior.addBottomSheetCallback(onHideBottomSheetCallback)
+                    } else {
+                        behavior.removeBottomSheetCallback(onHideBottomSheetCallback)
+                        behavior.state = BottomSheetBehavior.STATE_HIDDEN
+                    }
                 }
             }
             subscribe(vm.icon) { icon ->

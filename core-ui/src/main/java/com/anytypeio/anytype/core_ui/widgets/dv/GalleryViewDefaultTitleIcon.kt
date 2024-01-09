@@ -118,7 +118,7 @@ class GalleryViewDefaultTitleIcon @JvmOverloads constructor(
                     .diskCacheStrategy(DiskCacheStrategy.ALL)
                     .into(ivIconEmoji)
             } catch (e: Throwable) {
-                Timber.e(e, "Error while setting emoji icon for: $emoji")
+                Timber.w(e, "Error while setting emoji icon for: $emoji")
             }
         } else {
             ivIconEmoji.setImageDrawable(null)

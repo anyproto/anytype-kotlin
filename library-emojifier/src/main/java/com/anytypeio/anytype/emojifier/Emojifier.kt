@@ -55,7 +55,7 @@ object Emojifier {
             return uri(page, index)
         } catch (e: Exception) {
            return Config.EMPTY_URI.also {
-               Timber.e(e, "Error while searching for uri")
+               Timber.w(e, "Error while searching for uri")
            }
         }
     }

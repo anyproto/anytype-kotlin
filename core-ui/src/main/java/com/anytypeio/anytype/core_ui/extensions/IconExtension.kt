@@ -15,7 +15,7 @@ fun ImageView.setEmojiOrNull(unicode: String?) {
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .into(this)
         } catch (e: Throwable) {
-            Timber.e(e, "Error while setting emoji icon for: $unicode")
+            Timber.w(e, "Error while setting emoji icon for: $unicode")
         }
     else
         setImageDrawable(null)

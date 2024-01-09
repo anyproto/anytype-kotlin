@@ -17,8 +17,8 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
@@ -41,7 +41,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val analytics: Analytics,
     private val createAccount: CreateAccount,
     private val setupWallet: SetupWallet,
-    private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip,
+    private val importGetStartedUseCase: ImportGetStartedUseCase,
     private val pathProvider: PathProvider,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val crashReporter: CrashReporter,
@@ -185,7 +185,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
 
     private fun proceedWithSettingUpMobileUseCase(space: Id, name: String) {
         viewModelScope.launch {
-            setupMobileUseCaseSkip.async(SetupMobileUseCaseSkip.Params(space)).fold(
+            importGetStartedUseCase.async(ImportGetStartedUseCase.Params(space)).fold(
                 onFailure = {
                     proceedWithSettingAccountName(name)
                 },
@@ -211,7 +211,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         private val spaceGradientProvider: SpaceGradientProvider,
         private val createAccount: CreateAccount,
         private val setupWallet: SetupWallet,
-        private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip,
+        private val importGetStartedUseCase: ImportGetStartedUseCase,
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val crashReporter: CrashReporter,
@@ -227,7 +227,7 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 analytics = analytics,
                 createAccount = createAccount,
                 setupWallet = setupWallet,
-                setupMobileUseCaseSkip = setupMobileUseCaseSkip,
+                importGetStartedUseCase = importGetStartedUseCase,
                 pathProvider = pathProvider,
                 spaceGradientProvider = spaceGradientProvider,
                 relationsSubscriptionManager = relationsSubscriptionManager,

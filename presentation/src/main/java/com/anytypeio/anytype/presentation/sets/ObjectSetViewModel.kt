@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -1452,7 +1453,7 @@ class ObjectSetViewModel(
                 analytics = analytics,
                 event = ObjectStateAnalyticsEvent.OBJECT_CREATE,
                 startTime = startTime,
-                type = objType?.sourceObject ?: Props.OBJ_TYPE_CUSTOM
+                type = objType?.sourceObject ?: OBJ_TYPE_CUSTOM
             )
         }
     }

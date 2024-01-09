@@ -936,7 +936,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         fromName = getFrom(),
                         isTemplate = command.isTemplate
                     )
-                    fr.showChildFragment()
+                    if (!fr.isAdded) {
+                        fr.showChildFragment()
+                    } else {
+                        Timber.d("Ignoring, fragment already added.")
+                    }
                 }
                 is Command.OpenCoverGallery -> {
                     findNavController().safeNavigate(

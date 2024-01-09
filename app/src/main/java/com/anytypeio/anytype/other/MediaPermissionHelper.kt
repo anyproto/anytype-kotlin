@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import com.anytypeio.anytype.core_utils.ext.FilePickerUtils.getPermissionToRequestByMime
 import com.anytypeio.anytype.core_utils.ext.FilePickerUtils.hasPermission
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.core_utils.ext.msg
+import com.anytypeio.anytype.core_utils.ext.toast
 
 class MediaPermissionHelper(
     private val fragment: Fragment,
@@ -31,15 +33,19 @@ class MediaPermissionHelper(
         }
 
     fun openFilePicker(mimeType: Mimetype, requestCode: Int?) {
-        this.mimeType = mimeType
-        this.requestCode = requestCode
-        val context = fragment.context ?: return
-        val hasPermission = mimeType.hasPermission(context)
-        if (hasPermission) {
-            onPermissionSuccess(mimeType, requestCode)
-        } else {
-            val permission = mimeType.getPermissionToRequestByMime()
-            permissionReadStorage.launch(permission)
+        try {
+            this.mimeType = mimeType
+            this.requestCode = requestCode
+            val context = fragment.context ?: return
+            val hasPermission = mimeType.hasPermission(context)
+            if (hasPermission) {
+                onPermissionSuccess(mimeType, requestCode)
+            } else {
+                val permission = mimeType.getPermissionToRequestByMime()
+                permissionReadStorage.launch(permission)
+            }
+        } catch (e: Exception) {
+            fragment.toast(e.msg())
         }
     }
 }

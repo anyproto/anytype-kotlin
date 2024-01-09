@@ -838,10 +838,9 @@ class CollectionViewModel(
                 onSuccess = { result ->
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = result.typeKey.key,
-                        storeOfObjectTypes = storeOfObjectTypes,
                         route = EventsDictionary.Routes.objCreateHome,
-                        startTime = startTime
+                        startTime = startTime,
+                        objType = objType
                     )
                     proceedWithOpeningObject(result.obj)
                 },

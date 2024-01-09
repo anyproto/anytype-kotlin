@@ -7,9 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.searchScreenShow
-import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
@@ -1035,7 +1033,6 @@ class EditorViewModel(
                                     if (event.details.details[context]?.type?.contains(ObjectTypeIds.FILE) == true) {
                                         isSyncStatusVisible.value = false
                                     }
-                                    val block = event.blocks.firstOrNull { it.id == context }
                                     sendAnalyticsObjectShowEvent(
                                         analytics = analytics,
                                         startTime = startTime,
@@ -1159,7 +1156,7 @@ class EditorViewModel(
 
     fun onBackButtonPressed() {
         Timber.d("onBackButtonPressed, ")
-        viewModelScope.sendAnalyticsGoBackEvent(analytics, analyticsContext)
+        viewModelScope.sendAnalyticsGoBackEvent(analytics)
         proceedWithExitingBack()
     }
 
@@ -1403,7 +1400,7 @@ class EditorViewModel(
             range = range,
             marks = emptyList()
         )
-        viewModelScope.sendAnalyticsSetDescriptionEvent(analytics, analyticsContext)
+        viewModelScope.sendAnalyticsSetDescriptionEvent(analytics)
     }
 
     private fun proceedWithEnterEvent(
@@ -1967,8 +1964,7 @@ class EditorViewModel(
         }
         viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
             analytics = analytics,
-            type = Content.Text.Mark.Type.TEXT_COLOR,
-            context = analyticsContext
+            type = Content.Text.Mark.Type.TEXT_COLOR
         )
     }
 
@@ -1985,8 +1981,7 @@ class EditorViewModel(
         viewModelScope.sendAnalyticsBlockBackgroundEvent(
             analytics = analytics,
             count = ids.size,
-            color = color,
-            context = analyticsContext
+            color = color
         )
     }
 
@@ -2021,8 +2016,7 @@ class EditorViewModel(
             )
             sendAnalyticsUpdateTextMarkupEvent(
                 analytics = analytics,
-                type = type,
-                context = analyticsContext
+                type = type
             )
         }
     }
@@ -2170,8 +2164,7 @@ class EditorViewModel(
                 viewModelScope.launch { renderCommand.send(Unit) }
                 viewModelScope.sendAnalyticsSearchWordsEvent(
                     analytics = analytics,
-                    length = query.length,
-                    context = analyticsContext
+                    length = query.length
                 )
             }
             is SearchInDocEvent.Next -> {
@@ -2753,8 +2746,7 @@ class EditorViewModel(
                 Intent.Text.TurnInto(
                     context = context,
                     targets = targets,
-                    style = style,
-                    analyticsContext = analyticsContext
+                    style = style
                 )
             )
         }
@@ -3517,8 +3509,7 @@ class EditorViewModel(
                 )
                 sendAnalyticsBlockReorder(
                     analytics = analytics,
-                    count = blocks.size,
-                    context = analyticsContext
+                    count = blocks.size
                 )
             }
         } else {
@@ -4193,8 +4184,7 @@ class EditorViewModel(
 
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = searchScreenShow,
-            props = Props(mapOf(EventsPropertiesKey.context to analyticsContext))
+            eventName = searchScreenShow
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
@@ -4295,8 +4285,7 @@ class EditorViewModel(
                 success = {
                     dispatcher.send(it)
                     sendAnalyticsRelationValueEvent(
-                        analytics = analytics,
-                        context = analyticsContext
+                        analytics = analytics
                     )
                 },
                 failure = {
@@ -4739,8 +4728,7 @@ class EditorViewModel(
                         )
                         sendAnalyticsUpdateTextMarkupEvent(
                             analytics = analytics,
-                            type = type,
-                            context = analyticsContext
+                            type = type
                         )
                     }
                 }
@@ -5063,15 +5051,13 @@ class EditorViewModel(
                 is SlashItem.Color.Background -> {
                     sendAnalyticsBlockBackgroundEvent(
                         analytics = analytics,
-                        color = item.themeColor.code,
-                        context = analyticsContext
+                        color = item.themeColor.code
                     )
                 }
                 is SlashItem.Color.Text -> {
                     sendAnalyticsUpdateTextMarkupEvent(
                         analytics = analytics,
-                        type = Content.Text.Mark.Type.TEXT_COLOR,
-                        context = analyticsContext
+                        type = Content.Text.Mark.Type.TEXT_COLOR
                     )
                 }
             }
@@ -5463,7 +5449,7 @@ class EditorViewModel(
                     text = event.text,
                     range = event.range
                 )
-                viewModelScope.sendAnalyticsSetTitleEvent(analytics, analyticsContext)
+                viewModelScope.sendAnalyticsSetTitleEvent(analytics)
             }
         }
     }
@@ -5840,8 +5826,7 @@ class EditorViewModel(
         viewModelScope.sendAnalyticsSearchResultEvent(
             analytics = analytics,
             pos = pos,
-            length = mentionTrigger.length - 1,
-            context = analyticsContext
+            length = mentionTrigger.length - 1
         )
         onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
     }
@@ -5981,8 +5966,7 @@ class EditorViewModel(
             )
             sendAnalyticsBlockReorder(
                 analytics = analytics,
-                count = 1,
-                context = analyticsContext
+                count = 1
             )
         }
     }

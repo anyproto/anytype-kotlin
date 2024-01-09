@@ -34,14 +34,11 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.features.WidgetAnalytics
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_LAYOUT_NONE
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.TextStyle
@@ -50,14 +47,12 @@ import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.sets.isChangingDefaultTypeAvailable
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 fun Block.Prototype.getAnalyticsEvent(
     eventName: String,
@@ -242,50 +237,18 @@ fun CoroutineScope.sendAnalyticsObjectShowEvent(
         details = details,
         ctx = ctx
     )
-    val layout = layoutCode?.toInt()?.let { code ->
-        ObjectType.Layout.values().find { layout ->
-            layout.code == code
-        }
-    }?.name ?: OBJ_LAYOUT_NONE
-    val props =  Props(
+    val props = Props(
         mapOf(
-            EventsPropertiesKey.type to objType,
-            EventsPropertiesKey.layout to layout
+            EventsPropertiesKey.objectType to objType,
         )
     )
     sendEvent(
         analytics = analytics,
         eventName = objectScreenShow,
-        props = propsForObjectEvents(details = details, context = ctx),
+        props = props,
         startTime = startTime,
         middleTime = System.currentTimeMillis(),
         renderTime = System.currentTimeMillis()
-    )
-}
-
-private fun propsForObjectEvents(
-    details: Map<Id, Block.Fields>?,
-    layoutCode: Double? = null,
-    route: String? = null,
-    context: String,
-    view: String? = null
-): Props {
-    val objType = getAnalyticsObjectType(
-        details = details,
-        ctx = context
-    )
-    val layout = layoutCode?.toInt()?.let { code ->
-        ObjectType.Layout.values().find { layout ->
-            layout.code == code
-        }
-    }?.name ?: OBJ_LAYOUT_NONE
-    return Props(
-        mapOf(
-            EventsPropertiesKey.objectType to objType,
-            EventsPropertiesKey.layout to layout,
-            EventsPropertiesKey.route to route,
-            EventsPropertiesKey.view to view
-        )
     )
 }
 
@@ -705,15 +668,21 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     details: Map<Id, Block.Fields>,
     ctx: Id
 ) {
+    val objType = getAnalyticsObjectType(
+        details = details,
+        ctx = ctx
+    )
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.objectType to objType,
+            EventsPropertiesKey.route to route,
+            EventsPropertiesKey.view to view
+        )
+    )
     sendEvent(
         analytics = analytics,
         eventName = objectCreate,
-        props = propsForObjectEvents(
-            details = details,
-            context = ctx,
-            route = route,
-            view = view
-        ),
+        props = props,
         startTime = startTime,
         middleTime = System.currentTimeMillis()
     )
@@ -721,22 +690,50 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
 
 fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     analytics: Analytics,
-    type: Key?,
     route: String,
     startTime: Long? = null,
-    view: String? = null
+    view: String? = null,
+    objType: String?
 ) {
-    launch {
-        analytics.sendEvent(
-            eventName = objectCreate,
-            props = propsForObjectEvents(
-                route = route,
-                view = view
-            ),
-            startTime = startTime,
-            middleTime = System.currentTimeMillis()
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.objectType to objType,
+            EventsPropertiesKey.route to route,
+            EventsPropertiesKey.view to view
         )
-    }
+    )
+    sendEvent(
+        analytics = analytics,
+        eventName = objectCreate,
+        props = props,
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
+    )
+}
+
+fun CoroutineScope.sendAnalyticsObjectCreateEvent(
+    analytics: Analytics,
+    route: String,
+    startTime: Long? = null,
+    view: String? = null,
+    objType: ObjectWrapper.Type?
+) {
+    val objTypeParam = if (objType == null) null
+    else objType.sourceObject ?: OBJ_TYPE_CUSTOM
+    val props = Props(
+        mapOf(
+            EventsPropertiesKey.objectType to objTypeParam,
+            EventsPropertiesKey.route to route,
+            EventsPropertiesKey.view to view
+        )
+    )
+    sendEvent(
+        analytics = analytics,
+        eventName = objectCreate,
+        props = props,
+        startTime = startTime,
+        middleTime = System.currentTimeMillis()
+    )
 }
 
 fun CoroutineScope.sendAnalyticsSetTitleEvent(
@@ -1155,7 +1152,7 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    objectType = type ?: OBJ_TYPE_CUSTOM,
+                    objectType = type,
                     route = route
                 )
             )

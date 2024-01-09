@@ -128,7 +128,7 @@ class AddToAnytypeViewModel(
                     success = { obj ->
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = MarketplaceObjectTypeIds.BOOKMARK,
+                            objType = MarketplaceObjectTypeIds.BOOKMARK,
                             route = EventsDictionary.Routes.sharingExtension,
                             startTime = startTime
                         )
@@ -170,7 +170,7 @@ class AddToAnytypeViewModel(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = MarketplaceObjectTypeIds.NOTE,
+                            objType = MarketplaceObjectTypeIds.NOTE,
                             route = EventsDictionary.Routes.sharingExtension,
                             startTime = startTime
                         )

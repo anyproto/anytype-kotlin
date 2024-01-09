@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -1125,24 +1126,22 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun proceedWithCreatingDataViewObject(
+    private suspend fun proceedWithCreatingDataViewObject(
         params: CreateDataViewObject.Params,
         action: ((CreateDataViewObject.Result) -> Unit)? = null
     ) {
         val startTime = System.currentTimeMillis()
-        viewModelScope.launch {
-            createDataViewObject.async(params).fold(
-                onFailure = { Timber.e(it, "Error while creating new record") },
-                onSuccess = { result ->
-                    action?.invoke(result)
-                    proceedWithNewDataViewObject(result)
-                    sendAnalyticsObjectCreateEvent(
-                        startTime = startTime,
-                        typeKey = result.objectType.key,
-                    )
-                }
-            )
-        }
+        createDataViewObject.async(params).fold(
+            onFailure = { Timber.e(it, "Error while creating new record") },
+            onSuccess = { result ->
+                action?.invoke(result)
+                proceedWithNewDataViewObject(result)
+                sendAnalyticsObjectCreateEvent(
+                    startTime = startTime,
+                    typeKey = result.objectType.key,
+                )
+            }
+        )
     }
 
     private suspend fun proceedWithNewDataViewObject(
@@ -1298,20 +1297,18 @@ class ObjectSetViewModel(
             return
         }
         isCustomizeViewPanelVisible.value = false
-        jobs += viewModelScope.launch {
-            val navigateCommand = when (layout) {
-                ObjectType.Layout.SET,
-                ObjectType.Layout.COLLECTION -> AppNavigation.Command.OpenSetOrCollection(target = target)
-                else -> AppNavigation.Command.OpenObject(id = target)
-            }
-            closeBlock.async(context).fold(
-                onSuccess = { navigate(EventWrapper(navigateCommand)) },
-                onFailure = {
-                    Timber.e(it, "Error while closing object set: $context")
-                    navigate(EventWrapper(navigateCommand))
-                }
-            )
+        val navigateCommand = when (layout) {
+            ObjectType.Layout.SET,
+            ObjectType.Layout.COLLECTION -> AppNavigation.Command.OpenSetOrCollection(target = target)
+            else -> AppNavigation.Command.OpenObject(id = target)
         }
+        closeBlock.async(context).fold(
+            onSuccess = { navigate(EventWrapper(navigateCommand)) },
+            onFailure = {
+                Timber.e(it, "Error while closing object set: $context")
+                navigate(EventWrapper(navigateCommand))
+            }
+        )
     }
 
     private suspend fun proceedWithOpeningTemplate(target: Id, targetTypeId: Id, targetTypeKey: Id) {
@@ -1433,11 +1430,10 @@ class ObjectSetViewModel(
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        startTime = startTime,
-                        storeOfObjectTypes = storeOfObjectTypes,
-                        type = result.typeKey.key,
                         route = EventsDictionary.Routes.navigation,
-                        view = EventsDictionary.View.viewNavbar
+                        startTime = startTime,
+                        view = EventsDictionary.View.viewNavbar,
+                        objType = objType
                     )
                 },
                 onFailure = { e ->
@@ -1456,7 +1452,7 @@ class ObjectSetViewModel(
                 analytics = analytics,
                 event = ObjectStateAnalyticsEvent.OBJECT_CREATE,
                 startTime = startTime,
-                type = objType?.sourceObject
+                type = objType?.sourceObject ?: Props.OBJ_TYPE_CUSTOM
             )
         }
     }

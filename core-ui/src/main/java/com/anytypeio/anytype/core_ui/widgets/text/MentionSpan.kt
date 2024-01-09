@@ -84,7 +84,15 @@ class MentionSpan constructor(
         }
         val rect = Rect()
         paint.getTextBounds(text.toString(), start, end, rect)
-        return imageSize + imagePadding + (rect.right - rect.left) + endPaddingPx
+
+        // Add imageSize and imagePadding only if icon or placeholder is not null
+        val additionalSize = if (icon != null || placeholder != null) {
+            imageSize + imagePadding
+        } else {
+            0
+        }
+
+        return additionalSize + (rect.right - rect.left) + endPaddingPx
     }
 
     override fun draw(
@@ -99,15 +107,18 @@ class MentionSpan constructor(
         paint: Paint
     ) {
 
+        var transitionY = 0F
         val drawable = getCachedDrawable()
-        val paintFontMetrics = paint.fontMetrics
-        val fontHeight = paintFontMetrics.descent - paintFontMetrics.ascent
-        val centerY = y + paintFontMetrics.descent - fontHeight / 2
-        val transitionY = centerY - imageSize / 2
-
-        canvas.save()
-        canvas.translate(x, transitionY)
-        drawable?.draw(canvas)
+        drawable?.let {
+            val paintFontMetrics = paint.fontMetrics
+            val fontHeight = paintFontMetrics.descent - paintFontMetrics.ascent
+            val centerY = y + paintFontMetrics.descent - fontHeight / 2
+            transitionY = centerY - imageSize / 2
+            canvas.save()
+            canvas.translate(x, transitionY)
+            it.draw(canvas)
+            canvas.restore()
+        }
 
         if (initials != null) {
             val textColor = paint.color
@@ -140,13 +151,19 @@ class MentionSpan constructor(
             }
         }
 
+        // Adjust starting position for text drawing based on presence of icon or placeholder
+        val textStartX = if (icon != null || placeholder != null) {
+            x + imageSize + imagePadding
+        } else {
+            x
+        }
+
         canvas.drawText(
             text.substring(start, end),
-            imageSize + imagePadding.toFloat(),
+            textStartX,
             y - transitionY,
             paint
         )
-        canvas.restore()
     }
 
     private fun getCachedDrawable(): Drawable? {

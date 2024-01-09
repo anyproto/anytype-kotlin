@@ -1069,7 +1069,6 @@ class HomeScreenViewModel(
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
                             type = result.typeKey.key,
-                            storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.navigation,
                             startTime = startTime,
                             view = EventsDictionary.View.viewHome

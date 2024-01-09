@@ -386,8 +386,6 @@ fun CoroutineScope.sendAnalyticsBackLinkAddEvent(
 ) {
     val props = Props(
         buildMap {
-            analytics.getContext()?.let { put("context", it) }
-            analytics.getOriginalId()?.let { put("originalId", it) }
             put("linkType", "Object")
         }
     )
@@ -406,8 +404,6 @@ fun CoroutineScope.sendAnalyticsAddToCollectionEvent(
 ) {
     val props = Props(
         buildMap {
-            analytics.getContext()?.let { put("context", it) }
-            analytics.getOriginalId()?.let { put("originalId", it) }
             put("linkType", "Collection")
         }
     )
@@ -753,7 +749,6 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
             eventName = objectCreate,
             props = propsForObjectEvents(
                 route = route,
-                sourceObject = type,
                 view = view
             ),
             startTime = startTime,
@@ -861,12 +856,7 @@ fun CoroutineScope.sendAnalyticsGoBackEvent(
 ) {
     sendEvent(
         analytics = analytics,
-        eventName = EventsDictionary.goBack,
-        props = Props(
-            mapOf(
-                EventsPropertiesKey.context to context
-            )
-        )
+        eventName = EventsDictionary.goBack
     )
 }
 
@@ -968,13 +958,6 @@ fun CoroutineScope.sendAnalyticsMentionMenuEvent(
     )
 }
 
-fun ObjectState.DataView.getAnalyticsParams(): Pair<String?, String?> {
-    val block = blocks.firstOrNull { it.id == root }
-    val analyticsContext = block?.fields?.analyticsContext
-    val analyticsObjectId = if (analyticsContext != null) block.fields.analyticsOriginalId else null
-    return Pair(analyticsContext, analyticsObjectId)
-}
-
 fun CoroutineScope.logEvent(
     state: ObjectState,
     analytics: Analytics,
@@ -991,9 +974,6 @@ fun CoroutineScope.logEvent(
         is ObjectState.DataView.Set -> "ot-set"
     }
     val scope = this
-    val params = state.getAnalyticsParams()
-    val analyticsContext = params.first
-    val analyticsObjectId = params.second
     when (event) {
         ObjectStateAnalyticsEvent.OPEN_OBJECT -> {
             when (state) {
@@ -1001,22 +981,14 @@ fun CoroutineScope.logEvent(
                     analytics = analytics,
                     eventName = collectionScreenShow,
                     startTime = startTime,
-                    middleTime = middleTime,
-                    props = buildProps(
-                        analyticsContext = analyticsContext,
-                        analyticsObjectId = analyticsObjectId
-                    )
+                    middleTime = middleTime
                 )
                 is ObjectState.DataView.Set -> scope.sendEvent(
                     analytics = analytics,
                     eventName = setScreenShow,
                     startTime = startTime,
                     middleTime = middleTime,
-                    props = buildProps(
-                        analyticsContext = analyticsContext,
-                        analyticsObjectId = analyticsObjectId,
-                        embedType = embedTypeDefault
-                    )
+                    props = buildProps(embedType = embedTypeDefault)
                 )
             }
         }
@@ -1025,11 +997,7 @@ fun CoroutineScope.logEvent(
                 analytics = analytics,
                 eventName = turnIntoCollection,
                 startTime = startTime,
-                middleTime = middleTime,
-                props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId
-                )
+                middleTime = middleTime
             )
         }
         ObjectStateAnalyticsEvent.SELECT_QUERY -> {
@@ -1038,11 +1006,7 @@ fun CoroutineScope.logEvent(
                 eventName = setSelectQuery,
                 startTime = startTime,
                 middleTime = middleTime,
-                props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
-                    type = type
-                )
+                props = buildProps(type = type)
             )
         }
         ObjectStateAnalyticsEvent.ADD_VIEW -> {
@@ -1052,8 +1016,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     type = type,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault
@@ -1067,8 +1029,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     type = type,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault
@@ -1082,8 +1042,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault
                 )
@@ -1096,8 +1054,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     type = type,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault
@@ -1111,8 +1067,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     type = type,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault
@@ -1126,8 +1080,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     type = type,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault
@@ -1141,8 +1093,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault,
                     condition = condition
@@ -1156,8 +1106,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault,
                     condition = condition
@@ -1171,8 +1119,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault
                 )
@@ -1185,8 +1131,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault,
                     type = type
@@ -1200,8 +1144,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault,
                     type = type
@@ -1215,8 +1157,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     embedType = embedTypeDefault,
                     objectType = objectTypeDefault
                 )
@@ -1233,8 +1173,6 @@ fun CoroutineScope.logEvent(
                 startTime = startTime,
                 middleTime = middleTime,
                 props = buildProps(
-                    analyticsContext = analyticsContext,
-                    analyticsObjectId = analyticsObjectId,
                     objectType = type ?: OBJ_TYPE_CUSTOM,
                     route = route
                 )
@@ -1375,8 +1313,6 @@ fun CoroutineScope.logEvent(
 }
 
 private fun buildProps(
-    analyticsContext: String? = null,
-    analyticsObjectId: String? = null,
     embedType: String? = null,
     type: String? = null,
     objectType: String? = null,
@@ -1385,8 +1321,6 @@ private fun buildProps(
 ): Props {
     return Props(
         map = buildMap {
-            if (analyticsContext != null) put("context", analyticsContext)
-            if (analyticsObjectId != null) put("originalId", analyticsObjectId)
             if (embedType != null) put("embedType", embedType)
             if (type != null) put("type", type)
             if (objectType != null) put("objectType", objectType)

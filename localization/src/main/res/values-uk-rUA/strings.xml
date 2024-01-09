@@ -534,7 +534,7 @@
     <string name="templates_menu_edit">Редагувати шаблон</string>
     <string name="templates_menu_duplicate">Дублювати</string>
     <string name="templates_menu_delete">Видалити</string>
-    <string name="unsupported">Не підтримується</string>
+    <string name="unsupported">Unsupported</string>
     <string name="set_as_default">Make default</string>
     <string name="default_object">Default object</string>
     <string name="default_template">Default template</string>
@@ -1063,4 +1063,6 @@
         <item quantity="many">%d links from</item>
         <item quantity="other">%d links from</item>
     </plurals>
+    <string name="dates_days_ago">%1$s days ago</string>
+    <string name="dates_days_from">%1$s days from now</string>
 </resources>

@@ -479,8 +479,8 @@
     <string name="number_selected_rows">%1$d rows selected</string>
     <string name="one_selected_block">выбран 1 блок</string>
     <string name="number_selected_blocks">%1$d selected blocks</string>
-    <string name="error_find_block">Could\'t find the selected block</string>
-    <string name="error_block_selection">Block selection error</string>
+    <string name="error_find_block">Не удалось найти выбранный блок</string>
+    <string name="error_block_selection">Ошибка выбора блока</string>
     <string name="undefined">Не определено</string>
     <string name="set_by_relation">Отношение: %1$s</string>
     <string name="set_by_relations">Отношение: %1$s</string>
@@ -616,7 +616,7 @@
     <string name="create_bookmark">Создать</string>
     <string name="hint_paste_or_type_a_url">Вставить или ввести URL</string>
     <string name="content_description_menu_icon">Menu icon</string>
-    <string name="failed_to_launch_wallet">Failed to launch wallet after retry.</string>
+    <string name="failed_to_launch_wallet">Не удалось запустить кошелек после повторной попытки.</string>
     <string name="pickit_drive">Выбран файл на диске</string>
     <string name="pickit_file_selected">Файл был выбран от неизвестного поставщика</string>
     <string name="pickit_local_file">Выбранный локальный файл</string>
@@ -664,9 +664,9 @@
     <string name="edit_relations_title">Свойства</string>
     <string name="edit_view">Редактировать вид</string>
     <string name="relation_open_edit">Открыть для изменения</string>
-    <string name="remove_from_set">Remove from this set</string>
-    <string name="reset">Reset</string>
-    <string name="search_a_relation">Search a relation</string>
+    <string name="remove_from_set">Удалить из этого набора</string>
+    <string name="reset">Сброс</string>
+    <string name="search_a_relation">Поиск свойств</string>
     <string name="content_description_check_icon">Check icon</string>
     <string name="filter_condition_is">Является</string>
     <string name="today">Сегодня</string>
@@ -675,19 +675,19 @@
     <string name="no_date">Нет даты</string>
     <string name="exact_day">Точная дата</string>
     <string name="reorder">Упорядочить</string>
-    <string name="choose_an_image">Choose an image</string>
-    <string name="optimal_dimensions_in_width_1080_pixels">Optimal dimensions in width 1080 pixels</string>
-    <string name="cover_size">Cover size</string>
-    <string name="tab_upload_image">Upload image</string>
+    <string name="choose_an_image">Выберите изображение</string>
+    <string name="optimal_dimensions_in_width_1080_pixels">Оптимальные размеры в ширине 1080 пикселей</string>
+    <string name="cover_size">Размер обложки</string>
+    <string name="tab_upload_image">Загрузить изображение</string>
     <string name="tab_gallery">Галерея</string>
     <string name="change_type">Изменить тип</string>
     <string name="change_cover">Изменить обложку</string>
     <string name="remove">Удалить</string>
-    <string name="choose_options">Choose options</string>
+    <string name="choose_options">Выберите параметры</string>
     <string name="search_tags">Поиск по тегам</string>
-    <string name="choose_relation_to_filter">Choose a relation to filter</string>
-    <string name="choose_relation_to_sort">Choose a relation to sort</string>
-    <string name="btn_apply_new_object">Add to list</string>
+    <string name="choose_relation_to_filter">Выберите свойство для фильтра</string>
+    <string name="choose_relation_to_sort">Выберите свойство для сортировки</string>
+    <string name="btn_apply_new_object">Добавить в список</string>
     <string name="btn_add">Добавить</string>
     <string name="btn_upload_gallery">Загрузить из галереи</string>
     <string name="btn_upload_storage">Upload from External storage</string>
@@ -709,9 +709,9 @@
     <string name="layout_description">Расположение объектов на холсте</string>
     <string name="relations_description">Список связанных объектов</string>
     <string name="history_description">All version of object</string>
-    <string name="history">History</string>
-    <string name="object_debug">Object Debug</string>
-    <string name="object_diagnostics">Diagnostics</string>
+    <string name="history">История</string>
+    <string name="object_debug">Отладка объекта</string>
+    <string name="object_diagnostics">Диагностика</string>
     <string name="provide_name">Provide name for new object</string>
     <string name="soon">Скоро</string>
     <string name="are_you_sure_delete_one_object">Are you sure you want to delete 1 object?</string>
@@ -724,7 +724,7 @@
     <string name="go_back">Вернуться</string>
     <string name="snack_object_set_not_found">Set not found for this type.</string>
     <string name="create_new_set">Создать</string>
-    <string name="shortcut_create_new_object_of_type">New %1$s</string>
+    <string name="shortcut_create_new_object_of_type">Новый %1$s</string>
     <string name="close">Закрыть</string>
     <string name="go_to_settings">Go to settings</string>
     <string name="do_not_forget_mnemonic_phrase">Don\'t forget to take and save your recovery phrase</string>
@@ -1064,4 +1064,6 @@
         <item quantity="many">%d links from</item>
         <item quantity="other">%d links from</item>
     </plurals>
+    <string name="dates_days_ago">%1$s дней назад</string>
+    <string name="dates_days_from">%1$s дней спустя</string>
 </resources>

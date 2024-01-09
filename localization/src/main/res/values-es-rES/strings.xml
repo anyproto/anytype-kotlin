@@ -232,7 +232,7 @@
     <string name="paste">Pegar</string>
     <string name="select">Seleccionar</string>
     <string name="search">Búsqueda</string>
-    <string name="search_hint">Search...</string>
+    <string name="search_hint">Buscar...</string>
     <string name="relations">Relaciones</string>
     <string name="relation">Relación</string>
     <string name="download">Descargar</string>
@@ -272,10 +272,10 @@
     <string name="sync_status_toast_unknown">Inicializando la sincronización</string>
     <string name="sync_status_toast_offline">Nodo de Anytype no está conectado</string>
     <string name="sync_status_toast_syncing">Descargando o subiendo datos a algún nodo</string>
-    <string name="sync_status_toast_synced">Backed up on Anytype Network</string>
-    <string name="sync_status_toast_synced_staging">Backed up on Anytype Staging</string>
-    <string name="sync_status_toast_synced_local">Local only</string>
-    <string name="sync_status_toast_synced_self_hosted">Backed up on Self-hosted Network</string>
+    <string name="sync_status_toast_synced">Respaldado en la red de Anytype</string>
+    <string name="sync_status_toast_synced_staging">Respaldado en Anytype Staging</string>
+    <string name="sync_status_toast_synced_local">Solo local</string>
+    <string name="sync_status_toast_synced_self_hosted">Respaldado en red de usuario</string>
     <string name="sync_status_toast_failed">Error al sincronizar, intentándolo de nuevo...</string>
     <string name="sync_status_toast_incompatible">Versión desactualizada. Por favor actualice Anytype</string>
     <string name="relation_format_description">Descripción</string>
@@ -350,7 +350,7 @@
     <string name="select_tags">Seleccionar etiquetas</string>
     <string name="select_status">Seleccionar estado</string>
     <string name="select_objects">Seleccionar objetos</string>
-    <string name="no_value">No value</string>
+    <string name="no_value">Sin valor</string>
     <string name="source">Origen</string>
     <string name="query">Consulta</string>
     <string name="select_query">Seleccionar consulta</string>
@@ -722,7 +722,7 @@
     <string name="go_back">Volver</string>
     <string name="snack_object_set_not_found">Set no encontrado para este tipo.</string>
     <string name="create_new_set">Crear</string>
-    <string name="shortcut_create_new_object_of_type">New %1$s</string>
+    <string name="shortcut_create_new_object_of_type">Nuevo %1$s</string>
     <string name="close">Cerrar</string>
     <string name="go_to_settings">Ir a Ajustes</string>
     <string name="do_not_forget_mnemonic_phrase">No olvide guardar su frase de recuperación</string>
@@ -764,12 +764,12 @@
     <string name="trouble_mode">modo_problemas</string>
     <string name="settings_screen">Ajustes</string>
     <string name="settings_network_mode">Modo de red</string>
-    <string name="settings_network_configuration_file">Self-hosted Configuration</string>
+    <string name="settings_network_configuration_file">Configuración alojada por el usuario</string>
     <string name="settings_network_configuration_file_choose">Seleccionar archivo</string>
     <string-array name="settings_networks_entries">
         <item>Anytype</item>
         <item>Sólo local</item>
-        <item>Self-hosted</item>
+        <item>Alojado por el usuario</item>
     </string-array>
     <string name="snack_link_to">enlazado a</string>
     <string name="snack_move_to">movido a</string>
@@ -893,7 +893,7 @@
     <string name="slash_widget_actions_copy">Copiar</string>
     <string name="slash_widget_actions_paste">Pegar</string>
     <string name="slash_widget_actions_link_to">Añadir enlace</string>
-    <string name="slash_widget_actions_link_to_subtitle">Create link to another object</string>
+    <string name="slash_widget_actions_link_to_subtitle">Crear enlace a otro objeto</string>
     <string name="slash_widget_actions_move">Mover</string>
     <string name="slash_widget_actions_moveto">Mover a</string>
     <string name="slash_widget_actions_clean_style">Eliminar estilo</string>
@@ -1031,12 +1031,12 @@
     <string name="alert_gallery_unsupported_description">Por favor, use la aplicación de escritorio por ahora.</string>
     <!--endregion-->
     <!--region SHARING MENU -->
-    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_section_name">Guardar como</string>
     <string name="sharing_menu_save_as_note_option">Nota</string>
     <string name="sharing_menu_save_as_bookmark_option">Marcador</string>
     <string name="sharing_menu_data">Datos</string>
     <string name="sharing_menu_add_to_anytype_header_title">Añadir a Anytype</string>
-    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
+    <string name="sharing_menu_toast_object_added">Nuevo objeto añadido al espacio \'%1$s\'</string>
     <!--endregion-->
     <!--region ORIGIN RELATION VALUES -->
     <string name="relation_origin_none">Ninguno</string>
@@ -1049,11 +1049,13 @@
     <string name="relation_origin_library_installed">Librería instalada</string>
     <!--endregion-->
     <plurals name="links_to_count">
-        <item quantity="one">%d link to</item>
-        <item quantity="other">%d links to</item>
+        <item quantity="one">%d enlace a</item>
+        <item quantity="other">%d enlaces a</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d link from</item>
-        <item quantity="other">%d links from</item>
+        <item quantity="one">%d enlace de</item>
+        <item quantity="other">%d enlaces de</item>
     </plurals>
+    <string name="dates_days_ago">Hace %1$s días</string>
+    <string name="dates_days_from">%1$s días desde ahora</string>
 </resources>

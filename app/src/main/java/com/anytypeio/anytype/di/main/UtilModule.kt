@@ -16,11 +16,13 @@ import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.DebugConfig
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
 import com.anytypeio.anytype.other.BasicLogger
 import com.anytypeio.anytype.other.DefaultDebugConfig
+import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -46,6 +48,11 @@ object UtilModule {
     @Provides
     @Singleton
     fun provideAppInfo(): AppInfo = DefaultAppInfo(BuildConfig.VERSION_NAME)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideDateProvider(): DateProvider = DateProviderImpl()
 
     @Module
     interface Bindings {

@@ -1,24 +1,19 @@
 package com.anytypeio.anytype.core_ui.features.editor
 
 import android.os.Build
-import android.view.KeyEvent
-import android.view.inputmethod.EditorInfo
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.common.Span
-import com.anytypeio.anytype.core_ui.features.editor.holders.text.Checkbox
 import com.anytypeio.anytype.core_ui.features.editor.holders.text.Paragraph
 import com.anytypeio.anytype.core_ui.tools.CustomBetterLinkMovementMethod
 import com.anytypeio.anytype.core_ui.widgets.text.MentionSpan
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_PARAGRAPH
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -358,7 +353,7 @@ class BlockAdapterReadWriteModeTest : BlockAdapterTestSetup() {
             text = blockText,
             id = MockDataFactory.randomUuid(),
             marks = listOf(
-                Markup.Mark.Mention.Base(
+                Markup.Mark.Object(
                     from = 0,
                     to = blockText.length,
                     param = mentionParam,

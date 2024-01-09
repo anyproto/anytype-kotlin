@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.auth
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.DateHelper
 import com.anytypeio.anytype.domain.account.RestoreAccount
 import com.anytypeio.anytype.domain.auth.interactor.Logout
@@ -73,6 +74,9 @@ class DeleteAccountViewModelTest {
     @Mock
     private lateinit var spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher
 
+    @Mock
+    lateinit var awaitAccountStartManager: AwaitAccountStartManager
+
     lateinit var restoreAccount: RestoreAccount
     lateinit var logout: Logout
 
@@ -90,7 +94,8 @@ class DeleteAccountViewModelTest {
             config = configStorage,
             dispatchers = testDispatchers,
             user = userSettingsRepository,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            awaitAccountStartManager = awaitAccountStartManager
         )
         vm = DeletedAccountViewModel(
             restoreAccount = restoreAccount,

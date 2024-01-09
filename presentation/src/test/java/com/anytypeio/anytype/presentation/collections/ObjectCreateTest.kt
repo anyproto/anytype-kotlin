@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.collections
 import app.cash.turbine.testIn
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubRelationObject
@@ -36,6 +37,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
+        stubNetworkMode()
     }
 
     @After
@@ -88,7 +90,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 CreateDataViewObject.Params.SetByType(
                     type = TypeKey(setOfKey),
                     filters = mockObjectSet.filters,
-                    template = null
+                    template = null,
+                    dvRelationLinks = mockObjectSet.relationLinks
                 )
             )
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -107,7 +110,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     CreateDataViewObject.Params.SetByType(
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
-                        template = null
+                        template = null,
+                        dvRelationLinks = mockObjectSet.relationLinks
                     )
                 )
             }
@@ -154,7 +158,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 CreateDataViewObject.Params.SetByType(
                     type = TypeKey(setOfKey),
                     filters = mockObjectSet.filters,
-                    template = null
+                    template = null,
+                    dvRelationLinks = emptyList()
                 )
             )
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -174,7 +179,8 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     CreateDataViewObject.Params.SetByType(
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
-                        template = null
+                        template = null,
+                        dvRelationLinks = mockObjectSet.relationLinks
                     )
                 )
             }
@@ -185,17 +191,17 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         runTest {
 
             val setByRelationValue = "setByRelation-${RandomString.make()}"
+
             val relationKey = "relationKey-${RandomString.make()}"
             val relationUniqueKeys = "relationUniqueKeys-${RandomString.make()}"
             mockObjectSet = MockSet(context = root, setOfValue = setByRelationValue)
-            val relationSetBy = StubRelationObject(
-                id = setByRelationValue,
-                key = relationKey,
-                uniqueKey = relationUniqueKeys,
-                isReadOnlyValue = false,
-                format = Relation.Format.LONG_TEXT,
-                spaceId = mockObjectSet.spaceId
+            val setByRelationMap = mapOf(
+                Relations.ID to setByRelationValue,
+                Relations.LAYOUT to ObjectType.Layout.RELATION.code.toDouble(),
+                Relations.RELATION_KEY to relationKey,
+                Relations.UNIQUE_KEY to relationUniqueKeys,
             )
+            val relationSetBy = ObjectWrapper.Relation(map = setByRelationMap)
             val pageTypeId = ObjectState.VIEW_DEFAULT_OBJECT_TYPE
             val pageTypeMap = mapOf(
                 Relations.ID to MockDataFactory.randomString(),
@@ -236,10 +242,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             )
             doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
                 CreateDataViewObject.Params.SetByRelation(
-                    relations = listOf(setByRelationValue),
                     filters = mockObjectSet.filters,
                     template = null,
-                    type = TypeKey(pageTypeId)
+                    type = TypeKey(pageTypeId),
+                    objSetByRelation = relationSetBy,
+                    dvRelationLinks = mockObjectSet.relationLinks
                 )
             )
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -256,10 +263,11 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             verifyBlocking(createDataViewObject, times(1)) {
                 async(
                     CreateDataViewObject.Params.SetByRelation(
-                        relations = listOf(relationSetBy.id),
                         filters = mockObjectSet.filters,
                         template = null,
-                        type = TypeKey(pageTypeId)
+                        type = TypeKey(pageTypeId),
+                        objSetByRelation = relationSetBy,
+                        dvRelationLinks = mockObjectSet.relationLinks
                     )
                 )
             }
@@ -317,8 +325,10 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
         )
         doReturn(Resultat.success(result)).`when`(createDataViewObject).async(
             CreateDataViewObject.Params.Collection(
-                templateId = null,
-                type = TypeKey(pageTypeId)
+                template = null,
+                type = TypeKey(pageTypeId),
+                filters = emptyList(),
+                dvRelationLinks = objectCollection.relationLinks
             )
         )
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
@@ -336,7 +346,9 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             async(
                 CreateDataViewObject.Params.Collection(
                     type = TypeKey(pageTypeId),
-                    templateId = null
+                    template = null,
+                    filters = emptyList(),
+                    dvRelationLinks = objectCollection.relationLinks
                 )
             )
         }

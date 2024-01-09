@@ -1,8 +1,10 @@
 package com.anytypeio.anytype.di.feature.sharing
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -51,4 +53,6 @@ interface AddToAnytypeDependencies : ComponentDependencies {
     fun configStorage(): ConfigStorage
     fun container(): StorelessSubscriptionContainer
     fun urlBuilder(): UrlBuilder
+    fun awaitAccountStartedManager(): AwaitAccountStartManager
+    fun analytics(): Analytics
 }

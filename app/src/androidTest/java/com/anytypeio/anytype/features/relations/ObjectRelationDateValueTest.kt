@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -37,6 +38,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 
 @RunWith(AndroidJUnit4::class)
@@ -48,6 +50,9 @@ class ObjectRelationDateValueTest {
 
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
+
+    @Mock
+    lateinit var dateProvider: DateProvider
 
     val root = MockDataFactory.randomUuid()
 
@@ -64,7 +69,8 @@ class ObjectRelationDateValueTest {
                 objectState = state,
                 storeOfRelations = storeOfRelations
             ),
-            values = DataViewObjectValueProvider(db = db, objectState = state)
+            values = DataViewObjectValueProvider(db = db, objectState = state),
+            dateProvider = dateProvider
         )
     }
 

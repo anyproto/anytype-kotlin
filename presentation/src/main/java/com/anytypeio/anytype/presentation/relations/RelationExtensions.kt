@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.relations
 
 import com.anytypeio.anytype.core_models.*
 import com.anytypeio.anytype.core_models.Relations.NUMBER_DEFAULT_VALUE
+import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.const.DateConst
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -225,35 +226,6 @@ object FilterInputValueParser {
         else -> {
             if (condition.hasValue()) value else null
         }
-    }
-}
-
-/**
- * Converts relation {format DATE} value {Any?} to time in millis {Long} or null
- * @tests [RelationValueExtensionTest]
- */
-object DateParser {
-    fun parse(value: Any?): Long? {
-        val result: Long? = when (value) {
-            is String -> value.toLongOrNull()
-            is Double -> value.toLong()
-            is Long -> value
-            else -> null
-        }
-        return result
-    }
-
-    fun parseInMillis(value: Any?) : Long? {
-        val result: Long? = when (value) {
-            is String -> value.toLongOrNull()
-            is Double -> value.toLong()
-            is Long -> value
-            else -> null
-        }
-        return if (result!= null)
-            result * 1000
-        else
-            null
     }
 }
 

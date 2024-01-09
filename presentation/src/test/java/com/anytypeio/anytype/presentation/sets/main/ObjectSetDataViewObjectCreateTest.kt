@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
+import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
@@ -32,6 +33,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
 
     private lateinit var viewModel: ObjectSetViewModel
     private lateinit var mockObjectSet: MockSet
+    private lateinit var mockObjectCollection: MockCollection
 
     private val setOfId = "setOfId"
     private val setOfKey = "setOfKey"
@@ -41,6 +43,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
         MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey)
+        mockObjectCollection = MockCollection(context = root)
+        stubNetworkMode()
     }
 
     @After
@@ -71,7 +75,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
             CreateDataViewObject.Params.SetByType(
                 type = TypeKey(setOfKey),
                 filters = mockObjectSet.filters,
-                template = null
+                template = null,
+                dvRelationLinks = listOf()
             )
         )
 
@@ -94,7 +99,8 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
                     CreateDataViewObject.Params.SetByType(
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
-                        template = null
+                        template = null,
+                        dvRelationLinks = mockObjectSet.relationLinks
                     )
                 )
             }

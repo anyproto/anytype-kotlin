@@ -355,7 +355,7 @@ abstract class ObjectMenuViewModelBase(
     fun proceedWithCreatingWidget(obj: ObjectWrapper.Basic) {
         viewModelScope.launch {
             val config = spaceManager.getConfig()
-            if (config != null) {
+            if (config != null && obj.isValid) {
                 createWidget(
                     CreateWidget.Params(
                         ctx = config.widgets,
@@ -377,6 +377,13 @@ abstract class ObjectMenuViewModelBase(
                             sendToast(SOMETHING_WENT_WRONG_MSG)
                         }
                     )
+                }
+            } else {
+                if (!obj.isValid) {
+                    sendToast("Could not create widget: object is not valid.")
+                }
+                if (config == null) {
+                    sendToast("Could not create widget: config is missing.")
                 }
             }
         }

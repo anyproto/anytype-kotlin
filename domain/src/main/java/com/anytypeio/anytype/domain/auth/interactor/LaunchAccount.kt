@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
@@ -25,7 +26,8 @@ class LaunchAccount @Inject constructor(
     private val featuresConfigProvider: FeaturesConfigProvider,
     private val spaceManager: SpaceManager,
     private val metricsProvider: MetricsProvider,
-    private val settings: UserSettingsRepository
+    private val settings: UserSettingsRepository,
+    private val awaitAccountStartManager: AwaitAccountStartManager
 ) : BaseUseCase<String, BaseUseCase.None>(context) {
 
     override suspend fun run(params: None) = try {
@@ -57,6 +59,7 @@ class LaunchAccount @Inject constructor(
             } else {
                 spaceManager.set(setup.config.space)
             }
+            awaitAccountStartManager.setIsStarted(true)
             Either.Right(setup.config.analytics)
         }
     } catch (e: Throwable) {

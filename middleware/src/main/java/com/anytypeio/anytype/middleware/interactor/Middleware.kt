@@ -1589,7 +1589,6 @@ class Middleware @Inject constructor(
     @Throws(Exception::class)
     fun objectImportUseCaseSkip(space: Id) {
         val request = Rpc.Object.ImportUseCase.Request(
-            useCase = Rpc.Object.ImportUseCase.Request.UseCase.SKIP,
             spaceId = space
         )
         if (BuildConfig.DEBUG) logRequest(request)

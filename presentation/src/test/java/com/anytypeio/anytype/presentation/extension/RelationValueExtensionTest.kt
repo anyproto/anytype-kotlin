@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_utils.const.DateConst
-import com.anytypeio.anytype.presentation.relations.DateParser
+import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.presentation.relations.getDateRelationFormat
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.test_utils.MockDataFactory

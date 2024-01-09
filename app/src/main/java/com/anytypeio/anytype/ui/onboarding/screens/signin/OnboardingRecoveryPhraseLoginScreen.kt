@@ -1,12 +1,14 @@
 package com.anytypeio.anytype.ui.onboarding.screens.signin
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
@@ -16,6 +18,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -43,7 +46,7 @@ import com.anytypeio.anytype.core_ui.views.TitleLogin
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel.SetupState
-import com.anytypeio.anytype.ui.onboarding.OnboardingInput
+import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicInput
 
 @Composable
 fun RecoveryScreenWrapper(
@@ -94,7 +97,7 @@ fun RecoveryScreen(
         LazyColumn(
             content = {
                 item {
-                    OnboardingInput(
+                    OnboardingMnemonicInput(
                         modifier = Modifier
                             .padding(
                                 start = 18.dp,
@@ -104,6 +107,14 @@ fun RecoveryScreen(
                             )
                             .height(165.dp)
                             .fillMaxWidth()
+                            .background(
+                                color = Color(0x26DAD7CA),
+                                shape = RoundedCornerShape(24.dp)
+                            )
+                            .padding(
+                                horizontal = 8.dp,
+                                vertical = 4.dp
+                            )
                         ,
                         text = text,
                         singleLine = false,
@@ -122,8 +133,7 @@ fun RecoveryScreen(
                                     context.toast(emptyRecoveryPhraseError)
                                 }
                             }
-                        ),
-                        visualTransformation = MnemonicPhraseFormatter
+                        )
                     )
                 }
                 item {

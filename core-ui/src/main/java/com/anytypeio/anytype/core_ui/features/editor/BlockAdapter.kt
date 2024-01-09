@@ -1273,7 +1273,12 @@ class BlockAdapter(
                             item = blocks[position] as BlockView.DataView.Deleted
                         )
                     }
-                    else -> throw IllegalStateException("Unexpected view holder: $holder")
+                    is Unsupported -> {
+                        holder.bind(item = blocks[position] as BlockView.Unsupported)
+                    }
+                    else -> {
+                        Timber.e("Unexpected view holder: $holder")
+                    }
                 }
                 checkIfDecorationChanged(holder, payloads.typeOf(), position)
             }

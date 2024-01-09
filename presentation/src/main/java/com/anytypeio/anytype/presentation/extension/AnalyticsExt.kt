@@ -39,7 +39,6 @@ import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
-import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
@@ -79,7 +78,7 @@ fun Block.Prototype.getAnalyticsEvent(
             Props(
                 mapOf(
                     EventsPropertiesKey.type to getTypePropName(),
-                    EventsPropertiesKey.style to getStyleName()
+                    EventsPropertiesKey.style to "Embed"
                 )
             )
         }
@@ -149,24 +148,15 @@ fun Block.Content.Text.Style.getStyleName(): String = when (this) {
 
 fun Block.Prototype.Text.getStyleName() = this.style.getStyleName()
 
-fun Block.Prototype.File.getStyleName() = when (this.type) {
+fun Block.Prototype.File.getTypePropName() = this.type.getPropName()
+
+fun Block.Content.File.Type?.getPropName() = when (this) {
     Block.Content.File.Type.NONE -> "None"
     Block.Content.File.Type.FILE -> "File"
     Block.Content.File.Type.IMAGE -> "Image"
     Block.Content.File.Type.VIDEO -> "Video"
     Block.Content.File.Type.AUDIO -> "Audio"
-    Block.Content.File.Type.PDF -> "PDF"
-}
-
-fun Block.Prototype.File.getTypePropName() = this.type.getPropName()
-
-fun Block.Content.File.Type?.getPropName() = when (this) {
-    Block.Content.File.Type.NONE -> "none"
-    Block.Content.File.Type.FILE -> "file"
-    Block.Content.File.Type.IMAGE -> "image"
-    Block.Content.File.Type.VIDEO -> "video"
-    Block.Content.File.Type.AUDIO -> "audio"
-    Block.Content.File.Type.PDF -> "pdf"
+    Block.Content.File.Type.PDF -> "Pdf"
     else -> ""
 }
 
@@ -201,14 +191,6 @@ fun Markup.Type.getPropName() = when (this) {
     Markup.Type.MENTION -> "Mention"
     Markup.Type.OBJECT -> "Object"
     Markup.Type.UNDERLINE -> "Underline"
-}
-
-fun DVViewerType.getPropName() = when (this) {
-    Block.Content.DataView.Viewer.Type.GRID -> "table"
-    Block.Content.DataView.Viewer.Type.LIST -> "list"
-    Block.Content.DataView.Viewer.Type.GALLERY -> "gallery"
-    Block.Content.DataView.Viewer.Type.BOARD -> "kanban"
-    Block.Content.DataView.Viewer.Type.CALENDAR -> "calendar"
 }
 
 fun DVFilterCondition.getPropName() = when (this) {

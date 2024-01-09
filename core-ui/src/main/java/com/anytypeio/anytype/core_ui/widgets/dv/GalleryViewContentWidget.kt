@@ -14,13 +14,13 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.content.res.use
 import androidx.core.view.updateLayoutParams
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.formatTimestamp
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.emojifier.Emojifier
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
@@ -242,7 +242,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                                             .load(Emojifier.uri(icon.unicode))
                                             .into(image)
                                     } catch (e: Throwable) {
-                                        Timber.e(
+                                        Timber.w(
                                             e,
                                             "Error while setting emoji icon for: ${icon.unicode}"
                                         )

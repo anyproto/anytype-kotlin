@@ -18,7 +18,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
+import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -35,7 +35,7 @@ import timber.log.Timber
 class OnboardingVoidViewModel @Inject constructor(
     private val createAccount: CreateAccount,
     private val setupWallet: SetupWallet,
-    private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip,
+    private val importGetStartedUseCase: ImportGetStartedUseCase,
     private val pathProvider: PathProvider,
     private val spaceGradientProvider: SpaceGradientProvider,
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
@@ -123,7 +123,7 @@ class OnboardingVoidViewModel @Inject constructor(
 
     private fun proceedWithSettingUpMobileUseCase(space: Id) {
         viewModelScope.launch {
-            setupMobileUseCaseSkip.async(SetupMobileUseCaseSkip.Params(space)).fold(
+            importGetStartedUseCase.async(ImportGetStartedUseCase.Params(space)).fold(
                 onFailure = {
                     Timber.e(it, "Error while importing use case")
                     navigation.emit(Navigation.NavigateToMnemonic)
@@ -228,7 +228,7 @@ class OnboardingVoidViewModel @Inject constructor(
     class Factory @Inject constructor(
         private val createAccount: CreateAccount,
         private val setupWallet: SetupWallet,
-        private val setupMobileUseCaseSkip: SetupMobileUseCaseSkip,
+        private val importGetStartedUseCase: ImportGetStartedUseCase,
         private val pathProvider: PathProvider,
         private val spaceGradientProvider: SpaceGradientProvider,
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
@@ -245,7 +245,7 @@ class OnboardingVoidViewModel @Inject constructor(
             return OnboardingVoidViewModel(
                 createAccount = createAccount,
                 setupWallet = setupWallet,
-                setupMobileUseCaseSkip = setupMobileUseCaseSkip,
+                importGetStartedUseCase = importGetStartedUseCase,
                 pathProvider = pathProvider,
                 spaceGradientProvider = spaceGradientProvider,
                 relationsSubscriptionManager = relationsSubscriptionManager,

@@ -8,5 +8,6 @@ enum class ObjectOrigin(val code: Int) {
     WEB_CLIPPER(4),
     SHARING_EXTENSION(5),
     USE_CASE(6),
-    BUILT_IN(7)
+    BUILT_IN(7),
+    BOOKMARK(8)
 }

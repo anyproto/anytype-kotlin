@@ -1205,6 +1205,7 @@
     <string name="relation_origin_mobile_sharing_extension">Mobile sharing extension</string>
     <string name="relation_origin_use_case">Use case</string>
     <string name="relation_origin_library_installed">Library installed</string>
+    <string name="relation_origin_bookmark">Bookmark</string>
 
     <!--endregion-->
 

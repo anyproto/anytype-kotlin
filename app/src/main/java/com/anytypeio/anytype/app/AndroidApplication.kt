@@ -5,6 +5,7 @@ import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
 import com.amplitude.api.Amplitude
+import com.amplitude.api.TrackingOptions
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.tracker.AmplitudeTracker
@@ -85,7 +86,10 @@ class AndroidApplication : Application(), HasComponentDependencies {
     }
 
     private fun setupAnalytics() {
-        Amplitude.getInstance().initialize(this, BuildConfig.AMPLITUDE_KEY)
+        Amplitude
+            .getInstance()
+            .setTrackingOptions(TrackingOptions().disableIpAddress())
+            .initialize(this, BuildConfig.AMPLITUDE_KEY)
     }
 
     private fun setupLocalNetworkAddressHandler() {

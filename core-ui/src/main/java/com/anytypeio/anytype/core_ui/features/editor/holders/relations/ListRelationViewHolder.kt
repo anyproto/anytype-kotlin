@@ -263,6 +263,7 @@ fun Int.resRelationOrigin() : Int {
         5 -> R.string.relation_origin_mobile_sharing_extension
         6 -> R.string.relation_origin_use_case
         7 -> R.string.relation_origin_library_installed
+        8 -> R.string.relation_origin_bookmark
         else -> R.string.unknown
     }
 }

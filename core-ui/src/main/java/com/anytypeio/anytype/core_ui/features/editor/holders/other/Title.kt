@@ -359,13 +359,13 @@ sealed class Title(view: View) : BlockViewHolder(view), TextHolder {
                             .diskCacheStrategy(DiskCacheStrategy.ALL)
                             .into(emoji)
                     } catch (e: Throwable) {
-                        Timber.e(e, "Error while setting emoji icon for: ${item.emoji}")
+                        Timber.w(e, "Error while setting emoji icon for: ${item.emoji}")
                     }
                 } else {
                     emoji.setImageDrawable(null)
                 }
             } catch (e: Throwable) {
-                Timber.e(e, "Could not set emoji icon")
+                Timber.w(e, "Could not set emoji icon")
             }
         }
 

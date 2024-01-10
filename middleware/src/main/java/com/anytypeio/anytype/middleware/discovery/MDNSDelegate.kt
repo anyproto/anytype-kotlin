@@ -27,7 +27,7 @@ class MDNSDelegate(
                 }
             }
         } catch (e: Exception) {
-            Timber.e(e, "Error while starting MDNS delegate")
+            Timber.w(e, "Error while starting MDNS delegate")
         }
     }
 
@@ -38,7 +38,7 @@ class MDNSDelegate(
                 resolver.stop()
             }
         } catch (e: Exception) {
-            Timber.e(e, "Error while stopping MDNS delegate")
+            Timber.w(e, "Error while stopping MDNS delegate")
         }
     }
 
@@ -49,7 +49,7 @@ class MDNSDelegate(
                 if (isStarted) start()
             }
         } catch (e: Exception) {
-            Timber.e(e, "Error while setting observer")
+            Timber.w(e, "Error while setting observer")
         }
     }
 
@@ -60,7 +60,7 @@ class MDNSDelegate(
                 stop()
             }
         } catch (e: Exception) {
-            Timber.e(e, "Error while removing observer")
+            Timber.w(e, "Error while removing observer")
         }
     }
 }

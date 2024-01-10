@@ -371,7 +371,11 @@ fun List<BlockView>.enterSAM(
         is BlockView.DataView.EmptySource -> view.copy(
             isSelected = isSelected
         )
-        else -> view.also { check(view !is BlockView.Permission) }
+        else -> view.also {
+            if(view !is BlockView.Permission) {
+                Timber.e("Attempts to enter SAM for block which does not support read / write mode")
+            }
+        }
     }
 }
 

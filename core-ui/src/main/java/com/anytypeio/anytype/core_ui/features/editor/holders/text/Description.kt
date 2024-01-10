@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import timber.log.Timber
@@ -76,7 +75,7 @@ class Description(val binding: ItemBlockDescriptionBinding) : BlockViewHolder(bi
                     }
                 }
             } catch (e: Throwable) {
-                Timber.e(e, "Error while setting cursor from $item")
+                Timber.w(e, "Error while setting cursor from $item")
             }
         }
     }

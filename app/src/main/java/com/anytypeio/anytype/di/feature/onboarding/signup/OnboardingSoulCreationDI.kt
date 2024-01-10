@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.`object`.SetupMobileUseCaseSkip
+import com.anytypeio.anytype.domain.`object`.ImportGetStartedUseCase
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -83,7 +83,7 @@ object OnboardingSoulCreationModule {
     fun provideSetupSkipUseCase(
         repository: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ) = SetupMobileUseCaseSkip(
+    ) = ImportGetStartedUseCase(
         repo = repository,
         dispatchers = dispatchers
     )

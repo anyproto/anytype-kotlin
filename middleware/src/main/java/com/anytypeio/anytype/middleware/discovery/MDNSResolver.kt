@@ -39,7 +39,7 @@ class MDNSResolver(
                 }
             }
         } catch (e: Exception) {
-            Timber.e(e, "Error while starting MDNS Resolver")
+            Timber.w(e, "Error while starting MDNS Resolver")
         }
     }
 

@@ -17,6 +17,10 @@ interface DateProvider {
     fun getTimestampForWeekAgoAtStartOfDay(): TimeInSeconds
 }
 
+interface DateTypeNameProvider {
+    fun name(type: DateType) : String
+}
+
 enum class DateType {
     TOMORROW,
     TODAY,

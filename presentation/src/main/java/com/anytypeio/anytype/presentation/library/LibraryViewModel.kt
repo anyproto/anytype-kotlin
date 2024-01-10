@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenRelation
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenType
 import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryView
@@ -22,11 +23,13 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.workspace.AddObjectToWorkspace
 import com.anytypeio.anytype.domain.workspace.RemoveObjectsFromWorkspace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -68,7 +71,8 @@ class LibraryViewModel(
     private val spaceManager: SpaceManager,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val appCoroutineDispatchers: AppCoroutineDispatchers,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : NavigationViewModel<LibraryViewModel.Navigation>() {
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
@@ -196,10 +200,20 @@ class LibraryViewModel(
     private fun proceedWithCreateDoc(
         objType: ObjectWrapper.Type? = null
     ) {
+        val startTime = System.currentTimeMillis()
         val params = objType?.uniqueKey.getCreateObjectParams(objType?.defaultTemplateId)
         viewModelScope.launch {
             createObject.async(params).fold(
-                onSuccess = { result -> proceedWithOpeningObject(result.obj) },
+                onSuccess = {
+                    result -> proceedWithOpeningObject(result.obj)
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        route = EventsDictionary.Routes.objCreateLibrary,
+                        startTime = startTime,
+                        objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
+                        view = EventsDictionary.View.viewHome
+                    )
+                            },
                 onFailure = { e -> Timber.e(e, "Error while creating a new object") }
             )
         }
@@ -481,7 +495,8 @@ class LibraryViewModel(
         private val spaceManager: SpaceManager,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val appCoroutineDispatchers: AppCoroutineDispatchers,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val storeOfObjectTypes: StoreOfObjectTypes
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -499,7 +514,8 @@ class LibraryViewModel(
                 spaceManager,
                 storelessSubscriptionContainer = storelessSubscriptionContainer,
                 appCoroutineDispatchers = appCoroutineDispatchers,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                storeOfObjectTypes = storeOfObjectTypes
             ) as T
         }
     }

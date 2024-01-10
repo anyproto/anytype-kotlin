@@ -840,7 +840,8 @@ class CollectionViewModel(
                         analytics = analytics,
                         route = EventsDictionary.Routes.objCreateHome,
                         startTime = startTime,
-                        objType = objType
+                        objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
+                        view = EventsDictionary.View.viewHome
                     )
                     proceedWithOpeningObject(result.obj)
                 },

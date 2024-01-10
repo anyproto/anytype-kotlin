@@ -1071,7 +1071,7 @@ class HomeScreenViewModel(
                             route = EventsDictionary.Routes.navigation,
                             startTime = startTime,
                             view = EventsDictionary.View.viewHome,
-                            objType = objType
+                            objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         )
                         if (objType != null) {
                             sendAnalyticsObjectTypeSelectOrChangeEvent(

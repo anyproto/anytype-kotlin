@@ -3180,10 +3180,9 @@ class EditorViewModel(
                     sendAnalyticsCreateLink(analytics)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        details = orchestrator.stores.details.current().details,
-                        ctx = context,
                         route = EventsDictionary.Routes.objPowerTool,
-                        startTime = startTime
+                        startTime = startTime,
+                        objType = storeOfObjectTypes.getByKey(objectTypeView.key)
                     )
                     proceedWithOpeningObject(result.objectId)
                 }
@@ -3225,10 +3224,10 @@ class EditorViewModel(
                 onSuccess = { result ->
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        details = orchestrator.stores.details.current().details,
-                        ctx = context,
-                        route = EventsDictionary.Routes.objPowerTool,
-                        startTime = startTime
+                        route = EventsDictionary.Routes.navigation,
+                        startTime = startTime,
+                        objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
+                        view = EventsDictionary.View.viewNavbar
                     )
                     proceedWithCloseCurrentAndOpenObject(result.obj)
                 },
@@ -5811,10 +5810,9 @@ class EditorViewModel(
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        details = orchestrator.stores.details.current().details,
-                        ctx = context,
                         route = EventsDictionary.Routes.objCreateMention,
-                        startTime = startTime
+                        startTime = startTime,
+                        objType = storeOfObjectTypes.getByKey(typeKey.key)
                     )
                 }
             )
@@ -6135,7 +6133,6 @@ class EditorViewModel(
                     createObjectAddProceedToAddToTextAsLink(
                         name = name,
                         typeKey = response.type,
-                        typeId = response.id,
                         templateId = response.defaultTemplate
                     )
                 }
@@ -6167,7 +6164,6 @@ class EditorViewModel(
     private suspend fun createObjectAddProceedToAddToTextAsLink(
         name: String,
         typeKey: TypeKey,
-        typeId: TypeId?,
         templateId: Id?
     ) {
         val startTime = System.currentTimeMillis()
@@ -6182,10 +6178,9 @@ class EditorViewModel(
                 proceedToAddObjectToTextAsLink(id = result.id)
                 viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
-                    details = orchestrator.stores.details.current().details,
-                    ctx = context,
-                    route = EventsDictionary.Routes.objTurnInto,
-                    startTime = startTime
+                    route = EventsDictionary.Routes.objLink,
+                    startTime = startTime,
+                    objType = storeOfObjectTypes.getByKey(typeKey.key)
                 )
             }
         )

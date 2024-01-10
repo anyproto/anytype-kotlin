@@ -1434,7 +1434,7 @@ class ObjectSetViewModel(
                         route = EventsDictionary.Routes.navigation,
                         startTime = startTime,
                         view = EventsDictionary.View.viewNavbar,
-                        objType = objType
+                        objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key)
                     )
                 },
                 onFailure = { e ->

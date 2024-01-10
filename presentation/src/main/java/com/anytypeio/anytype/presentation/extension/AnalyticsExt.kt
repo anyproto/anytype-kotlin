@@ -665,34 +665,6 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
     route: String,
     startTime: Long? = null,
     view: String? = null,
-    details: Map<Id, Block.Fields>,
-    ctx: Id
-) {
-    val objType = getAnalyticsObjectType(
-        details = details,
-        ctx = ctx
-    )
-    val props = Props(
-        mapOf(
-            EventsPropertiesKey.objectType to objType,
-            EventsPropertiesKey.route to route,
-            EventsPropertiesKey.view to view
-        )
-    )
-    sendEvent(
-        analytics = analytics,
-        eventName = objectCreate,
-        props = props,
-        startTime = startTime,
-        middleTime = System.currentTimeMillis()
-    )
-}
-
-fun CoroutineScope.sendAnalyticsObjectCreateEvent(
-    analytics: Analytics,
-    route: String,
-    startTime: Long? = null,
-    view: String? = null,
     objType: String?
 ) {
     val props = Props(

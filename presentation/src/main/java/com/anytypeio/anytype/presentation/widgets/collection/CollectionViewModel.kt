@@ -346,10 +346,12 @@ class CollectionViewModel(
 
     private fun List<ObjectView>.tryAddSections(): List<CollectionView> {
         return if (subscription == Subscription.Recent || subscription == Subscription.RecentLocal)
-            this.groupBy {
-                dateProvider.getRelativeTimeSpanString(
-                    if (subscription == Subscription.Recent) it.obj.lastModifiedDate
-                    else it.obj.lastOpenedDate
+            this.groupBy { item ->
+                dateProvider.calculateDateType(
+                    if (subscription == Subscription.Recent)
+                        item.obj.lastModifiedDate / 1000
+                    else
+                        item.obj.lastOpenedDate / 1000
                 )
             }
                 .flatMap { (key, value) ->

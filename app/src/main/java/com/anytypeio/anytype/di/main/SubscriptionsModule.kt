@@ -64,9 +64,7 @@ object SubscriptionsModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun objectTypesStore(
-        logger: Logger
-    ): StoreOfObjectTypes = DefaultStoreOfObjectTypes(logger)
+    fun objectTypesStore(): StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
     @JvmStatic
     @Provides

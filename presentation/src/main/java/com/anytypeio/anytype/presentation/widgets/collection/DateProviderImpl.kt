@@ -12,14 +12,32 @@ class DateProviderImpl @Inject constructor() : DateProvider {
 
     override fun calculateDateType(date: Long): DateType {
         val dateInstant = Instant.ofEpochSecond(date)
-        val currentDate = dateInstant.atZone(ZoneId.systemDefault()).toLocalDate()
-        val currentDateWithZeroTime = currentDate.atStartOfDay().toLocalDate()
+        val givenDate = dateInstant.atZone(ZoneId.systemDefault()).toLocalDate()
+        val givenDateWithZeroTime = givenDate.atStartOfDay().toLocalDate()
 
-        return when (currentDateWithZeroTime) {
+        return when (givenDateWithZeroTime) {
             LocalDate.now() -> DateType.TODAY
             LocalDate.now().plusDays(1) -> DateType.TOMORROW
             LocalDate.now().minusDays(1) -> DateType.YESTERDAY
-            else -> DateType.EXACT_DAY
+            else -> {
+                val nowAtStartOfDay = LocalDate.now().atStartOfDay().toLocalDate()
+                val sevenDaysAgo = nowAtStartOfDay.minusDays(7)
+                val thirtyDaysAgo = nowAtStartOfDay.minusDays(30)
+
+                if (givenDateWithZeroTime > nowAtStartOfDay)
+                    DateType.UNDEFINED
+                else {
+                    if (givenDateWithZeroTime < thirtyDaysAgo) {
+                        DateType.OLDER
+                    } else {
+                        if (givenDateWithZeroTime < sevenDaysAgo) {
+                            DateType.PREVIOUS_THIRTY_DAYS
+                        } else {
+                            DateType.PREVIOUS_SEVEN_DAYS
+                        }
+                    }
+                }
+            }
         }
     }
 

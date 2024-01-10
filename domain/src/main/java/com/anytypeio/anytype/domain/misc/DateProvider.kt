@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.domain.misc
 
+/**
+ * Time measure in seconds.
+ */
 interface DateProvider {
     fun getRelativeTimeSpanString(date: Long): CharSequence
     fun calculateDateType(date: Long): DateType
@@ -12,8 +15,11 @@ interface DateProvider {
 }
 
 enum class DateType {
-    TODAY,
     TOMORROW,
+    TODAY,
     YESTERDAY,
-    EXACT_DAY
+    PREVIOUS_SEVEN_DAYS,
+    PREVIOUS_THIRTY_DAYS,
+    OLDER,
+    UNDEFINED
 }

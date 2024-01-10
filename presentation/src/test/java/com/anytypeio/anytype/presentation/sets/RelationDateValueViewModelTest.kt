@@ -2,11 +2,15 @@ package com.anytypeio.anytype.presentation.sets
 
 import android.util.Log
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.DateType
 import com.anytypeio.anytype.presentation.relations.providers.FakeObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.FakeObjectValueProvider
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
+import java.time.Duration
+import java.time.LocalDate
 import kotlin.test.assertEquals
+import kotlin.test.expect
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
@@ -300,6 +304,99 @@ class RelationDateValueViewModelTest {
                 timeInSeconds = tomorrowTimestamp
             ),
             actual = result
+        )
+    }
+
+    @Test
+    fun `should be within previous seven days`() {
+
+        val today = dateProvider.getTimestampForTodayAtStartOfDay()
+
+        val twoDaysAgo = today - Duration.ofDays(2).toSeconds()
+        val threeDaysAgo = today - Duration.ofDays(3).toSeconds()
+        val fourDaysAgo = today - Duration.ofDays(4).toSeconds()
+        val fiveDaysAgo = today - Duration.ofDays(5).toSeconds()
+        val sixDaysAgo = today - Duration.ofDays(6).toSeconds()
+        val sevenDaysAgo = today - Duration.ofDays(7).toSeconds()
+
+        assertEquals(
+            expected = DateType.PREVIOUS_SEVEN_DAYS,
+            actual = dateProvider.calculateDateType(twoDaysAgo)
+        )
+
+        assertEquals(
+            expected = DateType.PREVIOUS_SEVEN_DAYS,
+            actual = dateProvider.calculateDateType(threeDaysAgo)
+        )
+
+        assertEquals(
+            expected = DateType.PREVIOUS_SEVEN_DAYS,
+            actual = dateProvider.calculateDateType(fourDaysAgo)
+        )
+
+        assertEquals(
+            expected = DateType.PREVIOUS_SEVEN_DAYS,
+            actual = dateProvider.calculateDateType(fiveDaysAgo)
+        )
+
+        assertEquals(
+            expected = DateType.PREVIOUS_SEVEN_DAYS,
+            actual = dateProvider.calculateDateType(sixDaysAgo)
+        )
+
+        assertEquals(
+            expected = DateType.PREVIOUS_SEVEN_DAYS,
+            actual = dateProvider.calculateDateType(sevenDaysAgo)
+        )
+    }
+
+    @Test
+    fun `should be within previous thirty days`() {
+
+        val today = dateProvider.getTimestampForTodayAtStartOfDay()
+
+        val heightDaysAgo = today - Duration.ofDays(8).toSeconds()
+        val nineDaysAgo = today - Duration.ofDays(9).toSeconds()
+        val tenDaysAgo = today - Duration.ofDays(10).toSeconds()
+        val thirtyDaysAgo = today - Duration.ofDays(30).toSeconds()
+
+        assertEquals(
+            expected = DateType.PREVIOUS_THIRTY_DAYS,
+            actual = dateProvider.calculateDateType(heightDaysAgo)
+        )
+
+        assertEquals(
+            expected = DateType.PREVIOUS_THIRTY_DAYS,
+            actual = dateProvider.calculateDateType(nineDaysAgo)
+        )
+
+        assertEquals(
+            expected = DateType.PREVIOUS_THIRTY_DAYS,
+            actual = dateProvider.calculateDateType(tenDaysAgo)
+        )
+
+        assertEquals(
+            expected = DateType.PREVIOUS_THIRTY_DAYS,
+            actual = dateProvider.calculateDateType(thirtyDaysAgo)
+        )
+    }
+
+    @Test
+    fun `should be older than previous thirty days`() {
+
+        val today = dateProvider.getTimestampForTodayAtStartOfDay()
+
+        val thirtyOneDaysAgo = today - Duration.ofDays(31).toSeconds()
+        val thirtyTwoDaysAgo = today - Duration.ofDays(32).toSeconds()
+
+        assertEquals(
+            expected = DateType.OLDER,
+            actual = dateProvider.calculateDateType(thirtyOneDaysAgo)
+        )
+
+        assertEquals(
+            expected = DateType.OLDER,
+            actual = dateProvider.calculateDateType(thirtyTwoDaysAgo)
         )
     }
 }

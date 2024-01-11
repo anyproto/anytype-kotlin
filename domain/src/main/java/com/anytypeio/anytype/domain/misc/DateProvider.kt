@@ -1,19 +1,32 @@
 package com.anytypeio.anytype.domain.misc
 
+import com.anytypeio.anytype.core_models.TimeInSeconds
+
+
+/**
+ * Time measure in seconds.
+ */
 interface DateProvider {
     fun getRelativeTimeSpanString(date: Long): CharSequence
-    fun calculateDateType(date: Long): DateType
-    fun getCurrentTimestampInSeconds(): Long
-    fun getTimestampForTodayAtStartOfDay(): Long
-    fun getTimestampForTomorrowAtStartOfDay(): Long
-    fun getTimestampForYesterdayAtStartOfDay(): Long
-    fun getTimestampForWeekAheadAtStartOfDay(): Long
-    fun getTimestampForWeekAgoAtStartOfDay(): Long
+    fun calculateDateType(date: TimeInSeconds): DateType
+    fun getCurrentTimestampInSeconds(): TimeInSeconds
+    fun getTimestampForTodayAtStartOfDay(): TimeInSeconds
+    fun getTimestampForTomorrowAtStartOfDay(): TimeInSeconds
+    fun getTimestampForYesterdayAtStartOfDay(): TimeInSeconds
+    fun getTimestampForWeekAheadAtStartOfDay(): TimeInSeconds
+    fun getTimestampForWeekAgoAtStartOfDay(): TimeInSeconds
+}
+
+interface DateTypeNameProvider {
+    fun name(type: DateType) : String
 }
 
 enum class DateType {
-    TODAY,
     TOMORROW,
+    TODAY,
     YESTERDAY,
-    EXACT_DAY
+    PREVIOUS_SEVEN_DAYS,
+    PREVIOUS_THIRTY_DAYS,
+    OLDER,
+    UNDEFINED
 }

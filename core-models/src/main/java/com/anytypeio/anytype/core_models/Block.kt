@@ -60,10 +60,6 @@ data class Block(
                 else -> null
             }
 
-
-        val analyticsContext: String? by default
-        val analyticsOriginalId: String? by default
-
         companion object {
             fun empty(): Fields = Fields(emptyMap())
             const val NAME_KEY = "name"

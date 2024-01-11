@@ -140,7 +140,11 @@ suspend fun DVViewer.render(
                 Viewer.Unsupported(
                     id = id,
                     title = name,
-                    error = "This view type (${type.name.lowercase()}) is not supported on Android yet. See it as grid view?"
+                    error = if (type == DVViewerType.BOARD) {
+                        "Kanban view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data."
+                    } else {
+                        "Calendar view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data."
+                    }
                 )
             }
         }

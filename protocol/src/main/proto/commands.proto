@@ -2572,6 +2572,32 @@ message Rpc {
                 }
             }
         }
+
+        message SpaceOffload {
+            message Request {
+                string spaceId = 1;
+            }
+            message Response {
+                Error error = 1;
+                int32 filesOffloaded = 2;
+                uint64 bytesOffloaded = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                        NODE_NOT_STARTED = 103;
+
+                    }
+                }
+            }
+        }
+
         message ListOffload {
             message Request {
                 repeated string onlyIds = 1; // empty means all
@@ -2610,7 +2636,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                string hash = 2;
+                string objectId = 2;
 
                 message Error {
                     Code code = 1;
@@ -2626,7 +2652,7 @@ message Rpc {
         }
         message Download {
             message Request {
-                string hash = 1;
+                string objectId = 1;
                 string path = 2; // path to save file. Temp directory is used if empty
             }
 
@@ -2942,7 +2968,7 @@ message Rpc {
 
             message Response {
                 Error error = 1;
-                string hash = 2;
+                string objectId = 2;
 
                 message Error {
                     Code code = 1;

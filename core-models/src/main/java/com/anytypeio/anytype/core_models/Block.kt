@@ -214,7 +214,7 @@ data class Block(
 
         /**
          * File block.
-         * @property hash file hash
+         * @property targetObjectId id of the target object
          * @property name filename
          * @property mime mime type
          * @property size file size (in bytes)
@@ -222,7 +222,7 @@ data class Block(
          * @property state file state
          */
         data class File(
-            val hash: String? = null,
+            val targetObjectId: Id? = null,
             val name: String? = null,
             val mime: String? = null,
             val size: Long? = null,

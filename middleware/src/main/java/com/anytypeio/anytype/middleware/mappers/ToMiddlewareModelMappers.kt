@@ -113,7 +113,7 @@ fun Block.Content.Bookmark.State.toMiddlewareModel(): MBookmarkState = when (thi
 }
 
 fun Block.Content.File.toMiddlewareModel(): MBFile = MBFile(
-    hash = hash.orEmpty(),
+    targetObjectId = targetObjectId.orEmpty(),
     name = name.orEmpty(),
     mime = mime.orEmpty(),
     size = size ?: 0,

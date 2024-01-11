@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -216,4 +217,5 @@ interface LibraryDependencies : ComponentDependencies {
     fun config(): ConfigStorage
     fun logger(): Logger
     fun container(): StorelessSubscriptionContainer
+    fun storeOfTypes (): StoreOfObjectTypes
 }

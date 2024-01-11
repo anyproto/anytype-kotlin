@@ -325,8 +325,7 @@ class Orchestrator(
                         success = { payload ->
                             analytics.sendAnalyticsChangeTextBlockStyleEvent(
                                 style = intent.style,
-                                count = intent.targets.size,
-                                analyticsContext = intent.analyticsContext
+                                count = intent.targets.size
                             )
                             proxies.payloads.send(payload)
                         }

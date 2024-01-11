@@ -1068,11 +1068,10 @@ class HomeScreenViewModel(
                     onSuccess = { result ->
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
-                            type = result.typeKey.key,
-                            storeOfObjectTypes = storeOfObjectTypes,
                             route = EventsDictionary.Routes.navigation,
                             startTime = startTime,
-                            view = EventsDictionary.View.viewHome
+                            view = EventsDictionary.View.viewHome,
+                            objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
                         )
                         if (objType != null) {
                             sendAnalyticsObjectTypeSelectOrChangeEvent(

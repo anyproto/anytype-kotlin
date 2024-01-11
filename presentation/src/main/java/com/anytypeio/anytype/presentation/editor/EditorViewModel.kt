@@ -7,9 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.searchScreenShow
-import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
@@ -397,9 +395,6 @@ class EditorViewModel(
      */
     var currentMediaUploadDescription: Media.Upload.Description? = null
         private set
-
-    private var analyticsContext: String? = null
-    private var analyticsOriginalId: String? = null
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
     override val commands = MutableLiveData<EventWrapper<Command>>()
@@ -1038,16 +1033,11 @@ class EditorViewModel(
                                     if (event.details.details[context]?.type?.contains(ObjectTypeIds.FILE) == true) {
                                         isSyncStatusVisible.value = false
                                     }
-                                    val block = event.blocks.firstOrNull { it.id == context }
-                                    analytics.setContext(block?.fields?.analyticsContext)
-                                    analytics.setOriginalId(block?.fields?.analyticsOriginalId)
-                                    analyticsContext = block?.fields?.analyticsContext
-                                    if (analyticsContext != null) {
-                                        analyticsOriginalId = block?.fields?.analyticsOriginalId
-                                    }
                                     sendAnalyticsObjectShowEvent(
                                         analytics = analytics,
-                                        startTime = startTime
+                                        startTime = startTime,
+                                        details = orchestrator.stores.details.current().details,
+                                        ctx = context,
                                     )
                                 }
                             }
@@ -1166,7 +1156,7 @@ class EditorViewModel(
 
     fun onBackButtonPressed() {
         Timber.d("onBackButtonPressed, ")
-        viewModelScope.sendAnalyticsGoBackEvent(analytics, analyticsContext)
+        viewModelScope.sendAnalyticsGoBackEvent(analytics)
         proceedWithExitingBack()
     }
 
@@ -1410,7 +1400,7 @@ class EditorViewModel(
             range = range,
             marks = emptyList()
         )
-        viewModelScope.sendAnalyticsSetDescriptionEvent(analytics, analyticsContext)
+        viewModelScope.sendAnalyticsSetDescriptionEvent(analytics)
     }
 
     private fun proceedWithEnterEvent(
@@ -1953,7 +1943,6 @@ class EditorViewModel(
             )
             sendAnalyticsBlockAlignEvent(
                 analytics = analytics,
-                context = analyticsContext,
                 count = targets.size,
                 align = alignment
             )
@@ -1975,8 +1964,7 @@ class EditorViewModel(
         }
         viewModelScope.sendAnalyticsUpdateTextMarkupEvent(
             analytics = analytics,
-            type = Content.Text.Mark.Type.TEXT_COLOR,
-            context = analyticsContext
+            type = Content.Text.Mark.Type.TEXT_COLOR
         )
     }
 
@@ -1993,8 +1981,7 @@ class EditorViewModel(
         viewModelScope.sendAnalyticsBlockBackgroundEvent(
             analytics = analytics,
             count = ids.size,
-            color = color,
-            context = analyticsContext
+            color = color
         )
     }
 
@@ -2029,8 +2016,7 @@ class EditorViewModel(
             )
             sendAnalyticsUpdateTextMarkupEvent(
                 analytics = analytics,
-                type = type,
-                context = analyticsContext
+                type = type
             )
         }
     }
@@ -2178,8 +2164,7 @@ class EditorViewModel(
                 viewModelScope.launch { renderCommand.send(Unit) }
                 viewModelScope.sendAnalyticsSearchWordsEvent(
                     analytics = analytics,
-                    length = query.length,
-                    context = analyticsContext
+                    length = query.length
                 )
             }
             is SearchInDocEvent.Next -> {
@@ -2761,8 +2746,7 @@ class EditorViewModel(
                 Intent.Text.TurnInto(
                     context = context,
                     targets = targets,
-                    style = style,
-                    analyticsContext = analyticsContext
+                    style = style
                 )
             )
         }
@@ -3196,10 +3180,9 @@ class EditorViewModel(
                     sendAnalyticsCreateLink(analytics)
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = objectTypeView.key,
-                        storeOfObjectTypes = storeOfObjectTypes,
                         route = EventsDictionary.Routes.objPowerTool,
-                        startTime = startTime
+                        startTime = startTime,
+                        objType = storeOfObjectTypes.getByKey(objectTypeView.key)
                     )
                     proceedWithOpeningObject(result.objectId)
                 }
@@ -3241,10 +3224,10 @@ class EditorViewModel(
                 onSuccess = { result ->
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = result.typeKey.key,
-                        storeOfObjectTypes = storeOfObjectTypes,
-                        route = EventsDictionary.Routes.objPowerTool,
-                        startTime = startTime
+                        route = EventsDictionary.Routes.navigation,
+                        startTime = startTime,
+                        objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
+                        view = EventsDictionary.View.viewNavbar
                     )
                     proceedWithCloseCurrentAndOpenObject(result.obj)
                 },
@@ -3525,8 +3508,7 @@ class EditorViewModel(
                 )
                 sendAnalyticsBlockReorder(
                     analytics = analytics,
-                    count = blocks.size,
-                    context = analyticsContext
+                    count = blocks.size
                 )
             }
         } else {
@@ -4201,8 +4183,7 @@ class EditorViewModel(
 
         viewModelScope.sendEvent(
             analytics = analytics,
-            eventName = searchScreenShow,
-            props = Props(mapOf(EventsPropertiesKey.context to analyticsContext))
+            eventName = searchScreenShow
         )
         navigation.postValue(EventWrapper(AppNavigation.Command.OpenPageSearch))
     }
@@ -4303,8 +4284,7 @@ class EditorViewModel(
                 success = {
                     dispatcher.send(it)
                     sendAnalyticsRelationValueEvent(
-                        analytics = analytics,
-                        context = analyticsContext
+                        analytics = analytics
                     )
                 },
                 failure = {
@@ -4747,8 +4727,7 @@ class EditorViewModel(
                         )
                         sendAnalyticsUpdateTextMarkupEvent(
                             analytics = analytics,
-                            type = type,
-                            context = analyticsContext
+                            type = type
                         )
                     }
                 }
@@ -5071,15 +5050,13 @@ class EditorViewModel(
                 is SlashItem.Color.Background -> {
                     sendAnalyticsBlockBackgroundEvent(
                         analytics = analytics,
-                        color = item.themeColor.code,
-                        context = analyticsContext
+                        color = item.themeColor.code
                     )
                 }
                 is SlashItem.Color.Text -> {
                     sendAnalyticsUpdateTextMarkupEvent(
                         analytics = analytics,
-                        type = Content.Text.Mark.Type.TEXT_COLOR,
-                        context = analyticsContext
+                        type = Content.Text.Mark.Type.TEXT_COLOR
                     )
                 }
             }
@@ -5471,7 +5448,7 @@ class EditorViewModel(
                     text = event.text,
                     range = event.range
                 )
-                viewModelScope.sendAnalyticsSetTitleEvent(analytics, analyticsContext)
+                viewModelScope.sendAnalyticsSetTitleEvent(analytics)
             }
         }
     }
@@ -5833,10 +5810,9 @@ class EditorViewModel(
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,
-                        type = typeKey.key,
-                        storeOfObjectTypes = storeOfObjectTypes,
                         route = EventsDictionary.Routes.objCreateMention,
-                        startTime = startTime
+                        startTime = startTime,
+                        objType = storeOfObjectTypes.getByKey(typeKey.key)
                     )
                 }
             )
@@ -5848,8 +5824,7 @@ class EditorViewModel(
         viewModelScope.sendAnalyticsSearchResultEvent(
             analytics = analytics,
             pos = pos,
-            length = mentionTrigger.length - 1,
-            context = analyticsContext
+            length = mentionTrigger.length - 1
         )
         onCreateMentionInText(id = mention.id, name = mention.name, mentionTrigger = mentionTrigger)
     }
@@ -5989,8 +5964,7 @@ class EditorViewModel(
             )
             sendAnalyticsBlockReorder(
                 analytics = analytics,
-                count = 1,
-                context = analyticsContext
+                count = 1
             )
         }
     }
@@ -6159,7 +6133,6 @@ class EditorViewModel(
                     createObjectAddProceedToAddToTextAsLink(
                         name = name,
                         typeKey = response.type,
-                        typeId = response.id,
                         templateId = response.defaultTemplate
                     )
                 }
@@ -6191,7 +6164,6 @@ class EditorViewModel(
     private suspend fun createObjectAddProceedToAddToTextAsLink(
         name: String,
         typeKey: TypeKey,
-        typeId: TypeId?,
         templateId: Id?
     ) {
         val startTime = System.currentTimeMillis()
@@ -6206,10 +6178,9 @@ class EditorViewModel(
                 proceedToAddObjectToTextAsLink(id = result.id)
                 viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
-                    type = typeKey.key,
-                    storeOfObjectTypes = storeOfObjectTypes,
-                    route = EventsDictionary.Routes.objTurnInto,
-                    startTime = startTime
+                    route = EventsDictionary.Routes.objLink,
+                    startTime = startTime,
+                    objType = storeOfObjectTypes.getByKey(typeKey.key)
                 )
             }
         )

@@ -339,7 +339,7 @@ abstract class ObjectMenuViewModelBase(
     fun onDiagnosticsGoroutinesClicked(ctx: Id) {
         jobs += viewModelScope.launch {
             debugGoroutinesShareDownloader.stream(
-                MiddlewareShareDownloader.Params(hash = ctx, name = "goroutines")
+                MiddlewareShareDownloader.Params(objectId = ctx, name = "goroutines")
             ).collect { result ->
                 result.fold(
                     onSuccess = { success -> commands.emit(Command.ShareDebugGoroutines(success.path)) },

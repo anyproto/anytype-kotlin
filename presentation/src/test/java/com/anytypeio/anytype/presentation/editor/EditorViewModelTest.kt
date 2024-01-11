@@ -2568,7 +2568,7 @@ open class EditorViewModelTest {
                 params = eq(
                     MiddlewareShareDownloader.Params(
                         name = file.content<Block.Content.File>().name.orEmpty(),
-                        hash = file.content<Block.Content.File>().hash.orEmpty(),
+                        objectId = file.content<Block.Content.File>().hash.orEmpty(),
                     )
                 )
             )

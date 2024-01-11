@@ -17,10 +17,12 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.DebugConfig
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.interactor.ProtobufConverterProvider
 import com.anytypeio.anytype.other.BasicLogger
+import com.anytypeio.anytype.other.DefaultDateTypeNameProvider
 import com.anytypeio.anytype.other.DefaultDebugConfig
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import dagger.Binds
@@ -84,5 +86,9 @@ object UtilModule {
         @Binds
         @Singleton
         fun bindProtobufConverterProvider(provider: ProtobufConverterProvider.Impl): ProtobufConverterProvider
+
+        @Binds
+        @Singleton
+        fun bindDateTypeNameProvider(provider: DefaultDateTypeNameProvider) : DateTypeNameProvider
     }
 }

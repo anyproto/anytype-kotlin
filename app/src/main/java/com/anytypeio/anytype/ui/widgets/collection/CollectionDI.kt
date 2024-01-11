@@ -221,5 +221,5 @@ interface CollectionDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun logger(): Logger
     fun dateProvider(): DateProvider
-    fun dateTimeNameProvider(): DateTypeNameProvider
+    fun dateTypeNameProvider(): DateTypeNameProvider
 }

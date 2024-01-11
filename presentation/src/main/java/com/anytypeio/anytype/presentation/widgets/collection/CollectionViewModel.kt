@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -102,7 +103,8 @@ class CollectionViewModel(
     private val dateProvider: DateProvider,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val spaceManager: SpaceManager,
-    private val getSpaceView: GetSpaceView
+    private val getSpaceView: GetSpaceView,
+    private val dateTypeNameProvider: DateTypeNameProvider
 ) : ViewModel(), Reducer<CoreObjectView, Payload> {
 
     val payloads: Flow<Payload>
@@ -346,15 +348,17 @@ class CollectionViewModel(
 
     private fun List<ObjectView>.tryAddSections(): List<CollectionView> {
         return if (subscription == Subscription.Recent || subscription == Subscription.RecentLocal)
-            this.groupBy {
-                dateProvider.getRelativeTimeSpanString(
-                    if (subscription == Subscription.Recent) it.obj.lastModifiedDate
-                    else it.obj.lastOpenedDate
+            this.groupBy { item ->
+                dateProvider.calculateDateType(
+                    if (subscription == Subscription.Recent)
+                        item.obj.lastModifiedDate / 1000
+                    else
+                        item.obj.lastOpenedDate / 1000
                 )
             }
                 .flatMap { (key, value) ->
                     buildList {
-                        add(CollectionView.SectionView(key.toString()))
+                        add(CollectionView.SectionView(dateTypeNameProvider.name(key)))
                         addAll(value)
                     }
                 }
@@ -915,7 +919,8 @@ class CollectionViewModel(
         private val dateProvider: DateProvider,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val spaceManager: SpaceManager,
-        private val getSpaceView: GetSpaceView
+        private val getSpaceView: GetSpaceView,
+        private val dateTypeNameProvider: DateTypeNameProvider
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -939,7 +944,8 @@ class CollectionViewModel(
                 dateProvider = dateProvider,
                 storeOfObjectTypes = storeOfObjectTypes,
                 spaceManager = spaceManager,
-                getSpaceView = getSpaceView
+                getSpaceView = getSpaceView,
+                dateTypeNameProvider = dateTypeNameProvider
             ) as T
         }
     }

@@ -1221,7 +1221,18 @@
         <item quantity="other">%d links from</item>
     </plurals>
 
+    <!--region ORIGIN RELATION VALUES -->
+
+    <string name="date_type_tomorrow">Tomorrow</string>
+    <string name="date_type_today">Today</string>
+    <string name="date_type_yesterday">Yesterday</string>
+    <string name="date_type_previous_seven_days">Previous seven days</string>
+    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_older">Older</string>
+
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
+
+    <!--endregion-->
 
 </resources>

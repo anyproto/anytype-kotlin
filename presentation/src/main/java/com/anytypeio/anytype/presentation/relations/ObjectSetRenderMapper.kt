@@ -140,11 +140,10 @@ suspend fun DVViewer.render(
                 Viewer.Unsupported(
                     id = id,
                     title = name,
-                    error = if (type == DVViewerType.BOARD) {
-                        "Kanban view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data."
-                    } else {
-                        "Calendar view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data."
-                    }
+                    type = if (type == DVViewerType.BOARD)
+                        Viewer.Unsupported.TYPE_KANBAN
+                    else
+                        Viewer.Unsupported.TYPE_CALENDAR
                 )
             }
         }

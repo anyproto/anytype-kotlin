@@ -1,13 +1,19 @@
 package com.anytypeio.anytype.persistence.repo
 
+import android.content.Context
 import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.repo.AuthCache
+import com.anytypeio.anytype.persistence.SpacePreferences
 import com.anytypeio.anytype.persistence.db.AnytypeDatabase
 import com.anytypeio.anytype.persistence.mapper.toEntity
 import com.anytypeio.anytype.persistence.mapper.toTable
 import com.anytypeio.anytype.persistence.networkmode.NetworkModeProvider
+import com.anytypeio.anytype.persistence.preferences.PrefSerializer
+import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
 
 class DefaultAuthCache(
     private val db: AnytypeDatabase,

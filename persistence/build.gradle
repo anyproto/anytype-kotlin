@@ -3,6 +3,7 @@ plugins {
     id "kotlin-android"
     id "kotlin-kapt"
     id "kotlinx-serialization"
+    id "com.squareup.wire"
 }
 
 dependencies {
@@ -18,6 +19,7 @@ dependencies {
 
     implementation libs.room
     implementation libs.roomKtx
+    implementation libs.dataStore
 
     kapt libs.annotations
 
@@ -42,4 +44,9 @@ android {
         jvmToolchain(17)
     }
     namespace 'com.anytypeio.anytype.persistence'
+}
+
+wire {
+    protoPath { srcDir 'src/main/proto' }
+    kotlin {}
 }

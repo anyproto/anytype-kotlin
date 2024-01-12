@@ -4,6 +4,7 @@ option java_package = "com.anytypeio.anytype.persistence";
 option java_multiple_files = true;
 
 message SpacePreferences {
+  // maps space id to space preference
   map <string, SpacePreference> preferences = 1;
 }
 

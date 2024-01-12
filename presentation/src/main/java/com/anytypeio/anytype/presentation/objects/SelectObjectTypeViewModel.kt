@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
+import com.anytypeio.anytype.domain.types.SetPinnedObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -34,6 +35,8 @@ class SelectObjectTypeViewModel(
     private val getObjectTypes: GetObjectTypes,
     private val spaceManager: SpaceManager,
     private val addObjectToSpace: AddObjectToSpace,
+    private val setPinnedObjectTypes: SetPinnedObjectTypes,
+    private val get
 ) : BaseViewModel() {
 
     val viewState = MutableStateFlow<SelectTypeViewState>(SelectTypeViewState.Loading)

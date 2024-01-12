@@ -18,8 +18,13 @@ sealed class Viewer {
     data class Unsupported(
         override val id: String,
         override val title: String,
-        val error: String
-    ) : Viewer()
+        val type: Int = TYPE_KANBAN
+    ) : Viewer() {
+        companion object {
+            const val TYPE_KANBAN = 0
+            const val TYPE_CALENDAR = 1
+        }
+    }
 
     data class GridView(
         override val id: String,

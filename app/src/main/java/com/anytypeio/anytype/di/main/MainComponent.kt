@@ -21,7 +21,7 @@ import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
-import com.anytypeio.anytype.di.feature.objects.CreateObjectOfTypeDependencies
+import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
@@ -102,7 +102,7 @@ interface MainComponent :
     SelectSpaceDependencies,
     CreateSpaceDependencies,
     SpaceSettingsDependencies,
-    CreateObjectOfTypeDependencies,
+    SelectObjectTypeDependencies,
     SpacesStorageDependencies,
     AppPreferencesDependencies,
     AddToAnytypeDependencies {
@@ -264,7 +264,7 @@ private abstract class ComponentDependenciesModule private constructor() {
 
     @Binds
     @IntoMap
-    @ComponentDependenciesKey(CreateObjectOfTypeDependencies::class)
+    @ComponentDependenciesKey(SelectObjectTypeDependencies::class)
     abstract fun provideCreateObjectOfTypeDependencies(component: MainComponent): ComponentDependencies
 
     @Binds

@@ -61,7 +61,7 @@ import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
-import com.anytypeio.anytype.di.feature.objects.DaggerCreateObjectOfTypeComponent
+import com.anytypeio.anytype.di.feature.objects.DaggerSelectObjectTypeComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponent
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemonicLoginComponent
@@ -102,7 +102,7 @@ import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
-import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
+import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
@@ -932,11 +932,11 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val createObjectOfTypeComponent = ComponentWithParams { excludedTypeKeys: List<TypeKey> ->
-        DaggerCreateObjectOfTypeComponent
+    val selectObjectTypeComponent = ComponentWithParams { excludedTypeKeys: List<TypeKey> ->
+        DaggerSelectObjectTypeComponent
             .factory()
             .create(
-                params = CreateObjectOfTypeViewModel.Params(excludedTypeKeys),
+                params = SelectObjectTypeViewModel.Params(excludedTypeKeys),
                 dependencies = findComponentDependencies()
             )
     }

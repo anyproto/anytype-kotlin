@@ -21,7 +21,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.collection.SubscriptionMapper
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.dashboard.DeleteAlertFragment
-import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
+import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
 import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import javax.inject.Inject
 
@@ -55,7 +55,7 @@ class CollectionFragment : BaseComposeFragment() {
                     CollectionScreen(
                         vm = vm,
                         onCreateObjectLongClicked = {
-                            val dialog = CreateObjectOfTypeFragment().apply {
+                            val dialog = SelectObjectTypeFragment().apply {
                                 onTypeSelected = {
                                     vm.onAddClicked(it)
                                 }

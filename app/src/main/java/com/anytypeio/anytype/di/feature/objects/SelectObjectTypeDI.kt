@@ -7,43 +7,43 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
-import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
+import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
+import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
 import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 
 @Component(
-    dependencies = [CreateObjectOfTypeDependencies::class],
+    dependencies = [SelectObjectTypeDependencies::class],
     modules = [
-        CreateObjectOfTypeModule::class,
-        CreateObjectOfTypeModule.Declarations::class
+        SelectObjectTypeModule::class,
+        SelectObjectTypeModule.Declarations::class
     ]
 )
 @PerScreen
-interface CreateObjectOfTypeComponent {
-    fun inject(fragment: CreateObjectOfTypeFragment)
+interface SelectObjectTypeComponent {
+    fun inject(fragment: SelectObjectTypeFragment)
     @Component.Factory
     interface Factory {
         fun create(
-            @BindsInstance params: CreateObjectOfTypeViewModel.Params,
-            dependencies: CreateObjectOfTypeDependencies
-        ): CreateObjectOfTypeComponent
+            @BindsInstance params: SelectObjectTypeViewModel.Params,
+            dependencies: SelectObjectTypeDependencies
+        ): SelectObjectTypeComponent
     }
 }
 
 @Module
-object CreateObjectOfTypeModule {
+object SelectObjectTypeModule {
     @Module
     interface Declarations {
         @Binds
         @PerScreen
-        fun bindViewModelFactory(factory: CreateObjectOfTypeViewModel.Factory): ViewModelProvider.Factory
+        fun bindViewModelFactory(factory: SelectObjectTypeViewModel.Factory): ViewModelProvider.Factory
     }
 }
 
-interface CreateObjectOfTypeDependencies : ComponentDependencies {
+interface SelectObjectTypeDependencies : ComponentDependencies {
     fun repo(): BlockRepository
     fun analytics(): Analytics
     fun dispatchers(): AppCoroutineDispatchers

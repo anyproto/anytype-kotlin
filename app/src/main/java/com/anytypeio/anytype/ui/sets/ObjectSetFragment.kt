@@ -43,7 +43,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_ui.extensions.getLabelText
 import com.anytypeio.anytype.core_ui.extensions.getToastMsg
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
@@ -98,7 +97,7 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
-import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
+import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
@@ -124,7 +123,6 @@ import com.bumptech.glide.Glide
 import javax.inject.Inject
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import timber.log.Timber
 
 open class ObjectSetFragment :
     NavigationFragment<FragmentObjectSetBinding>(R.layout.fragment_object_set),
@@ -313,7 +311,7 @@ open class ObjectSetFragment :
                 .btnAddDoc
                 .longClicks(withHaptic = true)
                 .onEach {
-                    val dialog = CreateObjectOfTypeFragment().apply {
+                    val dialog = SelectObjectTypeFragment().apply {
                         onTypeSelected = {
                             vm.onAddNewDocumentClicked(it)
                         }

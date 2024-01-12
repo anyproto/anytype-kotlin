@@ -827,7 +827,7 @@
     <string name="space_type_private">Private</string>
     <string name="space_type_unknown">Невідомо</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_groups">Groups</string>
+    <string name="create_object_section_lists">Groups</string>
     <string name="create_object_section_objects">Об\'єкти</string>
     <string name="edit">Редагувати</string>
     <string name="unselect_all">Скасувати вибір</string>

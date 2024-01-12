@@ -823,7 +823,7 @@
     <string name="space_type_private">Private</string>
     <string name="space_type_unknown">Ukjent</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_groups">Groups</string>
+    <string name="create_object_section_lists">Groups</string>
     <string name="create_object_section_objects">Objekter</string>
     <string name="edit">Rediger</string>
     <string name="unselect_all">Fjern alle valg</string>

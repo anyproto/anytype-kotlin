@@ -74,7 +74,7 @@ import com.anytypeio.anytype.presentation.objects.SelectTypeViewState
 @Preview
 @Composable
 fun PreviewScreen() {
-    CreateObjectOfTypeScreen(
+    SelectObjectTypeScreen(
         onTypeClicked = {},
         state = SelectTypeViewState.Loading,
         onQueryChanged = {},
@@ -83,7 +83,7 @@ fun PreviewScreen() {
 }
 
 @Composable
-fun CreateObjectOfTypeScreen(
+fun SelectObjectTypeScreen(
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
@@ -173,7 +173,7 @@ private fun FlowRowContent(
                 }
                 is SelectTypeView.Section.Groups -> {
                     Section(
-                        title = stringResource(id = R.string.create_object_section_groups),
+                        title = stringResource(id = R.string.create_object_section_lists),
                     )
                 }
                 is SelectTypeView.Section.Objects -> {
@@ -216,7 +216,7 @@ private fun LazyColumnContent(
                         span = { GridItemSpan(maxLineSpan) }
                     ) {
                         Section(
-                            title = stringResource(id = R.string.create_object_section_groups),
+                            title = stringResource(id = R.string.create_object_section_lists),
                         )
                     }
                 }

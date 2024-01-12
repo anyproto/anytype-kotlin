@@ -29,7 +29,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class CreateObjectOfTypeViewModel(
+class SelectObjectTypeViewModel(
     private val params: Params,
     private val getObjectTypes: GetObjectTypes,
     private val spaceManager: SpaceManager,
@@ -184,7 +184,7 @@ class CreateObjectOfTypeViewModel(
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
             modelClass: Class<T>
-        ) = CreateObjectOfTypeViewModel(
+        ) = SelectObjectTypeViewModel(
             params = params,
             getObjectTypes = getObjectTypes,
             spaceManager = spaceManager,

@@ -911,7 +911,7 @@
     <string name="space_type_private">Private</string>
     <string name="space_type_unknown">Unknown</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_groups">Groups</string>
+    <string name="create_object_section_lists">Lists</string>
     <string name="create_object_section_objects">Objects</string>
 
     <string name="edit">Edit</string>

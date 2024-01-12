@@ -61,7 +61,7 @@ import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
-import com.anytypeio.anytype.di.feature.objects.DaggerCreateObjectOfTypeComponent
+import com.anytypeio.anytype.di.feature.objects.DaggerSelectObjectTypeComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponent
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemonicLoginComponent
@@ -933,7 +933,7 @@ class ComponentManager(
     }
 
     val selectObjectTypeComponent = ComponentWithParams { excludedTypeKeys: List<TypeKey> ->
-        DaggerCreateObjectOfTypeComponent
+        DaggerSelectObjectTypeComponent
             .factory()
             .create(
                 params = SelectObjectTypeViewModel.Params(excludedTypeKeys),

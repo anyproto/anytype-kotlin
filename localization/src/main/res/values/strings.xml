@@ -911,7 +911,7 @@
     <string name="space_type_private">Private</string>
     <string name="space_type_unknown">Unknown</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_groups">Groups</string>
+    <string name="create_object_section_lists">Lists</string>
     <string name="create_object_section_objects">Objects</string>
 
     <string name="edit">Edit</string>
@@ -1221,7 +1221,22 @@
         <item quantity="other">%d links from</item>
     </plurals>
 
+    <!--region ORIGIN RELATION VALUES -->
+
+    <string name="date_type_tomorrow">Tomorrow</string>
+    <string name="date_type_today">Today</string>
+    <string name="date_type_yesterday">Yesterday</string>
+    <string name="date_type_previous_seven_days">Previous seven days</string>
+    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_older">Older</string>
+
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
+
+    <!--endregion-->
+
+    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
+    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
+    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
 
 </resources>

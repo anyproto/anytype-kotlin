@@ -823,7 +823,7 @@
     <string name="space_type_private">Privado</string>
     <string name="space_type_unknown">Desconocido</string>
     <string name="create_space_start_with">Empezar con</string>
-    <string name="create_object_section_groups">Grupos</string>
+    <string name="create_object_section_lists">Grupos</string>
     <string name="create_object_section_objects">Objetos</string>
     <string name="edit">Editar</string>
     <string name="unselect_all">Deseleccionar todo</string>

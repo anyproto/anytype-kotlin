@@ -20,18 +20,18 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.Command
-import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
+import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
-class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
+class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
-    lateinit var factory: CreateObjectOfTypeViewModel.Factory
+    lateinit var factory: SelectObjectTypeViewModel.Factory
 
     private val excludedTypeKeys get() = argOrNull<List<Key>>(EXCLUDED_TYPE_KEYS_ARG_KEY)
 
-    private val vm by viewModels<CreateObjectOfTypeViewModel> { factory }
+    private val vm by viewModels<SelectObjectTypeViewModel> { factory }
 
     lateinit var onTypeSelected: (ObjectWrapper.Type) -> Unit
 
@@ -45,7 +45,7 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
             MaterialTheme(
                 typography = typography
             ) {
-                CreateObjectOfTypeScreen(
+                SelectObjectTypeScreen(
                     state = vm.viewState.collectAsStateWithLifecycle().value,
                     onTypeClicked = vm::onTypeClicked,
                     onQueryChanged = vm::onQueryChanged,
@@ -77,14 +77,14 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
 
     override fun injectDependencies() {
         componentManager()
-            .createObjectOfTypeComponent.get(
+            .selectObjectTypeComponent.get(
                 params = excludedTypeKeys?.map { TypeKey(it) } ?: emptyList()
             )
             .inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().createObjectOfTypeComponent.release()
+        componentManager().selectObjectTypeComponent.release()
     }
 
     companion object {
@@ -93,7 +93,7 @@ class CreateObjectOfTypeFragment : BaseBottomSheetComposeFragment() {
         fun newInstance(
             excludedTypeKeys: List<Key>,
             onTypeSelected: (ObjectWrapper.Type) -> Unit
-        ): CreateObjectOfTypeFragment = CreateObjectOfTypeFragment().apply {
+        ): SelectObjectTypeFragment = SelectObjectTypeFragment().apply {
             this.onTypeSelected = onTypeSelected
             arguments =
                 bundleOf(

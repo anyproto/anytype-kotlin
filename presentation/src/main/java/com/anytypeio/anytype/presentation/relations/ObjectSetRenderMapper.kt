@@ -140,7 +140,10 @@ suspend fun DVViewer.render(
                 Viewer.Unsupported(
                     id = id,
                     title = name,
-                    error = "This view type (${type.name.lowercase()}) is not supported on Android yet. See it as grid view?"
+                    type = if (type == DVViewerType.BOARD)
+                        Viewer.Unsupported.TYPE_KANBAN
+                    else
+                        Viewer.Unsupported.TYPE_CALENDAR
                 )
             }
         }

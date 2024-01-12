@@ -821,7 +821,7 @@
     <string name="space_type_private">Pribadi</string>
     <string name="space_type_unknown">Tidak diketahui</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_groups">Grup</string>
+    <string name="create_object_section_lists">Grup</string>
     <string name="create_object_section_objects">Objek</string>
     <string name="edit">Sunting</string>
     <string name="unselect_all">Batal pilih semua</string>

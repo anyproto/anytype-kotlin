@@ -24,7 +24,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
+import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_MODIFY_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_KEY_UNINSTALL_RELATION
 import com.anytypeio.anytype.ui.relations.REQUEST_UNINSTALL_RELATION_ARG_ID
@@ -72,7 +72,7 @@ class LibraryFragment : BaseComposeFragment() {
                             findNavController().popBackStack()
                         },
                         onCreateObjectLongClicked = {
-                            val dialog = CreateObjectOfTypeFragment().apply {
+                            val dialog = SelectObjectTypeFragment().apply {
                                 onTypeSelected = {
                                     vm.onCreateObjectOfTypeClicked(it)
                                 }

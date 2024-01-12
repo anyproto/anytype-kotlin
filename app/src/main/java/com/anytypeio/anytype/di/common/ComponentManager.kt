@@ -102,7 +102,7 @@ import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
-import com.anytypeio.anytype.presentation.objects.CreateObjectOfTypeViewModel
+import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
@@ -932,11 +932,11 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val createObjectOfTypeComponent = ComponentWithParams { excludedTypeKeys: List<TypeKey> ->
+    val selectObjectTypeComponent = ComponentWithParams { excludedTypeKeys: List<TypeKey> ->
         DaggerCreateObjectOfTypeComponent
             .factory()
             .create(
-                params = CreateObjectOfTypeViewModel.Params(excludedTypeKeys),
+                params = SelectObjectTypeViewModel.Params(excludedTypeKeys),
                 dependencies = findComponentDependencies()
             )
     }

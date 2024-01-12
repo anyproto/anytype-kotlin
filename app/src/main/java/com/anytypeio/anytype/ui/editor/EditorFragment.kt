@@ -144,7 +144,7 @@ import com.anytypeio.anytype.ui.linking.OnLinkToAction
 import com.anytypeio.anytype.ui.moving.MoveToFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
-import com.anytypeio.anytype.ui.objects.creation.CreateObjectOfTypeFragment
+import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.OnObjectSelectTypeAction
 import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
@@ -612,7 +612,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .btnAddDoc
             .longClicks(withHaptic = true)
             .onEach {
-                val dialog = CreateObjectOfTypeFragment().apply {
+                val dialog = SelectObjectTypeFragment().apply {
                     onTypeSelected = {
                         vm.onAddNewDocumentClicked(it)
                     }
@@ -1042,7 +1042,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenObjectSelectTypeScreen -> {
                     hideKeyboard()
-                    val dialog = CreateObjectOfTypeFragment.newInstance(
+                    val dialog = SelectObjectTypeFragment.newInstance(
                         excludedTypeKeys = command.excludedTypes,
                         onTypeSelected = vm::onObjectTypeChanged
                     )

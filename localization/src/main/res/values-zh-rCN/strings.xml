@@ -821,7 +821,7 @@
     <string name="space_type_private">私人</string>
     <string name="space_type_unknown">未知</string>
     <string name="create_space_start_with">开始于：</string>
-    <string name="create_object_section_groups">分组</string>
+    <string name="create_object_section_lists">分组</string>
     <string name="create_object_section_objects">对象</string>
     <string name="edit">编辑</string>
     <string name="unselect_all">取消全选</string>

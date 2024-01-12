@@ -827,7 +827,7 @@
     <string name="space_type_private">Приватный</string>
     <string name="space_type_unknown">Неизвестно</string>
     <string name="create_space_start_with">Начинается с</string>
-    <string name="create_object_section_groups">Группы</string>
+    <string name="create_object_section_lists">Группы</string>
     <string name="create_object_section_objects">Объекты</string>
     <string name="edit">Изменить</string>
     <string name="unselect_all">Отменить выбор</string>

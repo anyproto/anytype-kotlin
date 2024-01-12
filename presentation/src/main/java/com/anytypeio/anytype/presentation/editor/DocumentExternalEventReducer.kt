@@ -74,12 +74,12 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
                 val content = block.content<Block.Content.File>()
                 block.copy(
                     content = content.copy(
-                        type = event.type ?: content.type,
-                        state = event.state ?: content.state,
                         targetObjectId = event.targetObjectId ?: content.targetObjectId,
-                        size = event.size ?: content.size,
                         name = event.name ?: content.name,
                         mime = event.mime ?: content.mime,
+                        size = event.size ?: content.size,
+                        type = event.type ?: content.type,
+                        state = event.state ?: content.state,
                     )
                 )
             },

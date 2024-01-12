@@ -222,7 +222,7 @@ class DefaultUserSettingsCache(
         }
     }
 
-    override suspend fun getPinnedObjectTypes(space: SpaceId): Flow<List<TypeId>> {
+    override fun getPinnedObjectTypes(space: SpaceId): Flow<List<TypeId>> {
         return context.spacePrefsStore
             .data
             .map { preferences ->

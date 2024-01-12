@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
+import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.types.SetPinnedObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -36,7 +37,7 @@ class SelectObjectTypeViewModel(
     private val spaceManager: SpaceManager,
     private val addObjectToSpace: AddObjectToSpace,
     private val setPinnedObjectTypes: SetPinnedObjectTypes,
-    private val get
+    private val getPinnedObjectTypes: GetPinnedObjectTypes
 ) : BaseViewModel() {
 
     val viewState = MutableStateFlow<SelectTypeViewState>(SelectTypeViewState.Loading)
@@ -182,7 +183,9 @@ class SelectObjectTypeViewModel(
         private val params: Params,
         private val getObjectTypes: GetObjectTypes,
         private val spaceManager: SpaceManager,
-        private val addObjectToSpace: AddObjectToSpace
+        private val addObjectToSpace: AddObjectToSpace,
+        private val setPinnedObjectTypes: SetPinnedObjectTypes,
+        private val getPinnedObjectTypes: GetPinnedObjectTypes
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -191,7 +194,9 @@ class SelectObjectTypeViewModel(
             params = params,
             getObjectTypes = getObjectTypes,
             spaceManager = spaceManager,
-            addObjectToSpace = addObjectToSpace
+            addObjectToSpace = addObjectToSpace,
+            setPinnedObjectTypes = setPinnedObjectTypes,
+            getPinnedObjectTypes = getPinnedObjectTypes
         ) as T
     }
 

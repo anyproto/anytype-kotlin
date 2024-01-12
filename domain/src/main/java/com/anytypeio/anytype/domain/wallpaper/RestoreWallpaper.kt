@@ -28,4 +28,6 @@ class RestoreWallpaper(
         .catch {
             // Do nothing.
         }
+
+    override fun build(params: Unit): Flow<Unit> = build()
 }

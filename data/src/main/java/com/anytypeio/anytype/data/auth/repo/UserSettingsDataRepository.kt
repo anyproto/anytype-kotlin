@@ -36,7 +36,7 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         )
     }
 
-    override suspend fun getPinnedObjectTypes(space: SpaceId): Flow<List<TypeId>> {
+    override fun getPinnedObjectTypes(space: SpaceId): Flow<List<TypeId>> {
         return cache.getPinnedObjectTypes(space = space)
     }
 

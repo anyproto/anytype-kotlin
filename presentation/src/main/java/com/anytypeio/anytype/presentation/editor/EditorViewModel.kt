@@ -40,6 +40,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.descendants
 import com.anytypeio.anytype.core_models.ext.isAllTextAndNoneCodeBlocks
 import com.anytypeio.anytype.core_models.ext.isAllTextBlocks
+import com.anytypeio.anytype.core_models.ext.isValid
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.ext.parents
 import com.anytypeio.anytype.core_models.ext.process
@@ -3653,7 +3654,7 @@ class EditorViewModel(
                             dispatch(
                                 Command.OpenFullScreenImage(
                                     target = clicked.target,
-                                    url = urlBuilder.original(content.hash)
+                                    url = urlBuilder.original(content.targetObjectId)
                                 )
                             )
                         } else {
@@ -4108,15 +4109,17 @@ class EditorViewModel(
 
     private fun onFileClicked(id: String) {
         val file = blocks.find { it.id == id }
-        if (file != null && file.content is Content.File) {
-            val cnt = (file.content as Content.File)
+        val content = file?.content as? Content.File
+        if (content != null && content.isValid()) {
             dispatch(
                 Command.OpenFileByDefaultApp(
                     id = id,
-                    mime = cnt.mime.orEmpty(),
-                    uri = urlBuilder.file(cnt.hash)
+                    uri = urlBuilder.file(content.targetObjectId)
                 )
             )
+        } else {
+            Timber.e("Block is not File or with wrong state, can't proceed with open")
+            sendToast("Something went wrong. Couldn't open file.")
         }
     }
 
@@ -4133,7 +4136,7 @@ class EditorViewModel(
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Media.ShareFile(
-                        hash = content.hash.orEmpty(),
+                        objectId = content.targetObjectId.orEmpty(),
                         name = content.name.orEmpty(),
                         type = content.type,
                         onDownloaded = onDownloaded
@@ -4152,15 +4155,15 @@ class EditorViewModel(
         sendToast("Downloading file in background...")
 
         val block = blocks.firstOrNull { it.id == id }
-        val content = block?.content
+        val content = block?.content as? Content.File
 
-        if (content is Content.File && content.state == Content.File.State.DONE) {
+        if (content != null && content.isValid()) {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
                         url = when (content.type) {
-                            Content.File.Type.IMAGE -> urlBuilder.image(content.hash)
-                            else -> urlBuilder.file(content.hash)
+                            Content.File.Type.IMAGE -> urlBuilder.image(content.targetObjectId)
+                            else -> urlBuilder.file(content.targetObjectId)
                         },
                         name = content.name.orEmpty(),
                         type = content.type
@@ -4169,6 +4172,7 @@ class EditorViewModel(
             }
         } else {
             Timber.e("Block is not File or with wrong state, can't proceed with download")
+            sendToast("Something went wrong. Couldn't download file.")
         }
     }
 

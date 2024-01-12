@@ -18,6 +18,8 @@ interface UserSettingsRepository {
     suspend fun setDefaultObjectType(space: SpaceId, type: TypeId)
     suspend fun getDefaultObjectType(space: SpaceId): TypeId?
 
+    suspend fun setPinnedObjectTypes(space: SpaceId, types: List<TypeId>)
+
     suspend fun setThemeMode(mode: ThemeMode)
     suspend fun getThemeMode(): ThemeMode
 

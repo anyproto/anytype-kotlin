@@ -207,7 +207,7 @@ class DefaultUserSettingsCache(
             .apply()
     }
 
-    override suspend fun setPinnedTypes(space: SpaceId, types: List<TypeId>) {
+    override suspend fun setPinnedObjectTypes(space: SpaceId, types: List<TypeId>) {
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences
                 .preferences

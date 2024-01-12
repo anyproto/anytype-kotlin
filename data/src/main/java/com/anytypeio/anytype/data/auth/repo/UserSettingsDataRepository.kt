@@ -28,6 +28,13 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         space: SpaceId
     ): TypeId? = cache.getDefaultObjectType(space = space)
 
+    override suspend fun setPinnedObjectTypes(space: SpaceId, types: List<TypeId>) {
+        cache.setPinnedObjectTypes(
+            space = space,
+            types = types
+        )
+    }
+
     override suspend fun setThemeMode(mode: ThemeMode) {
         cache.setThemeMode(mode)
     }

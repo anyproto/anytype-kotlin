@@ -74,16 +74,16 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
                 val content = block.content<Block.Content.File>()
                 block.copy(
                     content = content.copy(
-                        hash = event.hash ?: content.hash,
+                        type = event.type ?: content.type,
+                        state = event.state ?: content.state,
+                        targetObjectId = event.targetObjectId ?: content.targetObjectId,
+                        size = event.size ?: content.size,
                         name = event.name ?: content.name,
                         mime = event.mime ?: content.mime,
-                        size = event.size ?: content.size,
-                        type = event.type ?: content.type,
-                        state = event.state ?: content.state
                     )
                 )
             },
-            target = { block -> block.id == event.id }
+            target = { block -> block.id == event.blockId }
         )
         is Event.Command.BookmarkGranularChange -> state.replace(
             replacement = { block ->

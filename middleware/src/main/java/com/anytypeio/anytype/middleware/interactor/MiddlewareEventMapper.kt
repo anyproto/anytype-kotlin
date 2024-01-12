@@ -126,11 +126,11 @@ fun anytype.Event.Message.toCoreModels(
         with(event) {
             Event.Command.UpdateFileBlock(
                 context = context,
-                id = id,
+                blockId = id,
+                targetObjectId = targetObjectId?.value_,
                 state = state?.value_?.toCoreModels(),
                 type = type?.value_?.toCoreModels(),
                 name = name?.value_,
-                hash = hash?.value_,
                 mime = mime?.value_,
                 size = size?.value_
             )

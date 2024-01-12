@@ -79,7 +79,7 @@ class DocumentExternalEventReducer : StateReducer<List<Block>, Event> {
                         mime = event.mime ?: content.mime,
                         size = event.size ?: content.size,
                         type = event.type ?: content.type,
-                        state = event.state ?: content.state,
+                        state = event.state ?: content.state
                     )
                 )
             },

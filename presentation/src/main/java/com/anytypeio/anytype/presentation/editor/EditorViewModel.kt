@@ -4109,12 +4109,12 @@ class EditorViewModel(
 
     private fun onFileClicked(id: String) {
         val file = blocks.find { it.id == id }
-        val content = file?.content as? Content.File
-        if (content != null && content.isValid()) {
+        val fileContent = file?.content as? Content.File
+        if (fileContent != null && fileContent.isValid()) {
             dispatch(
                 Command.OpenFileByDefaultApp(
                     id = id,
-                    uri = urlBuilder.file(content.targetObjectId)
+                    uri = urlBuilder.file(fileContent.targetObjectId)
                 )
             )
         } else {
@@ -4155,18 +4155,18 @@ class EditorViewModel(
         sendToast("Downloading file in background...")
 
         val block = blocks.firstOrNull { it.id == id }
-        val content = block?.content as? Content.File
-
-        if (content != null && content.isValid()) {
+        val fileContent = block?.content as? Content.File
+        
+        if (fileContent != null && fileContent.isValid()) {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
-                        url = when (content.type) {
-                            Content.File.Type.IMAGE -> urlBuilder.image(content.targetObjectId)
-                            else -> urlBuilder.file(content.targetObjectId)
+                        url = when (fileContent.type) {
+                            Content.File.Type.IMAGE -> urlBuilder.image(fileContent.targetObjectId)
+                            else -> urlBuilder.file(fileContent.targetObjectId)
                         },
-                        name = content.name.orEmpty(),
-                        type = content.type
+                        name = fileContent.name.orEmpty(),
+                        type = fileContent.type
                     )
                 )
             }

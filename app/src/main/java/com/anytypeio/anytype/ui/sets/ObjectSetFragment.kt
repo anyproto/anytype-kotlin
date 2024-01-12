@@ -671,8 +671,18 @@ open class ObjectSetFragment :
                     galleryView.clear()
                     listView.gone()
                     listView.setViews(emptyList())
+                    when(viewer.type) {
+                        Viewer.Unsupported.TYPE_CALENDAR -> {
+                            unsupportedViewError.setText(R.string.error_calendar_view_not_supported)
+                        }
+                        Viewer.Unsupported.TYPE_KANBAN -> {
+                            unsupportedViewError.setText(R.string.error_kanban_view_not_supported)
+                        }
+                        else -> {
+                            unsupportedViewError.setText(R.string.error_generic_view_not_supported)
+                        }
+                    }
                     unsupportedViewError.visible()
-                    unsupportedViewError.text = viewer.error
                 }
             }
             null -> {

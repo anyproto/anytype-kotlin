@@ -37,7 +37,7 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
         val file = Block(
             id = MockDataFactory.randomUuid(),
             content = Block.Content.File(
-                hash = MockDataFactory.randomUuid(),
+                targetObjectId = MockDataFactory.randomUuid(),
                 type = Block.Content.File.Type.FILE,
                 state = Block.Content.File.State.DONE
             ),

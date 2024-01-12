@@ -150,7 +150,7 @@ class MiddlewareEventChannelTest {
     @Test
     fun `should return UpdateBlockFile event`() {
 
-        val hash = "785687346534hfjdbsjfbds"
+        val targetObjectId = "785687346534hfjdbsjfbds"
         val name = "video1.mp4"
         val mime = "video/*"
         val size = 999111L
@@ -162,7 +162,7 @@ class MiddlewareEventChannelTest {
 
         val msg = anytype.Event.Block.Set.File(
             id = id,
-            hash = anytype.Event.Block.Set.File.Hash(hash),
+            targetObjectId = anytype.Event.Block.Set.File.TargetObjectId(targetObjectId),
             mime = anytype.Event.Block.Set.File.Mime(mime),
             size = anytype.Event.Block.Set.File.Size(size),
             type = anytype.Event.Block.Set.File.Type(type),
@@ -181,8 +181,8 @@ class MiddlewareEventChannelTest {
         val expected = listOf(
             Event.Command.UpdateFileBlock(
                 context = context,
-                id = id,
-                hash = hash,
+                blockId = id,
+                targetObjectId = targetObjectId,
                 mime = mime,
                 size = size,
                 type = com.anytypeio.anytype.core_models.Block.Content.File.Type.VIDEO,
@@ -220,7 +220,7 @@ class MiddlewareEventChannelTest {
         val expected = listOf(
             Event.Command.UpdateFileBlock(
                 context = context,
-                id = id
+                blockId = id
             )
         )
 

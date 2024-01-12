@@ -28,17 +28,18 @@ import com.anytypeio.anytype.presentation.templates.TemplateObjectTypeView
 import timber.log.Timber
 
 fun Block.Content.File.toPictureView(
-    id: String,
+    blockId: String,
     urlBuilder: UrlBuilder,
     indent: Int,
     mode: BlockView.Mode,
     isSelected: Boolean = false,
     background: ThemeColor,
     isPreviousBlockMedia: Boolean,
-    decorations: List<BlockView.Decoration>
+    decorations: List<BlockView.Decoration>,
+    details: Block.Details = Block.Details()
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Picture(
-        id = id,
+        id = blockId,
         indent = indent,
         mode = mode,
         isSelected = isSelected,
@@ -47,28 +48,45 @@ fun Block.Content.File.toPictureView(
         decorations = decorations
     )
     Block.Content.File.State.UPLOADING -> BlockView.Upload.Picture(
-        id = id,
+        id = blockId,
         indent = indent,
         mode = mode,
         isSelected = isSelected,
         background = background,
         decorations = decorations
     )
-    Block.Content.File.State.DONE -> BlockView.Media.Picture(
-        id = id,
-        size = size,
-        name = name,
-        mime = mime,
-        hash = hash,
-        url = urlBuilder.image(hash),
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        background = background,
-        decorations = decorations
-    )
+    Block.Content.File.State.DONE -> {
+        val targetId = this.targetObjectId
+        if (targetId.isNullOrEmpty()) {
+            Timber.w("Target object id is null or empty for Picture block $blockId in done state")
+            BlockView.Error.Picture(
+                id = blockId,
+                indent = indent,
+                mode = mode,
+                isSelected = isSelected,
+                background = background,
+                decorations = decorations
+            )
+        } else {
+            val targetObject =
+                ObjectWrapper.File(details.details[targetId]?.map ?: emptyMap())
+            BlockView.Media.Picture(
+                id = blockId,
+                targetObjectId = targetId,
+                url = urlBuilder.image(targetId),
+                indent = indent,
+                mode = mode,
+                isSelected = isSelected,
+                background = background,
+                decorations = decorations,
+                size = targetObject.sizeInBytes?.toLong(),
+                name = targetObject.name,
+                mime = targetObject.fileMimeType
+            )
+        }
+    }
     Block.Content.File.State.ERROR -> BlockView.Error.Picture(
-        id = id,
+        id = blockId,
         indent = indent,
         mode = mode,
         isSelected = isSelected,
@@ -79,17 +97,18 @@ fun Block.Content.File.toPictureView(
 }
 
 fun Block.Content.File.toVideoView(
-    id: String,
+    blockId: Id,
     urlBuilder: UrlBuilder,
     indent: Int,
     mode: BlockView.Mode,
     isSelected: Boolean = false,
     background: ThemeColor,
     isPrevBlockMedia: Boolean,
-    decorations: List<BlockView.Decoration>
+    decorations: List<BlockView.Decoration>,
+    details: Block.Details = Block.Details()
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.Video(
-        id = id,
+        id = blockId,
         indent = indent,
         mode = mode,
         isSelected = isSelected,
@@ -98,28 +117,45 @@ fun Block.Content.File.toVideoView(
         decorations = decorations
     )
     Block.Content.File.State.UPLOADING -> BlockView.Upload.Video(
-        id = id,
+        id = blockId,
         indent = indent,
         mode = mode,
         isSelected = isSelected,
         background = background,
         decorations = decorations
     )
-    Block.Content.File.State.DONE -> BlockView.Media.Video(
-        id = id,
-        size = size,
-        name = name,
-        mime = mime,
-        hash = hash,
-        url = urlBuilder.video(hash),
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        background = background,
-        decorations = decorations
-    )
+    Block.Content.File.State.DONE -> {
+        val targetId = this.targetObjectId
+        if (targetId.isNullOrEmpty()) {
+            Timber.w("Target object id is null or empty for Video block $blockId in done state")
+            BlockView.Error.Video(
+                id = blockId,
+                indent = indent,
+                mode = mode,
+                isSelected = isSelected,
+                background = background,
+                decorations = decorations
+            )
+        } else {
+            val targetObject =
+                ObjectWrapper.File(details.details[targetId]?.map ?: emptyMap())
+            BlockView.Media.Video(
+                id = blockId,
+                targetObjectId = targetId,
+                url = urlBuilder.video(targetId),
+                indent = indent,
+                mode = mode,
+                isSelected = isSelected,
+                background = background,
+                decorations = decorations,
+                size = targetObject.sizeInBytes?.toLong(),
+                name = targetObject.name,
+                mime = targetObject.fileMimeType
+            )
+        }
+    }
     Block.Content.File.State.ERROR -> BlockView.Error.Video(
-        id = id,
+        id = blockId,
         indent = indent,
         mode = mode,
         isSelected = isSelected,
@@ -130,17 +166,18 @@ fun Block.Content.File.toVideoView(
 }
 
 fun Block.Content.File.toFileView(
-    id: String,
+    blockId: String,
     urlBuilder: UrlBuilder,
     indent: Int,
     mode: BlockView.Mode,
     isSelected: Boolean = false,
     background: ThemeColor,
     isPrevBlockMedia: Boolean,
-    decorations: List<BlockView.Decoration>
+    decorations: List<BlockView.Decoration>,
+    details: Block.Details = Block.Details()
 ): BlockView = when (state) {
     Block.Content.File.State.EMPTY -> BlockView.MediaPlaceholder.File(
-        id = id,
+        id = blockId,
         indent = indent,
         mode = mode,
         isSelected = isSelected,
@@ -149,28 +186,45 @@ fun Block.Content.File.toFileView(
         decorations = decorations
     )
     Block.Content.File.State.UPLOADING -> BlockView.Upload.File(
-        id = id,
+        id = blockId,
         indent = indent,
         mode = mode,
         isSelected = isSelected,
         background = background,
         decorations = decorations
     )
-    Block.Content.File.State.DONE -> BlockView.Media.File(
-        id = id,
-        size = size,
-        name = name,
-        mime = mime,
-        hash = hash,
-        url = urlBuilder.video(hash),
-        indent = indent,
-        mode = mode,
-        isSelected = isSelected,
-        background = background,
-        decorations = decorations
-    )
+    Block.Content.File.State.DONE -> {
+        val targetId = this.targetObjectId
+        if (targetId.isNullOrEmpty()) {
+            Timber.w("Target object id is null or empty for File block $blockId in done state")
+            BlockView.Error.File(
+                id = blockId,
+                indent = indent,
+                mode = mode,
+                isSelected = isSelected,
+                background = background,
+                decorations = decorations
+            )
+        } else {
+            val targetObject =
+                ObjectWrapper.File(details.details[targetId]?.map ?: emptyMap())
+            BlockView.Media.File(
+                id = blockId,
+                targetObjectId = targetId,
+                size = targetObject.sizeInBytes?.toLong(),
+                name = targetObject.name,
+                mime = targetObject.fileMimeType,
+                url = urlBuilder.file(targetId),
+                indent = indent,
+                mode = mode,
+                isSelected = isSelected,
+                background = background,
+                decorations = decorations
+            )
+        }
+    }
     Block.Content.File.State.ERROR -> BlockView.Error.File(
-        id = id,
+        id = blockId,
         indent = indent,
         mode = mode,
         isSelected = isSelected,

@@ -37,7 +37,6 @@ import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
 import com.anytypeio.anytype.presentation.relations.BlockFieldsCoverWrapper
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.getCover
-import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.objectTypeRelation
 import com.anytypeio.anytype.presentation.relations.view
@@ -635,7 +634,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                             indent = indent,
                             selection = selection,
                             isPreviousBlockMedia = isPreviousBlockMedia,
-                            schema = blockDecorationScheme
+                            schema = blockDecorationScheme,
+                            details = details
                         )
                     )
                     isPreviousBlockMedia = true
@@ -1336,10 +1336,11 @@ class DefaultBlockViewRenderer @Inject constructor(
         indent: Int,
         selection: Set<Id>,
         isPreviousBlockMedia: Boolean,
-        schema: NestedDecorationData
+        schema: NestedDecorationData,
+        details: Block.Details
     ): BlockView = when (content.type) {
         Content.File.Type.IMAGE -> content.toPictureView(
-            id = block.id,
+            blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1350,10 +1351,11 @@ class DefaultBlockViewRenderer @Inject constructor(
             ),
             background = block.parseThemeBackgroundColor(),
             isPreviousBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block)
+            decorations = schema.toBlockViewDecoration(block),
+            details = details
         )
         Content.File.Type.FILE -> content.toFileView(
-            id = block.id,
+            blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1364,10 +1366,11 @@ class DefaultBlockViewRenderer @Inject constructor(
             ),
             background = block.parseThemeBackgroundColor(),
             isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block)
+            decorations = schema.toBlockViewDecoration(block),
+            details = details
         )
         Content.File.Type.VIDEO -> content.toVideoView(
-            id = block.id,
+            blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1378,10 +1381,11 @@ class DefaultBlockViewRenderer @Inject constructor(
             ),
             background = block.parseThemeBackgroundColor(),
             isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block)
+            decorations = schema.toBlockViewDecoration(block),
+            details = details
         )
         Content.File.Type.AUDIO -> content.toFileView(
-            id = block.id,
+            blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1392,10 +1396,11 @@ class DefaultBlockViewRenderer @Inject constructor(
             ),
             background = block.parseThemeBackgroundColor(),
             isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block)
+            decorations = schema.toBlockViewDecoration(block),
+            details = details
         )
         Content.File.Type.PDF -> content.toFileView(
-            id = block.id,
+            blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1406,10 +1411,11 @@ class DefaultBlockViewRenderer @Inject constructor(
             ),
             background = block.parseThemeBackgroundColor(),
             isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block)
+            decorations = schema.toBlockViewDecoration(block),
+            details = details
         )
         Content.File.Type.NONE -> content.toFileView(
-            id = block.id,
+            blockId = block.id,
             urlBuilder = urlBuilder,
             indent = indent,
             mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
@@ -1420,7 +1426,8 @@ class DefaultBlockViewRenderer @Inject constructor(
             ),
             background = block.parseThemeBackgroundColor(),
             isPrevBlockMedia = isPreviousBlockMedia,
-            decorations = schema.toBlockViewDecoration(block)
+            decorations = schema.toBlockViewDecoration(block),
+            details = details
         )
         else -> throw IllegalStateException("Unexpected file type: ${content.type}")
     }

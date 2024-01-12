@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
+import kotlinx.coroutines.flow.Flow
 
 interface UserSettingsRepository {
 
@@ -19,6 +20,7 @@ interface UserSettingsRepository {
     suspend fun getDefaultObjectType(space: SpaceId): TypeId?
 
     suspend fun setPinnedObjectTypes(space: SpaceId, types: List<TypeId>)
+    suspend fun getPinnedObjectTypes(space: SpaceId) : Flow<List<TypeId>>
 
     suspend fun setThemeMode(mode: ThemeMode)
     suspend fun getThemeMode(): ThemeMode

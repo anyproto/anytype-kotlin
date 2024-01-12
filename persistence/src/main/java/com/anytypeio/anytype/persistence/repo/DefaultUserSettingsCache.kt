@@ -21,11 +21,10 @@ import com.anytypeio.anytype.persistence.common.toJsonString
 import com.anytypeio.anytype.persistence.common.toStringMap
 import com.anytypeio.anytype.persistence.model.asSettings
 import com.anytypeio.anytype.persistence.model.asWallpaper
-import com.anytypeio.anytype.persistence.preferences.PrefSerializer
 import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
-import timber.log.Timber
+import com.anytypeio.anytype.persistence.preferences.SpacePrefSerializer
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 class DefaultUserSettingsCache(
     private val prefs: SharedPreferences,
@@ -34,7 +33,7 @@ class DefaultUserSettingsCache(
 
     private val Context.spacePrefsStore: DataStore<SpacePreferences> by dataStore(
         fileName = SPACE_PREFERENCE_FILENAME,
-        serializer = PrefSerializer
+        serializer = SpacePrefSerializer
     )
 
     override suspend fun setCurrentSpace(space: SpaceId) {
@@ -83,11 +82,6 @@ class DefaultUserSettingsCache(
     }
 
     override suspend fun getDefaultObjectType(space: SpaceId): TypeId? {
-        val test = runBlocking { context.spacePrefsStore.data.first() }
-
-        Timber.d("Getting default object type from space preferences: $test")
-
-
         val curr = prefs
             .getString(DEFAULT_OBJECT_TYPES_KEY, "")
             .orEmpty()
@@ -226,6 +220,16 @@ class DefaultUserSettingsCache(
                 preferences = result
             )
         }
+    }
+
+    override suspend fun getPinnedObjectTypes(space: SpaceId): Flow<List<TypeId>> {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.pinnedObjectTypeKeys?.map { id -> TypeId(id) } ?: emptyList()
+            }
     }
 
     override suspend fun clear() {

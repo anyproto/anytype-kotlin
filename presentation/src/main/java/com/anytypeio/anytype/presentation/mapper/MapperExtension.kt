@@ -17,6 +17,8 @@ import com.anytypeio.anytype.presentation.editor.editor.mention.createMentionMar
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.UiBlock
+import com.anytypeio.anytype.presentation.extension.getUrlForFileBlock
+import com.anytypeio.anytype.presentation.extension.getUrlForFileContent
 import com.anytypeio.anytype.presentation.objects.ObjectLayoutView
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.sets.buildGridRow
@@ -56,24 +58,15 @@ fun Block.Content.File.toPictureView(
         decorations = decorations
     )
     Block.Content.File.State.DONE -> {
+        val url = urlBuilder.getUrlForFileContent(this)
         val targetId = this.targetObjectId
-        if (targetId.isNullOrEmpty()) {
-            Timber.w("Target object id is null or empty for Picture block $blockId in done state")
-            BlockView.Error.Picture(
-                id = blockId,
-                indent = indent,
-                mode = mode,
-                isSelected = isSelected,
-                background = background,
-                decorations = decorations
-            )
-        } else {
-            val targetObject =
-                ObjectWrapper.File(details.details[targetId]?.map ?: emptyMap())
+        val struct = details.details[targetId]?.map
+        if (url != null && targetId != null && !struct.isNullOrEmpty()) {
+            val targetObject = ObjectWrapper.File(struct)
             BlockView.Media.Picture(
                 id = blockId,
                 targetObjectId = targetId,
-                url = urlBuilder.image(targetId),
+                url = url,
                 indent = indent,
                 mode = mode,
                 isSelected = isSelected,
@@ -82,6 +75,17 @@ fun Block.Content.File.toPictureView(
                 size = targetObject.sizeInBytes?.toLong(),
                 name = targetObject.name,
                 mime = targetObject.fileMimeType
+            )
+
+        } else {
+            Timber.w("Could not build picture view for block $blockId")
+            BlockView.Error.Picture(
+                id = blockId,
+                indent = indent,
+                mode = mode,
+                isSelected = isSelected,
+                background = background,
+                decorations = decorations
             )
         }
     }
@@ -125,24 +129,15 @@ fun Block.Content.File.toVideoView(
         decorations = decorations
     )
     Block.Content.File.State.DONE -> {
+        val url = urlBuilder.getUrlForFileContent(this)
         val targetId = this.targetObjectId
-        if (targetId.isNullOrEmpty()) {
-            Timber.w("Target object id is null or empty for Video block $blockId in done state")
-            BlockView.Error.Video(
-                id = blockId,
-                indent = indent,
-                mode = mode,
-                isSelected = isSelected,
-                background = background,
-                decorations = decorations
-            )
-        } else {
-            val targetObject =
-                ObjectWrapper.File(details.details[targetId]?.map ?: emptyMap())
+        val struct = details.details[targetId]?.map
+        if (url != null && targetId != null && !struct.isNullOrEmpty()) {
+            val targetObject = ObjectWrapper.File(struct)
             BlockView.Media.Video(
                 id = blockId,
                 targetObjectId = targetId,
-                url = urlBuilder.video(targetId),
+                url = url,
                 indent = indent,
                 mode = mode,
                 isSelected = isSelected,
@@ -151,6 +146,17 @@ fun Block.Content.File.toVideoView(
                 size = targetObject.sizeInBytes?.toLong(),
                 name = targetObject.name,
                 mime = targetObject.fileMimeType
+            )
+
+        } else {
+            Timber.w("Could not build video view for block $blockId")
+            BlockView.Error.Video(
+                id = blockId,
+                indent = indent,
+                mode = mode,
+                isSelected = isSelected,
+                background = background,
+                decorations = decorations
             )
         }
     }
@@ -194,27 +200,29 @@ fun Block.Content.File.toFileView(
         decorations = decorations
     )
     Block.Content.File.State.DONE -> {
+        val url = urlBuilder.getUrlForFileContent(this)
         val targetId = this.targetObjectId
-        if (targetId.isNullOrEmpty()) {
-            Timber.w("Target object id is null or empty for File block $blockId in done state")
-            BlockView.Error.File(
+        val struct = details.details[targetId]?.map
+        if (url != null && targetId != null && !struct.isNullOrEmpty()) {
+            val targetObject = ObjectWrapper.File(struct)
+            BlockView.Media.File(
                 id = blockId,
+                targetObjectId = targetId,
+                url = url,
                 indent = indent,
                 mode = mode,
                 isSelected = isSelected,
                 background = background,
-                decorations = decorations
-            )
-        } else {
-            val targetObject =
-                ObjectWrapper.File(details.details[targetId]?.map ?: emptyMap())
-            BlockView.Media.File(
-                id = blockId,
-                targetObjectId = targetId,
+                decorations = decorations,
                 size = targetObject.sizeInBytes?.toLong(),
                 name = targetObject.name,
-                mime = targetObject.fileMimeType,
-                url = urlBuilder.file(targetId),
+                mime = targetObject.fileMimeType
+            )
+
+        } else {
+            Timber.w("Could not build file view for block $blockId")
+            BlockView.Error.File(
+                id = blockId,
                 indent = indent,
                 mode = mode,
                 isSelected = isSelected,

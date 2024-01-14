@@ -138,7 +138,7 @@ private suspend fun ObjectWrapper.Basic.mapToCoverItem(
                 val preview = details[id]
                 preview != null && preview.type.contains(IMAGE)
             }
-            if (previewId != null) {
+            if (!previewId.isNullOrBlank()) {
                 coverImage = urlBuilder.image(previewId)
             }
         }

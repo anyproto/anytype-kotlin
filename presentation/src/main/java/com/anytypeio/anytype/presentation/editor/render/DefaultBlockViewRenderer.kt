@@ -1265,8 +1265,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     url = obj.source.orEmpty(),
                     title = obj.name,
                     description = obj.description,
-                    imageUrl = obj.picture?.ifEmpty { null }?.let { urlBuilder.image(it) },
-                    faviconUrl = obj.iconImage?.ifEmpty { null }?.let { urlBuilder.image(it) },
+                    imageUrl = obj.picture?.takeIf { it.isNotBlank() }?.let { urlBuilder.image(it) },
+                    faviconUrl = obj.iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.image(it) },
                     indent = indent,
                     mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
                     isSelected = checkIfSelected(
@@ -1481,15 +1481,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    emoji = details.details[root.id]?.iconEmoji?.let { name ->
-                        name.ifEmpty { null }
-                    },
-                    image = details.details[root.id]?.iconImage?.let { name ->
-                        if (name.isNotEmpty())
-                            urlBuilder.thumbnail(name)
-                        else
-                            null
-                    },
+                    emoji = details.details[root.id]?.iconEmoji?.takeIf { it.isNotBlank() },
+                    image = details.details[root.id]?.iconImage?.takeIf { it.isNotBlank() }
+                        ?.let { urlBuilder.thumbnail(it) },
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
@@ -1519,11 +1513,8 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    image = details.details[root.id]?.iconImage?.let { name ->
-                        if (name.isNotEmpty())
-                            urlBuilder.thumbnail(name)
-                        else
-                            null
+                    image = details.details[root.id]?.iconImage?.takeIf { it.isNotBlank() }?.let {
+                        urlBuilder.thumbnail(it)
                     },
                     spaceGradient = null,
                     isFocused = resolveIsFocused(focus, block),
@@ -1540,11 +1531,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    emoji = details.details[root.id]?.iconEmoji?.let { name ->
-                        name.ifEmpty { null }
-                    },
+                    emoji = details.details[root.id]?.iconEmoji?.takeIf { it.isNotBlank() },
                     image = details.details[root.id]?.iconImage?.let { image ->
-                        if (image.isNotEmpty() && layout != ObjectType.Layout.BOOKMARK)
+                        if (image.isNotBlank() && layout != ObjectType.Layout.BOOKMARK)
                             urlBuilder.thumbnail(image)
                         else
                             null
@@ -1564,14 +1553,9 @@ class DefaultBlockViewRenderer @Inject constructor(
                     mode = blockMode,
                     id = block.id,
                     text = content.text,
-                    emoji = details.details[root.id]?.iconEmoji?.let { name ->
-                        name.ifEmpty { null }
-                    },
-                    image = details.details[root.id]?.iconImage?.let { name ->
-                        if (name.isNotEmpty())
-                            urlBuilder.thumbnail(name)
-                        else
-                            null
+                    emoji = details.details[root.id]?.iconEmoji?.takeIf { it.isNotBlank() },
+                    image = details.details[root.id]?.iconImage?.takeIf { it.isNotBlank() }?.let {
+                        urlBuilder.thumbnail(it)
                     },
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,

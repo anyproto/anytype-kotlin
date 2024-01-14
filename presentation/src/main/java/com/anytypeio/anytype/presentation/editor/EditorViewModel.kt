@@ -40,7 +40,6 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.descendants
 import com.anytypeio.anytype.core_models.ext.isAllTextAndNoneCodeBlocks
 import com.anytypeio.anytype.core_models.ext.isAllTextBlocks
-import com.anytypeio.anytype.core_models.ext.isValid
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.ext.parents
 import com.anytypeio.anytype.core_models.ext.process
@@ -196,6 +195,7 @@ import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
+import com.anytypeio.anytype.presentation.extension.getUrlForFileBlock
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
@@ -3647,18 +3647,21 @@ class EditorViewModel(
             is ListenerType.Picture.View -> {
                 when (mode) {
                     EditorMode.Edit, EditorMode.Locked -> {
-                        val target = blocks.find { it.id == clicked.target }
-                        if (target != null) {
-                            val content = target.content
-                            check(content is Content.File)
+                        val fileBlock = blocks.find { it.id == clicked.target }
+                        val url = urlBuilder.getUrlForFileBlock(
+                            fileBlock = fileBlock,
+                            isOriginalImage = true
+                        )
+                        if (url != null ) {
                             dispatch(
                                 Command.OpenFullScreenImage(
                                     target = clicked.target,
-                                    url = urlBuilder.original(content.targetObjectId)
+                                    url = url
                                 )
                             )
                         } else {
-                            Timber.e("Could not find target for picture")
+                            Timber.e("Block is not File or with wrong state, can't proceed with download")
+                            sendToast("Something went wrong. Couldn't open image")
                         }
                     }
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
@@ -4107,14 +4110,16 @@ class EditorViewModel(
         }
     }
 
-    private fun onFileClicked(id: String) {
-        val file = blocks.find { it.id == id }
-        val fileContent = file?.content as? Content.File
-        if (fileContent != null && fileContent.isValid()) {
+    private fun onFileClicked(blockId: String) {
+        val fileBlock = blocks.find { it.id == blockId }
+        val url = urlBuilder.getUrlForFileBlock(
+            fileBlock = fileBlock
+        )
+        if (url != null) {
             dispatch(
                 Command.OpenFileByDefaultApp(
-                    id = id,
-                    uri = urlBuilder.file(fileContent.targetObjectId)
+                    id = blockId,
+                    uri = url
                 )
             )
         } else {
@@ -4148,23 +4153,21 @@ class EditorViewModel(
         }
     }
 
-    fun startDownloadingFile(id: String) {
+    fun startDownloadingFile(blockId: Id) {
 
-        Timber.d("startDownloadingFile, id:[$id]")
+        Timber.d("startDownloadingFile, for block:[$blockId]")
 
         sendToast("Downloading file in background...")
 
-        val block = blocks.firstOrNull { it.id == id }
-        val fileContent = block?.content as? Content.File
+        val fileBlock = blocks.firstOrNull { it.id == blockId }
+        val fileContent = fileBlock?.content as? Content.File
+        val url = urlBuilder.getUrlForFileBlock(fileBlock)
         
-        if (fileContent != null && fileContent.isValid()) {
+        if (fileContent != null && url != null) {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
-                        url = when (fileContent.type) {
-                            Content.File.Type.IMAGE -> urlBuilder.image(fileContent.targetObjectId)
-                            else -> urlBuilder.file(fileContent.targetObjectId)
-                        },
+                        url = url,
                         name = fileContent.name.orEmpty(),
                         type = fileContent.type
                     )

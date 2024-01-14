@@ -290,7 +290,3 @@ fun List<Block>.isAllTextBlocks(): Boolean =
 fun Block.Content.Text.parseThemeTextColor() : ThemeColor {
     return color?.let { ThemeColor.fromCode(it) } ?: ThemeColor.DEFAULT
 }
-
-fun Content.File.isValid(): Boolean {
-    return !targetObjectId.isNullOrBlank() && state == Content.File.State.DONE
-}

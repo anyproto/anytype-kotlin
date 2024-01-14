@@ -2626,7 +2626,7 @@ open class EditorViewModelTest {
 
         // TESTING
 
-        vm.startDownloadingFile(id = file.id)
+        vm.startDownloadingFile(blockId = file.id)
 
         runBlockingTest {
             verify(downloadFile, times(1)).invoke(
@@ -2634,7 +2634,7 @@ open class EditorViewModelTest {
                     DownloadFile.Params(
                         name = file.content<Block.Content.File>().name.orEmpty(),
                         url = builder.file(
-                            hash = file.content<Block.Content.File>().targetObjectId
+                            path = file.content<Block.Content.File>().targetObjectId!!
                         )
                     )
                 )

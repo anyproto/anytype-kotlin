@@ -655,11 +655,17 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // SETUP
 
+        val fileBlockId = MockDataFactory.randomUuid()
+        val targetObjectId = MockDataFactory.randomUuid()
+        val mimeType = "*/png"
+        val fileName = "image.png"
+        val fileSize = 1000.0
+
         val picture = Block(
-            id = MockDataFactory.randomUuid(),
+            id = fileBlockId,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.File(
-                targetObjectId = MockDataFactory.randomString(),
+                targetObjectId = targetObjectId,
                 type = Block.Content.File.Type.IMAGE,
                 state = Block.Content.File.State.DONE
             ),
@@ -683,7 +689,19 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenDocument(
-            document = page
+            document = page,
+            details = Block.Details(
+                mapOf(
+                    targetObjectId to Block.Fields(
+                        mapOf(
+                            Relations.ID to targetObjectId,
+                            Relations.FILE_MIME_TYPE to mimeType,
+                            Relations.NAME to fileName,
+                            Relations.SIZE_IN_BYTES to fileSize
+                        )
+                    )
+                )
+            )
         )
 
         val vm = buildViewModel()
@@ -703,11 +721,11 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Media.Picture(
                 id = picture.id,
                 mode = BlockView.Mode.READ,
-                targetObjectId = picture.content<Block.Content.File>().targetObjectId!!,
-                mime = null,
-                name = null,
-                size = null,
-                url = builder.image(picture.content<Block.Content.File>().targetObjectId),
+                targetObjectId = targetObjectId,
+                mime = mimeType,
+                name = fileName,
+                size = fileSize.toLong(),
+                url = builder.image(targetObjectId),
                 indent = 0,
                 decorations = listOf(
                     BlockView.Decoration(
@@ -734,7 +752,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFullScreenImage(
                 target = picture.id,
-                url = builder.original(picture.content<Block.Content.File>().targetObjectId)
+                url = builder.original(targetObjectId)
             )
         }
     }

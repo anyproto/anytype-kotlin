@@ -69,7 +69,7 @@ class EditorErrorMessageTest : EditorPresentationTestSetup() {
 
             // Launching operation that triggers a toast
 
-            vm.startDownloadingFile(id = file.id)
+            vm.startDownloadingFile(blockId = file.id)
 
             val subscription2 = launch { vm.toasts.collect { consumed.add(it) } }
 

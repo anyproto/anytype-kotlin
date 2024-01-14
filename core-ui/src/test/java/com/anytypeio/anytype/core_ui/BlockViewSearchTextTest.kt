@@ -114,7 +114,7 @@ class BlockViewSearchTextTest {
             id = MockDataFactory.randomString(),
             name = MockDataFactory.randomString(),
             searchFields = listOf(field1),
-            hash = MockDataFactory.randomString(),
+            targetObjectId = MockDataFactory.randomString(),
             mime = MockDataFactory.randomString(),
             size = MockDataFactory.randomLong(),
             indent = 0,

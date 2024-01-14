@@ -177,11 +177,11 @@ sealed class Event {
          */
         data class UpdateFileBlock(
             override val context: String,
-            val id: Id,
+            val blockId: Id,
+            val targetObjectId: Id? = null,
             val state: Block.Content.File.State? = null,
             val type: Block.Content.File.Type? = null,
             val name: String? = null,
-            val hash: String? = null,
             val mime: String? = null,
             val size: Long? = null
         ) : Command()

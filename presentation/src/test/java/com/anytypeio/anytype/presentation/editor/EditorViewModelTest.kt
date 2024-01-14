@@ -8,6 +8,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
@@ -398,12 +399,19 @@ open class EditorViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         builder = UrlBuilder(gateway)
+        stubNetworkMode()
     }
 
     @Test
     fun `should not start observing events when view model is initialized`() {
         givenViewModel()
         verifyNoInteractions(interceptEvents)
+    }
+
+    fun stubNetworkMode() {
+        getNetworkMode.stub {
+            onBlocking { run(Unit) } doReturn NetworkModeConfig()
+        }
     }
 
     @Test
@@ -2568,7 +2576,7 @@ open class EditorViewModelTest {
                 params = eq(
                     MiddlewareShareDownloader.Params(
                         name = file.content<Block.Content.File>().name.orEmpty(),
-                        hash = file.content<Block.Content.File>().hash.orEmpty(),
+                        objectId = file.content<Block.Content.File>().targetObjectId.orEmpty(),
                     )
                 )
             )
@@ -2618,7 +2626,7 @@ open class EditorViewModelTest {
 
         // TESTING
 
-        vm.startDownloadingFile(id = file.id)
+        vm.startDownloadingFile(blockId = file.id)
 
         runBlockingTest {
             verify(downloadFile, times(1)).invoke(
@@ -2626,7 +2634,7 @@ open class EditorViewModelTest {
                     DownloadFile.Params(
                         name = file.content<Block.Content.File>().name.orEmpty(),
                         url = builder.file(
-                            hash = file.content<Block.Content.File>().hash
+                            path = file.content<Block.Content.File>().targetObjectId!!
                         )
                     )
                 )
@@ -3394,7 +3402,7 @@ open class EditorViewModelTest {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields(emptyMap()),
             content = Block.Content.File(
-                hash = MockDataFactory.randomString(),
+                targetObjectId = MockDataFactory.randomString(),
                 type = Block.Content.File.Type.IMAGE,
                 state = Block.Content.File.State.ERROR
             ),
@@ -3469,7 +3477,7 @@ open class EditorViewModelTest {
             id = MockDataFactory.randomUuid(),
             fields = Block.Fields(emptyMap()),
             content = Block.Content.File(
-                hash = MockDataFactory.randomString(),
+                targetObjectId = MockDataFactory.randomString(),
                 type = Block.Content.File.Type.VIDEO,
                 state = Block.Content.File.State.ERROR
             ),

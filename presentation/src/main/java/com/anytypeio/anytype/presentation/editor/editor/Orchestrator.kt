@@ -449,7 +449,7 @@ class Orchestrator(
                 is Intent.Media.ShareFile -> {
                     documentFileShareDownloader.async(
                         params = MiddlewareShareDownloader.Params(
-                            hash = intent.hash,
+                            objectId = intent.objectId,
                             name = intent.name
                         )
                     ).suspendFold(

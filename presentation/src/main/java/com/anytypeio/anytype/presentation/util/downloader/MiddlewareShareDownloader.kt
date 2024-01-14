@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.util.downloader
 
 import android.content.Context
 import android.net.Uri
-import com.anytypeio.anytype.core_models.Hash
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import java.io.File
@@ -18,7 +18,7 @@ abstract class MiddlewareShareDownloader(
 ) : ResultInteractor<MiddlewareShareDownloader.Params, MiddlewareShareDownloader.Response>(dispatchers.io) {
 
     data class Params(
-        val hash: Hash,
+        val objectId: Id,
         val name: String
     )
 
@@ -28,20 +28,20 @@ abstract class MiddlewareShareDownloader(
     )
 
     /**
-     * @param hash is a some middleware id
+     * @param objectId id of Object File
      * @param path is local storage path to the file created
      * @return path to the file in the local storage
      * */
-    abstract suspend fun downloadFile(hash: String, path: String): String
+    abstract suspend fun downloadFile(objectId: Id, path: String): String
 
     override suspend fun doWork(params: Params): Response {
         val cacheDir = context.cacheDir
 
         require(cacheDir != null) { "Impossible to cache files!" }
 
-        val downloadFolder = File("${cacheDir.path}/${params.hash}").apply { mkdirs() }
+        val downloadFolder = File("${cacheDir.path}/${params.objectId}").apply { mkdirs() }
 
-        val resultFilePath = "${cacheDir.path}/${params.hash}/${params.name}"
+        val resultFilePath = "${cacheDir.path}/${params.objectId}/${params.name}"
         val resultFile = File(resultFilePath)
 
         if (!resultFile.exists()) {
@@ -50,7 +50,12 @@ abstract class MiddlewareShareDownloader(
             if (tempDir.exists()) tempDir.deleteRecursively()
             tempDir.mkdirs()
 
-            val tempResult = File(downloadFile(params.hash, tempFileFolderPath))
+            val tempResult = File(
+                downloadFile(
+                    objectId = params.objectId,
+                    path = tempFileFolderPath
+                )
+            )
 
             tempResult.renameTo(resultFile)
         }

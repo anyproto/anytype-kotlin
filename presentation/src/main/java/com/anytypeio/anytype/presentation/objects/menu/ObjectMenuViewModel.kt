@@ -152,7 +152,7 @@ class ObjectMenuViewModel(
     override fun onDiagnosticsClicked(ctx: Id) {
         jobs += viewModelScope.launch {
             debugTreeShareDownloader.stream(
-                MiddlewareShareDownloader.Params(hash = ctx, name = "$ctx.zip")
+                MiddlewareShareDownloader.Params(objectId = ctx, name = "$ctx.zip")
             ).collect { result ->
                 result.fold(
                     onSuccess = { success ->

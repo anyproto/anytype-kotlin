@@ -646,7 +646,7 @@ class BlockViewDiffUtilTest {
 
         val oldBlock = BlockView.Media.File(
             id = id,
-            hash = MockDataFactory.randomString(),
+            targetObjectId = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
             mime = MockDataFactory.randomString(),
             size = MockDataFactory.randomLong(),

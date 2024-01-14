@@ -998,7 +998,7 @@ sealed class BlockView : ViewType {
             val size: Long?,
             val name: String?,
             val mime: String?,
-            val hash: String?,
+            val targetObjectId: Id,
             val url: String
         ) : Media(), Searchable {
             override fun getViewType() = HOLDER_FILE
@@ -1017,7 +1017,7 @@ sealed class BlockView : ViewType {
             val size: Long?,
             val name: String?,
             val mime: String?,
-            val hash: String?,
+            val targetObjectId: Id,
             val url: String
         ) : Media() {
             override fun getViewType() = HOLDER_VIDEO
@@ -1068,8 +1068,8 @@ sealed class BlockView : ViewType {
             val size: Long?,
             val name: String?,
             val mime: String?,
-            val hash: String?,
-            val url: String
+            val targetObjectId: Id,
+            val url: String,
         ) : Media() {
             override fun getViewType() = HOLDER_PICTURE
         }

@@ -370,6 +370,7 @@ message Event {
                 Name name = 6;
                 Size size = 7;
                 Style style = 8;
+                TargetObjectId targetObjectId = 9;
 
                 message Name {
                     string value = 1;
@@ -403,6 +404,9 @@ message Event {
                     int64 value = 1;
                 }
 
+                message TargetObjectId {
+                    string value = 1;
+                }
             }
 
 

@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_utils.common.EventWrapper
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -21,6 +20,7 @@ import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.jraska.livedata.test
 import kotlin.test.assertEquals
+import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -48,6 +48,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubGetNetworkMode()
     }
 
     @Test
@@ -543,15 +544,18 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     }
 
     @Test
-    fun `should open file when clicking on file when page is locked`() {
+    fun `should open file when clicking on file when page is locked`() = runTest {
 
         // SETUP
 
+        val fileBlockId = MockDataFactory.randomUuid()
+        val targetObjectId = MockDataFactory.randomUuid()
+
         val file = Block(
-            id = MockDataFactory.randomUuid(),
+            id = fileBlockId,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.File(
-                hash = MockDataFactory.randomString(),
+                targetObjectId = targetObjectId,
                 type = Block.Content.File.Type.FILE,
                 state = Block.Content.File.State.DONE
             ),
@@ -565,17 +569,33 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     mapOf(Block.Fields.IS_LOCKED_KEY to true)
                 ),
                 content = Block.Content.Smart,
-                children = listOf(header.id, file.id)
+                children = listOf(header.id, fileBlockId)
             ),
             header,
             title,
             file
         )
 
+        val mimeType = "application/pdf"
+        val fileName = "file.pdf"
+        val fileSize = 1000.0
+
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenDocument(
-            document = page
+            document = page,
+            details = Block.Details(
+                mapOf(
+                    targetObjectId to Block.Fields(
+                        mapOf(
+                            Relations.ID to targetObjectId,
+                            Relations.FILE_MIME_TYPE to mimeType,
+                            Relations.NAME to fileName,
+                            Relations.SIZE_IN_BYTES to fileSize
+                        )
+                    )
+                )
+            )
         )
 
         val vm = buildViewModel()
@@ -593,13 +613,13 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                 mode = BlockView.Mode.READ
             ),
             BlockView.Media.File(
-                id = file.id,
+                id = fileBlockId,
                 mode = BlockView.Mode.READ,
-                hash = file.content<Block.Content.File>().hash,
-                mime = null,
-                name = null,
-                size = null,
-                url = builder.file(file.content<Block.Content.File>().hash),
+                targetObjectId = targetObjectId,
+                mime = mimeType,
+                name = fileName,
+                size = fileSize.toLong(),
+                url = builder.file(targetObjectId),
                 decorations = listOf(
                     BlockView.Decoration(
                         background = ThemeColor.DEFAULT,
@@ -618,15 +638,14 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         val testObserver = vm.commands.test()
 
-        vm.onClickListener(ListenerType.File.View(file.id))
+        vm.onClickListener(ListenerType.File.View(fileBlockId))
 
         // checking open-by-default-app command
 
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFileByDefaultApp(
-                id = file.id,
-                uri = builder.file(file.content<Block.Content.File>().hash),
-                mime = file.content<Block.Content.File>().mime.orEmpty()
+                id = fileBlockId,
+                uri = builder.file(targetObjectId)
             )
         }
     }
@@ -636,11 +655,17 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         // SETUP
 
+        val fileBlockId = MockDataFactory.randomUuid()
+        val targetObjectId = MockDataFactory.randomUuid()
+        val mimeType = "*/png"
+        val fileName = "image.png"
+        val fileSize = 1000.0
+
         val picture = Block(
-            id = MockDataFactory.randomUuid(),
+            id = fileBlockId,
             fields = Block.Fields(emptyMap()),
             content = Block.Content.File(
-                hash = MockDataFactory.randomString(),
+                targetObjectId = targetObjectId,
                 type = Block.Content.File.Type.IMAGE,
                 state = Block.Content.File.State.DONE
             ),
@@ -664,7 +689,19 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         stubInterceptEvents()
         stubInterceptThreadStatus()
         stubOpenDocument(
-            document = page
+            document = page,
+            details = Block.Details(
+                mapOf(
+                    targetObjectId to Block.Fields(
+                        mapOf(
+                            Relations.ID to targetObjectId,
+                            Relations.FILE_MIME_TYPE to mimeType,
+                            Relations.NAME to fileName,
+                            Relations.SIZE_IN_BYTES to fileSize
+                        )
+                    )
+                )
+            )
         )
 
         val vm = buildViewModel()
@@ -684,11 +721,11 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             BlockView.Media.Picture(
                 id = picture.id,
                 mode = BlockView.Mode.READ,
-                hash = picture.content<Block.Content.File>().hash,
-                mime = null,
-                name = null,
-                size = null,
-                url = builder.image(picture.content<Block.Content.File>().hash),
+                targetObjectId = targetObjectId,
+                mime = mimeType,
+                name = fileName,
+                size = fileSize.toLong(),
+                url = builder.image(targetObjectId),
                 indent = 0,
                 decorations = listOf(
                     BlockView.Decoration(
@@ -715,7 +752,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFullScreenImage(
                 target = picture.id,
-                url = builder.original(picture.content<Block.Content.File>().hash)
+                url = builder.original(targetObjectId)
             )
         }
     }

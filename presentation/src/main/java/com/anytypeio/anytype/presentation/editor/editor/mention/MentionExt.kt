@@ -144,7 +144,7 @@ private fun createBaseMentionMark(
         )
     }
 
-    if (!image.isNullOrEmpty()) {
+    if (!image.isNullOrBlank()) {
         return Markup.Mark.Mention.WithImage(
             from = from,
             to = to,

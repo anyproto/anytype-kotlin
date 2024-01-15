@@ -47,13 +47,13 @@
                 android:textColor="@color/text_tertiary"
                 android:text="@string/loading_please_wait"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/progressBar2"
+                app:layout_constraintEnd_toStartOf="@+id/progressBar"
                 app:layout_constraintStart_toEndOf="@+id/fileIcon"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="https://github.com/anyproto/anytype-kotlin"/>
 
             <com.google.android.material.progressindicator.CircularProgressIndicator
-                android:id="@+id/progressBar2"
+                android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:indeterminate="true"

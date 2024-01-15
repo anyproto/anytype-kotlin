@@ -3,12 +3,6 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.placeholders
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
-import androidx.core.view.updateLayoutParams
-import androidx.core.view.updatePadding
-import androidx.recyclerview.widget.RecyclerView
-import com.anytypeio.anytype.core_ui.BuildConfig
-import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -17,14 +11,14 @@ import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
-import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaUploadingBinding
+import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.google.android.material.card.MaterialCardView
 
 abstract class MediaPlaceholder(
-    val binding: ItemBlockMediaPlaceholderBinding
+    val binding: ItemBlockMediaUploadingBinding
 ) : BlockViewHolder(binding.root),
     BlockViewHolder.DragAndDropHolder,
     BlockViewHolder.IndentableHolder,
@@ -33,7 +27,7 @@ abstract class MediaPlaceholder(
 
     protected val root: View = binding.root
     protected val card: MaterialCardView = binding.card
-    protected val title: TextView = binding.title
+    protected val title: TextView = binding.fileName
 
     override val decoratableContainer: EditorDecorationContainer
         get() = binding.decorationContainer
@@ -61,6 +55,7 @@ abstract class MediaPlaceholder(
         with(itemView) {
             setOnClickListener { placeholderClick(item.id, clicked) }
         }
+        binding.progressBar.invisible()
     }
 
     open fun processChangePayload(payloads: List<BlockViewDiffUtil.Payload>, item: BlockView) {

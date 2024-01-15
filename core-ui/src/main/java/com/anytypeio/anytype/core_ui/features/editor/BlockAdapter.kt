@@ -34,7 +34,6 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderThreeBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderTwoBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHighlightBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockLatexBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockNumberedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkArchiveBinding
@@ -520,7 +519,7 @@ class BlockAdapter(
             }
             HOLDER_FILE_PLACEHOLDER -> {
                 FilePlaceholder(
-                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaUploadingBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_FILE_UPLOAD -> {
@@ -540,7 +539,7 @@ class BlockAdapter(
             }
             HOLDER_VIDEO_PLACEHOLDER -> {
                 VideoPlaceholder(
-                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaUploadingBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_VIDEO_UPLOAD -> {
@@ -673,7 +672,7 @@ class BlockAdapter(
             }
             HOLDER_BOOKMARK_PLACEHOLDER -> {
                 BookmarkPlaceholder(
-                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaUploadingBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_BOOKMARK_ERROR -> {
@@ -693,7 +692,7 @@ class BlockAdapter(
             }
             HOLDER_PICTURE_PLACEHOLDER -> {
                 PicturePlaceholder(
-                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaUploadingBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_PICTURE_UPLOAD -> {

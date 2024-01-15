@@ -113,6 +113,10 @@ fun List<BlockView>.singleStylingMode(
             mode = BlockView.Mode.READ,
             isSelected = isSelected
         )
+        is BlockView.Upload.Bookmark -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
         is BlockView.MediaPlaceholder.File -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected
@@ -260,6 +264,10 @@ fun List<BlockView>.enterSAM(
             isSelected = isSelected
         )
         is BlockView.Upload.Picture -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
+        is BlockView.Upload.Bookmark -> view.copy(
             mode = BlockView.Mode.READ,
             isSelected = isSelected
         )
@@ -458,6 +466,7 @@ fun List<BlockView>.updateCursorAndEditMode(
         is BlockView.Upload.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Upload.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Upload.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Upload.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.MediaPlaceholder.File -> view.copy(
             mode = BlockView.Mode.EDIT,
             isSelected = false
@@ -518,6 +527,7 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Upload.File -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Upload.Video -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Upload.Picture -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Upload.Bookmark -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.MediaPlaceholder.File -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.MediaPlaceholder.Video -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.MediaPlaceholder.Bookmark -> view.copy(mode = BlockView.Mode.READ)
@@ -550,6 +560,7 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
         is BlockView.Upload.File -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Upload.Video -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.Upload.Picture -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        is BlockView.Upload.Bookmark -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         is BlockView.MediaPlaceholder.File -> view.copy(
             mode = BlockView.Mode.EDIT,
             isSelected = false

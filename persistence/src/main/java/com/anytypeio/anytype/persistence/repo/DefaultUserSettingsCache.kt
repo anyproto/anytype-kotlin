@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.persistence.repo
 
+import android.content.Context
 import android.content.SharedPreferences
+import androidx.datastore.core.DataStore
+import androidx.datastore.dataStore
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ThemeMode
@@ -9,6 +12,8 @@ import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
+import com.anytypeio.anytype.persistence.SpacePreference
+import com.anytypeio.anytype.persistence.SpacePreferences
 import com.anytypeio.anytype.persistence.common.JsonString
 import com.anytypeio.anytype.persistence.common.deserializeWallpaperSettings
 import com.anytypeio.anytype.persistence.common.serializeWallpaperSettings
@@ -16,8 +21,20 @@ import com.anytypeio.anytype.persistence.common.toJsonString
 import com.anytypeio.anytype.persistence.common.toStringMap
 import com.anytypeio.anytype.persistence.model.asSettings
 import com.anytypeio.anytype.persistence.model.asWallpaper
+import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
+import com.anytypeio.anytype.persistence.preferences.SpacePrefSerializer
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
-class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSettingsCache {
+class DefaultUserSettingsCache(
+    private val prefs: SharedPreferences,
+    private val context: Context
+) : UserSettingsCache {
+
+    private val Context.spacePrefsStore: DataStore<SpacePreferences> by dataStore(
+        fileName = SPACE_PREFERENCE_FILENAME,
+        serializer = SpacePrefSerializer
+    )
 
     override suspend fun setCurrentSpace(space: SpaceId) {
         prefs.edit()
@@ -46,6 +63,22 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
             .edit()
             .putString(DEFAULT_OBJECT_TYPES_KEY, updated.toJsonString())
             .apply()
+
+        context
+            .spacePrefsStore
+            .updateData { prefs ->
+                val givenSpacePreferences = prefs.preferences.getOrDefault(
+                    space.id,
+                    SpacePreference()
+                )
+                val updatedSpacePreferences = givenSpacePreferences.copy(
+                    defaultObjectTypeKey = type.id
+                )
+
+                val result = prefs.preferences + mapOf(space.id to updatedSpacePreferences)
+
+                prefs.copy(preferences = result)
+            }
     }
 
     override suspend fun getDefaultObjectType(space: SpaceId): TypeId? {
@@ -168,7 +201,41 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
             .apply()
     }
 
+    override suspend fun setPinnedObjectTypes(space: SpaceId, types: List<TypeId>) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+
+            val updated = givenSpacePreference.copy(
+                pinnedObjectTypeKeys = types.map { type -> type.id }
+            )
+
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+
+            SpacePreferences(
+                preferences = result
+            )
+        }
+    }
+
+    override fun getPinnedObjectTypes(space: SpaceId): Flow<List<TypeId>> {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.pinnedObjectTypeKeys?.map { id -> TypeId(id) } ?: emptyList()
+            }
+    }
+
     override suspend fun clear() {
+
+        // Clearing shared preferences
+
         prefs.edit()
             .remove(DEFAULT_OBJECT_TYPE_ID_KEY)
             .remove(DEFAULT_OBJECT_TYPE_NAME_KEY)
@@ -176,6 +243,12 @@ class DefaultUserSettingsCache(private val prefs: SharedPreferences) : UserSetti
             .remove(ACTIVE_WIDGETS_VIEWS_KEY)
             .remove(CURRENT_SPACE_KEY)
             .apply()
+
+        // Clearing data stores
+
+        context.spacePrefsStore.updateData {
+            SpacePreferences(emptyMap())
+        }
     }
 
     companion object {

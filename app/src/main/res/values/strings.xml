@@ -1,4 +1,7 @@
 <resources>
     <string name="amplitude_api_key">1ba981d1a9afb8af8c81847ef3383a20</string>
     <string name="amplitude_api_key_debug">b9791dd64a1e9f07a330a4ac9feb1f10</string>
+    <string name="create_object_section_pinned">Pinned</string>
+    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
+    <string name="any_object_creation_menu_unpin">Unpin</string>
 </resources>

@@ -8,7 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,6 +32,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
@@ -55,6 +57,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
@@ -70,6 +73,7 @@ import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
 import com.anytypeio.anytype.presentation.objects.SelectTypeViewState
+import kotlinx.coroutines.delay
 
 @Preview
 @Composable
@@ -78,13 +82,17 @@ fun PreviewScreen() {
         onTypeClicked = {},
         state = SelectTypeViewState.Loading,
         onQueryChanged = {},
-        onFocused = {}
+        onFocused = {},
+        onUnpinTypeClicked = {},
+        onPinOnTopClicked = {}
     )
 }
 
 @Composable
 fun SelectObjectTypeScreen(
     onTypeClicked: (SelectTypeView.Type) -> Unit,
+    onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
     state: SelectTypeViewState
@@ -104,18 +112,30 @@ fun SelectObjectTypeScreen(
             onFocused = onFocused
         )
         Spacer(modifier = Modifier.height(8.dp))
-        ScreenContent(state, onTypeClicked)
+        ScreenContent(
+            state = state,
+            onTypeClicked = onTypeClicked,
+            onPinOnTopClicked = onPinOnTopClicked,
+            onUnpinTypeClicked = onUnpinTypeClicked
+        )
     }
 }
 
 @Composable
 private fun ScreenContent(
     state: SelectTypeViewState,
-    onTypeClicked: (SelectTypeView.Type) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit,
+    onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit
 ) {
     when (state) {
         is SelectTypeViewState.Content -> {
-            FlowRowContent(state.views, onTypeClicked)
+            FlowRowContent(
+                views = state.views,
+                onTypeClicked = onTypeClicked,
+                onPinOnTopClicked = onPinOnTopClicked,
+                onUnpinTypeClicked = onUnpinTypeClicked
+            )
         }
         SelectTypeViewState.Empty -> {
             AnimatedVisibility(
@@ -149,7 +169,9 @@ private fun ScreenContent(
 @OptIn(ExperimentalLayoutApi::class)
 private fun FlowRowContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (SelectTypeView.Type) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit,
+    onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit
 ) {
     FlowRow(
         modifier = Modifier
@@ -162,13 +184,62 @@ private fun FlowRowContent(
         views.forEach { view ->
             when (view) {
                 is SelectTypeView.Type -> {
-                    ObjectTypeItem(
-                        name = view.name,
-                        emoji = view.icon,
-                        onItemClicked = throttledClick(
-                            onClick = { onTypeClicked(view) }
-                        ),
-                        modifier = Modifier
+                    val isMenuExpanded = remember {
+                        mutableStateOf(false)
+                    }
+                    Box {
+                        ObjectTypeItem(
+                            name = view.name,
+                            emoji = view.icon,
+                            onItemClicked = throttledClick(
+                                onClick = { onTypeClicked(view) }
+                            ),
+                            onItemLongClicked = {
+                                isMenuExpanded.value = !isMenuExpanded.value
+                            },
+                            modifier = Modifier
+                        )
+                        if (view.isPinnable) {
+                            DropdownMenu(
+                                expanded = isMenuExpanded.value,
+                                onDismissRequest = { isMenuExpanded.value = false },
+                                offset = DpOffset(x = 0.dp, y = 6.dp)
+                            ) {
+                                if (!view.isPinned || !view.isFirstInSection) {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            isMenuExpanded.value = false
+                                            onPinOnTopClicked(view)
+                                        }
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.any_object_creation_menu_pin_on_top),
+                                            style = BodyRegular,
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    }
+                                }
+                                if (view.isPinned) {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            isMenuExpanded.value = false
+                                            onUnpinTypeClicked(view)
+                                        }
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.any_object_creation_menu_unpin),
+                                            style = BodyRegular,
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                is SelectTypeView.Section.Pinned -> {
+                    Section(
+                        title = stringResource(id = R.string.create_object_section_pinned),
                     )
                 }
                 is SelectTypeView.Section.Groups -> {
@@ -230,6 +301,16 @@ private fun LazyColumnContent(
                         )
                     }
                 }
+                is SelectTypeView.Section.Pinned -> {
+                    item(
+                        key = view.javaClass.name,
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        Section(
+                            title = stringResource(id = R.string.create_object_section_pinned)
+                        )
+                    }
+                }
                 is SelectTypeView.Section.Library -> {
                     item(
                         key = view.javaClass.name,
@@ -252,6 +333,9 @@ private fun LazyColumnContent(
                                     onTypeClicked(view)
                                 }
                             ),
+                            onItemLongClicked = {
+
+                            },
                             modifier = Modifier.animateItemPlacement()
                         )
                     }
@@ -262,12 +346,14 @@ private fun LazyColumnContent(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ObjectTypeItem(
     modifier: Modifier,
     name: String,
     emoji: String,
-    onItemClicked: () -> Unit
+    onItemClicked: () -> Unit,
+    onItemLongClicked: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -278,7 +364,14 @@ fun ObjectTypeItem(
                 shape = RoundedCornerShape(12.dp)
             )
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onItemClicked() },
+            .combinedClickable(
+                onClick = {
+                    onItemClicked()
+                },
+                onLongClick = {
+                    onItemLongClicked()
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(

@@ -118,7 +118,8 @@ fun SelectObjectTypeScreen(
             state = state,
             onTypeClicked = onTypeClicked,
             onPinOnTopClicked = onPinOnTopClicked,
-            onUnpinTypeClicked = onUnpinTypeClicked
+            onUnpinTypeClicked = onUnpinTypeClicked,
+            onSetDefaultTypeClicked = onSetDefaultTypeClicked
         )
     }
 }
@@ -128,7 +129,8 @@ private fun ScreenContent(
     state: SelectTypeViewState,
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
-    onPinOnTopClicked: (SelectTypeView.Type) -> Unit
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
 ) {
     when (state) {
         is SelectTypeViewState.Content -> {
@@ -136,7 +138,8 @@ private fun ScreenContent(
                 views = state.views,
                 onTypeClicked = onTypeClicked,
                 onPinOnTopClicked = onPinOnTopClicked,
-                onUnpinTypeClicked = onUnpinTypeClicked
+                onUnpinTypeClicked = onUnpinTypeClicked,
+                onSetDefaultTypeClicked = onSetDefaultTypeClicked
             )
         }
         SelectTypeViewState.Empty -> {
@@ -173,7 +176,8 @@ private fun FlowRowContent(
     views: List<SelectTypeView>,
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
-    onPinOnTopClicked: (SelectTypeView.Type) -> Unit
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
 ) {
     FlowRow(
         modifier = Modifier
@@ -199,7 +203,8 @@ private fun FlowRowContent(
                             onItemLongClicked = {
                                 isMenuExpanded.value = !isMenuExpanded.value
                             },
-                            modifier = Modifier
+                            modifier = Modifier,
+                            isSelected = view.isDefault
                         )
                         if (view.isPinnable) {
                             DropdownMenu(
@@ -230,6 +235,20 @@ private fun FlowRowContent(
                                     ) {
                                         Text(
                                             text = stringResource(R.string.any_object_creation_menu_unpin),
+                                            style = BodyRegular,
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    }
+                                }
+                                if (!view.isDefault && !view.isFromLibrary) {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            isMenuExpanded.value = false
+                                            onSetDefaultTypeClicked(view)
+                                        }
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.any_object_creation_menu_set_as_default),
                                             style = BodyRegular,
                                             color = colorResource(id = R.color.text_primary)
                                         )
@@ -338,7 +357,8 @@ private fun LazyColumnContent(
                             onItemLongClicked = {
 
                             },
-                            modifier = Modifier.animateItemPlacement()
+                            modifier = Modifier.animateItemPlacement(),
+                            isSelected = view.isDefault
                         )
                     }
                 }
@@ -354,6 +374,7 @@ fun ObjectTypeItem(
     modifier: Modifier,
     name: String,
     emoji: String,
+    isSelected: Boolean,
     onItemClicked: () -> Unit,
     onItemLongClicked: () -> Unit
 ) {
@@ -362,7 +383,12 @@ fun ObjectTypeItem(
             .height(48.dp)
             .border(
                 width = 1.dp,
-                color = colorResource(id = R.color.shape_primary),
+                color = if (isSelected)
+                    colorResource(id = R.color.palette_system_amber_50)
+                else colorResource(
+                    id =
+                    R.color.shape_primary
+                ),
                 shape = RoundedCornerShape(12.dp)
             )
             .clip(RoundedCornerShape(12.dp))

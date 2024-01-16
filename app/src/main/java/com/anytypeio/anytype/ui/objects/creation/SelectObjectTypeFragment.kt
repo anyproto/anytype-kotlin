@@ -54,14 +54,14 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
                     onPinOnTopClicked = {
                         lifecycleScope.launch {
                             // Workaround to prevent dropdown-menu flickering
-                            delay(100)
+                            delay(DROP_DOWN_MENU_ACTION_DELAY)
                             vm.onPinTypeClicked(it)
                         }
                     },
                     onUnpinTypeClicked = {
                         lifecycleScope.launch {
                             // Workaround to prevent dropdown-menu flickering
-                            delay(100)
+                            delay(DROP_DOWN_MENU_ACTION_DELAY)
                             vm.onUnpinTypeClicked(it)
                         }
                     },
@@ -106,6 +106,7 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val EXCLUDED_TYPE_KEYS_ARG_KEY = "arg.create-object-of-type.excluded-type-keys"
+        const val DROP_DOWN_MENU_ACTION_DELAY = 100L
 
         fun newInstance(
             excludedTypeKeys: List<Key>,

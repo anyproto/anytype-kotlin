@@ -11,6 +11,8 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
@@ -22,8 +24,10 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
@@ -53,7 +57,7 @@ class SelectObjectTypeViewModel(
         viewModelScope.launch {
             space = spaceManager.get()
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
-                getObjectTypes.stream(
+                val types = getObjectTypes.stream(
                     GetObjectTypes.Params(
                         sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                         filters = ObjectSearchConstants.filterTypes(
@@ -69,10 +73,23 @@ class SelectObjectTypeViewModel(
                         keys = ObjectSearchConstants.defaultKeysObjectType,
                         query = query
                     )
-                ).filterIsInstance<Resultat.Success<List<ObjectWrapper.Type>>>().map { result ->
+                ).filterIsInstance<Resultat.Success<List<ObjectWrapper.Type>>>()
+
+                combine(
+                    types,
+                    getPinnedObjectTypes.flow(GetPinnedObjectTypes.Params(SpaceId(space)))
+                ) { result, pinned ->
                     _objectTypes.clear()
                     _objectTypes.addAll(result.getOrNull() ?: emptyList())
+
+                    val pinnedObjectTypesIds = pinned.map { it.id }
+
                     val allTypes = (result.getOrNull() ?: emptyList())
+
+                    val pinnedTypes = allTypes
+                        .filter { pinnedObjectTypesIds.contains(it.id) }
+                        .sortedBy { obj -> pinnedObjectTypesIds.indexOf(obj.id) }
+
                     val (allUserTypes, allLibraryTypes) = allTypes.partition { type ->
                         type.getValue<Id>(Relations.SPACE_ID) == space
                     }
@@ -82,7 +99,25 @@ class SelectObjectTypeViewModel(
                     val (groups, objects) = allUserTypes.partition { type ->
                         type.uniqueKey == ObjectTypeUniqueKeys.SET || type.uniqueKey == ObjectTypeUniqueKeys.COLLECTION
                     }
+                    val notPinnedObjects = objects.filter { !pinnedObjectTypesIds.contains(it.id) }
                     buildList {
+                        if (pinnedTypes.isNotEmpty()) {
+                            add(
+                                SelectTypeView.Section.Pinned
+                            )
+                            addAll(
+                                pinnedTypes.mapIndexed { index, type ->
+                                    SelectTypeView.Type(
+                                        id = type.id,
+                                        typeKey = type.uniqueKey,
+                                        name = type.name.orEmpty(),
+                                        icon = type.iconEmoji.orEmpty(),
+                                        isPinned = true,
+                                        isFirstInSection = index == 0
+                                    )
+                                }
+                            )
+                        }
                         if (groups.isNotEmpty()) {
                             add(
                                 SelectTypeView.Section.Groups
@@ -98,12 +133,12 @@ class SelectObjectTypeViewModel(
                                 }
                             )
                         }
-                        if (objects.isNotEmpty()) {
+                        if (notPinnedObjects.isNotEmpty()) {
                             add(
                                 SelectTypeView.Section.Objects
                             )
                             addAll(
-                                objects.map { type ->
+                                notPinnedObjects.map { type ->
                                     SelectTypeView.Type(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
@@ -143,6 +178,47 @@ class SelectObjectTypeViewModel(
     fun onQueryChanged(input: String) {
         viewModelScope.launch {
             query.emit(input)
+        }
+    }
+
+    fun onPinTypeClicked(typeView: SelectTypeView.Type) {
+        val state = viewState.value
+        if (state is SelectTypeViewState.Content) {
+            val pinned = buildSet {
+                add(TypeId(typeView.id))
+                state.views.forEach { view ->
+                    if (view is SelectTypeView.Type && view.isPinned)
+                        add(TypeId(view.id))
+                }
+            }
+            viewModelScope.launch {
+                setPinnedObjectTypes.async(
+                    SetPinnedObjectTypes.Params(
+                        space = SpaceId(id = space),
+                        types = pinned.toList()
+                    )
+                )
+            }
+        }
+    }
+
+    fun onUnpinTypeClicked(typeView: SelectTypeView.Type) {
+        val state = viewState.value
+        if (state is SelectTypeViewState.Content) {
+            val pinned = buildSet {
+                state.views.forEach { view ->
+                    if (view is SelectTypeView.Type && view.isPinned && view.id != typeView.id)
+                        add(TypeId(view.id))
+                }
+            }
+            viewModelScope.launch {
+                setPinnedObjectTypes.async(
+                    SetPinnedObjectTypes.Params(
+                        space = SpaceId(id = space),
+                        types = pinned.toList()
+                    )
+                )
+            }
         }
     }
 
@@ -213,6 +289,7 @@ sealed class SelectTypeViewState{
 
 sealed class SelectTypeView {
     sealed class Section : SelectTypeView() {
+        object Pinned : Section()
         object Objects : Section()
         object Groups : Section()
         object Library : Section()
@@ -223,7 +300,9 @@ sealed class SelectTypeView {
         val typeKey: Key,
         val name: String,
         val icon: String,
-        val isFromLibrary: Boolean = false
+        val isFromLibrary: Boolean = false,
+        val isPinned: Boolean = false,
+        val isFirstInSection: Boolean = false
     ) : SelectTypeView()
 }
 

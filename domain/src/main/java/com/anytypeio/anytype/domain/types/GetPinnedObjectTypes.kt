@@ -15,7 +15,9 @@ class GetPinnedObjectTypes @Inject constructor(
     dispatchers: AppCoroutineDispatchers
 ) : FlowInteractor<GetPinnedObjectTypes.Params, List<TypeId>>(dispatchers.io) {
 
-    override fun build(): Flow<List<TypeId>> = emptyFlow()
+    override fun build(): Flow<List<TypeId>> {
+        throw UnsupportedOperationException()
+    }
 
     override fun build(params: Params) = repo.getPinnedObjectTypes(
         space = params.space

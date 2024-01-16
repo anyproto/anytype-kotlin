@@ -48,8 +48,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -84,7 +86,8 @@ fun PreviewScreen() {
         onQueryChanged = {},
         onFocused = {},
         onUnpinTypeClicked = {},
-        onPinOnTopClicked = {}
+        onPinOnTopClicked = {},
+        onSetDefaultTypeClicked = {}
     )
 }
 
@@ -93,6 +96,7 @@ fun SelectObjectTypeScreen(
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
     onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
     state: SelectTypeViewState
@@ -116,7 +120,8 @@ fun SelectObjectTypeScreen(
             state = state,
             onTypeClicked = onTypeClicked,
             onPinOnTopClicked = onPinOnTopClicked,
-            onUnpinTypeClicked = onUnpinTypeClicked
+            onUnpinTypeClicked = onUnpinTypeClicked,
+            onSetDefaultTypeClicked = onSetDefaultTypeClicked
         )
     }
 }
@@ -126,7 +131,8 @@ private fun ScreenContent(
     state: SelectTypeViewState,
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
-    onPinOnTopClicked: (SelectTypeView.Type) -> Unit
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
 ) {
     when (state) {
         is SelectTypeViewState.Content -> {
@@ -134,7 +140,8 @@ private fun ScreenContent(
                 views = state.views,
                 onTypeClicked = onTypeClicked,
                 onPinOnTopClicked = onPinOnTopClicked,
-                onUnpinTypeClicked = onUnpinTypeClicked
+                onUnpinTypeClicked = onUnpinTypeClicked,
+                onSetDefaultTypeClicked = onSetDefaultTypeClicked
             )
         }
         SelectTypeViewState.Empty -> {
@@ -171,7 +178,8 @@ private fun FlowRowContent(
     views: List<SelectTypeView>,
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
-    onPinOnTopClicked: (SelectTypeView.Type) -> Unit
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
 ) {
     FlowRow(
         modifier = Modifier
@@ -187,6 +195,7 @@ private fun FlowRowContent(
                     val isMenuExpanded = remember {
                         mutableStateOf(false)
                     }
+                    val haptic = LocalHapticFeedback.current
                     Box {
                         ObjectTypeItem(
                             name = view.name,
@@ -195,9 +204,11 @@ private fun FlowRowContent(
                                 onClick = { onTypeClicked(view) }
                             ),
                             onItemLongClicked = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 isMenuExpanded.value = !isMenuExpanded.value
                             },
-                            modifier = Modifier
+                            modifier = Modifier,
+                            isSelected = view.isDefault
                         )
                         if (view.isPinnable) {
                             DropdownMenu(
@@ -228,6 +239,20 @@ private fun FlowRowContent(
                                     ) {
                                         Text(
                                             text = stringResource(R.string.any_object_creation_menu_unpin),
+                                            style = BodyRegular,
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
+                                    }
+                                }
+                                if (!view.isDefault && !view.isFromLibrary) {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            isMenuExpanded.value = false
+                                            onSetDefaultTypeClicked(view)
+                                        }
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.any_object_creation_menu_set_as_default),
                                             style = BodyRegular,
                                             color = colorResource(id = R.color.text_primary)
                                         )
@@ -336,7 +361,8 @@ private fun LazyColumnContent(
                             onItemLongClicked = {
 
                             },
-                            modifier = Modifier.animateItemPlacement()
+                            modifier = Modifier.animateItemPlacement(),
+                            isSelected = view.isDefault
                         )
                     }
                 }
@@ -352,6 +378,7 @@ fun ObjectTypeItem(
     modifier: Modifier,
     name: String,
     emoji: String,
+    isSelected: Boolean,
     onItemClicked: () -> Unit,
     onItemLongClicked: () -> Unit
 ) {
@@ -360,7 +387,12 @@ fun ObjectTypeItem(
             .height(48.dp)
             .border(
                 width = 1.dp,
-                color = colorResource(id = R.color.shape_primary),
+                color = if (isSelected)
+                    colorResource(id = R.color.palette_system_amber_50)
+                else colorResource(
+                    id =
+                    R.color.shape_primary
+                ),
                 shape = RoundedCornerShape(12.dp)
             )
             .clip(RoundedCornerShape(12.dp))

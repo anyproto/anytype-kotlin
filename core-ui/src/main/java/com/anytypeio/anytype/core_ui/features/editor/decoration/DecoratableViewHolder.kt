@@ -36,6 +36,19 @@ interface DecoratableCardViewHolder : DecoratableViewHolder {
     }
 }
 
+interface DecoratableMediaErrorViewHolder : DecoratableViewHolder {
+    val decoratableCard: View
+
+    override fun applyDecorations(decorations: List<BlockView.Decoration>) {
+        decoratableContainer.decorate(decorations) { rect ->
+            decoratableCard.applyMediaErrorDecorations<FrameLayout.LayoutParams>(
+                rect = rect,
+                res = decoratableCard.resources
+            )
+        }
+    }
+}
+
 /**
  * Applying decorations for card blocks (media blocks, placeholders, link-to-objects, bookmarks, etc.)
  */
@@ -62,4 +75,18 @@ inline fun <reified LP : ViewGroup.MarginLayoutParams> View.applySelectorOffset(
     marginEnd = content.marginEnd - selectorLeftRightOffset
     topMargin = content.marginTop
     bottomMargin = content.marginBottom
+}
+
+/**
+ * Applying decorations for media error blocks
+ */
+inline fun <reified LP : ViewGroup.MarginLayoutParams> View.applyMediaErrorDecorations(
+    rect: Rect,
+    res: Resources
+) = updateLayoutParams<LP> {
+    val defaultIndentOffset = res.getDimension(R.dimen.default_indent).toInt()
+    marginStart = defaultIndentOffset + rect.left
+    marginEnd = defaultIndentOffset + rect.right
+    topMargin = res.getDimension(R.dimen.card_block_extra_space_top).toInt()
+    bottomMargin = res.getDimension(R.dimen.dp_8).toInt() + rect.bottom
 }

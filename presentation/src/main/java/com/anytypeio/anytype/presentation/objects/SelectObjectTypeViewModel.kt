@@ -123,12 +123,15 @@ class SelectObjectTypeViewModel(
                                 SelectTypeView.Section.Groups
                             )
                             addAll(
-                                groups.map { type ->
+                                groups.mapIndexed { index, type ->
                                     SelectTypeView.Type(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
-                                        icon = type.iconEmoji.orEmpty()
+                                        icon = type.iconEmoji.orEmpty(),
+                                        isFirstInSection = index == 0,
+                                        isPinnable = false,
+                                        isPinned = false,
                                     )
                                 }
                             )
@@ -138,12 +141,15 @@ class SelectObjectTypeViewModel(
                                 SelectTypeView.Section.Objects
                             )
                             addAll(
-                                notPinnedObjects.map { type ->
+                                notPinnedObjects.mapIndexed { index, type ->
                                     SelectTypeView.Type(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
-                                        icon = type.iconEmoji.orEmpty()
+                                        icon = type.iconEmoji.orEmpty(),
+                                        isPinnable = true,
+                                        isFirstInSection = index == 0,
+                                        isPinned = false
                                     )
                                 }
                             )
@@ -151,13 +157,16 @@ class SelectObjectTypeViewModel(
                         if (filteredLibraryTypes.isNotEmpty()) {
                             add(SelectTypeView.Section.Library)
                             addAll(
-                                filteredLibraryTypes.map { type ->
+                                filteredLibraryTypes.mapIndexed { index, type ->
                                     SelectTypeView.Type(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
                                         name = type.name.orEmpty(),
                                         icon = type.iconEmoji.orEmpty(),
-                                        isFromLibrary = true
+                                        isFromLibrary = true,
+                                        isPinned = false,
+                                        isPinnable = false,
+                                        isFirstInSection = index == 0
                                     )
                                 }
                             )
@@ -302,7 +311,8 @@ sealed class SelectTypeView {
         val icon: String,
         val isFromLibrary: Boolean = false,
         val isPinned: Boolean = false,
-        val isFirstInSection: Boolean = false
+        val isFirstInSection: Boolean = false,
+        val isPinnable: Boolean = true
     ) : SelectTypeView()
 }
 

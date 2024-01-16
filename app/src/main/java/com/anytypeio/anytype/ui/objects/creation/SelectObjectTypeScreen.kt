@@ -199,37 +199,39 @@ private fun FlowRowContent(
                             },
                             modifier = Modifier
                         )
-                        DropdownMenu(
-                            expanded = isMenuExpanded.value,
-                            onDismissRequest = { isMenuExpanded.value = false },
-                            offset = DpOffset(x = 0.dp, y = 6.dp)
-                        ) {
-                            if (!view.isPinned || !view.isFirstInSection) {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        isMenuExpanded.value = false
-                                        onPinOnTopClicked(view)
+                        if (view.isPinnable) {
+                            DropdownMenu(
+                                expanded = isMenuExpanded.value,
+                                onDismissRequest = { isMenuExpanded.value = false },
+                                offset = DpOffset(x = 0.dp, y = 6.dp)
+                            ) {
+                                if (!view.isPinned || !view.isFirstInSection) {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            isMenuExpanded.value = false
+                                            onPinOnTopClicked(view)
+                                        }
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.any_object_creation_menu_pin_on_top),
+                                            style = BodyRegular,
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
                                     }
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.any_object_creation_menu_pin_on_top),
-                                        style = BodyRegular,
-                                        color = colorResource(id = R.color.text_primary)
-                                    )
                                 }
-                            }
-                            if (view.isPinned) {
-                                DropdownMenuItem(
-                                    onClick = {
-                                        isMenuExpanded.value = false
-                                        onUnpinTypeClicked(view)
+                                if (view.isPinned) {
+                                    DropdownMenuItem(
+                                        onClick = {
+                                            isMenuExpanded.value = false
+                                            onUnpinTypeClicked(view)
+                                        }
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.any_object_creation_menu_unpin),
+                                            style = BodyRegular,
+                                            color = colorResource(id = R.color.text_primary)
+                                        )
                                     }
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.any_object_creation_menu_unpin),
-                                        style = BodyRegular,
-                                        color = colorResource(id = R.color.text_primary)
-                                    )
                                 }
                             }
                         }

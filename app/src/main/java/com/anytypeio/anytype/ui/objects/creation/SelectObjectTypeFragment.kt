@@ -53,12 +53,14 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
                     onTypeClicked = vm::onTypeClicked,
                     onPinOnTopClicked = {
                         lifecycleScope.launch {
+                            // Workaround to prevent dropdown-menu flickering
                             delay(100)
                             vm.onPinTypeClicked(it)
                         }
                     },
                     onUnpinTypeClicked = {
                         lifecycleScope.launch {
+                            // Workaround to prevent dropdown-menu flickering
                             delay(100)
                             vm.onUnpinTypeClicked(it)
                         }

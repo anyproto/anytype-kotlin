@@ -191,6 +191,7 @@ class SelectObjectTypeViewModel(
     }
 
     fun onPinTypeClicked(typeView: SelectTypeView.Type) {
+        Timber.d("onPinTypeClicked: ${typeView.id}")
         val state = viewState.value
         if (state is SelectTypeViewState.Content) {
             val pinned = buildSet {
@@ -212,6 +213,7 @@ class SelectObjectTypeViewModel(
     }
 
     fun onUnpinTypeClicked(typeView: SelectTypeView.Type) {
+        Timber.d("onUnpinTypeClicked: ${typeView.id}")
         val state = viewState.value
         if (state is SelectTypeViewState.Content) {
             val pinned = buildSet {

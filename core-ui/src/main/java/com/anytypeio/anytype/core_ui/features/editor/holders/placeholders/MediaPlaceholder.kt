@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.placeholders
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.TextView
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -11,14 +12,13 @@ import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaUploadingBinding
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.google.android.material.card.MaterialCardView
 
 abstract class MediaPlaceholder(
-    val binding: ItemBlockMediaUploadingBinding
+    val binding: ItemBlockMediaPlaceholderBinding
 ) : BlockViewHolder(binding.root),
     BlockViewHolder.DragAndDropHolder,
     BlockViewHolder.IndentableHolder,

@@ -2,7 +2,7 @@ package com.anytypeio.anytype.core_ui.features.editor.holders.upload
 
 import android.view.View
 import android.widget.FrameLayout
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaUploadingBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
@@ -14,7 +14,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 
 abstract class MediaUpload(
-    val binding: ItemBlockMediaUploadingBinding
+    val binding: ItemBlockMediaPlaceholderBinding
 ) : BlockViewHolder(binding.root),
     BlockViewHolder.IndentableHolder,
     SupportCustomTouchProcessor, DecoratableCardViewHolder {

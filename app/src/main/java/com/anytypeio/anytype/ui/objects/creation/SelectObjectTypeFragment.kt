@@ -65,6 +65,13 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
                             vm.onUnpinTypeClicked(it)
                         }
                     },
+                    onSetDefaultTypeClicked = {
+                        lifecycleScope.launch {
+                            // Workaround to prevent dropdown-menu flickering
+                            delay(DROP_DOWN_MENU_ACTION_DELAY)
+                            vm.onSetDefaultObjectTypeClicked(it)
+                        }
+                    },
                     onQueryChanged = vm::onQueryChanged,
                     onFocused = {
                         skipCollapsed()

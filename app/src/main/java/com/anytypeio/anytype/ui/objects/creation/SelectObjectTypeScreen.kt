@@ -84,7 +84,8 @@ fun PreviewScreen() {
         onQueryChanged = {},
         onFocused = {},
         onUnpinTypeClicked = {},
-        onPinOnTopClicked = {}
+        onPinOnTopClicked = {},
+        onSetDefaultTypeClicked = {}
     )
 }
 
@@ -93,6 +94,7 @@ fun SelectObjectTypeScreen(
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
     onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
     state: SelectTypeViewState

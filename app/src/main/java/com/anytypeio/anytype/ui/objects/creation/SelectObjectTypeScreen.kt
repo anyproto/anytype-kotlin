@@ -48,8 +48,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -193,6 +195,7 @@ private fun FlowRowContent(
                     val isMenuExpanded = remember {
                         mutableStateOf(false)
                     }
+                    val haptic = LocalHapticFeedback.current
                     Box {
                         ObjectTypeItem(
                             name = view.name,
@@ -201,6 +204,7 @@ private fun FlowRowContent(
                                 onClick = { onTypeClicked(view) }
                             ),
                             onItemLongClicked = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                 isMenuExpanded.value = !isMenuExpanded.value
                             },
                             modifier = Modifier,

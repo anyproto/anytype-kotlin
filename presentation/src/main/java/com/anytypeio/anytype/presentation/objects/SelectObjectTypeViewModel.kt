@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.types.SetPinnedObjectTypes
@@ -41,7 +42,8 @@ class SelectObjectTypeViewModel(
     private val spaceManager: SpaceManager,
     private val addObjectToSpace: AddObjectToSpace,
     private val setPinnedObjectTypes: SetPinnedObjectTypes,
-    private val getPinnedObjectTypes: GetPinnedObjectTypes
+    private val getPinnedObjectTypes: GetPinnedObjectTypes,
+    private val getDefaultObjectType: GetDefaultObjectType
 ) : BaseViewModel() {
 
     val viewState = MutableStateFlow<SelectTypeViewState>(SelectTypeViewState.Loading)
@@ -53,7 +55,6 @@ class SelectObjectTypeViewModel(
     lateinit var space: Id
 
     init {
-        Timber.d("Params: ${params}")
         viewModelScope.launch {
             space = spaceManager.get()
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
@@ -77,8 +78,9 @@ class SelectObjectTypeViewModel(
 
                 combine(
                     types,
-                    getPinnedObjectTypes.flow(GetPinnedObjectTypes.Params(SpaceId(space)))
-                ) { result, pinned ->
+                    getPinnedObjectTypes.flow(GetPinnedObjectTypes.Params(SpaceId(space))),
+                    getDefaultObjectType.asFlow(Unit)
+                ) { result, pinned, default ->
                     _objectTypes.clear()
                     _objectTypes.addAll(result.getOrNull() ?: emptyList())
 
@@ -113,7 +115,8 @@ class SelectObjectTypeViewModel(
                                         name = type.name.orEmpty(),
                                         icon = type.iconEmoji.orEmpty(),
                                         isPinned = true,
-                                        isFirstInSection = index == 0
+                                        isFirstInSection = index == 0,
+                                        isDefault = type.uniqueKey == default.type.key
                                     )
                                 }
                             )
@@ -132,6 +135,7 @@ class SelectObjectTypeViewModel(
                                         isFirstInSection = index == 0,
                                         isPinnable = false,
                                         isPinned = false,
+                                        isDefault = type.uniqueKey == default.type.key
                                     )
                                 }
                             )
@@ -149,7 +153,8 @@ class SelectObjectTypeViewModel(
                                         icon = type.iconEmoji.orEmpty(),
                                         isPinnable = true,
                                         isFirstInSection = index == 0,
-                                        isPinned = false
+                                        isPinned = false,
+                                        isDefault = type.uniqueKey == default.type.key
                                     )
                                 }
                             )
@@ -166,7 +171,8 @@ class SelectObjectTypeViewModel(
                                         isFromLibrary = true,
                                         isPinned = false,
                                         isPinnable = false,
-                                        isFirstInSection = index == 0
+                                        isFirstInSection = index == 0,
+                                        isDefault = type.uniqueKey == default.type.key
                                     )
                                 }
                             )
@@ -272,7 +278,8 @@ class SelectObjectTypeViewModel(
         private val spaceManager: SpaceManager,
         private val addObjectToSpace: AddObjectToSpace,
         private val setPinnedObjectTypes: SetPinnedObjectTypes,
-        private val getPinnedObjectTypes: GetPinnedObjectTypes
+        private val getPinnedObjectTypes: GetPinnedObjectTypes,
+        private val getDefaultObjectType: GetDefaultObjectType
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -283,7 +290,8 @@ class SelectObjectTypeViewModel(
             spaceManager = spaceManager,
             addObjectToSpace = addObjectToSpace,
             setPinnedObjectTypes = setPinnedObjectTypes,
-            getPinnedObjectTypes = getPinnedObjectTypes
+            getPinnedObjectTypes = getPinnedObjectTypes,
+            getDefaultObjectType = getDefaultObjectType
         ) as T
     }
 
@@ -314,7 +322,8 @@ sealed class SelectTypeView {
         val isFromLibrary: Boolean = false,
         val isPinned: Boolean = false,
         val isFirstInSection: Boolean = false,
-        val isPinnable: Boolean = true
+        val isPinnable: Boolean = true,
+        val isDefault: Boolean = false
     ) : SelectTypeView()
 }
 

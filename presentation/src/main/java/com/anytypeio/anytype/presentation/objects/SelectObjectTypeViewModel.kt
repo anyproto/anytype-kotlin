@@ -56,7 +56,7 @@ class SelectObjectTypeViewModel(
 
     lateinit var space: Id
 
-    private val defaultObjectTypePipeline = MutableSharedFlow<TypeKey>()
+    private val defaultObjectTypePipeline = MutableSharedFlow<TypeKey>(1)
 
     init {
 

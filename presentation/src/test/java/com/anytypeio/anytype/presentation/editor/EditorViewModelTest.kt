@@ -3595,7 +3595,8 @@ open class EditorViewModelTest {
                         background = ThemeColor.DEFAULT,
                         style = BlockView.Decoration.Style.Card
                     )
-                )
+                ),
+                name = file.content<Block.Content.File>().name.orEmpty()
             )
         )
 

@@ -95,7 +95,8 @@ fun Block.Content.File.toPictureView(
         mode = mode,
         isSelected = isSelected,
         background = background,
-        decorations = decorations
+        decorations = decorations,
+        name = name
     )
     else -> throw IllegalStateException("Unexpected state: $state")
 }
@@ -166,7 +167,8 @@ fun Block.Content.File.toVideoView(
         mode = mode,
         isSelected = isSelected,
         background = background,
-        decorations
+        decorations = decorations,
+        name = name
     )
     else -> throw IllegalStateException("Unexpected state: $state")
 }
@@ -237,7 +239,8 @@ fun Block.Content.File.toFileView(
         mode = mode,
         isSelected = isSelected,
         background = background,
-        decorations = decorations
+        decorations = decorations,
+        name = name
     )
     else -> throw IllegalStateException("Unexpected state: $state")
 }

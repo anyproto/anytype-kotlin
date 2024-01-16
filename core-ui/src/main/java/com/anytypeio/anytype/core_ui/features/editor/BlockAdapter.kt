@@ -15,8 +15,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.BuildConfig
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkErrorBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockBookmarkUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockBulletedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCalloutBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockCheckboxBinding
@@ -29,13 +27,12 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerDotsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerLineBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFeaturedRelationsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileErrorBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderOneBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderThreeBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderTwoBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHighlightBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockLatexBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaErrorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockNumberedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkArchiveBinding
@@ -47,8 +44,6 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIco
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkDeleteBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkLoadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureErrorBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockPictureUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDefaultBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockRelationDeletedBinding
@@ -66,8 +61,6 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockTocBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockToggleBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockUnsupportedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoErrorBinding
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockVideoUploadingBinding
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil.Payload
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.holders.dataview.DataViewBlockDefaultHolder
@@ -528,12 +521,12 @@ class BlockAdapter(
             }
             HOLDER_FILE_UPLOAD -> {
                 FileUpload(
-                    ItemBlockFileUploadingBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_FILE_ERROR -> {
                 FileError(
-                    ItemBlockFileErrorBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_VIDEO -> {
@@ -548,12 +541,12 @@ class BlockAdapter(
             }
             HOLDER_VIDEO_UPLOAD -> {
                 VideoUpload(
-                    ItemBlockVideoUploadingBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_VIDEO_ERROR -> {
                 VideoError(
-                    ItemBlockVideoErrorBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_OBJECT_LINK_DEFAULT -> {
@@ -681,12 +674,12 @@ class BlockAdapter(
             }
             HOLDER_BOOKMARK_ERROR -> {
                 BookmarkError(
-                    ItemBlockBookmarkErrorBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_BOOKMARK_UPLOAD -> {
                 BookmarkUpload(
-                    ItemBlockBookmarkUploadingBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_PICTURE -> {
@@ -701,12 +694,12 @@ class BlockAdapter(
             }
             HOLDER_PICTURE_UPLOAD -> {
                 PictureUpload(
-                    ItemBlockPictureUploadingBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_PICTURE_ERROR -> {
                 PictureError(
-                    ItemBlockPictureErrorBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_DIVIDER_LINE -> {

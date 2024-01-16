@@ -3608,6 +3608,13 @@ class EditorViewModel(
                     else -> Unit
                 }
             }
+            is ListenerType.Bookmark.Upload -> {
+                when (mode) {
+                    EditorMode.Edit -> Unit
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
             is ListenerType.Bookmark.Error -> {
                 when (mode) {
                     EditorMode.Edit -> onFailedBookmarkClicked(clicked.item)

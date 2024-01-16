@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderThreeBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderTwoBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHighlightBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockLatexBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaErrorBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaUploadingBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockNumberedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkArchiveBinding
@@ -529,7 +530,7 @@ class BlockAdapter(
             }
             HOLDER_FILE_ERROR -> {
                 FileError(
-                    ItemBlockFileErrorBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_VIDEO -> {
@@ -549,7 +550,7 @@ class BlockAdapter(
             }
             HOLDER_VIDEO_ERROR -> {
                 VideoError(
-                    ItemBlockVideoErrorBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_OBJECT_LINK_DEFAULT -> {
@@ -677,7 +678,7 @@ class BlockAdapter(
             }
             HOLDER_BOOKMARK_ERROR -> {
                 BookmarkError(
-                    ItemBlockBookmarkErrorBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_BOOKMARK_UPLOAD -> {
@@ -702,7 +703,7 @@ class BlockAdapter(
             }
             HOLDER_PICTURE_ERROR -> {
                 PictureError(
-                    ItemBlockPictureErrorBinding.inflate(inflater, parent, false)
+                    ItemBlockMediaErrorBinding.inflate(inflater, parent, false)
                 )
             }
             HOLDER_DIVIDER_LINE -> {

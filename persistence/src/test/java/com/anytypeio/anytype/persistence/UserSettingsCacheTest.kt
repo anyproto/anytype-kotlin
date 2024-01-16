@@ -2,6 +2,7 @@ package com.anytypeio.anytype.persistence
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -32,7 +33,8 @@ class UserSettingsCacheTest {
     fun `should save and return default wallpaper`() = runTest {
 
         val cache = DefaultUserSettingsCache(
-            prefs = defaultPrefs
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext()
         )
 
         val space = MockDataFactory.randomUuid()
@@ -55,7 +57,8 @@ class UserSettingsCacheTest {
     fun `should save and return gradient wallpaper`() = runTest {
 
         val cache = DefaultUserSettingsCache(
-            prefs = defaultPrefs
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext()
         )
 
         val space = MockDataFactory.randomUuid()
@@ -81,7 +84,8 @@ class UserSettingsCacheTest {
     fun `should not save wallpaper if space id is empty, should return default`() = runTest {
 
         val cache = DefaultUserSettingsCache(
-            prefs = defaultPrefs
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext()
         )
 
         val space = ""
@@ -108,7 +112,8 @@ class UserSettingsCacheTest {
     fun `should save and return solid-color wallpaper`() = runTest {
 
         val cache = DefaultUserSettingsCache(
-            prefs = defaultPrefs
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext()
         )
 
         val space = MockDataFactory.randomUuid()
@@ -134,7 +139,8 @@ class UserSettingsCacheTest {
     fun `should save and return image wallpaper`() = runTest {
 
         val cache = DefaultUserSettingsCache(
-            prefs = defaultPrefs
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext()
         )
 
         val space = MockDataFactory.randomUuid()
@@ -160,7 +166,8 @@ class UserSettingsCacheTest {
     fun `should return default wallpaper`() = runTest {
 
         val cache = DefaultUserSettingsCache(
-            prefs = defaultPrefs
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext()
         )
 
         val space = MockDataFactory.randomUuid()
@@ -178,7 +185,8 @@ class UserSettingsCacheTest {
     fun `should save new default object type for given space`() = runTest {
 
         val cache = DefaultUserSettingsCache(
-            prefs = defaultPrefs
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext()
         )
 
         val space = SpaceId(MockDataFactory.randomUuid())
@@ -210,7 +218,8 @@ class UserSettingsCacheTest {
     fun `should save default object type for two given spaces`() = runTest {
 
         val cache = DefaultUserSettingsCache(
-            prefs = defaultPrefs
+            prefs = defaultPrefs,
+            context = ApplicationProvider.getApplicationContext()
         )
 
         val space1 = SpaceId(MockDataFactory.randomUuid())

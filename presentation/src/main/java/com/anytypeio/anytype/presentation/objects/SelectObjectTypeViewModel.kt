@@ -354,7 +354,7 @@ class SelectObjectTypeViewModel(
                     space = space,
                     url = url,
                     details = mapOf(
-                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                        Relations.ORIGIN to ObjectOrigin.CLIPBOARD.code.toDouble()
                     )
                 )
             ).process(
@@ -384,7 +384,7 @@ class SelectObjectTypeViewModel(
                     text = text,
                     space = space,
                     details = mapOf(
-                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                        Relations.ORIGIN to ObjectOrigin.CLIPBOARD.code.toDouble()
                     )
                 )
             ).fold(

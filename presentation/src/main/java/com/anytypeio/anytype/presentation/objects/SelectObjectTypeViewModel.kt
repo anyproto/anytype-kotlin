@@ -218,7 +218,7 @@ class SelectObjectTypeViewModel(
                     defaultObjectTypePipeline.emit(response.type)
                 },
                 onFailure = {
-
+                    Timber.e(it, "Error while getting default object type for init")
                 }
             )
         }
@@ -247,6 +247,13 @@ class SelectObjectTypeViewModel(
                         space = SpaceId(id = space),
                         types = pinned.toList()
                     )
+                ).fold(
+                    onFailure = {
+                        Timber.e(it, "Error while setting pinned types")
+                    },
+                    onSuccess = {
+                        Timber.d("Set pinned types successfully")
+                    }
                 )
             }
         }
@@ -268,6 +275,13 @@ class SelectObjectTypeViewModel(
                         space = SpaceId(id = space),
                         types = pinned.toList()
                     )
+                ).fold(
+                    onFailure = {
+                        Timber.e(it, "Error while setting pinned types")
+                    },
+                    onSuccess = {
+                        Timber.d("Set pinned types successfully")
+                    }
                 )
             }
         }

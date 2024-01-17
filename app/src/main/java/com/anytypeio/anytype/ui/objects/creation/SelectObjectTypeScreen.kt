@@ -75,7 +75,6 @@ import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
 import com.anytypeio.anytype.presentation.objects.SelectTypeViewState
-import kotlinx.coroutines.delay
 
 @Preview
 @Composable
@@ -554,3 +553,52 @@ private fun Section(title: String) {
         )
     }
 }
+
+
+
+@Preview
+@Composable
+fun ClipboardCreateObjectPreview() {
+    ClipboardBottomToolbar(type = CLIPBOARD_TYPE_OBJECT)
+}
+
+@Preview
+@Composable
+fun ClipboardCreateBookmarkPreview() {
+    ClipboardBottomToolbar(type = CLIPBOARD_TYPE_BOOKMARK)
+}
+
+@Composable
+fun ClipboardBottomToolbar(
+    type: ClipboardDataType
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_clipboard_bottom_toolbar),
+            contentDescription = "Clipboard icon",
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .align(Alignment.CenterStart)
+        )
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 50.dp),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_secondary),
+            text = when(type) {
+                CLIPBOARD_TYPE_OBJECT -> stringResource(R.string.clipboard_panel_create_object_from_clipboard)
+                CLIPBOARD_TYPE_BOOKMARK -> stringResource(R.string.clipboard_panel_create_bookmark_from_clipboard)
+                else -> throw IllegalStateException("Unexpected type")
+            }
+        )
+    }
+}
+
+const val CLIPBOARD_TYPE_OBJECT = 0
+const val CLIPBOARD_TYPE_BOOKMARK = 1
+typealias ClipboardDataType = Int

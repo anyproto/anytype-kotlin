@@ -118,6 +118,11 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
                 }
             }
             LaunchedEffect(Unit) {
+                vm.toasts.collect { toast ->
+                    toast(toast)
+                }
+            }
+            LaunchedEffect(Unit) {
                 vm.navigation.collect { nav ->
                     when(nav) {
                         is OpenObjectNavigation.OpenEditor -> {

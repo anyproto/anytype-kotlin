@@ -1806,6 +1806,7 @@ class EditorViewModel(
                         needSortByDownloads = true
                         if (content.state == Content.File.State.DONE) {
                             targetActions.addIfNotExists(ActionItemType.Download)
+                            targetActions.addIfNotExists(ActionItemType.OpenObject)
                         } else {
                             excludedActions.add(ActionItemType.Download)
                         }
@@ -5581,6 +5582,18 @@ class EditorViewModel(
                         )
                     } else {
                         sendToast("This bookmark doesn’t have a source.")
+                    }
+                }
+                is Content.File -> {
+                    val target = content.targetObjectId
+                    if (target != null) {
+                        proceedWithOpeningObject(target)
+                        viewModelScope.sendAnalyticsOpenAsObject(
+                            analytics = analytics,
+                            type = EventsDictionary.Type.bookmark
+                        )
+                    } else {
+                        sendToast("This object doesn’t have a target id")
                     }
                 }
                 else -> sendToast("Unexpected object")

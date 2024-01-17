@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
@@ -52,4 +53,5 @@ interface SelectObjectTypeDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun userSettingsRepo(): UserSettingsRepository
     fun configStorage(): ConfigStorage
+    fun appActionManager(): AppActionManager
 }

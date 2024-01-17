@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
+import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -25,6 +26,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
+import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
@@ -59,6 +61,7 @@ class SelectObjectTypeViewModel(
     private val setDefaultObjectType: SetDefaultObjectType,
     private val createBookmarkObject: CreateBookmarkObject,
     private val createPrefilledNote: CreatePrefilledNote,
+    private val appActionManager: AppActionManager,
     private val analytics: Analytics
 ) : BaseViewModel() {
 
@@ -74,10 +77,7 @@ class SelectObjectTypeViewModel(
 
     private val defaultObjectTypePipeline = MutableSharedFlow<TypeKey>(1)
 
-
-
     init {
-
         viewModelScope.launch {
             space = spaceManager.get()
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
@@ -218,7 +218,7 @@ class SelectObjectTypeViewModel(
                     defaultObjectTypePipeline.emit(response.type)
                 },
                 onFailure = {
-
+                    Timber.e(it, "Error while getting default object type for init")
                 }
             )
         }
@@ -235,20 +235,18 @@ class SelectObjectTypeViewModel(
         val state = viewState.value
         if (state is SelectTypeViewState.Content) {
             val pinned = buildSet {
-                add(TypeId(typeView.id))
+                add(typeView)
                 state.views.forEach { view ->
                     if (view is SelectTypeView.Type && view.isPinned)
-                        add(TypeId(view.id))
+                        add(view)
                 }
             }
-            viewModelScope.launch {
-                setPinnedObjectTypes.async(
-                    SetPinnedObjectTypes.Params(
-                        space = SpaceId(id = space),
-                        types = pinned.toList()
-                    )
-                )
-            }
+            proceedWithSettingPinnedTypes(
+                pinned = pinned.map { type -> TypeId(type.id) }
+            )
+            proceedWithUpdatingAppActions(
+                pinned = pinned.map { type -> type.typeKey to type.name }
+            )
         }
     }
 
@@ -259,15 +257,46 @@ class SelectObjectTypeViewModel(
             val pinned = buildSet {
                 state.views.forEach { view ->
                     if (view is SelectTypeView.Type && view.isPinned && view.id != typeView.id)
-                        add(TypeId(view.id))
+                        add(view)
                 }
             }
-            viewModelScope.launch {
-                setPinnedObjectTypes.async(
-                    SetPinnedObjectTypes.Params(
-                        space = SpaceId(id = space),
-                        types = pinned.toList()
-                    )
+            proceedWithSettingPinnedTypes(
+                pinned = pinned.map { type -> TypeId(type.id) }
+            )
+            proceedWithUpdatingAppActions(
+                pinned = pinned.map { type -> type.typeKey to type.name }
+            )
+        }
+    }
+
+    private fun proceedWithSettingPinnedTypes(pinned: List<TypeId>) {
+        viewModelScope.launch {
+            setPinnedObjectTypes.async(
+                SetPinnedObjectTypes.Params(
+                    space = SpaceId(id = space),
+                    types = pinned
+                )
+            ).fold(
+                onFailure = {
+                    Timber.e(it, "Error while setting pinned types")
+                },
+                onSuccess = {
+                    Timber.d("Set pinned types successfully")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithUpdatingAppActions(pinned: List<Pair<Key, Name>>) {
+        viewModelScope.launch {
+            if (pinned.isNotEmpty()) {
+                appActionManager.setup(
+                    pinned.take(MAX_TYPE_COUNT_FOR_APP_ACTIONS).map { (key, name) ->
+                        AppActionManager.Action.CreateNew(
+                            type = TypeKey(key),
+                            name = name
+                        )
+                    }
                 )
             }
         }
@@ -417,6 +446,7 @@ class SelectObjectTypeViewModel(
         private val setDefaultObjectType: SetDefaultObjectType,
         private val createBookmarkObject: CreateBookmarkObject,
         private val createPrefilledNote: CreatePrefilledNote,
+        private val appActionManager: AppActionManager,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -433,6 +463,7 @@ class SelectObjectTypeViewModel(
             setDefaultObjectType = setDefaultObjectType,
             createBookmarkObject = createBookmarkObject,
             createPrefilledNote = createPrefilledNote,
+            appActionManager = appActionManager,
             analytics = analytics
         ) as T
     }
@@ -480,3 +511,5 @@ sealed class Command {
     data class ShowTypeInstalledToast(val typeName: String) : Command()
     data class DispatchObjectType(val type: ObjectWrapper.Type) : Command()
 }
+
+const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 3

@@ -1002,12 +1002,12 @@ message Import {
     }
 }
 
+message FileEncryptionKey {
+    string path = 1;
+    string key = 2;
+}
+
 message FileInfo {
     string fileId = 1;
-    repeated EncryptionKey encryptionKeys = 2;
-
-    message EncryptionKey {
-        string path = 1;
-        string key = 2;
-    }
+    repeated FileEncryptionKey encryptionKeys = 2;
 }

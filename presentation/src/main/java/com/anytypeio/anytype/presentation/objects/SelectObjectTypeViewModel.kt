@@ -3,28 +3,39 @@ package com.anytypeio.anytype.presentation.objects
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
+import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
+import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.types.SetPinnedObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
+import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -45,11 +56,16 @@ class SelectObjectTypeViewModel(
     private val setPinnedObjectTypes: SetPinnedObjectTypes,
     private val getPinnedObjectTypes: GetPinnedObjectTypes,
     private val getDefaultObjectType: GetDefaultObjectType,
-    private val setDefaultObjectType: SetDefaultObjectType
+    private val setDefaultObjectType: SetDefaultObjectType,
+    private val createBookmarkObject: CreateBookmarkObject,
+    private val createPrefilledNote: CreatePrefilledNote,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val viewState = MutableStateFlow<SelectTypeViewState>(SelectTypeViewState.Loading)
+    val clipboardToolbarViewState = MutableStateFlow<ClipboardToolbarViewState>(ClipboardToolbarViewState.Hidden)
     val commands = MutableSharedFlow<Command>()
+    val navigation = MutableSharedFlow<OpenObjectNavigation>()
     private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
 
     private val query = MutableSharedFlow<String>()
@@ -57,6 +73,8 @@ class SelectObjectTypeViewModel(
     lateinit var space: Id
 
     private val defaultObjectTypePipeline = MutableSharedFlow<TypeKey>(1)
+
+
 
     init {
 
@@ -306,6 +324,86 @@ class SelectObjectTypeViewModel(
         }
     }
 
+    fun onClipboardUrlTypeDetected(url: Url) {
+        clipboardToolbarViewState.value = ClipboardToolbarViewState.CreateBookmark(url)
+    }
+
+    fun onClipboardTextTypeDetected(text: String) {
+        clipboardToolbarViewState.value = ClipboardToolbarViewState.CreateObject(text)
+    }
+
+    fun onClipboardToolbarClicked() {
+        when(val state = clipboardToolbarViewState.value) {
+            is ClipboardToolbarViewState.CreateBookmark -> {
+                proceedWithCreatingBookmark(state.url)
+            }
+            is ClipboardToolbarViewState.CreateObject -> {
+                proceedWithCreatingNote(state.text)
+            }
+            is ClipboardToolbarViewState.Hidden -> {
+                // Do nothing.
+            }
+        }
+    }
+
+    private fun proceedWithCreatingBookmark(url: String) {
+        viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
+            createBookmarkObject(
+                CreateBookmarkObject.Params(
+                    space = space,
+                    url = url,
+                    details = mapOf(
+                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                    )
+                )
+            ).process(
+                success = { obj ->
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        objType = MarketplaceObjectTypeIds.BOOKMARK,
+                        route = EventsDictionary.Routes.sharingExtension,
+                        startTime = startTime
+                    )
+                    navigation.emit(OpenObjectNavigation.OpenEditor(obj))
+                },
+                failure = {
+                    Timber.d(it, "Error while creating bookmark")
+                    sendToast("Error while creating bookmark: ${it.msg()}")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithCreatingNote(text: String) {
+        viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
+            createPrefilledNote.async(
+                CreatePrefilledNote.Params(
+                    text = text,
+                    space = space,
+                    details = mapOf(
+                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                    )
+                )
+            ).fold(
+                onSuccess = { result ->
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        objType = MarketplaceObjectTypeIds.NOTE,
+                        route = EventsDictionary.Routes.sharingExtension,
+                        startTime = startTime
+                    )
+                    navigation.emit(OpenObjectNavigation.OpenEditor(result))
+                },
+                onFailure = {
+                    Timber.d(it, "Error while creating note")
+                    sendToast("Error while creating note: ${it.msg()}")
+                }
+            )
+        }
+    }
+
     class Factory @Inject constructor(
         private val params: Params,
         private val getObjectTypes: GetObjectTypes,
@@ -314,7 +412,10 @@ class SelectObjectTypeViewModel(
         private val setPinnedObjectTypes: SetPinnedObjectTypes,
         private val getPinnedObjectTypes: GetPinnedObjectTypes,
         private val getDefaultObjectType: GetDefaultObjectType,
-        private val setDefaultObjectType: SetDefaultObjectType
+        private val setDefaultObjectType: SetDefaultObjectType,
+        private val createBookmarkObject: CreateBookmarkObject,
+        private val createPrefilledNote: CreatePrefilledNote,
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -327,7 +428,10 @@ class SelectObjectTypeViewModel(
             setPinnedObjectTypes = setPinnedObjectTypes,
             getPinnedObjectTypes = getPinnedObjectTypes,
             getDefaultObjectType = getDefaultObjectType,
-            setDefaultObjectType = setDefaultObjectType
+            setDefaultObjectType = setDefaultObjectType,
+            createBookmarkObject = createBookmarkObject,
+            createPrefilledNote = createPrefilledNote,
+            analytics = analytics
         ) as T
     }
 
@@ -340,6 +444,13 @@ sealed class SelectTypeViewState{
     object Loading : SelectTypeViewState()
     object Empty : SelectTypeViewState()
     data class Content(val views: List<SelectTypeView>) : SelectTypeViewState()
+}
+
+sealed class ClipboardToolbarViewState {
+    object Hidden : ClipboardToolbarViewState()
+    data class CreateBookmark(val url: Url) : ClipboardToolbarViewState()
+    data class CreateObject(val text: String) : ClipboardToolbarViewState()
+
 }
 
 sealed class SelectTypeView {

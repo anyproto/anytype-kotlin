@@ -8,6 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -559,23 +560,32 @@ private fun Section(title: String) {
 @Preview
 @Composable
 fun ClipboardCreateObjectPreview() {
-    ClipboardBottomToolbar(type = CLIPBOARD_TYPE_OBJECT)
+    ClipboardBottomToolbar(
+        type = CLIPBOARD_TYPE_OBJECT,
+        onToolbarClicked = {}
+    )
 }
 
 @Preview
 @Composable
 fun ClipboardCreateBookmarkPreview() {
-    ClipboardBottomToolbar(type = CLIPBOARD_TYPE_BOOKMARK)
+    ClipboardBottomToolbar(
+        type = CLIPBOARD_TYPE_BOOKMARK,
+        onToolbarClicked = {}
+    )
 }
 
 @Composable
 fun ClipboardBottomToolbar(
-    type: ClipboardDataType
+    type: ClipboardDataType,
+    modifier: Modifier = Modifier,
+    onToolbarClicked: () -> Unit
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
+            .clickable { onToolbarClicked() }
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_clipboard_bottom_toolbar),

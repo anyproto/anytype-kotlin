@@ -359,12 +359,13 @@ class SelectObjectTypeViewModel(
                 )
             ).process(
                 success = { obj ->
-                    sendAnalyticsObjectCreateEvent(
-                        analytics = analytics,
-                        objType = MarketplaceObjectTypeIds.BOOKMARK,
-                        route = EventsDictionary.Routes.sharingExtension,
-                        startTime = startTime
-                    )
+                    // TODO select correct route
+//                    sendAnalyticsObjectCreateEvent(
+//                        analytics = analytics,
+//                        objType = MarketplaceObjectTypeIds.BOOKMARK,
+//                        route = EventsDictionary.Routes.sharingExtension,
+//                        startTime = startTime
+//                    )
                     navigation.emit(OpenObjectNavigation.OpenEditor(obj))
                 },
                 failure = {
@@ -388,12 +389,13 @@ class SelectObjectTypeViewModel(
                 )
             ).fold(
                 onSuccess = { result ->
-                    sendAnalyticsObjectCreateEvent(
-                        analytics = analytics,
-                        objType = MarketplaceObjectTypeIds.NOTE,
-                        route = EventsDictionary.Routes.sharingExtension,
-                        startTime = startTime
-                    )
+                    // TODO select correct route
+//                    sendAnalyticsObjectCreateEvent(
+//                        analytics = analytics,
+//                        objType = MarketplaceObjectTypeIds.NOTE,
+//                        route = EventsDictionary.Routes.sharingExtension,
+//                        startTime = startTime
+//                    )
                     navigation.emit(OpenObjectNavigation.OpenEditor(result))
                 },
                 onFailure = {

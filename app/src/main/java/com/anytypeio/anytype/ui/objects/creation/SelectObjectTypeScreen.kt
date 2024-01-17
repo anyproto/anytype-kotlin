@@ -8,6 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -75,7 +76,6 @@ import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
 import com.anytypeio.anytype.presentation.objects.SelectTypeViewState
-import kotlinx.coroutines.delay
 
 @Preview
 @Composable
@@ -554,3 +554,61 @@ private fun Section(title: String) {
         )
     }
 }
+
+
+
+@Preview
+@Composable
+fun ClipboardCreateObjectPreview() {
+    ClipboardBottomToolbar(
+        type = CLIPBOARD_TYPE_OBJECT,
+        onToolbarClicked = {}
+    )
+}
+
+@Preview
+@Composable
+fun ClipboardCreateBookmarkPreview() {
+    ClipboardBottomToolbar(
+        type = CLIPBOARD_TYPE_BOOKMARK,
+        onToolbarClicked = {}
+    )
+}
+
+@Composable
+fun ClipboardBottomToolbar(
+    type: ClipboardDataType,
+    modifier: Modifier = Modifier,
+    onToolbarClicked: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clickable { onToolbarClicked() }
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_clipboard_bottom_toolbar),
+            contentDescription = "Clipboard icon",
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .align(Alignment.CenterStart)
+        )
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 50.dp),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_secondary),
+            text = when(type) {
+                CLIPBOARD_TYPE_OBJECT -> stringResource(R.string.clipboard_panel_create_object_from_clipboard)
+                CLIPBOARD_TYPE_BOOKMARK -> stringResource(R.string.clipboard_panel_create_bookmark_from_clipboard)
+                else -> throw IllegalStateException("Unexpected type")
+            }
+        )
+    }
+}
+
+const val CLIPBOARD_TYPE_OBJECT = 0
+const val CLIPBOARD_TYPE_BOOKMARK = 1
+typealias ClipboardDataType = Int

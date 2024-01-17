@@ -62,7 +62,6 @@ typealias MRelationOption = anytype.model.Relation.Option
 typealias MObjectRestriction = anytype.model.Restrictions.ObjectRestriction
 typealias MDVRestrictions = anytype.model.Restrictions.DataviewRestrictions
 typealias MDVRestriction = anytype.model.Restrictions.DataviewRestriction
-typealias MBlockRestriction = anytype.model.Block.Restrictions
 
 typealias MWidget = anytype.model.Block.Content.Widget
 typealias MWidgetLayout = anytype.model.Block.Content.Widget.Layout

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_models
 import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_models.Block.Content.Text.Style
 import com.anytypeio.anytype.core_models.ext.typeOf
-import com.anytypeio.anytype.core_models.restrictions.BlockRestriction
 
 /**
  * Represents block as basic data structure.
@@ -18,8 +17,7 @@ data class Block(
     val children: List<String>,
     val content: Content,
     val fields: Fields,
-    val backgroundColor: String? = null,
-    val restrictions: List<BlockRestriction> = emptyList()
+    val backgroundColor: String? = null
 ) {
 
     /**

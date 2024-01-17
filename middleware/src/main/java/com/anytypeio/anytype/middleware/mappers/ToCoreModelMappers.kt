@@ -34,7 +34,6 @@ import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.SpaceUsage
-import com.anytypeio.anytype.core_models.restrictions.BlockRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -94,8 +93,7 @@ fun List<MBlock>.toCoreModels(): List<Block> = mapNotNull { block ->
                 fields = block.toCoreModelsFields(),
                 children = block.childrenIds,
                 content = block.toCoreModelsText(),
-                backgroundColor = block.backgroundColor.ifEmpty { null },
-                restrictions = block.restrictions?.toCoreModel() ?: emptyList()
+                backgroundColor = block.backgroundColor.ifEmpty { null }
             )
         }
         block.layout != null -> {
@@ -789,13 +787,3 @@ fun Account.Info.config() : Config = Config(
     device = deviceId,
     network = networkId
 )
-
-fun MBlockRestriction.toCoreModel(): List<BlockRestriction> {
-    return buildList {
-        if (this@toCoreModel.read) add(BlockRestriction.READ)
-        if (this@toCoreModel.edit) add(BlockRestriction.EDIT)
-        if (this@toCoreModel.remove) add(BlockRestriction.REMOVE)
-        if (this@toCoreModel.drag) add(BlockRestriction.DRAG)
-        if (this@toCoreModel.dropOn) add(BlockRestriction.DROP_ON)
-    }
-}

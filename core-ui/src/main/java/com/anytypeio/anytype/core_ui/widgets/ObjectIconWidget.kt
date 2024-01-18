@@ -233,7 +233,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         val icon = mime.getMimeIcon(fileName)
         with(binding) {
             ivImage.visible()
-            ivImage.scaleType = ImageView.ScaleType.CENTER
+            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
             ivImage.setImageResource(icon)
             ivCheckbox.invisible()
             initialContainer.invisible()

@@ -125,7 +125,7 @@ class CreateDataViewObject @Inject constructor(
                             dateProvider = dateProvider
                         )
                         if (updatedValue != null)  {
-                            put(filter.relation, "$updatedValue")
+                            put(filter.relation, updatedValue.toDouble())
                         }
                     }
                     else -> {

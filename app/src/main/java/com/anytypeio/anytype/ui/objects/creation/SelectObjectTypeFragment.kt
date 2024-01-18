@@ -82,6 +82,20 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
                             vm.onSetDefaultObjectTypeClicked(it)
                         }
                     },
+                    onMoveLeftClicked = {
+                        lifecycleScope.launch {
+                            // Workaround to prevent dropdown-menu flickering
+                            delay(DROP_DOWN_MENU_ACTION_DELAY)
+                            vm.onMoveLeftClicked(it)
+                        }
+                    },
+                    onMoveRightClicked = {
+                        lifecycleScope.launch {
+                            // Workaround to prevent dropdown-menu flickering
+                            delay(DROP_DOWN_MENU_ACTION_DELAY)
+                            vm.onMoveRightClicked(it)
+                        }
+                    },
                     onQueryChanged = vm::onQueryChanged,
                     onFocused = {
                         skipCollapsed()

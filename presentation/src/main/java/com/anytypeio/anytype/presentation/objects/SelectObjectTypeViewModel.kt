@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.msg
+import com.anytypeio.anytype.core_utils.ext.swap
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -143,6 +144,7 @@ class SelectObjectTypeViewModel(
                                         icon = type.iconEmoji.orEmpty(),
                                         isPinned = true,
                                         isFirstInSection = index == 0,
+                                        isLastInSection = index == pinnedTypes.lastIndex,
                                         isDefault = type.uniqueKey == default.key
                                     )
                                 }
@@ -160,6 +162,7 @@ class SelectObjectTypeViewModel(
                                         name = type.name.orEmpty(),
                                         icon = type.iconEmoji.orEmpty(),
                                         isFirstInSection = index == 0,
+                                        isLastInSection = index == pinnedTypes.lastIndex,
                                         isPinnable = false,
                                         isPinned = false,
                                         isDefault = type.uniqueKey == default.key
@@ -180,6 +183,7 @@ class SelectObjectTypeViewModel(
                                         icon = type.iconEmoji.orEmpty(),
                                         isPinnable = true,
                                         isFirstInSection = index == 0,
+                                        isLastInSection = index == pinnedTypes.lastIndex,
                                         isPinned = false,
                                         isDefault = type.uniqueKey == default.key
                                     )
@@ -199,6 +203,7 @@ class SelectObjectTypeViewModel(
                                         isPinned = false,
                                         isPinnable = false,
                                         isFirstInSection = index == 0,
+                                        isLastInSection = index == pinnedTypes.lastIndex,
                                         isDefault = type.uniqueKey == default.key
                                     )
                                 }
@@ -283,6 +288,56 @@ class SelectObjectTypeViewModel(
         }
     }
 
+    fun onMoveLeftClicked(typeView: SelectTypeView.Type) {
+        Timber.d("onMoveLeftClicked: ${typeView.id}")
+        val pinnedTypes = pinned.value
+        val currentPosition = pinnedTypes.indexOf(TypeId(typeView.id))
+        if (currentPosition != -1 && currentPosition != 0 && pinnedTypes.size > 1) {
+            val updatedPinnedTypes = pinnedTypes.toMutableList().apply {
+                swap(index1 = currentPosition, index2 = currentPosition.dec())
+            }
+            proceedWithSettingPinnedTypes(pinned = updatedPinnedTypes)
+            viewModelScope.launch {
+                proceedWithUpdatingAppActions(
+                    pinned = updatedPinnedTypes.mapNotNull { type ->
+                        val obj = storeOfObjectTypes.get(type.id)
+                        val key = obj?.uniqueKey
+                        if (obj != null && key != null) {
+                            key to obj.name.orEmpty()
+                        } else {
+                            null
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    fun onMoveRightClicked(typeView: SelectTypeView.Type) {
+        Timber.d("onMoveRightClicked: ${typeView.id}")
+        val pinnedTypes = pinned.value
+        val currentPosition = pinnedTypes.indexOf(TypeId(typeView.id))
+        if (currentPosition != -1 && currentPosition != pinnedTypes.lastIndex && pinnedTypes.size > 1) {
+            val updatedPinnedTypes = pinnedTypes.toMutableList().apply {
+                swap(index1 = currentPosition, index2 = currentPosition.inc())
+            }
+            proceedWithSettingPinnedTypes(pinned = updatedPinnedTypes)
+            viewModelScope.launch {
+                proceedWithUpdatingAppActions(
+                    pinned = updatedPinnedTypes.mapNotNull { type ->
+                        val obj = storeOfObjectTypes.get(type.id)
+                        val key = obj?.uniqueKey
+                        if (obj != null && key != null) {
+                            key to obj.name.orEmpty()
+                        } else {
+                            null
+                        }
+                    }
+                )
+            }
+        }
+    }
+
     private fun proceedWithSettingPinnedTypes(pinned: List<TypeId>) {
         viewModelScope.launch {
             setPinnedObjectTypes.async(
@@ -301,7 +356,7 @@ class SelectObjectTypeViewModel(
         }
     }
 
-    private suspend fun proceedWithUpdatingAppActions(pinned: List<Pair<Key, Name>>) {
+    private fun proceedWithUpdatingAppActions(pinned: List<Pair<Key, Name>>) {
         if (pinned.isNotEmpty()) {
             appActionManager.setup(
                 pinned.take(MAX_TYPE_COUNT_FOR_APP_ACTIONS).map { (key, name) ->
@@ -516,6 +571,7 @@ sealed class SelectTypeView {
         val isFromLibrary: Boolean = false,
         val isPinned: Boolean = false,
         val isFirstInSection: Boolean = false,
+        val isLastInSection: Boolean = false,
         val isPinnable: Boolean = true,
         val isDefault: Boolean = false
     ) : SelectTypeView()

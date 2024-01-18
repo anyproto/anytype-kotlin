@@ -652,16 +652,6 @@
         <item name="android:layout_marginTop">@dimen/default_graphic_text_graphic_margin_top</item>
     </style>
 
-    <!-- text -->
-    <style name="DefaultGraphicTextBlockTextStyle" parent="TextView.ContentStyle.Body.Regular">
-        <item name="android:layout_width">@dimen/default_graphic_text_graphic_width</item>
-        <item name="android:layout_height">@dimen/default_graphic_text_graphic_width</item>
-        <item name="android:layout_marginStart">@dimen/default_graphic_text_text_margin_start</item>
-        <item name="android:paddingTop">@dimen/default_graphic_text_text_padding_top</item>
-        <item name="android:paddingBottom">@dimen/default_graphic_text_text_padding_bottom</item>
-        <item name="android:background">@null</item>
-    </style>
-
     <!-- Media placeholder {root {card {title}} selected}-->
     <!-- root -->
     <style name="DefaultMediaPlaceholderBlockRootStyle">

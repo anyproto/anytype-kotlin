@@ -18,6 +18,8 @@
         android:paddingEnd="@dimen/default_document_content_padding_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingTop="@dimen/dp_4"
+        android:paddingBottom="@dimen/dp_4"
         android:background="@drawable/item_block_multi_select_mode_selector"
         tools:background="@drawable/item_block_multi_select_selected">
 
@@ -30,17 +32,25 @@
 
         <ImageView
             android:id="@+id/graphic"
-            style="@style/DefaultGraphicTextBlockGraphicStyle"
+            android:layout_width="@dimen/dp_24"
+            android:layout_height="@dimen/dp_24"
             android:contentDescription="@string/content_description_file_icon"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/guideline"
             app:layout_constraintTop_toTopOf="parent"
             tools:background="@drawable/ic_mime_image" />
 
         <com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
             android:id="@+id/text"
-            style="@style/DefaultGraphicTextBlockTextStyle"
+            style="@style/TextView.ContentStyle.Body.Regular"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:ellipsize="middle"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:background="@null"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/graphic"
             app:layout_constraintTop_toTopOf="parent"

@@ -218,7 +218,8 @@ fun Block.Content.File.toFileView(
                 decorations = decorations,
                 size = targetObject.sizeInBytes?.toLong(),
                 name = targetObject.name,
-                mime = targetObject.fileMimeType
+                mime = targetObject.fileMimeType,
+                fileExt = targetObject.fileExt
             )
 
         } else {

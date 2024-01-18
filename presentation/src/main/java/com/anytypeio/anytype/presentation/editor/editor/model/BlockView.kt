@@ -1002,7 +1002,8 @@ sealed class BlockView : ViewType {
             val name: String?,
             val mime: String?,
             val targetObjectId: Id,
-            val url: String
+            val url: String,
+            val fileExt: String? = null
         ) : Media(), Searchable {
             override fun getViewType() = HOLDER_FILE
         }

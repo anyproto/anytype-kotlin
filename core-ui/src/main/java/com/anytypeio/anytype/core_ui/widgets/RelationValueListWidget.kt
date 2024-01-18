@@ -59,6 +59,7 @@ class RelationValueListWidget @JvmOverloads constructor(
             is ObjectRelationView.Tags -> setTagRelation(relation)
             is ObjectRelationView.File -> setRelationFile(relation)
             is ObjectRelationView.Status -> setStatusRelation(relation)
+            is ObjectRelationView.Checkbox -> setCheckboxRelation(relation)
             else -> TODO()
         }
         if (!isLast) dot.visible()
@@ -275,6 +276,13 @@ class RelationValueListWidget @JvmOverloads constructor(
 
 
     //endregion
+
+    //region CHECKBOX
+    private fun setCheckboxRelation(relation: ObjectRelationView.Checkbox) {
+        icon1.visible()
+        val icon = if (relation.isChecked) ObjectIcon.Checkbox(true) else ObjectIcon.Checkbox(false)
+        icon1.setIcon(icon = icon)
+    }
 
     companion object {
         private const val MAX_ITEMS = 2

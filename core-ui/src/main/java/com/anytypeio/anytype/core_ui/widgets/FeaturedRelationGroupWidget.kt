@@ -77,12 +77,9 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     ids.add(view.id)
                 }
                 is ObjectRelationView.Checkbox -> {
-                    val view = View(context).apply {
+                    val view = RelationValueListWidget(context).apply {
                         id = generateViewId()
-                        val size = context.dimen(R.dimen.dp_16).toInt()
-                        layoutParams = LayoutParams(size, size)
-                        setBackgroundResource(R.drawable.ic_relation_checkbox_selector)
-                        isSelected = relation.isChecked
+                        setRelation(relation, index == item.relations.lastIndex)
                         setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
                     addView(view)
@@ -91,7 +88,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is ObjectRelationView.File -> {
                     val view = RelationValueListWidget(context).apply {
                         id = generateViewId()
-                        setRelation(relation)
+                        setRelation(relation, index == item.relations.lastIndex)
                         setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
                     addView(view)
@@ -100,7 +97,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is ObjectRelationView.Object -> {
                     val view = RelationValueListWidget(context).apply {
                         id = generateViewId()
-                        setRelation(relation)
+                        setRelation(relation, index == item.relations.lastIndex)
                         setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
                     addView(view)
@@ -109,7 +106,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is ObjectRelationView.Status -> {
                     val view = RelationValueListWidget(context).apply {
                         id = generateViewId()
-                        setRelation(relation)
+                        setRelation(relation, index == item.relations.lastIndex)
                         setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
                     addView(view)
@@ -118,7 +115,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 is ObjectRelationView.Tags -> {
                     val view = RelationValueListWidget(context).apply {
                         id = generateViewId()
-                        setRelation(relation)
+                        setRelation(relation, index == item.relations.lastIndex)
                         setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
                     addView(view)

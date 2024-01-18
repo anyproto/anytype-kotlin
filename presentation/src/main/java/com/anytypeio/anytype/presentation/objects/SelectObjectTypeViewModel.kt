@@ -314,7 +314,7 @@ class SelectObjectTypeViewModel(
     }
 
     fun onMoveRightClicked(typeView: SelectTypeView.Type) {
-        Timber.d("onMoveLeftClicked: ${typeView.id}")
+        Timber.d("onMoveRightClicked: ${typeView.id}")
         val pinnedTypes = pinned.value
         val currentPosition = pinnedTypes.indexOf(TypeId(typeView.id))
         if (currentPosition != -1 && currentPosition != pinnedTypes.lastIndex && pinnedTypes.size > 1) {

@@ -1243,6 +1243,8 @@
     <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
     <string name="any_object_creation_menu_unpin">Unpin</string>
     <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="any_object_creation_menu_move_left">Move left</string>
+    <string name="any_object_creation_menu_move_right">Move right</string>
     <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
 
 </resources>

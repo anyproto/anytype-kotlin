@@ -52,21 +52,20 @@ class RelationValueListWidget @JvmOverloads constructor(
 
     fun setRelation(
         relation: ObjectRelationView,
-        isLast: Boolean = false,
-        isFirst: Boolean = false
+        isLast: Boolean = false
     ) {
         when (relation) {
-            is ObjectRelationView.Object -> setObjectRelation(relation, isLast)
-            is ObjectRelationView.Tags -> setTagRelation(relation, isLast)
-            is ObjectRelationView.File -> setRelationFile(relation, isLast)
-            is ObjectRelationView.Status -> TODO()
+            is ObjectRelationView.Object -> setObjectRelation(relation)
+            is ObjectRelationView.Tags -> setTagRelation(relation)
+            is ObjectRelationView.File -> setRelationFile(relation)
+            is ObjectRelationView.Status -> setStatusRelation(relation)
             else -> TODO()
         }
         if (!isLast) dot.visible()
     }
 
     //region OBJECTS
-    private fun setObjectRelation(relation: ObjectRelationView.Object, isFirst: Boolean = false) {
+    private fun setObjectRelation(relation: ObjectRelationView.Object) {
         when {
             relation.objects.isEmpty() -> setupSingleTextItem(name = relation.name)
             relation.objects.size > MAX_ITEMS -> setupMultipleObjects(relation)
@@ -139,7 +138,7 @@ class RelationValueListWidget @JvmOverloads constructor(
     //endregion
 
     //region TAGS
-    private fun setTagRelation(relation: ObjectRelationView.Tags, isLast: Boolean = false) {
+    private fun setTagRelation(relation: ObjectRelationView.Tags) {
         when {
             relation.tags.isEmpty() -> setupSingleTextItem(name = relation.name)
             relation.tags.size > MAX_ITEMS -> setupMultipleTags(relation)
@@ -194,8 +193,37 @@ class RelationValueListWidget @JvmOverloads constructor(
     }
     //endregion
 
+    //region STATUS
+    private fun setStatusRelation(relation: ObjectRelationView.Status) {
+        when {
+            relation.status.isEmpty() -> setupSingleTextItem(name = relation.name)
+            else -> {
+                val color = ThemeColor.values().find { it.code == relation.status[0].color }
+                val txt = relation.status[0].status
+                setupStatus(text1, color, txt)
+            }
+        }
+    }
+
+    private fun setupStatus(
+        textView: TextView,
+        color: ThemeColor?,
+        txt: String,
+        marginStart: Int = DEFAULT_MARGIN_START
+    ) {
+        textView.apply {
+            visible()
+            setTextColor(color?.let { resources.dark(it, textColorPrimary) } ?: textColorPrimary)
+            text = txt
+            updateLayoutParams<LayoutParams> {
+                setMarginStart(marginStart)
+            }
+        }
+    }
+    //endregion
+
     //region FILES
-    private fun setRelationFile(relation: ObjectRelationView.File, isFirst: Boolean = false) {
+    private fun setRelationFile(relation: ObjectRelationView.File) {
         when {
             relation.files.isEmpty() -> setupSingleTextItem(name = relation.name)
             relation.files.size > MAX_ITEMS -> setupMultipleFiles(relation)

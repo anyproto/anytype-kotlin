@@ -107,36 +107,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     ids.add(view.id)
                 }
                 is ObjectRelationView.Status -> {
-                    relation.status.forEach { status ->
-                        val color = ThemeColor.values().find { v -> v.code == status.color }
-                        val view = TextView(themeWrapper).apply {
-                            id = generateViewId()
-                            text = status.status
-                            isSingleLine = true
-                            maxLines = 1
-                            ellipsize = TextUtils.TruncateAt.END
-                            if (color != null) {
-                                setTextColor(resources.dark(color, defaultTextColor))
-                            } else {
-                                setTextColor(defaultTextColor)
-                            }
-                            setPadding(itemRightPadding, 0.dp, itemRightPadding, itemBottomPadding)
-                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                        }
-                        addView(view)
-                        ids.add(view.id)
+                    val view = RelationValueListWidget(context).apply {
+                        id = generateViewId()
+                        setRelation(relation)
+                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
-                    if (relation.status.isEmpty()) {
-                        val placeholder =
-                            buildTextItem(
-                                txt = relation.name,
-                                textColor = context.getColor(R.color.text_tertiary)
-                            ).apply {
-                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                            }
-                        addView(placeholder)
-                        ids.add(placeholder.id)
-                    }
+                    addView(view)
+                    ids.add(view.id)
                 }
                 is ObjectRelationView.Tags -> {
                     val view = RelationValueListWidget(context).apply {

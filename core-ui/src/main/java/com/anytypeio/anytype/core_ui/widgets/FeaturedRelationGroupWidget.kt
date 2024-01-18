@@ -8,9 +8,7 @@ import android.view.View
 import android.widget.TextView
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_models.ext.addIds
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.dark
@@ -18,7 +16,7 @@ import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
 import com.anytypeio.anytype.core_utils.ext.dimen
-import com.anytypeio.anytype.core_utils.ext.px
+import com.anytypeio.anytype.core_utils.ext.dp
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -38,8 +36,11 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
 
     private val style = R.style.FeaturedRelationTextStyle
     private val themeWrapper = ContextThemeWrapper(context, style)
-    private val dividerSize: Int = context.dimen(R.dimen.dp_4).toInt()
     private val defaultTextColor = resources.getColor(R.color.text_secondary, null)
+    private val itemRightPadding = resources.getDimensionPixelOffset(R.dimen.dp_8)
+    private val itemBottomPadding = resources.getDimensionPixelOffset(R.dimen.dp_4)
+    private val textColorPrimary = context.getColor(R.color.text_secondary)
+    private val textColorSecondary = context.getColor(R.color.text_tertiary)
 
     private var objectTypeIds = mutableListOf<Int>()
 
@@ -55,8 +56,8 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             setHorizontalStyle(Flow.CHAIN_PACKED)
             setHorizontalBias(0f)
             setHorizontalAlign(Flow.HORIZONTAL_ALIGN_START)
-            setHorizontalGap(15)
-            setVerticalGap(15)
+//            setHorizontalGap(15)
+//            setVerticalGap(15)
         }
 
         addView(flow)
@@ -66,16 +67,11 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         item.relations.forEachIndexed { index, relation ->
             when (relation) {
                 is ObjectRelationView.Default -> {
-                    val view = TextView(themeWrapper).apply {
-                        id = generateViewId()
-                        text = relation.value ?: getPlaceholderHint(relation)
-                        isSingleLine = true
-                        maxLines = 1
-                        ellipsize = TextUtils.TruncateAt.END
+                    val view = buildTextItem(
+                        txt = relation.value ?: relation.name,
+                        textColor = getTextColorByValue(relation.value)
+                    ).apply {
                         setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                    }
-                    if (relation.value == null) {
-                        view.alpha = 0.5f
                     }
                     addView(view)
                     ids.add(view.id)
@@ -93,61 +89,22 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     ids.add(view.id)
                 }
                 is ObjectRelationView.File -> {
-                    relation.files.forEach { file ->
-                        val view = TextView(themeWrapper).apply {
-                            id = generateViewId()
-                            text = file.name
-                            isSingleLine = true
-                            maxLines = 1
-                            ellipsize = TextUtils.TruncateAt.END
-                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                        }
-                        addView(view)
-                        ids.add(view.id)
+                    val view = RelationValueListWidget(context).apply {
+                        id = generateViewId()
+                        setRelation(relation)
+                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
-                    if (relation.files.isEmpty()) {
-                        val placeholder =
-                            buildPlaceholderView(resources.getString(R.string.select_files)).apply {
-                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                            }
-                        addView(placeholder)
-                        ids.add(placeholder.id)
-                    }
+                    addView(view)
+                    ids.add(view.id)
                 }
                 is ObjectRelationView.Object -> {
-                    relation.objects.forEach { obj ->
-                        if (obj is ObjectView.Default) {
-                            val view = TextView(themeWrapper).apply {
-                                id = generateViewId()
-                                text = obj.name
-                                isSingleLine = true
-                                maxLines = 1
-                                ellipsize = TextUtils.TruncateAt.END
-                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                            }
-                            addView(view)
-                            ids.add(view.id)
-                        } else {
-                            val view = TextView(themeWrapper).apply {
-                                id = generateViewId()
-                                setText(R.string.deleted)
-                                isSingleLine = true
-                                maxLines = 1
-                                ellipsize = TextUtils.TruncateAt.END
-                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                            }
-                            addView(view)
-                            ids.add(view.id)
-                        }
+                    val view = RelationValueListWidget(context).apply {
+                        id = generateViewId()
+                        setRelation(relation)
+                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
-                    if (relation.objects.isEmpty()) {
-                        val placeholder =
-                            buildPlaceholderView(resources.getString(R.string.select_objects)).apply {
-                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                            }
-                        addView(placeholder)
-                        ids.add(placeholder.id)
-                    }
+                    addView(view)
+                    ids.add(view.id)
                 }
                 is ObjectRelationView.Status -> {
                     relation.status.forEach { status ->
@@ -163,6 +120,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                             } else {
                                 setTextColor(defaultTextColor)
                             }
+                            setPadding(itemRightPadding, 0.dp, itemRightPadding, itemBottomPadding)
                             setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                         }
                         addView(view)
@@ -170,7 +128,10 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     }
                     if (relation.status.isEmpty()) {
                         val placeholder =
-                            buildPlaceholderView(resources.getString(R.string.select_status)).apply {
+                            buildTextItem(
+                                txt = relation.name,
+                                textColor = context.getColor(R.color.text_tertiary)
+                            ).apply {
                                 setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                             }
                         addView(placeholder)
@@ -178,42 +139,13 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                     }
                 }
                 is ObjectRelationView.Tags -> {
-                    relation.tags.forEach { tag ->
-                        val color = ThemeColor.values().find { v -> v.code == tag.color }
-                        val defaultBackground = resources.getColor(R.color.shape_primary, null)
-                        val view = TextView(themeWrapper).apply {
-                            id = generateViewId()
-                            text = tag.tag
-                            isSingleLine = true
-                            maxLines = 1
-                            ellipsize = TextUtils.TruncateAt.END
-                            if (color != null) {
-                                setTextColor(resources.dark(color, defaultTextColor))
-                                setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
-                                background.setDrawableColor(
-                                    resources.light(
-                                        color,
-                                        defaultBackground
-                                    )
-                                )
-                            } else {
-                                setTextColor(defaultTextColor)
-                                setBackgroundResource(R.drawable.rect_dv_cell_tag_item)
-                                background.setDrawableColor(defaultBackground)
-                            }
-                            setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                        }
-                        addView(view)
-                        ids.add(view.id)
+                    val view = RelationValueListWidget(context).apply {
+                        id = generateViewId()
+                        setRelation(relation)
+                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
                     }
-                    if (relation.tags.isEmpty()) {
-                        val placeholder =
-                            buildPlaceholderView(resources.getString(R.string.select_tags)).apply {
-                                setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                            }
-                        addView(placeholder)
-                        ids.add(placeholder.id)
-                    }
+                    addView(view)
+                    ids.add(view.id)
                 }
                 is ObjectRelationView.ObjectType.Base -> {
                     val view = inflateObjectTypeTextView(
@@ -266,6 +198,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
+                        setPadding(itemRightPadding, 0.dp, itemRightPadding, itemBottomPadding)
                         setTextColor(context.getColor(R.color.palette_dark_red))
                         objectTypeIds.add(id)
                     }
@@ -319,6 +252,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
+                        setPadding(itemRightPadding, 0.dp, itemRightPadding, itemBottomPadding)
                     }
                     view.setOnClickListener {
                         click(ListenerType.Relation.Featured(relation))
@@ -338,6 +272,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                         isSingleLine = true
                         maxLines = 1
                         ellipsize = TextUtils.TruncateAt.END
+                        setPadding(itemRightPadding, 0.dp, itemRightPadding, itemBottomPadding)
                     }
                     view.setOnClickListener {
                         click(ListenerType.Relation.Featured(relation))
@@ -347,15 +282,15 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
                 }
             }
 
-            if (index != item.relations.lastIndex) {
-                val div = View(context).apply {
-                    id = View.generateViewId()
-                    layoutParams = LayoutParams(dividerSize, dividerSize)
-                    setBackgroundResource(R.drawable.divider_featured_relations)
-                }
-                addView(div)
-                ids.add(div.id)
-            }
+//            if (index != item.relations.lastIndex) {
+//                val div = View(context).apply {
+//                    id = View.generateViewId()
+//                    layoutParams = LayoutParams(dividerSize, dividerSize)
+//                    setBackgroundResource(R.drawable.divider_featured_relations)
+//                }
+//                addView(div)
+//                ids.add(div.id)
+//            }
         }
 
         flow.referencedIds = ids.toIntArray()
@@ -370,7 +305,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             isSingleLine = true
             maxLines = 1
             ellipsize = TextUtils.TruncateAt.END
-            setPadding(if (isFirst) 0.px else 4.px, 2.px, 4.px, 2.px)
+            setPadding(itemRightPadding, 0.dp, itemRightPadding, itemBottomPadding)
             objectTypeIds.add(id)
         }
         if (name.isEmpty()) {
@@ -385,7 +320,7 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
         click: (ListenerType.Relation) -> Unit,
         ids: MutableList<Int>
     ) {
-        val placeholder = buildPlaceholderView(resources.getString(R.string.query)).apply {
+        val placeholder = buildTextItem(resources.getString(R.string.query)).apply {
                 setOnClickListener {
                     click(
                         ListenerType.Relation.SetQuery(queries = emptyList())
@@ -487,26 +422,17 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             ids.add(view.id)
     }
 
-    private fun getPlaceholderHint(relation: ObjectRelationView.Default): String {
-        return when (relation.format) {
-            Relation.Format.SHORT_TEXT -> resources.getString(R.string.enter_text)
-            Relation.Format.LONG_TEXT -> resources.getString(R.string.enter_text)
-            Relation.Format.NUMBER -> resources.getString(R.string.enter_number)
-            Relation.Format.DATE -> resources.getString(R.string.enter_date)
-            Relation.Format.URL -> resources.getString(R.string.enter_url)
-            Relation.Format.EMAIL -> resources.getString(R.string.enter_email)
-            Relation.Format.PHONE -> resources.getString(R.string.enter_phone)
-            else -> resources.getString(R.string.enter_value)
-        }
-    }
-
-    private fun buildPlaceholderView(txt: String): TextView = TextView(themeWrapper).apply {
+    private fun buildTextItem(
+        txt: String,
+        textColor: Int = context.getColor(R.color.text_secondary)
+    ): TextView = TextView(themeWrapper).apply {
         id = generateViewId()
         text = txt
         isSingleLine = true
-        alpha = 0.5f
+        setTextColor(textColor)
         maxLines = 1
         ellipsize = TextUtils.TruncateAt.END
+        setPadding(itemRightPadding, 0.dp, itemRightPadding, itemBottomPadding)
     }
 
     fun clear() {
@@ -519,6 +445,14 @@ class FeaturedRelationGroupWidget : ConstraintLayout {
             findViewById(objectTypeIds.first())
         } else {
             null
+        }
+    }
+
+    private fun getTextColorByValue(value: String?): Int {
+        return if (value.isNullOrEmpty()) {
+            textColorSecondary
+        } else {
+            textColorPrimary
         }
     }
 }

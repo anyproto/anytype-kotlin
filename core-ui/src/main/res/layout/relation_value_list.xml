@@ -32,7 +32,7 @@
         android:layout_marginStart="@dimen/dp_4"
         android:layout_gravity="center_vertical"
         android:maxLines="1"
-        android:maxLength="60"
+        android:maxLength="30"
         android:ellipsize="middle"
         android:visibility="gone"
         tools:text="Favorites"

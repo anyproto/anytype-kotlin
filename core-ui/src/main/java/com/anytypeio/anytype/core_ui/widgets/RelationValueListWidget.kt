@@ -58,7 +58,7 @@ class RelationValueListWidget @JvmOverloads constructor(
         when (relation) {
             is ObjectRelationView.Object -> setObjectRelation(relation, isLast)
             is ObjectRelationView.Tags -> setTagRelation(relation, isLast)
-            is ObjectRelationView.File -> TODO()
+            is ObjectRelationView.File -> setRelationFile(relation, isLast)
             is ObjectRelationView.Status -> TODO()
             else -> TODO()
         }
@@ -192,6 +192,60 @@ class RelationValueListWidget @JvmOverloads constructor(
             }
         }
     }
+    //endregion
+
+    //region FILES
+    private fun setRelationFile(relation: ObjectRelationView.File, isFirst: Boolean = false) {
+        when {
+            relation.files.isEmpty() -> setupSingleTextItem(name = relation.name)
+            relation.files.size > MAX_ITEMS -> setupMultipleFiles(relation)
+            else -> setupFiles(relation)
+        }
+    }
+
+    private fun setupMultipleFiles(relation: ObjectRelationView.File) {
+        setupFiles(relation)
+        with(number) {
+            text = "+${relation.files.size - MAX_ITEMS}"
+            visible()
+        }
+    }
+
+    private fun setupFiles(relation: ObjectRelationView.File) {
+        relation.files.take(MAX_ITEMS).forEachIndexed { index, file ->
+            val (textView, iconView, marginStartWithoutIcon) = when (index) {
+                0 -> Triple(text1, icon1, 0)
+                else -> Triple(text2, icon2, defaultItemsMargin)
+            }
+            setupFile(
+                textView = textView.apply { maxEms = 10 },
+                iconView = iconView,
+                txt = "${file.name}.${file.ext}",
+                objIcon = file.icon,
+                marginStartWithIcon = defaultObjectMargin,
+            )
+        }
+    }
+
+    private fun setupFile(
+        textView: TextView,
+        iconView: ObjectIconWidget,
+        txt: String,
+        objIcon: ObjectIcon,
+        marginStartWithIcon: Int
+    ) {
+        iconView.visible()
+        iconView.setIcon(objIcon)
+        textView.apply {
+            visible()
+            text = txt
+            updateLayoutParams<LayoutParams> {
+                marginStart = marginStartWithIcon
+            }
+        }
+    }
+
+
     //endregion
 
     companion object {

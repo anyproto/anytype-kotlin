@@ -140,7 +140,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Basic.Avatar -> setBasicInitials(icon.name)
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
-            is ObjectIcon.Task -> setCheckbox(icon.isChecked)
+            is ObjectIcon.Task -> setTask(icon.isChecked)
             is ObjectIcon.Bookmark -> setBookmark(icon.image)
             is ObjectIcon.None -> removeIcon()
             is ObjectIcon.File -> setFileImage(
@@ -148,6 +148,7 @@ class ObjectIconWidget @JvmOverloads constructor(
                 fileName = icon.fileName
             )
             ObjectIcon.Deleted -> setDeletedIcon()
+            is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
         }
     }
 
@@ -310,11 +311,27 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    fun setCheckbox(isChecked: Boolean?) {
+    fun setTask(isChecked: Boolean?) {
         with(binding) {
             composeView.gone()
             ivCheckbox.visible()
+            ivCheckbox.background = context.drawable(R.drawable.ic_data_view_grid_checkbox_selector)
             ivCheckbox.isActivated = isChecked ?: false
+            initialContainer.invisible()
+            emojiContainer.invisible()
+            ivBookmark.gone()
+            ivBookmark.setImageDrawable(null)
+            ivImage.invisible()
+        }
+    }
+
+    private fun setCheckbox(isChecked: Boolean?) {
+        with(binding) {
+            composeView.gone()
+            ivCheckbox.background = context.drawable(R.drawable.ic_relation_checkbox_selector)
+            ivCheckbox.scaleType = ImageView.ScaleType.CENTER_CROP
+            ivCheckbox.visible()
+            ivCheckbox.isSelected = isChecked ?: false
             initialContainer.invisible()
             emojiContainer.invisible()
             ivBookmark.gone()

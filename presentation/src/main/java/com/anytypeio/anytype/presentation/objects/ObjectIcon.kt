@@ -27,6 +27,7 @@ sealed class ObjectIcon {
     data class File(val mime: String?, val fileName: String?) : ObjectIcon()
 
     object Deleted : ObjectIcon()
+    data class Checkbox(val isChecked: Boolean) : ObjectIcon()
 
     companion object {
         fun from(

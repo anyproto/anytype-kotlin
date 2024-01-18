@@ -26,6 +26,8 @@ sealed class ObjectIcon {
 
     data class File(val mime: String?, val fileName: String?) : ObjectIcon()
 
+    object Deleted : ObjectIcon()
+
     companion object {
         fun from(
             obj: ObjectWrapper.Basic,

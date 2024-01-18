@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectIconBinding
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
@@ -146,6 +147,7 @@ class ObjectIconWidget @JvmOverloads constructor(
                 mime = icon.mime,
                 fileName = icon.fileName
             )
+            ObjectIcon.Deleted -> setDeletedIcon()
         }
     }
 
@@ -345,6 +347,20 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.setImageDrawable(null)
             ivCheckbox.invisible()
             binding.composeView.gone()
+        }
+    }
+
+    private fun setDeletedIcon() {
+        val icon = context.drawable(R.drawable.ic_relation_deleted)
+        with(binding) {
+            ivImage.visible()
+            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
+            ivImage.setImageDrawable(icon)
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            ivBookmark.invisible()
+            emojiContainer.invisible()
+            composeView.gone()
         }
     }
 }

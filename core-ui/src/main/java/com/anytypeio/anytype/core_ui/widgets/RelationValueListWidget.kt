@@ -51,7 +51,7 @@ class RelationValueListWidget @JvmOverloads constructor(
         number = findViewById(R.id.number)
         dot = findViewById(R.id.dot)
         maxTextWidth =
-            resources.displayMetrics.widthPixels / 2 - resources.getDimensionPixelSize(R.dimen.dp_60)
+            resources.displayMetrics.widthPixels / 2 - resources.getDimensionPixelSize(R.dimen.dp_72)
     }
 
     fun setRelation(

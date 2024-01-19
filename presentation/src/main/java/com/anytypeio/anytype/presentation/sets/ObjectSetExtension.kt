@@ -119,37 +119,45 @@ private fun ObjectState.DataView.mapFeaturedRelations(
 ): List<ObjectRelationView> = keys.mapNotNull { key ->
     when (key) {
         Relations.DESCRIPTION -> null
-        Relations.TYPE -> details.details[ctx]?.type?.firstOrNull()?.let { typeId ->
-            val objectType = details.details[typeId]?.map?.mapToObjectWrapperType()
-            if (objectType?.isDeleted == true) {
+        Relations.TYPE -> {
+
+            val type = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty()).type.firstOrNull()
+            val typeMap = type?.let { details.details[it]?.map }
+
+            val isTypeMapValid = !typeMap.isNullOrEmpty()
+            val wrapper = if (isTypeMapValid) typeMap?.mapToObjectWrapperType() else null
+
+            val isDeleted = wrapper == null || wrapper.isDeleted == true
+
+            if (wrapper != null && !isDeleted) {
+                when (this) {
+                    is ObjectState.DataView.Collection -> ObjectRelationView.ObjectType.Collection(
+                        id = wrapper.id,
+                        key = key,
+                        name = wrapper.name.orEmpty(),
+                        featured = true,
+                        readOnly = false,
+                        type = wrapper.id,
+                        system = key.isSystemKey()
+                    )
+                    is ObjectState.DataView.Set -> ObjectRelationView.ObjectType.Set(
+                        id = wrapper.id,
+                        key = key,
+                        name = wrapper.name.orEmpty(),
+                        featured = true,
+                        readOnly = false,
+                        type = wrapper.id,
+                        system = key.isSystemKey()
+                    )
+                }
+            } else {
                 ObjectRelationView.ObjectType.Deleted(
-                    id = typeId,
+                    id = type.orEmpty(),
                     key = key,
                     featured = true,
                     readOnly = false,
                     system = key.isSystemKey()
                 )
-            } else {
-                when (this) {
-                    is ObjectState.DataView.Collection -> ObjectRelationView.ObjectType.Collection(
-                        id = typeId,
-                        key = key,
-                        name = objectType?.name.orEmpty(),
-                        featured = true,
-                        readOnly = false,
-                        type = typeId,
-                        system = key.isSystemKey()
-                    )
-                    is ObjectState.DataView.Set -> ObjectRelationView.ObjectType.Set(
-                        id = typeId,
-                        key = key,
-                        name = objectType?.name.orEmpty(),
-                        featured = true,
-                        readOnly = false,
-                        type = typeId,
-                        system = key.isSystemKey()
-                    )
-                }
             }
         }
         Relations.SET_OF -> {

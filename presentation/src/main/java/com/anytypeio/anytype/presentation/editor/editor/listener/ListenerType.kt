@@ -67,7 +67,7 @@ sealed interface ListenerType {
         data class Placeholder(val target: Id) : Relation()
         data class Related(val value: BlockView.Relation) : Relation()
         data class Featured(val relation: ObjectRelationView) : Relation()
-        data class SetQuery(val queries: List<ObjectView>) : Relation()
+        data class SetQuery(val queries: List<ObjectView> = emptyList()) : Relation()
         object ChangeQueryByRelation : Relation()
         object TurnIntoCollection : Relation()
         data class ObjectType(val typeId: Id, val typeName: String): Relation()

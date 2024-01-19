@@ -36,6 +36,7 @@ class RelationValueListWidget @JvmOverloads constructor(
     private val icon2: ObjectIconWidget
     private val number: TextView
     private val dot: View
+    private var maxTextWidth: Int = 0
 
     init {
         LayoutInflater.from(context).inflate(
@@ -49,6 +50,8 @@ class RelationValueListWidget @JvmOverloads constructor(
         icon2 = findViewById(R.id.icon2)
         number = findViewById(R.id.number)
         dot = findViewById(R.id.dot)
+        maxTextWidth =
+            resources.displayMetrics.widthPixels / 2 - resources.getDimensionPixelSize(R.dimen.dp_60)
     }
 
     fun setRelation(
@@ -104,15 +107,19 @@ class RelationValueListWidget @JvmOverloads constructor(
             }
             when (obj) {
                 is ObjectView.Default -> setupObject(
-                    textView = textView,
+                    textView = textView.apply { maxWidth = maxTextWidth },
                     iconView = iconView,
                     txt = obj.name,
                     objIcon = obj.icon,
                     marginStartWithIcon = defaultObjectMargin,
                     marginStartWithoutIcon = marginStartWithoutIcon
                 )
+
                 is ObjectView.Deleted -> setupObject(
-                    textView = textView.apply { setTextColor(textColorSecondary) },
+                    textView = textView.apply {
+                        setTextColor(textColorSecondary)
+                        maxWidth = maxTextWidth
+                    },
                     iconView = iconView,
                     txt = resources.getString(R.string.deleted),
                     objIcon = ObjectIcon.Deleted,
@@ -136,6 +143,7 @@ class RelationValueListWidget @JvmOverloads constructor(
                 iconView.gone()
                 marginStartWithoutIcon
             }
+
             else -> {
                 iconView.visible()
                 iconView.setIcon(objIcon)
@@ -184,7 +192,12 @@ class RelationValueListWidget @JvmOverloads constructor(
         relation.tags.take(MAX_ITEMS).forEachIndexed { index, tag ->
             val color = ThemeColor.values().find { it.code == tag.color }
             if (index == 0) setupTag(text1, color, tag.tag)
-            else setupTag(text2, color, tag.tag, resources.getDimensionPixelSize(R.dimen.dp_6))
+            else setupTag(
+                textView = text2.apply { maxWidth = maxTextWidth },
+                color = color,
+                txt = tag.tag,
+                marginStart = resources.getDimensionPixelSize(R.dimen.dp_6)
+            )
         }
     }
 
@@ -269,7 +282,7 @@ class RelationValueListWidget @JvmOverloads constructor(
                 else -> Triple(text2, icon2, defaultItemsMargin)
             }
             setupFile(
-                textView = textView.apply { maxEms = 10 },
+                textView = textView.apply { maxWidth = maxTextWidth },
                 iconView = iconView,
                 txt = "${file.name}.${file.ext}",
                 objIcon = file.icon,
@@ -295,8 +308,6 @@ class RelationValueListWidget @JvmOverloads constructor(
             }
         }
     }
-
-
     //endregion
 
     //region OBJECT TYPE
@@ -316,6 +327,7 @@ class RelationValueListWidget @JvmOverloads constructor(
                     }
                 }
             }
+
             is ObjectRelationView.ObjectType.Deleted -> {
                 text1.apply {
                     visible()
@@ -343,6 +355,7 @@ class RelationValueListWidget @JvmOverloads constructor(
                     clickListener?.invoke(ListenerType.Relation.SetQuery())
                 }
             }
+
             else -> {
                 val sourceName = objectSource.sources.first().name
                 if (objectSource.isSourceByRelation) {
@@ -388,6 +401,7 @@ class RelationValueListWidget @JvmOverloads constructor(
                     textColor = textColorPrimary
                 )
             }
+
             is ObjectRelationView.Links.To -> {
                 val count = context.resources.getQuantityString(
                     R.plurals.links_to_count,

@@ -26,6 +26,7 @@ class FeaturedRelationGroupWidget @JvmOverloads constructor(
 
         val flow = Flow(context).apply {
             id = View.generateViewId()
+            setOrientation(Flow.HORIZONTAL)
             setWrapMode(Flow.WRAP_CHAIN)
             setHorizontalStyle(Flow.CHAIN_PACKED)
             setHorizontalBias(0f)

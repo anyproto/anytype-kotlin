@@ -153,55 +153,31 @@ private fun ObjectState.DataView.mapFeaturedRelations(
             }
         }
         Relations.SET_OF -> {
-            val objectSet = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty())
-            val sources = mutableListOf<ObjectView>()
-            val source = objectSet.setOf.firstOrNull()
-            if (source != null) {
-                val wrapper = ObjectWrapper.Basic(details.details[source]?.map.orEmpty())
-                if (!wrapper.isEmpty()) {
-                    if (wrapper.isDeleted == true) {
-                        ObjectRelationView.Source.Deleted(
-                            id = details.details[ctx]?.id.orEmpty(),
-                            key = key,
-                            name = Relations.RELATION_NAME_EMPTY,
-                            featured = true,
-                            readOnly = false,
-                            system = key.isSystemKey()
-                        )
-                    } else {
-                        sources.add(wrapper.toObjectView(urlBuilder = urlBuilder))
-                        ObjectRelationView.Source.Base(
-                            id = details.details[ctx]?.id.orEmpty(),
-                            key = key,
-                            name = Relations.RELATION_NAME_EMPTY,
-                            featured = true,
-                            readOnly = wrapper.relationReadonlyValue ?: false,
-                            sources = sources,
-                            system = key.isSystemKey()
-                        )
-                    }
-                } else {
-                    ObjectRelationView.Source.Base(
-                        id = details.details[ctx]?.id.orEmpty(),
-                        key = key,
-                        name = Relations.RELATION_NAME_EMPTY,
-                        featured = true,
-                        readOnly = wrapper.relationReadonlyValue ?: false,
-                        sources = sources,
-                        system = key.isSystemKey()
-                    )
-                }
+
+            val source = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty()).setOf.firstOrNull()
+            val sourceMap = source?.let { details.details[it]?.map }
+
+            val isSourceMapValid = !sourceMap.isNullOrEmpty()
+            val wrapper = if (isSourceMapValid) ObjectWrapper.Basic(sourceMap!!) else null
+
+            val isDeleted = wrapper?.isDeleted == true
+            val isReadOnly = wrapper?.relationReadonlyValue ?: false
+
+            val sources = if (!isDeleted && isSourceMapValid) {
+                listOf(wrapper!!.toObjectViewDefault(urlBuilder = urlBuilder))
             } else {
-                ObjectRelationView.Source.Base(
-                    id = details.details[ctx]?.id.orEmpty(),
-                    key = key,
-                    name = Relations.RELATION_NAME_EMPTY,
-                    featured = true,
-                    readOnly = false,
-                    sources = sources,
-                    system = key.isSystemKey()
-                )
+                emptyList()
             }
+
+            ObjectRelationView.Source(
+                id = details.details[ctx]?.id.orEmpty(),
+                key = key,
+                name = Relations.RELATION_NAME_EMPTY,
+                featured = true,
+                readOnly = isReadOnly,
+                sources = sources,
+                system = key.isSystemKey()
+            )
         }
         Relations.BACKLINKS, Relations.LINKS -> {
             details.linksFeaturedRelation(
@@ -299,7 +275,11 @@ fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
 
 fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder): ObjectView = when (isDeleted) {
     true -> ObjectView.Deleted(id)
-    else -> ObjectView.Default(
+    else -> toObjectViewDefault(urlBuilder)
+}
+
+fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder): ObjectView.Default {
+    return ObjectView.Default(
         id = id,
         name = getProperName(),
         icon = ObjectIcon.from(

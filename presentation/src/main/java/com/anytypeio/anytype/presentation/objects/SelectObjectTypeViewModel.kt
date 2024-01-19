@@ -129,6 +129,7 @@ class SelectObjectTypeViewModel(
                     val (groups, objects) = allUserTypes.partition { type ->
                         type.uniqueKey == ObjectTypeUniqueKeys.SET || type.uniqueKey == ObjectTypeUniqueKeys.COLLECTION
                     }
+                    val notPinnedGroups = groups.filter { !pinnedObjectTypesIds.contains(it.id) }
                     val notPinnedObjects = objects.filter { !pinnedObjectTypesIds.contains(it.id) }
                     buildList {
                         if (pinnedTypes.isNotEmpty()) {
@@ -150,12 +151,12 @@ class SelectObjectTypeViewModel(
                                 }
                             )
                         }
-                        if (groups.isNotEmpty()) {
+                        if (notPinnedGroups.isNotEmpty()) {
                             add(
                                 SelectTypeView.Section.Groups
                             )
                             addAll(
-                                groups.mapIndexed { index, type ->
+                                notPinnedGroups.mapIndexed { index, type ->
                                     SelectTypeView.Type(
                                         id = type.id,
                                         typeKey = type.uniqueKey,
@@ -163,8 +164,7 @@ class SelectObjectTypeViewModel(
                                         icon = type.iconEmoji.orEmpty(),
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
-                                        isPinnable = false,
-                                        isPinned = false,
+                                        isPinnable = true,
                                         isDefault = type.uniqueKey == default.key
                                     )
                                 }

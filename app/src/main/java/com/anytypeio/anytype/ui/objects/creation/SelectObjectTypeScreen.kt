@@ -297,7 +297,7 @@ private fun FlowRowContent(
                                             )
                                         }
                                     }
-                                    if (view.isFirstInSection) {
+                                    if (view.isFirstInSection && !view.isLastInSection) {
                                         DropdownMenuItem(
                                             onClick = {
                                                 isMenuExpanded.value = false
@@ -311,7 +311,7 @@ private fun FlowRowContent(
                                             )
                                         }
                                     }
-                                    if (view.isLastInSection) {
+                                    if (view.isLastInSection && !view.isFirstInSection) {
                                         DropdownMenuItem(
                                             onClick = {
                                                 isMenuExpanded.value = false

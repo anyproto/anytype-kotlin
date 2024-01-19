@@ -123,6 +123,7 @@ class FeaturedRelationGroupWidget @JvmOverloads constructor(
                     }
                     addView(view)
                     ids.add(view.id)
+                    objectTypeIds.add(view.id)
                 }
                 is ObjectRelationView.ObjectType.Deleted -> {
                     val view = RelationValueListWidget(context).apply {
@@ -137,6 +138,7 @@ class FeaturedRelationGroupWidget @JvmOverloads constructor(
                     }
                     addView(view)
                     ids.add(view.id)
+                    objectTypeIds.add(view.id)
                 }
                 is ObjectRelationView.ObjectType.Collection -> {
                     val view = RelationValueListWidget(context).apply {

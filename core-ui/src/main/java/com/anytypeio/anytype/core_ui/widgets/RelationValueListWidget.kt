@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.databinding.RelationValueListBinding
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -30,26 +31,20 @@ class RelationValueListWidget @JvmOverloads constructor(
     private val defaultObjectMargin = resources.getDimensionPixelSize(R.dimen.dp_4)
     private val defaultBackground = resources.getColor(R.color.shape_primary, null)
 
-    private val text1: TextView
-    private val text2: TextView
-    private val icon1: ObjectIconWidget
-    private val icon2: ObjectIconWidget
-    private val number: TextView
-    private val dot: View
+    private val MAX_ITEMS = 2
+    private val DEFAULT_MARGIN_START = 0
+
+    private val binding: RelationValueListBinding =
+        RelationValueListBinding.inflate(LayoutInflater.from(context), this, true)
+    private val text1: TextView = binding.text1
+    private val text2: TextView = binding.text2
+    private val icon1: ObjectIconWidget = binding.icon1
+    private val icon2: ObjectIconWidget = binding.icon2
+    private val number: TextView = binding.number
+    private val dot: View = binding.dot
     private var maxTextWidth: Int = 0
 
     init {
-        LayoutInflater.from(context).inflate(
-            R.layout.relation_value_list,
-            this,
-            true
-        ) as LinearLayout
-        text1 = findViewById(R.id.text1)
-        text2 = findViewById(R.id.text2)
-        icon1 = findViewById(R.id.icon1)
-        icon2 = findViewById(R.id.icon2)
-        number = findViewById(R.id.number)
-        dot = findViewById(R.id.dot)
         maxTextWidth =
             resources.displayMetrics.widthPixels / 2 - resources.getDimensionPixelSize(R.dimen.dp_72)
     }
@@ -416,9 +411,4 @@ class RelationValueListWidget @JvmOverloads constructor(
         }
     }
     //endregion
-
-    companion object {
-        private const val MAX_ITEMS = 2
-        private const val DEFAULT_MARGIN_START = 0
-    }
 }

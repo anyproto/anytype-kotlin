@@ -162,7 +162,6 @@ class FeaturedRelationGroupWidget @JvmOverloads constructor(
                                 }
                             )
                             popup.setOnDismissListener { background = null }
-                            //background = context.drawable(R.drawable.bg_featured_relation)
                             popup.show()
                         }
                     }

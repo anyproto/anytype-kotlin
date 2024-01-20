@@ -475,6 +475,12 @@ class SelectObjectTypeViewModel(
     private fun proceedWithCreatingNote(text: String) {
         viewModelScope.launch {
             val startTime = System.currentTimeMillis()
+            val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()?.type?.let {
+                if (it.key != ObjectTypeUniqueKeys.COLLECTION && it.key != ObjectTypeUniqueKeys.SET)
+                    it
+                else
+                    null
+            }
             createPrefilledNote.async(
                 CreatePrefilledNote.Params(
                     text = text,

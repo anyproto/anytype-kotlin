@@ -113,28 +113,6 @@ sealed class ObjectRelationView : DefaultObjectDiffIdentifier {
             val type: Id
         ) : ObjectType()
 
-        data class Set(
-            override val id: Id,
-            override val key: Key,
-            override val name: String,
-            override val value: String? = null,
-            override val featured: Boolean = false,
-            override val system: Boolean,
-            override val readOnly: Boolean = false,
-            val type: Id
-        ) : ObjectType()
-
-        data class Collection(
-            override val id: Id,
-            override val key: Key,
-            override val name: String,
-            override val value: String? = null,
-            override val featured: Boolean = false,
-            override val system: Boolean,
-            override val readOnly: Boolean = false,
-            val type: Id
-        ) : ObjectType()
-
         data class Deleted(
             override val id: Id,
             override val key: Key,

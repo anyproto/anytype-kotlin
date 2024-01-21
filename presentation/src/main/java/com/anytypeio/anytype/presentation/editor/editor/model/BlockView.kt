@@ -1296,8 +1296,6 @@ sealed class BlockView : ViewType {
                 is ObjectRelationView.ObjectType.Base -> HOLDER_OBJECT_TYPE
                 is ObjectRelationView.Source -> HOLDER_RELATION_SOURCE
                 is ObjectRelationView.ObjectType.Deleted -> HOLDER_OBJECT_TYPE_DELETED
-                is ObjectRelationView.ObjectType.Collection -> HOLDER_OBJECT_TYPE_COLLECTION
-                is ObjectRelationView.ObjectType.Set -> HOLDER_OBJECT_TYPE_SET
                 is ObjectRelationView.Links -> HOLDER_RELATION_OBJECT
             }
         }

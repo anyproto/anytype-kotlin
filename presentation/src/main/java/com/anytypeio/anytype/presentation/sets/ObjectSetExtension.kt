@@ -130,26 +130,15 @@ private fun ObjectState.DataView.mapFeaturedRelations(
             val isDeleted = wrapper == null || wrapper.isDeleted == true
 
             if (wrapper != null && !isDeleted) {
-                when (this) {
-                    is ObjectState.DataView.Collection -> ObjectRelationView.ObjectType.Collection(
-                        id = wrapper.id,
-                        key = key,
-                        name = wrapper.name.orEmpty(),
-                        featured = true,
-                        readOnly = false,
-                        type = wrapper.id,
-                        system = key.isSystemKey()
-                    )
-                    is ObjectState.DataView.Set -> ObjectRelationView.ObjectType.Set(
-                        id = wrapper.id,
-                        key = key,
-                        name = wrapper.name.orEmpty(),
-                        featured = true,
-                        readOnly = false,
-                        type = wrapper.id,
-                        system = key.isSystemKey()
-                    )
-                }
+                ObjectRelationView.ObjectType.Base(
+                    id = wrapper.id,
+                    key = key,
+                    name = wrapper.name.orEmpty(),
+                    featured = true,
+                    readOnly = false,
+                    type = wrapper.id,
+                    system = key.isSystemKey()
+                )
             } else {
                 ObjectRelationView.ObjectType.Deleted(
                     id = type.orEmpty(),

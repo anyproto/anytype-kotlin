@@ -272,9 +272,9 @@ class RelationValueListWidget @JvmOverloads constructor(
 
     private fun setupFiles(relation: ObjectRelationView.File) {
         relation.files.take(MAX_ITEMS).forEachIndexed { index, file ->
-            val (textView, iconView, marginStartWithoutIcon) = when (index) {
-                0 -> Triple(text1, icon1, 0)
-                else -> Triple(text2, icon2, defaultItemsMargin)
+            val (textView, iconView) = when (index) {
+                0 -> Pair(text1, icon1)
+                else -> Pair(text2, icon2)
             }
             setupFile(
                 textView = textView.apply { maxWidth = maxTextWidth },
@@ -308,9 +308,7 @@ class RelationValueListWidget @JvmOverloads constructor(
     //region OBJECT TYPE
     private fun setObjectTypeRelation(objType: ObjectRelationView.ObjectType) {
         when (objType) {
-            is ObjectRelationView.ObjectType.Base,
-            is ObjectRelationView.ObjectType.Collection,
-            is ObjectRelationView.ObjectType.Set -> {
+            is ObjectRelationView.ObjectType.Base -> {
                 text1.apply {
                     visible()
                     setTextColor(textColorPrimary)
@@ -358,7 +356,8 @@ class RelationValueListWidget @JvmOverloads constructor(
                         name = resources.getString(R.string.set_by_relation, sourceName),
                         textColor = textColorPrimary
                     ) {
-                        clickListener?.invoke(ListenerType.Relation.ChangeQueryByRelation)
+                        val msg = resources.getString(R.string.msg_query_cannot_be_changed)
+                        clickListener?.invoke(ListenerType.Relation.ChangeQueryByRelation(msg))
                     }
                 } else {
                     setupSingleTextItem(

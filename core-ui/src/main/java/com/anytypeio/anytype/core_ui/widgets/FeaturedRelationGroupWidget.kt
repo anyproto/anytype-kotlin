@@ -5,7 +5,6 @@ import android.util.AttributeSet
 import android.view.View
 import androidx.constraintlayout.helper.widget.Flow
 import androidx.constraintlayout.widget.ConstraintLayout
-import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
@@ -22,8 +21,8 @@ class FeaturedRelationGroupWidget @JvmOverloads constructor(
         item: BlockView.FeaturedRelation,
         click: (ListenerType.Relation) -> Unit
     ) {
+        val ids = mutableListOf<Int>()
         clear()
-
         val flow = Flow(context).apply {
             id = View.generateViewId()
             setOrientation(Flow.HORIZONTAL)
@@ -32,156 +31,17 @@ class FeaturedRelationGroupWidget @JvmOverloads constructor(
             setHorizontalBias(0f)
             setHorizontalAlign(Flow.HORIZONTAL_ALIGN_START)
         }
-
         addView(flow)
-
-        val ids = mutableListOf<Int>()
-
         item.relations.forEachIndexed { index, relation ->
-            when (relation) {
-                is ObjectRelationView.Default -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(relation, index == item.relations.lastIndex)
-                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                }
-                is ObjectRelationView.Checkbox -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(relation, index == item.relations.lastIndex)
-                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                }
-                is ObjectRelationView.File -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(relation, index == item.relations.lastIndex)
-                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                }
-                is ObjectRelationView.Object -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(relation, index == item.relations.lastIndex)
-                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                }
-                is ObjectRelationView.Status -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(relation, index == item.relations.lastIndex)
-                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                }
-                is ObjectRelationView.Tags -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(relation, index == item.relations.lastIndex)
-                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                }
-                is ObjectRelationView.Source -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(
-                            relation = relation,
-                            isLast = index == item.relations.lastIndex,
-                            clickListener = click
-                        )
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                }
-                is ObjectRelationView.ObjectType.Base -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(
-                            relation = relation,
-                            isLast = index == item.relations.lastIndex
-                        )
-                        setOnClickListener {
-                            click(
-                                ListenerType.Relation.ObjectType(
-                                    typeId = relation.type,
-                                    typeName = relation.name
-                                )
-                            )
-                        }
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                    objectTypeIds.add(view.id)
-                }
-                is ObjectRelationView.ObjectType.Deleted -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(
-                            relation = relation,
-                            isLast = index == item.relations.lastIndex
-                        )
-                        setOnClickListener {
-                            click(ListenerType.Relation.ObjectTypeDeleted)
-                        }
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                    objectTypeIds.add(view.id)
-                }
-                is ObjectRelationView.ObjectType.Collection -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(relation, index == item.relations.lastIndex)
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                }
-                is ObjectRelationView.ObjectType.Set -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(relation, index == item.relations.lastIndex)
-                        setOnClickListener {
-                            val popup = ObjectSetTypePopupMenu(
-                                context = context,
-                                view = it,
-                                onChangeTypeClicked = {
-                                    click(ListenerType.Relation.SetQuery(queries = emptyList()))
-                                },
-                                onConvertToCollection = {
-                                    click(ListenerType.Relation.TurnIntoCollection)
-                                }
-                            )
-                            popup.setOnDismissListener { background = null }
-                            popup.show()
-                        }
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                }
-                is ObjectRelationView.Links -> {
-                    val view = RelationValueListWidget(context).apply {
-                        id = generateViewId()
-                        setRelation(relation, index == item.relations.lastIndex)
-                        setOnClickListener { click(ListenerType.Relation.Featured(relation)) }
-                    }
-                    addView(view)
-                    ids.add(view.id)
-                }
-            }
+            val view = createRelationValueListWidget(
+                context = context,
+                relation = relation,
+                isLast = index == item.relations.lastIndex,
+                click = click
+            )
+            addView(view)
+            ids.add(view.id)
         }
-
         flow.referencedIds = ids.toIntArray()
     }
 
@@ -195,6 +55,29 @@ class FeaturedRelationGroupWidget @JvmOverloads constructor(
             findViewById(objectTypeIds.first())
         } else {
             null
+        }
+    }
+
+    private fun createRelationValueListWidget(context: Context, relation: ObjectRelationView, isLast: Boolean, click: (ListenerType.Relation) -> Unit): RelationValueListWidget {
+        return RelationValueListWidget(context).apply {
+            id = generateViewId()
+            setRelation(relation, isLast, click)
+            val action = determineClickAction(relation, this.id)
+            setOnClickListener { if (action != null) click(action) }
+        }
+    }
+
+    private fun determineClickAction(relation: ObjectRelationView, viewId: Int): ListenerType.Relation? {
+        return when (relation) {
+            is ObjectRelationView.ObjectType -> {
+                objectTypeIds.add(viewId)
+                ListenerType.Relation.ObjectType(relation, viewId)
+            }
+            is ObjectRelationView.Source -> {
+                objectTypeIds.add(viewId)
+                null
+            }
+            else -> ListenerType.Relation.Featured(relation)
         }
     }
 }

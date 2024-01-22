@@ -87,7 +87,9 @@ fun PreviewScreen() {
         onFocused = {},
         onUnpinTypeClicked = {},
         onPinOnTopClicked = {},
-        onSetDefaultTypeClicked = {}
+        onSetDefaultTypeClicked = {},
+        onMoveLeftClicked = {},
+        onMoveRightClicked = {}
     )
 }
 
@@ -97,6 +99,8 @@ fun SelectObjectTypeScreen(
     onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
     onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
     onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
+    onMoveLeftClicked: (SelectTypeView.Type) -> Unit,
+    onMoveRightClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
     state: SelectTypeViewState
@@ -121,7 +125,9 @@ fun SelectObjectTypeScreen(
             onTypeClicked = onTypeClicked,
             onPinOnTopClicked = onPinOnTopClicked,
             onUnpinTypeClicked = onUnpinTypeClicked,
-            onSetDefaultTypeClicked = onSetDefaultTypeClicked
+            onSetDefaultTypeClicked = onSetDefaultTypeClicked,
+            onMoveLeftClicked = onMoveLeftClicked,
+            onMoveRightClicked = onMoveRightClicked
         )
     }
 }
@@ -133,6 +139,8 @@ private fun ScreenContent(
     onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
     onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
     onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
+    onMoveLeftClicked: (SelectTypeView.Type) -> Unit,
+    onMoveRightClicked: (SelectTypeView.Type) -> Unit,
 ) {
     when (state) {
         is SelectTypeViewState.Content -> {
@@ -141,7 +149,9 @@ private fun ScreenContent(
                 onTypeClicked = onTypeClicked,
                 onPinOnTopClicked = onPinOnTopClicked,
                 onUnpinTypeClicked = onUnpinTypeClicked,
-                onSetDefaultTypeClicked = onSetDefaultTypeClicked
+                onSetDefaultTypeClicked = onSetDefaultTypeClicked,
+                onMoveRightClicked = onMoveRightClicked,
+                onMoveLeftClicked = onMoveLeftClicked
             )
         }
         SelectTypeViewState.Empty -> {
@@ -180,6 +190,8 @@ private fun FlowRowContent(
     onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
     onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
     onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
+    onMoveLeftClicked: (SelectTypeView.Type) -> Unit,
+    onMoveRightClicked: (SelectTypeView.Type) -> Unit,
 ) {
     FlowRow(
         modifier = Modifier
@@ -256,6 +268,62 @@ private fun FlowRowContent(
                                             style = BodyRegular,
                                             color = colorResource(id = R.color.text_primary)
                                         )
+                                    }
+                                }
+                                if (view.isPinned) {
+                                    if (!view.isFirstInSection && !view.isLastInSection) {
+                                        DropdownMenuItem(
+                                            onClick = {
+                                                isMenuExpanded.value = false
+                                                onMoveLeftClicked(view)
+                                            }
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.any_object_creation_menu_move_left),
+                                                style = BodyRegular,
+                                                color = colorResource(id = R.color.text_primary)
+                                            )
+                                        }
+                                        DropdownMenuItem(
+                                            onClick = {
+                                                isMenuExpanded.value = false
+                                                onMoveRightClicked(view)
+                                            }
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.any_object_creation_menu_move_right),
+                                                style = BodyRegular,
+                                                color = colorResource(id = R.color.text_primary)
+                                            )
+                                        }
+                                    }
+                                    if (view.isFirstInSection && !view.isLastInSection) {
+                                        DropdownMenuItem(
+                                            onClick = {
+                                                isMenuExpanded.value = false
+                                                onMoveRightClicked(view)
+                                            }
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.any_object_creation_menu_move_right),
+                                                style = BodyRegular,
+                                                color = colorResource(id = R.color.text_primary)
+                                            )
+                                        }
+                                    }
+                                    if (view.isLastInSection && !view.isFirstInSection) {
+                                        DropdownMenuItem(
+                                            onClick = {
+                                                isMenuExpanded.value = false
+                                                onMoveLeftClicked(view)
+                                            }
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.any_object_creation_menu_move_left),
+                                                style = BodyRegular,
+                                                color = colorResource(id = R.color.text_primary)
+                                            )
+                                        }
                                     }
                                 }
                             }

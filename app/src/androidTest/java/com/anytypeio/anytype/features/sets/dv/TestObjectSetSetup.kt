@@ -56,6 +56,7 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
+import com.anytypeio.anytype.ext.DefaultDateHelper
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -68,6 +69,7 @@ import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubsc
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -169,9 +171,6 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var getNetworkMode: GetNetworkMode
 
-    @Mock
-    lateinit var dateProvider: DateProvider
-
     private lateinit var getTemplates: GetTemplates
     private lateinit var getDefaultObjectType: GetDefaultObjectType
 
@@ -211,6 +210,8 @@ abstract class TestObjectSetSetup {
 
     private val delegator = Delegator.Default<Action>()
 
+    private val dateProvider = DateProviderImpl()
+
     open fun setup() {
         MockitoAnnotations.openMocks(this)
 
@@ -232,10 +233,8 @@ abstract class TestObjectSetSetup {
         )
         createDataViewObject = CreateDataViewObject(
             repo = repo,
-            storeOfRelations = storeOfRelations,
             dispatchers = dispatchers,
-            spaceManager = spaceManager,
-            dateProvider = dateProvider
+            spaceManager = spaceManager
         )
         setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
@@ -295,6 +294,7 @@ abstract class TestObjectSetSetup {
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = appCoroutineDispatchers,
             getNetworkMode = getNetworkMode,
+            dateProvider = dateProvider
         )
     }
 

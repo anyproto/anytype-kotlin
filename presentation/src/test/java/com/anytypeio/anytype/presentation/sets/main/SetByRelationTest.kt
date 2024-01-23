@@ -33,6 +33,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
         closable = MockitoAnnotations.openMocks(this)
         viewModel = givenViewModel()
         mockObjectSet = MockSet(context = root, setOfValue = setOfId, setOfKey = setOfKey)
+        stubNetworkMode()
     }
 
     @After
@@ -66,7 +67,7 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
                 type = TypeKey(setOfKey),
                 filters = mockObjectSet.filters,
                 template = null,
-                dvRelationLinks = mockObjectSet.relationLinks
+                prefilled = emptyMap()
             )
         )
 
@@ -90,7 +91,10 @@ class SetByRelationTest : ObjectSetViewModelTestSetup() {
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
                         template = null,
-                        dvRelationLinks = mockObjectSet.relationLinks
+                        prefilled = mapOf(
+                            mockObjectSet.filters[0].relation to mockObjectSet.filters[0].value,
+                            mockObjectSet.filters[1].relation to mockObjectSet.filters[1].value
+                        )
                     )
                 )
             }

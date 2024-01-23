@@ -49,8 +49,6 @@ class SelectSpaceViewModel(
     private val spaceGradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
     private val saveCurrentSpace: SaveCurrentSpace,
-    private val appActionManager: AppActionManager,
-    private val getDefaultObjectType: GetDefaultObjectType,
     private val analytics: Analytics
 ) : BaseViewModel() {
 
@@ -202,31 +200,13 @@ class SelectSpaceViewModel(
                         Timber.e(it, "Error while saving current space in user settings")
                     },
                     onSuccess = {
-                        resetDefaultObjectTypeForAppActions(
-                            onExit = { commands.emit(Command.SwitchToNewSpace) }
-                        )
+                        commands.emit(Command.SwitchToNewSpace)
                     }
                 )
             } else {
                 commands.emit(Command.Dismiss)
             }
         }
-    }
-
-    private suspend fun resetDefaultObjectTypeForAppActions(onExit: suspend () -> Unit) {
-        getDefaultObjectType.async(Unit).fold(
-            onSuccess = { result ->
-                val type = result.type
-                appActionManager.setup(
-                    AppActionManager.Action.CreateNew(
-                        type = type,
-                        name = result.name ?: "Object"
-                    )
-                )
-                onExit()
-            },
-            onFailure = { onExit() }
-        )
     }
 
     fun onCreateSpaceClicked() {
@@ -257,8 +237,6 @@ class SelectSpaceViewModel(
         private val spaceGradientProvider: SpaceGradientProvider,
         private val urlBuilder: UrlBuilder,
         private val saveCurrentSpace: SaveCurrentSpace,
-        private val appActionManager: AppActionManager,
-        private val getDefaultObjectType: GetDefaultObjectType,
         private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -270,8 +248,6 @@ class SelectSpaceViewModel(
             spaceGradientProvider = spaceGradientProvider,
             urlBuilder = urlBuilder,
             saveCurrentSpace = saveCurrentSpace,
-            appActionManager = appActionManager,
-            getDefaultObjectType = getDefaultObjectType,
             analytics = analytics
         ) as T
     }

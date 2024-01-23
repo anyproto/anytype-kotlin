@@ -46,6 +46,11 @@ import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.relations.view
+import com.anytypeio.anytype.core_models.PermittedConditions
+import com.anytypeio.anytype.core_models.ext.DAYS_IN_MONTH
+import com.anytypeio.anytype.core_models.ext.DAYS_IN_WEEK
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.ext.SECONDS_IN_DAY
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -615,7 +620,7 @@ suspend fun DVViewer.prefillNewObjectDetails(
     buildMap {
         filters.forEach { filter ->
             val relationObject = storeOfRelations.getByKey(filter.relation) ?: return@forEach
-            if (!relationObject.isReadonlyValue && permittedConditions.contains(
+            if (!relationObject.isReadonlyValue && PermittedConditions.contains(
                     filter.condition
                 )
             ) {
@@ -692,16 +697,4 @@ fun DVFilterQuickOption.getTimestampForQuickOption(value: Long?, dateProvider: D
         DVFilterQuickOption.EXACT_DATE -> value
     }
 }
-
-const val SECONDS_IN_DAY = 86400
-const val DAYS_IN_MONTH = 30
-const val DAYS_IN_WEEK = 7
-const val EMPTY_STRING_VALUE = ""
-val permittedConditions = listOf(
-    DVFilterCondition.ALL_IN,
-    DVFilterCondition.IN,
-    DVFilterCondition.EQUAL,
-    DVFilterCondition.GREATER_OR_EQUAL,
-    DVFilterCondition.LESS_OR_EQUAL
-)
 

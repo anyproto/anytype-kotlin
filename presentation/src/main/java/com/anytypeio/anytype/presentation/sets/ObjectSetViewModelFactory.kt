@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -78,7 +79,8 @@ class ObjectSetViewModelFactory(
     private val spaceManager: SpaceManager,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getNetworkMode: GetNetworkMode
+    private val getNetworkMode: GetNetworkMode,
+    private val dateProvider: DateProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -120,7 +122,8 @@ class ObjectSetViewModelFactory(
             createTemplate = createTemplate,
             dispatchers = dispatchers,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            dateProvider = dateProvider
         ) as T
     }
 }

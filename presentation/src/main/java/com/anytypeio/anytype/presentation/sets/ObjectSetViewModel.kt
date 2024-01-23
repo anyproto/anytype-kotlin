@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -168,7 +169,8 @@ class ObjectSetViewModel(
     private val createTemplate: CreateTemplate,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getNetworkMode: GetNetworkMode
+    private val getNetworkMode: GetNetworkMode,
+    private val dateProvider: DateProvider
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
@@ -1048,25 +1050,35 @@ class ObjectSetViewModel(
                             } else {
                                 val validTemplateId = templateChosenBy ?: defaultTemplate
                                 val dvRelationLinks = currentState.dataViewContent.relationLinks
+                                val prefilled = viewer.prefillNewObjectDetails(
+                                    storeOfRelations = storeOfRelations,
+                                    dateProvider = dateProvider,
+                                    dataViewRelationLinks = dvRelationLinks
+                                )
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = TypeKey(uniqueKey),
                                         filters = viewer.filters,
                                         template = validTemplateId,
-                                        dvRelationLinks = dvRelationLinks
+                                        prefilled = prefilled
                                     )
                                 )
                             }
                         }
                         ObjectType.Layout.RELATION -> {
                             val validTemplateId = templateChosenBy ?: defaultTemplate
+                            val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
+                                storeOfRelations = storeOfRelations,
+                                dateProvider = dateProvider,
+                                dataViewRelationLinks = currentState.dataViewContent.relationLinks,
+                                objSetByRelation = ObjectWrapper.Relation(sourceDetails.map)
+                            )
                             proceedWithCreatingDataViewObject(
                                 CreateDataViewObject.Params.SetByRelation(
                                     filters = viewer.filters,
                                     template = validTemplateId,
                                     type = TypeKey(objectTypeUniqueKey),
-                                    objSetByRelation = ObjectWrapper.Relation(sourceDetails.map),
-                                    dvRelationLinks = currentState.dataViewContent.relationLinks
+                                    prefilled = prefilled
                                 )
                             )
                         }
@@ -1106,11 +1118,16 @@ class ObjectSetViewModel(
         }
 
         val validTemplateId = templateChosenBy ?: defaultTemplate
+        val prefilled = viewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            dataViewRelationLinks = state.dataViewContent.relationLinks
+        )
         val createObjectParams = CreateDataViewObject.Params.Collection(
             template = validTemplateId,
             type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!,
             filters = viewer.filters,
-            dvRelationLinks = state.dataViewContent.relationLinks
+            prefilled = prefilled
         )
         proceedWithCreatingDataViewObject(createObjectParams) { result ->
             val params = AddObjectToCollection.Params(

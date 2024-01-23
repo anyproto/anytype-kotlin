@@ -1499,10 +1499,37 @@ class ObjectSetViewModel(
                 dispatch(command)
             }
             is ListenerType.Relation.ChangeQueryByRelation -> {
-                toast("Currently, this query can be changed via Desktop only")
+                toast(clicked.msg)
             }
-            is ListenerType.Relation.TurnIntoCollection -> {
-                proceedWithConvertingToCollection()
+            is ListenerType.Relation.ObjectType -> {
+                when (clicked.relation) {
+                    is ObjectRelationView.ObjectType.Base -> {
+                        val state = stateReducer.state.value.dataViewState() ?: return
+                        when (state) {
+                            is ObjectState.DataView.Collection -> {
+                                //do nothing
+                            }
+                            is ObjectState.DataView.Set -> {
+                                val setOfValue = state.getSetOfValue(context)
+                                val command = if (state.isSetByRelation(setOfValue = setOfValue)) {
+                                    ObjectSetCommand.Modal.ShowObjectSetRelationPopupMenu(
+                                        ctx = clicked.relation.id,
+                                        anchor = clicked.viewId
+                                    )
+                                } else {
+                                    ObjectSetCommand.Modal.ShowObjectSetTypePopupMenu(
+                                        ctx = clicked.relation.id,
+                                        anchor = clicked.viewId
+                                    )
+                                }
+                                dispatch(command)
+                            }
+                        }
+                    }
+                    is ObjectRelationView.ObjectType.Deleted -> TODO()
+                    is ObjectRelationView.Source -> TODO()
+                    else -> TODO()
+                }
             }
             is ListenerType.Relation.Featured -> {
                 onRelationClickedListMode(
@@ -1621,7 +1648,7 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun proceedWithConvertingToCollection() {
+    fun proceedWithConvertingToCollection() {
         val startTime = System.currentTimeMillis()
         val params = ConvertObjectToCollection.Params(ctx = context)
         viewModelScope.launch {

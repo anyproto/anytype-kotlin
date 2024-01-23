@@ -27,5 +27,6 @@ data class FileView(
     val id: String,
     val ext: String,
     val mime: String,
-    val name: String
+    val name: String,
+    val icon: ObjectIcon
 )

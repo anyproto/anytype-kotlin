@@ -91,7 +91,11 @@ suspend fun List<ColumnView>.buildGridRow(
                                             id = id,
                                             name = wrapper.name.orEmpty(),
                                             mime = wrapper.fileMimeType.orEmpty(),
-                                            ext = wrapper.fileExt.orEmpty()
+                                            ext = wrapper.fileExt.orEmpty(),
+                                            icon = ObjectIcon.File(
+                                                mime = wrapper.fileMimeType.orEmpty(),
+                                                fileName = wrapper.name.orEmpty(),
+                                            )
                                         )
                                     )
                                 }
@@ -223,7 +227,11 @@ fun Struct.buildFileViews(
                 id = value,
                 name = details[value]?.name.orEmpty(),
                 mime = details[value]?.fileMimeType.orEmpty(),
-                ext = details[value]?.fileExt.orEmpty()
+                ext = details[value]?.fileExt.orEmpty(),
+                icon = ObjectIcon.File(
+                    mime = details[value]?.fileMimeType.orEmpty(),
+                    fileName = details[value]?.name.orEmpty(),
+                )
             )
         )
     } else if (value is List<*>) {
@@ -233,7 +241,11 @@ fun Struct.buildFileViews(
                     id = id,
                     name = details[id]?.name.orEmpty(),
                     mime = details[id]?.fileMimeType.orEmpty(),
-                    ext = details[id]?.fileExt.orEmpty()
+                    ext = details[id]?.fileExt.orEmpty(),
+                    icon = ObjectIcon.File(
+                        mime = details[id]?.fileMimeType.orEmpty(),
+                        fileName = details[id]?.name.orEmpty(),
+                    )
                 )
             )
         }

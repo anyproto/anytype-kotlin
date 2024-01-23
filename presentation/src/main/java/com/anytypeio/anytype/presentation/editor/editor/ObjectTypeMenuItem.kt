@@ -10,12 +10,13 @@ sealed class ObjectTypeMenuItem {
 }
 
 fun ListenerType.Relation.ObjectType.items(set: Id? = null): List<ObjectTypeMenuItem> {
+    val relation = this
     return if (set.isNullOrBlank()) {
         listOf(
             ObjectTypeMenuItem.ChangeType,
             ObjectTypeMenuItem.CreateSet(
-                type = typeId,
-                typeName = typeName
+                type = relation.relation.id,
+                typeName = relation.relation.name
             )
         )
     } else {
@@ -23,11 +24,8 @@ fun ListenerType.Relation.ObjectType.items(set: Id? = null): List<ObjectTypeMenu
             ObjectTypeMenuItem.ChangeType,
             ObjectTypeMenuItem.OpenSet(
                 set = set,
-                typeName = typeName
+                typeName = relation.relation.name
             )
         )
     }
 }
-
-fun ListenerType.Relation.ObjectTypeDeleted.items(): List<ObjectTypeMenuItem> =
-    listOf(ObjectTypeMenuItem.ChangeType)

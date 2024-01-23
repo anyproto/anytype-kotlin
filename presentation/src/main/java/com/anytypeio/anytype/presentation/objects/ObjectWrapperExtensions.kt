@@ -320,7 +320,11 @@ suspend fun ObjectWrapper.Basic.files(
                     id = obj.id,
                     name = obj.name.orEmpty(),
                     mime = obj.fileMimeType.orEmpty(),
-                    ext = obj.fileExt.orEmpty()
+                    ext = obj.fileExt.orEmpty(),
+                    icon = ObjectIcon.File(
+                        mime = obj.fileMimeType.orEmpty(),
+                        fileName = obj.name.orEmpty()
+                    )
                 )
             )
         } else {

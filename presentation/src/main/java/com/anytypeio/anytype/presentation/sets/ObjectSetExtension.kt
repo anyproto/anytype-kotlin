@@ -129,89 +129,62 @@ private fun ObjectState.DataView.mapFeaturedRelations(
 ): List<ObjectRelationView> = keys.mapNotNull { key ->
     when (key) {
         Relations.DESCRIPTION -> null
-        Relations.TYPE -> details.details[ctx]?.type?.firstOrNull()?.let { typeId ->
-            val objectType = details.details[typeId]?.map?.mapToObjectWrapperType()
-            if (objectType?.isDeleted == true) {
+        Relations.TYPE -> {
+
+            val type = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty()).type.firstOrNull()
+            val typeMap = type?.let { details.details[it]?.map }
+
+            val isTypeMapValid = !typeMap.isNullOrEmpty()
+            val wrapper = if (isTypeMapValid) typeMap?.mapToObjectWrapperType() else null
+
+            val isDeleted = wrapper == null || wrapper.isDeleted == true
+
+            if (wrapper != null && !isDeleted) {
+                ObjectRelationView.ObjectType.Base(
+                    id = wrapper.id,
+                    key = key,
+                    name = wrapper.name.orEmpty(),
+                    featured = true,
+                    readOnly = false,
+                    type = wrapper.id,
+                    system = key.isSystemKey()
+                )
+            } else {
                 ObjectRelationView.ObjectType.Deleted(
-                    id = typeId,
+                    id = type.orEmpty(),
                     key = key,
                     featured = true,
                     readOnly = false,
                     system = key.isSystemKey()
                 )
-            } else {
-                when (this) {
-                    is ObjectState.DataView.Collection -> ObjectRelationView.ObjectType.Collection(
-                        id = typeId,
-                        key = key,
-                        name = objectType?.name.orEmpty(),
-                        featured = true,
-                        readOnly = false,
-                        type = typeId,
-                        system = key.isSystemKey()
-                    )
-                    is ObjectState.DataView.Set -> ObjectRelationView.ObjectType.Set(
-                        id = typeId,
-                        key = key,
-                        name = objectType?.name.orEmpty(),
-                        featured = true,
-                        readOnly = false,
-                        type = typeId,
-                        system = key.isSystemKey()
-                    )
-                }
             }
         }
         Relations.SET_OF -> {
-            val objectSet = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty())
-            val sources = mutableListOf<ObjectView>()
-            val source = objectSet.setOf.firstOrNull()
-            if (source != null) {
-                val wrapper = ObjectWrapper.Basic(details.details[source]?.map.orEmpty())
-                if (!wrapper.isEmpty()) {
-                    if (wrapper.isDeleted == true) {
-                        ObjectRelationView.Source.Deleted(
-                            id = details.details[ctx]?.id.orEmpty(),
-                            key = key,
-                            name = Relations.RELATION_NAME_EMPTY,
-                            featured = true,
-                            readOnly = false,
-                            system = key.isSystemKey()
-                        )
-                    } else {
-                        sources.add(wrapper.toObjectView(urlBuilder = urlBuilder))
-                        ObjectRelationView.Source.Base(
-                            id = details.details[ctx]?.id.orEmpty(),
-                            key = key,
-                            name = Relations.RELATION_NAME_EMPTY,
-                            featured = true,
-                            readOnly = wrapper.relationReadonlyValue ?: false,
-                            sources = sources,
-                            system = key.isSystemKey()
-                        )
-                    }
-                } else {
-                    ObjectRelationView.Source.Base(
-                        id = details.details[ctx]?.id.orEmpty(),
-                        key = key,
-                        name = Relations.RELATION_NAME_EMPTY,
-                        featured = true,
-                        readOnly = wrapper.relationReadonlyValue ?: false,
-                        sources = sources,
-                        system = key.isSystemKey()
-                    )
-                }
+
+            val source = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty()).setOf.firstOrNull()
+            val sourceMap = source?.let { details.details[it]?.map }
+
+            val isSourceMapValid = !sourceMap.isNullOrEmpty()
+            val wrapper = if (isSourceMapValid) ObjectWrapper.Basic(sourceMap!!) else null
+
+            val isDeleted = wrapper?.isDeleted == true
+            val isReadOnly = wrapper?.relationReadonlyValue ?: false
+
+            val sources = if (!isDeleted && isSourceMapValid) {
+                listOf(wrapper!!.toObjectViewDefault(urlBuilder = urlBuilder))
             } else {
-                ObjectRelationView.Source.Base(
-                    id = details.details[ctx]?.id.orEmpty(),
-                    key = key,
-                    name = Relations.RELATION_NAME_EMPTY,
-                    featured = true,
-                    readOnly = false,
-                    sources = sources,
-                    system = key.isSystemKey()
-                )
+                emptyList()
             }
+
+            ObjectRelationView.Source(
+                id = details.details[ctx]?.id.orEmpty(),
+                key = key,
+                name = Relations.RELATION_NAME_EMPTY,
+                featured = true,
+                readOnly = isReadOnly,
+                sources = sources,
+                system = key.isSystemKey()
+            )
         }
         Relations.BACKLINKS, Relations.LINKS -> {
             details.linksFeaturedRelation(
@@ -309,7 +282,11 @@ fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
 
 fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder): ObjectView = when (isDeleted) {
     true -> ObjectView.Deleted(id)
-    else -> ObjectView.Default(
+    else -> toObjectViewDefault(urlBuilder)
+}
+
+fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder): ObjectView.Default {
+    return ObjectView.Default(
         id = id,
         name = getProperName(),
         icon = ObjectIcon.from(

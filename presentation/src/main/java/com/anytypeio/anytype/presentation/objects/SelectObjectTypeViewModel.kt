@@ -524,5 +524,3 @@ sealed class Command {
     data class ShowTypeInstalledToast(val typeName: String) : Command()
     data class DispatchObjectType(val type: ObjectWrapper.Type) : Command()
 }
-
-const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 3

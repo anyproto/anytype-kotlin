@@ -228,7 +228,7 @@ private fun FlowRowContent(
                                 onDismissRequest = { isMenuExpanded.value = false },
                                 offset = DpOffset(x = 0.dp, y = 6.dp)
                             ) {
-                                if (!view.isPinned || !view.isFirstInSection) {
+                                if (!view.isPinned) {
                                     DropdownMenuItem(
                                         onClick = {
                                             isMenuExpanded.value = false
@@ -256,7 +256,7 @@ private fun FlowRowContent(
                                         )
                                     }
                                 }
-                                if (!view.isDefault && !view.isFromLibrary) {
+                                if (view.canBeDefault && !view.isDefault && !view.isFromLibrary) {
                                     DropdownMenuItem(
                                         onClick = {
                                             isMenuExpanded.value = false

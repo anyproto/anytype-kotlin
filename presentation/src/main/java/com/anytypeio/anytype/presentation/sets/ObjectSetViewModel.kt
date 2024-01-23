@@ -1066,33 +1066,24 @@ class ObjectSetViewModel(
                             }
                         }
                         ObjectType.Layout.RELATION -> {
-                            val validTemplateId = templateChosenBy ?: defaultTemplate
-                            val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
-                                storeOfRelations = storeOfRelations,
-                                dateProvider = dateProvider,
-                                dataViewRelationLinks = currentState.dataViewContent.relationLinks,
-                                objSetByRelation = ObjectWrapper.Relation(sourceDetails.map)
-                            )
-                            proceedWithCreatingDataViewObject(
-                                CreateDataViewObject.Params.SetByRelation(
-                                    filters = viewer.filters,
-                                    template = validTemplateId,
-                                    type = TypeKey(objectTypeUniqueKey),
-                                    prefilled = prefilled
-                                )
-                            )
                             if (objectTypeUniqueKey == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
                                     ObjectSetCommand.Modal.CreateBookmark(ctx = context)
                                 )
                             } else {
+                                val validTemplateId = templateChosenBy ?: defaultTemplate
+                                val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
+                                    storeOfRelations = storeOfRelations,
+                                    dateProvider = dateProvider,
+                                    dataViewRelationLinks = currentState.dataViewContent.relationLinks,
+                                    objSetByRelation = ObjectWrapper.Relation(sourceDetails.map)
+                                )
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByRelation(
                                         filters = viewer.filters,
                                         template = validTemplateId,
                                         type = TypeKey(objectTypeUniqueKey),
-                                        objSetByRelation = ObjectWrapper.Relation(sourceDetails.map),
-                                        dvRelationLinks = currentState.dataViewContent.relationLinks
+                                        prefilled = prefilled
                                     )
                                 )
                             }

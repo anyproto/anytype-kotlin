@@ -129,7 +129,7 @@ class ViewerGridAdapter(
         private fun showIcon(row: Viewer.GridView.Row) {
             binding.objectIcon.visible()
             when (row.layout) {
-                Layout.TODO -> binding.objectIcon.setCheckbox(row.isChecked)
+                Layout.TODO -> binding.objectIcon.setTask(row.isChecked)
                 Layout.BASIC, Layout.BOOKMARK, Layout.SET, Layout.COLLECTION -> {
                     if ((row.image != null || row.emoji != null)) {
                         if (row.image != null) {

@@ -59,7 +59,6 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_OBJECT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_PLACEHOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_SOURCE
-import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_SOURCE_DELETED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_STATUS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_RELATION_TAGS
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TABLE
@@ -1295,11 +1294,8 @@ sealed class BlockView : ViewType {
                 is ObjectRelationView.Object -> HOLDER_RELATION_OBJECT
                 is ObjectRelationView.File -> HOLDER_RELATION_FILE
                 is ObjectRelationView.ObjectType.Base -> HOLDER_OBJECT_TYPE
-                is ObjectRelationView.Source.Base -> HOLDER_RELATION_SOURCE
-                is ObjectRelationView.Source.Deleted -> HOLDER_RELATION_SOURCE_DELETED
+                is ObjectRelationView.Source -> HOLDER_RELATION_SOURCE
                 is ObjectRelationView.ObjectType.Deleted -> HOLDER_OBJECT_TYPE_DELETED
-                is ObjectRelationView.ObjectType.Collection -> HOLDER_OBJECT_TYPE_COLLECTION
-                is ObjectRelationView.ObjectType.Set -> HOLDER_OBJECT_TYPE_SET
                 is ObjectRelationView.Links -> HOLDER_RELATION_OBJECT
             }
         }

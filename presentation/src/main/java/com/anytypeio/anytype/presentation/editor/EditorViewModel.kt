@@ -110,6 +110,7 @@ import com.anytypeio.anytype.presentation.editor.editor.Intent
 import com.anytypeio.anytype.presentation.editor.editor.Intent.Media
 import com.anytypeio.anytype.presentation.editor.editor.KeyPressedEvent
 import com.anytypeio.anytype.presentation.editor.editor.Markup
+import com.anytypeio.anytype.presentation.editor.editor.ObjectTypeMenuItem
 import com.anytypeio.anytype.presentation.editor.editor.Orchestrator
 import com.anytypeio.anytype.presentation.editor.editor.Proxy
 import com.anytypeio.anytype.presentation.editor.editor.SideEffect
@@ -4006,32 +4007,43 @@ class EditorViewModel(
             }
             is ListenerType.Relation.ObjectType -> {
                 if (isObjectTemplate()) return
-                viewModelScope.launch {
-                    val params = FindObjectSetForType.Params(
-                        type = clicked.typeId,
-                        filters = ObjectSearchConstants.setsByObjectTypeFilters(
-                            types = listOf(clicked.typeId),
-                            space = spaceManager.get()
-                        )
-                    )
-                    findObjectSetForType(params).process(
-                        failure = {
-                            Timber.e(it, "Error while search for a set for type ${clicked.typeId}")
-                        },
-                        success = { response ->
-                            val command = when (response) {
-                                is FindObjectSetForType.Response.NotFound ->
-                                    Command.OpenObjectTypeMenu(clicked.items())
-                                is FindObjectSetForType.Response.Success ->
-                                    Command.OpenObjectTypeMenu(clicked.items(set = response.obj.id))
-                            }
-                            commands.postValue(EventWrapper(command))
+                when (val relation = clicked.relation) {
+                    is ObjectRelationView.ObjectType.Base -> {
+                        viewModelScope.launch {
+                            val params = FindObjectSetForType.Params(
+                                type = relation.type,
+                                filters = ObjectSearchConstants.setsByObjectTypeFilters(
+                                    types = listOf(relation.type),
+                                    space = spaceManager.get()
+                                )
+                            )
+                            findObjectSetForType(params).process(
+                                failure = {
+                                    Timber.e(
+                                        it,
+                                        "Error search for a set for type ${relation.type}"
+                                    )
+                                },
+                                success = { response ->
+                                    val command = when (response) {
+                                        is FindObjectSetForType.Response.NotFound ->
+                                            Command.OpenObjectTypeMenu(listOf(ObjectTypeMenuItem.ChangeType))
+
+                                        is FindObjectSetForType.Response.Success ->
+                                            Command.OpenObjectTypeMenu(clicked.items(set = response.obj.id))
+                                    }
+                                    commands.postValue(EventWrapper(command))
+                                }
+                            )
                         }
-                    )
+                    }
+                    is ObjectRelationView.ObjectType.Deleted -> {
+                        commands.postValue(EventWrapper(Command.OpenObjectTypeMenu(listOf(ObjectTypeMenuItem.ChangeType))))
+                    }
+                    else -> {
+                        Timber.e("Unexpected relation type: $relation")
+                    }
                 }
-            }
-            is ListenerType.Relation.ObjectTypeDeleted -> {
-                commands.postValue(EventWrapper(Command.OpenObjectTypeMenu(clicked.items())))
             }
             else -> {}
         }

@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.InputType
+import android.view.ContextThemeWrapper
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.View
@@ -48,6 +49,8 @@ import com.anytypeio.anytype.core_ui.extensions.getToastMsg
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
+import com.anytypeio.anytype.core_ui.menu.ObjectSetRelationPopupMenu
+import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.reactive.editorActionEvents
 import com.anytypeio.anytype.core_ui.reactive.longClicks
@@ -81,6 +84,7 @@ import com.anytypeio.anytype.databinding.FragmentObjectSetBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -1066,6 +1070,32 @@ open class ObjectSetFragment :
                     excludeTypes = command.excludedTypes
                 )
                 fr.showChildFragment()
+            }
+
+            is ObjectSetCommand.Modal.ShowObjectSetTypePopupMenu -> {
+                val themeWrapper = ContextThemeWrapper(context, R.style.DefaultPopupMenuStyle)
+                val popup = ObjectSetTypePopupMenu(
+                    context = themeWrapper,
+                    view = featuredRelations.findViewById(command.anchor),
+                    onChangeTypeClicked = {
+                        vm.onClickListener(ListenerType.Relation.SetQuery(queries = emptyList()))
+                    },
+                    onConvertToCollection = {
+                        vm.proceedWithConvertingToCollection()
+                    }
+                )
+                popup.show()
+            }
+            is ObjectSetCommand.Modal.ShowObjectSetRelationPopupMenu -> {
+                val themeWrapper = ContextThemeWrapper(context, R.style.DefaultPopupMenuStyle)
+                val popup = ObjectSetRelationPopupMenu(
+                    context = themeWrapper,
+                    view = featuredRelations.findViewById(command.anchor),
+                    onConvertToCollection = {
+                        vm.proceedWithConvertingToCollection()
+                    }
+                )
+                popup.show()
             }
         }
     }

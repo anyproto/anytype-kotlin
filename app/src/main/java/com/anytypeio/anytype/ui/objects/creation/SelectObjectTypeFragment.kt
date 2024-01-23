@@ -7,12 +7,15 @@ import android.view.ViewGroup
 import android.webkit.URLUtil
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -56,7 +59,11 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(
-                typography = typography
+                typography = typography,
+                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
+                colors = MaterialTheme.colors.copy(
+                    surface = colorResource(id = R.color.background_secondary)
+                )
             ) {
                 SelectObjectTypeScreen(
                     state = vm.viewState.collectAsStateWithLifecycle().value,

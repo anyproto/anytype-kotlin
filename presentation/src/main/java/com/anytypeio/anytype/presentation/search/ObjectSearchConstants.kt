@@ -923,11 +923,10 @@ object ObjectSearchConstants {
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
         ),
-        // TODO fix
         DVFilter(
-            relation = Relations.TYPE,
-            condition = DVFilterCondition.EQUAL,
-            value = SET
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.IN,
+            value = ObjectType.Layout.SET.code.toDouble()
         ),
         DVFilter(
             relation = Relations.SPACE_ID,

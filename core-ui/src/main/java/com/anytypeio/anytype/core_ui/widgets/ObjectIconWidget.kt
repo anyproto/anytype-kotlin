@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.WidgetObjectIconBinding
 import com.anytypeio.anytype.core_ui.extensions.color
+import com.anytypeio.anytype.core_ui.extensions.drawable
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.extensions.setCircularShape
 import com.anytypeio.anytype.core_ui.extensions.setCorneredShape
@@ -139,13 +140,15 @@ class ObjectIconWidget @JvmOverloads constructor(
             is ObjectIcon.Basic.Avatar -> setBasicInitials(icon.name)
             is ObjectIcon.Profile.Avatar -> setProfileInitials(icon.name)
             is ObjectIcon.Profile.Image -> setCircularImage(icon.hash)
-            is ObjectIcon.Task -> setCheckbox(icon.isChecked)
+            is ObjectIcon.Task -> setTask(icon.isChecked)
             is ObjectIcon.Bookmark -> setBookmark(icon.image)
             is ObjectIcon.None -> removeIcon()
             is ObjectIcon.File -> setFileImage(
                 mime = icon.mime,
                 fileName = icon.fileName
             )
+            ObjectIcon.Deleted -> setDeletedIcon()
+            is ObjectIcon.Checkbox -> setCheckbox(icon.isChecked)
         }
     }
 
@@ -231,7 +234,7 @@ class ObjectIconWidget @JvmOverloads constructor(
         val icon = mime.getMimeIcon(fileName)
         with(binding) {
             ivImage.visible()
-            ivImage.scaleType = ImageView.ScaleType.CENTER
+            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
             ivImage.setImageResource(icon)
             ivCheckbox.invisible()
             initialContainer.invisible()
@@ -308,11 +311,27 @@ class ObjectIconWidget @JvmOverloads constructor(
         }
     }
 
-    fun setCheckbox(isChecked: Boolean?) {
+    fun setTask(isChecked: Boolean?) {
         with(binding) {
             composeView.gone()
             ivCheckbox.visible()
+            ivCheckbox.background = context.drawable(R.drawable.ic_data_view_grid_checkbox_selector)
             ivCheckbox.isActivated = isChecked ?: false
+            initialContainer.invisible()
+            emojiContainer.invisible()
+            ivBookmark.gone()
+            ivBookmark.setImageDrawable(null)
+            ivImage.invisible()
+        }
+    }
+
+    private fun setCheckbox(isChecked: Boolean?) {
+        with(binding) {
+            composeView.gone()
+            ivCheckbox.background = context.drawable(R.drawable.ic_relation_checkbox_selector)
+            ivCheckbox.scaleType = ImageView.ScaleType.CENTER_CROP
+            ivCheckbox.visible()
+            ivCheckbox.isSelected = isChecked ?: false
             initialContainer.invisible()
             emojiContainer.invisible()
             ivBookmark.gone()
@@ -345,6 +364,20 @@ class ObjectIconWidget @JvmOverloads constructor(
             ivBookmark.setImageDrawable(null)
             ivCheckbox.invisible()
             binding.composeView.gone()
+        }
+    }
+
+    private fun setDeletedIcon() {
+        val icon = context.drawable(R.drawable.ic_relation_deleted)
+        with(binding) {
+            ivImage.visible()
+            ivImage.scaleType = ImageView.ScaleType.CENTER_CROP
+            ivImage.setImageDrawable(icon)
+            ivCheckbox.invisible()
+            initialContainer.invisible()
+            ivBookmark.invisible()
+            emojiContainer.invisible()
+            composeView.gone()
         }
     }
 }

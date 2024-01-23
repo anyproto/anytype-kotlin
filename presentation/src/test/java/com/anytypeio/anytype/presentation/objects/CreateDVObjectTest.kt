@@ -1,27 +1,30 @@
-package com.anytypeio.anytype.domain.dataview.interactor
+package com.anytypeio.anytype.presentation.objects
 
 import com.anytypeio.anytype.core_models.Block
-import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVFilterOperator
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
-import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.DVViewerType
+import com.anytypeio.anytype.core_models.PermittedConditions
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.StubDataViewView
+import com.anytypeio.anytype.core_models.StubDataViewViewRelation
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.common.DefaultCoroutineTestRule
-import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.core_models.ext.DAYS_IN_MONTH
+import com.anytypeio.anytype.core_models.ext.DAYS_IN_WEEK
+import com.anytypeio.anytype.core_models.ext.SECONDS_IN_DAY
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
-import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
+import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
+import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
+import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
+import net.bytebuddy.utility.RandomString
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -29,32 +32,15 @@ import org.mockito.Mock
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
-import org.mockito.kotlin.times
-import org.mockito.kotlin.verifyBlocking
 
-class CreateDataViewObjectUseCaseTest {
-
-    @get:Rule
-    val rule = DefaultCoroutineTestRule()
-
-    @Mock
-    lateinit var repo: BlockRepository
+@OptIn(ExperimentalCoroutinesApi::class)
+class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
 
     @Mock
     lateinit var dateProvider: DateProvider
 
-    private val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
-    lateinit var spaceManager: SpaceManager
-
-    lateinit var dispatchers: AppCoroutineDispatchers
-    lateinit var createDataViewObject: CreateDataViewObject
-
-    private val SECONDS_IN_DAY = 86400L
-
     private val timestamp = 1703775402L
     private val spaceId = "spaceId-${MockDataFactory.randomString()}"
-    private val type = "type-${MockDataFactory.randomString()}"
-    private val template = "template-${MockDataFactory.randomString()}"
     private val filterDate = StubRelationObject(
         id = "dueDateId-${MockDataFactory.randomString()}",
         key = "dueDateKey-${MockDataFactory.randomString()}",
@@ -63,43 +49,21 @@ class CreateDataViewObjectUseCaseTest {
         spaceId = spaceId
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
+    @get:Rule
+    val coroutineTestRule = CoroutinesTestRule()
+
     @Before
     fun setup() = runTest {
-        repo = mock(verboseLogging = true)
         dateProvider = mock(verboseLogging = true)
-        dispatchers = AppCoroutineDispatchers(
-            io = rule.dispatcher,
-            computation = rule.dispatcher,
-            main = rule.dispatcher
-        )
-        spaceManager = SpaceManager.Impl(
-            repo = repo,
-            dispatchers = dispatchers,
-            configStorage = ConfigStorage.CacheStorage(),
-            logger = mock()
-        )
-        createDataViewObject = CreateDataViewObject(
-            repo = repo,
-            storeOfRelations = storeOfRelations,
-            spaceManager = spaceManager,
-            dispatchers = dispatchers,
-            dateProvider = dateProvider
-        )
         storeOfRelations.merge(listOf(filterDate))
-        spaceManager.set(spaceId)
         dateProvider.stub {
             on { getCurrentTimestampInSeconds() } doReturn timestamp
         }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should create object with prefilled details from filters in set by relation`() = runTest {
 
-        val spaceId = "spaceId-${MockDataFactory.randomString()}"
-        val type = "type-${MockDataFactory.randomString()}"
-        val template = "template-${MockDataFactory.randomString()}"
         val prefilledRelation = StubRelationObject(
             id = "prefilledRelationId-${MockDataFactory.randomString()}",
             key = "prefilledRelationKey-${MockDataFactory.randomString()}",
@@ -150,92 +114,96 @@ class CreateDataViewObjectUseCaseTest {
                 filter4Relation
             )
         )
-        spaceManager.set(spaceId)
 
         val notPermittedConditions =
-            DVFilterCondition.values().filterNot { it in CreateDataViewObject.permittedConditions }
+            DVFilterCondition.values().filterNot { it in PermittedConditions }
 
         val filters = listOf(
             DVFilter(
                 relation = filter1Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
-                condition = Block.Content.DataView.Filter.Condition.EQUAL,
+                operator = DVFilterOperator.AND,
+                condition = DVFilterCondition.EQUAL,
                 value = "321"
             ),
             DVFilter(
                 relation = filter2Relation.key,
                 relationFormat = RelationFormat.CHECKBOX,
-                operator = Block.Content.DataView.Filter.Operator.AND,
-                condition = Block.Content.DataView.Filter.Condition.EQUAL,
+                operator = DVFilterOperator.AND,
+                condition = DVFilterCondition.EQUAL,
                 value = true
             ),
             DVFilter(
                 relation = filter3Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
-                condition = Block.Content.DataView.Filter.Condition.EQUAL,
+                operator = DVFilterOperator.AND,
+                condition = DVFilterCondition.EQUAL,
                 value = "456"
             ),
             DVFilter(
                 relation = filter4Relation.key,
                 relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
+                operator = DVFilterOperator.AND,
                 condition = notPermittedConditions.random(),
                 value = "456"
             )
         )
 
-        val params = CreateDataViewObject.Params.SetByRelation(
-            template = template,
-            type = TypeKey(type),
+        val dvViewer =
+            StubDataViewView(
+                id = "dvViewerList-${RandomString.make()}",
+                viewerRelations = listOf(
+                    StubDataViewViewRelation(key = filter1Relation.key),
+                    StubDataViewViewRelation(key = filter2Relation.key),
+                    StubDataViewViewRelation(key = filter3Relation.key),
+                    StubDataViewViewRelation(key = filter4Relation.key)
+                ),
+                type = DVViewerType.LIST,
+                filters = filters
+            )
+
+        val struct = dvViewer.resolveSetByRelationPrefilledObjectData(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
             objSetByRelation = prefilledRelation,
-            filters = filters,
-            dvRelationLinks = dvRelationLinks
+            dataViewRelationLinks = dvRelationLinks,
         )
 
-        createDataViewObject.async(params)
-
-        val expected = Command.CreateObject(
-            template = template,
-            prefilled = mapOf(
-                prefilledRelation.key to null,
-                filter1Relation.key to "321",
-                filter2Relation.key to true
-            ),
-            internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
-            space = SpaceId(spaceId),
-            typeKey = TypeKey(type)
+        val expectedStruct = mapOf(
+            prefilledRelation.key to null,
+            filter1Relation.key to "321",
+            filter2Relation.key to true
         )
 
-        verifyBlocking(repo, times(1)) {
-            createObject(command = expected)
-        }
+        assertEquals(expectedStruct, struct)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should update value prefilled setof relation by filter value`() = runTest {
 
-        val spaceId = "spaceId-${MockDataFactory.randomString()}"
-        val type = "type-${MockDataFactory.randomString()}"
-        val template = "template-${MockDataFactory.randomString()}"
         val prefilledRelation = StubRelationObject(
             id = "prefilledRelationId-${MockDataFactory.randomString()}",
             key = "prefilledRelationKey-${MockDataFactory.randomString()}",
             format = RelationFormat.SHORT_TEXT
         )
+        val filter1Relation = StubRelationObject(
+            id = "filter1RelationId-${MockDataFactory.randomString()}",
+            key = "filter1RelationKey-${MockDataFactory.randomString()}",
+            format = RelationFormat.SHORT_TEXT,
+            isReadOnlyValue = false,
+            spaceId = spaceId
+        )
 
         val dvRelationLinks = listOf(
-            RelationLink(prefilledRelation.key, RelationFormat.SHORT_TEXT),
+            RelationLink(filter1Relation.key, RelationFormat.SHORT_TEXT)
         )
 
         storeOfRelations.merge(
             listOf(
-                prefilledRelation
+                prefilledRelation,
+                filter1Relation
             )
         )
-        spaceManager.set(spaceId)
 
         val filters = listOf(
             DVFilter(
@@ -247,38 +215,33 @@ class CreateDataViewObjectUseCaseTest {
             )
         )
 
-        val params = CreateDataViewObject.Params.SetByRelation(
-            template = template,
-            type = TypeKey(type),
-            filters = filters,
-            dvRelationLinks = dvRelationLinks,
-            objSetByRelation = prefilledRelation
+        val dvViewer =
+            StubDataViewView(
+                id = "dvViewerList-${RandomString.make()}",
+                viewerRelations = listOf(
+                    StubDataViewViewRelation(key = filter1Relation.key)
+                ),
+                type = DVViewerType.LIST,
+                filters = filters
+            )
+
+        val struct = dvViewer.resolveSetByRelationPrefilledObjectData(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            objSetByRelation = prefilledRelation,
+            dataViewRelationLinks = dvRelationLinks,
         )
 
-        createDataViewObject.async(params)
-
-        val expected = Command.CreateObject(
-            template = template,
-            prefilled = mapOf(
-                prefilledRelation.key to "456"
-            ),
-            internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
-            space = SpaceId(spaceId),
-            typeKey = TypeKey(type)
+        val expectedStruct = mapOf(
+            prefilledRelation.key to "456"
         )
 
-        verifyBlocking(repo, times(1)) {
-            createObject(command = expected)
-        }
+        assertEquals(expectedStruct, struct)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun `should create object with prefilled details from filters in set by type`() = runTest {
 
-        val spaceId = "spaceId-${MockDataFactory.randomString()}"
-        val type = "type-${MockDataFactory.randomString()}"
-        val template = "template-${MockDataFactory.randomString()}"
         val filter1Relation = StubRelationObject(
             id = "filter1RelationId-${MockDataFactory.randomString()}",
             key = "filter1RelationKey-${MockDataFactory.randomString()}",
@@ -306,50 +269,6 @@ class CreateDataViewObjectUseCaseTest {
             format = RelationFormat.SHORT_TEXT,
             isReadOnlyValue = false,
             spaceId = spaceId
-        )
-
-        storeOfRelations.merge(
-            listOf(
-                filter1Relation,
-                filter2Relation,
-                filter3Relation,
-                filter4Relation
-            )
-        )
-        spaceManager.set(spaceId)
-
-        val notPermittedConditions =
-            DVFilterCondition.values().filterNot { it in CreateDataViewObject.permittedConditions }
-
-        val filters = listOf(
-            DVFilter(
-                relation = filter1Relation.key,
-                relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
-                condition = Block.Content.DataView.Filter.Condition.EQUAL,
-                value = "321"
-            ),
-            DVFilter(
-                relation = filter2Relation.key,
-                relationFormat = RelationFormat.CHECKBOX,
-                operator = Block.Content.DataView.Filter.Operator.AND,
-                condition = Block.Content.DataView.Filter.Condition.EQUAL,
-                value = true
-            ),
-            DVFilter(
-                relation = filter3Relation.key,
-                relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
-                condition = Block.Content.DataView.Filter.Condition.EQUAL,
-                value = "456"
-            ),
-            DVFilter(
-                relation = filter4Relation.key,
-                relationFormat = RelationFormat.SHORT_TEXT,
-                operator = Block.Content.DataView.Filter.Operator.AND,
-                condition = notPermittedConditions.random(),
-                value = "456"
-            )
         )
 
         val dvRelationLinks = listOf(
@@ -359,74 +278,6 @@ class CreateDataViewObjectUseCaseTest {
             RelationLink(filter4Relation.key, RelationFormat.SHORT_TEXT)
         )
 
-        val params = CreateDataViewObject.Params.SetByType(
-            template = template,
-            type = TypeKey(type),
-            filters = filters,
-            dvRelationLinks = dvRelationLinks
-        )
-
-        createDataViewObject.async(params)
-
-        val expected = Command.CreateObject(
-            template = template,
-            prefilled = mapOf(
-                filter1Relation.key to "321",
-                filter2Relation.key to true
-            ),
-            internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
-            space = SpaceId(spaceId),
-            typeKey = TypeKey(type)
-        )
-
-        verifyBlocking(repo, times(1)) {
-            createObject(command = expected)
-        }
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    @Test
-    fun `should create object with prefilled details from filters in collection`() = runTest {
-
-        val spaceId = "spaceId-${MockDataFactory.randomString()}"
-        val type = "type-${MockDataFactory.randomString()}"
-        val template = "template-${MockDataFactory.randomString()}"
-        val filter1Relation = StubRelationObject(
-            id = "filter1RelationId-${MockDataFactory.randomString()}",
-            key = "filter1RelationKey-${MockDataFactory.randomString()}",
-            format = RelationFormat.SHORT_TEXT,
-            isReadOnlyValue = false,
-            spaceId = spaceId
-        )
-        val filter2Relation = StubRelationObject(
-            id = "filter2RelationId-${MockDataFactory.randomString()}",
-            key = "filter2RelationKey-${MockDataFactory.randomString()}",
-            format = RelationFormat.CHECKBOX,
-            isReadOnlyValue = false,
-            spaceId = spaceId
-        )
-        val filter3Relation = StubRelationObject(
-            id = "filter3RelationId-${MockDataFactory.randomString()}",
-            key = "filter3RelationKey-${MockDataFactory.randomString()}",
-            format = RelationFormat.SHORT_TEXT,
-            isReadOnlyValue = true,
-            spaceId = spaceId
-        )
-        val filter4Relation = StubRelationObject(
-            id = "filter4RelationId-${MockDataFactory.randomString()}",
-            key = "filter4RelationKey-${MockDataFactory.randomString()}",
-            format = RelationFormat.SHORT_TEXT,
-            isReadOnlyValue = false,
-            spaceId = spaceId
-        )
-
-        val dvRelationLinks = listOf(
-            RelationLink(filter1Relation.id, RelationFormat.SHORT_TEXT),
-            RelationLink(filter2Relation.id, RelationFormat.CHECKBOX),
-            RelationLink(filter3Relation.id, RelationFormat.SHORT_TEXT),
-            RelationLink(filter4Relation.id, RelationFormat.SHORT_TEXT)
-        )
-
         storeOfRelations.merge(
             listOf(
                 filter1Relation,
@@ -435,10 +286,9 @@ class CreateDataViewObjectUseCaseTest {
                 filter4Relation
             )
         )
-        spaceManager.set(spaceId)
 
         val notPermittedConditions =
-            DVFilterCondition.values().filterNot { it in CreateDataViewObject.permittedConditions }
+            DVFilterCondition.values().filterNot { it in PermittedConditions }
 
         val filters = listOf(
             DVFilter(
@@ -471,29 +321,140 @@ class CreateDataViewObjectUseCaseTest {
             )
         )
 
-        val params = CreateDataViewObject.Params.Collection(
-            template = template,
-            type = TypeKey(type),
-            filters = filters,
-            dvRelationLinks = dvRelationLinks
+        val dvViewer =
+            StubDataViewView(
+                id = "dvViewerList-${RandomString.make()}",
+                viewerRelations = listOf(
+                    StubDataViewViewRelation(key = filter1Relation.key),
+                    StubDataViewViewRelation(key = filter2Relation.key),
+                    StubDataViewViewRelation(key = filter3Relation.key),
+                    StubDataViewViewRelation(key = filter4Relation.key)
+                ),
+                type = DVViewerType.LIST,
+                filters = filters
+            )
+
+        val struct = dvViewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            dataViewRelationLinks = dvRelationLinks,
         )
 
-        createDataViewObject.async(params)
+        val expectedStruct = mapOf(
+            filter1Relation.key to "321",
+            filter2Relation.key to true
+        )
 
-        val expected = Command.CreateObject(
-            template = template,
-            prefilled = mapOf(
-                filter1Relation.key to "321",
-                filter2Relation.key to true
+        assertEquals(expectedStruct, struct)
+    }
+
+    @Test
+    fun `should create object with prefilled details from filters in collection`() = runTest {
+
+        val filter1Relation = StubRelationObject(
+            id = "filter1RelationId-${MockDataFactory.randomString()}",
+            key = "filter1RelationKey-${MockDataFactory.randomString()}",
+            format = RelationFormat.SHORT_TEXT,
+            isReadOnlyValue = false,
+            spaceId = spaceId
+        )
+        val filter2Relation = StubRelationObject(
+            id = "filter2RelationId-${MockDataFactory.randomString()}",
+            key = "filter2RelationKey-${MockDataFactory.randomString()}",
+            format = RelationFormat.CHECKBOX,
+            isReadOnlyValue = false,
+            spaceId = spaceId
+        )
+        val filter3Relation = StubRelationObject(
+            id = "filter3RelationId-${MockDataFactory.randomString()}",
+            key = "filter3RelationKey-${MockDataFactory.randomString()}",
+            format = RelationFormat.SHORT_TEXT,
+            isReadOnlyValue = true,
+            spaceId = spaceId
+        )
+        val filter4Relation = StubRelationObject(
+            id = "filter4RelationId-${MockDataFactory.randomString()}",
+            key = "filter4RelationKey-${MockDataFactory.randomString()}",
+            format = RelationFormat.SHORT_TEXT,
+            isReadOnlyValue = false,
+            spaceId = spaceId
+        )
+
+        val dvRelationLinks = listOf(
+            RelationLink(filter1Relation.key, RelationFormat.SHORT_TEXT),
+            RelationLink(filter2Relation.key, RelationFormat.CHECKBOX),
+            RelationLink(filter3Relation.key, RelationFormat.SHORT_TEXT),
+            RelationLink(filter4Relation.key, RelationFormat.SHORT_TEXT)
+        )
+
+        storeOfRelations.merge(
+            listOf(
+                filter1Relation,
+                filter2Relation,
+                filter3Relation,
+                filter4Relation
+            )
+        )
+
+        val notPermittedConditions =
+            DVFilterCondition.values().filterNot { it in PermittedConditions }
+
+        val filters = listOf(
+            DVFilter(
+                relation = filter1Relation.key,
+                relationFormat = RelationFormat.SHORT_TEXT,
+                operator = Block.Content.DataView.Filter.Operator.AND,
+                condition = Block.Content.DataView.Filter.Condition.EQUAL,
+                value = "321"
             ),
-            internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
-            space = SpaceId(spaceId),
-            typeKey = TypeKey(type)
+            DVFilter(
+                relation = filter2Relation.key,
+                relationFormat = RelationFormat.CHECKBOX,
+                operator = Block.Content.DataView.Filter.Operator.AND,
+                condition = Block.Content.DataView.Filter.Condition.EQUAL,
+                value = true
+            ),
+            DVFilter(
+                relation = filter3Relation.key,
+                relationFormat = RelationFormat.SHORT_TEXT,
+                operator = Block.Content.DataView.Filter.Operator.AND,
+                condition = Block.Content.DataView.Filter.Condition.EQUAL,
+                value = "456"
+            ),
+            DVFilter(
+                relation = filter4Relation.key,
+                relationFormat = RelationFormat.SHORT_TEXT,
+                operator = Block.Content.DataView.Filter.Operator.AND,
+                condition = notPermittedConditions.random(),
+                value = "456"
+            )
         )
 
-        verifyBlocking(repo, times(1)) {
-            createObject(command = expected)
-        }
+        val dvViewer =
+            StubDataViewView(
+                id = "dvViewerList-${RandomString.make()}",
+                viewerRelations = listOf(
+                    StubDataViewViewRelation(key = filter1Relation.key),
+                    StubDataViewViewRelation(key = filter2Relation.key),
+                    StubDataViewViewRelation(key = filter3Relation.key),
+                    StubDataViewViewRelation(key = filter4Relation.key)
+                ),
+                type = DVViewerType.LIST,
+                filters = filters
+            )
+
+        val struct = dvViewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            dataViewRelationLinks = dvRelationLinks,
+        )
+
+        val expectedStruct = mapOf(
+            filter1Relation.key to "321",
+            filter2Relation.key to true
+        )
+
+        assertEquals(expectedStruct, struct)
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -517,28 +478,28 @@ class CreateDataViewObjectUseCaseTest {
             RelationLink(filterDate.key, RelationFormat.DATE)
         )
 
-        val params = CreateDataViewObject.Params.SetByType(
-            template = template,
-            type = TypeKey(type),
-            filters = filters,
-            dvRelationLinks = dvRelationLinks
+        storeOfRelations.merge(listOf(filterDate))
+
+        val dvViewer =
+            StubDataViewView(
+                id = "dvViewerList-${RandomString.make()}",
+                viewerRelations = listOf(
+                    StubDataViewViewRelation(key = filterDate.key, isVisible = true)
+                ),
+                type = DVViewerType.LIST,
+                filters = filters
+            )
+
+        val prefilled = dvViewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            dataViewRelationLinks = dvRelationLinks,
         )
 
-        createDataViewObject.async(params)
-
-        val expected = Command.CreateObject(
-            template = template,
-            prefilled = mapOf(
-                filterDate.key to (expectedValue?.toDouble() ?: timestamp.toDouble()),
-            ),
-            internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
-            space = SpaceId(spaceId),
-            typeKey = TypeKey(type)
+        val expectedPrefilled = mapOf(
+            filterDate.key to (expectedValue?.toDouble() ?: timestamp.toDouble()),
         )
-
-        verifyBlocking(repo, times(1)) {
-            createObject(command = expected)
-        }
+        assertEquals(expectedPrefilled, prefilled)
     }
 
     @Test
@@ -644,9 +605,6 @@ class CreateDataViewObjectUseCaseTest {
     @Test
     fun `should take relation format from relation link`() = runTest {
 
-        val spaceId = "spaceId-${MockDataFactory.randomString()}"
-        val type = "type-${MockDataFactory.randomString()}"
-        val template = "template-${MockDataFactory.randomString()}"
         val filter1Relation = StubRelationObject(
             id = "filter1RelationId-${MockDataFactory.randomString()}",
             key = "filter1RelationKey-${MockDataFactory.randomString()}",
@@ -656,7 +614,6 @@ class CreateDataViewObjectUseCaseTest {
         )
 
         storeOfRelations.merge(listOf(filter1Relation))
-        spaceManager.set(spaceId)
 
         val filters = listOf(
             DVFilter(
@@ -671,25 +628,24 @@ class CreateDataViewObjectUseCaseTest {
             RelationLink(filter1Relation.key, RelationFormat.CHECKBOX),
         )
 
-        val params = CreateDataViewObject.Params.SetByType(
-            template = template,
-            type = TypeKey(type),
-            filters = filters,
-            dvRelationLinks = dvRelationLinks
+        val dvViewer =
+            StubDataViewView(
+                id = "dvViewerList-${RandomString.make()}",
+                viewerRelations = listOf(
+                    StubDataViewViewRelation(key = filter1Relation.key)
+                ),
+                type = DVViewerType.LIST,
+                filters = filters
+            )
+
+        val struct = dvViewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            dataViewRelationLinks = dvRelationLinks,
         )
 
-        createDataViewObject.async(params)
+        val expectedStruct = mapOf(filter1Relation.key to true)
 
-        val expected = Command.CreateObject(
-            template = template,
-            prefilled = mapOf(filter1Relation.key to true),
-            internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
-            space = SpaceId(spaceId),
-            typeKey = TypeKey(type)
-        )
-
-        verifyBlocking(repo, times(1)) {
-            createObject(command = expected)
-        }
+        assertEquals(expectedStruct, struct)
     }
 }

@@ -67,6 +67,5 @@ interface SelectSpaceDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun userSettings(): UserSettingsRepository
     fun logger(): Logger
-    fun appActionManager(): AppActionManager
     fun configStorage(): ConfigStorage
 }

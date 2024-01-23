@@ -85,9 +85,7 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             createDataViewObject = CreateDataViewObject(
                 repo = repo,
                 spaceManager = spaceManager,
-                dispatchers = dispatchers,
-                storeOfRelations = storeOfRelations,
-                dateProvider = dateProvider
+                dispatchers = dispatchers
             ),
             dispatcher = dispatcher,
             delegator = delegator,
@@ -120,7 +118,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             getObjectTypes = getObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            dateProvider = dateProvider
         )
         stubNetworkMode()
     }

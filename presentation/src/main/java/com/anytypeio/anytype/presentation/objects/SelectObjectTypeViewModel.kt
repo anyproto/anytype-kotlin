@@ -165,7 +165,8 @@ class SelectObjectTypeViewModel(
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
                                         isPinnable = true,
-                                        isDefault = type.uniqueKey == default.key
+                                        isDefault = false,
+                                        canBeDefault = false
                                     )
                                 }
                             )
@@ -579,7 +580,8 @@ sealed class SelectTypeView {
         val isFirstInSection: Boolean = false,
         val isLastInSection: Boolean = false,
         val isPinnable: Boolean = true,
-        val isDefault: Boolean = false
+        val isDefault: Boolean = false,
+        val canBeDefault: Boolean = true
     ) : SelectTypeView()
 }
 

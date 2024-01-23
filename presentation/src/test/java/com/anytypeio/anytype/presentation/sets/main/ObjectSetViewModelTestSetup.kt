@@ -75,6 +75,7 @@ import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -274,7 +275,8 @@ open class ObjectSetViewModelTestSetup {
             getObjectTypes = getObjectTypes,
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             dispatchers = dispatchers,
-            getNetworkMode = getNetworkMode
+            getNetworkMode = getNetworkMode,
+            dateProvider = DateProviderImpl()
         )
     }
 

@@ -251,19 +251,6 @@ class SelectObjectTypeViewModel(
             proceedWithSettingPinnedTypes(
                 pinned = updatedPinnedTypes.map { type -> TypeId(type.id) }
             )
-            viewModelScope.launch {
-                proceedWithUpdatingAppActions(
-                    pinned = updatedPinnedTypes.mapNotNull { type ->
-                        val obj = storeOfObjectTypes.get(type.id)
-                        val key = obj?.uniqueKey
-                        if (obj != null && key != null) {
-                            key to obj.name.orEmpty()
-                        } else {
-                            null
-                        }
-                    }
-                )
-            }
         }
     }
 
@@ -273,19 +260,6 @@ class SelectObjectTypeViewModel(
         if (state is SelectTypeViewState.Content) {
             val updatedPinnedTypes = pinned.value.filter { type -> type.id != typeView.id }
             proceedWithSettingPinnedTypes(pinned = updatedPinnedTypes)
-            viewModelScope.launch {
-                proceedWithUpdatingAppActions(
-                    pinned = updatedPinnedTypes.mapNotNull { type ->
-                        val obj = storeOfObjectTypes.get(type.id)
-                        val key = obj?.uniqueKey
-                        if (obj != null && key != null) {
-                            key to obj.name.orEmpty()
-                        } else {
-                            null
-                        }
-                    }
-                )
-            }
         }
     }
 
@@ -298,19 +272,6 @@ class SelectObjectTypeViewModel(
                 swap(index1 = currentPosition, index2 = currentPosition.dec())
             }
             proceedWithSettingPinnedTypes(pinned = updatedPinnedTypes)
-            viewModelScope.launch {
-                proceedWithUpdatingAppActions(
-                    pinned = updatedPinnedTypes.mapNotNull { type ->
-                        val obj = storeOfObjectTypes.get(type.id)
-                        val key = obj?.uniqueKey
-                        if (obj != null && key != null) {
-                            key to obj.name.orEmpty()
-                        } else {
-                            null
-                        }
-                    }
-                )
-            }
         }
     }
 
@@ -323,19 +284,6 @@ class SelectObjectTypeViewModel(
                 swap(index1 = currentPosition, index2 = currentPosition.inc())
             }
             proceedWithSettingPinnedTypes(pinned = updatedPinnedTypes)
-            viewModelScope.launch {
-                proceedWithUpdatingAppActions(
-                    pinned = updatedPinnedTypes.mapNotNull { type ->
-                        val obj = storeOfObjectTypes.get(type.id)
-                        val key = obj?.uniqueKey
-                        if (obj != null && key != null) {
-                            key to obj.name.orEmpty()
-                        } else {
-                            null
-                        }
-                    }
-                )
-            }
         }
     }
 
@@ -352,19 +300,6 @@ class SelectObjectTypeViewModel(
                 },
                 onSuccess = {
                     Timber.d("Set pinned types successfully")
-                }
-            )
-        }
-    }
-
-    private fun proceedWithUpdatingAppActions(pinned: List<Pair<Key, Name>>) {
-        if (pinned.isNotEmpty()) {
-            appActionManager.setup(
-                pinned.take(MAX_TYPE_COUNT_FOR_APP_ACTIONS).map { (key, name) ->
-                    AppActionManager.Action.CreateNew(
-                        type = TypeKey(key),
-                        name = name
-                    )
                 }
             )
         }

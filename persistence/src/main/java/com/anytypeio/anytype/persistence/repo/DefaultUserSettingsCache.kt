@@ -208,7 +208,7 @@ class DefaultUserSettingsCache(
                 .getOrDefault(key = space.id, defaultValue = SpacePreference())
 
             val updated = givenSpacePreference.copy(
-                pinnedObjectTypeKeys = types.map { type -> type.id }
+                pinnedObjectTypeIds = types.map { type -> type.id }
             )
 
             val result = buildMap {
@@ -228,7 +228,7 @@ class DefaultUserSettingsCache(
             .map { preferences ->
                 preferences
                     .preferences[space.id]
-                    ?.pinnedObjectTypeKeys?.map { id -> TypeId(id) } ?: emptyList()
+                    ?.pinnedObjectTypeIds?.map { id -> TypeId(id) } ?: emptyList()
             }
     }
 

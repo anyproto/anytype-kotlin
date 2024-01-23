@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.objects.resolveSetByRelationPrefilledObjectData
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.StateFlow
@@ -50,13 +49,16 @@ class ObjectSetCreateBookmarkRecordViewModel(
             val state = objectState.value.dataViewState() ?: return
             when (state) {
                 is ObjectState.DataView.Collection -> {
+                    val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+                    val prefilled = viewer.prefillNewObjectDetails(
+                        dateProvider = dateProvider,
+                        storeOfRelations = storeOfRelations,
+                        dataViewRelationLinks = state.objectRelationLinks
+                    )
                     proceedWithCreatingBookmarkObject(
-                        input = input
-                    ) { objId ->
-                        objId?.let {
-                            proceedWithAddingNewBookmarkObject(it)
-                        }
-                    }
+                        input = input,
+                        details = prefilled
+                    ) { proceedWithAddingNewBookmarkObject(it) }
                 }
 
                 is ObjectState.DataView.Set -> {
@@ -65,15 +67,10 @@ class ObjectSetCreateBookmarkRecordViewModel(
                         val sourceDetails = state.details[setOf.firstOrNull()]
                         if (sourceDetails != null && sourceDetails.map.isNotEmpty()) {
                             val sourceObject = ObjectWrapper.Relation(sourceDetails.map)
-                            val viewer = state.viewerByIdOrFirst(session.currentViewerId.value)
-                            if (viewer == null) {
-                                Timber.e("onCreateNewDataViewObject, Viewer is empty")
-                                return
-                            }
-                            val details = sourceObject.resolveSetByRelationPrefilledObjectData(
-                                dvFilters = viewer.filters,
+                            val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+                            val details = viewer.resolveSetByRelationPrefilledObjectData(
                                 objSetByRelation = sourceObject,
-                                dvRelationLinks = state.objectRelationLinks,
+                                dataViewRelationLinks = state.objectRelationLinks,
                                 dateProvider = dateProvider,
                                 storeOfRelations = storeOfRelations
                             )
@@ -82,7 +79,6 @@ class ObjectSetCreateBookmarkRecordViewModel(
                                 details = details
                             ) { isCompleted.value = true }
                         }
-
                     } else {
                         proceedWithCreatingBookmarkObject(
                             input = input
@@ -116,7 +112,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
     private suspend fun proceedWithCreatingBookmarkObject(
         input: String,
         details: Struct = emptyMap(),
-        action: suspend (Id?) -> Unit
+        action: suspend (Id) -> Unit
     ) {
         val params = CreateBookmarkObject.Params(
             space = spaceManager.get(),
@@ -127,7 +123,6 @@ class ObjectSetCreateBookmarkRecordViewModel(
             failure = {
                 Timber.e(it, "Error while creating bookmark object")
                 sendToast("Error while creating bookmark object")
-                action(null)
             },
             success = { objId ->
                 Timber.d("Created bookmark object with id: $objId")

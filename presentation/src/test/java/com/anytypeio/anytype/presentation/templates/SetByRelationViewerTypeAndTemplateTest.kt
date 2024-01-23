@@ -177,8 +177,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 filters = listOf(),
                 type = pageTypeKey,
                 template = null,
-                dvRelationLinks = listOf(relationLink1),
-                objSetByRelation = relationObject1
+                prefilled = mapOf(relationLink1.key to null)
             )
             async(params)
         }
@@ -268,8 +267,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 filters = listOf(),
                 type = pageTypeKey,
                 template = DEFAULT_TEMPLATE_ID_BLANK,
-                dvRelationLinks = listOf(relationLink1),
-                objSetByRelation = relationObject1
+                prefilled = mapOf(relationLink1.key to null)
             )
             async(params)
         }
@@ -359,8 +357,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                 filters = listOf(),
                 type = pageTypeKey,
                 template = pageTemplate2.id,
-                dvRelationLinks = listOf(relationLink1),
-                objSetByRelation = relationObject1
+                prefilled = mapOf(relationLink1.key to null)
             )
             async(params)
         }
@@ -461,8 +458,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                     filters = listOf(),
                     type = customType1Key,
                     template = template1.id,
-                    dvRelationLinks = listOf(relationLink1),
-                    objSetByRelation = relationObject1
+                    prefilled = mapOf(relationLink1.key to null)
                 )
                 async(params)
             }
@@ -563,8 +559,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                     filters = listOf(),
                     type = customType1Key,
                     template = null,
-                    dvRelationLinks = listOf(relationLink1),
-                    objSetByRelation = relationObject1
+                    prefilled = mapOf(relationLink1.key to null)
                 )
                 async(params)
             }
@@ -665,8 +660,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                     filters = listOf(),
                     type = customType1Key,
                     template = DEFAULT_TEMPLATE_ID_BLANK,
-                    dvRelationLinks = listOf(relationLink1),
-                    objSetByRelation = relationObject1
+                    prefilled = mapOf(relationLink1.key to null)
                 )
                 async(params)
             }
@@ -767,8 +761,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                     filters = listOf(),
                     type = customType1Key,
                     template = DEFAULT_TEMPLATE_ID_BLANK,
-                    dvRelationLinks = listOf(relationLink1),
-                    objSetByRelation = relationObject1
+                    prefilled = mapOf(relationLink1.key to null)
                 )
                 async(params)
             }
@@ -869,8 +862,7 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
                     filters = listOf(),
                     type = customType1Key,
                     template = template2.id,
-                    dvRelationLinks = listOf(relationLink1),
-                    objSetByRelation = relationObject1
+                    prefilled = mapOf(relationLink1.key to null)
                 )
                 async(params)
             }

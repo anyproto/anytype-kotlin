@@ -11,7 +11,10 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -159,7 +162,11 @@ class SplashViewModel(
                     proceedWithNavigation()
                 },
                 onSuccess = { result ->
-                    commands.emit(Command.NavigateToObject(result.objectId))
+                    if (type == COLLECTION || type == SET) {
+                        commands.emit(Command.NavigateToObjectSet(result.objectId))
+                    } else {
+                        commands.emit(Command.NavigateToObject(result.objectId))
+                    }
                 }
             )
         }

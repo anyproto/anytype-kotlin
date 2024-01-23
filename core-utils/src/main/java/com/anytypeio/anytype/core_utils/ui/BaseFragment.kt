@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 abstract class BaseFragment<T : ViewBinding>(
@@ -101,7 +102,18 @@ abstract class BaseFragment<T : ViewBinding>(
 
     protected fun DialogFragment.showChildFragment(tag: String? = null) {
         jobs += this@BaseFragment.lifecycleScope.launch {
-            throttleFlow.emit { show(this@BaseFragment.childFragmentManager, tag) }
+            throttleFlow.emit {
+                runCatching {
+                    show(this@BaseFragment.childFragmentManager, tag)
+                }.fold(
+                    onSuccess = {
+                        // Do nothing.
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while navifation")
+                    }
+                )
+            }
         }
     }
 

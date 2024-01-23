@@ -529,7 +529,7 @@ class CreateDataViewObjectUseCaseTest {
         val expected = Command.CreateObject(
             template = template,
             prefilled = mapOf(
-                filterDate.key to (expectedValue?.toString() ?: timestamp.toString()),
+                filterDate.key to (expectedValue?.toDouble() ?: timestamp.toDouble()),
             ),
             internalFlags = listOf(InternalFlags.ShouldSelectTemplate),
             space = SpaceId(spaceId),

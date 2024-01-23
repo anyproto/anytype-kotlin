@@ -39,6 +39,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -222,112 +223,15 @@ private fun FlowRowContent(
                             modifier = Modifier,
                             isSelected = view.isDefault
                         )
-                        if (view.isPinnable) {
-                            DropdownMenu(
-                                expanded = isMenuExpanded.value,
-                                onDismissRequest = { isMenuExpanded.value = false },
-                                offset = DpOffset(x = 0.dp, y = 6.dp)
-                            ) {
-                                if (!view.isPinned) {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            isMenuExpanded.value = false
-                                            onPinOnTopClicked(view)
-                                        }
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.any_object_creation_menu_pin_on_top),
-                                            style = BodyRegular,
-                                            color = colorResource(id = R.color.text_primary)
-                                        )
-                                    }
-                                }
-                                if (view.isPinned) {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            isMenuExpanded.value = false
-                                            onUnpinTypeClicked(view)
-                                        }
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.any_object_creation_menu_unpin),
-                                            style = BodyRegular,
-                                            color = colorResource(id = R.color.text_primary)
-                                        )
-                                    }
-                                }
-                                if (view.canBeDefault && !view.isDefault && !view.isFromLibrary) {
-                                    DropdownMenuItem(
-                                        onClick = {
-                                            isMenuExpanded.value = false
-                                            onSetDefaultTypeClicked(view)
-                                        }
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.any_object_creation_menu_set_as_default),
-                                            style = BodyRegular,
-                                            color = colorResource(id = R.color.text_primary)
-                                        )
-                                    }
-                                }
-                                if (view.isPinned) {
-                                    if (!view.isFirstInSection && !view.isLastInSection) {
-                                        DropdownMenuItem(
-                                            onClick = {
-                                                isMenuExpanded.value = false
-                                                onMoveLeftClicked(view)
-                                            }
-                                        ) {
-                                            Text(
-                                                text = stringResource(R.string.any_object_creation_menu_move_left),
-                                                style = BodyRegular,
-                                                color = colorResource(id = R.color.text_primary)
-                                            )
-                                        }
-                                        DropdownMenuItem(
-                                            onClick = {
-                                                isMenuExpanded.value = false
-                                                onMoveRightClicked(view)
-                                            }
-                                        ) {
-                                            Text(
-                                                text = stringResource(R.string.any_object_creation_menu_move_right),
-                                                style = BodyRegular,
-                                                color = colorResource(id = R.color.text_primary)
-                                            )
-                                        }
-                                    }
-                                    if (view.isFirstInSection && !view.isLastInSection) {
-                                        DropdownMenuItem(
-                                            onClick = {
-                                                isMenuExpanded.value = false
-                                                onMoveRightClicked(view)
-                                            }
-                                        ) {
-                                            Text(
-                                                text = stringResource(R.string.any_object_creation_menu_move_right),
-                                                style = BodyRegular,
-                                                color = colorResource(id = R.color.text_primary)
-                                            )
-                                        }
-                                    }
-                                    if (view.isLastInSection && !view.isFirstInSection) {
-                                        DropdownMenuItem(
-                                            onClick = {
-                                                isMenuExpanded.value = false
-                                                onMoveLeftClicked(view)
-                                            }
-                                        ) {
-                                            Text(
-                                                text = stringResource(R.string.any_object_creation_menu_move_left),
-                                                style = BodyRegular,
-                                                color = colorResource(id = R.color.text_primary)
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-                        }
+                        ObjectTypeItemMenu(
+                            view = view,
+                            isMenuExpanded = isMenuExpanded,
+                            onPinOnTopClicked = onPinOnTopClicked,
+                            onUnpinTypeClicked = onUnpinTypeClicked,
+                            onSetDefaultTypeClicked = onSetDefaultTypeClicked,
+                            onMoveLeftClicked = onMoveLeftClicked,
+                            onMoveRightClicked = onMoveRightClicked
+                        )
                     }
                 }
                 is SelectTypeView.Section.Pinned -> {
@@ -352,6 +256,124 @@ private fun FlowRowContent(
                 }
             }
 
+        }
+    }
+}
+
+@Composable
+private fun ObjectTypeItemMenu(
+    view: SelectTypeView.Type,
+    isMenuExpanded: MutableState<Boolean>,
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
+    onMoveLeftClicked: (SelectTypeView.Type) -> Unit,
+    onMoveRightClicked: (SelectTypeView.Type) -> Unit
+) {
+    if (view.isPinnable) {
+        DropdownMenu(
+            expanded = isMenuExpanded.value,
+            onDismissRequest = { isMenuExpanded.value = false },
+            offset = DpOffset(x = 0.dp, y = 6.dp)
+        ) {
+            if (!view.isPinned) {
+                DropdownMenuItem(
+                    onClick = {
+                        isMenuExpanded.value = false
+                        onPinOnTopClicked(view)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.any_object_creation_menu_pin_on_top),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+            }
+            if (view.isPinned) {
+                DropdownMenuItem(
+                    onClick = {
+                        isMenuExpanded.value = false
+                        onUnpinTypeClicked(view)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.any_object_creation_menu_unpin),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+            }
+            if (view.canBeDefault && !view.isDefault && !view.isFromLibrary) {
+                DropdownMenuItem(
+                    onClick = {
+                        isMenuExpanded.value = false
+                        onSetDefaultTypeClicked(view)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.any_object_creation_menu_set_as_default),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+            }
+            if (view.isPinned) {
+                if (!view.isFirstInSection && !view.isLastInSection) {
+                    DropdownMenuItem(
+                        onClick = {
+                            isMenuExpanded.value = false
+                            onMoveLeftClicked(view)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.any_object_creation_menu_move_left),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                    DropdownMenuItem(
+                        onClick = {
+                            isMenuExpanded.value = false
+                            onMoveRightClicked(view)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.any_object_creation_menu_move_right),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                }
+                if (view.isFirstInSection && !view.isLastInSection) {
+                    DropdownMenuItem(
+                        onClick = {
+                            isMenuExpanded.value = false
+                            onMoveRightClicked(view)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.any_object_creation_menu_move_right),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                }
+                if (view.isLastInSection && !view.isFirstInSection) {
+                    DropdownMenuItem(
+                        onClick = {
+                            isMenuExpanded.value = false
+                            onMoveLeftClicked(view)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.any_object_creation_menu_move_left),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                }
+            }
         }
     }
 }

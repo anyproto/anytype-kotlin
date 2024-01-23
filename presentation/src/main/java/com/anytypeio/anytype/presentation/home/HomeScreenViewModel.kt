@@ -1145,10 +1145,7 @@ class HomeScreenViewModel(
                         if (uniqueKey != null) {
                             add(wrapper.uniqueKey)
                         } else {
-                            Timber.w(":CHECK:Current space: ${spaceManager.get()}")
-                            Timber.w(":CHECK:Current config: ${config}")
-                            Timber.w(":CHECK:Could not found unique key for a pinned type: ${typeId.id}")
-                            Timber.w(":CHECK:Idea type: ${storeOfObjectTypes.getByKey("ot-idea")}")
+                            Timber.w("Could not found unique key for a pinned type: ${typeId.id}")
                         }
                     }
                     if (size < MAX_TYPE_COUNT_FOR_APP_ACTIONS && !contains(ObjectTypeUniqueKeys.NOTE)) {

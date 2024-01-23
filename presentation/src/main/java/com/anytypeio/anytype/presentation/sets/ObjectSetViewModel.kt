@@ -1060,15 +1060,21 @@ class ObjectSetViewModel(
                         }
                         ObjectType.Layout.RELATION -> {
                             val validTemplateId = templateChosenBy ?: defaultTemplate
-                            proceedWithCreatingDataViewObject(
-                                CreateDataViewObject.Params.SetByRelation(
-                                    filters = viewer.filters,
-                                    template = validTemplateId,
-                                    type = TypeKey(objectTypeUniqueKey),
-                                    objSetByRelation = ObjectWrapper.Relation(sourceDetails.map),
-                                    dvRelationLinks = currentState.dataViewContent.relationLinks
+                            if (objectTypeUniqueKey == ObjectTypeIds.BOOKMARK) {
+                                dispatch(
+                                    ObjectSetCommand.Modal.CreateBookmark(ctx = context)
                                 )
-                            )
+                            } else {
+                                proceedWithCreatingDataViewObject(
+                                    CreateDataViewObject.Params.SetByRelation(
+                                        filters = viewer.filters,
+                                        template = validTemplateId,
+                                        type = TypeKey(objectTypeUniqueKey),
+                                        objSetByRelation = ObjectWrapper.Relation(sourceDetails.map),
+                                        dvRelationLinks = currentState.dataViewContent.relationLinks
+                                    )
+                                )
+                            }
                         }
                         else -> toast("Unable to define a source for a new object.")
                     }
@@ -1106,23 +1112,30 @@ class ObjectSetViewModel(
         }
 
         val validTemplateId = templateChosenBy ?: defaultTemplate
+        val type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         val createObjectParams = CreateDataViewObject.Params.Collection(
             template = validTemplateId,
-            type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!,
+            type = type,
             filters = viewer.filters,
             dvRelationLinks = state.dataViewContent.relationLinks
         )
-        proceedWithCreatingDataViewObject(createObjectParams) { result ->
-            val params = AddObjectToCollection.Params(
-                ctx = context,
-                after = "",
-                targets = listOf(result.objectId)
+        if (type.key == ObjectTypeIds.BOOKMARK) {
+            dispatch(
+                ObjectSetCommand.Modal.CreateBookmark(ctx = context)
             )
-            viewModelScope.launch {
-                addObjectToCollection.async(params).fold(
-                    onSuccess = { payload -> dispatcher.send(payload) },
-                    onFailure = { Timber.e(it, "Error while adding object to collection") }
+        } else {
+            proceedWithCreatingDataViewObject(createObjectParams) { result ->
+                val params = AddObjectToCollection.Params(
+                    ctx = context,
+                    after = "",
+                    targets = listOf(result.objectId)
                 )
+                viewModelScope.launch {
+                    addObjectToCollection.async(params).fold(
+                        onSuccess = { payload -> dispatcher.send(payload) },
+                        onFailure = { Timber.e(it, "Error while adding object to collection") }
+                    )
+                }
             }
         }
     }

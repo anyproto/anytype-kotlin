@@ -49,6 +49,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
+import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
@@ -192,6 +193,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var searchObjects: SearchObjects
+
+    @Mock
+    lateinit var getPinnedObjectTypes: GetPinnedObjectTypes
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
@@ -2814,7 +2818,8 @@ class HomeScreenViewModelTest {
         spaceManager = spaceManager,
         setObjectDetails = setObjectDetails,
         getSpaceView = getSpaceView,
-        searchObjects = searchObjects
+        searchObjects = searchObjects,
+        getPinnedObjectTypes = getPinnedObjectTypes
     )
 
     companion object {

@@ -1066,21 +1066,27 @@ class ObjectSetViewModel(
                             }
                         }
                         ObjectType.Layout.RELATION -> {
-                            val validTemplateId = templateChosenBy ?: defaultTemplate
-                            val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
-                                storeOfRelations = storeOfRelations,
-                                dateProvider = dateProvider,
-                                dataViewRelationLinks = currentState.dataViewContent.relationLinks,
-                                objSetByRelation = ObjectWrapper.Relation(sourceDetails.map)
-                            )
-                            proceedWithCreatingDataViewObject(
-                                CreateDataViewObject.Params.SetByRelation(
-                                    filters = viewer.filters,
-                                    template = validTemplateId,
-                                    type = TypeKey(objectTypeUniqueKey),
-                                    prefilled = prefilled
+                            if (objectTypeUniqueKey == ObjectTypeIds.BOOKMARK) {
+                                dispatch(
+                                    ObjectSetCommand.Modal.CreateBookmark(ctx = context)
                                 )
-                            )
+                            } else {
+                                val validTemplateId = templateChosenBy ?: defaultTemplate
+                                val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
+                                    storeOfRelations = storeOfRelations,
+                                    dateProvider = dateProvider,
+                                    dataViewRelationLinks = currentState.dataViewContent.relationLinks,
+                                    objSetByRelation = ObjectWrapper.Relation(sourceDetails.map)
+                                )
+                                proceedWithCreatingDataViewObject(
+                                    CreateDataViewObject.Params.SetByRelation(
+                                        filters = viewer.filters,
+                                        template = validTemplateId,
+                                        type = TypeKey(objectTypeUniqueKey),
+                                        prefilled = prefilled
+                                    )
+                                )
+                            }
                         }
                         else -> toast("Unable to define a source for a new object.")
                     }
@@ -1123,23 +1129,30 @@ class ObjectSetViewModel(
             dateProvider = dateProvider,
             dataViewRelationLinks = state.dataViewContent.relationLinks
         )
+        val type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         val createObjectParams = CreateDataViewObject.Params.Collection(
             template = validTemplateId,
-            type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!,
+            type = type,
             filters = viewer.filters,
             prefilled = prefilled
         )
-        proceedWithCreatingDataViewObject(createObjectParams) { result ->
-            val params = AddObjectToCollection.Params(
-                ctx = context,
-                after = "",
-                targets = listOf(result.objectId)
+        if (type.key == ObjectTypeIds.BOOKMARK) {
+            dispatch(
+                ObjectSetCommand.Modal.CreateBookmark(ctx = context)
             )
-            viewModelScope.launch {
-                addObjectToCollection.async(params).fold(
-                    onSuccess = { payload -> dispatcher.send(payload) },
-                    onFailure = { Timber.e(it, "Error while adding object to collection") }
+        } else {
+            proceedWithCreatingDataViewObject(createObjectParams) { result ->
+                val params = AddObjectToCollection.Params(
+                    ctx = context,
+                    after = "",
+                    targets = listOf(result.objectId)
                 )
+                viewModelScope.launch {
+                    addObjectToCollection.async(params).fold(
+                        onSuccess = { payload -> dispatcher.send(payload) },
+                        onFailure = { Timber.e(it, "Error while adding object to collection") }
+                    )
+                }
             }
         }
     }

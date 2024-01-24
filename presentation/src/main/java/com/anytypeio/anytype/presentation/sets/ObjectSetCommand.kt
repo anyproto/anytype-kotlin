@@ -93,6 +93,16 @@ sealed class ObjectSetCommand {
         data class OpenSelectTypeScreen(
             val excludedTypes: List<Id>
         ) : Modal()
+
+        data class ShowObjectSetTypePopupMenu(
+            val ctx: Id,
+            val anchor: Int
+        ) : Modal()
+
+        data class ShowObjectSetRelationPopupMenu(
+            val ctx: Id,
+            val anchor: Int
+        ) : Modal()
     }
 
     sealed class Intent : ObjectSetCommand() {

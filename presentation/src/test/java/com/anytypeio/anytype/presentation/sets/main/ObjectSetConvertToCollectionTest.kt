@@ -72,7 +72,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
         val secondState = stateFlow.awaitItem()
         assertIs<ObjectState.DataView.Set>(secondState)
 
-        viewModel.onClickListener(clicked = ListenerType.Relation.TurnIntoCollection)
+        viewModel.proceedWithConvertingToCollection()
 
         val eventSetIsCollection = Event.Command.DataView.SetIsCollection(
             context = root,

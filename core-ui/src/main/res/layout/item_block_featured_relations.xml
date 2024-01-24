@@ -3,8 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/featuredRelationRoot"
     android:layout_marginTop="@dimen/dp_8"
-    android:paddingStart="20dp"
-    android:paddingEnd="20dp"
+    android:layout_marginStart="-8dp"
+    android:layout_marginEnd="@dimen/dp_12"
     android:layout_marginBottom="24dp"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"/>

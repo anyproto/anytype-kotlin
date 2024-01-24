@@ -10,5 +10,5 @@ message SpacePreferences {
 
 message SpacePreference {
   optional string defaultObjectTypeKey = 1;
-  repeated string pinnedObjectTypeKeys = 2;
+  repeated string pinnedObjectTypeIds = 2;
 }

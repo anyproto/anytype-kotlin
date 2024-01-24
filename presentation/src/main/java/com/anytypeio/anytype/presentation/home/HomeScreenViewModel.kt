@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -47,6 +48,7 @@ import com.anytypeio.anytype.domain.page.CloseBlock
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
+import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
@@ -156,7 +158,8 @@ class HomeScreenViewModel(
     private val setWidgetActiveView: SetWidgetActiveView,
     private val setObjectDetails: SetObjectDetails,
     private val getSpaceView: GetSpaceView,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
+    private val getPinnedObjectTypes: GetPinnedObjectTypes
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -1127,15 +1130,33 @@ class HomeScreenViewModel(
     private fun proceedWithSettingUpShortcuts() {
         spaceManager
             .observe()
-            .onEach { config ->
-                val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()
+            .flatMapLatest { config ->
+                getPinnedObjectTypes.flow(
+                    GetPinnedObjectTypes.Params(space = SpaceId(config.space))
+                ).map { pinned ->
+                    config to pinned
+                }
+            }
+            .onEach { (config, pinned) ->
                 val keys = buildSet {
-                    if (defaultObjectType != null) {
-                        add(defaultObjectType.type.key)
+                    pinned.forEach { typeId ->
+                        val wrapper = storeOfObjectTypes.get(typeId.id)
+                        val uniqueKey = wrapper?.uniqueKey
+                        if (uniqueKey != null) {
+                            add(wrapper.uniqueKey)
+                        } else {
+                            Timber.w("Could not found unique key for a pinned type: ${typeId.id}")
+                        }
                     }
-                    add(ObjectTypeUniqueKeys.NOTE)
-                    add(ObjectTypeUniqueKeys.PAGE)
-                    add(ObjectTypeUniqueKeys.TASK)
+                    if (size < MAX_TYPE_COUNT_FOR_APP_ACTIONS && !contains(ObjectTypeUniqueKeys.NOTE)) {
+                        add(ObjectTypeUniqueKeys.NOTE)
+                    }
+                    if (size < MAX_TYPE_COUNT_FOR_APP_ACTIONS && !contains(ObjectTypeUniqueKeys.PAGE)) {
+                        add(ObjectTypeUniqueKeys.PAGE)
+                    }
+                    if (size < MAX_TYPE_COUNT_FOR_APP_ACTIONS && !contains(ObjectTypeUniqueKeys.TASK)) {
+                        add(ObjectTypeUniqueKeys.TASK)
+                    }
                 }
                 searchObjects(
                     SearchObjects.Params(
@@ -1360,7 +1381,8 @@ class HomeScreenViewModel(
         private val spaceWidgetContainer: SpaceWidgetContainer,
         private val setObjectDetails: SetObjectDetails,
         private val getSpaceView: GetSpaceView,
-        private val searchObjects: SearchObjects
+        private val searchObjects: SearchObjects,
+        private val getPinnedObjectTypes: GetPinnedObjectTypes
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1396,7 +1418,8 @@ class HomeScreenViewModel(
             spaceWidgetContainer = spaceWidgetContainer,
             setObjectDetails = setObjectDetails,
             getSpaceView = getSpaceView,
-            searchObjects = searchObjects
+            searchObjects = searchObjects,
+            getPinnedObjectTypes = getPinnedObjectTypes
         ) as T
     }
 
@@ -1515,3 +1538,5 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         }
     }
 }
+
+const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4

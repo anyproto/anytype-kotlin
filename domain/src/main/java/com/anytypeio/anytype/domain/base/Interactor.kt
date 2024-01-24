@@ -73,7 +73,9 @@ abstract class FlowInteractor<in P, R>(
     private val context: CoroutineContext
 ) {
     protected abstract fun build() : Flow<R>
+    protected abstract fun build(params: P) : Flow<R>
     fun flow() : Flow<R> = build().flowOn(context)
+    fun flow(params: P) : Flow<R> = build(params).flowOn(context)
 }
 
 

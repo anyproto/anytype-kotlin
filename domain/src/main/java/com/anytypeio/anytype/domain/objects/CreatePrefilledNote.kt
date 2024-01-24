@@ -22,7 +22,7 @@ class CreatePrefilledNote @Inject constructor(
     override suspend fun doWork(params: Params): Id {
         val obj = repo.createObject(
             Command.CreateObject(
-                typeKey = TypeKey(ObjectTypeUniqueKeys.NOTE),
+                typeKey = params.customType ?: TypeKey(ObjectTypeUniqueKeys.NOTE),
                 space = SpaceId(params.space),
                 template = null,
                 internalFlags = emptyList(),
@@ -43,9 +43,13 @@ class CreatePrefilledNote @Inject constructor(
         return obj.id
     }
 
+    /**
+     * @param [customType] provide custom type instead of note if needed
+     */
     data class Params(
         val space: Id,
         val text: String,
-        val details: Struct
+        val details: Struct,
+        val customType: TypeKey? = null
     )
 }

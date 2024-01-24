@@ -277,7 +277,11 @@ object DataModule {
     @Singleton
     fun provideUserSettingsCache(
         @Named("default") prefs: SharedPreferences,
-    ): UserSettingsCache = DefaultUserSettingsCache(prefs)
+        context: Context
+    ): UserSettingsCache = DefaultUserSettingsCache(
+        prefs = prefs,
+        context = context
+    )
 
     @JvmStatic
     @Provides

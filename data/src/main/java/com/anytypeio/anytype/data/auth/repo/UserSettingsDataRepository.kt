@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import kotlinx.coroutines.flow.Flow
 
 class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSettingsRepository {
 
@@ -27,6 +28,17 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     override suspend fun getDefaultObjectType(
         space: SpaceId
     ): TypeId? = cache.getDefaultObjectType(space = space)
+
+    override suspend fun setPinnedObjectTypes(space: SpaceId, types: List<TypeId>) {
+        cache.setPinnedObjectTypes(
+            space = space,
+            types = types
+        )
+    }
+
+    override fun getPinnedObjectTypes(space: SpaceId): Flow<List<TypeId>> {
+        return cache.getPinnedObjectTypes(space = space)
+    }
 
     override suspend fun setThemeMode(mode: ThemeMode) {
         cache.setThemeMode(mode)

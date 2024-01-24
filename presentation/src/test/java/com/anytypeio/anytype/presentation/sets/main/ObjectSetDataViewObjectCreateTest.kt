@@ -76,7 +76,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
                 type = TypeKey(setOfKey),
                 filters = mockObjectSet.filters,
                 template = null,
-                dvRelationLinks = listOf()
+                prefilled = mapOf(),
             )
         )
 
@@ -100,7 +100,7 @@ class ObjectSetDataViewObjectCreateTest : ObjectSetViewModelTestSetup() {
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
                         template = null,
-                        dvRelationLinks = mockObjectSet.relationLinks
+                        prefilled = mapOf(),
                     )
                 )
             }

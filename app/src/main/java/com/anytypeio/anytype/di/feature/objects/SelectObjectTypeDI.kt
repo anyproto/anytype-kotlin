@@ -6,6 +6,10 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
@@ -48,4 +52,8 @@ interface SelectObjectTypeDependencies : ComponentDependencies {
     fun analytics(): Analytics
     fun dispatchers(): AppCoroutineDispatchers
     fun spaceManager(): SpaceManager
+    fun userSettingsRepo(): UserSettingsRepository
+    fun configStorage(): ConfigStorage
+    fun appActionManager(): AppActionManager
+    fun storeOfObjectTypes(): StoreOfObjectTypes
 }

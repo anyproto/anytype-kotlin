@@ -532,7 +532,7 @@
     <string name="undefined">Undefined</string>
     <string name="set_by_relation">Relation: %1$s</string>
     <string name="set_by_relations">Relations: %1$s</string>
-    <string name="set_by_type">Type: %1$s</string>
+    <string name="set_by_type">Object Type: %1$s</string>
     <string name="my_types">My types</string>
     <string name="my_relations">My relations</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
@@ -1239,6 +1239,14 @@
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
+
+    <string name="create_object_section_pinned">Pinned</string>
+    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
+    <string name="any_object_creation_menu_unpin">Unpin</string>
+    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="any_object_creation_menu_move_left">Move left</string>
+    <string name="any_object_creation_menu_move_right">Move right</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
 
     <string name="block_media_error">Something went wrong, please try again</string>
 </resources>

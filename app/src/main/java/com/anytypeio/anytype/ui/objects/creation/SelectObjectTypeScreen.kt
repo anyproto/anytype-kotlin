@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,10 +33,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -46,8 +50,10 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -55,6 +61,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.R
@@ -78,13 +85,23 @@ fun PreviewScreen() {
         onTypeClicked = {},
         state = SelectTypeViewState.Loading,
         onQueryChanged = {},
-        onFocused = {}
+        onFocused = {},
+        onUnpinTypeClicked = {},
+        onPinOnTopClicked = {},
+        onSetDefaultTypeClicked = {},
+        onMoveLeftClicked = {},
+        onMoveRightClicked = {}
     )
 }
 
 @Composable
 fun SelectObjectTypeScreen(
     onTypeClicked: (SelectTypeView.Type) -> Unit,
+    onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
+    onMoveLeftClicked: (SelectTypeView.Type) -> Unit,
+    onMoveRightClicked: (SelectTypeView.Type) -> Unit,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit,
     state: SelectTypeViewState
@@ -104,18 +121,39 @@ fun SelectObjectTypeScreen(
             onFocused = onFocused
         )
         Spacer(modifier = Modifier.height(8.dp))
-        ScreenContent(state, onTypeClicked)
+        ScreenContent(
+            state = state,
+            onTypeClicked = onTypeClicked,
+            onPinOnTopClicked = onPinOnTopClicked,
+            onUnpinTypeClicked = onUnpinTypeClicked,
+            onSetDefaultTypeClicked = onSetDefaultTypeClicked,
+            onMoveLeftClicked = onMoveLeftClicked,
+            onMoveRightClicked = onMoveRightClicked
+        )
     }
 }
 
 @Composable
 private fun ScreenContent(
     state: SelectTypeViewState,
-    onTypeClicked: (SelectTypeView.Type) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit,
+    onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
+    onMoveLeftClicked: (SelectTypeView.Type) -> Unit,
+    onMoveRightClicked: (SelectTypeView.Type) -> Unit,
 ) {
     when (state) {
         is SelectTypeViewState.Content -> {
-            FlowRowContent(state.views, onTypeClicked)
+            FlowRowContent(
+                views = state.views,
+                onTypeClicked = onTypeClicked,
+                onPinOnTopClicked = onPinOnTopClicked,
+                onUnpinTypeClicked = onUnpinTypeClicked,
+                onSetDefaultTypeClicked = onSetDefaultTypeClicked,
+                onMoveRightClicked = onMoveRightClicked,
+                onMoveLeftClicked = onMoveLeftClicked
+            )
         }
         SelectTypeViewState.Empty -> {
             AnimatedVisibility(
@@ -149,7 +187,12 @@ private fun ScreenContent(
 @OptIn(ExperimentalLayoutApi::class)
 private fun FlowRowContent(
     views: List<SelectTypeView>,
-    onTypeClicked: (SelectTypeView.Type) -> Unit
+    onTypeClicked: (SelectTypeView.Type) -> Unit,
+    onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
+    onMoveLeftClicked: (SelectTypeView.Type) -> Unit,
+    onMoveRightClicked: (SelectTypeView.Type) -> Unit,
 ) {
     FlowRow(
         modifier = Modifier
@@ -162,13 +205,38 @@ private fun FlowRowContent(
         views.forEach { view ->
             when (view) {
                 is SelectTypeView.Type -> {
-                    ObjectTypeItem(
-                        name = view.name,
-                        emoji = view.icon,
-                        onItemClicked = throttledClick(
-                            onClick = { onTypeClicked(view) }
-                        ),
-                        modifier = Modifier
+                    val isMenuExpanded = remember {
+                        mutableStateOf(false)
+                    }
+                    val haptic = LocalHapticFeedback.current
+                    Box {
+                        ObjectTypeItem(
+                            name = view.name,
+                            emoji = view.icon,
+                            onItemClicked = throttledClick(
+                                onClick = { onTypeClicked(view) }
+                            ),
+                            onItemLongClicked = {
+                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                isMenuExpanded.value = !isMenuExpanded.value
+                            },
+                            modifier = Modifier,
+                            isSelected = view.isDefault
+                        )
+                        ObjectTypeItemMenu(
+                            view = view,
+                            isMenuExpanded = isMenuExpanded,
+                            onPinOnTopClicked = onPinOnTopClicked,
+                            onUnpinTypeClicked = onUnpinTypeClicked,
+                            onSetDefaultTypeClicked = onSetDefaultTypeClicked,
+                            onMoveLeftClicked = onMoveLeftClicked,
+                            onMoveRightClicked = onMoveRightClicked
+                        )
+                    }
+                }
+                is SelectTypeView.Section.Pinned -> {
+                    Section(
+                        title = stringResource(id = R.string.create_object_section_pinned),
                     )
                 }
                 is SelectTypeView.Section.Groups -> {
@@ -188,6 +256,124 @@ private fun FlowRowContent(
                 }
             }
 
+        }
+    }
+}
+
+@Composable
+private fun ObjectTypeItemMenu(
+    view: SelectTypeView.Type,
+    isMenuExpanded: MutableState<Boolean>,
+    onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
+    onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
+    onSetDefaultTypeClicked: (SelectTypeView.Type) -> Unit,
+    onMoveLeftClicked: (SelectTypeView.Type) -> Unit,
+    onMoveRightClicked: (SelectTypeView.Type) -> Unit
+) {
+    if (view.isPinnable) {
+        DropdownMenu(
+            expanded = isMenuExpanded.value,
+            onDismissRequest = { isMenuExpanded.value = false },
+            offset = DpOffset(x = 0.dp, y = 6.dp)
+        ) {
+            if (!view.isPinned) {
+                DropdownMenuItem(
+                    onClick = {
+                        isMenuExpanded.value = false
+                        onPinOnTopClicked(view)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.any_object_creation_menu_pin_on_top),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+            }
+            if (view.isPinned) {
+                DropdownMenuItem(
+                    onClick = {
+                        isMenuExpanded.value = false
+                        onUnpinTypeClicked(view)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.any_object_creation_menu_unpin),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+            }
+            if (view.canBeDefault && !view.isDefault && !view.isFromLibrary) {
+                DropdownMenuItem(
+                    onClick = {
+                        isMenuExpanded.value = false
+                        onSetDefaultTypeClicked(view)
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.any_object_creation_menu_set_as_default),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+            }
+            if (view.isPinned) {
+                if (!view.isFirstInSection && !view.isLastInSection) {
+                    DropdownMenuItem(
+                        onClick = {
+                            isMenuExpanded.value = false
+                            onMoveLeftClicked(view)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.any_object_creation_menu_move_left),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                    DropdownMenuItem(
+                        onClick = {
+                            isMenuExpanded.value = false
+                            onMoveRightClicked(view)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.any_object_creation_menu_move_right),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                }
+                if (view.isFirstInSection && !view.isLastInSection) {
+                    DropdownMenuItem(
+                        onClick = {
+                            isMenuExpanded.value = false
+                            onMoveRightClicked(view)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.any_object_creation_menu_move_right),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                }
+                if (view.isLastInSection && !view.isFirstInSection) {
+                    DropdownMenuItem(
+                        onClick = {
+                            isMenuExpanded.value = false
+                            onMoveLeftClicked(view)
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.any_object_creation_menu_move_left),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -230,6 +416,16 @@ private fun LazyColumnContent(
                         )
                     }
                 }
+                is SelectTypeView.Section.Pinned -> {
+                    item(
+                        key = view.javaClass.name,
+                        span = { GridItemSpan(maxLineSpan) }
+                    ) {
+                        Section(
+                            title = stringResource(id = R.string.create_object_section_pinned)
+                        )
+                    }
+                }
                 is SelectTypeView.Section.Library -> {
                     item(
                         key = view.javaClass.name,
@@ -252,7 +448,11 @@ private fun LazyColumnContent(
                                     onTypeClicked(view)
                                 }
                             ),
-                            modifier = Modifier.animateItemPlacement()
+                            onItemLongClicked = {
+
+                            },
+                            modifier = Modifier.animateItemPlacement(),
+                            isSelected = view.isDefault
                         )
                     }
                 }
@@ -262,23 +462,38 @@ private fun LazyColumnContent(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ObjectTypeItem(
     modifier: Modifier,
     name: String,
     emoji: String,
-    onItemClicked: () -> Unit
+    isSelected: Boolean,
+    onItemClicked: () -> Unit,
+    onItemLongClicked: () -> Unit
 ) {
     Row(
         modifier = modifier
             .height(48.dp)
             .border(
                 width = 1.dp,
-                color = colorResource(id = R.color.shape_primary),
+                color = if (isSelected)
+                    colorResource(id = R.color.palette_system_amber_50)
+                else colorResource(
+                    id =
+                    R.color.shape_primary
+                ),
                 shape = RoundedCornerShape(12.dp)
             )
             .clip(RoundedCornerShape(12.dp))
-            .clickable { onItemClicked() },
+            .combinedClickable(
+                onClick = {
+                    onItemClicked()
+                },
+                onLongClick = {
+                    onItemLongClicked()
+                }
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(
@@ -429,3 +644,61 @@ private fun Section(title: String) {
         )
     }
 }
+
+
+
+@Preview
+@Composable
+fun ClipboardCreateObjectPreview() {
+    ClipboardBottomToolbar(
+        type = CLIPBOARD_TYPE_OBJECT,
+        onToolbarClicked = {}
+    )
+}
+
+@Preview
+@Composable
+fun ClipboardCreateBookmarkPreview() {
+    ClipboardBottomToolbar(
+        type = CLIPBOARD_TYPE_BOOKMARK,
+        onToolbarClicked = {}
+    )
+}
+
+@Composable
+fun ClipboardBottomToolbar(
+    type: ClipboardDataType,
+    modifier: Modifier = Modifier,
+    onToolbarClicked: () -> Unit
+) {
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .clickable { onToolbarClicked() }
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.ic_clipboard_bottom_toolbar),
+            contentDescription = "Clipboard icon",
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .align(Alignment.CenterStart)
+        )
+        Text(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 50.dp),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_secondary),
+            text = when(type) {
+                CLIPBOARD_TYPE_OBJECT -> stringResource(R.string.clipboard_panel_create_object_from_clipboard)
+                CLIPBOARD_TYPE_BOOKMARK -> stringResource(R.string.clipboard_panel_create_bookmark_from_clipboard)
+                else -> throw IllegalStateException("Unexpected type")
+            }
+        )
+    }
+}
+
+const val CLIPBOARD_TYPE_OBJECT = 0
+const val CLIPBOARD_TYPE_BOOKMARK = 1
+typealias ClipboardDataType = Int

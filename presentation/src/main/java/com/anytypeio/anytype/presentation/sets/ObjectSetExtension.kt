@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.DVRecord
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
@@ -15,9 +16,12 @@ import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVVie
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -26,6 +30,7 @@ import com.anytypeio.anytype.core_utils.ext.addAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -41,6 +46,11 @@ import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.relations.view
+import com.anytypeio.anytype.core_models.PermittedConditions
+import com.anytypeio.anytype.core_models.ext.DAYS_IN_MONTH
+import com.anytypeio.anytype.core_models.ext.DAYS_IN_WEEK
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.ext.SECONDS_IN_DAY
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -119,89 +129,62 @@ private fun ObjectState.DataView.mapFeaturedRelations(
 ): List<ObjectRelationView> = keys.mapNotNull { key ->
     when (key) {
         Relations.DESCRIPTION -> null
-        Relations.TYPE -> details.details[ctx]?.type?.firstOrNull()?.let { typeId ->
-            val objectType = details.details[typeId]?.map?.mapToObjectWrapperType()
-            if (objectType?.isDeleted == true) {
+        Relations.TYPE -> {
+
+            val type = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty()).type.firstOrNull()
+            val typeMap = type?.let { details.details[it]?.map }
+
+            val isTypeMapValid = !typeMap.isNullOrEmpty()
+            val wrapper = if (isTypeMapValid) typeMap?.mapToObjectWrapperType() else null
+
+            val isDeleted = wrapper == null || wrapper.isDeleted == true
+
+            if (wrapper != null && !isDeleted) {
+                ObjectRelationView.ObjectType.Base(
+                    id = wrapper.id,
+                    key = key,
+                    name = wrapper.name.orEmpty(),
+                    featured = true,
+                    readOnly = false,
+                    type = wrapper.id,
+                    system = key.isSystemKey()
+                )
+            } else {
                 ObjectRelationView.ObjectType.Deleted(
-                    id = typeId,
+                    id = type.orEmpty(),
                     key = key,
                     featured = true,
                     readOnly = false,
                     system = key.isSystemKey()
                 )
-            } else {
-                when (this) {
-                    is ObjectState.DataView.Collection -> ObjectRelationView.ObjectType.Collection(
-                        id = typeId,
-                        key = key,
-                        name = objectType?.name.orEmpty(),
-                        featured = true,
-                        readOnly = false,
-                        type = typeId,
-                        system = key.isSystemKey()
-                    )
-                    is ObjectState.DataView.Set -> ObjectRelationView.ObjectType.Set(
-                        id = typeId,
-                        key = key,
-                        name = objectType?.name.orEmpty(),
-                        featured = true,
-                        readOnly = false,
-                        type = typeId,
-                        system = key.isSystemKey()
-                    )
-                }
             }
         }
         Relations.SET_OF -> {
-            val objectSet = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty())
-            val sources = mutableListOf<ObjectView>()
-            val source = objectSet.setOf.firstOrNull()
-            if (source != null) {
-                val wrapper = ObjectWrapper.Basic(details.details[source]?.map.orEmpty())
-                if (!wrapper.isEmpty()) {
-                    if (wrapper.isDeleted == true) {
-                        ObjectRelationView.Source.Deleted(
-                            id = details.details[ctx]?.id.orEmpty(),
-                            key = key,
-                            name = Relations.RELATION_NAME_EMPTY,
-                            featured = true,
-                            readOnly = false,
-                            system = key.isSystemKey()
-                        )
-                    } else {
-                        sources.add(wrapper.toObjectView(urlBuilder = urlBuilder))
-                        ObjectRelationView.Source.Base(
-                            id = details.details[ctx]?.id.orEmpty(),
-                            key = key,
-                            name = Relations.RELATION_NAME_EMPTY,
-                            featured = true,
-                            readOnly = wrapper.relationReadonlyValue ?: false,
-                            sources = sources,
-                            system = key.isSystemKey()
-                        )
-                    }
-                } else {
-                    ObjectRelationView.Source.Base(
-                        id = details.details[ctx]?.id.orEmpty(),
-                        key = key,
-                        name = Relations.RELATION_NAME_EMPTY,
-                        featured = true,
-                        readOnly = wrapper.relationReadonlyValue ?: false,
-                        sources = sources,
-                        system = key.isSystemKey()
-                    )
-                }
+
+            val source = ObjectWrapper.Basic(details.details[ctx]?.map.orEmpty()).setOf.firstOrNull()
+            val sourceMap = source?.let { details.details[it]?.map }
+
+            val isSourceMapValid = !sourceMap.isNullOrEmpty()
+            val wrapper = if (isSourceMapValid) ObjectWrapper.Basic(sourceMap!!) else null
+
+            val isDeleted = wrapper?.isDeleted == true
+            val isReadOnly = wrapper?.relationReadonlyValue ?: false
+
+            val sources = if (!isDeleted && isSourceMapValid) {
+                listOf(wrapper!!.toObjectViewDefault(urlBuilder = urlBuilder))
             } else {
-                ObjectRelationView.Source.Base(
-                    id = details.details[ctx]?.id.orEmpty(),
-                    key = key,
-                    name = Relations.RELATION_NAME_EMPTY,
-                    featured = true,
-                    readOnly = false,
-                    sources = sources,
-                    system = key.isSystemKey()
-                )
+                emptyList()
             }
+
+            ObjectRelationView.Source(
+                id = details.details[ctx]?.id.orEmpty(),
+                key = key,
+                name = Relations.RELATION_NAME_EMPTY,
+                featured = true,
+                readOnly = isReadOnly,
+                sources = sources,
+                system = key.isSystemKey()
+            )
         }
         Relations.BACKLINKS, Relations.LINKS -> {
             details.linksFeaturedRelation(
@@ -299,7 +282,11 @@ fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
 
 fun ObjectWrapper.Basic.toObjectView(urlBuilder: UrlBuilder): ObjectView = when (isDeleted) {
     true -> ObjectView.Deleted(id)
-    else -> ObjectView.Default(
+    else -> toObjectViewDefault(urlBuilder)
+}
+
+fun ObjectWrapper.Basic.toObjectViewDefault(urlBuilder: UrlBuilder): ObjectView.Default {
+    return ObjectView.Default(
         id = id,
         name = getProperName(),
         icon = ObjectIcon.from(
@@ -599,6 +586,92 @@ fun ObjectState.DataView.isChangingDefaultTypeAvailable(): Boolean {
             val setOfValue = getSetOfValue(root)
             isSetByRelation(setOfValue = setOfValue)
         }
+    }
+}
+
+suspend fun DVViewer.prefillNewObjectDetails(
+    storeOfRelations: StoreOfRelations,
+    dateProvider: DateProvider,
+    dataViewRelationLinks: List<RelationLink>
+): Struct =
+    buildMap {
+        filters.forEach { filter ->
+            val relationObject = storeOfRelations.getByKey(filter.relation) ?: return@forEach
+            if (!relationObject.isReadonlyValue && PermittedConditions.contains(
+                    filter.condition
+                )
+            ) {
+                //Relation format should be taken from DataView relation links
+                val filterRelationFormat =
+                    dataViewRelationLinks.firstOrNull { it.key == filter.relation }?.format
+                when (filterRelationFormat) {
+                    Relation.Format.DATE -> {
+                        val value = DateParser.parse(filter.value)
+                        val updatedValue = filter.quickOption.getTimestampForQuickOption(
+                            value = value,
+                            dateProvider = dateProvider
+                        )
+                        if (updatedValue != null) {
+                            put(filter.relation, updatedValue.toDouble())
+                        }
+                    }
+                    else -> {
+                        filter.value?.let { put(filter.relation, it) }
+                    }
+                }
+            }
+        }
+    }
+
+suspend fun DVViewer.resolveSetByRelationPrefilledObjectData(
+    storeOfRelations: StoreOfRelations,
+    dateProvider: DateProvider,
+    objSetByRelation: ObjectWrapper.Relation,
+    dataViewRelationLinks: List<RelationLink>
+): Struct {
+    val prefillWithSetOf = buildMap {
+        val relationFormat = objSetByRelation.relationFormat
+        val defaultValue = resolveDefaultValueByFormat(relationFormat)
+        put(objSetByRelation.key, defaultValue)
+    }
+    val prefillNewObjectDetails = prefillNewObjectDetails(storeOfRelations, dateProvider, dataViewRelationLinks)
+    return prefillWithSetOf + prefillNewObjectDetails
+}
+
+private fun resolveDefaultValueByFormat(format: RelationFormat): Any? = when (format) {
+    Relation.Format.LONG_TEXT,
+    Relation.Format.SHORT_TEXT,
+    Relation.Format.URL,
+    Relation.Format.EMAIL,
+    Relation.Format.PHONE,
+    Relation.Format.EMOJI -> EMPTY_STRING_VALUE
+    Relation.Format.CHECKBOX -> false
+    Relation.Format.NUMBER -> null
+    else -> null
+}
+
+fun DVFilterQuickOption.getTimestampForQuickOption(value: Long?, dateProvider: DateProvider): Long? {
+    val option = this
+    val time = dateProvider.getCurrentTimestampInSeconds()
+    return when (option) {
+        DVFilterQuickOption.DAYS_AGO -> {
+            if (value == null) return null
+            time - SECONDS_IN_DAY * value
+        }
+        DVFilterQuickOption.LAST_MONTH -> time - SECONDS_IN_DAY * DAYS_IN_MONTH
+        DVFilterQuickOption.LAST_WEEK -> time - SECONDS_IN_DAY * DAYS_IN_WEEK
+        DVFilterQuickOption.YESTERDAY -> time - SECONDS_IN_DAY
+        DVFilterQuickOption.CURRENT_WEEK,
+        DVFilterQuickOption.CURRENT_MONTH,
+        DVFilterQuickOption.TODAY -> time
+        DVFilterQuickOption.TOMORROW -> time + SECONDS_IN_DAY
+        DVFilterQuickOption.NEXT_WEEK -> time + SECONDS_IN_DAY * DAYS_IN_WEEK
+        DVFilterQuickOption.NEXT_MONTH -> time + SECONDS_IN_DAY * DAYS_IN_MONTH
+        DVFilterQuickOption.DAYS_AHEAD -> {
+            if (value == null) return null
+            time + SECONDS_IN_DAY * value
+        }
+        DVFilterQuickOption.EXACT_DATE -> value
     }
 }
 

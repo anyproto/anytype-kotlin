@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.domain.launch
+package com.anytypeio.anytype.domain.types
 
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -7,20 +7,20 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import javax.inject.Inject
 
-class SetDefaultObjectType @Inject constructor(
+class SetPinnedObjectTypes @Inject constructor(
     private val repo: UserSettingsRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<SetDefaultObjectType.Params, Unit>(dispatchers.io) {
+) : ResultInteractor<SetPinnedObjectTypes.Params, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Params) {
-        repo.setDefaultObjectType(
+        repo.setPinnedObjectTypes(
             space = params.space,
-            type = params.type
+            types = params.types
         )
     }
 
-    data class Params(
+    class Params(
         val space: SpaceId,
-        val type: TypeId,
+        val types: List<TypeId>
     )
 }

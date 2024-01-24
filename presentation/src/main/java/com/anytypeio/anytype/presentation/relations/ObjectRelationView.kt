@@ -77,31 +77,17 @@ sealed class ObjectRelationView : DefaultObjectDiffIdentifier {
         val objects: List<ObjectView>
     ) : ObjectRelationView()
 
-    sealed class Source : ObjectRelationView() {
-        data class Base(
-            override val id: Id,
-            override val key: Key,
-            override val name: String,
-            override val value: String? = null,
-            override val featured: Boolean = false,
-            override val system: Boolean,
-            override val readOnly: Boolean = false,
-            val sources: List<ObjectView>
-        ) : Source() {
-            val isSourceByRelation : Boolean get() = sources.any { s ->
-                s is ObjectView.Default && s.isRelation
-            }
-        }
-
-        data class Deleted(
-            override val id: Id,
-            override val key: Key,
-            override val name: String,
-            override val value: String? = null,
-            override val system: Boolean,
-            override val featured: Boolean = false,
-            override val readOnly: Boolean,
-            ) : Source()
+    data class Source(
+        override val id: Id,
+        override val key: Key,
+        override val name: String,
+        override val value: String? = null,
+        override val featured: Boolean = false,
+        override val system: Boolean,
+        override val readOnly: Boolean = false,
+        val sources: List<ObjectView.Default>
+    ) : ObjectRelationView() {
+        val isSourceByRelation: Boolean get() = sources.any { s -> s.isRelation }
     }
 
     data class File(
@@ -117,28 +103,6 @@ sealed class ObjectRelationView : DefaultObjectDiffIdentifier {
 
     sealed class ObjectType : ObjectRelationView() {
         data class Base(
-            override val id: Id,
-            override val key: Key,
-            override val name: String,
-            override val value: String? = null,
-            override val featured: Boolean = false,
-            override val system: Boolean,
-            override val readOnly: Boolean = false,
-            val type: Id
-        ) : ObjectType()
-
-        data class Set(
-            override val id: Id,
-            override val key: Key,
-            override val name: String,
-            override val value: String? = null,
-            override val featured: Boolean = false,
-            override val system: Boolean,
-            override val readOnly: Boolean = false,
-            val type: Id
-        ) : ObjectType()
-
-        data class Collection(
             override val id: Id,
             override val key: Key,
             override val name: String,

@@ -91,7 +91,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     type = TypeKey(setOfKey),
                     filters = mockObjectSet.filters,
                     template = null,
-                    dvRelationLinks = mockObjectSet.relationLinks
+                    prefilled = emptyMap()
                 )
             )
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -111,7 +111,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
                         template = null,
-                        dvRelationLinks = mockObjectSet.relationLinks
+                        prefilled = emptyMap()
                     )
                 )
             }
@@ -159,7 +159,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     type = TypeKey(setOfKey),
                     filters = mockObjectSet.filters,
                     template = null,
-                    dvRelationLinks = emptyList()
+                    prefilled = emptyMap()
                 )
             )
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -180,7 +180,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                         type = TypeKey(setOfKey),
                         filters = mockObjectSet.filters,
                         template = null,
-                        dvRelationLinks = mockObjectSet.relationLinks
+                        prefilled = emptyMap()
                     )
                 )
             }
@@ -245,8 +245,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     filters = mockObjectSet.filters,
                     template = null,
                     type = TypeKey(pageTypeId),
-                    objSetByRelation = relationSetBy,
-                    dvRelationLinks = mockObjectSet.relationLinks
+                    prefilled = emptyMap()
                 )
             )
             doReturn(Resultat.success(Unit)).`when`(closeBlock).async(mockObjectSet.root)
@@ -266,8 +265,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                         filters = mockObjectSet.filters,
                         template = null,
                         type = TypeKey(pageTypeId),
-                        objSetByRelation = relationSetBy,
-                        dvRelationLinks = mockObjectSet.relationLinks
+                        prefilled = mapOf(relationKey to null)
                     )
                 )
             }
@@ -328,7 +326,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 template = null,
                 type = TypeKey(pageTypeId),
                 filters = emptyList(),
-                dvRelationLinks = objectCollection.relationLinks
+                prefilled = emptyMap()
             )
         )
         doReturn(Resultat.success(Unit)).`when`(closeBlock).async(objectCollection.root)
@@ -348,7 +346,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                     type = TypeKey(pageTypeId),
                     template = null,
                     filters = emptyList(),
-                    dvRelationLinks = objectCollection.relationLinks
+                    prefilled = emptyMap()
                 )
             )
         }

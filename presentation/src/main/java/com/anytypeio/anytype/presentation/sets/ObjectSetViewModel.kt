@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -168,7 +169,8 @@ class ObjectSetViewModel(
     private val createTemplate: CreateTemplate,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getNetworkMode: GetNetworkMode
+    private val getNetworkMode: GetNetworkMode,
+    private val dateProvider: DateProvider
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>, ViewerDelegate by viewerDelegate {
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
@@ -1048,27 +1050,43 @@ class ObjectSetViewModel(
                             } else {
                                 val validTemplateId = templateChosenBy ?: defaultTemplate
                                 val dvRelationLinks = currentState.dataViewContent.relationLinks
+                                val prefilled = viewer.prefillNewObjectDetails(
+                                    storeOfRelations = storeOfRelations,
+                                    dateProvider = dateProvider,
+                                    dataViewRelationLinks = dvRelationLinks
+                                )
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
                                         type = TypeKey(uniqueKey),
                                         filters = viewer.filters,
                                         template = validTemplateId,
-                                        dvRelationLinks = dvRelationLinks
+                                        prefilled = prefilled
                                     )
                                 )
                             }
                         }
                         ObjectType.Layout.RELATION -> {
-                            val validTemplateId = templateChosenBy ?: defaultTemplate
-                            proceedWithCreatingDataViewObject(
-                                CreateDataViewObject.Params.SetByRelation(
-                                    filters = viewer.filters,
-                                    template = validTemplateId,
-                                    type = TypeKey(objectTypeUniqueKey),
-                                    objSetByRelation = ObjectWrapper.Relation(sourceDetails.map),
-                                    dvRelationLinks = currentState.dataViewContent.relationLinks
+                            if (objectTypeUniqueKey == ObjectTypeIds.BOOKMARK) {
+                                dispatch(
+                                    ObjectSetCommand.Modal.CreateBookmark(ctx = context)
                                 )
-                            )
+                            } else {
+                                val validTemplateId = templateChosenBy ?: defaultTemplate
+                                val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
+                                    storeOfRelations = storeOfRelations,
+                                    dateProvider = dateProvider,
+                                    dataViewRelationLinks = currentState.dataViewContent.relationLinks,
+                                    objSetByRelation = ObjectWrapper.Relation(sourceDetails.map)
+                                )
+                                proceedWithCreatingDataViewObject(
+                                    CreateDataViewObject.Params.SetByRelation(
+                                        filters = viewer.filters,
+                                        template = validTemplateId,
+                                        type = TypeKey(objectTypeUniqueKey),
+                                        prefilled = prefilled
+                                    )
+                                )
+                            }
                         }
                         else -> toast("Unable to define a source for a new object.")
                     }
@@ -1106,23 +1124,35 @@ class ObjectSetViewModel(
         }
 
         val validTemplateId = templateChosenBy ?: defaultTemplate
+        val prefilled = viewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            dataViewRelationLinks = state.dataViewContent.relationLinks
+        )
+        val type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         val createObjectParams = CreateDataViewObject.Params.Collection(
             template = validTemplateId,
-            type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!,
+            type = type,
             filters = viewer.filters,
-            dvRelationLinks = state.dataViewContent.relationLinks
+            prefilled = prefilled
         )
-        proceedWithCreatingDataViewObject(createObjectParams) { result ->
-            val params = AddObjectToCollection.Params(
-                ctx = context,
-                after = "",
-                targets = listOf(result.objectId)
+        if (type.key == ObjectTypeIds.BOOKMARK) {
+            dispatch(
+                ObjectSetCommand.Modal.CreateBookmark(ctx = context)
             )
-            viewModelScope.launch {
-                addObjectToCollection.async(params).fold(
-                    onSuccess = { payload -> dispatcher.send(payload) },
-                    onFailure = { Timber.e(it, "Error while adding object to collection") }
+        } else {
+            proceedWithCreatingDataViewObject(createObjectParams) { result ->
+                val params = AddObjectToCollection.Params(
+                    ctx = context,
+                    after = "",
+                    targets = listOf(result.objectId)
                 )
+                viewModelScope.launch {
+                    addObjectToCollection.async(params).fold(
+                        onSuccess = { payload -> dispatcher.send(payload) },
+                        onFailure = { Timber.e(it, "Error while adding object to collection") }
+                    )
+                }
             }
         }
     }
@@ -1482,10 +1512,37 @@ class ObjectSetViewModel(
                 dispatch(command)
             }
             is ListenerType.Relation.ChangeQueryByRelation -> {
-                toast("Currently, this query can be changed via Desktop only")
+                toast(clicked.msg)
             }
-            is ListenerType.Relation.TurnIntoCollection -> {
-                proceedWithConvertingToCollection()
+            is ListenerType.Relation.ObjectType -> {
+                when (clicked.relation) {
+                    is ObjectRelationView.ObjectType.Base -> {
+                        val state = stateReducer.state.value.dataViewState() ?: return
+                        when (state) {
+                            is ObjectState.DataView.Collection -> {
+                                //do nothing
+                            }
+                            is ObjectState.DataView.Set -> {
+                                val setOfValue = state.getSetOfValue(context)
+                                val command = if (state.isSetByRelation(setOfValue = setOfValue)) {
+                                    ObjectSetCommand.Modal.ShowObjectSetRelationPopupMenu(
+                                        ctx = clicked.relation.id,
+                                        anchor = clicked.viewId
+                                    )
+                                } else {
+                                    ObjectSetCommand.Modal.ShowObjectSetTypePopupMenu(
+                                        ctx = clicked.relation.id,
+                                        anchor = clicked.viewId
+                                    )
+                                }
+                                dispatch(command)
+                            }
+                        }
+                    }
+                    is ObjectRelationView.ObjectType.Deleted -> TODO()
+                    is ObjectRelationView.Source -> TODO()
+                    else -> TODO()
+                }
             }
             is ListenerType.Relation.Featured -> {
                 onRelationClickedListMode(
@@ -1604,7 +1661,7 @@ class ObjectSetViewModel(
         }
     }
 
-    private fun proceedWithConvertingToCollection() {
+    fun proceedWithConvertingToCollection() {
         val startTime = System.currentTimeMillis()
         val params = ConvertObjectToCollection.Params(ctx = context)
         viewModelScope.launch {

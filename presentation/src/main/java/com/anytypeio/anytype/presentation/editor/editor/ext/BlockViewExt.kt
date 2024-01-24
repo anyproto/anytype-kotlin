@@ -381,7 +381,7 @@ fun List<BlockView>.enterSAM(
         )
         else -> view.also {
             if(view !is BlockView.Permission) {
-                Timber.e("Attempts to enter SAM for block which does not support read / write mode")
+                Timber.w("Attempts to enter SAM for block which does not support read / write mode")
             }
         }
     }
@@ -737,7 +737,7 @@ fun List<BlockView>.highlight(
         else -> {
             view.also { v ->
                 if (v is BlockView.Searchable) {
-                    Timber.e("Ignoring search field for block type: ${v.getViewType()}")
+                    Timber.w("Ignoring search field for block type: ${v.getViewType()}")
                 }
             }
         }
@@ -1092,7 +1092,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.DataView.Default -> copy(isSelected = newSelection)
     else -> this.also {
         if (this is BlockView.Selectable)
-            Timber.e("Error when change selection for Selectable BlockView $this")
+            Timber.w("Error when change selection for Selectable BlockView $this")
     }
 }
 

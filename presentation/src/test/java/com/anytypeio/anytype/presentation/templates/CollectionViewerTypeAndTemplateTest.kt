@@ -170,7 +170,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = pageTypeKey,
                 template = null,
                 filters = emptyList(),
-                dvRelationLinks = listOf(relationLink1)
+                prefilled = emptyMap()
             )
             async(params)
         }
@@ -262,7 +262,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = pageTypeKey,
                 template = null,
                 filters = emptyList(),
-                dvRelationLinks = listOf(relationLink1)
+                prefilled = emptyMap()
             )
             async(params)
         }
@@ -354,7 +354,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = pageTypeKey,
                 template = pageTemplate2.id,
                 filters = emptyList(),
-                dvRelationLinks = listOf(relationLink1)
+                prefilled = emptyMap()
             )
             async(params)
         }
@@ -446,7 +446,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = TypeKey(customType1Key.key),
                 template = template1.id,
                 filters = emptyList(),
-                dvRelationLinks = listOf(relationLink1)
+                prefilled = emptyMap()
             )
             async(params)
         }
@@ -538,7 +538,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = TypeKey(customType1Key.key),
                 template = DEFAULT_TEMPLATE_ID_BLANK,
                 filters = emptyList(),
-                dvRelationLinks = listOf(relationLink1)
+                prefilled = emptyMap()
             )
             async(params)
         }
@@ -630,7 +630,7 @@ class CollectionViewerTypeAndTemplateTest: ObjectSetViewModelTestSetup() {
                 type = TypeKey(customType1Key.key),
                 template = template2.id,
                 filters = emptyList(),
-                dvRelationLinks = listOf(relationLink1)
+                prefilled = emptyMap()
             )
             async(params)
         }

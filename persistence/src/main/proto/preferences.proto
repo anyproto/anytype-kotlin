@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+option java_package = "com.anytypeio.anytype.persistence";
+option java_multiple_files = true;
+
+message SpacePreferences {
+  // maps space id to space preference
+  map <string, SpacePreference> preferences = 1;
+}
+
+message SpacePreference {
+  optional string defaultObjectTypeKey = 1;
+  repeated string pinnedObjectTypeIds = 2;
+}

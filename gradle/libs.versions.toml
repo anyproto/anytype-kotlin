@@ -64,6 +64,7 @@ timberVersion = '5.0.1'
 protobufJavaVersion = '3.9.2'
 protocVersion = '3.9.0'
 roomVersion = '2.5.2'
+dataStoreVersion = '1.0.0'
 amplitudeVersion = '2.36.1'
 coilComposeVersion = '2.2.2'
 sentryVersion = '6.0.0'
@@ -153,6 +154,7 @@ protobufJava = { module = "com.google.protobuf:protobuf-java", version.ref = "pr
 protobufJavaUtil = { module = "com.google.protobuf:protobuf-java-util", version.ref = "protobufJavaVersion" }
 protoc = { module = "com.google.protobuf:protoc", version.ref = "protocVersion" }
 room = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
+dataStore = { module = "androidx.datastore:datastore", version.ref = "dataStoreVersion" }
 roomKtx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 annotations = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 roomTesting = { module = "androidx.room:room-testing", version.ref = "roomVersion" }

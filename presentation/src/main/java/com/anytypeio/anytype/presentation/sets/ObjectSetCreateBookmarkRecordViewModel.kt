@@ -55,10 +55,10 @@ class ObjectSetCreateBookmarkRecordViewModel(
                         storeOfRelations = storeOfRelations,
                         dataViewRelationLinks = state.objectRelationLinks
                     )
-                    proceedWithCreatingBookmarkObject(
+                    createBookmark(
                         input = input,
                         details = prefilled
-                    ) { proceedWithAddingNewBookmarkObject(it) }
+                    ) { addBookmarkToCollection(it) }
                 }
 
                 is ObjectState.DataView.Set -> {
@@ -74,13 +74,13 @@ class ObjectSetCreateBookmarkRecordViewModel(
                                 dateProvider = dateProvider,
                                 storeOfRelations = storeOfRelations
                             )
-                            proceedWithCreatingBookmarkObject(
+                            createBookmark(
                                 input = input,
                                 details = details
                             ) { isCompleted.value = true }
                         }
                     } else {
-                        proceedWithCreatingBookmarkObject(
+                        createBookmark(
                             input = input
                         ) { isCompleted.value = true }
                     }
@@ -91,7 +91,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
         }
     }
 
-    private suspend fun proceedWithAddingNewBookmarkObject(bookmarkObj: Id) {
+    private suspend fun addBookmarkToCollection(bookmarkObj: Id) {
         val state = objectState.value.dataViewState() ?: return
         val params = AddObjectToCollection.Params(
             ctx = state.root,
@@ -109,7 +109,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
         )
     }
 
-    private suspend fun proceedWithCreatingBookmarkObject(
+    private suspend fun createBookmark(
         input: String,
         details: Struct = emptyMap(),
         action: suspend (Id) -> Unit

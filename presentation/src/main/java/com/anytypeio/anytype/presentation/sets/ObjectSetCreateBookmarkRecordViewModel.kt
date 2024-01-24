@@ -112,7 +112,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
     private suspend fun createBookmark(
         input: String,
         details: Struct = emptyMap(),
-        action: suspend (Id) -> Unit
+        onSuccess: suspend (Id) -> Unit
     ) {
         val params = CreateBookmarkObject.Params(
             space = spaceManager.get(),
@@ -126,7 +126,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
             },
             success = { objId ->
                 Timber.d("Created bookmark object with id: $objId")
-                action(objId)
+                onSuccess(objId)
             }
         )
     }

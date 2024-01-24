@@ -58,7 +58,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     createBookmark(
                         input = input,
                         details = prefilled
-                    ) { addBookmarkToCollection(it) }
+                    ) { bookmarkObj -> addBookmarkToCollection(bookmarkObj) }
                 }
 
                 is ObjectState.DataView.Set -> {

@@ -14,10 +14,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.widgets.dv.WidgetHeader
+import com.anytypeio.anytype.presentation.relations.model.RelationsListItem
 
 
 data class RelationsAddState(

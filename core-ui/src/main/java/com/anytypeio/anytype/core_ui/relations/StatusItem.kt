@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.views.Relations1
+import com.anytypeio.anytype.presentation.relations.model.RelationsListItem
 
 @Composable
 fun StatusItem(state: RelationsListItem.Item.Status) {

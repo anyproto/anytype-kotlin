@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.presentation.relations.model.RelationsListItem
 
 @Composable
 fun CommonContainer(content: @Composable BoxScope.() -> Unit) {

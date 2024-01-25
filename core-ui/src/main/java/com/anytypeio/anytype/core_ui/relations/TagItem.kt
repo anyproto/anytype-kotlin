@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.views.Relations1
+import com.anytypeio.anytype.presentation.relations.model.RelationsListItem
 
 @Composable
 fun TagItem(state: RelationsListItem.Item.Tag) {

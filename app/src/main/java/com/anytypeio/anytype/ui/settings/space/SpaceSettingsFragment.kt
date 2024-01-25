@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -277,9 +278,10 @@ fun SpaceSettingsScreen(
                         style = PreviewTitle2Regular,
                         maxLines = 2,
                         color = colorResource(id = R.color.text_primary),
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .align(Alignment.BottomStart)
-                            .padding(bottom = 12.dp)
+                            .padding(bottom = 12.dp, end = 50.dp)
                             .noRippleClickable {
                                 onSpaceIdClicked(spaceData.data.spaceId.orEmpty())
                             }
@@ -290,7 +292,7 @@ fun SpaceSettingsScreen(
         item {
             Box(
                 modifier = Modifier
-                    .height(72.dp)
+                    .height(92.dp)
                     .padding(horizontal = 20.dp)
                     .fillMaxWidth()
             ) {
@@ -304,8 +306,9 @@ fun SpaceSettingsScreen(
                     Text(
                         text = spaceData.data.createdBy ?: stringResource(id = R.string.unknown),
                         style = PreviewTitle2Regular,
-                        maxLines = 1,
+                        maxLines = 2,
                         color = colorResource(id = R.color.text_primary),
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp)
@@ -364,6 +367,7 @@ fun SpaceSettingsScreen(
                         style = PreviewTitle2Regular,
                         maxLines = 2,
                         color = colorResource(id = R.color.text_primary),
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp)
@@ -379,7 +383,7 @@ fun SpaceSettingsScreen(
                 Box(modifier = Modifier.height(78.dp)) {
                     ButtonWarning(
                         onClick = { onDeleteSpaceClicked() },
-                        text = "Delete space",
+                        text = stringResource(R.string.delete_space),
                         modifier = Modifier
                             .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
                             .fillMaxWidth()

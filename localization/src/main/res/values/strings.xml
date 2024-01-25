@@ -1247,4 +1247,6 @@
     <string name="any_object_creation_menu_move_right">Move right</string>
     <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
 
+    <string name="relation_value_create_new">Create \"%1$s\"</string>
+
 </resources>

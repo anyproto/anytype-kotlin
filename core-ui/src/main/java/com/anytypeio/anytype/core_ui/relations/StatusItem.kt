@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.relations
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,7 +7,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -19,8 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
-import com.anytypeio.anytype.core_ui.extensions.light
-//import com.anytypeio.anytype.core_ui.views.Relations1
+import com.anytypeio.anytype.core_ui.views.Relations1
 
 @Composable
 fun StatusItem(state: RelationsListItem.Item.Status) {
@@ -53,7 +50,7 @@ fun StatusItemText(state: RelationsListItem.Item.Status) {
             .padding(start = 6.dp, end = 6.dp),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        //style = Relations1
+        style = Relations1
     )
 }
 

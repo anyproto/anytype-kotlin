@@ -20,9 +20,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
-
-//import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
-//import com.anytypeio.anytype.core_ui.views.Relations1
+import com.anytypeio.anytype.core_ui.views.Relations1
 
 @Composable
 fun TagItem(state: RelationsListItem.Item.Tag) {
@@ -60,7 +58,7 @@ fun TagItemText(state: RelationsListItem.Item.Tag) {
             .padding(start = 6.dp, end = 6.dp),
         maxLines = 1,
         overflow = TextOverflow.Ellipsis,
-        //style = Relations1
+        style = Relations1
     )
 }
 

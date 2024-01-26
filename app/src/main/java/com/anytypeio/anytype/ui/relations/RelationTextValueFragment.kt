@@ -79,19 +79,23 @@ open class RelationTextValueFragment :
             val input = binding.recycler.findViewById<TextView?>(R.id.textInputField)
             val parsed = input?.text?.toString().orEmpty()
             // Workaround for updating relation value when before reloading content
-            if (action is RelationValueAction.Url.Reload && parsed != action.url) {
-                withParent<TextValueEditReceiver> {
-                    onTextValueChanged(
-                        ctx = ctx,
-                        relationKey = relationKey,
-                        objectId = objectId,
-                        text = parsed
+            if (action is RelationValueAction.Url.Reload) {
+                if (parsed != action.url) {
+                    withParent<TextValueEditReceiver> {
+                        onTextValueChanged(
+                            ctx = ctx,
+                            relationKey = relationKey,
+                            objectId = objectId,
+                            text = parsed
+                        )
+                    }
+                    vm.onAction(
+                        target = objectId,
+                        action = action.copy(url = parsed)
                     )
+                } else {
+                    toast(getString(R.string.enter_value))
                 }
-                vm.onAction(
-                    target = objectId,
-                    action = action.copy(url = parsed)
-                )
             } else {
                 vm.onAction(
                     target = objectId,

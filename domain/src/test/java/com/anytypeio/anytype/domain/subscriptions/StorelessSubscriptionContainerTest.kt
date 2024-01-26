@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.StubObject
+import com.anytypeio.anytype.core_models.StubObjectMinim
 import com.anytypeio.anytype.core_models.SubscriptionEvent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -18,6 +19,8 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
@@ -68,8 +71,8 @@ class StorelessSubscriptionContainerTest {
     @Test
     fun `should emit two objects from initial results`() = runTest {
 
-        val obj1 = StubObject()
-        val obj2 = StubObject()
+        val obj1 = StubObjectMinim()
+        val obj2 = StubObjectMinim()
         val givenResults = listOf(obj1, obj2)
 
         stubSearchWithSubscription(
@@ -86,6 +89,108 @@ class StorelessSubscriptionContainerTest {
             assertEquals(
                 expected = givenResults,
                 actual = first
+            )
+            awaitComplete()
+        }
+    }
+
+    @Test
+    fun `should add one object to objects from initial results after consuming add-event and set-event`() = runTest {
+
+        val obj1 = StubObjectMinim(id = "1", name = "Walter Benjamin")
+        val obj2 = StubObjectMinim(id = "2", name = "Aby Warburg")
+        val addedObject = StubObjectMinim(id = "3", name = "Aloïs Riegl")
+
+        val initialResults = listOf(obj1, obj2)
+        val resultAfterEvents = listOf(obj1, obj2, addedObject)
+
+        val events = buildList {
+            add(
+                SubscriptionEvent.Add(
+                    subscription = defaultSearchParams.subscription,
+                    afterId = obj2.id,
+                    target = addedObject.id
+                )
+            )
+            add(
+                SubscriptionEvent.Set(
+                    subscriptions = listOf(defaultSearchParams.subscription),
+                    target = addedObject.id,
+                    data = addedObject.map
+                )
+            )
+        }
+
+        stubSearchWithSubscription(
+            results = initialResults,
+            params = defaultSearchParams
+        )
+        stubSubscriptionEventChannel(
+            subscription = defaultSearchParams.subscription,
+            events = flowOf(events)
+        )
+
+        container.subscribe(defaultSearchParams).test {
+            val first = awaitItem()
+            assertEquals(
+                expected = initialResults,
+                actual = first
+            )
+            val second = awaitItem()
+            assertEquals(
+                expected = resultAfterEvents,
+                actual = second
+            )
+            awaitComplete()
+        }
+    }
+
+    @Test
+    fun `should update one object from initial results after consuming amend event`() = runTest {
+
+        val obj1 = StubObjectMinim(id = "1", name = "Heinrich")
+        val obj2 = StubObjectMinim(id = "2", name = "Aby Warburg")
+        val updatedName = "Heinrich Wölfflin"
+        val obj2Updated = ObjectWrapper.Basic(
+            obj2.map.toMutableMap().apply {
+                set(Relations.NAME, updatedName)
+            }
+        )
+
+        val initialResults = listOf(obj1, obj2)
+        val resultsAfterEvents = listOf(obj1, obj2Updated)
+
+        val events = buildList {
+            add(
+                SubscriptionEvent.Amend(
+                    subscriptions = listOf(defaultSearchParams.subscription),
+                    target = obj2.id,
+                    diff = mapOf(
+                        Relations.NAME to updatedName
+                    )
+                )
+            )
+        }
+
+        stubSearchWithSubscription(
+            results = initialResults,
+            params = defaultSearchParams
+        )
+        stubSubscriptionEventChannel(
+            subscription = defaultSearchParams.subscription,
+            events = flowOf(events)
+        )
+
+        container.subscribe(defaultSearchParams).test {
+            val first = awaitItem()
+            assertEquals(
+                expected = initialResults,
+                actual = first
+            )
+            val second = awaitItem()
+            assertEquals(
+                expected = resultsAfterEvents,
+                actual = second
             )
             awaitComplete()
         }

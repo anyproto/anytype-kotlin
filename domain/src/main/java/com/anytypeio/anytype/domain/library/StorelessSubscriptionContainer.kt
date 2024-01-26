@@ -99,25 +99,35 @@ interface StorelessSubscriptionContainer {
                 payload.forEach { event ->
                     when (event) {
                         is SubscriptionEvent.Add -> {
-                            result = addEventProcessor.process(event, result)
+                            if (event.subscription == subscription) {
+                                result = addEventProcessor.process(event, result)
+                            }
                         }
                         is SubscriptionEvent.Amend -> {
-                            result = amendEventProcessor.process(event, result)
+                            if (event.subscriptions.contains(subscription)) {
+                                result = amendEventProcessor.process(event, result)
+                            }
                         }
                         is SubscriptionEvent.Position -> {
                             result = positionEventProcessor.process(event, result)
                         }
                         is SubscriptionEvent.Remove -> {
-                            result = removeEventProcessor.process(event, result)
+                            if (event.subscription == subscription) {
+                                result = removeEventProcessor.process(event, result)
+                            }
                         }
                         is SubscriptionEvent.Set -> {
-                            result = setEventProcessor.process(event, result)
+                            if (event.subscriptions.contains(subscription)) {
+                                result = setEventProcessor.process(event, result)
+                            }
                         }
                         is SubscriptionEvent.Unset -> {
-                            result = unsetEventProcessor.process(event, result)
+                            if (event.subscriptions.contains(subscription)) {
+                                result = unsetEventProcessor.process(event, result)
+                            }
                         }
                         else -> {
-                            // do nothing
+                            logger.logWarning("Ignoring subscription event")
                         }
                     }
                 }

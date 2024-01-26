@@ -38,6 +38,16 @@ fun StubObject(
     )
 )
 
+fun StubObjectMinim(
+    id: String = MockDataFactory.randomUuid(),
+    name: String = MockDataFactory.randomString()
+): ObjectWrapper.Basic = ObjectWrapper.Basic(
+    map = mapOf(
+        Relations.ID to id,
+        Relations.NAME to name
+    )
+)
+
 fun StubObjectView(
     root: Id,
     blocks: List<Block> = emptyList(),

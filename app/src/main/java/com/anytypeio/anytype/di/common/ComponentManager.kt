@@ -86,7 +86,6 @@ import com.anytypeio.anytype.di.feature.settings.DaggerAppearanceComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerSpacesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
-import com.anytypeio.anytype.di.feature.settings.MainSettingsModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.sharing.DaggerAddToAnytypeComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerCreateSpaceComponent
@@ -798,10 +797,6 @@ class ComponentManager(
 
     val logoutWarningComponent = Component {
         main.logoutWarningComponent().module(LogoutWarningModule).build()
-    }
-
-    val mainSettingsComponent = Component {
-        main.mainSettingsComponent().module(MainSettingsModule).build()
     }
 
     val filesStorageComponent = Component {

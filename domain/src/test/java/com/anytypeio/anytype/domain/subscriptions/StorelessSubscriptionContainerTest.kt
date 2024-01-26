@@ -146,6 +146,67 @@ class StorelessSubscriptionContainerTest {
     }
 
     @Test
+    fun `should add one object to objects from initial results after consuming add-event, amend-event and then set-event`() = runTest {
+
+        val obj1 = StubObjectMinim(id = "1", name = "Walter Benjamin")
+        val obj2 = StubObjectMinim(id = "2", name = "Aby Warburg")
+        val addedObject = StubObjectMinim(id = "3", name = "")
+        val addedObjectAfterUpdate = StubObjectMinim(id = "3", name = "Erwin Panofsky")
+
+        val initialResults = listOf(obj1, obj2)
+        val resultAfterEvents = listOf(obj1, obj2, addedObjectAfterUpdate)
+
+        val events = buildList {
+            add(
+                SubscriptionEvent.Add(
+                    subscription = defaultSearchParams.subscription,
+                    afterId = obj2.id,
+                    target = addedObject.id
+                )
+            )
+            add(
+                SubscriptionEvent.Set(
+                    subscriptions = listOf(defaultSearchParams.subscription),
+                    target = addedObject.id,
+                    data = addedObject.map
+                )
+            )
+            add(
+                SubscriptionEvent.Amend(
+                    subscriptions = listOf(defaultSearchParams.subscription),
+                    target = addedObject.id,
+                    diff = mapOf(
+                        Relations.NAME to "Erwin Panofsky"
+                    )
+                )
+            )
+        }
+
+        stubSearchWithSubscription(
+            results = initialResults,
+            params = defaultSearchParams
+        )
+        stubSubscriptionEventChannel(
+            subscription = defaultSearchParams.subscription,
+            events = flowOf(events)
+        )
+
+        container.subscribe(defaultSearchParams).test {
+            val first = awaitItem()
+            assertEquals(
+                expected = initialResults,
+                actual = first
+            )
+            val second = awaitItem()
+            assertEquals(
+                expected = resultAfterEvents,
+                actual = second
+            )
+            awaitComplete()
+        }
+    }
+
+    @Test
     fun `should update one object from initial results after consuming amend event`() = runTest {
 
         val obj1 = StubObjectMinim(id = "1", name = "Heinrich")

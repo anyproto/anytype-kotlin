@@ -34,8 +34,14 @@ setup_local_mw:
 download_mw_artefacts:
 	./scripts/mw/update-mw.sh
 
+download_mw_artefacts_custom:
+	./scripts/mw/update-mw-custom.sh
+
 normalize_mw_imports:
 	./scripts/mw/normalize-imports.sh
 
 # Update mw when new release is ready
 update_mw: download_mw_artefacts normalize_mw_imports
+
+# Update mw from custom build (download only library, you have to update your proto files manually)
+update_mw_custom: download_mw_artefacts_custom

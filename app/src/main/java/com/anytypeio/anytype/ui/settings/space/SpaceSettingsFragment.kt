@@ -75,9 +75,13 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
     ).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            MaterialTheme(typography = typography) {
+            MaterialTheme(
+                typography = typography,
+                colors = MaterialTheme.colors.copy(
+                    surface = colorResource(id = R.color.context_menu_background)
+                )
+            ) {
                 SpaceSettingsScreen(
-                    onSpaceIconClick = {},
                     onNameSet = vm::onNameSet,
                     spaceData = vm.spaceViewState.collectAsStateWithLifecycle().value,
                     onDeleteSpaceClicked = throttledClick(
@@ -125,7 +129,8 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                             successToast = context.getString(R.string.created_by_id_copied_toast_msg)
                         )
                     },
-                    onDebugClicked = vm::onSpaceDebugClicked
+                    onDebugClicked = vm::onSpaceDebugClicked,
+                    onRandomGradientClicked = vm::onRandomSpaceGradientClicked
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {
@@ -176,7 +181,6 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
 @Composable
 fun SpaceSettingsScreen(
     spaceData: ViewState<SpaceSettingsViewModel.SpaceData>,
-    onSpaceIconClick: () -> Unit,
     onNameSet: (String) -> Unit,
     onDeleteSpaceClicked: () -> Unit,
     onFileStorageClick: () -> Unit,
@@ -184,7 +188,8 @@ fun SpaceSettingsScreen(
     onSpaceIdClicked: (Id) -> Unit,
     onNetworkIdClicked: (Id) -> Unit,
     onCreatedByClicked: (Id) -> Unit,
-    onDebugClicked: () -> Unit
+    onDebugClicked: () -> Unit,
+    onRandomGradientClicked: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -205,8 +210,8 @@ fun SpaceSettingsScreen(
                     is ViewState.Success -> spaceData.data.icon
                     else -> null
                 },
-                onSpaceIconClick = onSpaceIconClick,
-                onNameSet = onNameSet
+                onNameSet = onNameSet,
+                onRandomGradientClicked = onRandomGradientClicked
             )
         }
         item { Divider() }

@@ -486,7 +486,7 @@
     <string name="undefined">Не определено</string>
     <string name="set_by_relation">Отношение: %1$s</string>
     <string name="set_by_relations">Отношение: %1$s</string>
-    <string name="set_by_type">Object Type: %1$s</string>
+    <string name="set_by_type">Тип: %1$s</string>
     <string name="my_types">Мои типы</string>
     <string name="my_relations">Мои свойства</string>
     <string name="type_added">Свойство \"%1$s\" добавлено в вашу библиотеку</string>
@@ -829,7 +829,7 @@
     <string name="space_type_private">Приватный</string>
     <string name="space_type_unknown">Неизвестно</string>
     <string name="create_space_start_with">Начинается с</string>
-    <string name="create_object_section_lists">Lists</string>
+    <string name="create_object_section_lists">Группы</string>
     <string name="create_object_section_objects">Объекты</string>
     <string name="edit">Изменить</string>
     <string name="unselect_all">Отменить выбор</string>

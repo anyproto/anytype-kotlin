@@ -483,7 +483,7 @@
     <string name="undefined">未定义</string>
     <string name="set_by_relation">关联：%1$s</string>
     <string name="set_by_relations">关联：%1$s</string>
-    <string name="set_by_type">Object Type: %1$s</string>
+    <string name="set_by_type">类型：%1$s</string>
     <string name="my_types">我的类型</string>
     <string name="my_relations">我的关联</string>
     <string name="type_added">关联“%1$s”已添加到您的文库</string>
@@ -823,7 +823,7 @@
     <string name="space_type_private">私人</string>
     <string name="space_type_unknown">未知</string>
     <string name="create_space_start_with">开始于：</string>
-    <string name="create_object_section_lists">Lists</string>
+    <string name="create_object_section_lists">分组</string>
     <string name="create_object_section_objects">对象</string>
     <string name="edit">编辑</string>
     <string name="unselect_all">取消全选</string>

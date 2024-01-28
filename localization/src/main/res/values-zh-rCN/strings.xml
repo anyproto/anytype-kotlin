@@ -49,6 +49,8 @@
     <string name="space">空间</string>
     <string name="space_name">空间名称</string>
     <string name="personal_space">个人空间</string>
+    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
     <string name="in_order_to_save">为了节省本地设备上的空间，您可以将所有文件卸载到我们的加密备份节点。打开文件时，文件将被重新加载。</string>
     <string name="manage_files">管理文件</string>
@@ -481,7 +483,7 @@
     <string name="undefined">未定义</string>
     <string name="set_by_relation">关联：%1$s</string>
     <string name="set_by_relations">关联：%1$s</string>
-    <string name="set_by_type">类型：%1$s</string>
+    <string name="set_by_type">Object Type: %1$s</string>
     <string name="my_types">我的类型</string>
     <string name="my_relations">我的关联</string>
     <string name="type_added">关联“%1$s”已添加到您的文库</string>
@@ -821,7 +823,7 @@
     <string name="space_type_private">私人</string>
     <string name="space_type_unknown">未知</string>
     <string name="create_space_start_with">开始于：</string>
-    <string name="create_object_section_lists">分组</string>
+    <string name="create_object_section_lists">Lists</string>
     <string name="create_object_section_objects">对象</string>
     <string name="edit">编辑</string>
     <string name="unselect_all">取消全选</string>
@@ -964,7 +966,7 @@
     <string name="onboarding_terms_and_policy_terms">\u00A0使用的条款\u00A0</string>
     <string name="onboarding_terms_and_policy_infix">" 和 "</string>
     <string name="onboarding_terms_and_policy_privacy">隐私\u00A0政策</string>
-    <string name="onboarding_join_button_text">创建新账户</string>
+    <string name="onboarding_join_button_text">Join</string>
     <string name="onboarding_log_in_button_text">登录</string>
     <string name="onboarding_invite_code_title">填写邀请码</string>
     <string name="onboarding_invite_code_description">如果你没有，只需要打开anytype.io并注册到等候列表。</string>
@@ -1045,6 +1047,7 @@
     <string name="relation_origin_mobile_sharing_extension">手机共享扩展</string>
     <string name="relation_origin_use_case">使用案例</string>
     <string name="relation_origin_library_installed">库已安装</string>
+    <string name="relation_origin_bookmark">书签</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="other">%d 链接至</item>
@@ -1052,6 +1055,24 @@
     <plurals name="links_from_count">
         <item quantity="other">%d 链接自</item>
     </plurals>
+    <!--region ORIGIN RELATION VALUES -->
+    <string name="date_type_tomorrow">明天</string>
+    <string name="date_type_today">今天</string>
+    <string name="date_type_yesterday">昨天</string>
+    <string name="date_type_previous_seven_days">Previous seven days</string>
+    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_older">较早的</string>
     <string name="dates_days_ago">%1$s 天前</string>
     <string name="dates_days_from">%1$s 天后</string>
+    <!--endregion-->
+    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="create_object_section_pinned">Pinned</string>
+    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
+    <string name="any_object_creation_menu_unpin">Unpin</string>
+    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="any_object_creation_menu_move_left">向左移动</string>
+    <string name="any_object_creation_menu_move_right">向右移动</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
 </resources>

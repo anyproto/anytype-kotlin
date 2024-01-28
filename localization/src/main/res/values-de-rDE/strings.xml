@@ -484,7 +484,7 @@
     <string name="undefined">Unbestimmt</string>
     <string name="set_by_relation">Beziehung: %1$s</string>
     <string name="set_by_relations">Beziehungen: %1$s</string>
-    <string name="set_by_type">Object Type: %1$s</string>
+    <string name="set_by_type">Typ: %1$s</string>
     <string name="my_types">Meine Typen</string>
     <string name="my_relations">Meine Relationen</string>
     <string name="type_added">Typ „%1$s“ zu Ihrer Bibliothek hinzugefügt</string>
@@ -825,7 +825,7 @@
     <string name="space_type_private">Privat</string>
     <string name="space_type_unknown">Unbekannt</string>
     <string name="create_space_start_with">Starte mit</string>
-    <string name="create_object_section_lists">Lists</string>
+    <string name="create_object_section_lists">Gruppen</string>
     <string name="create_object_section_objects">Objekte</string>
     <string name="edit">Bearbeiten</string>
     <string name="unselect_all">Alle abwählen</string>

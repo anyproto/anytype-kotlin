@@ -49,6 +49,8 @@
     <string name="space">Espacio</string>
     <string name="space_name">Nombre del espacio</string>
     <string name="personal_space">Espacio personal</string>
+    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="delete_space">Eliminar \'\' espacio</string>
     <string name="you_can_store">Puede almacenar hasta %1$s de sus archivos en nuestro nodo de copia de seguridad cifrado de forma gratuita. Si alcanza el límite, los archivos se almacenarán sólo localmente.</string>
     <string name="in_order_to_save">Para ahorrar espacio en tu dispositivo local, puedes subir todos tus archivos a nuestro nodo de copia de seguridad cifrada. Los archivos se cargarán de nuevo cuando los abras.</string>
     <string name="manage_files">Gestionar archivos</string>
@@ -482,7 +484,7 @@
     <string name="undefined">Indefinido</string>
     <string name="set_by_relation">Relación: %1$s</string>
     <string name="set_by_relations">Relaciones: %1$s</string>
-    <string name="set_by_type">Tipo: %1$s</string>
+    <string name="set_by_type">Object Type: %1$s</string>
     <string name="my_types">Mis tipos</string>
     <string name="my_relations">Mis relaciones</string>
     <string name="type_added">Tipo \"%1$s\" agregado a su biblioteca</string>
@@ -823,7 +825,7 @@
     <string name="space_type_private">Privado</string>
     <string name="space_type_unknown">Desconocido</string>
     <string name="create_space_start_with">Empezar con</string>
-    <string name="create_object_section_lists">Grupos</string>
+    <string name="create_object_section_lists">Lists</string>
     <string name="create_object_section_objects">Objetos</string>
     <string name="edit">Editar</string>
     <string name="unselect_all">Deseleccionar todo</string>
@@ -966,7 +968,7 @@
     <string name="onboarding_terms_and_policy_terms">Términos\u00A0de\u00A0Uso</string>
     <string name="onboarding_terms_and_policy_infix">" y "</string>
     <string name="onboarding_terms_and_policy_privacy">Política\u00A0de Privacidad</string>
-    <string name="onboarding_join_button_text">Crear una nueva cuenta</string>
+    <string name="onboarding_join_button_text">Join</string>
     <string name="onboarding_log_in_button_text">Iniciar sesión</string>
     <string name="onboarding_invite_code_title">Escriba su código de invitación</string>
     <string name="onboarding_invite_code_description">Si no tienes uno, simplemente ve a anytype.io\ny regístrate en la lista de espera.</string>
@@ -1047,6 +1049,7 @@
     <string name="relation_origin_mobile_sharing_extension">Extensión para compartir móvil</string>
     <string name="relation_origin_use_case">Caso de uso</string>
     <string name="relation_origin_library_installed">Librería instalada</string>
+    <string name="relation_origin_bookmark">Marcador</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="one">%d enlace a</item>
@@ -1056,6 +1059,24 @@
         <item quantity="one">%d enlace de</item>
         <item quantity="other">%d enlaces de</item>
     </plurals>
+    <!--region ORIGIN RELATION VALUES -->
+    <string name="date_type_tomorrow">Mañana</string>
+    <string name="date_type_today">Hoy</string>
+    <string name="date_type_yesterday">Ayer</string>
+    <string name="date_type_previous_seven_days">Previous seven days</string>
+    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_older">Más antiguo</string>
     <string name="dates_days_ago">Hace %1$s días</string>
     <string name="dates_days_from">%1$s días desde ahora</string>
+    <!--endregion-->
+    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="create_object_section_pinned">Pinned</string>
+    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
+    <string name="any_object_creation_menu_unpin">Unpin</string>
+    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="any_object_creation_menu_move_left">Mover a la izquierda</string>
+    <string name="any_object_creation_menu_move_right">Mover a la derecha</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
 </resources>

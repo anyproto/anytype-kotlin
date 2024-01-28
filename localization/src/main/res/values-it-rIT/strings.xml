@@ -49,6 +49,8 @@
     <string name="space">Space</string>
     <string name="space_name">Nome dello Spazio</string>
     <string name="personal_space">Impostazioni</string>
+    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
     <string name="in_order_to_save">Per risparmiare spazio sul tuo dispositivo locale, puoi liberare tutti i tuoi file trasferendoli al nostro nodo di backup criptato. I file verranno ricaricati quando li apri</string>
     <string name="manage_files">Gestione file</string>
@@ -482,7 +484,7 @@
     <string name="undefined">Undefined</string>
     <string name="set_by_relation">Relation: %1$s</string>
     <string name="set_by_relations">Relations: %1$s</string>
-    <string name="set_by_type">Type: %1$s</string>
+    <string name="set_by_type">Object Type: %1$s</string>
     <string name="my_types">My types</string>
     <string name="my_relations">Le mie relazioni</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
@@ -823,7 +825,7 @@
     <string name="space_type_private">Privato</string>
     <string name="space_type_unknown">Sconosciuto</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_lists">Groups</string>
+    <string name="create_object_section_lists">Lists</string>
     <string name="create_object_section_objects">Oggetti</string>
     <string name="edit">Modifica</string>
     <string name="unselect_all">Deseleziona tutto</string>
@@ -966,7 +968,7 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Crea Nuovo Account</string>
+    <string name="onboarding_join_button_text">Unisciti</string>
     <string name="onboarding_log_in_button_text">Accedi</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
@@ -1047,6 +1049,7 @@
     <string name="relation_origin_mobile_sharing_extension">Estensione di condivisione mobile</string>
     <string name="relation_origin_use_case">Caso d\'uso</string>
     <string name="relation_origin_library_installed">Libreria installata</string>
+    <string name="relation_origin_bookmark">Segnalibro</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="one">%d collegamento a </item>
@@ -1056,6 +1059,24 @@
         <item quantity="one">%d collegamento da</item>
         <item quantity="other">%d collegamenti da</item>
     </plurals>
-    <string name="dates_days_ago">%1$s days ago</string>
-    <string name="dates_days_from">%1$s days from now</string>
+    <!--region ORIGIN RELATION VALUES -->
+    <string name="date_type_tomorrow">Domani</string>
+    <string name="date_type_today">Oggi</string>
+    <string name="date_type_yesterday">Ieri</string>
+    <string name="date_type_previous_seven_days">Previous seven days</string>
+    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_older">Meno recenti</string>
+    <string name="dates_days_ago">%1$s giorni fa</string>
+    <string name="dates_days_from">%1$s giorni da adesso</string>
+    <!--endregion-->
+    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="create_object_section_pinned">Pinned</string>
+    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
+    <string name="any_object_creation_menu_unpin">Unpin</string>
+    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="any_object_creation_menu_move_left">Sposta a sinistra</string>
+    <string name="any_object_creation_menu_move_right">Sposta a destra</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
 </resources>

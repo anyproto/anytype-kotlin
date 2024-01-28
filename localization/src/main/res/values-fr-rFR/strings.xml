@@ -35,7 +35,7 @@
     <string name="about_what_is_new">Quoi de neuf</string>
     <string name="about_anytype_community">Communauté Anytype</string>
     <string name="about_help_and_tutorials">Aide &amp; Tutoriels</string>
-    <string name="about_legal">Legal</string>
+    <string name="about_legal">Mentions légales</string>
     <string name="about_terms_of_use">Conditions d\'utilisation</string>
     <string name="about_privacy_policy">Politique de confidentialité</string>
     <string name="about_acknowledgements">Remerciements</string>
@@ -49,6 +49,8 @@
     <string name="space">Espace</string>
     <string name="space_name">Nom de l\'espace</string>
     <string name="personal_space">Paramètres</string>
+    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="delete_space">Supprimer l\'espace</string>
     <string name="you_can_store">Vous pouvez stocker gratuitement jusqu\'à %1$s de vos fichiers sur notre nœud de sauvegarde chiffré. Si vous atteignez la limite, les fichiers ne seront stockés que localement.</string>
     <string name="in_order_to_save">Afin d\'économiser de l\'espace sur votre appareil, vous pouvez décharger tous vos fichiers vers notre nœud de sauvegarde chiffré. Les fichiers seront rechargés lorsque vous les ouvrirez.</string>
     <string name="manage_files">Gérer les fichiers</string>
@@ -482,7 +484,7 @@
     <string name="undefined">Non défini</string>
     <string name="set_by_relation">Relation : %1$s</string>
     <string name="set_by_relations">Relations : %1$s</string>
-    <string name="set_by_type">Type : %1$s</string>
+    <string name="set_by_type">Object Type: %1$s</string>
     <string name="my_types">Mes types</string>
     <string name="my_relations">Mes relations</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
@@ -515,7 +517,7 @@
     <string name="change_icon">Changer d\'icône</string>
     <string name="random">Aléatoire</string>
     <string name="choose">Choose</string>
-    <string name="attributes">Attributes</string>
+    <string name="attributes">Attributs</string>
     <string name="file_delete_alert_title">Êtes-vous sûr de vouloir supprimer définitivement les fichiers ?</string>
     <string name="file_delete_alert_subtitle">Vous ne pouvez pas annuler cette action.</string>
     <string name="file_delete_cancel">Annuler</string>
@@ -823,7 +825,7 @@
     <string name="space_type_private">Privé</string>
     <string name="space_type_unknown">Inconnu</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_lists">Groups</string>
+    <string name="create_object_section_lists">Lists</string>
     <string name="create_object_section_objects">Objets</string>
     <string name="edit">Éditer</string>
     <string name="unselect_all">Tout désélectionner</string>
@@ -909,7 +911,7 @@
     <string name="slash_widget_pink_color_title">Rose</string>
     <string name="slash_widget_purple_color_title">Violet</string>
     <string name="slash_widget_blue_color_title">Bleu</string>
-    <string name="slash_widget_ice_color_title">Sky</string>
+    <string name="slash_widget_ice_color_title">Ciel</string>
     <string name="slash_widget_teal_color_title">Turquoise</string>
     <string name="slash_widget_lime_color_title">Vert</string>
     <string name="slash_widget_background_item">%1$s background</string>
@@ -966,7 +968,7 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Créer un nouveau compte</string>
+    <string name="onboarding_join_button_text">Rejoindre</string>
     <string name="onboarding_log_in_button_text">Connexion</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
@@ -1047,6 +1049,7 @@
     <string name="relation_origin_mobile_sharing_extension">Extension de partage mobile</string>
     <string name="relation_origin_use_case">Cas d\'utilisation</string>
     <string name="relation_origin_library_installed">Bibliothèque installée.</string>
+    <string name="relation_origin_bookmark">Marque-page</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="one">%d lien vers</item>
@@ -1056,6 +1059,24 @@
         <item quantity="one">Lien %d depuis</item>
         <item quantity="other">%d links from</item>
     </plurals>
+    <!--region ORIGIN RELATION VALUES -->
+    <string name="date_type_tomorrow">Demain</string>
+    <string name="date_type_today">Aujourd\'hui</string>
+    <string name="date_type_yesterday">Hier</string>
+    <string name="date_type_previous_seven_days">Previous seven days</string>
+    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_older">Plus ancien</string>
     <string name="dates_days_ago">Il y a %1$s jours</string>
     <string name="dates_days_from">Dans %1$s jours</string>
+    <!--endregion-->
+    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="create_object_section_pinned">Pinned</string>
+    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
+    <string name="any_object_creation_menu_unpin">Unpin</string>
+    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="any_object_creation_menu_move_left">Déplacer à gauche</string>
+    <string name="any_object_creation_menu_move_right">Déplacer à droite</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
 </resources>

@@ -483,7 +483,7 @@
     <string name="undefined">Undefined</string>
     <string name="set_by_relation">Relasi: %1$s</string>
     <string name="set_by_relations">Relasi: %1$s</string>
-    <string name="set_by_type">Object Type: %1$s</string>
+    <string name="set_by_type">Tipe: %1$s</string>
     <string name="my_types">Tipeku</string>
     <string name="my_relations">Relasiku</string>
     <string name="type_added">Tipe \"%1$s\" ditambahkan ke pustakamu</string>
@@ -823,7 +823,7 @@
     <string name="space_type_private">Pribadi</string>
     <string name="space_type_unknown">Tidak diketahui</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_lists">Lists</string>
+    <string name="create_object_section_lists">Grup</string>
     <string name="create_object_section_objects">Objek</string>
     <string name="edit">Sunting</string>
     <string name="unselect_all">Batal pilih semua</string>

@@ -49,7 +49,7 @@
     <string name="space">Espaço</string>
     <string name="space_name">Nome do espaço</string>
     <string name="personal_space">Configurações</string>
-    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="space_settings_apply_random_gradient">Aplicar gradiente aleatório</string>
     <string name="delete_space">Excluir Espaço</string>
     <string name="you_can_store">Você pode armazenar até %1$s de seus arquivos em nosso nó de backup criptografado gratuitamente. Se você atingir o limite, os arquivos serão armazenados apenas localmente.</string>
     <string name="in_order_to_save">Para economizar espaço no seu dispositivo local, você pode descarregar todos os seus arquivos no nosso servidor de backup criptografado. Os arquivos serão carregados novamente quando forem abertos.</string>
@@ -484,7 +484,7 @@
     <string name="undefined">Indefinido</string>
     <string name="set_by_relation">Relação: %1$s</string>
     <string name="set_by_relations">Relações: %1$s</string>
-    <string name="set_by_type">Tipo: %1$s</string>
+    <string name="set_by_type">Objeto do tipo: %1$s</string>
     <string name="my_types">Meus tipos</string>
     <string name="my_relations">Meus relacionamentos</string>
     <string name="type_added">Tipo \"%1$s\" adicionado à sua biblioteca</string>
@@ -1063,8 +1063,8 @@
     <string name="date_type_tomorrow">Amanhã</string>
     <string name="date_type_today">Hoje</string>
     <string name="date_type_yesterday">Ontem</string>
-    <string name="date_type_previous_seven_days">Previous seven days</string>
-    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_previous_seven_days">Últimos sete dias</string>
+    <string name="date_type_previous_thirty_days">Últimos trinta dias</string>
     <string name="date_type_older">Mais antigo</string>
     <string name="dates_days_ago">Há %1$s dias</string>
     <string name="dates_days_from">Daqui a %1$s dias</string>
@@ -1072,11 +1072,11 @@
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="create_object_section_pinned">Pinned</string>
-    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
-    <string name="any_object_creation_menu_unpin">Unpin</string>
-    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="create_object_section_pinned">Fixado</string>
+    <string name="any_object_creation_menu_pin_on_top">Fixar no topo</string>
+    <string name="any_object_creation_menu_unpin">Desafixar</string>
+    <string name="any_object_creation_menu_set_as_default">Definir como padrão</string>
     <string name="any_object_creation_menu_move_left">Mover à esquerda</string>
     <string name="any_object_creation_menu_move_right">Move à direita</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Criar objeto a partir da área de transferência.</string>
 </resources>

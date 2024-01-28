@@ -484,7 +484,7 @@
     <string name="undefined">Undefined</string>
     <string name="set_by_relation">Relation: %1$s</string>
     <string name="set_by_relations">Relations: %1$s</string>
-    <string name="set_by_type">Object Type: %1$s</string>
+    <string name="set_by_type">Type: %1$s</string>
     <string name="my_types">My types</string>
     <string name="my_relations">Mine relasjoner</string>
     <string name="type_added">Type \"%1$s\" added to your library</string>
@@ -825,7 +825,7 @@
     <string name="space_type_private">Private</string>
     <string name="space_type_unknown">Ukjent</string>
     <string name="create_space_start_with">Start with</string>
-    <string name="create_object_section_lists">Lists</string>
+    <string name="create_object_section_lists">Groups</string>
     <string name="create_object_section_objects">Objekter</string>
     <string name="edit">Rediger</string>
     <string name="unselect_all">Fjern alle valg</string>

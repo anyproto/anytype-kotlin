@@ -966,7 +966,7 @@
     <string name="onboarding_terms_and_policy_terms">\u00A0使用的条款\u00A0</string>
     <string name="onboarding_terms_and_policy_infix">" 和 "</string>
     <string name="onboarding_terms_and_policy_privacy">隐私\u00A0政策</string>
-    <string name="onboarding_join_button_text">Join</string>
+    <string name="onboarding_join_button_text">注册</string>
     <string name="onboarding_log_in_button_text">登录</string>
     <string name="onboarding_invite_code_title">填写邀请码</string>
     <string name="onboarding_invite_code_description">如果你没有，只需要打开anytype.io并注册到等候列表。</string>
@@ -1059,20 +1059,20 @@
     <string name="date_type_tomorrow">明天</string>
     <string name="date_type_today">今天</string>
     <string name="date_type_yesterday">昨天</string>
-    <string name="date_type_previous_seven_days">Previous seven days</string>
-    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_previous_seven_days">过去 7 天</string>
+    <string name="date_type_previous_thirty_days">过去 30 天</string>
     <string name="date_type_older">较早的</string>
     <string name="dates_days_ago">%1$s 天前</string>
     <string name="dates_days_from">%1$s 天后</string>
     <!--endregion-->
-    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="create_object_section_pinned">Pinned</string>
-    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
-    <string name="any_object_creation_menu_unpin">Unpin</string>
-    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="error_kanban_view_not_supported">看板视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
+    <string name="error_calendar_view_not_supported">日历视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
+    <string name="error_generic_view_not_supported">此视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
+    <string name="create_object_section_pinned">固定</string>
+    <string name="any_object_creation_menu_pin_on_top">置顶</string>
+    <string name="any_object_creation_menu_unpin">取消固定</string>
+    <string name="any_object_creation_menu_set_as_default">设为默认</string>
     <string name="any_object_creation_menu_move_left">向左移动</string>
     <string name="any_object_creation_menu_move_right">向右移动</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
+    <string name="clipboard_panel_create_object_from_clipboard">从剪贴板创建对象</string>
 </resources>

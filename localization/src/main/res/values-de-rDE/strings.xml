@@ -49,7 +49,7 @@
     <string name="space">Space</string>
     <string name="space_name">Space-Name</string>
     <string name="personal_space">Persönlicher Space</string>
-    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="space_settings_apply_random_gradient">Zufälligen Farbverlauf anwenden</string>
     <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
     <string name="in_order_to_save">Um Platz auf deinem Gerät zu sparen, können alle deine Dateien auf unseren verschlüsselten Backup-Knoten ausgelagert werden. Die Dateien werden beim Öffnen dann wieder heruntergeladen.</string>
@@ -1063,20 +1063,20 @@
     <string name="date_type_tomorrow">Morgen</string>
     <string name="date_type_today">Heute</string>
     <string name="date_type_yesterday">Gestern</string>
-    <string name="date_type_previous_seven_days">Previous seven days</string>
-    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_previous_seven_days">Letzte sieben Tage</string>
+    <string name="date_type_previous_thirty_days">Letzte dreißig Tage</string>
     <string name="date_type_older">Älter</string>
     <string name="dates_days_ago">Vor %1$s Tagen</string>
     <string name="dates_days_from">In %1$s Tagen</string>
     <!--endregion-->
-    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="create_object_section_pinned">Pinned</string>
-    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
-    <string name="any_object_creation_menu_unpin">Unpin</string>
-    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="error_kanban_view_not_supported">Kanban-Ansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
+    <string name="error_calendar_view_not_supported">Kalenderansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
+    <string name="error_generic_view_not_supported">Diese Ansicht ist auf Mobilgeräten noch nicht verfügbar.\nÄndere den Ansichtstyp (Einstellungen -&gt; Ansicht) oder erstelle eine neue Ansicht, um auf deine Daten zuzugreifen.</string>
+    <string name="create_object_section_pinned">Angeheftet</string>
+    <string name="any_object_creation_menu_pin_on_top">Oben anheften</string>
+    <string name="any_object_creation_menu_unpin">Loslösen</string>
+    <string name="any_object_creation_menu_set_as_default">Als Standard festlegen</string>
     <string name="any_object_creation_menu_move_left">Nach links verschieben</string>
     <string name="any_object_creation_menu_move_right">Nach rechts verschieben</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Objekt aus der Zwischenablage erstellen</string>
 </resources>

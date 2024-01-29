@@ -1059,8 +1059,8 @@
     <string name="date_type_tomorrow">Besok</string>
     <string name="date_type_today">Hari ini</string>
     <string name="date_type_yesterday">Kemarin</string>
-    <string name="date_type_previous_seven_days">Previous seven days</string>
-    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_previous_seven_days">Tujuh hari terakhir</string>
+    <string name="date_type_previous_thirty_days">30 hari terakhir</string>
     <string name="date_type_older">Lebih lama</string>
     <string name="dates_days_ago">%1$s hari yang lalu</string>
     <string name="dates_days_from">%1$s hari dari sekarang</string>
@@ -1068,11 +1068,11 @@
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="create_object_section_pinned">Pinned</string>
-    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
-    <string name="any_object_creation_menu_unpin">Unpin</string>
-    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="create_object_section_pinned">Tersemat</string>
+    <string name="any_object_creation_menu_pin_on_top">Sematkan di atas</string>
+    <string name="any_object_creation_menu_unpin">Lepas sematan</string>
+    <string name="any_object_creation_menu_set_as_default">Atur sebagai bawaan</string>
     <string name="any_object_creation_menu_move_left">Pindah ke kiri</string>
     <string name="any_object_creation_menu_move_right">Pindah ke kanan</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Buat objek dari papan kerani</string>
 </resources>

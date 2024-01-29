@@ -49,6 +49,8 @@
     <string name="space">Ruang</string>
     <string name="space_name">Nama Ruang</string>
     <string name="personal_space">Setelan</string>
+    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="delete_space">Hapus ruang</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
     <string name="in_order_to_save">Untuk menghemat penyimpanan ruang pada perangkat lokal, anda dapat melepaskan semua berkas ke simpul cadangan terenkripsi kami. Berkas - berkas akan diunduh kembali saat kamu membuka mereka. </string>
     <string name="manage_files">Mengatur berkas</string>
@@ -63,13 +65,13 @@
     <string name="space_settings">Setelan ruang</string>
     <string name="data_management">Manajemen data</string>
     <string name="deleted_account_danger_zone_msg">Begitu kamu meminta akunmu dihapus, kamu punya waktu 30 hari untuk membatalkan permintaan ini. Setelah 30 hari, data akun terenkripsimu akan dihapus secara permanen dari simpul cadangan, dan kamu tidak akan bisa masuk ke Anytype di perangkat baru.</string>
-    <string name="danger_zone">Danger zone</string>
+    <string name="danger_zone">Hapus akun (Hati-hati!)</string>
     <string name="snackbar_template_add">Templat baru ditambahkan ke tipe ini</string>
     <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
-    <string name="multi_select_turn_into">Turn into</string>
+    <string name="multi_select_turn_into">Ubah menjadi</string>
     <string name="multi_select_move_to">Pindahkan ke</string>
-    <string name="option_toolbar_header_turn_into">Turn into</string>
+    <string name="option_toolbar_header_turn_into">Ubah menjadi</string>
     <string name="option_toolbar_header_add_block">Add block</string>
     <string name="option_text_text">Teks</string>
     <string name="option_text_header_one">Header 1</string>
@@ -142,12 +144,12 @@
     <string name="detail_number">Angka</string>
     <string name="detail_multiple">Multiple select</string>
     <string name="detail_date">Tanggal</string>
-    <string name="detail_file">File and Media</string>
+    <string name="detail_file">Berkas dan Media</string>
     <string name="detail_checkbox">Kotak centang</string>
     <string name="detail_url">URL</string>
     <string name="detail_phone">Telepon</string>
     <string name="add_new">Tambah baru</string>
-    <string name="turn_into">Turn into</string>
+    <string name="turn_into">Ubah menjadi</string>
     <string name="modal_reorder">Reorder</string>
     <string name="modal_done">Selesai</string>
     <string name="modal_prop_name">Property name</string>
@@ -185,7 +187,7 @@
     <string name="error_while_loading">Galat saat memuat</string>
     <string name="error_while_loading_picture">Galat saat memuat gambar</string>
     <string name="block_with_a_picture">Block with a picture</string>
-    <string name="tap_here_to_insert_a_bookmark_url">Tap here to insert a bookmark url</string>
+    <string name="tap_here_to_insert_a_bookmark_url">Ketuk di sini untuk memasukkan URL markah</string>
     <string name="archive">Archive</string>
     <string name="add_block_option_icon">Add block option icon</string>
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
@@ -208,7 +210,7 @@
     <string name="background">Latar belakang</string>
     <string name="content_description_close_button">Close button</string>
     <string name="action_bar_add_below">Tambah blok di bawah</string>
-    <string name="action_bar_turn_into">Turn into</string>
+    <string name="action_bar_turn_into">Ubah menjadi</string>
     <string name="action_bar_turn_into_page">Jadikan Halaman</string>
     <string name="action_bar_delete">Hapus</string>
     <string name="action_bar_to_bin">Buang ke Bak Sampah</string>
@@ -445,7 +447,7 @@
     <string name="simple_tables_widget_item_clear_contents">Bersihkan</string>
     <string name="simple_tables_widget_item_color">Warna</string>
     <string name="simple_tables_widget_item_style">Gaya</string>
-    <string name="simple_tables_widget_item_clear_style">Reset Style</string>
+    <string name="simple_tables_widget_item_clear_style">Atur Ulang Gaya</string>
     <string name="simple_tables_widget_item_insert_left">Sisip kiri</string>
     <string name="simple_tables_widget_item_insert_right">Menyisipkan di kanan</string>
     <string name="simple_tables_widget_item_move_left">Pindah ke kiri</string>
@@ -477,12 +479,12 @@
     <string name="one_selected_block">1 blok terpilih</string>
     <string name="number_selected_blocks">%1$d blok terpilih</string>
     <string name="error_find_block">Tidak dapat menemukan balok yang dipilih</string>
-    <string name="error_block_selection">Block selection error</string>
+    <string name="error_block_selection">Galat pemilihan balok</string>
     <string name="undefined">Undefined</string>
-    <string name="set_by_relation">Relation: %1$s</string>
-    <string name="set_by_relations">Relations: %1$s</string>
+    <string name="set_by_relation">Relasi: %1$s</string>
+    <string name="set_by_relations">Relasi: %1$s</string>
     <string name="set_by_type">Tipe: %1$s</string>
-    <string name="my_types">My types</string>
+    <string name="my_types">Tipeku</string>
     <string name="my_relations">Relasiku</string>
     <string name="type_added">Tipe \"%1$s\" ditambahkan ke pustakamu</string>
     <string name="block_data_view_content_description_title">The name of the source set of the inline set</string>
@@ -939,7 +941,7 @@
     <string name="library_description_relations">All objects are connected. Use relations to build connections between objects.</string>
     <string name="library_button_create_type">Create a type</string>
     <string name="library_button_create_relation">Create a relation</string>
-    <string name="library_subtitle_types">My types</string>
+    <string name="library_subtitle_types">Tipeku</string>
     <string name="library_subtitle_relations">Relasiku</string>
     <string name="library_subtitle_library">Pustaka</string>
     <string name="library_create_new_type">Create a type \'%1$s\'</string>
@@ -964,7 +966,7 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" dan "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Buat Akun Baru</string>
+    <string name="onboarding_join_button_text">Gabung</string>
     <string name="onboarding_log_in_button_text">Masuk</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
@@ -1045,6 +1047,7 @@
     <string name="relation_origin_mobile_sharing_extension">Mobile sharing extension</string>
     <string name="relation_origin_use_case">Use case</string>
     <string name="relation_origin_library_installed">Pustaka terpasang</string>
+    <string name="relation_origin_bookmark">Markah</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="other">%d links to</item>
@@ -1052,6 +1055,24 @@
     <plurals name="links_from_count">
         <item quantity="other">%d links from</item>
     </plurals>
+    <!--region ORIGIN RELATION VALUES -->
+    <string name="date_type_tomorrow">Besok</string>
+    <string name="date_type_today">Hari ini</string>
+    <string name="date_type_yesterday">Kemarin</string>
+    <string name="date_type_previous_seven_days">Previous seven days</string>
+    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_older">Lebih lama</string>
     <string name="dates_days_ago">%1$s hari yang lalu</string>
     <string name="dates_days_from">%1$s hari dari sekarang</string>
+    <!--endregion-->
+    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="create_object_section_pinned">Pinned</string>
+    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
+    <string name="any_object_creation_menu_unpin">Unpin</string>
+    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="any_object_creation_menu_move_left">Pindah ke kiri</string>
+    <string name="any_object_creation_menu_move_right">Pindah ke kanan</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
 </resources>

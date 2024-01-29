@@ -89,13 +89,13 @@
     <string name="option_tool_set">Stel in</string>
     <string name="option_tool_contact">Contacteer</string>
     <string name="option_tool_existing_tool">Bestaande functie</string>
-    <string name="option_media_file">File</string>
-    <string name="option_media_picture">Picture</string>
+    <string name="option_media_file">Bestand</string>
+    <string name="option_media_picture">Afbeelding</string>
     <string name="option_media_video">Video</string>
-    <string name="option_media_bookmark">Bookmark</string>
+    <string name="option_media_bookmark">Bladwijzer</string>
     <string name="option_other_divider">Scheidingslijn</string>
     <string name="option_other_dots">Gestippelde scheidingslijn</string>
-    <string name="option_other_code">Code snippet</string>
+    <string name="option_other_code">Codefragment</string>
     <string name="option_relation_relation">Relatie</string>
     <string name="toolbar_section_text">Tekst</string>
     <string name="toolbar_section_list">Lijst</string>
@@ -128,10 +128,10 @@
     <string name="customize_view">Pas weergave aan</string>
     <string name="kanban_view">Kanban weergave</string>
     <string name="properties">Eigenschappen</string>
-    <string name="sort">Sort</string>
+    <string name="sort">Sorteer</string>
     <string name="sort_empty_state">Geen sorteringen hier. Je kunt er een paar toevoegen</string>
     <string name="filter_empty_state">Geen filters hier. Je kunt er een paar toevoegen</string>
-    <string name="relation_status_value_empty_state">No related options here. You can add some</string>
+    <string name="relation_status_value_empty_state">Geen gerelateerde opties hier. Je kunt er enkele toevoegen</string>
     <string name="filter_by">Filter op</string>
     <string name="filter">Filter</string>
     <string name="modal_view">Weergave</string>
@@ -167,9 +167,9 @@
     <string name="hint_header_two">Koptitel</string>
     <string name="hint_header_three">Subkoptitel</string>
     <string name="hint_checkbox">Selectievak</string>
-    <string name="hint_upload_video">Upload a video</string>
-    <string name="hint_upload_image">Upload a picture</string>
-    <string name="hint_upload_file">Upload a file</string>
+    <string name="hint_upload_video">Upload een video</string>
+    <string name="hint_upload_image">Upload een afbeelding</string>
+    <string name="hint_upload_file">Upload een bestand</string>
     <string name="hint_upload_audio">Upload audio</string>
     <string name="hint_add_a_web_bookmark">Voeg een webbladwijzer toe</string>
     <string name="hint_bullet">Item van opsommingslijst</string>
@@ -219,7 +219,7 @@
     <string name="action_bar_style">Stijl</string>
     <string name="action_bar_color">Kleur</string>
     <string name="action_bar_background">Achtergrond</string>
-    <string name="action_bar_download">Download</string>
+    <string name="action_bar_download">Downloaden</string>
     <string name="action_bar_replace">Vervang</string>
     <string name="action_bar_add_caption">Voeg bijschrift toe</string>
     <string name="action_bar_rename">Hernoem</string>
@@ -237,9 +237,9 @@
     <string name="search_hint">Zoek...</string>
     <string name="relations">Relaties</string>
     <string name="relation">Relatie</string>
-    <string name="download">Download</string>
+    <string name="download">Downloaden</string>
     <string name="view">Weergave</string>
-    <string name="views">Views</string>
+    <string name="views">Weergaven</string>
     <string name="choose_emoji">Kies een emoji</string>
     <string name="logo_transition">logo_transition</string>
     <string name="page_nav_link_from">Link van</string>
@@ -261,17 +261,17 @@
     <string name="new_set">Nieuwe set</string>
     <string name="create_new_object_type">Maak een nieuw object type aan</string>
     <plurals name="page_selected">
-        <item quantity="one">%d page selected</item>
+        <item quantity="one">%d pagina geselecteerd</item>
         <item quantity="other">%d pagina\'s geselecteerd</item>
     </plurals>
     <string name="button_new">Nieuw</string>
     <string name="viewer_default_title">Alles</string>
     <string name="sync_status_unknown">Aan het voorbereiden...</string>
-    <string name="sync_status_offline">No connection</string>
+    <string name="sync_status_offline">Geen verbinding</string>
     <string name="sync_status_syncing">Aan het synchroniseren…</string>
-    <string name="sync_status_synced">Synced</string>
+    <string name="sync_status_synced">Gesynchroniseerd</string>
     <string name="sync_status_failed">Niet gesynchroniseerd</string>
-    <string name="sync_status_toast_unknown">Initializing sync</string>
+    <string name="sync_status_toast_unknown">Synchronisatie wordt opgestart</string>
     <string name="sync_status_toast_offline">Anytype node is niet verbonden</string>
     <string name="sync_status_toast_syncing">Gegevens downloaden of uploaden naar een node</string>
     <string name="sync_status_toast_synced">Back-up gemaakt op Anytype netwerk</string>
@@ -285,7 +285,7 @@
     <string name="relation_format_number">Nummer</string>
     <string name="relation_format_date">Datum</string>
     <string name="relation_format_status">Status</string>
-    <string name="relation_format_file">File</string>
+    <string name="relation_format_file">Bestand</string>
     <string name="relation_format_checkbox">Selectievak</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">E-mailadres</string>
@@ -312,7 +312,7 @@
     <string name="value_quotes">\"%1$s\"</string>
     <string name="select_all">Selecteer alle</string>
     <string name="value">Waarde</string>
-    <string name="empty">Empty</string>
+    <string name="empty">Leeg</string>
     <string name="dv_cell_description_hint">Voeg tekst ... toe</string>
     <string name="dv_cell_number_hint">Voeg nummer ... toe</string>
     <string name="unknown_object_type">Onbekend type</string>
@@ -324,7 +324,7 @@
     <string name="content_description_cover_image_view">Cover image view</string>
     <string name="cover_color_solid">Effen kleuren</string>
     <string name="cover_gradients">Gradiënten</string>
-    <string name="clear">Clear</string>
+    <string name="clear">Wis</string>
     <string name="create_option">Maak optie \"%1$s\" aan</string>
     <string name="featured_relations">Aanbevolen relaties</string>
     <string name="other_relations">Andere relaties</string>
@@ -334,11 +334,11 @@
     <string name="dv_filter_checkbox_not_checked"> niet aangevinkt</string>
     <string name="paste_or_type_a_url">Plak of type een URL</string>
     <string name="callout">Tekstkader</string>
-    <string name="highlight">Highlight</string>
+    <string name="highlight">Markeer</string>
     <string name="title">Titel</string>
     <string name="heading">Koptitel</string>
     <string name="subheading">Subkoptitel</string>
-    <string name="create_from_scratch">Maak aan vanaf nul</string>
+    <string name="create_from_scratch">Maak aan vanuit niets</string>
     <string name="create_relation_with_name">Maak relatie \"%1$s\" aan</string>
     <string name="name_is_required">Naam is vereist</string>
     <string name="favourite">Maak favoriet</string>
@@ -357,7 +357,7 @@
     <string name="query">Vraag</string>
     <string name="select_query">Selecteer zoekopdracht</string>
     <string name="objects">Objecten</string>
-    <string name="web_pages">Web pages</string>
+    <string name="web_pages">Internetpagina\'s</string>
     <string name="select_files">Selecteer bestanden</string>
     <string name="u">U</string>
     <string name="enter_text">Voer tekst in</string>
@@ -367,7 +367,7 @@
     <string name="enter_email">Voer e-mailadres in</string>
     <string name="enter_phone">Voer telefoonnummer in</string>
     <string name="scroll_to_select_position">Scroll om een nieuwe positie te selecteren</string>
-    <string name="block_action_add_below">Add below</string>
+    <string name="block_action_add_below">Voeg toe hieronder</string>
     <string name="content_desc_back_button">Back button</string>
     <string name="content_desc_home_button">Home button</string>
     <string name="content_desc_search_button">Search button</string>
@@ -397,7 +397,7 @@
     <string name="no_source">Geen bron</string>
     <string name="deleted_object">Verwijderd object</string>
     <string name="open_set">Open set</string>
-    <string name="deleted">Deleted</string>
+    <string name="deleted">Verwijderd</string>
     <string name="paste_link_or_search">Link plakken of objecten zoeken</string>
     <string name="paste_from_clipboard">Plakken vanaf klembord</string>
     <string name="create_object_with_name">Maak object \"%1$s\" aan</string>
@@ -431,10 +431,10 @@
     <string name="hide_icon">Hide icon</string>
     <string name="description">Beschrijving</string>
     <string name="object_type">Objecttype</string>
-    <string name="preview_layout">Preview layout</string>
-    <string name="unknown">Unknown</string>
+    <string name="preview_layout">Voorbeeldweergave lay-out</string>
+    <string name="unknown">Onbekend</string>
     <string name="unknown_error">Onbekende foutmelding</string>
-    <string name="bookmark">Bookmark</string>
+    <string name="bookmark">Bladwijzer</string>
     <string name="paste_text">Tekst</string>
     <string name="paste_link">Link</string>
     <string name="next">Volgende</string>
@@ -445,7 +445,7 @@
     <string name="this_type_has_templates">Dit type heeft %1$d sjablonen</string>
     <string name="item_relation_create_from_scratch_title">Type</string>
     <string name="btn_restore">Herstel</string>
-    <string name="simple_tables_widget_item_clear_contents">Clear</string>
+    <string name="simple_tables_widget_item_clear_contents">Wis</string>
     <string name="simple_tables_widget_item_color">Kleur</string>
     <string name="simple_tables_widget_item_style">Stijl</string>
     <string name="simple_tables_widget_item_clear_style">Reset stijl</string>
@@ -456,14 +456,14 @@
     <string name="simple_tables_widget_item_insert_above">Voeg boven in</string>
     <string name="simple_tables_widget_item_insert_below">Voeg beneden in</string>
     <string name="simple_tables_widget_item_copy">Kopieer</string>
-    <string name="simple_tables_widget_item_sort">Sort</string>
+    <string name="simple_tables_widget_item_sort">Sorteer</string>
     <string name="simple_tables_widget_item_move_up">Verplaats naar boven</string>
     <string name="simple_tables_widget_item_move_down">Verplaats naar beneden</string>
     <string name="simple_tables_widget_tab_cell">Cel</string>
     <string name="simple_tables_widget_tab_row">Rij</string>
     <string name="simple_tables_widget_tab_column">Kolom</string>
     <string name="open_object">Open object</string>
-    <string name="open_source">Open source</string>
+    <string name="open_source">Open bron</string>
     <string name="reload_object_content">Herlaad inhoud object</string>
     <string name="open_link">Open link</string>
     <string name="copy_email">Kopieer e-mailadres</string>
@@ -522,7 +522,7 @@
     <string name="file_delete_alert_subtitle">Je kunt deze actie niet ongedaan maken.</string>
     <string name="file_delete_cancel">Annuleer</string>
     <string name="file_delete_delete">Verwijder</string>
-    <string name="menu_type_change">Change type</string>
+    <string name="menu_type_change">Verander type</string>
     <string name="menu_type_open_set">Open set van %1$s</string>
     <string name="menu_type_create_set">Maak set aan van %1$s</string>
     <string name="toast_active_view_delete">De huidige weergave kan niet worden verwijderd</string>
@@ -534,10 +534,10 @@
     <string name="templates_menu_edit">Sjabloon bewerken</string>
     <string name="templates_menu_duplicate">Dupliceer</string>
     <string name="templates_menu_delete">Verwijder</string>
-    <string name="unsupported">Unsupported</string>
+    <string name="unsupported">Niet ondersteund</string>
     <string name="set_as_default">Maak standaard</string>
-    <string name="default_object">Standaard object</string>
-    <string name="default_template">Standaard sjabloon</string>
+    <string name="default_object">Standaardobject</string>
+    <string name="default_template">Standaardsjabloon</string>
     <string name="title_templates_not_allowed">Dit type ondersteunt geen sjablonen</string>
     <string name="num_applied">%1$d toegepast</string>
     <string name="view_list">Lijst</string>
@@ -560,16 +560,16 @@
     <string name="choose_pin_code">Kies pincode</string>
     <string name="congratulations">Gefeliciteerd!</string>
     <string name="time_to_update_title">Het is tijd om te updaten</string>
-    <string name="time_to_update_text">Een deel van je gegevens werd beheerd door een nieuwere versie van Anytype. Update de app alsjeblieft om met al je documenten en de nieuwe functies te werken.</string>
+    <string name="time_to_update_text">Een deel van jouw gegevens werd beheerd door een nieuwere versie van Anytype. Update de app alsjeblieft om met al jouw documenten en de nieuwe functies te werken.</string>
     <string name="update">Updaten</string>
     <string name="later">Later</string>
     <string name="let_us_start">Laten we beginnen!</string>
-    <string name="you_ve_created_your_first_profile">Je hebt je eerste profiel aangemaakt!</string>
-    <string name="it_s_stored_on_your_device_and_nobody_will_know_about_it_until_you_share_it">Het wordt op je apparaat opgeslagen en niemand zal er van weten totdat je het deelt!</string>
+    <string name="you_ve_created_your_first_profile">Je hebt jouw eerste profiel aangemaakt!</string>
+    <string name="it_s_stored_on_your_device_and_nobody_will_know_about_it_until_you_share_it">Het wordt op jouw apparaat opgeslagen en niemand zal er van weten totdat je het deelt!</string>
     <string name="choose_profile">Kies profiel</string>
     <string name="logout">Log uit</string>
     <string name="add_profile">Voeg profiel toe</string>
-    <string name="add_name_and_profile_picture">Voeg je naam \nen profielafbeelding toe</string>
+    <string name="add_name_and_profile_picture">Voeg jouw naam \nen profielafbeelding toe</string>
     <string name="type_your_name">Voer jouw naam in</string>
     <string name="create_profile">Maak</string>
     <string name="t">T</string>
@@ -583,7 +583,7 @@
     <string name="other_settings">Andere instellingen</string>
     <string name="your_page">Jouw openbare pagina</string>
     <string name="updates">Updates</string>
-    <string name="recovery_phrase_text">Je zult dit nodig hebben om in te loggen. Bewaar dit op een veilige plek. Als je dit verliest, heb je niet langer toegang tot je account.</string>
+    <string name="recovery_phrase_text">Je zult dit nodig hebben om in te loggen. Bewaar dit op een veilige plek. Als je dit verliest, heb je niet langer toegang tot jouw account.</string>
     <string name="back_up_your_recovery_phrase">Back-up jouw herstelzin</string>
     <string name="i_ve_written_it_down">ik heb het opgeschreven</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
@@ -634,7 +634,7 @@
     <string name="link">Link</string>
     <string name="move_into_this_page">Verplaats naar deze pagina</string>
     <string name="move_into">Verplaats naar</string>
-    <string name="fetching_your_account">Je account wordt opgehaald...</string>
+    <string name="fetching_your_account">Jouw account wordt opgehaald...</string>
     <string name="search_on_page">Zoek op pagina</string>
     <string name="object_view_type">Object weergave type</string>
     <string name="object_type_name">Object type naam</string>
@@ -647,7 +647,7 @@
     <string name="sort_by">Sorteer op</string>
     <string name="hint_tap_to_type">Tik om te typen</string>
     <string name="viewer_gallery">Galerij</string>
-    <string name="viewer_as">View as</string>
+    <string name="viewer_as">Geef weer als</string>
     <string name="viewer_kanban">Kanban</string>
     <string name="viewer_table">Raster</string>
     <string name="viewer_list">Lijst</string>
@@ -659,7 +659,7 @@
     <string name="delete">Verwijder</string>
     <string name="view_relations">Bekijk relaties</string>
     <string name="create">Maak</string>
-    <string name="new_view">New view</string>
+    <string name="new_view">Nieuwe weergave</string>
     <string name="coming_soon">Binnenkort</string>
     <string name="edit_relations_title">Relaties</string>
     <string name="edit_view">Bewerk weergave</string>
@@ -672,15 +672,15 @@
     <string name="today">Vandaag</string>
     <string name="yesterday">Gisteren</string>
     <string name="tomorrow">Morgen</string>
-    <string name="no_date">No date</string>
-    <string name="exact_day">Exact day</string>
+    <string name="no_date">Geen datum</string>
+    <string name="exact_day">Exacte dag</string>
     <string name="reorder">Herschik</string>
     <string name="choose_an_image">Kies een afbeelding</string>
     <string name="optimal_dimensions_in_width_1080_pixels">Optimale afmetingen in breedte 1080 pixels</string>
-    <string name="cover_size">Omslag afmetingen</string>
+    <string name="cover_size">Afmeting omslag</string>
     <string name="tab_upload_image">Upload afbeelding</string>
     <string name="tab_gallery">Galerij</string>
-    <string name="change_type">Change type</string>
+    <string name="change_type">Verander type</string>
     <string name="change_cover">Wijzig omslag</string>
     <string name="remove">Verwijder</string>
     <string name="choose_options">Kies opties</string>
@@ -727,9 +727,9 @@
     <string name="shortcut_create_new_object_of_type">Nieuw %1$s</string>
     <string name="close">Sluit</string>
     <string name="go_to_settings">Ga naar instellingen</string>
-    <string name="do_not_forget_mnemonic_phrase">Vergeet niet je herstelzin te kopiëren en op te slaan</string>
+    <string name="do_not_forget_mnemonic_phrase">Vergeet niet jouw herstelzin te kopiëren en op te slaan</string>
     <string name="you_can_always_find_mnemonic_in_settings">Je kunt de zin altijd vinden in de instellingen op het dashboardscherm.</string>
-    <string name="if_you_lose_recovery_phrase_warning">Als je de herstelzin verliest en uitgelogd wordt, zul je nooit meer toegang tot je gegevens kunnen krijgen. Sla deze herstelzin op buiten Anytype voor gegevenshersel.</string>
+    <string name="if_you_lose_recovery_phrase_warning">Als je de herstelzin verliest en uitgelogd wordt, zul je nooit meer toegang tot jouw gegevens kunnen krijgen. Sla deze herstelzin op buiten Anytype voor gegevenshersel.</string>
     <string name="card_size">Kaartgrootte</string>
     <string name="clear_cache">Wis cache</string>
     <string name="clear_cache_title">Weet je het zeker?</string>
@@ -752,26 +752,26 @@
     <string name="swipe_to_choose">Gebruik vegen om te kiezen</string>
     <string name="without_template">Zonder sjabloon</string>
     <string name="unsplash_generic_error">Fout tijdens het zoeken naar afbeeldingen op Unsplash. Probeer het later opnieuw.</string>
-    <string name="do_not_forget_to_save_recovery_phrase_msg">Vergeet niet je herstelzin te kopiëren en op te slaan vanuit de instellingen</string>
-    <string name="unlock_your_object_to_add_new_relation">Ontgrendel je object om een nieuwe relatie toe te voegen</string>
-    <string name="unlock_your_object_to_edit_relations">Ontgrendel je object om relaties aan te passen</string>
+    <string name="do_not_forget_to_save_recovery_phrase_msg">Vergeet niet jouw herstelzin te kopiëren en op te slaan vanuit de instellingen</string>
+    <string name="unlock_your_object_to_add_new_relation">Ontgrendel jouw object om een nieuwe relatie toe te voegen</string>
+    <string name="unlock_your_object_to_edit_relations">Ontgrendel jouw object om relaties aan te passen</string>
     <string name="fragment_relation_create_from_scratch_title">Selecteer relatie type</string>
     <string name="fragment_dashboard_restore">Herstel</string>
-    <string name="your_account_deleted">Je account is verwijderd.</string>
+    <string name="your_account_deleted">Jouw account is verwijderd.</string>
     <plurals name="fragment_dashboard_selected_count">
-        <item quantity="one">%d object selected</item>
+        <item quantity="one">%d object geselecteerd</item>
         <item quantity="other">%d objecten geselecteerd</item>
     </plurals>
     <string name="debug_mode">debug_mode</string>
     <string name="trouble_mode">trouble_mode</string>
     <string name="settings_screen">Instellingen</string>
     <string name="settings_network_mode">Netwerkmodus</string>
-    <string name="settings_network_configuration_file">Self-hosted instellingen</string>
+    <string name="settings_network_configuration_file">Zelfgehoste instellingen</string>
     <string name="settings_network_configuration_file_choose">Kies bestand</string>
     <string-array name="settings_networks_entries">
         <item>Anytype</item>
-        <item>Local-only</item>
-        <item>Self-hosted</item>
+        <item>Alleen lokaal</item>
+        <item>Zelfgehost</item>
     </string-array>
     <string name="snack_link_to">gelinkt naar</string>
     <string name="snack_move_to">verplaatst naar</string>
@@ -797,11 +797,11 @@
     <string name="sync_status_incompatible">Niet-compatibele versie</string>
     <string name="base_add_options_empty_title">Geen tags gevonden</string>
     <string name="base_add_options_empty_subtitle">Begin met typen om een nieuwe te maken</string>
-    <string name="sync_status_local_only">Local-only</string>
+    <string name="sync_status_local_only">Alleen lokaal</string>
     <string name="mail_more_space_body">Hallo Anytype team. Ik neem contact op met het verzoek om mijn opslagcapaciteit uit te breiden, omdat ik geen opslagruimte meer heb. Mijn huidige limiet is %1$s. Mijn account ID is %2$s. Cheers, %3$s</string>
-    <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
+    <string name="your_recovery_phrase_can_t_be_empty">Jouw herstelzin mag niet leeg zijn</string>
     <string name="go_to_the_app">Ga naar de app</string>
-    <string name="exiting_please_wait">Exiting... please wait</string>
+    <string name="exiting_please_wait">Aan het afsluiten... een ogenblik geduld</string>
     <string name="loading_please_wait">Aan het laden... even geduld a.j.b.</string>
     <string name="personal">Persoonlijk</string>
     <string name="create_space">Maak een ruimte aan</string>
@@ -823,9 +823,9 @@
     <string name="download_anytype_url">https://download.anytype.io</string>
     <string name="space_type_personal">Persoonlijk</string>
     <string name="space_type_private">Persoonlijk</string>
-    <string name="space_type_unknown">Unknown</string>
+    <string name="space_type_unknown">Onbekend</string>
     <string name="create_space_start_with">Begin met</string>
-    <string name="create_object_section_lists">Lists</string>
+    <string name="create_object_section_lists">Lijsten</string>
     <string name="create_object_section_objects">Objecten</string>
     <string name="edit">Bewerk</string>
     <string name="unselect_all">Deselecteer alle</string>
@@ -874,15 +874,15 @@
     <string name="slash_widget_style_code">Code</string>
     <string name="slash_widget_style_link">Link</string>
     <string name="slash_widget_style_underline">Onderstrepen</string>
-    <string name="slash_widget_media_file">File</string>
+    <string name="slash_widget_media_file">Bestand</string>
     <string name="slash_widget_media_file_subtitle">Sla bestand op in oorspronkelijke staat</string>
-    <string name="slash_widget_media_picture">Picture</string>
+    <string name="slash_widget_media_picture">Afbeelding</string>
     <string name="slash_widget_media_picture_subtitle">Verrijk je pagina met een afbeelding</string>
     <string name="slash_widget_media_video">Video</string>
     <string name="slash_widget_media_video_subtitle">Upload afspeelbare video</string>
-    <string name="slash_widget_media_bookmark">Bookmark</string>
+    <string name="slash_widget_media_bookmark">Bladwijzer</string>
     <string name="slash_widget_media_bookmark_subtitle">Sla je favoriete link op met samenvatting</string>
-    <string name="slash_widget_media_code">Code snippet</string>
+    <string name="slash_widget_media_code">Codefragment</string>
     <string name="slash_widget_media_code_subtitle">Leg code fragment vast</string>
     <string name="slash_widget_other_line">Scheidingslijn</string>
     <string name="slash_widget_other_dots">Gestippelde scheidingslijn</string>
@@ -1030,53 +1030,53 @@
     <!--endregion-->
     <!--region ALERTS -->
     <string name="alert_gallery_unsupported_title">Galerij wordt binnenkort ondersteund</string>
-    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
+    <string name="alert_gallery_unsupported_description">Gebruik alsjeblieft voorlopig de desktop app</string>
     <!--endregion-->
     <!--region SHARING MENU -->
-    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_section_name">Sla op als</string>
     <string name="sharing_menu_save_as_note_option">Notitie</string>
-    <string name="sharing_menu_save_as_bookmark_option">Bookmark</string>
+    <string name="sharing_menu_save_as_bookmark_option">Bladwijzer</string>
     <string name="sharing_menu_data">Gegevens</string>
     <string name="sharing_menu_add_to_anytype_header_title">Voeg toe aan Anytype</string>
-    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
+    <string name="sharing_menu_toast_object_added">Nieuw object wordt toegevoegd aan de ruimte \'%1$s\'</string>
     <!--endregion-->
     <!--region ORIGIN RELATION VALUES -->
     <string name="relation_origin_none">Geen</string>
-    <string name="relation_origin_clipboard">Clipboard</string>
+    <string name="relation_origin_clipboard">Klembord</string>
     <string name="relation_origin_dnd">Drag &amp; Drop</string>
-    <string name="relation_origin_imported_object">Imported object</string>
-    <string name="relation_origin_web_clipper">Web clipper</string>
-    <string name="relation_origin_mobile_sharing_extension">Mobile sharing extension</string>
-    <string name="relation_origin_use_case">Use case</string>
-    <string name="relation_origin_library_installed">Library installed</string>
-    <string name="relation_origin_bookmark">Bookmark</string>
+    <string name="relation_origin_imported_object">Geïmporteerd object</string>
+    <string name="relation_origin_web_clipper">Webclipper</string>
+    <string name="relation_origin_mobile_sharing_extension">Mobiel delen extensie</string>
+    <string name="relation_origin_use_case">Gebruikssituatie</string>
+    <string name="relation_origin_library_installed">Bibliotheek geïnstalleerd</string>
+    <string name="relation_origin_bookmark">Bladwijzer</string>
     <!--endregion-->
     <plurals name="links_to_count">
-        <item quantity="one">%d link to</item>
-        <item quantity="other">%d links to</item>
+        <item quantity="one">%d link naar</item>
+        <item quantity="other">%d links naar</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d link from</item>
-        <item quantity="other">%d links from</item>
+        <item quantity="one">%d link van</item>
+        <item quantity="other">%d links van</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">Morgen</string>
     <string name="date_type_today">Vandaag</string>
     <string name="date_type_yesterday">Gisteren</string>
-    <string name="date_type_previous_seven_days">Previous seven days</string>
-    <string name="date_type_previous_thirty_days">Previous thirty days</string>
-    <string name="date_type_older">Older</string>
-    <string name="dates_days_ago">%1$s days ago</string>
-    <string name="dates_days_from">%1$s days from now</string>
+    <string name="date_type_previous_seven_days">Afgelopen zeven dagen</string>
+    <string name="date_type_previous_thirty_days">Afgelopen dertig dagen</string>
+    <string name="date_type_older">Ouder</string>
+    <string name="dates_days_ago">%1$s dagen geleden</string>
+    <string name="dates_days_from">%1$s dagen vanaf nu</string>
     <!--endregion-->
-    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="create_object_section_pinned">Pinned</string>
-    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
-    <string name="any_object_creation_menu_unpin">Unpin</string>
-    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="error_kanban_view_not_supported">Kanban weergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
+    <string name="error_calendar_view_not_supported">Agendaweergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
+    <string name="error_generic_view_not_supported">Deze weergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
+    <string name="create_object_section_pinned">Vastgezet</string>
+    <string name="any_object_creation_menu_pin_on_top">Zet vast bovenaan</string>
+    <string name="any_object_creation_menu_unpin">Maak los</string>
+    <string name="any_object_creation_menu_set_as_default">Stel in als standaard</string>
     <string name="any_object_creation_menu_move_left">Verplaats naar links</string>
     <string name="any_object_creation_menu_move_right">Verplaats naar rechts</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Maak object aan vanaf klembord</string>
 </resources>

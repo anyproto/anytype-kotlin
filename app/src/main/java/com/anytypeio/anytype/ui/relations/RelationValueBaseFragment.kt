@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.core_utils.ui.DragAndDropViewHolder
 import com.anytypeio.anytype.core_utils.ui.OnStartDragListener
@@ -36,9 +37,10 @@ import com.anytypeio.anytype.ui.relations.add.AddObjectRelationFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import timber.log.Timber
 
-abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragment<T>(),
-    OnStartDragListener,
-    AddObjectRelationFragment.ObjectValueAddReceiver {
+abstract class  RelationValueBaseFragment : BaseBottomSheetComposeFragment(),
+    //OnStartDragListener,
+    AddObjectRelationFragment.ObjectValueAddReceiver
+{
 
     protected val ctx get() = argString(CTX_KEY)
     protected val relationKey get() = argString(RELATION_KEY)
@@ -50,99 +52,99 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
 
     abstract val vm: RelationValueBaseViewModel
 
-    private val dndItemTouchHelper: ItemTouchHelper by lazy { ItemTouchHelper(dndBehavior) }
+    //private val dndItemTouchHelper: ItemTouchHelper by lazy { ItemTouchHelper(dndBehavior) }
     protected lateinit var dividerItem: RecyclerView.ItemDecoration
     protected lateinit var dividerItemEdit: RecyclerView.ItemDecoration
 
-    protected abstract val root: View
-    protected abstract val recycler: RecyclerView
-    protected abstract val btnAddValue: ImageView
-    protected abstract val btnEditOrDone: TextView
-    protected abstract val refresh: ProgressBar
-    protected abstract val tvRelationHeader: TextView
+    //protected abstract val root: View
+    //protected abstract val recycler: RecyclerView
+//    protected abstract val btnAddValue: ImageView
+//    protected abstract val btnEditOrDone: TextView
+//    protected abstract val refresh: ProgressBar
+//    protected abstract val tvRelationHeader: TextView
 
     protected abstract val onStatusClickedCallback: (RelationValueView.Option.Status) -> Unit
-    protected abstract fun observeViews(values: List<RelationValueView>)
+    //protected abstract fun observeViews(values: List<RelationValueView>)
 
-    private val dndBehavior by lazy {
-        object : DefaultDragAndDropBehavior(
-            onItemMoved = { from, to -> relationValueAdapter.onItemMove(from, to) },
-            onItemDropped = {
-                vm.onObjectValueOrderChanged(
-                    target = target,
-                    relationKey = relationKey,
-                    order = relationValueAdapter.order()
-                )
-            }
-        ) {
-            override fun getMovementFlags(
-                recyclerView: RecyclerView,
-                viewHolder: RecyclerView.ViewHolder
-            ): Int {
-                if (viewHolder is DragAndDropViewHolder) return super.getMovementFlags(
-                    recyclerView,
-                    viewHolder
-                )
-                return makeMovementFlags(0, 0)
-            }
-        }
-    }
+//    private val dndBehavior by lazy {
+//        object : DefaultDragAndDropBehavior(
+//            onItemMoved = { from, to -> relationValueAdapter.onItemMove(from, to) },
+//            onItemDropped = {
+//                vm.onObjectValueOrderChanged(
+//                    target = target,
+//                    relationKey = relationKey,
+//                    order = relationValueAdapter.order()
+//                )
+//            }
+//        ) {
+//            override fun getMovementFlags(
+//                recyclerView: RecyclerView,
+//                viewHolder: RecyclerView.ViewHolder
+//            ): Int {
+//                if (viewHolder is DragAndDropViewHolder) return super.getMovementFlags(
+//                    recyclerView,
+//                    viewHolder
+//                )
+//                return makeMovementFlags(0, 0)
+//            }
+//        }
+//    }
 
-    protected val relationValueAdapter by lazy {
-        RelationValueAdapter(
-            onCreateOptionClicked = {},
-            onTagClicked = {},
-            onStatusClicked = onStatusClickedCallback,
-            onRemoveStatusClicked = { status ->
-                vm.onRemoveStatusFromObjectClicked(
-                    ctx = ctx,
-                    target = target,
-                    relationKey = relationKey,
-                    status = status.id
-                )
-            },
-            onRemoveTagClicked = { tag ->
-                vm.onRemoveTagFromObjectClicked(
-                    ctx = ctx,
-                    target = target,
-                    relationKey = relationKey,
-                    tag = tag.id
-                )
-            },
-            onObjectClicked = { o ->
-                if (o is RelationValueView.Object.Default) {
-                    vm.onObjectClicked(
-                        ctx = ctx,
-                        id = o.id,
-                        layout = o.layout,
-                        profileLinkIdentity = o.profileLinkIdentity
-                    )
-                } else {
-                    vm.onNonExistentObjectClicked(
-                        ctx = ctx,
-                        target = o.id
-                    )
-                }
-            },
-            onRemoveObjectClicked = { obj ->
-                vm.onRemoveObjectFromObjectClicked(
-                    ctx = ctx,
-                    target = target,
-                    relationKey = relationKey,
-                    objectId = obj
-                )
-            },
-            onFileClicked = { o -> vm.onFileClicked(o.id) },
-            onRemoveFileClicked = { file ->
-                vm.onRemoveFileFromObjectClicked(
-                    ctx = ctx,
-                    target = target,
-                    relationKey = relationKey,
-                    fileId = file
-                )
-            }
-        )
-    }
+//    protected val relationValueAdapter by lazy {
+//        RelationValueAdapter(
+//            onCreateOptionClicked = {},
+//            onTagClicked = {},
+//            onStatusClicked = onStatusClickedCallback,
+//            onRemoveStatusClicked = { status ->
+//                vm.onRemoveStatusFromObjectClicked(
+//                    ctx = ctx,
+//                    target = target,
+//                    relationKey = relationKey,
+//                    status = status.id
+//                )
+//            },
+//            onRemoveTagClicked = { tag ->
+//                vm.onRemoveTagFromObjectClicked(
+//                    ctx = ctx,
+//                    target = target,
+//                    relationKey = relationKey,
+//                    tag = tag.id
+//                )
+//            },
+//            onObjectClicked = { o ->
+//                if (o is RelationValueView.Object.Default) {
+//                    vm.onObjectClicked(
+//                        ctx = ctx,
+//                        id = o.id,
+//                        layout = o.layout,
+//                        profileLinkIdentity = o.profileLinkIdentity
+//                    )
+//                } else {
+//                    vm.onNonExistentObjectClicked(
+//                        ctx = ctx,
+//                        target = o.id
+//                    )
+//                }
+//            },
+//            onRemoveObjectClicked = { obj ->
+//                vm.onRemoveObjectFromObjectClicked(
+//                    ctx = ctx,
+//                    target = target,
+//                    relationKey = relationKey,
+//                    objectId = obj
+//                )
+//            },
+//            onFileClicked = { o -> vm.onFileClicked(o.id) },
+//            onRemoveFileClicked = { file ->
+//                vm.onRemoveFileFromObjectClicked(
+//                    ctx = ctx,
+//                    target = target,
+//                    relationKey = relationKey,
+//                    fileId = file
+//                )
+//            }
+//        )
+//    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -154,22 +156,22 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         jobs += lifecycleScope.subscribe(vm.isDismissed) { observeDismiss(it) }
         jobs += lifecycleScope.subscribe(vm.isEditing) { observeEditing(it) }
-        jobs += lifecycleScope.subscribe(vm.views) { observeViews(it) }
-        jobs += lifecycleScope.subscribe(vm.name) { tvRelationHeader.text = it }
+        //jobs += lifecycleScope.subscribe(vm.views) { observeViews(it) }
+        //jobs += lifecycleScope.subscribe(vm.name) { tvRelationHeader.text = it }
         jobs += lifecycleScope.subscribe(vm.navigation) { command -> navigate(command) }
         jobs += lifecycleScope.subscribe(vm.isLoading) { isLoading -> observeLoading(isLoading) }
         jobs += lifecycleScope.subscribe(vm.copyFileStatus) { command ->
             pickerDelegate.onCopyFileCommand(command)
         }
-        jobs += lifecycleScope.subscribe(vm.isReadOnlyValue) { isReadOnly ->
-            if (isReadOnly) {
-                btnAddValue.gone()
-                btnEditOrDone.gone()
-            } else {
-                btnAddValue.visible()
-                btnEditOrDone.visible()
-            }
-        }
+//        jobs += lifecycleScope.subscribe(vm.isReadOnlyValue) { isReadOnly ->
+//            if (isReadOnly) {
+//                btnAddValue.gone()
+//                btnEditOrDone.gone()
+//            } else {
+//                btnAddValue.visible()
+//                btnEditOrDone.visible()
+//            }
+//        }
         super.onStart()
         vm.onStart(
             ctx = ctx,
@@ -179,13 +181,13 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
     }
 
     private fun observeLoading(isLoading: Boolean) {
-        if (isLoading) {
-            refresh.visible()
-            btnAddValue.invisible()
-        } else {
-            refresh.gone()
-            btnAddValue.visible()
-        }
+//        if (isLoading) {
+//            refresh.visible()
+//            btnAddValue.invisible()
+//        } else {
+//            refresh.gone()
+//            btnAddValue.visible()
+//        }
     }
 
     private fun navigate(command: AppNavigation.Command) {
@@ -223,34 +225,34 @@ abstract class  RelationValueBaseFragment<T: ViewBinding> : BaseBottomSheetFragm
         super.onDestroy()
     }
 
-    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
-        dndItemTouchHelper.startDrag(viewHolder)
-    }
+//    override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
+//        dndItemTouchHelper.startDrag(viewHolder)
+//    }
 
     private fun observeEditing(isEditing: Boolean) {
-        if (isEditing) {
-            recycler.apply {
-                removeItemDecoration(dividerItem)
-                addItemDecoration(dividerItemEdit)
-            }
-            btnAddValue.invisible()
-            btnEditOrDone.setText(R.string.done)
-            dndItemTouchHelper.attachToRecyclerView(recycler)
-        } else {
-            recycler.apply {
-                removeItemDecoration(dividerItemEdit)
-                addItemDecoration(dividerItem)
-            }
-            btnAddValue.visible()
-            btnEditOrDone.setText(R.string.edit)
-            dndItemTouchHelper.attachToRecyclerView(null)
-        }
+//        if (isEditing) {
+//            recycler.apply {
+//                removeItemDecoration(dividerItem)
+//                addItemDecoration(dividerItemEdit)
+//            }
+//            btnAddValue.invisible()
+//            btnEditOrDone.setText(R.string.done)
+//            dndItemTouchHelper.attachToRecyclerView(recycler)
+//        } else {
+//            recycler.apply {
+//                removeItemDecoration(dividerItemEdit)
+//                addItemDecoration(dividerItem)
+//            }
+//            btnAddValue.visible()
+//            btnEditOrDone.setText(R.string.edit)
+//            dndItemTouchHelper.attachToRecyclerView(null)
+//        }
     }
 
     private fun observeDismiss(isDismissed: Boolean) {
-        if (isDismissed) {
-            dismiss()
-        }
+//        if (isDismissed) {
+//            dismiss()
+//        }
     }
 
     //region PICK IT

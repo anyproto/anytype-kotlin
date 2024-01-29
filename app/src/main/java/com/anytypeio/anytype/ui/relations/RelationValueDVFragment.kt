@@ -30,7 +30,7 @@ import com.anytypeio.anytype.ui.relations.add.AddObjectRelationFragment
 import com.anytypeio.anytype.ui.relations.add.AddOptionsRelationDVFragment
 import javax.inject.Inject
 
-open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationValueBinding>(),
+open class RelationValueDVFragment : RelationValueBaseFragment(),
     FileActionsFragment.FileActionReceiver,
     AddFileRelationFragment.FileValueAddReceiver {
 
@@ -40,42 +40,42 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
 
     val isIntrinsic: Boolean get() = argOrNull<Boolean>(IS_INTRINSIC_KEY) ?: false
 
-    override val root: View
-        get() = binding.root
-    override val recycler: RecyclerView
-        get() = binding.recycler
-    override val btnAddValue: ImageView
-        get() = binding.btnAddValue
-    override val btnEditOrDone: TextView
-        get() = binding.btnEditOrDone
-    override val refresh: ProgressBar
-        get() = binding.refresh
-    override val tvRelationHeader: TextView
-        get() = binding.tvRelationHeader
+//    override val root: View
+//        get() = binding.root
+//    override val recycler: RecyclerView
+//        get() = binding.recycler
+//    override val btnAddValue: ImageView
+//        get() = binding.btnAddValue
+//    override val btnEditOrDone: TextView
+//        get() = binding.btnEditOrDone
+//    override val refresh: ProgressBar
+//        get() = binding.refresh
+//    override val tvRelationHeader: TextView
+//        get() = binding.tvRelationHeader
 
     override val onStatusClickedCallback: (RelationValueView.Option.Status) -> Unit = {}
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = relationValueAdapter
-        }
-        dividerItem = DefaultDividerItemDecoration(
-            drawable(R.drawable.divider_relations)
-        )
-        dividerItemEdit = DefaultDividerItemDecoration(
-            drawable(R.drawable.divider_relations_edit)
-        )
-        with(lifecycleScope) {
-            subscribe(btnEditOrDone.clicks()) { vm.onEditOrDoneClicked(isLocked) }
-            subscribe(btnAddValue.clicks()) { vm.onAddValueClicked(isLocked) }
-        }
+//        recycler.apply {
+//            layoutManager = LinearLayoutManager(context)
+//            adapter = relationValueAdapter
+//        }
+//        dividerItem = DefaultDividerItemDecoration(
+//            drawable(R.drawable.divider_relations)
+//        )
+//        dividerItemEdit = DefaultDividerItemDecoration(
+//            drawable(R.drawable.divider_relations_edit)
+//        )
+//        with(lifecycleScope) {
+//            subscribe(btnEditOrDone.clicks()) { vm.onEditOrDoneClicked(isLocked) }
+//            subscribe(btnAddValue.clicks()) { vm.onAddValueClicked(isLocked) }
+//        }
     }
 
-    override fun observeViews(values: List<RelationValueView>) {
-        relationValueAdapter.update(values)
-    }
+//    override fun observeViews(values: List<RelationValueView>) {
+//        relationValueAdapter.update(values)
+//    }
 
     override fun onObjectValueChanged(
         ctx: Id,
@@ -172,12 +172,12 @@ open class RelationValueDVFragment : RelationValueBaseFragment<FragmentRelationV
         vm.onFileValueActionUploadFromStorageClicked()
     }
 
-    override fun inflateBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentRelationValueBinding = FragmentRelationValueBinding.inflate(
-        inflater, container, false
-    )
+//    override fun inflateBinding(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?
+//    ): FragmentRelationValueBinding = FragmentRelationValueBinding.inflate(
+//        inflater, container, false
+//    )
 
     override fun injectDependencies() {
         if (isIntrinsic) {

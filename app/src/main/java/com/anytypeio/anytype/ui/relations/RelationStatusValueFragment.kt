@@ -28,30 +28,29 @@ import com.anytypeio.anytype.presentation.sets.RelationValueViewModel
 import com.anytypeio.anytype.ui.relations.add.AddOptionsRelationFragment
 import javax.inject.Inject
 
-class RelationStatusValueFragment :
-    RelationValueBaseFragment<FragmentRelationStatusValueBinding>() {
+class RelationStatusValueFragment : RelationValueBaseFragment() {
 
     @Inject
     lateinit var factory: RelationValueViewModel.Factory
     override val vm: RelationValueViewModel by viewModels { factory }
 
-    override val root: View
-        get() = binding.root
-    override val recycler: RecyclerView
-        get() = binding.recycler
-    override val btnAddValue: ImageView
-        get() = binding.btnAddValue
-    override val btnEditOrDone: TextView
-        get() = binding.btnEditOrDone
-    override val refresh: ProgressBar
-        get() = binding.refresh
-    override val tvRelationHeader: TextView
-        get() = binding.tvRelationHeader
-
-    private val btnClear
-        get() = binding.btnClear
-    private val tvEmptyPlaceholder
-        get() = binding.tvEmptyPlaceholder
+//    override val root: View
+//        get() = binding.root
+//    override val recycler: RecyclerView
+//        get() = binding.recycler
+//    override val btnAddValue: ImageView
+//        get() = binding.btnAddValue
+//    override val btnEditOrDone: TextView
+//        get() = binding.btnEditOrDone
+//    override val refresh: ProgressBar
+//        get() = binding.refresh
+//    override val tvRelationHeader: TextView
+//        get() = binding.tvRelationHeader
+//
+//    private val btnClear
+//        get() = binding.btnClear
+//    private val tvEmptyPlaceholder
+//        get() = binding.tvEmptyPlaceholder
 
     override val onStatusClickedCallback: (RelationValueView.Option.Status) -> Unit = {
         vm.onAddValueClicked(isLocked)
@@ -59,40 +58,40 @@ class RelationStatusValueFragment :
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        recycler.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = relationValueAdapter
-        }
-        dividerItem = DefaultDividerItemDecoration(
-            drawable(R.drawable.divider_relations)
-        )
-        dividerItemEdit = DefaultDividerItemDecoration(
-            drawable(R.drawable.divider_relations_edit)
-        )
-        proceed(btnAddValue.clicks()) { vm.onAddValueClicked(isLocked) }
-        proceed(btnClear.clicks()) {
-            vm.onRemoveStatusFromObjectClicked(
-                ctx = ctx,
-                target = target,
-                relationKey = relationKey,
-            )
-        }
+//        recycler.apply {
+//            layoutManager = LinearLayoutManager(context)
+//            adapter = relationValueAdapter
+//        }
+//        dividerItem = DefaultDividerItemDecoration(
+//            drawable(R.drawable.divider_relations)
+//        )
+//        dividerItemEdit = DefaultDividerItemDecoration(
+//            drawable(R.drawable.divider_relations_edit)
+//        )
+//        proceed(btnAddValue.clicks()) { vm.onAddValueClicked(isLocked) }
+//        proceed(btnClear.clicks()) {
+//            vm.onRemoveStatusFromObjectClicked(
+//                ctx = ctx,
+//                target = target,
+//                relationKey = relationKey,
+//            )
+//        }
     }
 
-    override fun observeViews(values: List<RelationValueView>) {
-        if (values.isNotEmpty() && values.first() is RelationValueView.Empty) {
-            recycler.gone()
-            btnClear.gone()
-            tvEmptyPlaceholder.visible()
-            btnAddValue.visible()
-        } else {
-            recycler.visible()
-            btnClear.visible()
-            tvEmptyPlaceholder.gone()
-            btnAddValue.gone()
-        }
-        relationValueAdapter.update(values)
-    }
+//    override fun observeViews(values: List<RelationValueView>) {
+//        if (values.isNotEmpty() && values.first() is RelationValueView.Empty) {
+//            recycler.gone()
+//            btnClear.gone()
+//            tvEmptyPlaceholder.visible()
+//            btnAddValue.visible()
+//        } else {
+//            recycler.visible()
+//            btnClear.visible()
+//            tvEmptyPlaceholder.gone()
+//            btnAddValue.gone()
+//        }
+//        relationValueAdapter.update(values)
+//    }
 
     override fun onObjectValueChanged(ctx: Id, objectId: Id, relationKey: Key, ids: List<Id>) {
         vm.onAddObjectsOrFilesValueToObject(
@@ -121,14 +120,14 @@ class RelationStatusValueFragment :
         fr.showChildFragment()
     }
 
-    override fun inflateBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentRelationStatusValueBinding {
-        return FragmentRelationStatusValueBinding.inflate(
-            inflater, container, false
-        )
-    }
+//    override fun inflateBinding(
+//        inflater: LayoutInflater,
+//        container: ViewGroup?
+//    ): FragmentRelationStatusValueBinding {
+//        return FragmentRelationStatusValueBinding.inflate(
+//            inflater, container, false
+//        )
+//    }
 
     override fun injectDependencies() {
         componentManager().objectObjectRelationValueComponent.get(ctx).inject(this)

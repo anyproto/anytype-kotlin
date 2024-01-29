@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.di.main
 
-import com.anytypeio.anytype.app.AndroidApplication
+    import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
 import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
@@ -33,7 +33,6 @@ import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
 import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
 import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
-import com.anytypeio.anytype.di.feature.settings.MainSettingsSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.SpacesStorageDependencies
 import com.anytypeio.anytype.di.feature.sharing.AddToAnytypeDependencies
@@ -129,7 +128,6 @@ interface MainComponent :
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
     fun personalizationSettingsComponentBuilder(): PersonalizationSettingsSubComponent.Builder
     fun logoutWarningComponent(): LogoutWarningSubComponent.Builder
-    fun mainSettingsComponent(): MainSettingsSubComponent.Builder
 
     //endregion
 }

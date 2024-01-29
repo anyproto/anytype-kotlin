@@ -378,3 +378,5 @@ class FilesStorageViewModel(
         const val WARNING_PERCENT = 0.9f
     }
 }
+
+const val SPACE_STORAGE_SUBSCRIPTION_ID = "settings_space_storage_subscription"

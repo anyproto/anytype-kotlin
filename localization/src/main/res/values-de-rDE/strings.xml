@@ -49,6 +49,8 @@
     <string name="space">Space</string>
     <string name="space_name">Space-Name</string>
     <string name="personal_space">Persönlicher Space</string>
+    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="delete_space">Space löschen</string>
     <string name="you_can_store">Du kannst bis zu %1$s deiner Dateien auf unserem verschlüsselten und kostenlosen Backup-Knoten speichern. Wenn das Limit erreicht wurde, werden Dateien nur noch lokal gespeichert.</string>
     <string name="in_order_to_save">Um Platz auf deinem Gerät zu sparen, können alle deine Dateien auf unseren verschlüsselten Backup-Knoten ausgelagert werden. Die Dateien werden beim Öffnen dann wieder heruntergeladen.</string>
     <string name="manage_files">Dateien verwalten</string>
@@ -615,7 +617,7 @@
     <string name="hint_paste_or_type_a_url">URL einfügen oder eingeben</string>
     <string name="content_description_menu_icon">Menu icon</string>
     <string name="failed_to_launch_wallet">Wallet konnte nicht gestartet werden, nachdem erneut versucht wurde.</string>
-    <string name="pickit_drive">Drive file was selected</string>
+    <string name="pickit_drive">Laufwerksdatei wurde ausgewählt</string>
     <string name="pickit_file_selected">Datei wurde von unbekanntem Provider ausgewählt</string>
     <string name="pickit_local_file">Lokale Datei wurde ausgewählt</string>
     <string name="pickit_waiting">Warte auf Empfangen der Datei…</string>
@@ -966,7 +968,7 @@
     <string name="onboarding_terms_and_policy_terms">Nutzungsbedingungen</string>
     <string name="onboarding_terms_and_policy_infix">" und "</string>
     <string name="onboarding_terms_and_policy_privacy">Datenschutzrichtlinie</string>
-    <string name="onboarding_join_button_text">Neues Konto erstellen</string>
+    <string name="onboarding_join_button_text">Beitreten</string>
     <string name="onboarding_log_in_button_text">Anmelden</string>
     <string name="onboarding_invite_code_title">Gib deinen Einladungscode ein</string>
     <string name="onboarding_invite_code_description">Wenn du noch keinen hast, gehe einfach zu anytype.io\nund lass dich auf die Warteliste setzen.</string>
@@ -1043,10 +1045,11 @@
     <string name="relation_origin_clipboard">Zwischenablage</string>
     <string name="relation_origin_dnd">Drag &amp; Drop</string>
     <string name="relation_origin_imported_object">Importiertes Objekt</string>
-    <string name="relation_origin_web_clipper">Web clipper</string>
+    <string name="relation_origin_web_clipper">Web Clipper</string>
     <string name="relation_origin_mobile_sharing_extension">Erweiterung für mobiles Teilen</string>
     <string name="relation_origin_use_case">Anwendungsfall</string>
     <string name="relation_origin_library_installed">Bibliothek installiert</string>
+    <string name="relation_origin_bookmark">Lesezeichen</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="one">%d Link zu</item>
@@ -1056,6 +1059,24 @@
         <item quantity="one">%d Link von</item>
         <item quantity="other">%d Links von</item>
     </plurals>
-    <string name="dates_days_ago">%1$s days ago</string>
-    <string name="dates_days_from">%1$s days from now</string>
+    <!--region ORIGIN RELATION VALUES -->
+    <string name="date_type_tomorrow">Morgen</string>
+    <string name="date_type_today">Heute</string>
+    <string name="date_type_yesterday">Gestern</string>
+    <string name="date_type_previous_seven_days">Previous seven days</string>
+    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_older">Älter</string>
+    <string name="dates_days_ago">Vor %1$s Tagen</string>
+    <string name="dates_days_from">In %1$s Tagen</string>
+    <!--endregion-->
+    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="create_object_section_pinned">Pinned</string>
+    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
+    <string name="any_object_creation_menu_unpin">Unpin</string>
+    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="any_object_creation_menu_move_left">Nach links verschieben</string>
+    <string name="any_object_creation_menu_move_right">Nach rechts verschieben</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
 </resources>

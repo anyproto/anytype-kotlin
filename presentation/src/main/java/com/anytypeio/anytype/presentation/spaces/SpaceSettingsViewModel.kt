@@ -46,7 +46,8 @@ class SpaceSettingsViewModel(
     private val urlBuilder: UrlBuilder,
     private val deleteSpace: DeleteSpace,
     private val configStorage: ConfigStorage,
-    private val debugSpaceShareDownloader: DebugSpaceShareDownloader
+    private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
+    private val spaceGradientProvider: SpaceGradientProvider
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -165,6 +166,22 @@ class SpaceSettingsViewModel(
         proceedWithSpaceDebug()
     }
 
+    fun onRandomSpaceGradientClicked() {
+        viewModelScope.launch {
+            val config = spaceConfig
+            if (config != null) {
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = SpaceId(config.space),
+                        details = mapOf(
+                            Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble()
+                        )
+                    )
+                )
+            }
+        }
+    }
+
     fun onDeleteSpaceClicked() {
         viewModelScope.launch {
             analytics.sendEvent(
@@ -274,7 +291,8 @@ class SpaceSettingsViewModel(
         private val spaceManager: SpaceManager,
         private val deleteSpace: DeleteSpace,
         private val configStorage: ConfigStorage,
-        private val debugFileShareDownloader: DebugSpaceShareDownloader
+        private val debugFileShareDownloader: DebugSpaceShareDownloader,
+        private val spaceGradientProvider: SpaceGradientProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -288,7 +306,8 @@ class SpaceSettingsViewModel(
             analytics = analytics,
             deleteSpace = deleteSpace,
             configStorage = configStorage,
-            debugSpaceShareDownloader = debugFileShareDownloader
+            debugSpaceShareDownloader = debugFileShareDownloader,
+            spaceGradientProvider = spaceGradientProvider
         ) as T
     }
 

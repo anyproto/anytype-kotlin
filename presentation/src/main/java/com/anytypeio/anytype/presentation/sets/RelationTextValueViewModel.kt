@@ -111,17 +111,17 @@ class RelationTextValueViewModel(
                                 isEditable = isValueEditable
                             )
                         )
-                        if (value != null) {
-                            actions.value = buildList {
+                        actions.value = buildList {
+                            if (!value.isNullOrEmpty()) {
                                 add(RelationValueAction.Url.Browse(value))
                                 add(RelationValueAction.Url.Copy(value))
-                                if (relation.key == Relations.SOURCE) {
-                                    val type = obj.type.firstOrNull()
-                                    if (type != null) {
-                                        val wrapper = storeOfObjectTypes.get(type)
-                                        if (wrapper?.uniqueKey == ObjectTypeUniqueKeys.BOOKMARK) {
-                                            add(RelationValueAction.Url.Reload(value))
-                                        }
+                            }
+                            if (relation.key == Relations.SOURCE) {
+                                val type = obj.type.firstOrNull()
+                                if (type != null) {
+                                    val wrapper = storeOfObjectTypes.get(type)
+                                    if (wrapper?.uniqueKey == ObjectTypeUniqueKeys.BOOKMARK) {
+                                        add(RelationValueAction.Url.Reload(value.orEmpty()))
                                     }
                                 }
                             }

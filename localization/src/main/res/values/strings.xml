@@ -59,6 +59,8 @@
     <string name="space">Space</string>
     <string name="space_name">Space name</string>
     <string name="personal_space">Personal Space</string>
+    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="delete_space">Delete space</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
     <string name="in_order_to_save">In order to save space on your local device, you can offload all your files to our encrypted backup node. The files will be loaded back when you open them.</string>
     <string name="manage_files">Manage files</string>
@@ -1076,7 +1078,7 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Create New Account</string>
+    <string name="onboarding_join_button_text">Join</string>
     <string name="onboarding_log_in_button_text">Login</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>

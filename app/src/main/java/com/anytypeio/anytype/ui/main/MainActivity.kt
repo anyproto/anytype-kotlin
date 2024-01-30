@@ -139,8 +139,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
             }
         }
-        if (savedInstanceState == null && intent.action == Intent.ACTION_SEND) {
-            proceedWithShareIntent(intent)
+        if (savedInstanceState == null) {
+            val action = intent.action
+            if (action == Intent.ACTION_SEND || action == Intent.ACTION_SEND_MULTIPLE) {
+                proceedWithShareIntent(intent)
+            }
         }
     }
 
@@ -217,6 +220,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                         else
                             null
                     }
+                    Timber.d("Parsed multiple uris: ${uris}")
                     vm.onIntentMultipleImageShare(uris)
                 } else {
                     proceedWithReceivingImage(intent)
@@ -229,6 +233,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     proceedWithReceivingFile(intent)
                 }
             }
+            else -> Timber.e("Unexpected scenario: ${intent.type}")
         }
     }
 

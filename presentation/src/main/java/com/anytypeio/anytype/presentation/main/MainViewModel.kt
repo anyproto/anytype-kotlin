@@ -192,6 +192,7 @@ class MainViewModel(
     }
 
     fun onIntentMultipleImageShare(uris: List<String>) {
+        Timber.d("onIntentMultipleImageShare: $uris")
         viewModelScope.launch {
             checkAuthorizationStatus(Unit).process(
                 failure = { e -> Timber.e(e, "Error while checking auth status") },

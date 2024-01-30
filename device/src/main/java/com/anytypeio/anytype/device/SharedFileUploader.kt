@@ -9,12 +9,14 @@ import com.anytypeio.anytype.domain.device.FileSharer
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
+import timber.log.Timber
 
 class SharedFileUploader @Inject constructor(
     private val context: Context
 ) : FileSharer {
 
-    override fun getPath(uri: String): String? {
+    override fun getPath(uri: String): String {
+        Timber.d("Getting path for: ${uri}")
         val parsed = Uri.parse(uri)
         checkNotNull(parsed)
         return parsePathFromFile(parsed)

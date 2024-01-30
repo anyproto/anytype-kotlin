@@ -3,8 +3,10 @@ package com.anytypeio.anytype.ui.main
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -18,6 +20,8 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_utils.ext.parseImagePath
+import com.anytypeio.anytype.core_utils.ext.parsePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.componentManager
@@ -37,6 +41,9 @@ import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.github.javiersantos.appupdater.AppUpdater
 import com.github.javiersantos.appupdater.enums.UpdateFrom
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStreamReader
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -107,11 +114,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         )
                                     )
                             }
-                            is Command.AddToAnytype -> {
-                                SharingFragment.new(command.data).show(
+                            is Command.Sharing.Text -> {
+                                SharingFragment.text(command.data).show(
                                     supportFragmentManager,
                                     SHARE_DIALOG_LABEL
                                 )
+                            }
+                            is Command.Sharing.Image -> {
+                                SharingFragment.image(command.path).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
+                            is Command.Sharing.Images -> {
+                                toast("TODO")
                             }
                             is Command.Error -> {
                                 toast(command.msg)
@@ -172,6 +188,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 Intent.ACTION_SEND -> {
                     proceedWithShareIntent(intent)
                 }
+                Intent.ACTION_SEND_MULTIPLE -> {
+                    proceedWithShareIntent(intent)
+                }
             }
         }
         if (BuildConfig.DEBUG) {
@@ -180,8 +199,69 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     private fun proceedWithShareIntent(intent: Intent) {
-        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-            vm.onIntentShare(it)
+        Timber.d("Got intent: ${intent}")
+        when {
+            intent.type == "text/plain" -> {
+                vm.onIntentTextShare(intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty())
+            }
+            intent.type?.startsWith("image/") == true -> {
+                if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+                    // TODO
+                } else {
+                    val extra = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
+                    if (extra is Uri) {
+                        val parsed = runCatching { extra.parseImagePath(context) }
+                        Timber.d("Parse uri: ${parsed.getOrNull()}")
+                        parsed.fold(
+                            onSuccess = {
+                                vm.onIntentImageShare(it)
+                            },
+                            onFailure = {
+                                Timber.e(it, "Error while parsing path")
+                            }
+                        )
+                    }
+                }
+            }
+            intent.type?.startsWith("application/") == true -> {
+                if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+                    // TODO
+                } else {
+                    val extra = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
+                    if (extra is Uri) {
+                        Timber.d("Extra: $extra")
+                        val inputStream = contentResolver.openInputStream(extra)
+                        var path = ""
+                        inputStream?.use { input ->
+                            val newFile = File(cacheDir?.path + "/" + "test");
+                            Timber.d("Start copy file to cache : ${newFile.path}")
+                            FileOutputStream(newFile).use { output ->
+                                val buffer = ByteArray(1024)
+                                var read: Int = input.read(buffer)
+                                while (read != -1) {
+                                    output.write(buffer, 0, read)
+                                    read = input.read(buffer)
+                                }
+                            }
+                            path = newFile.path
+                        }
+
+                        val parsed = runCatching {
+//                            extra.parseImagePath(context)
+                            path
+                        }
+                        Timber.d("Parse uri: ${parsed.getOrNull()}")
+                        parsed.fold(
+                            onSuccess = {
+                                vm.onIntentImageShare(it)
+                            },
+                            onFailure = {
+                                Timber.e(it, "Error while parsing path")
+                            }
+                        )
+                    }
+                }
+            }
         }
     }
 

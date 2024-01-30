@@ -16,9 +16,11 @@ import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
@@ -48,7 +50,8 @@ class AddToAnytypeViewModel(
     private val getSpaceViews: GetSpaceViews,
     private val urlBuilder: UrlBuilder,
     private val awaitAccountStartManager: AwaitAccountStartManager,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val uploadFile: UploadFile
 ) : BaseViewModel() {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -192,6 +195,29 @@ class AddToAnytypeViewModel(
         }
     }
 
+    fun onUploadImage(path: String) {
+        Timber.d("Attempt to share image: $path")
+        viewModelScope.launch {
+            val targetSpaceView = spaceViews.value.firstOrNull { view ->
+                view.isSelected
+            }
+            val targetSpaceId = targetSpaceView?.obj?.targetSpaceId!!
+            val params = UploadFile.Params(
+                path = path,
+                space = SpaceId(targetSpaceId)
+            )
+            Timber.d("Uploading file with params: $params")
+            uploadFile.async(params).fold(
+                onSuccess = {
+                    Timber.d("Successfully upload file")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while uploading file")
+                }
+            )
+        }
+    }
+
     fun onSelectSpaceClicked(view: SpaceView) {
         Timber.d("onSelectSpaceClicked: ${view.obj.targetSpaceId}")
         viewModelScope.launch {
@@ -225,7 +251,8 @@ class AddToAnytypeViewModel(
         private val getSpaceViews: GetSpaceViews,
         private val urlBuilder: UrlBuilder,
         private val awaitAccountStartManager: AwaitAccountStartManager,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val uploadFile: UploadFile
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -236,7 +263,8 @@ class AddToAnytypeViewModel(
                 getSpaceViews = getSpaceViews,
                 urlBuilder = urlBuilder,
                 awaitAccountStartManager = awaitAccountStartManager,
-                analytics = analytics
+                analytics = analytics,
+                uploadFile = uploadFile
             ) as T
         }
     }

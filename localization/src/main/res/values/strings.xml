@@ -1192,6 +1192,7 @@
     <string name="sharing_menu_save_as_section_name">Save as</string>
     <string name="sharing_menu_save_as_note_option">Note</string>
     <string name="sharing_menu_save_as_bookmark_option">Bookmark</string>
+    <string name="sharing_menu_save_as_image_option">Image</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Add to Anytype</string>
     <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>

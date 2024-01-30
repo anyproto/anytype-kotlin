@@ -821,7 +821,8 @@ class Middleware @Inject constructor(
         val type = command.type.toMiddlewareModel()
         val request = Rpc.File.Upload.Request(
             localPath = command.path,
-            type = type
+            type = type,
+            spaceId = command.space?.id.orEmpty()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.fileUpload(request)

@@ -80,14 +80,16 @@ fun AddToAnytypeScreen(
     onSelectSpaceClicked: (SpaceView) -> Unit
 ) {
     var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
-    val items = if (data is SharingData.Url)
-        listOf(SAVE_AS_NOTE, SAVE_AS_BOOKMARK)
-    else
-        listOf(SAVE_AS_NOTE)
+    val items = when (data) {
+        is SharingData.Url -> listOf(SAVE_AS_NOTE, SAVE_AS_BOOKMARK)
+        is SharingData.Image -> listOf(SAVE_AS_IMAGE)
+        else -> listOf(SAVE_AS_NOTE)
+    }
     var selectedIndex by remember {
         mutableStateOf(
             when(data) {
                 is SharingData.Url -> SAVE_AS_BOOKMARK
+                is SharingData.Image -> SAVE_AS_IMAGE
                 else -> SAVE_AS_NOTE
             }
         )
@@ -111,10 +113,11 @@ fun AddToAnytypeScreen(
             )
 
             Text(
-                text = if (selectedIndex == SAVE_AS_BOOKMARK)
-                    stringResource(id = R.string.sharing_menu_save_as_bookmark_option)
-                else
-                    stringResource(id = R.string.sharing_menu_save_as_note_option),
+                text = when (selectedIndex) {
+                    SAVE_AS_BOOKMARK -> stringResource(id = R.string.sharing_menu_save_as_bookmark_option)
+                    SAVE_AS_IMAGE -> stringResource(id = R.string.sharing_menu_save_as_image_option)
+                    else -> stringResource(id = R.string.sharing_menu_save_as_note_option)
+                },
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(bottom = 14.dp, start = 20.dp),
@@ -390,6 +393,7 @@ private fun SmallSpaceIcon(
 
 const val SAVE_AS_NOTE = 0
 const val SAVE_AS_BOOKMARK = 1
+const val SAVE_AS_IMAGE = 2
 typealias SaveAsOption = Int
 
 sealed class SharingData {
@@ -401,5 +405,9 @@ sealed class SharingData {
     data class Raw(val raw: String) : SharingData() {
         override val data: String
             get() = raw
+    }
+    data class Image(val path: String) : SharingData() {
+        override val data: String
+            get() = path
     }
 }

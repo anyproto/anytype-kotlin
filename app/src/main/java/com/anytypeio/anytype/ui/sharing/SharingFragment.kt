@@ -22,16 +22,25 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.settings.typography
+import java.lang.IllegalStateException
 import javax.inject.Inject
 
 class SharingFragment : BaseBottomSheetComposeFragment() {
 
     private val sharedData : SharingData get() {
-        val result = arg<String>(SHARING_DATE_KEY)
-        return if (URLUtil.isValidUrl(result)) {
-            SharingData.Url(result)
+        val args = requireArguments()
+        return if (args.containsKey(SHARING_TEXT_KEY)) {
+            val result = arg<String>(SHARING_TEXT_KEY)
+            if (URLUtil.isValidUrl(result)) {
+                SharingData.Url(result)
+            } else {
+                SharingData.Raw(result)
+            }
+        } else if (args.containsKey(SHARING_IMAGE_KEY)) {
+            val result = arg<String>(SHARING_IMAGE_KEY)
+            SharingData.Image(path = result)
         } else {
-            SharingData.Raw(result)
+            throw IllegalStateException("Unexpected result")
         }
     }
 
@@ -56,6 +65,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         when(option) {
                             SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
                             SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
+                            SAVE_AS_IMAGE -> vm.onUploadImage(sharedData.data)
                         }
                     },
                     onCancelClicked = {
@@ -120,9 +130,15 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
-        private const val SHARING_DATE_KEY = "arg.sharing.data-key"
-        fun new(data: String) : SharingFragment = SharingFragment().apply {
-            arguments = bundleOf(SHARING_DATE_KEY to data)
+        private const val SHARING_TEXT_KEY = "arg.sharing.text-key"
+        private const val SHARING_IMAGE_KEY = "arg.sharing.image-key"
+
+        fun text(data: String) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_TEXT_KEY to data)
+        }
+
+        fun image(image: String) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_IMAGE_KEY to image)
         }
     }
 }

@@ -34,12 +34,15 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.presentation.relations.RelationValueView
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAction
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewState
 
 @Composable
 fun RelationsValueScreen(
-    state: RelationValueViewState,
-    action: (RelationValueViewAction) -> Unit
+    state: TagStatusViewState,
+    action: (TagStatusAction) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -57,10 +60,10 @@ fun RelationsValueScreen(
                 .padding(bottom = 20.dp)
         ) {
             Header(state = state, action = action)
-//            SearchField(
-//                onFocused = {},
-//                onQueryChanged = { s -> }
-//            )
+            SearchField(
+                onFocused = {},
+                onQueryChanged = { s -> }
+            )
             Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
             RelationsLazyList(state = state, action = action)
         }
@@ -68,7 +71,7 @@ fun RelationsValueScreen(
 }
 
 @Composable
-private fun Header(state: RelationValueViewState, action: (RelationValueViewAction) -> Unit) {
+private fun Header(state: TagStatusViewState, action: (TagStatusAction) -> Unit) {
 
     // Dragger at the top, centered
     Box(
@@ -91,7 +94,7 @@ private fun Header(state: RelationValueViewState, action: (RelationValueViewActi
                 .wrapContentWidth()
                 .fillMaxHeight()
                 .align(Alignment.CenterStart)
-                .noRippleClickable { action(RelationValueViewAction.Clear) }
+                .noRippleClickable { action(TagStatusAction.Clear) }
             ) {
                 Text(
                     modifier = Modifier
@@ -110,7 +113,7 @@ private fun Header(state: RelationValueViewState, action: (RelationValueViewActi
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(horizontal = 74.dp),
-            text = state.title,
+            text = getTitle(state = state),
             style = Title1.copy(),
             color = colorResource(R.color.text_primary),
             overflow = TextOverflow.Ellipsis,
@@ -125,7 +128,7 @@ private fun Header(state: RelationValueViewState, action: (RelationValueViewActi
                     .fillMaxHeight()
                     .align(Alignment.CenterEnd)
                     .noRippleThrottledClickable {
-                        action.invoke(RelationValueViewAction.Plus)
+                        action.invoke(TagStatusAction.Plus)
                     }
             ) {
                 Image(
@@ -143,18 +146,18 @@ private fun Header(state: RelationValueViewState, action: (RelationValueViewActi
 }
 
 @Composable
-fun RelationsLazyList(state: RelationValueViewState, action: (RelationValueViewAction) -> Unit) {
+fun RelationsLazyList(state: TagStatusViewState, action: (TagStatusAction) -> Unit) {
     when (state) {
-        is RelationValueViewState.Content -> RelationsViewContent(state = state, action = action)
-        is RelationValueViewState.Empty -> RelationsViewEmpty()
-        is RelationValueViewState.Loading -> RelationsViewLoading()
+        is TagStatusViewState.Content -> RelationsViewContent(state = state, action = action)
+        is TagStatusViewState.Empty -> RelationsViewEmpty()
+        is TagStatusViewState.Loading -> RelationsViewLoading()
     }
 }
 
 @Composable
 fun RelationsViewContent(
-    state: RelationValueViewState.Content,
-    action: (RelationValueViewAction) -> Unit
+    state: TagStatusViewState.Content,
+    action: (TagStatusAction) -> Unit
 ) {
     val lazyListState = rememberLazyListState()
     LazyColumn(
@@ -186,23 +189,31 @@ fun RelationsViewLoading() {
     // TODO
 }
 
-private fun isClearButtonVisible(state: RelationValueViewState): Boolean {
-    if (state !is RelationValueViewState.Content) return false
+private fun isClearButtonVisible(state: TagStatusViewState): Boolean {
+    if (state !is TagStatusViewState.Content) return false
     return state.items.any { it is RelationValueView.Option.Tag && it.isSelected } && state.isRelationEditable
 }
 
-private fun isPlusButtonVisible(state: RelationValueViewState): Boolean {
+private fun isPlusButtonVisible(state: TagStatusViewState): Boolean {
     return when (state)  {
-        is RelationValueViewState.Content -> state.isRelationEditable
-        is RelationValueViewState.Empty -> state.isRelationEditable
-        is RelationValueViewState.Loading -> false
+        is TagStatusViewState.Content -> state.isRelationEditable
+        is TagStatusViewState.Empty -> state.isRelationEditable
+        is TagStatusViewState.Loading -> false
+    }
+}
+
+private fun getTitle(state: TagStatusViewState): String {
+    return when (state) {
+        is TagStatusViewState.Content -> state.title
+        is TagStatusViewState.Empty -> state.title
+        is TagStatusViewState.Loading -> ""
     }
 }
 
 @Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
 @Composable
 fun MyWidgetHeader() {
-    Header(state = RelationValueViewState.Content(
+    Header(state = TagStatusViewState.Content(
         isRelationEditable = true,
         title = "Tags",
         items = listOf(
@@ -229,18 +240,4 @@ fun MyWidgetHeader() {
             )
         )
     ), action = {})
-}
-
-sealed class RelationValueViewState{
-    abstract val title: String
-    data class Loading(override val title: String) : RelationValueViewState()
-    data class Empty(override val title: String, val isRelationEditable: Boolean) : RelationValueViewState()
-    data class Content(override val title: String, val items: List<RelationValueView>, val isRelationEditable: Boolean) : RelationValueViewState()
-}
-
-sealed class RelationValueViewAction {
-    data class Click(val item: RelationValueView) : RelationValueViewAction()
-    data class LongClick(val item: RelationValueView) : RelationValueViewAction()
-    object Clear : RelationValueViewAction()
-    object Plus : RelationValueViewAction()
 }

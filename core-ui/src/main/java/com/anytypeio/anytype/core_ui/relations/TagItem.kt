@@ -24,11 +24,12 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.model.RelationsListItem
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAction
 
 @Composable
-fun TagItem(state: RelationValueView.Option.Tag, action: (RelationValueViewAction) -> Unit) {
+fun TagItem(state: RelationValueView.Option.Tag, action: (TagStatusAction) -> Unit) {
     CommonContainer(
-        modifier = Modifier.noRippleClickable { action(RelationValueViewAction.Click(state)) }
+        modifier = Modifier.noRippleClickable { action(TagStatusAction.Click(state)) }
     ) {
         Box(
             modifier = Modifier

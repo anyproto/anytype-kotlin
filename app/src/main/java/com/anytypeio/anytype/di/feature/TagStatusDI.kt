@@ -14,7 +14,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.relations.value.TagStatusValueFragment
+import com.anytypeio.anytype.ui.relations.value.TagStatusFragment
 import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
@@ -34,7 +34,7 @@ interface TagStatusObjectComponent {
         fun build(): TagStatusObjectComponent
     }
 
-    fun inject(fragment: TagStatusValueFragment)
+    fun inject(fragment: TagStatusFragment)
 }
 
 @Module

@@ -36,6 +36,7 @@ import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.util.getExternalFilesDirTemp
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
@@ -306,6 +307,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             }
             Timber.d("Extracted name: $name")
             val inputStream = contentResolver.openInputStream(extra)
+            val cacheDir = context.getExternalFilesDirTemp()
+            if (cacheDir != null && !cacheDir.exists()) {
+                Timber.d("Created temp dir")
+                cacheDir.mkdirs()
+            }
             var path = ""
             inputStream?.use { input ->
                 val newFile = File(cacheDir?.path + "/" + name);

@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -74,9 +75,13 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
     ).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            MaterialTheme(typography = typography) {
+            MaterialTheme(
+                typography = typography,
+                colors = MaterialTheme.colors.copy(
+                    surface = colorResource(id = R.color.context_menu_background)
+                )
+            ) {
                 SpaceSettingsScreen(
-                    onSpaceIconClick = {},
                     onNameSet = vm::onNameSet,
                     spaceData = vm.spaceViewState.collectAsStateWithLifecycle().value,
                     onDeleteSpaceClicked = throttledClick(
@@ -124,7 +129,8 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                             successToast = context.getString(R.string.created_by_id_copied_toast_msg)
                         )
                     },
-                    onDebugClicked = vm::onSpaceDebugClicked
+                    onDebugClicked = vm::onSpaceDebugClicked,
+                    onRandomGradientClicked = vm::onRandomSpaceGradientClicked
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {
@@ -175,7 +181,6 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
 @Composable
 fun SpaceSettingsScreen(
     spaceData: ViewState<SpaceSettingsViewModel.SpaceData>,
-    onSpaceIconClick: () -> Unit,
     onNameSet: (String) -> Unit,
     onDeleteSpaceClicked: () -> Unit,
     onFileStorageClick: () -> Unit,
@@ -183,7 +188,8 @@ fun SpaceSettingsScreen(
     onSpaceIdClicked: (Id) -> Unit,
     onNetworkIdClicked: (Id) -> Unit,
     onCreatedByClicked: (Id) -> Unit,
-    onDebugClicked: () -> Unit
+    onDebugClicked: () -> Unit,
+    onRandomGradientClicked: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -204,8 +210,8 @@ fun SpaceSettingsScreen(
                     is ViewState.Success -> spaceData.data.icon
                     else -> null
                 },
-                onSpaceIconClick = onSpaceIconClick,
-                onNameSet = onNameSet
+                onNameSet = onNameSet,
+                onRandomGradientClicked = onRandomGradientClicked
             )
         }
         item { Divider() }
@@ -277,9 +283,10 @@ fun SpaceSettingsScreen(
                         style = PreviewTitle2Regular,
                         maxLines = 2,
                         color = colorResource(id = R.color.text_primary),
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .align(Alignment.BottomStart)
-                            .padding(bottom = 12.dp)
+                            .padding(bottom = 12.dp, end = 50.dp)
                             .noRippleClickable {
                                 onSpaceIdClicked(spaceData.data.spaceId.orEmpty())
                             }
@@ -290,7 +297,7 @@ fun SpaceSettingsScreen(
         item {
             Box(
                 modifier = Modifier
-                    .height(72.dp)
+                    .height(92.dp)
                     .padding(horizontal = 20.dp)
                     .fillMaxWidth()
             ) {
@@ -304,8 +311,9 @@ fun SpaceSettingsScreen(
                     Text(
                         text = spaceData.data.createdBy ?: stringResource(id = R.string.unknown),
                         style = PreviewTitle2Regular,
-                        maxLines = 1,
+                        maxLines = 2,
                         color = colorResource(id = R.color.text_primary),
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp)
@@ -364,6 +372,7 @@ fun SpaceSettingsScreen(
                         style = PreviewTitle2Regular,
                         maxLines = 2,
                         color = colorResource(id = R.color.text_primary),
+                        overflow = TextOverflow.Ellipsis,
                         modifier = Modifier
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp)
@@ -379,7 +388,7 @@ fun SpaceSettingsScreen(
                 Box(modifier = Modifier.height(78.dp)) {
                     ButtonWarning(
                         onClick = { onDeleteSpaceClicked() },
-                        text = "Delete space",
+                        text = stringResource(R.string.delete_space),
                         modifier = Modifier
                             .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
                             .fillMaxWidth()

@@ -1138,8 +1138,9 @@ class HomeScreenViewModel(
                 }
             }
             .onEach { (config, pinned) ->
+                val defaultObjectType = getDefaultObjectType.async(Unit).getOrNull()?.type
                 val keys = buildSet {
-                    pinned.forEach { typeId ->
+                    pinned.take(MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS).forEach { typeId ->
                         val wrapper = storeOfObjectTypes.get(typeId.id)
                         val uniqueKey = wrapper?.uniqueKey
                         if (uniqueKey != null) {
@@ -1147,6 +1148,9 @@ class HomeScreenViewModel(
                         } else {
                             Timber.w("Could not found unique key for a pinned type: ${typeId.id}")
                         }
+                    }
+                    if (defaultObjectType != null && size < MAX_TYPE_COUNT_FOR_APP_ACTIONS && !contains(defaultObjectType.key)) {
+                        add(defaultObjectType.key)
                     }
                     if (size < MAX_TYPE_COUNT_FOR_APP_ACTIONS && !contains(ObjectTypeUniqueKeys.NOTE)) {
                         add(ObjectTypeUniqueKeys.NOTE)
@@ -1192,6 +1196,7 @@ class HomeScreenViewModel(
                 ).process(
                     success = { wrappers ->
                         val types = wrappers
+                            .filter { type -> type.notDeletedNorArchived }
                             .map { ObjectWrapper.Type(it.map) }
                             .sortedBy { keys.indexOf(it.uniqueKey) }
 
@@ -1540,3 +1545,4 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
 }
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4
+const val MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS = 3

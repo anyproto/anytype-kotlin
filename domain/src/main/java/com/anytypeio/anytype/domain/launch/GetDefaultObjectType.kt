@@ -162,6 +162,9 @@ class GetDefaultObjectType @Inject constructor(
         )
     )
 
+    /**
+     * TODO provide space to params
+     */
     data class Response(
         val id: TypeId,
         val type: TypeKey,

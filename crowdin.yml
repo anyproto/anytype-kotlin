@@ -12,6 +12,7 @@ export_languages:
   - 'fr'
   - 'it'
   - 'ru'
+  - 'nl'
 files:
   - source: /localization/src/main/res/values/strings.xml
     translation: /localization/src/main/res/values-%android_code%/strings.xml

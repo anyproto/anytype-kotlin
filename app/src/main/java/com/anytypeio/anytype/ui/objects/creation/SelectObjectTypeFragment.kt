@@ -62,7 +62,7 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
                 typography = typography,
                 shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
                 colors = MaterialTheme.colors.copy(
-                    surface = colorResource(id = R.color.background_secondary)
+                    surface = colorResource(id = R.color.context_menu_background)
                 )
             ) {
                 SelectObjectTypeScreen(

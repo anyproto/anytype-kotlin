@@ -49,6 +49,8 @@
     <string name="space">Rom</string>
     <string name="space_name">Romnavn</string>
     <string name="personal_space">Innstillinger</string>
+    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="delete_space">Slett rom</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
     <string name="in_order_to_save">For å spare plass på den lokale enheten din, kan du slette alle lokale filer og beholde dem på vår krypterte sikkerhetskopi-node. Filene vil bli lastet ned igjen når du åpner dem.</string>
     <string name="manage_files">Administrer filer</string>
@@ -532,7 +534,7 @@
     <string name="templates_menu_edit">Rediger mal</string>
     <string name="templates_menu_duplicate">Dupliser</string>
     <string name="templates_menu_delete">Slett</string>
-    <string name="unsupported">Unsupported</string>
+    <string name="unsupported">Ikke støttet</string>
     <string name="set_as_default">Make default</string>
     <string name="default_object">Default object</string>
     <string name="default_template">Default template</string>
@@ -768,7 +770,7 @@
     <string name="settings_network_configuration_file_choose">Choose file</string>
     <string-array name="settings_networks_entries">
         <item>Anytype</item>
-        <item>Local-only</item>
+        <item>Kun lokalt</item>
         <item>Self-hosted</item>
     </string-array>
     <string name="snack_link_to">koblet til</string>
@@ -795,7 +797,7 @@
     <string name="sync_status_incompatible">Incompatible version</string>
     <string name="base_add_options_empty_title">No tags found</string>
     <string name="base_add_options_empty_subtitle">Start typing to create a new one</string>
-    <string name="sync_status_local_only">Local-only</string>
+    <string name="sync_status_local_only">Kun lokalt</string>
     <string name="mail_more_space_body">Hi, Anytype team. I am reaching out to request an increase in my file storage capacity as I have run out of storage. My current limits is %1$s. My account id is %2$s. Cheers, %3$s</string>
     <string name="your_recovery_phrase_can_t_be_empty">Your recovery phrase can\'t be empty</string>
     <string name="go_to_the_app">Gå til appen</string>
@@ -966,7 +968,7 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Opprett ny konto</string>
+    <string name="onboarding_join_button_text">Bli med</string>
     <string name="onboarding_log_in_button_text">Logg inn</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
@@ -1047,6 +1049,7 @@
     <string name="relation_origin_mobile_sharing_extension">Mobile sharing extension</string>
     <string name="relation_origin_use_case">Use case</string>
     <string name="relation_origin_library_installed">Library installed</string>
+    <string name="relation_origin_bookmark">Bokmerke</string>
     <!--endregion-->
     <plurals name="links_to_count">
         <item quantity="one">%d link to</item>
@@ -1056,6 +1059,24 @@
         <item quantity="one">%d link from</item>
         <item quantity="other">%d links from</item>
     </plurals>
+    <!--region ORIGIN RELATION VALUES -->
+    <string name="date_type_tomorrow">I morgen</string>
+    <string name="date_type_today">I dag</string>
+    <string name="date_type_yesterday">I går</string>
+    <string name="date_type_previous_seven_days">Previous seven days</string>
+    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_older">Eldre</string>
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
+    <!--endregion-->
+    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="create_object_section_pinned">Pinned</string>
+    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
+    <string name="any_object_creation_menu_unpin">Unpin</string>
+    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="any_object_creation_menu_move_left">Flytt til venstre</string>
+    <string name="any_object_creation_menu_move_right">Flytt til høyre</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
 </resources>

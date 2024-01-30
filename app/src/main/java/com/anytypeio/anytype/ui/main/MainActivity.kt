@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.provider.OpenableColumns
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -199,7 +200,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     private fun proceedWithShareIntent(intent: Intent) {
-        Timber.d("Got intent: ${intent}")
+        Timber.d("Got intent: $intent")
         when {
             intent.type == "text/plain" -> {
                 vm.onIntentTextShare(intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty())
@@ -210,29 +211,34 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 } else {
                     val extra = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
                     if (extra is Uri) {
-                        val parsed = runCatching { extra.parseImagePath(context) }
-                        Timber.d("Parse uri: ${parsed.getOrNull()}")
-                        parsed.fold(
-                            onSuccess = {
-                                vm.onIntentImageShare(it)
-                            },
-                            onFailure = {
-                                Timber.e(it, "Error while parsing path")
+                        Timber.d("Uri path: ${extra.path}")
+                        val name = if (extra.scheme == "content") {
+                            contentResolver.query(
+                                extra,
+                                null,
+                                null,
+                                null,
+                                null
+                            ).use { cursor ->
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    val idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                                    if (idx != -1) {
+                                        cursor.getString(idx)
+                                    } else {
+                                        "Untitled"
+                                    }
+                                } else {
+                                    "Untitled"
+                                }
                             }
-                        )
-                    }
-                }
-            }
-            intent.type?.startsWith("application/") == true -> {
-                if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-                    // TODO
-                } else {
-                    val extra = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
-                    if (extra is Uri) {
+                        } else {
+                            extra.path!!.substring(extra.path!!.lastIndexOf("/"))
+                        }
+                        Timber.d("Extracted name: $name")
                         val inputStream = contentResolver.openInputStream(extra)
                         var path = ""
                         inputStream?.use { input ->
-                            val newFile = File(cacheDir?.path + "/" + "test5");
+                            val newFile = File(cacheDir?.path + "/" + name);
                             FileOutputStream(newFile).use { output ->
                                 val buffer = ByteArray(1024)
                                 var read: Int = input.read(buffer)
@@ -244,11 +250,66 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             path = newFile.path
                         }
 
-                        val parsed = runCatching {
-//                            extra.parseImagePath(context)
-                            path
+                        val parsed = runCatching { path }
+                        Timber.d("Parse IMAGE uri: ${parsed.getOrNull()} for path: ${extra.path} with scheme: ${extra.scheme}")
+                        parsed.fold(
+                            onSuccess = {
+                                vm.onIntentImageShare(it)
+                            },
+                            onFailure = {
+                                Timber.e(it, "Error while parsing path")
+                            }
+                        )
+                    } else {
+                        Timber.w("URI not found")
+                    }
+                }
+            }
+            intent.type?.startsWith("application/") == true -> {
+                if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+                    // TODO
+                } else {
+                    val extra = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
+                    if (extra is Uri) {
+                        val name = if (extra.scheme == "content") {
+                            contentResolver.query(
+                                extra,
+                                null,
+                                null,
+                                null,
+                                null
+                            ).use { cursor ->
+                                if (cursor != null && cursor.moveToFirst()) {
+                                    val idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                                    if (idx != -1) {
+                                        cursor.getString(idx)
+                                    } else {
+                                        "Untitled"
+                                    }
+                                } else {
+                                    "Untitled"
+                                }
+                            }
+                        } else {
+                            extra.path!!.substring(extra.path!!.lastIndexOf("/"))
                         }
-                        Timber.d("Parse uri: ${parsed.getOrNull()}")
+                        val inputStream = contentResolver.openInputStream(extra)
+                        var path = ""
+                        inputStream?.use { input ->
+                            val newFile = File(cacheDir?.path + "/" + name);
+                            FileOutputStream(newFile).use { output ->
+                                val buffer = ByteArray(1024)
+                                var read: Int = input.read(buffer)
+                                while (read != -1) {
+                                    output.write(buffer, 0, read)
+                                    read = input.read(buffer)
+                                }
+                            }
+                            path = newFile.path
+                        }
+
+                        val parsed = runCatching { path }
+                        Timber.d("Parsed APPLICATION uri: ${parsed.getOrNull()} for path: ${extra.path} with scheme: ${extra.scheme}")
                         parsed.fold(
                             onSuccess = {
                                 vm.onIntentImageShare(it)

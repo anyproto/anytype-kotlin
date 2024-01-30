@@ -191,13 +191,13 @@ class MainViewModel(
         }
     }
 
-    fun onIntentMultipleImageShare(data: String) {
+    fun onIntentMultipleImageShare(uris: List<String>) {
         viewModelScope.launch {
             checkAuthorizationStatus(Unit).process(
                 failure = { e -> Timber.e(e, "Error while checking auth status") },
                 success = { status ->
                     if (status == AuthStatus.AUTHORIZED) {
-                        commands.emit(Command.Sharing.Image(data))
+                        commands.emit(Command.Sharing.Images(uris))
                     }
                 }
             )
@@ -212,7 +212,7 @@ class MainViewModel(
         sealed class Sharing : Command() {
             data class Text(val data: String) : Sharing()
             data class Image(val path: String): Sharing()
-            data class Images(val paths: List<String>): Sharing()
+            data class Images(val uris: List<String>): Sharing()
         }
     }
 }

@@ -21,8 +21,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.core_utils.ext.parseImagePath
-import com.anytypeio.anytype.core_utils.ext.parsePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.componentManager
@@ -45,7 +43,6 @@ import com.github.javiersantos.appupdater.AppUpdater
 import com.github.javiersantos.appupdater.enums.UpdateFrom
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStreamReader
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -129,7 +126,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 )
                             }
                             is Command.Sharing.Images -> {
-                                toast("TODO")
+                                SharingFragment.images(command.uris).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
                             }
                             is Command.Error -> {
                                 toast(command.msg)
@@ -208,7 +208,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             }
             intent.type?.startsWith("image/") == true -> {
                 if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-                    // TODO
+                    val extras = intent
+                        .getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
+                        ?: arrayListOf()
+                    val uris = extras.mapNotNull { extra ->
+                        if (extra is Uri)
+                            extra.toString()
+                        else
+                            null
+                    }
+                    vm.onIntentMultipleImageShare(uris)
                 } else {
                     proceedWithReceivingImage(intent)
                 }

@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argStringList
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -39,7 +40,10 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
         } else if (args.containsKey(SHARING_IMAGE_KEY)) {
             val result = arg<String>(SHARING_IMAGE_KEY)
             SharingData.Image(path = result)
-        } else {
+        } else if (args.containsKey(SHARING_MULTIPLE_IMAGES_KEY)) {
+            val result = argStringList(SHARING_MULTIPLE_IMAGES_KEY)
+            SharingData.Images(uris = result)
+        }else {
             throw IllegalStateException("Unexpected result")
         }
     }
@@ -48,6 +52,24 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: AddToAnytypeViewModel.Factory
 
     private val vm by viewModels<AddToAnytypeViewModel> { factory }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        when(val data= sharedData) {
+            is SharingData.Image -> {
+                toast("TODO")
+            }
+            is SharingData.Images -> {
+                vm.onShareImages(data.uris)
+            }
+            is SharingData.Raw -> {
+                toast("TODO")
+            }
+            is SharingData.Url -> {
+                toast("TODO")
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -132,6 +154,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
     companion object {
         private const val SHARING_TEXT_KEY = "arg.sharing.text-key"
         private const val SHARING_IMAGE_KEY = "arg.sharing.image-key"
+        private const val SHARING_MULTIPLE_IMAGES_KEY = "arg.sharing.multiple-images-key"
 
         fun text(data: String) : SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_TEXT_KEY to data)
@@ -139,6 +162,10 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
 
         fun image(image: String) : SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_IMAGE_KEY to image)
+        }
+
+        fun images(uris: List<String>) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_MULTIPLE_IMAGES_KEY to ArrayList(uris))
         }
     }
 }

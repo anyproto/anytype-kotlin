@@ -410,4 +410,9 @@ sealed class SharingData {
         override val data: String
             get() = path
     }
+
+    data class Images(val uris: List<String>): SharingData() {
+        override val data: String
+            get() = uris.toString()
+    }
 }

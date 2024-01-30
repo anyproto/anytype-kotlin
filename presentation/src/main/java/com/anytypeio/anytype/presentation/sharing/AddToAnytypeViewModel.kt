@@ -112,6 +112,10 @@ class AddToAnytypeViewModel(
         }
     }
 
+    fun onShareImages(uris: List<String>) {
+        Timber.d("Got URIs: $uris")
+    }
+
     fun onCreateBookmark(url: String) {
         viewModelScope.launch {
             val targetSpaceView = spaceViews.value.firstOrNull { view ->

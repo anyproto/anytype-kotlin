@@ -35,8 +35,6 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.relations.RelationValueView
-import com.anytypeio.anytype.presentation.sets.RelationValueViewAction
-import com.anytypeio.anytype.presentation.sets.RelationValueViewState
 
 @Composable
 fun RelationsValueScreen(
@@ -58,7 +56,7 @@ fun RelationsValueScreen(
                 .wrapContentHeight()
                 .padding(bottom = 20.dp)
         ) {
-            WidgetHeader(state = state, action = action)
+            Header(state = state, action = action)
 //            SearchField(
 //                onFocused = {},
 //                onQueryChanged = { s -> }
@@ -70,7 +68,7 @@ fun RelationsValueScreen(
 }
 
 @Composable
-private fun WidgetHeader(state: RelationValueViewState, action: (RelationValueViewAction) -> Unit) {
+private fun Header(state: RelationValueViewState, action: (RelationValueViewAction) -> Unit) {
 
     // Dragger at the top, centered
     Box(
@@ -180,10 +178,12 @@ fun RelationsViewContent(
 
 @Composable
 fun RelationsViewEmpty() {
+    // TODO
 }
 
 @Composable
 fun RelationsViewLoading() {
+    // TODO
 }
 
 private fun isClearButtonVisible(state: RelationValueViewState): Boolean {
@@ -202,14 +202,14 @@ private fun isPlusButtonVisible(state: RelationValueViewState): Boolean {
 @Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
 @Composable
 fun MyWidgetHeader() {
-    WidgetHeader(state = RelationValueViewState.Content(
+    Header(state = RelationValueViewState.Content(
         isRelationEditable = true,
         title = "Tags",
         items = listOf(
             RelationValueView.Option.Tag(
                 name = "Urgent",
                 color = "red",
-                number = 1,
+                //number = 1,
                 isSelected = true,
                 id = "1",
                 removable = false,
@@ -218,7 +218,7 @@ fun MyWidgetHeader() {
             RelationValueView.Option.Tag(
                 name = "Personal",
                 color = "orange",
-                number = 1,
+                //number = 1,
                 isSelected = false,
                 id = "1",
                 removable = false,
@@ -229,4 +229,18 @@ fun MyWidgetHeader() {
             )
         )
     ), action = {})
+}
+
+sealed class RelationValueViewState{
+    abstract val title: String
+    data class Loading(override val title: String) : RelationValueViewState()
+    data class Empty(override val title: String, val isRelationEditable: Boolean) : RelationValueViewState()
+    data class Content(override val title: String, val items: List<RelationValueView>, val isRelationEditable: Boolean) : RelationValueViewState()
+}
+
+sealed class RelationValueViewAction {
+    data class Click(val item: RelationValueView) : RelationValueViewAction()
+    data class LongClick(val item: RelationValueView) : RelationValueViewAction()
+    object Clear : RelationValueViewAction()
+    object Plus : RelationValueViewAction()
 }

@@ -24,7 +24,6 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.model.RelationsListItem
-import com.anytypeio.anytype.presentation.sets.RelationValueViewAction
 
 @Composable
 fun TagItem(state: RelationValueView.Option.Tag, action: (RelationValueViewAction) -> Unit) {
@@ -40,7 +39,7 @@ fun TagItem(state: RelationValueView.Option.Tag, action: (RelationValueViewActio
             TagItemText(state = state)
         }
         CircleIcon(
-            number = if (state.isSelected) state.number.toString() else null,
+            //number = if (state.isSelected) state.number.toString() else null,
             isSelected = state.isSelected,
             modifier = Modifier
                 .size(36.dp)
@@ -81,7 +80,7 @@ fun PreviewTagItem() {
             state = RelationValueView.Option.Tag(
                 name = "Urgent",
                 color = "red",
-                number = 1,
+                //number = 1,
                 isSelected = true,
                 id = "1",
                 removable = false,
@@ -93,7 +92,7 @@ fun PreviewTagItem() {
             state = RelationValueView.Option.Tag(
                 name = "Personal",
                 color = "orange",
-                number = 1,
+                //number = 1,
                 isSelected = true,
                 id = "1",
                 removable = false,

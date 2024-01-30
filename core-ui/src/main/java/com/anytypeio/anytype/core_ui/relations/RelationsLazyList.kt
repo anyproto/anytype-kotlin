@@ -113,7 +113,7 @@ private fun Header(state: TagStatusViewState, action: (TagStatusAction) -> Unit)
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(horizontal = 74.dp),
-            text = state.title,
+            text = getTitle(state = state),
             style = Title1.copy(),
             color = colorResource(R.color.text_primary),
             overflow = TextOverflow.Ellipsis,
@@ -199,6 +199,14 @@ private fun isPlusButtonVisible(state: TagStatusViewState): Boolean {
         is TagStatusViewState.Content -> state.isRelationEditable
         is TagStatusViewState.Empty -> state.isRelationEditable
         is TagStatusViewState.Loading -> false
+    }
+}
+
+private fun getTitle(state: TagStatusViewState): String {
+    return when (state) {
+        is TagStatusViewState.Content -> state.title
+        is TagStatusViewState.Empty -> state.title
+        is TagStatusViewState.Loading -> ""
     }
 }
 

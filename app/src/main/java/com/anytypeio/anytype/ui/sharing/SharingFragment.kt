@@ -53,24 +53,6 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<AddToAnytypeViewModel> { factory }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        when(val data= sharedData) {
-            is SharingData.Image -> {
-                toast("TODO")
-            }
-            is SharingData.Images -> {
-                vm.onShareImages(data.uris)
-            }
-            is SharingData.Raw -> {
-                toast("TODO")
-            }
-            is SharingData.Url -> {
-                toast("TODO")
-            }
-        }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -84,11 +66,14 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                 AddToAnytypeScreen(
                     data = sharedData,
                     onDoneClicked = { option ->
-                        when(option) {
-                            SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
-                            SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
-                            SAVE_AS_IMAGE -> vm.onUploadImage(sharedData.data)
-                        }
+//                        when(option) {
+//                            SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
+//                            SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
+//                            SAVE_AS_IMAGE -> vm.onUploadImage(sharedData.data)
+//                        }
+                                    vm.onShareImages(
+                                        uris = (sharedData as SharingData.Images).uris
+                                    )
                     },
                     onCancelClicked = {
                         vm.onCancelClicked().also {

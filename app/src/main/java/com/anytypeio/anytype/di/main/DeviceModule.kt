@@ -4,10 +4,13 @@ import android.content.Context
 import com.anytypeio.anytype.data.auth.other.DataDownloader
 import com.anytypeio.anytype.data.auth.other.Device
 import com.anytypeio.anytype.device.DefaultLocalProvider
+import com.anytypeio.anytype.device.SharedFileUploader
 import com.anytypeio.anytype.device.base.AndroidDevice
 import com.anytypeio.anytype.device.download.AndroidDeviceDownloader
+import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -40,4 +43,9 @@ object DeviceModule {
     @Provides
     @Singleton
     fun provideLocaleProvider(context: Context): LocaleProvider = DefaultLocalProvider(context)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideFileSharer(context: Context): FileSharer = SharedFileUploader(context)
 }

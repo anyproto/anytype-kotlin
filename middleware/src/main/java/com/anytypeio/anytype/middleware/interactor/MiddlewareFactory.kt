@@ -46,7 +46,8 @@ class MiddlewareFactory {
             is Block.Prototype.File -> {
                 val file = MBFile(
                     state = prototype.state.toMiddlewareModel(),
-                    type = prototype.type.toMiddlewareModel()
+                    type = prototype.type.toMiddlewareModel(),
+                    targetObjectId = prototype.targetObjectId.orEmpty()
                 )
                 MBlock(file_ = file)
             }

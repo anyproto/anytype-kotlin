@@ -5,18 +5,19 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Parcelable
 import android.provider.OpenableColumns
+import com.anytypeio.anytype.domain.device.FileSharer
 import java.io.File
 import java.io.FileOutputStream
+import javax.inject.Inject
 
-class SharedFileUploader(
+class SharedFileUploader @Inject constructor(
     private val context: Context
-) {
+) : FileSharer {
 
-    fun test(intent: Intent)  {
-        val extra = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
-        if (extra is Uri) {
-            parsePathFromFile(extra)
-        }
+    override fun getPath(uri: String): String? {
+        val parsed = Uri.parse(uri)
+        checkNotNull(parsed)
+        return parsePathFromFile(parsed)
     }
 
     private fun parsePathFromFile(extra: Uri) : String {

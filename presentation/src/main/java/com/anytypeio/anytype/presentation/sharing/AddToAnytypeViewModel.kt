@@ -21,6 +21,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onSuccess
+import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
@@ -34,6 +36,8 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -52,7 +56,8 @@ class AddToAnytypeViewModel(
     private val urlBuilder: UrlBuilder,
     private val awaitAccountStartManager: AwaitAccountStartManager,
     private val analytics: Analytics,
-    private val uploadFile: UploadFile
+    private val uploadFile: UploadFile,
+    private val fileSharer: FileSharer
 ) : BaseViewModel() {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -113,7 +118,59 @@ class AddToAnytypeViewModel(
     }
 
     fun onShareImages(uris: List<String>) {
-        Timber.d("Got URIs: $uris")
+        viewModelScope.launch(Dispatchers.IO) {
+            delay(3000)
+            val targetSpaceView = spaceViews.value.firstOrNull { view ->
+                view.isSelected
+            }
+            val targetSpaceId = targetSpaceView?.obj?.targetSpaceId!!
+            val paths = uris.mapNotNull { uri ->
+                fileSharer.getPath(uri)
+            }
+            val files = mutableListOf<Id>()
+            paths.forEach { path ->
+                uploadFile.async(
+                    UploadFile.Params(
+                        path = path,
+                        space = SpaceId(targetSpaceId)
+                    )
+                ).onSuccess { obj ->
+                    files.add(obj)
+                }
+            }
+            val startTime = System.currentTimeMillis()
+            createPrefilledNote.async(
+                CreatePrefilledNote.Params(
+                    text = "Here are your files",
+                    space = targetSpaceId,
+                    details = mapOf(
+                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                    ),
+                    attachments = files
+                )
+            ).fold(
+                onSuccess = { result ->
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        objType = MarketplaceObjectTypeIds.NOTE,
+                        route = EventsDictionary.Routes.sharingExtension,
+                        startTime = startTime
+                    )
+                    if (targetSpaceId == spaceManager.get()) {
+                        navigation.emit(OpenObjectNavigation.OpenEditor(result))
+                    } else {
+                        with(commands) {
+                            emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
+                            emit(Command.Dismiss)
+                        }
+                    }
+                },
+                onFailure = {
+                    Timber.d(it, "Error while creating note")
+                    sendToast("Error while creating note: ${it.msg()}")
+                }
+            )
+        }
     }
 
     fun onCreateBookmark(url: String) {
@@ -260,7 +317,8 @@ class AddToAnytypeViewModel(
         private val urlBuilder: UrlBuilder,
         private val awaitAccountStartManager: AwaitAccountStartManager,
         private val analytics: Analytics,
-        private val uploadFile: UploadFile
+        private val uploadFile: UploadFile,
+        private val fileSharer: FileSharer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -272,7 +330,8 @@ class AddToAnytypeViewModel(
                 urlBuilder = urlBuilder,
                 awaitAccountStartManager = awaitAccountStartManager,
                 analytics = analytics,
-                uploadFile = uploadFile
+                uploadFile = uploadFile,
+                fileSharer = fileSharer
             ) as T
         }
     }

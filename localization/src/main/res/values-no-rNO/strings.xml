@@ -1079,4 +1079,5 @@
     <string name="any_object_creation_menu_move_left">Flytt til venstre</string>
     <string name="any_object_creation_menu_move_right">Flytt til høyre</string>
     <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
+    <string name="relation_value_create_new">Create \"%1$s\"</string>
 </resources>

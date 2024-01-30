@@ -22,12 +22,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.presentation.relations.model.RelationsListItem
 
 @Composable
-fun CommonContainer(content: @Composable BoxScope.() -> Unit) {
+fun CommonContainer(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(52.dp)
             .padding(horizontal = 20.dp),
@@ -38,17 +39,21 @@ fun CommonContainer(content: @Composable BoxScope.() -> Unit) {
 @Composable
 fun CircleIcon(number: String? = null, isSelected: Boolean, modifier: Modifier) {
     if (isSelected && number != null) {
-        Text(
-            text = number,
-            //style = PreviewTitle2Medium,
-            color = colorResource(id = R.color.text_white),
+        Box(
             modifier = modifier
                 .background(
                     color = colorResource(id = R.color.palette_system_sky),
                     shape = CircleShape
-                ),
-            textAlign = TextAlign.Center
-        )
+                )
+        ) {
+            Text(
+                text = number,
+                style = PreviewTitle2Medium,
+                color = colorResource(id = R.color.text_white),
+                modifier = Modifier.align(Alignment.Center),
+                textAlign = TextAlign.Center
+            )
+        }
     } else {
         Box(
             modifier = modifier
@@ -76,7 +81,7 @@ fun CheckedIcon(isSelected: Boolean, modifier: Modifier) {
 
 @Composable
 fun ItemTagOrStatusCreate(state: RelationsListItem.CreateItem) {
-    CommonContainer {
+    CommonContainer(modifier = Modifier.padding(top = 8.dp)) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

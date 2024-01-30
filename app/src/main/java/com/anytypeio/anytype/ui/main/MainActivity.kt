@@ -233,6 +233,21 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     proceedWithReceivingFile(intent)
                 }
             }
+            intent.type == "*/*" -> {
+                if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+                    val extras = intent
+                        .getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
+                        ?: arrayListOf()
+                    val uris = extras.mapNotNull { extra ->
+                        if (extra is Uri)
+                            extra.toString()
+                        else
+                            null
+                    }
+                    Timber.d("Parsed multiple uris: ${uris}")
+                    vm.onIntentMultipleImageShare(uris)
+                }
+            }
             else -> Timber.e("Unexpected scenario: ${intent.type}")
         }
     }

@@ -229,12 +229,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 } else {
                     val extra = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
                     if (extra is Uri) {
-                        Timber.d("Extra: $extra")
                         val inputStream = contentResolver.openInputStream(extra)
                         var path = ""
                         inputStream?.use { input ->
-                            val newFile = File(cacheDir?.path + "/" + "test");
-                            Timber.d("Start copy file to cache : ${newFile.path}")
+                            val newFile = File(cacheDir?.path + "/" + "test5");
                             FileOutputStream(newFile).use { output ->
                                 val buffer = ByteArray(1024)
                                 var read: Int = input.read(buffer)

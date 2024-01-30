@@ -178,6 +178,7 @@ class MainViewModel(
     }
 
     fun onIntentImageShare(data: String) {
+        Timber.d("onIntentImageShare: $data")
         viewModelScope.launch {
             checkAuthorizationStatus(Unit).process(
                 failure = { e -> Timber.e(e, "Error while checking auth status") },

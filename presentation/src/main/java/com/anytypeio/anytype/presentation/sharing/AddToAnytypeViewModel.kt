@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.CLICK_ONBOARDING_TO
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectOrigin
@@ -208,8 +209,11 @@ class AddToAnytypeViewModel(
             )
             Timber.d("Uploading file with params: $params")
             uploadFile.async(params).fold(
-                onSuccess = {
+                onSuccess = { obj: Id ->
                     Timber.d("Successfully upload file")
+                    if (targetSpaceId == spaceManager.get()) {
+                        navigation.emit(OpenObjectNavigation.OpenEditor(obj))
+                    }
                 },
                 onFailure = {
                     Timber.e(it, "Error while uploading file")

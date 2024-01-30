@@ -21,6 +21,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.componentManager
@@ -206,7 +207,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     private fun proceedWithShareIntent(intent: Intent) {
         Timber.d("Got intent: $intent")
         when {
-            intent.type == "text/plain" -> {
+            intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
                 vm.onIntentTextShare(intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty())
             }
             intent.type?.startsWith("image/") == true -> {
@@ -232,8 +233,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 } else {
                     proceedWithReceivingFile(intent)
                 }
+                Mimetype.MIME_FILE_ALL
             }
-            intent.type == "*/*" -> {
+            intent.type == Mimetype.MIME_FILE_ALL.value -> {
                 if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
                     val extras = intent
                         .getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)

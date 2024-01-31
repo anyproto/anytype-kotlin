@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
-import com.anytypeio.anytype.presentation.relations.model.RelationsListItem
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
 
 @Composable
 fun CommonContainer(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {

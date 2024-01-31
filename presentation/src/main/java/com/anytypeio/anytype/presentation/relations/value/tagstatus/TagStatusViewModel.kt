@@ -56,14 +56,43 @@ sealed class TagStatusViewState {
 
     data class Content(
         val title: String,
-        val items: List<RelationValueView>,
+        val items: List<RelationsListItem>,
         val isRelationEditable: Boolean
     ) : TagStatusViewState()
 }
 
 sealed class TagStatusAction {
-    data class Click(val item: RelationValueView) : TagStatusAction()
-    data class LongClick(val item: RelationValueView) : TagStatusAction()
+    data class Click(val item: RelationsListItem) : TagStatusAction()
+    data class LongClick(val item: RelationsListItem) : TagStatusAction()
     object Clear : TagStatusAction()
     object Plus : TagStatusAction()
+}
+
+enum class RelationContext{ OBJECT, OBJECT_SET, DATA_VIEW }
+
+sealed class RelationsListItem {
+
+    sealed class Item : RelationsListItem() {
+        data class Tag(
+            val optionId: Id,
+            val name: String,
+            val color: ThemeColor,
+            val isSelected: Boolean,
+            val number: Int = Int.MAX_VALUE
+        ) : Item()
+
+        data class Status(
+            val optionId: Id,
+            val name: String,
+            val color: ThemeColor,
+            val isSelected: Boolean
+        ) : Item()
+    }
+
+    sealed class CreateItem(
+        val text: String
+    ) : RelationsListItem() {
+        class Tag(text: String) : CreateItem(text)
+        class Status(text: String) : CreateItem(text)
+    }
 }

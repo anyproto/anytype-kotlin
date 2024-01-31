@@ -22,12 +22,11 @@ import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Relations1
-import com.anytypeio.anytype.presentation.relations.RelationValueView
-import com.anytypeio.anytype.presentation.relations.model.RelationsListItem
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAction
 
 @Composable
-fun TagItem(state: RelationValueView.Option.Tag, action: (TagStatusAction) -> Unit) {
+fun TagItem(state: RelationsListItem.Item.Tag, action: (TagStatusAction) -> Unit) {
     CommonContainer(
         modifier = Modifier.noRippleClickable { action(TagStatusAction.Click(state)) }
     ) {
@@ -40,10 +39,10 @@ fun TagItem(state: RelationValueView.Option.Tag, action: (TagStatusAction) -> Un
             TagItemText(state = state)
         }
         CircleIcon(
-            //number = if (state.isSelected) state.number.toString() else null,
+            number = if (state.isSelected) state.number.toString() else null,
             isSelected = state.isSelected,
             modifier = Modifier
-                .size(36.dp)
+                .size(24.dp)
                 .align(Alignment.CenterEnd)
         )
         Divider(modifier = Modifier.align(Alignment.BottomCenter))
@@ -51,15 +50,14 @@ fun TagItem(state: RelationValueView.Option.Tag, action: (TagStatusAction) -> Un
 }
 
 @Composable
-fun TagItemText(state: RelationValueView.Option.Tag) {
-    val themeColor = ThemeColor.values().find { it.code == state.color } ?: ThemeColor.DEFAULT
+fun TagItemText(state: RelationsListItem.Item.Tag) {
     Text(
         text = state.name,
-        color = dark(themeColor),
+        color = dark(state.color),
         modifier = Modifier
             .wrapContentWidth()
             .background(
-                color = light(color = themeColor),
+                color = light(color = state.color),
                 shape = RoundedCornerShape(size = 3.dp)
             )
             .padding(start = 6.dp, end = 6.dp),
@@ -78,26 +76,22 @@ fun PreviewTagItem() {
             .wrapContentHeight()
     ) {
         TagItem(
-            state = RelationValueView.Option.Tag(
+            state = RelationsListItem.Item.Tag(
                 name = "Urgent",
-                color = "red",
-                //number = 1,
+                color = ThemeColor.RED,
+                number = 1,
                 isSelected = true,
-                id = "1",
-                removable = false,
-                isCheckboxShown = false
+                optionId = "1"
             ),
             action = {}
         )
         TagItem(
-            state = RelationValueView.Option.Tag(
+            state = RelationsListItem.Item.Tag(
                 name = "Personal",
-                color = "orange",
-                //number = 1,
+                color = ThemeColor.ORANGE,
+                number = 1,
                 isSelected = true,
-                id = "1",
-                removable = false,
-                isCheckboxShown = false
+                optionId = "1"
             ),
             action = {}
         )

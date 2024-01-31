@@ -123,6 +123,7 @@ import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.sync.SyncStatusView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
@@ -151,6 +152,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
+import com.anytypeio.anytype.ui.relations.value.TagStatusFragment
 import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -1009,12 +1011,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenObjectRelationScreen.Value.Default -> {
                     hideKeyboard()
-                    val fr = RelationValueFragment.new(
+//                    val fr = RelationValueFragment.new(
+//                        ctx = command.ctx,
+//                        target = command.target,
+//                        relationKey = command.relationKey,
+//                        targetObjectTypes = command.targetObjectTypes,
+//                        isLocked = command.isLocked
+//                    )
+                    val fr = TagStatusFragment.new(
                         ctx = command.ctx,
-                        target = command.target,
+                        objectId = command.target,
                         relationKey = command.relationKey,
-                        targetObjectTypes = command.targetObjectTypes,
-                        isLocked = command.isLocked
+                        isLocked = command.isLocked,
+                        relationContext = RelationContext.OBJECT
                     )
                     fr.showChildFragment()
                 }

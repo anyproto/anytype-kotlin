@@ -9,7 +9,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
+import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -19,7 +19,7 @@ class TagStatusViewModelFactory @Inject constructor(
     private val params: TagStatusViewModel.Params,
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
-    private val details: ObjectDetailProvider,
+    private val storage: Editor.Storage,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val urlBuilder: UrlBuilder,
     private val dispatcher: Dispatcher<Payload>,
@@ -35,7 +35,7 @@ class TagStatusViewModelFactory @Inject constructor(
         params = params,
         relations = relations,
         values = values,
-        details = details,
+        storage = storage,
         storeOfObjectTypes = storeOfObjectTypes,
         dispatcher = dispatcher,
         setObjectDetails = setObjectDetails,

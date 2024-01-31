@@ -49,7 +49,7 @@
     <string name="space">空间</string>
     <string name="space_name">空间名称</string>
     <string name="personal_space">个人空间</string>
-    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="space_settings_apply_random_gradient">应用随机渐变色</string>
     <string name="delete_space">删除空间</string>
     <string name="you_can_store">您可以在我们的节点上免费加密备份存储多达 %1$s 的文件。如果达到限制，文件将仅存储在本地。</string>
     <string name="in_order_to_save">为了节省本地设备上的空间，您可以将所有文件卸载到我们的加密备份节点。打开文件时，文件将被重新加载。</string>

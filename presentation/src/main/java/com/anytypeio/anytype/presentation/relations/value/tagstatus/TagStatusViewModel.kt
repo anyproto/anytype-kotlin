@@ -90,8 +90,16 @@ class TagStatusViewModel(
         when (action) {
             TagStatusAction.Clear -> clearTagsOrStatus()
             is TagStatusAction.Click -> onActionClick(action.item)
-            is TagStatusAction.LongClick -> TODO()
+            is TagStatusAction.LongClick -> {
+                val currentState = viewState.value
+                if (currentState is TagStatusViewState.Content) {
+                    viewState.value = currentState.copy(showItemMenu = action.item)
+                }
+            }
             TagStatusAction.Plus -> TODO()
+            is TagStatusAction.Delete -> TODO()
+            is TagStatusAction.Duplicate -> TODO()
+            is TagStatusAction.Edit -> TODO()
         }
     }
 
@@ -341,15 +349,19 @@ sealed class TagStatusViewState {
     data class Content(
         val title: String,
         val items: List<RelationsListItem>,
-        val isRelationEditable: Boolean
+        val isRelationEditable: Boolean,
+        val showItemMenu: RelationsListItem.Item? = null
     ) : TagStatusViewState()
 }
 
 sealed class TagStatusAction {
     data class Click(val item: RelationsListItem) : TagStatusAction()
-    data class LongClick(val item: RelationsListItem) : TagStatusAction()
+    data class LongClick(val item: RelationsListItem.Item) : TagStatusAction()
     object Clear : TagStatusAction()
     object Plus : TagStatusAction()
+    data class Edit(val optionId: Id) : TagStatusAction()
+    data class Delete(val optionId: Id) : TagStatusAction()
+    data class Duplicate(val optionId: Id) : TagStatusAction()
 }
 
 enum class RelationContext{ OBJECT, OBJECT_SET, DATA_VIEW }
@@ -357,16 +369,19 @@ enum class RelationContext{ OBJECT, OBJECT_SET, DATA_VIEW }
 sealed class RelationsListItem {
 
     sealed class Item : RelationsListItem() {
+
+        abstract val optionId: Id
         data class Tag(
-            val optionId: Id,
+            override val optionId: Id,
             val name: String,
             val color: ThemeColor,
             val isSelected: Boolean,
-            val number: Int = Int.MAX_VALUE
+            val number: Int = Int.MAX_VALUE,
+            val showMenu: Boolean = false
         ) : Item()
 
         data class Status(
-            val optionId: Id,
+            override val optionId: Id,
             val name: String,
             val color: ThemeColor,
             val isSelected: Boolean

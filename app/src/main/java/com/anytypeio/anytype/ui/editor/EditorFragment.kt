@@ -123,7 +123,6 @@ import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.sync.SyncStatusView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
@@ -1011,19 +1010,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenObjectRelationScreen.Value.Default -> {
                     hideKeyboard()
-//                    val fr = RelationValueFragment.new(
-//                        ctx = command.ctx,
-//                        target = command.target,
-//                        relationKey = command.relationKey,
-//                        targetObjectTypes = command.targetObjectTypes,
-//                        isLocked = command.isLocked
-//                    )
-                    val fr = TagStatusFragment.new(
+                    val fr = RelationValueFragment.new(
                         ctx = command.ctx,
-                        objectId = command.target,
+                        target = command.target,
                         relationKey = command.relationKey,
-                        isLocked = command.isLocked,
-                        relationContext = RelationContext.OBJECT
+                        targetObjectTypes = command.targetObjectTypes,
+                        isLocked = command.isLocked
                     )
                     fr.showChildFragment()
                 }

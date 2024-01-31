@@ -30,9 +30,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
-import com.anytypeio.anytype.ui.relations.value.TagStatusFragment
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
@@ -149,19 +147,12 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                     }
                     fr.showChildFragment()
                 } else {
-//                    val fr = RelationValueFragment.new(
-//                        ctx = ctx,
-//                        target = command.target,
-//                        relationKey = command.relationKey,
-//                        targetObjectTypes = command.targetObjectTypes,
-//                        isLocked = command.isLocked
-//                    )
-                    val fr = TagStatusFragment.new(
-                        ctx = command.ctx,
-                        objectId = command.target,
+                    val fr = RelationValueFragment.new(
+                        ctx = ctx,
+                        target = command.target,
                         relationKey = command.relationKey,
-                        isLocked = command.isLocked,
-                        relationContext = RelationContext.OBJECT
+                        targetObjectTypes = command.targetObjectTypes,
+                        isLocked = command.isLocked
                     )
                     fr.showChildFragment()
                 }

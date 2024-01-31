@@ -43,7 +43,8 @@ import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusVie
 @Composable
 fun RelationsValueScreen(
     state: TagStatusViewState,
-    action: (TagStatusAction) -> Unit
+    action: (TagStatusAction) -> Unit,
+    onQueryChanged: (String) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -63,7 +64,7 @@ fun RelationsValueScreen(
             Header(state = state, action = action)
             SearchField(
                 onFocused = {},
-                onQueryChanged = { s -> }
+                onQueryChanged = onQueryChanged
             )
             Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
             RelationsLazyList(state = state, action = action)

@@ -8,7 +8,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.relations.providers.ObjectDetailProvider
+import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModel
@@ -46,7 +46,7 @@ object TagStatusObjectModule {
     fun provideFactory(
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
-        details: ObjectDetailProvider,
+        storage: Editor.Storage,
         storeOfObjectTypes: StoreOfObjectTypes,
         urlBuilder: UrlBuilder,
         setObjectDetails: UpdateDetail,
@@ -58,7 +58,7 @@ object TagStatusObjectModule {
     ): TagStatusViewModelFactory = TagStatusViewModelFactory(
         params = params,
         values = values,
-        details = details,
+        storage = storage,
         relations = relations,
         storeOfObjectTypes = storeOfObjectTypes,
         urlBuilder = urlBuilder,

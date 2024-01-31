@@ -132,7 +132,8 @@ class TagStatusViewModel(
                 initViewState(
                     relation = relation,
                     record = record,
-                    options = options
+                    options = options,
+                    query = query
                 )
             },
             failure = {
@@ -144,7 +145,8 @@ class TagStatusViewModel(
     private fun initViewState(
         relation: ObjectWrapper.Relation,
         record: Map<String, Any?>,
-        options: List<ObjectWrapper.Option>
+        options: List<ObjectWrapper.Option>,
+        query: String
     ) {
         val result = mutableListOf<RelationsListItem>()
         when (relation.format) {
@@ -173,6 +175,9 @@ class TagStatusViewModel(
                         options = options
                     )
                 )
+                if (query.isNotBlank()) {
+                    result.add(RelationsListItem.CreateItem.Tag(query))
+                }
             }
             else -> {
                 Timber.w("Relation format should be Tag or Status but was: ${relation.format}")

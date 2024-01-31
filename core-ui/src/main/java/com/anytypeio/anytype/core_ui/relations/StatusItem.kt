@@ -88,7 +88,8 @@ fun PreviewStatusItem() {
         ItemTagOrStatusCreate(
             state = RelationsListItem.CreateItem.Status(
                 text = "Personal"
-            )
+            ),
+            action = {}
         )
     }
 }

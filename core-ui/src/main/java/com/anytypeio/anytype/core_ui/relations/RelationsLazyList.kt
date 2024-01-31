@@ -172,10 +172,10 @@ fun RelationsViewContent(
             items = state.items,
             itemContent = { _, item ->
                 when (item) {
-                    is RelationsListItem.Item.Tag -> TagItem(state = item, action = action)
-                    is RelationsListItem.Item.Status -> StatusItem(state = item, action = action)
-                    is RelationsListItem.CreateItem.Status -> TODO()
-                    is RelationsListItem.CreateItem.Tag -> TODO()
+                    is RelationsListItem.Item.Tag -> TagItem(item, action)
+                    is RelationsListItem.Item.Status -> StatusItem(item, action)
+                    is RelationsListItem.CreateItem.Status -> ItemTagOrStatusCreate(item, action)
+                    is RelationsListItem.CreateItem.Tag -> ItemTagOrStatusCreate(item, action)
                 }
             })
     }

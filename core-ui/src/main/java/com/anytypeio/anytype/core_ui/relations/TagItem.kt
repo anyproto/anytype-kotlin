@@ -98,7 +98,8 @@ fun PreviewTagItem() {
         ItemTagOrStatusCreate(
             state = RelationsListItem.CreateItem.Tag(
                 text = "Done"
-            )
+            ),
+            action = {}
         )
     }
 }

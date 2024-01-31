@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.core_ui.relations
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,6 +12,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
@@ -24,26 +24,25 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAction
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TagItem(
     state: RelationsListItem.Item.Tag,
     action: (TagStatusAction) -> Unit
 ) {
     val haptics = LocalHapticFeedback.current
+    val isMenuExpanded = remember { mutableStateOf(false) }
     CommonContainer(
         modifier = Modifier
-            .noRippleClickable { action(TagStatusAction.Click(state)) }
-            .combinedClickable(
+            .noRippleCombinedClickable(
                 onClick = { action(TagStatusAction.Click(state)) },
-                onLongClick = {
+                onLongClicked = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    action(TagStatusAction.LongClick(state))
+                    isMenuExpanded.value = !isMenuExpanded.value
                 }
             )
     ) {
@@ -66,6 +65,7 @@ fun TagItem(
         ItemMenu(
             item = state,
             action = action,
+            isMenuExpanded = isMenuExpanded
         )
     }
 }

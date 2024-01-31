@@ -4,11 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.relations.RelationsValueScreen
@@ -19,6 +24,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModelFactory
+import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
 class TagStatusFragment : BaseBottomSheetComposeFragment() {
@@ -40,11 +46,19 @@ class TagStatusFragment : BaseBottomSheetComposeFragment() {
     ): View = ComposeView(requireContext()).apply {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
-            RelationsValueScreen(
-                state = vm.viewState.collectAsStateWithLifecycle().value,
-                action = vm::onAction,
-                onQueryChanged = vm::onQueryChanged
-            )
+            MaterialTheme(
+                typography = typography,
+                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp)),
+                colors = MaterialTheme.colors.copy(
+                    surface = colorResource(id = R.color.context_menu_background)
+                )
+            ) {
+                RelationsValueScreen(
+                    state = vm.viewState.collectAsStateWithLifecycle().value,
+                    action = vm::onAction,
+                    onQueryChanged = vm::onQueryChanged
+                )
+            }
         }
     }
 

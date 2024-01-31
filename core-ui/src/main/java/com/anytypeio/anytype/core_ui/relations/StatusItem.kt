@@ -10,22 +10,38 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.dark
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAction
 
 @Composable
-fun StatusItem(state: RelationsListItem.Item.Status, action: (TagStatusAction) -> Unit) {
+fun StatusItem(
+    state: RelationsListItem.Item.Status,
+    action: (TagStatusAction) -> Unit
+) {
+    val haptics = LocalHapticFeedback.current
+    val isMenuExpanded = remember { mutableStateOf(false) }
     CommonContainer(
-        modifier = Modifier.noRippleClickable { action(TagStatusAction.Click(state)) }
+        modifier = Modifier
+            .noRippleCombinedClickable(
+                onClick = { action(TagStatusAction.Click(state)) },
+                onLongClicked = {
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                    isMenuExpanded.value = !isMenuExpanded.value
+                }
+            )
     ) {
         Box(
             modifier = Modifier
@@ -42,6 +58,11 @@ fun StatusItem(state: RelationsListItem.Item.Status, action: (TagStatusAction) -
                 .align(Alignment.CenterEnd)
         )
         Divider(modifier = Modifier.align(Alignment.BottomCenter))
+        ItemMenu(
+            item = state,
+            action = action,
+            isMenuExpanded = isMenuExpanded
+        )
     }
 }
 

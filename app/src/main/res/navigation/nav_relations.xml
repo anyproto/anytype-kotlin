@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_relations"
+    app:startDestination="@id/tagStatusScreen">
+
+    <dialog
+        android:id="@+id/tagStatusScreen"
+        android:name="com.anytypeio.anytype.ui.relations.value.TagStatusFragment"
+        android:label="Tag status screen" />
+
+    <dialog
+        android:id="@+id/optionScreen"
+        android:name="com.anytypeio.anytype.ui.relations.value.OptionFragment"
+        android:label="Option create or edit screen" />
+
+</navigation>

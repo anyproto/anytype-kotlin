@@ -364,6 +364,22 @@ sealed class TagStatusAction {
     data class Duplicate(val optionId: Id) : TagStatusAction()
 }
 
+sealed class OptionWidgetViewState {
+    data class Edit(val optionId: Id, val text: String, val color: ThemeColor) :
+        OptionWidgetViewState()
+
+    data class Create(val optionId: Id, val text: String, val color: ThemeColor) :
+        OptionWidgetViewState()
+}
+
+sealed class OptionWidgetAction {
+    data class Apply(val optionId: Id, val text: String, val color: ThemeColor) :
+        OptionWidgetAction()
+
+    data class Create(val optionId: Id, val text: String, val color: ThemeColor) :
+        OptionWidgetAction()
+}
+
 enum class RelationContext{ OBJECT, OBJECT_SET, DATA_VIEW }
 
 sealed class RelationsListItem {

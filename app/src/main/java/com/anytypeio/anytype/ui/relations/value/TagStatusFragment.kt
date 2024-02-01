@@ -13,14 +13,18 @@ import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.relations.RelationsValueScreen
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.Command
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModelFactory
@@ -65,6 +69,15 @@ class TagStatusFragment : BaseBottomSheetComposeFragment() {
     override fun onStart() {
         super.onStart()
         vm.onStart()
+        jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
+    }
+
+    private fun observeCommands(command: Command) {
+        when (command) {
+            is Command.OpenOptionScreen -> {
+                findNavController().navigate(R.id.optionScreen)
+            }
+        }
     }
 
     override fun injectDependencies() {

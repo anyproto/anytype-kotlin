@@ -47,6 +47,7 @@ class TagStatusViewModel(
     val viewState = MutableStateFlow<TagStatusViewState>(TagStatusViewState.Loading)
     private val query = MutableSharedFlow<String>()
     private var isRelationNotEditable = false
+    val commands = MutableSharedFlow<Command>(replay = 0)
 
     fun onStart() {
         val obj = storage.details.current().details[params.objectId]
@@ -96,10 +97,22 @@ class TagStatusViewModel(
                     viewState.value = currentState.copy(showItemMenu = action.item)
                 }
             }
-            TagStatusAction.Plus -> TODO()
+            TagStatusAction.Plus -> emitCommand(
+                Command.OpenOptionScreen(
+                    optionId = "2324",
+                    color = "red",
+                    text = "1983"
+                )
+            )
             is TagStatusAction.Delete -> TODO()
             is TagStatusAction.Duplicate -> TODO()
             is TagStatusAction.Edit -> TODO()
+        }
+    }
+
+    private fun emitCommand(command: Command) {
+        viewModelScope.launch {
+            commands.emit(command)
         }
     }
 
@@ -340,6 +353,14 @@ class TagStatusViewModel(
     )
 }
 
+sealed class Command {
+    data class OpenOptionScreen(
+        val optionId: Id,
+        val color: String,
+        val text: String
+    ) : Command()
+}
+
 sealed class TagStatusViewState {
 
     object Loading : TagStatusViewState()
@@ -362,6 +383,26 @@ sealed class TagStatusAction {
     data class Edit(val optionId: Id) : TagStatusAction()
     data class Delete(val optionId: Id) : TagStatusAction()
     data class Duplicate(val optionId: Id) : TagStatusAction()
+}
+
+sealed class OptionWidgetViewState {
+    abstract val optionId: Id
+    abstract val text: String
+    abstract val color: ThemeColor
+
+    data class Edit(override val optionId: Id, override val text: String, override val color: ThemeColor) :
+        OptionWidgetViewState()
+
+    data class Create(override val optionId: Id, override val text: String, override val color: ThemeColor) :
+        OptionWidgetViewState()
+}
+
+sealed class OptionWidgetAction {
+    data class Apply(val optionId: Id, val text: String, val color: ThemeColor) :
+        OptionWidgetAction()
+
+    data class Create(val optionId: Id, val text: String, val color: ThemeColor) :
+        OptionWidgetAction()
 }
 
 enum class RelationContext{ OBJECT, OBJECT_SET, DATA_VIEW }

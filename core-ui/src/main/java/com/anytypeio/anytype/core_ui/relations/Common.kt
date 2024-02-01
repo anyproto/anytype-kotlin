@@ -22,9 +22,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
-import com.anytypeio.anytype.presentation.relations.model.RelationsListItem
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAction
 
 @Composable
 fun CommonContainer(modifier: Modifier = Modifier, content: @Composable BoxScope.() -> Unit) {
@@ -81,8 +83,10 @@ fun CheckedIcon(isSelected: Boolean, modifier: Modifier) {
 }
 
 @Composable
-fun ItemTagOrStatusCreate(state: RelationsListItem.CreateItem) {
-    CommonContainer(modifier = Modifier.padding(top = 8.dp)) {
+fun ItemTagOrStatusCreate(state: RelationsListItem.CreateItem, action: (TagStatusAction) -> Unit) {
+    CommonContainer(modifier = Modifier
+        .padding(top = 8.dp)
+        .noRippleClickable { action(TagStatusAction.Click(state)) }) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()

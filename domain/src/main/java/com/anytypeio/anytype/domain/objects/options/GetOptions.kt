@@ -63,11 +63,11 @@ class GetOptions(
                 Relations.NAME,
                 Relations.RELATION_OPTION_COLOR
             ),
-            fulltext = "",
+            fulltext = params.fulltext,
         ).map {
             ObjectWrapper.Option(it)
         }
     }
 
-    data class Params(val space: Id, val relation: Key)
+    data class Params(val space: Id, val relation: Key, val fulltext: String = "")
 }

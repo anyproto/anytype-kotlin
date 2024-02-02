@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.core_ui.relations
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,12 +12,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -49,6 +52,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -60,7 +64,7 @@ import com.anytypeio.anytype.presentation.relations.value.tagstatus.OptionWidget
 @Composable
 fun OptionWidget(
     state: OptionWidgetViewState,
-    action: (OptionWidgetAction) -> Unit,
+    action: (String, ThemeColor) -> Unit,
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -88,21 +92,25 @@ fun OptionWidget(
 @Composable
 fun OptionWidgetContent(
     state: OptionWidgetViewState,
-    action: (OptionWidgetAction) -> Unit,
+    action: (String, ThemeColor) -> Unit,
     focusRequester: FocusRequester,
     keyboardController: SoftwareKeyboardController?
 ) {
+    var selectedColor by remember(ThemeColor) { mutableStateOf(state.color) }
+    var editableText by remember(String) { mutableStateOf(state.text) }
+
     val (title, buttonText) = getTexts(state)
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
+            .verticalScroll(rememberScrollState())
             .padding(bottom = 20.dp, start = 20.dp, end = 20.dp)
     ) {
-        Header(text = title, action = action)
+        Header(text = title)
         TextInput(
             state = state,
-            action = action,
+            action = { editableText = it },
             focusRequester = focusRequester,
             keyboardController = keyboardController
         )
@@ -114,12 +122,20 @@ fun OptionWidgetContent(
             color = colorResource(id = R.color.text_secondary)
         )
         Spacer(modifier = Modifier.height(20.dp))
-        CirclesContainer(selectedColor = state.color)
+        CirclesContainer(selectedColor = selectedColor) { newColor ->
+            selectedColor = newColor
+        }
         Spacer(modifier = Modifier.height(115.dp))
         ButtonPrimary(
             text = buttonText,
-            modifier = Modifier.fillMaxWidth(),
-            onClick = { },
+            modifier = Modifier
+                .fillMaxWidth()
+                .imePadding(),
+            onClick = {
+                if (editableText.isNotBlank()) {
+                    action.invoke(editableText, selectedColor)
+                }
+            },
             size = ButtonSize.Large
         )
     }
@@ -127,7 +143,7 @@ fun OptionWidgetContent(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun CirclesContainer(selectedColor: ThemeColor) {
+fun CirclesContainer(selectedColor: ThemeColor, action: (ThemeColor) -> Unit) {
     FlowRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -143,10 +159,14 @@ fun CirclesContainer(selectedColor: ThemeColor) {
             .aspectRatio(1f)
             .align(Alignment.CenterVertically)
         ThemeColor.values().drop(1).forEach { color ->
-            Box(itemModifier.background(color = dark(color = color))
+            Box(
+                itemModifier
+                    .noRippleClickable { action(color) }
+                    .background(
+                        color = dark(color = color)
+                    )
             ) {
                 if (selectedColor == color) {
-                    Log.d("OptionWidget", "selectedColor == color $selectedColor == $color")
                     Image(
                         modifier = Modifier.align(Alignment.Center),
                         painter = painterResource(id = R.drawable.ic_tick_24),
@@ -162,7 +182,7 @@ fun CirclesContainer(selectedColor: ThemeColor) {
 @Composable
 private fun TextInput(
     state: OptionWidgetViewState,
-    action: (OptionWidgetAction) -> Unit,
+    action: (String) -> Unit,
     focusRequester: FocusRequester,
     keyboardController: SoftwareKeyboardController?
 ) {
@@ -193,12 +213,11 @@ private fun TextInput(
         keyboardActions = KeyboardActions {
             keyboardController?.hide()
             focusManager.clearFocus()
-            //action.invoke()
         },
         decorationBox = { innerTextField ->
             if (innerValue.isEmpty()) {
                 Text(
-                    text = "",
+                    text = stringResource(id = R.string.hint_enter_name),
                     style = Title1,
                     color = colorResource(id = R.color.text_tertiary),
                     modifier = Modifier
@@ -212,7 +231,7 @@ private fun TextInput(
 }
 
 @Composable
-private fun Header(text: String, action: (OptionWidgetAction) -> Unit) {
+private fun Header(text: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -261,6 +280,6 @@ fun PreviewOptionWidget() {
             text = "Urgent",
             color = ThemeColor.BLUE,
         ),
-        action = {},
+        action = { _, _ -> },
     )
 }

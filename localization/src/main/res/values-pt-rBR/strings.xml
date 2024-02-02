@@ -116,7 +116,7 @@
     <string name="content_description_bookmark_logo">Bookmark logo</string>
     <string name="content_description_file_icon">File icon</string>
     <string name="content_description_modal_icon">Modal icon</string>
-    <string name="modal_tap_to_type">Toque para escrever</string>
+    <string name="modal_tap_to_type">Toque para digitar</string>
     <string name="modal_gallery">Galeria</string>
     <string name="modal_kanban">Kanban</string>
     <string name="modal_table">Tabela</string>
@@ -363,7 +363,7 @@
     <string name="enter_text">Inserir texto</string>
     <string name="enter_number">Inserir número</string>
     <string name="enter_date">Insira uma data</string>
-    <string name="enter_url">Insira a URL</string>
+    <string name="enter_url">Inserir URL</string>
     <string name="enter_email">Insira o e-mail</string>
     <string name="enter_phone">Insira o telefone</string>
     <string name="scroll_to_select_position">Role para selecionar uma nova posição</string>
@@ -645,7 +645,7 @@
     <string name="content_description_image_icon">Image icon</string>
     <string name="content_description_emoji_icon">Emoji icon</string>
     <string name="sort_by">Ordenar por</string>
-    <string name="hint_tap_to_type">Toque para escrever</string>
+    <string name="hint_tap_to_type">Toque para digitar</string>
     <string name="viewer_gallery">Galeria</string>
     <string name="viewer_as">Exibir como</string>
     <string name="viewer_kanban">Kanban</string>

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.relations.value.tagstatus
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
@@ -99,9 +100,10 @@ class TagStatusViewModel(
             }
             TagStatusAction.Plus -> emitCommand(
                 Command.OpenOptionScreen(
-                    optionId = null,
                     color = ThemeColor.values().drop(1).random().code,
-                    text = ""
+                    relationKey = params.relationKey,
+                    ctx = params.ctx,
+                    objectId = params.objectId
                 )
             )
             is TagStatusAction.Delete -> TODO()
@@ -112,7 +114,10 @@ class TagStatusViewModel(
                     Command.OpenOptionScreen(
                         optionId = item.optionId,
                         color = item.color.code,
-                        text = item.name
+                        text = item.name,
+                        relationKey = params.relationKey,
+                        ctx = params.ctx,
+                        objectId = params.objectId
                     )
                 )
             }
@@ -356,7 +361,7 @@ class TagStatusViewModel(
     data class Params(
         val ctx: Id,
         val objectId: Id,
-        val relationKey: Id,
+        val relationKey: Key,
         val isLocked: Boolean,
         val relationContext: RelationContext
     )
@@ -364,9 +369,12 @@ class TagStatusViewModel(
 
 sealed class Command {
     data class OpenOptionScreen(
-        val optionId: Id?,
-        val color: String,
-        val text: String
+        val ctx: Id,
+        val objectId: Id,
+        val relationKey: Key,
+        val optionId: Id? = null,
+        val color: String? = null,
+        val text: String? = null,
     ) : Command()
 }
 
@@ -392,25 +400,6 @@ sealed class TagStatusAction {
     data class Edit(val item: RelationsListItem.Item) : TagStatusAction()
     data class Delete(val optionId: Id) : TagStatusAction()
     data class Duplicate(val optionId: Id) : TagStatusAction()
-}
-
-sealed class OptionWidgetViewState {
-    abstract val text: String
-    abstract val color: ThemeColor
-
-    data class Edit(val optionId: Id, override val text: String, override val color: ThemeColor) :
-        OptionWidgetViewState()
-
-    data class Create(override val text: String, override val color: ThemeColor) :
-        OptionWidgetViewState()
-}
-
-sealed class OptionWidgetAction {
-    data class Apply(val optionId: Id, val text: String, val color: ThemeColor) :
-        OptionWidgetAction()
-
-    data class Create(val text: String, val color: ThemeColor) :
-        OptionWidgetAction()
 }
 
 enum class RelationContext{ OBJECT, OBJECT_SET, DATA_VIEW }

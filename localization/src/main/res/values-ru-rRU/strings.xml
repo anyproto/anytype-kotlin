@@ -1020,7 +1020,7 @@
     <string name="content_description_remove_from_set_button">Remove relation from this set</string>
     <string name="content_desc_page_toolbar_search">Search pages</string>
     <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
-    <string name="content_desc_page_toolbar_add_doc">Add new page</string>
+    <string name="content_desc_page_toolbar_add_doc">Добавить страницу</string>
     <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
     <string name="content_desc_link_to_remove_link">Remove link icon</string>
     <string name="content_desc_link_to_copy_link">Copy link icon</string>
@@ -1034,10 +1034,10 @@
     <!--endregion-->
     <!--region ALERTS -->
     <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
-    <string name="alert_gallery_unsupported_description">Please use the desktop app for now.</string>
+    <string name="alert_gallery_unsupported_description">Пожалуйста, используйте приложение для компьютера.</string>
     <!--endregion-->
     <!--region SHARING MENU -->
-    <string name="sharing_menu_save_as_section_name">Save as</string>
+    <string name="sharing_menu_save_as_section_name">Сохранить как</string>
     <string name="sharing_menu_save_as_note_option">Заметка</string>
     <string name="sharing_menu_save_as_bookmark_option">Закладка</string>
     <string name="sharing_menu_data">Данные</string>
@@ -1071,8 +1071,8 @@
     <string name="date_type_tomorrow">Завтра</string>
     <string name="date_type_today">Сегодня</string>
     <string name="date_type_yesterday">Вчера</string>
-    <string name="date_type_previous_seven_days">Previous seven days</string>
-    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_previous_seven_days">За последние 7 дней</string>
+    <string name="date_type_previous_thirty_days">За последние 30 дней</string>
     <string name="date_type_older">Раньше</string>
     <string name="dates_days_ago">%1$s дней назад</string>
     <string name="dates_days_from">%1$s дней спустя</string>
@@ -1082,10 +1082,10 @@
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="create_object_section_pinned">Pinned</string>
     <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
-    <string name="any_object_creation_menu_unpin">Unpin</string>
-    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="any_object_creation_menu_unpin">Открепить</string>
+    <string name="any_object_creation_menu_set_as_default">Установить по умолчанию</string>
     <string name="any_object_creation_menu_move_left">Сдвинуть влево</string>
     <string name="any_object_creation_menu_move_right">Сдвинуть вправо</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
-    <string name="relation_value_create_new">Create \"%1$s\"</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Создать объект из буфера обмена</string>
+    <string name="relation_value_create_new">Создать %1$s\"</string>
 </resources>

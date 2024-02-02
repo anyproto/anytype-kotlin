@@ -99,14 +99,23 @@ class TagStatusViewModel(
             }
             TagStatusAction.Plus -> emitCommand(
                 Command.OpenOptionScreen(
-                    optionId = "2324",
-                    color = "red",
-                    text = "1983"
+                    optionId = null,
+                    color = ThemeColor.values().drop(1).random().code,
+                    text = ""
                 )
             )
             is TagStatusAction.Delete -> TODO()
             is TagStatusAction.Duplicate -> TODO()
-            is TagStatusAction.Edit -> TODO()
+            is TagStatusAction.Edit -> {
+                val item = action.item
+                emitCommand(
+                    Command.OpenOptionScreen(
+                        optionId = item.optionId,
+                        color = item.color.code,
+                        text = item.name
+                    )
+                )
+            }
         }
     }
 
@@ -355,7 +364,7 @@ class TagStatusViewModel(
 
 sealed class Command {
     data class OpenOptionScreen(
-        val optionId: Id,
+        val optionId: Id?,
         val color: String,
         val text: String
     ) : Command()
@@ -380,20 +389,19 @@ sealed class TagStatusAction {
     data class LongClick(val item: RelationsListItem.Item) : TagStatusAction()
     object Clear : TagStatusAction()
     object Plus : TagStatusAction()
-    data class Edit(val optionId: Id) : TagStatusAction()
+    data class Edit(val item: RelationsListItem.Item) : TagStatusAction()
     data class Delete(val optionId: Id) : TagStatusAction()
     data class Duplicate(val optionId: Id) : TagStatusAction()
 }
 
 sealed class OptionWidgetViewState {
-    abstract val optionId: Id
     abstract val text: String
     abstract val color: ThemeColor
 
-    data class Edit(override val optionId: Id, override val text: String, override val color: ThemeColor) :
+    data class Edit(val optionId: Id, override val text: String, override val color: ThemeColor) :
         OptionWidgetViewState()
 
-    data class Create(override val optionId: Id, override val text: String, override val color: ThemeColor) :
+    data class Create(override val text: String, override val color: ThemeColor) :
         OptionWidgetViewState()
 }
 
@@ -401,7 +409,7 @@ sealed class OptionWidgetAction {
     data class Apply(val optionId: Id, val text: String, val color: ThemeColor) :
         OptionWidgetAction()
 
-    data class Create(val optionId: Id, val text: String, val color: ThemeColor) :
+    data class Create(val text: String, val color: ThemeColor) :
         OptionWidgetAction()
 }
 
@@ -412,20 +420,23 @@ sealed class RelationsListItem {
     sealed class Item : RelationsListItem() {
 
         abstract val optionId: Id
+        abstract val name: String
+        abstract val color: ThemeColor
+        abstract val isSelected: Boolean
         data class Tag(
             override val optionId: Id,
-            val name: String,
-            val color: ThemeColor,
-            val isSelected: Boolean,
+            override val name: String,
+            override val color: ThemeColor,
+            override val isSelected: Boolean,
             val number: Int = Int.MAX_VALUE,
             val showMenu: Boolean = false
         ) : Item()
 
         data class Status(
             override val optionId: Id,
-            val name: String,
-            val color: ThemeColor,
-            val isSelected: Boolean
+            override val name: String,
+            override val color: ThemeColor,
+            override val isSelected: Boolean
         ) : Item()
     }
 

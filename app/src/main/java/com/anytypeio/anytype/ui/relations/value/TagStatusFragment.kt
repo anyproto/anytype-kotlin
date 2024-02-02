@@ -75,7 +75,12 @@ class TagStatusFragment : BaseBottomSheetComposeFragment() {
     private fun observeCommands(command: Command) {
         when (command) {
             is Command.OpenOptionScreen -> {
-                findNavController().navigate(R.id.optionScreen)
+                val arg = OptionFragment.args(
+                    optionId = command.optionId,
+                    color = command.color,
+                    text = command.text
+                )
+                findNavController().navigate(R.id.optionScreen, arg)
             }
         }
     }

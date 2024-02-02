@@ -33,7 +33,7 @@ fun ItemMenu(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
                 onClick = {
                     isMenuExpanded.value = false
-                    action(TagStatusAction.Edit(item.optionId))
+                    action(TagStatusAction.Edit(item))
                 },
             ) {
                 Text(

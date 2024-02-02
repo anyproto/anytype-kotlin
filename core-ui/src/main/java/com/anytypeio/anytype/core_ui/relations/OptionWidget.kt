@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.relations
 
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -57,14 +56,15 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.OptionWidgetAction
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.OptionWidgetViewState
+import com.anytypeio.anytype.presentation.relations.option.OptionScreenViewState
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OptionWidget(
-    state: OptionWidgetViewState,
-    action: (String, ThemeColor) -> Unit,
+    state: OptionScreenViewState,
+    onButtonClicked: () -> Unit,
+    onTextChanged: (String) -> Unit,
+    onColorChanged: (ThemeColor) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -81,9 +81,11 @@ fun OptionWidget(
 
         OptionWidgetContent(
             state = currentState,
-            action = action,
+            onButtonClicked = onButtonClicked,
             focusRequester = focusRequester,
-            keyboardController = keyboardController
+            keyboardController = keyboardController,
+            onTextChanged = onTextChanged,
+            onColorChanged = onColorChanged
         )
     }
 }
@@ -91,13 +93,15 @@ fun OptionWidget(
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun OptionWidgetContent(
-    state: OptionWidgetViewState,
-    action: (String, ThemeColor) -> Unit,
+    state: OptionScreenViewState,
+    onButtonClicked: () -> Unit,
     focusRequester: FocusRequester,
-    keyboardController: SoftwareKeyboardController?
+    keyboardController: SoftwareKeyboardController?,
+    onTextChanged: (String) -> Unit,
+    onColorChanged: (ThemeColor) -> Unit
 ) {
-    var selectedColor by remember(ThemeColor) { mutableStateOf(state.color) }
-    var editableText by remember(String) { mutableStateOf(state.text) }
+    var selectedColor by remember { mutableStateOf(state.color) }
+    var editableText by remember { mutableStateOf(state.text) }
 
     val (title, buttonText) = getTexts(state)
     Column(
@@ -109,8 +113,12 @@ fun OptionWidgetContent(
     ) {
         Header(text = title)
         TextInput(
-            state = state,
-            action = { editableText = it },
+            initialValue = state.text,
+            color = state.color,
+            onTextChanged = {
+                editableText = it
+                onTextChanged(it)
+            },
             focusRequester = focusRequester,
             keyboardController = keyboardController
         )
@@ -124,6 +132,7 @@ fun OptionWidgetContent(
         Spacer(modifier = Modifier.height(20.dp))
         CirclesContainer(selectedColor = selectedColor) { newColor ->
             selectedColor = newColor
+            onColorChanged(newColor)
         }
         Spacer(modifier = Modifier.height(115.dp))
         ButtonPrimary(
@@ -131,11 +140,7 @@ fun OptionWidgetContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .imePadding(),
-            onClick = {
-                if (editableText.isNotBlank()) {
-                    action.invoke(editableText, selectedColor)
-                }
-            },
+            onClick = { onButtonClicked() },
             size = ButtonSize.Large
         )
     }
@@ -181,15 +186,16 @@ fun CirclesContainer(selectedColor: ThemeColor, action: (ThemeColor) -> Unit) {
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun TextInput(
-    state: OptionWidgetViewState,
-    action: (String) -> Unit,
+    initialValue: String,
+    color: ThemeColor,
     focusRequester: FocusRequester,
-    keyboardController: SoftwareKeyboardController?
+    keyboardController: SoftwareKeyboardController?,
+    onTextChanged: (String) -> Unit
 ) {
-    var innerValue by remember(state) { mutableStateOf(state.text) }
+    var innerValue by remember { mutableStateOf(initialValue) }
     val focusManager = LocalFocusManager.current
 
-    if (state.text.isEmpty()) {
+    if (initialValue.isEmpty()) {
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
         }
@@ -197,11 +203,14 @@ private fun TextInput(
 
     BasicTextField(
         value = innerValue,
-        onValueChange = { innerValue = it },
-        textStyle = Title1.copy(color = dark(color = state.color)),
+        onValueChange = {
+            innerValue = it
+            onTextChanged(it)
+        },
+        textStyle = Title1.copy(color = dark(color = color)),
         singleLine = true,
         enabled = true,
-        cursorBrush = SolidColor(dark(color = state.color)),
+        cursorBrush = SolidColor(dark(color = color)),
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
@@ -260,13 +269,13 @@ private fun Header(text: String) {
 }
 
 @Composable
-private fun getTexts(state: OptionWidgetViewState): Pair<String, String> {
+private fun getTexts(state: OptionScreenViewState): Pair<String, String> {
     return when (state) {
-        is OptionWidgetViewState.Create -> {
+        is OptionScreenViewState.Create -> {
             stringResource(id = R.string.option_widget_create) to stringResource(id = R.string.create)
         }
 
-        is OptionWidgetViewState.Edit -> {
+        is OptionScreenViewState.Edit -> {
             stringResource(id = R.string.option_widget_edit) to stringResource(id = R.string.apply)
         }
     }
@@ -276,10 +285,12 @@ private fun getTexts(state: OptionWidgetViewState): Pair<String, String> {
 @Composable
 fun PreviewOptionWidget() {
     OptionWidget(
-        state = OptionWidgetViewState.Create(
+        state = OptionScreenViewState.Create(
             text = "Urgent",
             color = ThemeColor.BLUE,
         ),
-        action = { _, _ -> },
+        onButtonClicked = {},
+        onTextChanged = {},
+        onColorChanged = {}
     )
 }

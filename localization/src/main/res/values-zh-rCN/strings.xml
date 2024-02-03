@@ -1075,4 +1075,5 @@
     <string name="any_object_creation_menu_move_left">向左移动</string>
     <string name="any_object_creation_menu_move_right">向右移动</string>
     <string name="clipboard_panel_create_object_from_clipboard">从剪贴板创建对象</string>
+    <string name="relation_value_create_new">创建 “%1$s”</string>
 </resources>

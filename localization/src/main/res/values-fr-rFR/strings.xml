@@ -49,7 +49,7 @@
     <string name="space">Espace</string>
     <string name="space_name">Nom de l\'espace</string>
     <string name="personal_space">Paramètres</string>
-    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="space_settings_apply_random_gradient">Appliquer un dégradé aléatoire</string>
     <string name="delete_space">Supprimer l\'espace</string>
     <string name="you_can_store">Vous pouvez stocker gratuitement jusqu\'à %1$s de vos fichiers sur notre nœud de sauvegarde chiffré. Si vous atteignez la limite, les fichiers ne seront stockés que localement.</string>
     <string name="in_order_to_save">Afin d\'économiser de l\'espace sur votre appareil, vous pouvez décharger tous vos fichiers vers notre nœud de sauvegarde chiffré. Les fichiers seront rechargés lorsque vous les ouvrirez.</string>
@@ -1063,20 +1063,21 @@
     <string name="date_type_tomorrow">Demain</string>
     <string name="date_type_today">Aujourd\'hui</string>
     <string name="date_type_yesterday">Hier</string>
-    <string name="date_type_previous_seven_days">Previous seven days</string>
-    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_previous_seven_days">7 jours précédents</string>
+    <string name="date_type_previous_thirty_days">30 jours précédents</string>
     <string name="date_type_older">Plus ancien</string>
     <string name="dates_days_ago">Il y a %1$s jours</string>
     <string name="dates_days_from">Dans %1$s jours</string>
     <!--endregion-->
-    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="create_object_section_pinned">Pinned</string>
-    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
-    <string name="any_object_creation_menu_unpin">Unpin</string>
-    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="error_kanban_view_not_supported">La vue Kanban n\'est pas encore disponible sur mobile.\nChanger le type de vue (Paramètres -&gt; Voir) ou en créer un nouveau pour accéder à vos données.</string>
+    <string name="error_calendar_view_not_supported">La vue calendrier n\'est pas encore disponible sur mobile.\nChanger le type de vue (Paramètres -&gt; Voir) ou en créer un nouveau pour accéder à vos données.</string>
+    <string name="error_generic_view_not_supported">Cette vue n\'est pas encore disponible sur mobile.\nChanger le type de vue (Paramètres -&gt; Voir) ou en créer une nouvelle pour accéder à vos données.</string>
+    <string name="create_object_section_pinned">Épinglé</string>
+    <string name="any_object_creation_menu_pin_on_top">Épingler en haut</string>
+    <string name="any_object_creation_menu_unpin">Désépingler</string>
+    <string name="any_object_creation_menu_set_as_default">Définir par défaut</string>
     <string name="any_object_creation_menu_move_left">Déplacer à gauche</string>
     <string name="any_object_creation_menu_move_right">Déplacer à droite</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Créer un objet depuis le presse-papiers</string>
+    <string name="relation_value_create_new">Create \"%1$s\"</string>
 </resources>

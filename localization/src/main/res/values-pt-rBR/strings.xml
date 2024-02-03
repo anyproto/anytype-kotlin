@@ -1079,4 +1079,5 @@
     <string name="any_object_creation_menu_move_left">Mover à esquerda</string>
     <string name="any_object_creation_menu_move_right">Move à direita</string>
     <string name="clipboard_panel_create_object_from_clipboard">Criar objeto a partir da área de transferência.</string>
+    <string name="relation_value_create_new">Criar \"%1$s\"</string>
 </resources>

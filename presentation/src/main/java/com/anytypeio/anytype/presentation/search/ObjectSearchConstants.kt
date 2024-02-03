@@ -939,4 +939,45 @@ object ObjectSearchConstants {
             value = types
         )
     )
+
+    fun filterRelationOptions(relationKey: Key, spaces: List<Id>) : List<DVFilter> = listOf(
+        DVFilter(
+            relation = Relations.RELATION_KEY,
+            condition = DVFilterCondition.EQUAL,
+            value = relationKey
+        ),
+        DVFilter(
+            relation = Relations.LAYOUT,
+            condition = DVFilterCondition.EQUAL,
+            value = ObjectType.Layout.RELATION_OPTION.code.toDouble()
+        ),
+        DVFilter(
+            relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.SPACE_ID,
+            condition = DVFilterCondition.IN,
+            value = spaces
+        )
+    )
+
+    val keysRelationOptions = listOf(
+        Relations.ID,
+        Relations.SPACE_ID,
+        Relations.NAME,
+        Relations.RELATION_OPTION_COLOR,
+        Relations.RELATION_KEY
+    )
 }

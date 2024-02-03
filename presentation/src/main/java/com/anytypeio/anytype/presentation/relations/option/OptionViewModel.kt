@@ -29,7 +29,7 @@ class OptionViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val dispatcher: Dispatcher<Payload>,
     private val spaceManager: SpaceManager,
-    private val analytics: Analytics,
+    private val analytics: Analytics
 ) : BaseViewModel() {
 
     val command = MutableSharedFlow<Command>(replay = 0)
@@ -50,7 +50,7 @@ class OptionViewModel(
             val color = if (vmParams.color != null) {
                 ThemeColor.fromCode(vmParams.color)
             } else {
-                ThemeColor.values().drop(1).random()
+                ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
             }
             MutableStateFlow(
                 OptionScreenViewState.Edit(

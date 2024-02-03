@@ -20,6 +20,7 @@ message Event {
             Account.Details accountDetails = 201;
             Account.Config.Update accountConfigUpdate = 202;
             Account.Update accountUpdate = 203;
+            Account.LinkChallenge accountLinkChallenge = 204;
 
             Object.Details.Set objectDetailsSet = 16;
             Object.Details.Amend objectDetailsAmend = 50;
@@ -124,6 +125,16 @@ message Event {
         message Update {
             anytype.model.Account.Config config = 1;
             anytype.model.Account.Status status = 2;
+        }
+
+        message LinkChallenge {
+            message ClientInfo {
+                string processName = 1;
+                string processPath = 2;
+                bool signatureVerified = 3;
+            }
+            string challenge = 1;
+            ClientInfo clientInfo = 2;
         }
     }
 

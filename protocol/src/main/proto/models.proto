@@ -7,9 +7,8 @@ import "google/protobuf/struct.proto";
 message SmartBlockSnapshotBase {
     repeated Block blocks = 1;
     google.protobuf.Struct details = 2;
-    google.protobuf.Struct fileKeys = 3;
-    // deprecated
-    repeated Relation extraRelations = 4;
+    google.protobuf.Struct fileKeys = 3 [deprecated=true];
+    repeated Relation extraRelations = 4 [deprecated=true];
     repeated string objectTypes = 5;
     google.protobuf.Struct collections = 6;
     repeated string removedCollectionKeys = 8;
@@ -346,6 +345,7 @@ message Block {
                     Gallery = 2;
                     Kanban = 3;
                     Calendar = 4;
+                    Graph = 5;
                 }
 
                 enum Size {
@@ -1010,4 +1010,10 @@ message FileEncryptionKey {
 message FileInfo {
     string fileId = 1;
     repeated FileEncryptionKey encryptionKeys = 2;
+}
+
+enum ImageKind {
+    Basic = 0;
+    Cover = 1;
+    Icon = 2;
 }

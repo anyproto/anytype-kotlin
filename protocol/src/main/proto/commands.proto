@@ -210,12 +210,16 @@ message Rpc {
         message CreateSession {
             message Request {
                 option (no_auth) = true;
-                string mnemonic = 1;
+                oneof auth {
+                    string mnemonic = 1; // cold auth
+                    string appKey = 2; // persistent app key, that can be used to restore session
+                }
             }
 
             message Response {
                 Error error = 1;
                 string token = 2;
+                string appToken = 3; // in case of mnemonic auth, need to be persisted by client
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -640,8 +644,63 @@ message Rpc {
             LocalOnly = 1;  // disable any-sync network and use only local p2p nodes
             CustomConfig = 2; // use config provided in networkConfigFilePath
         }
-    }
 
+        message LocalLink {
+            message NewChallenge {
+                message Request {
+                    option (no_auth) = true;
+                    string appName = 1; // just for info, not secure to rely on
+                }
+
+                message Response {
+                    Error error = 1;
+                    string challengeId = 2;
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+
+                            ACCOUNT_IS_NOT_RUNNING = 101;
+                            TOO_MANY_REQUESTS = 102; // protection from overuse
+                        }
+                    }
+                }
+            }
+            message SolveChallenge {
+                message Request {
+                    option (no_auth) = true;
+                    string challengeId = 1;
+                    string answer = 2;
+                }
+
+                message Response {
+                    Error error = 1;
+                    string sessionToken = 2; // ephemeral token for the session
+                    string appKey = 3;  // persistent key, that can be used to restore session via CreateSession
+
+                    message Error {
+                        Code code = 1;
+                        string description = 2;
+
+                        enum Code {
+                            NULL = 0;
+                            UNKNOWN_ERROR = 1;
+                            BAD_INPUT = 2;
+
+                            ACCOUNT_IS_NOT_RUNNING = 101;
+                            INVALID_CHALLENGE_ID = 102;
+                            CHALLENGE_ATTEMPTS_EXCEEDED = 103;
+                            INCORRECT_ANSWER = 104;
+                        }
+                    }
+                }
+            }
+        }
+    }
     message Workspace {
         message GetCurrent {
             message Request {
@@ -1105,6 +1164,33 @@ message Rpc {
                 Error error = 1;
                 google.protobuf.Struct details = 2;
                 string objectId = 3;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        // ...
+                    }
+                }
+            }
+        }
+
+        message CreateFromUrl {
+            message Request {
+                string spaceId = 1;
+                string objectTypeUniqueKey = 2;
+                string url = 3;
+                google.protobuf.Struct details = 4;
+            }
+
+            message Response {
+                Error error = 1;
+                string objectId = 2;
+                google.protobuf.Struct details = 3;
 
                 message Error {
                     Code code = 1;
@@ -3684,6 +3770,27 @@ message Rpc {
 
             message Response {
                 Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+        message Preview {
+            message Request {
+                string html = 1;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated anytype.model.Block blocks = 2;
 
                 message Error {
                     Code code = 1;

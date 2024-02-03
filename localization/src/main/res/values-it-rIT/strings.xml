@@ -733,7 +733,7 @@
     <string name="card_size">Dimensione della Card</string>
     <string name="clear_cache">Clear cache</string>
     <string name="clear_cache_title">Sei sicuro/a?</string>
-    <string name="download_from_node">All media files stored in Anytype will be deleted from your current device. They can be downloaded again from a backup node or another device.</string>
+    <string name="download_from_node">Tutti i file multimediali memorizzati in Anytype verranno eliminati dal dispositivo corrente. Possono essere scaricati di nuovo da un nodo di backup o da un altro dispositivo.</string>
     <string name="new_profile">New profile</string>
     <string name="back_up_your_phrase">Frase di backup</string>
     <string name="anytype_analytics">Anytype Analytics</string>
@@ -932,7 +932,7 @@
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Cambia fonte</string>
     <string name="widget_change_type">Change Type</string>
-    <string name="widget_remove_widget">Remove Widget</string>
+    <string name="widget_remove_widget">Rimuovi Widget</string>
     <string name="widget_empty_bin">Svuota Cestino</string>
     <string name="widget_edit_widgets">Modifica Widgets</string>
     <!--endregion-->
@@ -988,7 +988,7 @@
     <string name="onboarding_soul_creation_personal_space">Impostazioni</string>
     <string name="onboarding_type_recovery_phrase">Digita la frase di recupero</string>
     <string name="onboarding_login_or">O</string>
-    <string name="onboarding_entering_void_title">Entering the Void</string>
+    <string name="onboarding_entering_void_title">Entrando nel Void</string>
     <string name="onboarding_mnemonic_read_more">Leggi altro</string>
     <string name="onboarding_mnemonic_additional_info">You can find Recovery Phrase later in\nAnytype settings</string>
     <string name="onboqrding_what_is_recovery_phrase">Che cos’è la Frase di Recupero?</string>

@@ -162,8 +162,26 @@ class TagStatusViewModel(
                     addTag(item.optionId)
                 }
             }
-            is RelationsListItem.CreateItem.Status -> TODO()
-            is RelationsListItem.CreateItem.Tag -> TODO()
+            is RelationsListItem.CreateItem.Status -> {
+                emitCommand(
+                    Command.OpenOptionScreen(
+                        text = item.text,
+                        relationKey = viewModelParams.relationKey,
+                        ctx = viewModelParams.ctx,
+                        objectId = viewModelParams.objectId
+                    )
+                )
+            }
+            is RelationsListItem.CreateItem.Tag -> {
+                emitCommand(
+                    Command.OpenOptionScreen(
+                        text = item.text,
+                        relationKey = viewModelParams.relationKey,
+                        ctx = viewModelParams.ctx,
+                        objectId = viewModelParams.objectId
+                    )
+                )
+            }
         }
     }
 

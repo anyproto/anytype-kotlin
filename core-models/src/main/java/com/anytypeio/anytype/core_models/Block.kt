@@ -297,7 +297,8 @@ data class Block(
                     LIST("List"),
                     GALLERY("Gallery"),
                     BOARD("Board"),
-                    CALENDAR("Calendar")
+                    CALENDAR("Calendar"),
+                    GRAPH("Graph")
                 }
 
                 enum class Size { SMALL, MEDIUM, LARGE }

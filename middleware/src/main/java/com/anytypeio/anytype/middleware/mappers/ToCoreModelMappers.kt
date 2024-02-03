@@ -551,6 +551,7 @@ fun MDVViewType.toCoreModels(): DVViewerType = when (this) {
     MDVViewType.Gallery -> DVViewerType.GALLERY
     MDVViewType.Kanban -> DVViewerType.BOARD
     MDVViewType.Calendar -> DVViewerType.CALENDAR
+    MDVViewType.Graph -> DVViewerType.GRAPH
 }
 
 fun MDVFilter.toCoreModels(): DVFilter = DVFilter(

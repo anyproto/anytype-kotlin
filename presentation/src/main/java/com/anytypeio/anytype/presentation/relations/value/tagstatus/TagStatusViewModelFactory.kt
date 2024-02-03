@@ -4,10 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -20,13 +18,11 @@ class TagStatusViewModelFactory @Inject constructor(
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val storage: Editor.Storage,
-    private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val urlBuilder: UrlBuilder,
     private val dispatcher: Dispatcher<Payload>,
     private val setObjectDetails: UpdateDetail,
     private val analytics: Analytics,
-    private val getOptions: GetOptions,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val subscription: StorelessSubscriptionContainer
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -36,12 +32,10 @@ class TagStatusViewModelFactory @Inject constructor(
         relations = relations,
         values = values,
         storage = storage,
-        storeOfObjectTypes = storeOfObjectTypes,
         dispatcher = dispatcher,
         setObjectDetails = setObjectDetails,
-        urlBuilder = urlBuilder,
         analytics = analytics,
-        getOptions = getOptions,
         spaceManager = spaceManager,
+        subscription = subscription
     ) as T
 }

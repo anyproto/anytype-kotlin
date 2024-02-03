@@ -72,6 +72,11 @@ class TagStatusFragment : BaseBottomSheetComposeFragment() {
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
     }
 
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
     private fun observeCommands(command: Command) {
         when (command) {
             is Command.OpenOptionScreen -> {

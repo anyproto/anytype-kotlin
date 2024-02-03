@@ -95,7 +95,7 @@ class TagStatusFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        val params = TagStatusViewModel.Params(
+        val params = TagStatusViewModel.ViewModelParams(
             ctx = ctx,
             objectId = objectId,
             relationKey = relationKey,

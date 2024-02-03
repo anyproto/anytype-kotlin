@@ -33,7 +33,7 @@ interface TagStatusObjectComponent {
     @Subcomponent.Builder
     interface Builder {
         @BindsInstance
-        fun params(params: TagStatusViewModel.Params): Builder
+        fun params(params: TagStatusViewModel.ViewModelParams): Builder
         fun build(): TagStatusObjectComponent
     }
 
@@ -70,7 +70,7 @@ object TagStatusObjectModule {
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         spaceManager: SpaceManager,
-        params: TagStatusViewModel.Params,
+        params: TagStatusViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer
     ): TagStatusViewModelFactory = TagStatusViewModelFactory(
         params = params,

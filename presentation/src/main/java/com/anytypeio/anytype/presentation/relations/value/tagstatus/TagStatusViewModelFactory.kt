@@ -14,7 +14,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
 
 class TagStatusViewModelFactory @Inject constructor(
-    private val params: TagStatusViewModel.Params,
+    private val params: TagStatusViewModel.ViewModelParams,
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val storage: Editor.Storage,
@@ -28,7 +28,7 @@ class TagStatusViewModelFactory @Inject constructor(
     override fun <T : ViewModel> create(
         modelClass: Class<T>
     ) = TagStatusViewModel(
-        params = params,
+        viewModelParams = params,
         relations = relations,
         values = values,
         storage = storage,

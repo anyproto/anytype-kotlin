@@ -13,10 +13,7 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -36,7 +33,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class TagStatusViewModel(
-    private val params: Params,
+    private val viewModelParams: ViewModelParams,
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val storage: Editor.Storage,
@@ -54,22 +51,22 @@ class TagStatusViewModel(
     private val jobs = mutableListOf<Job>()
 
     fun onStart() {
-        Timber.d("TagStatusViewModel init, params: $params")
+        Timber.d("onStart, params: $viewModelParams")
         jobs += viewModelScope.launch {
-            val relation = relations.get(relation = params.relationKey)
+            val relation = relations.get(relation = viewModelParams.relationKey)
             val spaces = listOf(spaceManager.get())
             val searchParams = StoreSearchParams(
                 subscription = SUB_MY_OPTIONS,
                 keys = ObjectSearchConstants.keysRelationOptions,
                 filters = ObjectSearchConstants.filterRelationOptions(
-                    relationKey = params.relationKey,
+                    relationKey = viewModelParams.relationKey,
                     spaces = spaces
                 )
             )
             combine(
                 values.subscribe(
-                    ctx = params.ctx,
-                    target = params.objectId
+                    ctx = viewModelParams.ctx,
+                    target = viewModelParams.objectId
                 ),
                 query.onStart { emit("") },
                 subscription.subscribe(searchParams)
@@ -120,12 +117,11 @@ class TagStatusViewModel(
             TagStatusAction.Plus -> emitCommand(
                 Command.OpenOptionScreen(
                     color = ThemeColor.values().drop(1).random().code,
-                    relationKey = params.relationKey,
-                    ctx = params.ctx,
-                    objectId = params.objectId
+                    relationKey = viewModelParams.relationKey,
+                    ctx = viewModelParams.ctx,
+                    objectId = viewModelParams.objectId
                 )
             )
-
             is TagStatusAction.Delete -> TODO()
             is TagStatusAction.Duplicate -> TODO()
             is TagStatusAction.Edit -> {
@@ -135,9 +131,9 @@ class TagStatusViewModel(
                         optionId = item.optionId,
                         color = item.color.code,
                         text = item.name,
-                        relationKey = params.relationKey,
-                        ctx = params.ctx,
-                        objectId = params.objectId
+                        relationKey = viewModelParams.relationKey,
+                        ctx = viewModelParams.ctx,
+                        objectId = viewModelParams.objectId
                     )
                 )
             }
@@ -180,7 +176,7 @@ class TagStatusViewModel(
         val result = mutableListOf<RelationsListItem>()
         when (relation.format) {
             Relation.Format.STATUS -> {
-                val ids: List<Id> = when (val value = record[params.relationKey]) {
+                val ids: List<Id> = when (val value = record[viewModelParams.relationKey]) {
                     is Id -> listOf(value)
                     is List<*> -> value.typeOf()
                     else -> emptyList()
@@ -192,9 +188,8 @@ class TagStatusViewModel(
                     )
                 )
             }
-
             Relation.Format.TAG -> {
-                val ids: List<Id> = when (val value = record[params.relationKey]) {
+                val ids: List<Id> = when (val value = record[viewModelParams.relationKey]) {
                     is Id -> listOf(value)
                     is List<*> -> value.typeOf()
                     else -> emptyList()
@@ -209,7 +204,6 @@ class TagStatusViewModel(
                     result.add(RelationsListItem.CreateItem.Tag(query))
                 }
             }
-
             else -> {
                 Timber.w("Relation format should be Tag or Status but was: ${relation.format}")
             }
@@ -231,9 +225,9 @@ class TagStatusViewModel(
 
     private fun addTag(tag: Id) {
         viewModelScope.launch {
-            val obj = values.get(ctx = params.ctx, target = params.objectId)
+            val obj = values.get(ctx = viewModelParams.ctx, target = viewModelParams.objectId)
             val result = mutableListOf<Id>()
-            val value = obj[params.relationKey]
+            val value = obj[viewModelParams.relationKey]
             if (value is List<*>) {
                 result.addAll(value.typeOf())
             } else if (value is Id) {
@@ -242,8 +236,8 @@ class TagStatusViewModel(
             result.add(tag)
             setObjectDetails(
                 UpdateDetail.Params(
-                    target = params.objectId,
-                    key = params.relationKey,
+                    target = viewModelParams.objectId,
+                    key = viewModelParams.relationKey,
                     value = result
                 )
             ).process(
@@ -258,12 +252,12 @@ class TagStatusViewModel(
 
     private fun removeTag(tag: Id) {
         viewModelScope.launch {
-            val obj = values.get(ctx = params.ctx, target = params.objectId)
-            val remaining = obj[params.relationKey].filterIdsById(tag)
+            val obj = values.get(ctx = viewModelParams.ctx, target = viewModelParams.objectId)
+            val remaining = obj[viewModelParams.relationKey].filterIdsById(tag)
             setObjectDetails(
                 UpdateDetail.Params(
-                    target = params.objectId,
-                    key = params.relationKey,
+                    target = viewModelParams.objectId,
+                    key = viewModelParams.relationKey,
                     value = remaining
                 )
             ).process(
@@ -279,8 +273,8 @@ class TagStatusViewModel(
         viewModelScope.launch {
             setObjectDetails(
                 UpdateDetail.Params(
-                    target = params.objectId,
-                    key = params.relationKey,
+                    target = viewModelParams.objectId,
+                    key = viewModelParams.relationKey,
                     value = listOf(status)
                 )
             ).process(
@@ -297,8 +291,8 @@ class TagStatusViewModel(
         viewModelScope.launch {
             setObjectDetails(
                 UpdateDetail.Params(
-                    target = params.objectId,
-                    key = params.relationKey,
+                    target = viewModelParams.objectId,
+                    key = viewModelParams.relationKey,
                     value = null
                 )
             ).process(
@@ -345,7 +339,7 @@ class TagStatusViewModel(
     }
 
     private fun setupIsRelationNotEditable(relation: ObjectWrapper.Relation) {
-        isRelationNotEditable = params.isLocked
+        isRelationNotEditable = viewModelParams.isLocked
                 || storage.objectRestrictions.current().contains(ObjectRestriction.RELATIONS)
                 || relation.isReadonlyValue
                 || relation.isHidden == true
@@ -361,7 +355,7 @@ class TagStatusViewModel(
         }
     }
 
-    data class Params(
+    data class ViewModelParams(
         val ctx: Id,
         val objectId: Id,
         val relationKey: Key,

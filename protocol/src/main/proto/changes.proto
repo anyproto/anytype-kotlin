@@ -59,6 +59,7 @@ message Change {
 
             StoreSliceUpdate storeSliceUpdate = 109;
             OriginalCreatedTimestampSet originalCreatedTimestampSet = 110;
+            SetFileInfo setFileInfo = 111;
         }
         reserved 102,103,104; // old unsupported relation changes
     }
@@ -150,5 +151,9 @@ message Change {
 
     message OriginalCreatedTimestampSet {
         int64 ts = 1;
+    }
+
+    message SetFileInfo {
+       model.FileInfo fileInfo = 1;
     }
 }

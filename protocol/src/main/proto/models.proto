@@ -7,15 +7,15 @@ import "google/protobuf/struct.proto";
 message SmartBlockSnapshotBase {
     repeated Block blocks = 1;
     google.protobuf.Struct details = 2;
-    google.protobuf.Struct fileKeys = 3;
-    // deprecated
-    repeated Relation extraRelations = 4;
+    google.protobuf.Struct fileKeys = 3 [deprecated=true];
+    repeated Relation extraRelations = 4 [deprecated=true];
     repeated string objectTypes = 5;
     google.protobuf.Struct collections = 6;
     repeated string removedCollectionKeys = 8;
     repeated RelationLink relationLinks = 7;
     string key = 9; // only used for pb backup purposes, ignored in other cases
     int64 originalCreatedTimestamp = 10; // ignored in import/export in favor of createdDate relation. Used to store original user-side object creation timestamp
+    FileInfo fileInfo = 11;
 }
 
 enum SmartBlockType {
@@ -45,6 +45,8 @@ enum SmartBlockType {
 
     Identity = 0x214;
     MissingObject = 0x207;
+
+    FileObject = 0x215;
 }
 
 message Block {
@@ -277,6 +279,7 @@ message Block {
             string mime = 4;
             int64 size = 5;
             int64 addedAt = 6;
+            string targetObjectId = 9;
 
             State state = 7;
             Style style = 8;
@@ -342,6 +345,7 @@ message Block {
                     Gallery = 2;
                     Kanban = 3;
                     Calendar = 4;
+                    Graph = 5;
                 }
 
                 enum Size {
@@ -996,4 +1000,20 @@ message Import {
         LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED = 7;
         FILE_LOAD_ERROR = 8;
     }
+}
+
+message FileEncryptionKey {
+    string path = 1;
+    string key = 2;
+}
+
+message FileInfo {
+    string fileId = 1;
+    repeated FileEncryptionKey encryptionKeys = 2;
+}
+
+enum ImageKind {
+    Basic = 0;
+    Cover = 1;
+    Icon = 2;
 }

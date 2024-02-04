@@ -739,6 +739,7 @@
     <string name="anytype_analytics">Analytiques de Anytype</string>
     <string name="anytype_analytics_msg">Understanding how people use Anytype helps us improve the product. This version of Anytype includes the analytics code that protects your privacy.\nIt doesn\'t record the actual document\'s content but still allows us to understand how you use Anytype.\nStay subscribed to our mailing list, as we will soon announce a new release that enables you to opt-out.</string>
     <string name="retry">Réessayer</string>
+    <string name="try_again">Try again</string>
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Annuler la suppression</string>
     <string name="logout_and_clear_local_data">Se déconnecter et effacer les données locales</string>
@@ -1079,5 +1080,6 @@
     <string name="any_object_creation_menu_move_left">Déplacer à gauche</string>
     <string name="any_object_creation_menu_move_right">Déplacer à droite</string>
     <string name="clipboard_panel_create_object_from_clipboard">Créer un objet depuis le presse-papiers</string>
+    <string name="block_media_error">Something went wrong, please try again</string>
     <string name="relation_value_create_new">Créer \"%1$s\"</string>
 </resources>

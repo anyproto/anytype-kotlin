@@ -92,7 +92,7 @@ fun StubFile(
     id: Id = MockDataFactory.randomUuid(),
     children: List<Id> = emptyList(),
     backgroundColor: String? = null,
-    hash: String = MockDataFactory.randomString(),
+    targetObjectId: Id = MockDataFactory.randomString(),
     name: String = MockDataFactory.randomString(),
     size: Long = MockDataFactory.randomLong(),
     type: Block.Content.File.Type? = null,
@@ -105,7 +105,7 @@ fun StubFile(
     content = Block.Content.File(
         size = size,
         name = name,
-        hash = hash,
+        targetObjectId = targetObjectId,
         type = type,
         state = state
     )

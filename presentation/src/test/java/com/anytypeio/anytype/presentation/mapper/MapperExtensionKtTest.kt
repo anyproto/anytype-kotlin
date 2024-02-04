@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
@@ -20,6 +23,8 @@ class MapperExtensionKtTest {
 
     private val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
 
+    private val targetObjectId : Id = "647tyhfgehf7ru"
+
     @Before
     fun before() {
         MockitoAnnotations.openMocks(this)
@@ -33,18 +38,28 @@ class MapperExtensionKtTest {
         val indent = MockDataFactory.randomInt()
 
         val name = "name"
-        val size = 10000L
         val mime = "*/txt"
-        val hash = "647tyhfgehf7ru"
         val state = Block.Content.File.State.DONE
         val type = Block.Content.File.Type.FILE
         val mode = BlockView.Mode.EDIT
 
+        val details = Block.Details(
+            mapOf(
+                targetObjectId to Block.Fields(
+                    mapOf(
+                        Relations.NAME to name,
+                        Relations.SIZE_IN_BYTES to 10000.0,
+                        Relations.FILE_MIME_TYPE to mime,
+                    )
+                )
+            )
+        )
+
         val block = Block.Content.File(
             name = name,
-            size = size,
+            size = 10000L,
             mime = mime,
-            hash = hash,
+            targetObjectId = targetObjectId,
             state = state,
             type = type
 
@@ -53,15 +68,15 @@ class MapperExtensionKtTest {
         val expected = BlockView.Media.File(
             id = id,
             name = name,
-            size = size,
+            size = 10000L,
             mime = mime,
-            hash = hash,
+            targetObjectId = targetObjectId,
             mode = BlockView.Mode.EDIT,
-            url = urlBuilder.video(hash),
+            url = urlBuilder.video(targetObjectId),
             indent = indent,
             decorations = emptyList()
         )
-        val actual = block.toFileView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
+        val actual = block.toFileView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), details)
 
         assertEquals(expected, actual)
     }
@@ -79,7 +94,8 @@ class MapperExtensionKtTest {
 
         val block = Block.Content.File(
             state = state,
-            type = type
+            type = type,
+            targetObjectId = targetObjectId
         )
 
         val expected =
@@ -102,8 +118,8 @@ class MapperExtensionKtTest {
 
         val block = Block.Content.File(
             state = state,
-            type = type
-
+            type = type,
+            targetObjectId = targetObjectId
         )
 
         val expected = BlockView.Error.File(id = id, indent = indent, decorations = emptyList())
@@ -125,7 +141,8 @@ class MapperExtensionKtTest {
 
         val block = Block.Content.File(
             state = state,
-            type = type
+            type = type,
+            targetObjectId = targetObjectId
         )
 
         val expected = BlockView.Upload.File(id = id, indent = indent)
@@ -142,7 +159,7 @@ class MapperExtensionKtTest {
         val indent = MockDataFactory.randomInt()
 
         val name = "name"
-        val size = 10000L
+        val size = 10000.0
         val mime = "image/jpeg"
         val hash = "647tyhfgehf7ru"
         val state = Block.Content.File.State.DONE
@@ -150,27 +167,36 @@ class MapperExtensionKtTest {
         val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
-            name = name,
-            size = size,
-            mime = mime,
-            hash = hash,
+            targetObjectId = targetObjectId,
             state = state,
             type = type
 
         )
 
+        val details = Block.Details(
+            mapOf(
+                targetObjectId to Block.Fields(
+                    mapOf(
+                        Relations.NAME to name,
+                        Relations.SIZE_IN_BYTES to size,
+                        Relations.FILE_MIME_TYPE to mime,
+                    )
+                )
+            )
+        )
+
         val expected = BlockView.Media.Picture(
             id = id,
             name = name,
-            size = size,
+            size = size.toLong(),
             mime = mime,
-            hash = hash,
+            targetObjectId = targetObjectId,
             url = urlBuilder.image(hash),
             indent = indent,
             decorations = emptyList()
         )
 
-        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
+        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), details)
 
         assertEquals(expected, actual)
     }
@@ -188,8 +214,8 @@ class MapperExtensionKtTest {
 
         val block = Block.Content.File(
             state = state,
-            type = type
-
+            type = type,
+            targetObjectId = targetObjectId
         )
 
         val expected = BlockView.MediaPlaceholder.Picture(
@@ -215,8 +241,8 @@ class MapperExtensionKtTest {
 
         val block = Block.Content.File(
             state = state,
-            type = type
-
+            type = type,
+            targetObjectId = targetObjectId
         )
 
         val expected = BlockView.Error.Picture(
@@ -243,7 +269,8 @@ class MapperExtensionKtTest {
 
         val block = Block.Content.File(
             state = state,
-            type = type
+            type = type,
+            targetObjectId = targetObjectId
         )
 
         val expected = BlockView.Upload.Picture(id = id, indent = indent)
@@ -262,18 +289,27 @@ class MapperExtensionKtTest {
         val name = "name"
         val size = 10000L
         val mime = "video/mp4"
-        val hash = "647tyhfgehf7ru"
+        val targetObjectId = "647tyhfgehf7ru"
         val state = Block.Content.File.State.DONE
         val type = Block.Content.File.Type.VIDEO
         val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
-            name = name,
-            size = size,
-            mime = mime,
-            hash = hash,
+            targetObjectId = targetObjectId,
             state = state,
             type = type
+        )
+
+        val details = Block.Details(
+            mapOf(
+                targetObjectId to Block.Fields(
+                    mapOf(
+                        Relations.NAME to name,
+                        Relations.SIZE_IN_BYTES to 10000.0,
+                        Relations.FILE_MIME_TYPE to mime,
+                    )
+                )
+            )
         )
 
         val expected = BlockView.Media.Video(
@@ -281,19 +317,19 @@ class MapperExtensionKtTest {
             name = name,
             size = size,
             mime = mime,
-            hash = hash,
-            url = urlBuilder.video(hash),
+            targetObjectId = targetObjectId,
+            url = urlBuilder.video(targetObjectId),
             indent = indent,
             decorations = emptyList()
         )
 
-        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
+        val actual = block.toVideoView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList(), details)
 
         assertEquals(expected, actual)
     }
 
     @Test
-    fun `should return video block view empty params`() {
+    fun `should return video block error view when target object id is empty`() {
 
         val id = MockDataFactory.randomUuid()
 
@@ -304,27 +340,102 @@ class MapperExtensionKtTest {
         val mode = BlockView.Mode.EDIT
 
         val block = Block.Content.File(
-            name = null,
-            size = null,
-            mime = null,
-            hash = null,
+            targetObjectId = null,
             state = state,
             type = type
-
         )
 
-        val expected = BlockView.Media.Video(
+        val expected = BlockView.Error.Video(
             id = id,
-            name = null,
-            size = null,
-            mime = null,
-            hash = null,
-            url = urlBuilder.video(null),
             indent = indent,
             decorations = emptyList()
         )
 
         val actual = block.toVideoView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should return image block error view when target object id is empty`() {
+
+        val id = MockDataFactory.randomUuid()
+
+        val indent = MockDataFactory.randomInt()
+
+        val state = Block.Content.File.State.DONE
+        val type = Block.Content.File.Type.IMAGE
+        val mode = BlockView.Mode.EDIT
+
+        val block = Block.Content.File(
+            targetObjectId = null,
+            state = state,
+            type = type
+        )
+
+        val expected = BlockView.Error.Picture(
+            id = id,
+            indent = indent,
+            decorations = emptyList()
+        )
+
+        val actual = block.toPictureView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should return file block error view when target object id is empty`() {
+
+        val id = MockDataFactory.randomUuid()
+
+        val indent = MockDataFactory.randomInt()
+
+        val state = Block.Content.File.State.DONE
+        val type = Block.Content.File.Type.FILE
+        val mode = BlockView.Mode.EDIT
+
+        val block = Block.Content.File(
+            targetObjectId = null,
+            state = state,
+            type = type
+        )
+
+        val expected = BlockView.Error.File(
+            id = id,
+            indent = indent,
+            decorations = emptyList()
+        )
+
+        val actual = block.toFileView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun `should return file block error view when target object id is empty for pdf`() {
+
+        val id = MockDataFactory.randomUuid()
+
+        val indent = MockDataFactory.randomInt()
+
+        val state = Block.Content.File.State.DONE
+        val type = Block.Content.File.Type.PDF
+        val mode = BlockView.Mode.EDIT
+
+        val block = Block.Content.File(
+            targetObjectId = null,
+            state = state,
+            type = type
+        )
+
+        val expected = BlockView.Error.File(
+            id = id,
+            indent = indent,
+            decorations = emptyList()
+        )
+
+        val actual = block.toFileView(id, urlBuilder, indent, mode, false, ThemeColor.DEFAULT, false, emptyList())
 
         assertEquals(expected, actual)
     }
@@ -344,7 +455,7 @@ class MapperExtensionKtTest {
             name = null,
             size = null,
             mime = null,
-            hash = null,
+            targetObjectId = null,
             state = state,
             type = type
         )
@@ -375,7 +486,7 @@ class MapperExtensionKtTest {
             name = null,
             size = null,
             mime = null,
-            hash = null,
+            targetObjectId = null,
             state = state,
             type = type
         )
@@ -405,7 +516,7 @@ class MapperExtensionKtTest {
             name = null,
             size = null,
             mime = null,
-            hash = null,
+            targetObjectId = null,
             state = state,
             type = type
         )
@@ -435,7 +546,7 @@ class MapperExtensionKtTest {
             name = null,
             size = null,
             mime = null,
-            hash = null,
+            targetObjectId = null,
             state = null,
             type = type
         )

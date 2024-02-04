@@ -11,6 +11,7 @@ sealed interface ListenerType {
     sealed class Bookmark : ListenerType {
         data class View(val item: BlockView.Media.Bookmark) : Bookmark()
         data class Placeholder(val target: String) : Bookmark()
+        data class Upload(val target: String) : File()
         data class Error(val item: BlockView.Error.Bookmark) : Bookmark()
     }
 

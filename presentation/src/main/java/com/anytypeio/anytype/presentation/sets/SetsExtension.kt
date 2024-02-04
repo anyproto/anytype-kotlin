@@ -207,7 +207,7 @@ suspend fun List<ColumnView>.buildGridRow(
         type = type,
         name = name,
         emoji = emoji,
-        image = image?.let { if (it.isEmpty()) null else builder.thumbnail(it) },
+        image = image?.takeIf { it.isNotBlank() }?.let { builder.thumbnail(it) },
         cells = cells,
         layout = layout,
         isChecked = done,

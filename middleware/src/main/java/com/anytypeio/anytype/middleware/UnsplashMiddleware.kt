@@ -28,6 +28,6 @@ class UnsplashMiddleware @Inject constructor(
     override fun download(id: Id): Hash {
         val request = Download.Request(pictureId = id).also { logger.logRequest(it) }
         val response = service.unsplashDownload(request = request).also { logger.logResponse(it) }
-        return response.hash
+        return response.objectId
     }
 }

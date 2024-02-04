@@ -826,13 +826,13 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.fileUpload(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return Response.Media.Upload(response.hash)
+        return Response.Media.Upload(response.objectId)
     }
 
     @Throws(Exception::class)
     fun fileDownload(command: Command.DownloadFile): Rpc.File.Download.Response {
         val request = Rpc.File.Download.Request(
-            hash = command.hash,
+            objectId = command.objectId,
             path = command.path
         )
         if (BuildConfig.DEBUG) logRequest(request)

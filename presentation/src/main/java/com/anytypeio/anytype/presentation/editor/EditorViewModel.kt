@@ -196,6 +196,7 @@ import com.anytypeio.anytype.presentation.editor.selection.updateTableBlockTab
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getProperObjectName
+import com.anytypeio.anytype.presentation.extension.getUrlForFileBlock
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockActionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockAlignEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsBlockBackgroundEvent
@@ -1806,6 +1807,7 @@ class EditorViewModel(
                         needSortByDownloads = true
                         if (content.state == Content.File.State.DONE) {
                             targetActions.addIfNotExists(ActionItemType.Download)
+                            targetActions.addIfNotExists(ActionItemType.OpenObject)
                         } else {
                             excludedActions.add(ActionItemType.Download)
                         }
@@ -3608,6 +3610,13 @@ class EditorViewModel(
                     else -> Unit
                 }
             }
+            is ListenerType.Bookmark.Upload -> {
+                when (mode) {
+                    EditorMode.Edit -> Unit
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
+                    else -> Unit
+                }
+            }
             is ListenerType.Bookmark.Error -> {
                 when (mode) {
                     EditorMode.Edit -> onFailedBookmarkClicked(clicked.item)
@@ -3647,18 +3656,21 @@ class EditorViewModel(
             is ListenerType.Picture.View -> {
                 when (mode) {
                     EditorMode.Edit, EditorMode.Locked -> {
-                        val target = blocks.find { it.id == clicked.target }
-                        if (target != null) {
-                            val content = target.content
-                            check(content is Content.File)
+                        val fileBlock = blocks.find { it.id == clicked.target }
+                        val url = urlBuilder.getUrlForFileBlock(
+                            fileBlock = fileBlock,
+                            isOriginalImage = true
+                        )
+                        if (url != null ) {
                             dispatch(
                                 Command.OpenFullScreenImage(
                                     target = clicked.target,
-                                    url = urlBuilder.original(content.hash)
+                                    url = url
                                 )
                             )
                         } else {
-                            Timber.e("Could not find target for picture")
+                            Timber.e("Block is not File or with wrong state, can't proceed with download")
+                            sendToast("Something went wrong. Couldn't open image")
                         }
                     }
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
@@ -4118,17 +4130,21 @@ class EditorViewModel(
         }
     }
 
-    private fun onFileClicked(id: String) {
-        val file = blocks.find { it.id == id }
-        if (file != null && file.content is Content.File) {
-            val cnt = (file.content as Content.File)
+    private fun onFileClicked(blockId: String) {
+        val fileBlock = blocks.find { it.id == blockId }
+        val url = urlBuilder.getUrlForFileBlock(
+            fileBlock = fileBlock
+        )
+        if (url != null) {
             dispatch(
                 Command.OpenFileByDefaultApp(
-                    id = id,
-                    mime = cnt.mime.orEmpty(),
-                    uri = urlBuilder.file(cnt.hash)
+                    id = blockId,
+                    uri = url
                 )
             )
+        } else {
+            Timber.e("Block is not File or with wrong state, can't proceed with open")
+            sendToast("Something went wrong. Couldn't open file.")
         }
     }
 
@@ -4145,7 +4161,7 @@ class EditorViewModel(
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Media.ShareFile(
-                        hash = content.hash.orEmpty(),
+                        objectId = content.targetObjectId.orEmpty(),
                         name = content.name.orEmpty(),
                         type = content.type,
                         onDownloaded = onDownloaded
@@ -4157,30 +4173,29 @@ class EditorViewModel(
         }
     }
 
-    fun startDownloadingFile(id: String) {
+    fun startDownloadingFile(blockId: Id) {
 
-        Timber.d("startDownloadingFile, id:[$id]")
+        Timber.d("startDownloadingFile, for block:[$blockId]")
 
         sendToast("Downloading file in background...")
 
-        val block = blocks.firstOrNull { it.id == id }
-        val content = block?.content
-
-        if (content is Content.File && content.state == Content.File.State.DONE) {
+        val fileBlock = blocks.firstOrNull { it.id == blockId }
+        val fileContent = fileBlock?.content as? Content.File
+        val url = urlBuilder.getUrlForFileBlock(fileBlock)
+        
+        if (fileContent != null && url != null) {
             viewModelScope.launch {
                 orchestrator.proxies.intents.send(
                     Media.DownloadFile(
-                        url = when (content.type) {
-                            Content.File.Type.IMAGE -> urlBuilder.image(content.hash)
-                            else -> urlBuilder.file(content.hash)
-                        },
-                        name = content.name.orEmpty(),
-                        type = content.type
+                        url = url,
+                        name = fileContent.name.orEmpty(),
+                        type = fileContent.type
                     )
                 )
             }
         } else {
             Timber.e("Block is not File or with wrong state, can't proceed with download")
+            sendToast("Something went wrong. Couldn't download file.")
         }
     }
 
@@ -5579,6 +5594,18 @@ class EditorViewModel(
                         )
                     } else {
                         sendToast("This bookmark doesn’t have a source.")
+                    }
+                }
+                is Content.File -> {
+                    val target = content.targetObjectId
+                    if (target != null) {
+                        proceedWithOpeningObject(target)
+                        viewModelScope.sendAnalyticsOpenAsObject(
+                            analytics = analytics,
+                            type = EventsDictionary.Type.bookmark
+                        )
+                    } else {
+                        sendToast("This object doesn’t have a target id")
                     }
                 }
                 else -> sendToast("Unexpected object")

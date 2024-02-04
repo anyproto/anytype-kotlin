@@ -27,7 +27,7 @@ sealed class Command {
 
     class DownloadFile(
         val path: String,
-        val hash: Hash
+        val objectId: Id
     )
 
     /**

@@ -52,15 +52,13 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="https://github.com/anyproto/anytype-kotlin"/>
 
-            <com.google.android.material.progressindicator.CircularProgressIndicator
+            <TextView
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:indeterminate="true"
-                app:trackColor="@color/glyph_inactive"
-                app:indicatorColor="#B6B6B6"
-                app:indicatorSize="20dp"
-                app:trackThickness="@dimen/dp_2"
+                android:text="@string/try_again"
+                style="@style/TextView.UXStyle.Captions.1.Medium"
+                android:textColor="@color/text_primary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -69,6 +67,16 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/errorMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="66dp"
+        android:layout_marginStart="20dp"
+        android:textColor="@color/palette_system_red"
+        style="@style/TextView.UXStyle.Captions.2.Regular"
+        android:text="@string/block_media_error"/>
 
     <View
         android:id="@+id/selected"

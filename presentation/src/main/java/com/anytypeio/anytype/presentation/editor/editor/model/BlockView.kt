@@ -780,7 +780,8 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val background: ThemeColor = ThemeColor.DEFAULT,
-            override val decorations: List<Decoration> = emptyList()
+            override val decorations: List<Decoration> = emptyList(),
+            val name: String? = null
         ) : Error() {
             override fun getViewType() = HOLDER_FILE_ERROR
         }
@@ -795,7 +796,8 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val background: ThemeColor = ThemeColor.DEFAULT,
-            override val decorations: List<Decoration> = emptyList()
+            override val decorations: List<Decoration> = emptyList(),
+            val name: String? = null
         ) : Error() {
             override fun getViewType() = HOLDER_VIDEO_ERROR
         }
@@ -809,7 +811,8 @@ sealed class BlockView : ViewType {
             override val mode: Mode = Mode.EDIT,
             override val isSelected: Boolean = false,
             override val background: ThemeColor = ThemeColor.DEFAULT,
-            override val decorations: List<Decoration> = emptyList()
+            override val decorations: List<Decoration> = emptyList(),
+            val name: String? = null
         ) : Error() {
             override fun getViewType() = HOLDER_PICTURE_ERROR
         }
@@ -997,8 +1000,9 @@ sealed class BlockView : ViewType {
             val size: Long?,
             val name: String?,
             val mime: String?,
-            val hash: String?,
-            val url: String
+            val targetObjectId: Id,
+            val url: String,
+            val fileExt: String? = null
         ) : Media(), Searchable {
             override fun getViewType() = HOLDER_FILE
         }
@@ -1016,7 +1020,7 @@ sealed class BlockView : ViewType {
             val size: Long?,
             val name: String?,
             val mime: String?,
-            val hash: String?,
+            val targetObjectId: Id,
             val url: String
         ) : Media() {
             override fun getViewType() = HOLDER_VIDEO
@@ -1067,8 +1071,8 @@ sealed class BlockView : ViewType {
             val size: Long?,
             val name: String?,
             val mime: String?,
-            val hash: String?,
-            val url: String
+            val targetObjectId: Id,
+            val url: String,
         ) : Media() {
             override fun getViewType() = HOLDER_PICTURE
         }

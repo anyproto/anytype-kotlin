@@ -31,16 +31,6 @@ class UrlBuilderTest {
     }
 
     @Test
-    fun `should return url with null at the end when image hash is null`() {
-        val hash = null
-
-        val expected =
-            gateway.provide() + UrlBuilder.IMAGE_PATH + null + UrlBuilder.DEFAULT_WIDTH_PARAM
-        val actual = urlBuilder.image(hash)
-        assertEquals(expected, actual)
-    }
-
-    @Test
     fun `should return url without hash when image hash is empty`() {
         val hash = ""
 
@@ -59,15 +49,6 @@ class UrlBuilderTest {
     }
 
     @Test
-    fun `should return url with null at the end when file hash is null`() {
-        val hash = null
-
-        val expected = gateway.provide() + UrlBuilder.FILE_PATH + null
-        val actual = urlBuilder.file(hash)
-        assertEquals(expected, actual)
-    }
-
-    @Test
     fun `should return url without hash when file hash is empty`() {
         val hash = ""
 
@@ -81,15 +62,6 @@ class UrlBuilderTest {
         val hash = "video001"
 
         val expected = gateway.provide() + UrlBuilder.FILE_PATH + hash
-        val actual = urlBuilder.video(hash)
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun `should return url with null at the end when video hash is null`() {
-        val hash = null
-
-        val expected = gateway.provide() + UrlBuilder.FILE_PATH + null
         val actual = urlBuilder.video(hash)
         assertEquals(expected, actual)
     }

@@ -31,7 +31,6 @@ sealed class Command {
      */
     data class OpenFileByDefaultApp(
         val id: String,
-        val mime: String,
         val uri: String
     ) : Command()
 

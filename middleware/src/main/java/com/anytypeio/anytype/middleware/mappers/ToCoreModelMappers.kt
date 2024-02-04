@@ -330,7 +330,7 @@ fun MBlock.toCoreModelsDivider(): Block.Content.Divider {
 fun MBlock.toCoreModelsFile(): Block.Content.File {
     val content = checkNotNull(file_)
     return Block.Content.File(
-        hash = content.hash,
+        targetObjectId = content.targetObjectId,
         name = content.name,
         mime = content.mime,
         size = content.size,
@@ -551,6 +551,7 @@ fun MDVViewType.toCoreModels(): DVViewerType = when (this) {
     MDVViewType.Gallery -> DVViewerType.GALLERY
     MDVViewType.Kanban -> DVViewerType.BOARD
     MDVViewType.Calendar -> DVViewerType.CALENDAR
+    MDVViewType.Graph -> DVViewerType.GRAPH
 }
 
 fun MDVFilter.toCoreModels(): DVFilter = DVFilter(

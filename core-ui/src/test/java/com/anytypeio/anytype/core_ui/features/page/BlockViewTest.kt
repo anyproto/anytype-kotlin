@@ -34,7 +34,7 @@ class BlockViewTest {
     fun `should return video block with view type Done`() {
         val block = BlockView.Media.Video(
             id = MockDataFactory.randomUuid(),
-            hash = MockDataFactory.randomString(),
+            targetObjectId = MockDataFactory.randomString(),
             url = MockDataFactory.randomString(),
             size = MockDataFactory.randomLong(),
             mime = MockDataFactory.randomString(),

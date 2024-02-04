@@ -9,7 +9,6 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.doReturn
-import org.mockito.kotlin.doThrow
 import org.mockito.kotlin.stub
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -37,7 +36,7 @@ class ObjectWrapperExtensionsKtTest {
 
         stubUrlBuilder(imageHash)
 
-        val result = obj.getImagePath(urlBuilder)
+        val result = urlBuilder.image(obj.iconImage!!)
 
         val expected = URL + imageHash
 
@@ -45,87 +44,6 @@ class ObjectWrapperExtensionsKtTest {
             expected = expected,
             actual = result
         )
-    }
-
-    @Test
-    fun `should return null image path from object wrapper when hash is null`() {
-
-        val imageHash: String? = null
-
-        val obj = ObjectWrapper.Basic(
-            mapOf("iconImage" to imageHash)
-        )
-
-        stubUrlBuilder(imageHash)
-
-        val result = obj.getImagePath(urlBuilder)
-
-        assertNull(actual = result)
-    }
-
-    @Test
-    fun `should return null image path from object wrapper when hash is empty`() {
-
-        val imageHash = ""
-
-        val obj = ObjectWrapper.Basic(
-            mapOf("iconImage" to imageHash)
-        )
-
-        stubUrlBuilder(imageHash)
-
-        val result = obj.getImagePath(urlBuilder)
-
-        assertNull(actual = result)
-    }
-
-    @Test
-    fun `should return null image path from object wrapper when hash is blank`() {
-
-        val imageHash = " "
-
-        val obj = ObjectWrapper.Basic(
-            mapOf("iconImage" to imageHash)
-        )
-
-        stubUrlBuilder(imageHash)
-
-        val result = obj.getImagePath(urlBuilder)
-
-        assertNull(actual = result)
-    }
-
-    @Test
-    fun `should return proper emoji from object wrapper`() {
-
-        val emojiHash = "ycd79"
-
-        val obj = ObjectWrapper.Basic(
-            mapOf("iconEmoji" to emojiHash)
-        )
-
-        val result = obj.getEmojiPath()
-
-        val expected = emojiHash
-
-        assertEquals(
-            expected = expected,
-            actual = result
-        )
-    }
-
-    @Test
-    fun `should return null emoji from object wrapper when emoji is null`() {
-
-        val emojiHash: String? = null
-
-        val obj = ObjectWrapper.Basic(
-            mapOf("iconEmoji" to emojiHash)
-        )
-
-        val result = obj.getEmojiPath()
-
-        assertNull(result)
     }
 
     @Test
@@ -137,7 +55,7 @@ class ObjectWrapperExtensionsKtTest {
             mapOf("iconEmoji" to emojiHash)
         )
 
-        val result = obj.getEmojiPath()
+        val result = urlBuilder.image(obj.iconEmoji!!)
 
         assertNull(result)
     }
@@ -151,7 +69,7 @@ class ObjectWrapperExtensionsKtTest {
             mapOf("iconEmoji" to emojiHash)
         )
 
-        val result = obj.getEmojiPath()
+        val result = urlBuilder.image(obj.iconEmoji!!)
 
         assertNull(result)
     }
@@ -226,15 +144,9 @@ class ObjectWrapperExtensionsKtTest {
         )
     }
 
-    fun stubUrlBuilder(hash: String?) {
-        if (hash == null) {
-            urlBuilder.stub {
-                on { image(null) } doThrow RuntimeException("Should not happened")
-            }
-        } else {
-            urlBuilder.stub {
-                on { image(hash) } doReturn URL + hash
-            }
+    fun stubUrlBuilder(targetObjectId: String) {
+        urlBuilder.stub {
+            on { image(targetObjectId) } doReturn URL + targetObjectId
         }
     }
 }

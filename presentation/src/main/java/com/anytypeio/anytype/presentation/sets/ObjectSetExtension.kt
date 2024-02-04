@@ -457,7 +457,7 @@ fun ObjectWrapper.Basic.toTemplateView(
         name = name.orEmpty(),
         targetTypeId = TypeId(targetObjectType.orEmpty()),
         emoji = if (!iconEmoji.isNullOrBlank()) iconEmoji else null,
-        image = if (!iconImage.isNullOrBlank()) urlBuilder.thumbnail(iconImage!!) else null,
+        image = iconImage?.takeIf { it.isNotBlank() }?.let { urlBuilder.thumbnail(it) },
         layout = layout ?: ObjectType.Layout.BASIC,
         coverColor = coverContainer?.coverColor,
         coverImage = coverContainer?.coverImage,

@@ -738,6 +738,7 @@
     <string name="anytype_analytics">Anytype分析</string>
     <string name="anytype_analytics_msg">了解人们如何使用Anytype有助于我们改进产品。此版本的Anytype包含保护您隐私的分析代码。\n它不会记录实际文档的内容，但仍然可以让我们了解您如何使用Anytype。\n请继续订阅我们的邮件列表，因为我们很快将发布一个新版本，让您可以选择退出。</string>
     <string name="retry">重试</string>
+    <string name="try_again">Try again</string>
     <string name="unsplash">Unsplash 图库</string>
     <string name="cancel_deletion">取消删除</string>
     <string name="logout_and_clear_local_data">退出账号并清空本地数据</string>
@@ -1075,5 +1076,6 @@
     <string name="any_object_creation_menu_move_left">向左移动</string>
     <string name="any_object_creation_menu_move_right">向右移动</string>
     <string name="clipboard_panel_create_object_from_clipboard">从剪贴板创建对象</string>
+    <string name="block_media_error">Something went wrong, please try again</string>
     <string name="relation_value_create_new">创建 “%1$s”</string>
 </resources>

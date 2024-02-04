@@ -123,7 +123,18 @@ class TagStatusViewModel(
                 )
             )
             is TagStatusAction.Delete -> TODO()
-            is TagStatusAction.Duplicate -> TODO()
+            is TagStatusAction.Duplicate -> {
+                val item = action.item
+                emitCommand(
+                    Command.OpenOptionScreen(
+                        color = item.color.code,
+                        text = item.name,
+                        relationKey = viewModelParams.relationKey,
+                        ctx = viewModelParams.ctx,
+                        objectId = viewModelParams.objectId
+                    )
+                )
+            }
             is TagStatusAction.Edit -> {
                 val item = action.item
                 emitCommand(
@@ -414,7 +425,7 @@ sealed class TagStatusAction {
     object Plus : TagStatusAction()
     data class Edit(val item: RelationsListItem.Item) : TagStatusAction()
     data class Delete(val optionId: Id) : TagStatusAction()
-    data class Duplicate(val optionId: Id) : TagStatusAction()
+    data class Duplicate(val item: RelationsListItem.Item) : TagStatusAction()
 }
 
 enum class RelationContext { OBJECT, OBJECT_SET, DATA_VIEW }

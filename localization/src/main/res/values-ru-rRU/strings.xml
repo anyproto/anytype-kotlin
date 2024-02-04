@@ -49,7 +49,7 @@
     <string name="space">Пространство</string>
     <string name="space_name">Название пространства</string>
     <string name="personal_space">Личное пространство</string>
-    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="space_settings_apply_random_gradient">Применить случайный градиент</string>
     <string name="delete_space">Удалить пространство</string>
     <string name="you_can_store">Вы можете бесплатно хранить до %1$s ваших файлов на нашем узле резервного копирования. При достижении лимита файлы будут храниться только локально.</string>
     <string name="in_order_to_save">Чтобы сохранить место на вашем локальном устройстве, вы можете выгрузить все ваши файлы в наш зашифрованный узел резервного копирования. Файлы будут загружены обратно, когда вы откроете их.</string>
@@ -196,7 +196,7 @@
     <string name="deleted_type_in_set">Тип: Удалено</string>
     <string name="menu_item_bold">Жирный</string>
     <string name="menu_item_italic">Курсив</string>
-    <string name="menu_item_strike">Strike</string>
+    <string name="menu_item_strike">Зачеркнутый</string>
     <string name="menu_item_code">Код</string>
     <string name="menu_item_link">Ссылка</string>
     <string name="menu_item_color">Цвет</string>
@@ -741,7 +741,7 @@
     <string name="anytype_analytics">Anytype Аналитика</string>
     <string name="anytype_analytics_msg">Понимание того, как люди используют Anytype помогает нам улучшить продукт. Эта версия Anytype включает в себя код аналитики, защищающий вашу конфиденциальность.\nОн не записывает фактическое содержимое документа, но позволяет нам понимать, как вы используете Anytype.\nОставайтесь в подписке на нашу рассылку, так как мы скоро объявим о новой версии, которая позволит вам отказаться от аналитики.</string>
     <string name="retry">Повторить</string>
-    <string name="try_again">Try again</string>
+    <string name="try_again">Попробуйте еще раз</string>
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Отменить удаление</string>
     <string name="logout_and_clear_local_data">Выйти и очистить локальные данные</string>
@@ -903,7 +903,7 @@
     <string name="slash_widget_actions_link_to_subtitle">Создать ссылку на другой объект</string>
     <string name="slash_widget_actions_move">Переместить</string>
     <string name="slash_widget_actions_moveto">Переместить в</string>
-    <string name="slash_widget_actions_clean_style">Clean style</string>
+    <string name="slash_widget_actions_clean_style">Очистить форматирование</string>
     <string name="slash_widget_back">Назад</string>
     <string name="slash_widget_align_right">Справа</string>
     <string name="slash_widget_align_center">По центру</string>
@@ -956,22 +956,22 @@
     <string name="library_objects_empty">Нет %1$s с именем «%2$s»</string>
     <string name="library_objects_empty_action">Попробуйте создать новый или найти что-то другое</string>
     <string name="library_relations_empty">Нет типов с именем «%1$s»</string>
-    <string name="library_type_added">Type `%1$s` added to your library\"</string>
-    <string name="library_type_removed">Type `%1$s` removed from your library\"</string>
-    <string name="library_relation_added">Relation `%1$s` added to your library\"</string>
-    <string name="library_relation_removed">Relation `%1$s` removed from your library\"</string>
-    <string name="library_something_went_wrong">Something went wrong. Please, try again later.</string>
-    <string name="type_creation_new_type">New type</string>
+    <string name="library_type_added">Свойство `%1$s` добавлено в вашу библиотеку</string>
+    <string name="library_type_removed">Свойство `%1$s` удалено из вашей библиотеки</string>
+    <string name="library_relation_added">Связь `%1$s` добавлена в вашу библиотеку</string>
+    <string name="library_relation_removed">Связь `%1$s` удалена из вашей библиотеки</string>
+    <string name="library_something_went_wrong">Что-то пошло не так. Пожалуйста, попробуйте позже.</string>
+    <string name="type_creation_new_type">Новое свойство</string>
     <string name="type_creation_done">Готово</string>
-    <string name="type_creation_placeholder">Type name</string>
+    <string name="type_creation_placeholder">Название свойства</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">the everything app</string>
+    <string name="onboarding_auth_title">универсальное приложение</string>
     <string name="onboarding_auth_subtitle">for those\nwho celebrate\ntrust &amp; autonomy</string>
     <string name="onboarding_auth_description">Anytype - это безопасное место для записи мыслей и заметок, планирования и организации всего что важно для вас.</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
-    <string name="onboarding_terms_and_policy_infix">" and "</string>
+    <string name="onboarding_terms_and_policy_infix">" и "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_join_button_text">Присоединиться</string>
     <string name="onboarding_log_in_button_text">Войти</string>
@@ -987,7 +987,7 @@
     <string name="onboarding_mnemonic_copy">Копировать в буфер обмена</string>
     <string name="onboarding_set_your_name_title">Выберите имя</string>
     <string name="onboarding_soul_creation_description">This is how you will appear in the app</string>
-    <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
+    <string name="onboarding_soul_creation_placeholder">Идентификатор Anytype</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
     <string name="onboarding_soul_space_creation">Setting up the Personal space…</string>
     <string name="onboarding_soul_creation_personal_space">Личное пространство</string>
@@ -1019,7 +1019,7 @@
     <string name="content_description_edit_view_button">Edit-view button</string>
     <string name="content_description_open_to_edit_view_button">Open to edit relation button</string>
     <string name="content_description_remove_from_set_button">Remove relation from this set</string>
-    <string name="content_desc_page_toolbar_search">Search pages</string>
+    <string name="content_desc_page_toolbar_search">Поиск страниц</string>
     <string name="content_desc_page_toolbar_navigation">Navigation through pages</string>
     <string name="content_desc_page_toolbar_add_doc">Добавить страницу</string>
     <string name="content_desc_mention_suggester_icon">Mention suggester icon</string>
@@ -1030,11 +1030,11 @@
     <string name="content_desc_layout_icon">Layout icon</string>
     <!--endregion-->
     <!--region BUTTONS -->
-    <string name="button_okay">Okay</string>
+    <string name="button_okay">Окей</string>
     <string name="button_close">Закрыть</string>
     <!--endregion-->
     <!--region ALERTS -->
-    <string name="alert_gallery_unsupported_title">Gallery will be supported soon</string>
+    <string name="alert_gallery_unsupported_title">Вскоре будет поддерживаться галерея</string>
     <string name="alert_gallery_unsupported_description">Пожалуйста, используйте приложение для компьютера.</string>
     <!--endregion-->
     <!--region SHARING MENU -->
@@ -1047,26 +1047,26 @@
     <!--endregion-->
     <!--region ORIGIN RELATION VALUES -->
     <string name="relation_origin_none">Нет</string>
-    <string name="relation_origin_clipboard">Clipboard</string>
+    <string name="relation_origin_clipboard">Буфер обмена</string>
     <string name="relation_origin_dnd">Drag &amp; Drop</string>
     <string name="relation_origin_imported_object">Imported object</string>
     <string name="relation_origin_web_clipper">Web clipper</string>
     <string name="relation_origin_mobile_sharing_extension">Mobile sharing extension</string>
-    <string name="relation_origin_use_case">Use case</string>
-    <string name="relation_origin_library_installed">Library installed</string>
+    <string name="relation_origin_use_case">Вариант использования</string>
+    <string name="relation_origin_library_installed">Библиотеки установлены.</string>
     <string name="relation_origin_bookmark">Закладка</string>
     <!--endregion-->
     <plurals name="links_to_count">
-        <item quantity="one">%d link to</item>
+        <item quantity="one">%d ссылка на</item>
         <item quantity="few">%d links to</item>
         <item quantity="many">%d links to</item>
-        <item quantity="other">%d links to</item>
+        <item quantity="other">%d ссылки на</item>
     </plurals>
     <plurals name="links_from_count">
-        <item quantity="one">%d link from</item>
+        <item quantity="one">%d ссылка от</item>
         <item quantity="few">%d links from</item>
         <item quantity="many">%d links from</item>
-        <item quantity="other">%d links from</item>
+        <item quantity="other">%d ссылки от</item>
     </plurals>
     <!--region ORIGIN RELATION VALUES -->
     <string name="date_type_tomorrow">Завтра</string>
@@ -1081,13 +1081,13 @@
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="create_object_section_pinned">Pinned</string>
-    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
+    <string name="create_object_section_pinned">Закреплённые</string>
+    <string name="any_object_creation_menu_pin_on_top">Закрепить</string>
     <string name="any_object_creation_menu_unpin">Открепить</string>
     <string name="any_object_creation_menu_set_as_default">Установить по умолчанию</string>
     <string name="any_object_creation_menu_move_left">Сдвинуть влево</string>
     <string name="any_object_creation_menu_move_right">Сдвинуть вправо</string>
     <string name="clipboard_panel_create_object_from_clipboard">Создать объект из буфера обмена</string>
-    <string name="block_media_error">Something went wrong, please try again</string>
+    <string name="block_media_error">Что-то пошло не так, пожалуйста, попробуйте еще раз.</string>
     <string name="relation_value_create_new">Создать %1$s\"</string>
 </resources>

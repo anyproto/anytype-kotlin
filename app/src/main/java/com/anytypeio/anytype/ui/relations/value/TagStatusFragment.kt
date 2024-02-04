@@ -66,6 +66,12 @@ class TagStatusFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        expand()
+    }
+
     override fun onStart() {
         super.onStart()
         vm.onStart()

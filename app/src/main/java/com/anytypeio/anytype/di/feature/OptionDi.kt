@@ -28,7 +28,7 @@ interface OptionObjectComponent {
     @Subcomponent.Builder
     interface Builder {
         @BindsInstance
-        fun params(params: OptionViewModel.Params): Builder
+        fun params(params: OptionViewModel.ViewModelParams): Builder
         fun build(): OptionObjectComponent
     }
 
@@ -49,7 +49,7 @@ object OptionObjectModule {
     @Provides
     @PerModal
     fun provideFactory(
-        params: OptionViewModel.Params,
+        params: OptionViewModel.ViewModelParams,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         setObjectDetails: SetObjectDetails,
         dispatcher: Dispatcher<Payload>,

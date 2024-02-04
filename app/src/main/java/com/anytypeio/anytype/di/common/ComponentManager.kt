@@ -957,7 +957,7 @@ class ComponentManager(
             .build()
     }
 
-    val optionObjectComponent = ComponentWithParams { params: OptionViewModel.Params ->
+    val optionObjectComponent = ComponentWithParams { params: OptionViewModel.ViewModelParams ->
         editorComponent.get(params.ctx)
             .optionObjectComponent()
             .params(params)

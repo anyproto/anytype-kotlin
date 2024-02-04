@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class OptionViewModel(
-    private val vmParams: Params,
+    private val viewModelParams: ViewModelParams,
     private val values: ObjectValueProvider,
     private val createOption: CreateRelationOption,
     private val setObjectDetails: SetObjectDetails,
@@ -27,7 +27,7 @@ class OptionViewModel(
     val command = MutableSharedFlow<Command>(replay = 0)
     val viewState: MutableStateFlow<OptionScreenViewState?>? = null
 
-    data class Params(
+    data class ViewModelParams(
         val ctx: Id,
         val relationKey: Key,
         val objectId: Id,

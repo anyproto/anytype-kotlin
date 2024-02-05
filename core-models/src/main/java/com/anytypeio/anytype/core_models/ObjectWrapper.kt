@@ -296,4 +296,17 @@ sealed class ObjectWrapper {
                 else -> emptyList()
             }
     }
+
+    data class File(override val map: Struct) : ObjectWrapper() {
+        private val default = map.withDefault { null }
+        val id: Id by default
+        val name: String? by default
+        val description: String? by default
+        val fileExt: String? by default
+        val fileMimeType: String? by default
+        val sizeInBytes: Double? by default
+        val url: String? by default
+        val isArchived: Boolean? by default
+        val isDeleted: Boolean? by default
+    }
 }

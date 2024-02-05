@@ -183,7 +183,7 @@ sealed class Intent {
         ) : Media()
 
         class ShareFile(
-            val hash: Hash,
+            val objectId: Id,
             val name: String,
             val type: Block.Content.File.Type?,
             val onDownloaded: (Uri) -> Unit

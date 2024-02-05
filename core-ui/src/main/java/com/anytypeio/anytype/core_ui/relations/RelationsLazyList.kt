@@ -27,6 +27,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -35,14 +36,15 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.SearchField
-import com.anytypeio.anytype.presentation.relations.RelationValueView
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAction
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewState
 
 @Composable
 fun RelationsValueScreen(
     state: TagStatusViewState,
-    action: (TagStatusAction) -> Unit
+    action: (TagStatusAction) -> Unit,
+    onQueryChanged: (String) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -62,7 +64,7 @@ fun RelationsValueScreen(
             Header(state = state, action = action)
             SearchField(
                 onFocused = {},
-                onQueryChanged = { s -> }
+                onQueryChanged = onQueryChanged
             )
             Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
             RelationsLazyList(state = state, action = action)
@@ -170,10 +172,10 @@ fun RelationsViewContent(
             items = state.items,
             itemContent = { _, item ->
                 when (item) {
-//                    is RelationValueView.Create -> ItemTagOrStatusCreate(state = item)
-//                    is RelationValueView.Option.Status -> StatusItem(state = item)
-                    is RelationValueView.Option.Tag -> TagItem(state = item, action = action)
-                    else -> TODO()
+                    is RelationsListItem.Item.Tag -> TagItem(item, action)
+                    is RelationsListItem.Item.Status -> StatusItem(item, action)
+                    is RelationsListItem.CreateItem.Status -> ItemTagOrStatusCreate(item, action)
+                    is RelationsListItem.CreateItem.Tag -> ItemTagOrStatusCreate(item, action)
                 }
             })
     }
@@ -191,7 +193,8 @@ fun RelationsViewLoading() {
 
 private fun isClearButtonVisible(state: TagStatusViewState): Boolean {
     if (state !is TagStatusViewState.Content) return false
-    return state.items.any { it is RelationValueView.Option.Tag && it.isSelected } && state.isRelationEditable
+    return state.items.any { it is RelationsListItem.Item.Tag && it.isSelected
+            || it is RelationsListItem.Item.Status && it.isSelected } && state.isRelationEditable
 }
 
 private fun isPlusButtonVisible(state: TagStatusViewState): Boolean {
@@ -217,26 +220,19 @@ fun MyWidgetHeader() {
         isRelationEditable = true,
         title = "Tags",
         items = listOf(
-            RelationValueView.Option.Tag(
+            RelationsListItem.Item.Tag(
                 name = "Urgent",
-                color = "red",
-                //number = 1,
+                color = ThemeColor.RED,
+                number = 1,
                 isSelected = true,
-                id = "1",
-                removable = false,
-                isCheckboxShown = false
+                optionId = "1"
             ),
-            RelationValueView.Option.Tag(
+            RelationsListItem.Item.Tag(
                 name = "Personal",
-                color = "orange",
-                //number = 1,
+                color = ThemeColor.ORANGE,
+                number = 2,
                 isSelected = false,
-                id = "1",
-                removable = false,
-                isCheckboxShown = false
-            ),
-            RelationValueView.Create(
-                name = "Done"
+                optionId = "1"
             )
         )
     ), action = {})

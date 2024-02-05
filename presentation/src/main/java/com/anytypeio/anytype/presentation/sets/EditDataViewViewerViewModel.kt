@@ -235,6 +235,7 @@ class EditDataViewViewerViewModel(
             Block.Content.DataView.Viewer.Type.GALLERY -> ViewState.Gallery
             Block.Content.DataView.Viewer.Type.BOARD -> ViewState.Kanban
             Block.Content.DataView.Viewer.Type.CALENDAR -> ViewState.Calendar
+            Block.Content.DataView.Viewer.Type.GRAPH -> ViewState.Graph
         }
     }
 
@@ -281,6 +282,7 @@ class EditDataViewViewerViewModel(
         object List : ViewState()
         object Kanban : ViewState()
         object Calendar: ViewState()
+        object Graph : ViewState()
         data class Error(val msg: String) : ViewState()
     }
 }

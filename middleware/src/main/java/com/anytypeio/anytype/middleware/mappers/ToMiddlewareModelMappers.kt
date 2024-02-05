@@ -113,7 +113,7 @@ fun Block.Content.Bookmark.State.toMiddlewareModel(): MBookmarkState = when (thi
 }
 
 fun Block.Content.File.toMiddlewareModel(): MBFile = MBFile(
-    hash = hash.orEmpty(),
+    targetObjectId = targetObjectId.orEmpty(),
     name = name.orEmpty(),
     mime = mime.orEmpty(),
     size = size ?: 0,
@@ -340,6 +340,7 @@ fun Block.Content.DataView.Viewer.Type.toMiddlewareModel(): MDVViewType = when (
     Block.Content.DataView.Viewer.Type.GALLERY -> MDVViewType.Gallery
     Block.Content.DataView.Viewer.Type.BOARD -> MDVViewType.Kanban
     Block.Content.DataView.Viewer.Type.CALENDAR -> MDVViewType.Calendar
+    Block.Content.DataView.Viewer.Type.GRAPH -> MDVViewType.Graph
 }
 
 fun Block.Content.DataView.Sort.toMiddlewareModel(): MDVSort =

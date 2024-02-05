@@ -10,29 +10,29 @@ import com.anytypeio.anytype.domain.config.Gateway
 class UrlBuilder(val gateway: Gateway) {
 
     /**
-     * Builds image url for given [hash]
+     * Builds image url for given [path]
      */
-    fun image(hash: String?): Url = gateway.provide() + IMAGE_PATH + hash + DEFAULT_WIDTH_PARAM
+    fun image(path: String): Url = gateway.provide() + IMAGE_PATH + path + DEFAULT_WIDTH_PARAM
 
     /**
-     * Builds original image url for given [hash]
+     * Builds original image url for given [path]
      */
-    fun original(hash: String?): Url = gateway.provide() + IMAGE_PATH + hash
+    fun original(path: String): Url = gateway.provide() + IMAGE_PATH + path
 
     /**
-     * Builds small image url for given [hash]
+     * Builds small image url for given [path]
      */
-    fun thumbnail(hash: String): Url = gateway.provide() + IMAGE_PATH + hash + THUMBNAIL_WIDTH_PARAM
+    fun thumbnail(path: String): Url = gateway.provide() + IMAGE_PATH + path + THUMBNAIL_WIDTH_PARAM
 
     /**
-     * Builds file url for given [hash]
+     * Builds file url for given [path]
      */
-    fun file(hash: String?): Url = gateway.provide() + FILE_PATH + hash
+    fun file(path: String): Url = gateway.provide() + FILE_PATH + path
 
     /**
-     * Builds video url for given [hash]
+     * Builds video url for given [path]
      */
-    fun video(hash: String?): Url = gateway.provide() + FILE_PATH + hash
+    fun video(path: String): Url = gateway.provide() + FILE_PATH + path
 
     companion object {
         const val IMAGE_PATH = "/image/"

@@ -21,15 +21,18 @@ fun CoverWrapper.getCover(
     when (type) {
         CoverType.UPLOADED_IMAGE,
         CoverType.UNSPLASH_IMAGE -> {
-            coverImage = coverId?.let { id ->
-                urlBuilder.image(id)
+            val targetObjectId = coverId
+            coverImage = if (!targetObjectId.isNullOrBlank()) {
+                urlBuilder.image(targetObjectId)
+            } else {
+                null
             }
         }
         CoverType.BUNDLED_IMAGE -> {
             val hash = coverId?.let { id ->
                 coverImageHashProvider.provide(id)
             }
-            if (hash != null) coverImage = urlBuilder.image(hash)
+            if (!hash.isNullOrBlank()) coverImage = urlBuilder.image(hash)
         }
         CoverType.COLOR -> {
             coverColor = coverId?.let { id ->

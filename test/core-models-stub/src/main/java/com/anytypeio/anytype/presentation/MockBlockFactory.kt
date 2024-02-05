@@ -88,7 +88,7 @@ object MockBlockFactory {
         id = MockDataFactory.randomUuid(),
         fields = Block.Fields(emptyMap()),
         content = Block.Content.File(
-            hash = MockDataFactory.randomUuid(),
+            targetObjectId = MockDataFactory.randomUuid(),
             name = MockDataFactory.randomString(),
             state = Block.Content.File.State.DONE,
             mime = MockDataFactory.randomString(),

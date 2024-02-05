@@ -31,7 +31,7 @@ sealed class Response {
 
     sealed class Media : Response() {
         class Upload(
-            val hash: String
+            val objectId: Id
         )
     }
 

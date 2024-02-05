@@ -2281,7 +2281,7 @@ class BlockAdapterTest {
         val views = listOf(
             BlockView.Media.File(
                 id = MockDataFactory.randomString(),
-                hash = MockDataFactory.randomString(),
+                targetObjectId = MockDataFactory.randomString(),
                 indent = MockDataFactory.randomInt(),
                 mime = MockDataFactory.randomString(),
                 size = MockDataFactory.randomLong(),
@@ -2292,7 +2292,7 @@ class BlockAdapterTest {
             ),
             BlockView.Media.File(
                 id = MockDataFactory.randomString(),
-                hash = MockDataFactory.randomString(),
+                targetObjectId = MockDataFactory.randomString(),
                 indent = MockDataFactory.randomInt(),
                 mime = MockDataFactory.randomString(),
                 size = MockDataFactory.randomLong(),
@@ -2330,7 +2330,7 @@ class BlockAdapterTest {
 
         val file = BlockView.Media.File(
             id = MockDataFactory.randomString(),
-            hash = MockDataFactory.randomString(),
+            targetObjectId = MockDataFactory.randomString(),
             indent = MockDataFactory.randomInt(),
             mime = MockDataFactory.randomString(),
             size = MockDataFactory.randomLong(),
@@ -2594,7 +2594,7 @@ class BlockAdapterTest {
 
     private fun givenPicture() = BlockView.Media.Picture(
         id = MockDataFactory.randomUuid(),
-        hash = MockDataFactory.randomString(),
+        targetObjectId = MockDataFactory.randomString(),
         indent = MockDataFactory.randomInt(),
         mime = MockDataFactory.randomString(),
         name = MockDataFactory.randomString(),
@@ -2606,7 +2606,7 @@ class BlockAdapterTest {
     private fun givenVideo() = BlockView.Media.Video(
         id = MockDataFactory.randomUuid(),
         indent = MockDataFactory.randomInt(),
-        hash = MockDataFactory.randomString(),
+        targetObjectId = MockDataFactory.randomString(),
         url = MockDataFactory.randomString(),
         mime = MockDataFactory.randomString(),
         name = MockDataFactory.randomString(),

@@ -1082,4 +1082,6 @@
     <string name="clipboard_panel_create_object_from_clipboard">Maak object aan vanaf klembord</string>
     <string name="block_media_error">Something went wrong, please try again</string>
     <string name="relation_value_create_new">Maak \"%1$s\" aan</string>
+    <string name="option_widget_create">Maak optie aan</string>
+    <string name="option_widget_edit">Bewerk optie</string>
 </resources>

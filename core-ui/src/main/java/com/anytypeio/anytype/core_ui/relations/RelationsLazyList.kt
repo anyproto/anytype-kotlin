@@ -26,9 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -42,7 +40,7 @@ import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAct
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewState
 
 @Composable
-fun RelationsValueScreen(
+fun TagOrStatusValueScreen(
     state: TagStatusViewState,
     action: (TagStatusAction) -> Unit,
     onQueryChanged: (String) -> Unit
@@ -193,12 +191,14 @@ fun RelationsViewLoading() {
 
 private fun isClearButtonVisible(state: TagStatusViewState): Boolean {
     if (state !is TagStatusViewState.Content) return false
-    return state.items.any { it is RelationsListItem.Item.Tag && it.isSelected
-            || it is RelationsListItem.Item.Status && it.isSelected } && state.isRelationEditable
+    return state.items.any {
+        it is RelationsListItem.Item.Tag && it.isSelected
+                || it is RelationsListItem.Item.Status && it.isSelected
+    } && state.isRelationEditable
 }
 
 private fun isPlusButtonVisible(state: TagStatusViewState): Boolean {
-    return when (state)  {
+    return when (state) {
         is TagStatusViewState.Content -> state.isRelationEditable
         is TagStatusViewState.Empty -> state.isRelationEditable
         is TagStatusViewState.Loading -> false
@@ -211,29 +211,4 @@ private fun getTitle(state: TagStatusViewState): String {
         is TagStatusViewState.Empty -> state.title
         is TagStatusViewState.Loading -> ""
     }
-}
-
-@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true)
-@Composable
-fun MyWidgetHeader() {
-    Header(state = TagStatusViewState.Content(
-        isRelationEditable = true,
-        title = "Tags",
-        items = listOf(
-            RelationsListItem.Item.Tag(
-                name = "Urgent",
-                color = ThemeColor.RED,
-                number = 1,
-                isSelected = true,
-                optionId = "1"
-            ),
-            RelationsListItem.Item.Tag(
-                name = "Personal",
-                color = ThemeColor.ORANGE,
-                number = 2,
-                isSelected = false,
-                optionId = "1"
-            )
-        )
-    ), action = {})
 }

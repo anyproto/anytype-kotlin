@@ -7,6 +7,7 @@ import com.anytypeio.anytype.device.DefaultLocalProvider
 import com.anytypeio.anytype.device.SharedFileUploader
 import com.anytypeio.anytype.device.base.AndroidDevice
 import com.anytypeio.anytype.device.download.AndroidDeviceDownloader
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.download.Downloader
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -47,5 +48,11 @@ object DeviceModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideFileSharer(context: Context): FileSharer = SharedFileUploader(context)
+    fun provideFileSharer(
+        context: Context,
+        dispatchers: AppCoroutineDispatchers
+    ): FileSharer = SharedFileUploader(
+        context = context,
+        dispatchers = dispatchers
+    )
 }

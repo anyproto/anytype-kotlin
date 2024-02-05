@@ -3,25 +3,28 @@ package com.anytypeio.anytype.device
 import android.content.Context
 import android.net.Uri
 import android.provider.OpenableColumns
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.localization.R
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 class SharedFileUploader @Inject constructor(
-    private val context: Context
+    private val context: Context,
+    private val dispatchers: AppCoroutineDispatchers
 ) : FileSharer {
 
-    override fun getPath(uri: String): String {
+    override suspend fun getPath(uri: String): String = withContext(dispatchers.io) {
         if (BuildConfig.DEBUG) Timber.d("Getting path for: $uri")
         val parsed = Uri.parse(uri)
         checkNotNull(parsed)
-        return parsePathFromUri(parsed)
+        parsePathFromUri(parsed)
     }
 
-    override fun clear() {
+    override suspend fun clear() {
         TODO("Not yet implemented")
     }
 

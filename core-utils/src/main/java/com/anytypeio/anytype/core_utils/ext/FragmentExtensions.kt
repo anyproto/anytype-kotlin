@@ -46,6 +46,10 @@ fun <T : Parcelable> Fragment.argList(key: String): ArrayList<T> {
     return checkNotNull(value)
 }
 
+fun Fragment.argStringList(key: String): ArrayList<String> {
+    return requireArguments().getStringArrayList(key) ?: ArrayList()
+}
+
 fun <T> CoroutineScope.subscribe(flow: Flow<T>, body: suspend (T) -> Unit): Job =
     flow.cancellable().onEach { body(it) }.launchIn(this)
 

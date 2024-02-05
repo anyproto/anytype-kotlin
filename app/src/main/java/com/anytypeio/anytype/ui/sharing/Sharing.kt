@@ -63,7 +63,7 @@ fun AddToAnytypeScreenUrlPreview() {
 @Composable
 fun AddToAnytypeScreenNotePreview() {
     AddToAnytypeScreen(
-        data = SharingData.Raw("The Work of Art in the Age of its Technological Reproducibility"),
+        data = SharingData.Text("The Work of Art in the Age of its Technological Reproducibility"),
         onCancelClicked = {},
         onDoneClicked = {},
         spaces = emptyList(),
@@ -80,15 +80,23 @@ fun AddToAnytypeScreen(
     onSelectSpaceClicked: (SpaceView) -> Unit
 ) {
     var isSaveAsMenuExpanded by remember { mutableStateOf(false) }
-    val items = if (data is SharingData.Url)
-        listOf(SAVE_AS_NOTE, SAVE_AS_BOOKMARK)
-    else
-        listOf(SAVE_AS_NOTE)
+    val items = when (data) {
+        is SharingData.Url -> listOf(SAVE_AS_NOTE, SAVE_AS_BOOKMARK)
+        is SharingData.Image -> listOf(SAVE_AS_IMAGE)
+        is SharingData.File -> listOf(SAVE_AS_FILE)
+        is SharingData.Images -> listOf(SAVE_AS_IMAGES)
+        is SharingData.Files -> listOf(SAVE_AS_FILES)
+        is SharingData.Text -> listOf(SAVE_AS_NOTE)
+    }
     var selectedIndex by remember {
         mutableStateOf(
             when(data) {
                 is SharingData.Url -> SAVE_AS_BOOKMARK
-                else -> SAVE_AS_NOTE
+                is SharingData.Image -> SAVE_AS_IMAGE
+                is SharingData.File -> SAVE_AS_FILE
+                is SharingData.Images -> SAVE_AS_IMAGES
+                is SharingData.Files -> SAVE_AS_FILES
+                is SharingData.Text -> SAVE_AS_NOTE
             }
         )
     }
@@ -111,10 +119,14 @@ fun AddToAnytypeScreen(
             )
 
             Text(
-                text = if (selectedIndex == SAVE_AS_BOOKMARK)
-                    stringResource(id = R.string.sharing_menu_save_as_bookmark_option)
-                else
-                    stringResource(id = R.string.sharing_menu_save_as_note_option),
+                text = when (selectedIndex) {
+                    SAVE_AS_BOOKMARK -> stringResource(id = R.string.sharing_menu_save_as_bookmark_option)
+                    SAVE_AS_IMAGE -> stringResource(id = R.string.sharing_menu_save_as_image_option)
+                    SAVE_AS_FILE -> stringResource(id = R.string.sharing_menu_save_as_file_option)
+                    SAVE_AS_IMAGES -> stringResource(id = R.string.sharing_menu_save_as_images_option)
+                    SAVE_AS_FILES -> stringResource(id = R.string.sharing_menu_save_as_files_option)
+                    else -> stringResource(id = R.string.sharing_menu_save_as_note_option)
+                },
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(bottom = 14.dp, start = 20.dp),
@@ -390,6 +402,10 @@ private fun SmallSpaceIcon(
 
 const val SAVE_AS_NOTE = 0
 const val SAVE_AS_BOOKMARK = 1
+const val SAVE_AS_IMAGE = 2
+const val SAVE_AS_FILE = 3
+const val SAVE_AS_IMAGES = 4
+const val SAVE_AS_FILES = 5
 typealias SaveAsOption = Int
 
 sealed class SharingData {
@@ -398,8 +414,27 @@ sealed class SharingData {
         override val data: String
             get() = url
     }
-    data class Raw(val raw: String) : SharingData() {
+    data class Text(val raw: String) : SharingData() {
         override val data: String
             get() = raw
+    }
+    data class Image(val uri: String) : SharingData() {
+        override val data: String
+            get() = uri
+    }
+
+    data class Images(val uris: List<String>): SharingData() {
+        override val data: String
+            get() = uris.toString()
+    }
+
+    data class Files(val uris: List<String>): SharingData() {
+        override val data: String
+            get() = uris.toString()
+    }
+
+    data class File(val uri: String): SharingData() {
+        override val data: String
+            get() = uri
     }
 }

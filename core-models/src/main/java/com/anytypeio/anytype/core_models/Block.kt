@@ -398,7 +398,8 @@ data class Block(
 
         data class File(
             val type: Content.File.Type,
-            val state: Content.File.State
+            val state: Content.File.State,
+            val targetObjectId: Id? = null
         ) : Prototype()
 
         data class Link(

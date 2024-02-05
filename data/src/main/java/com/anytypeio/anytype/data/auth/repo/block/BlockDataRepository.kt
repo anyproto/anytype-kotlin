@@ -256,7 +256,7 @@ class BlockDataRepository(
 
     override suspend fun uploadFile(
         command: Command.UploadFile
-    ): Hash = remote.uploadFile(command)
+    ): Id = remote.uploadFile(command)
 
     override suspend fun downloadFile(
         command: Command.DownloadFile

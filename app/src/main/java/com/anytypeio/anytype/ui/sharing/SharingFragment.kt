@@ -15,6 +15,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argStringList
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -22,18 +23,37 @@ import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.settings.typography
+import java.lang.IllegalStateException
 import javax.inject.Inject
 
 class SharingFragment : BaseBottomSheetComposeFragment() {
 
-    private val sharedData : SharingData get() {
-        val result = arg<String>(SHARING_DATE_KEY)
-        return if (URLUtil.isValidUrl(result)) {
-            SharingData.Url(result)
-        } else {
-            SharingData.Raw(result)
+    private val sharedData: SharingData
+        get() {
+            val args = requireArguments()
+            return if (args.containsKey(SHARING_TEXT_KEY)) {
+                val result = arg<String>(SHARING_TEXT_KEY)
+                if (URLUtil.isValidUrl(result)) {
+                    SharingData.Url(result)
+                } else {
+                    SharingData.Text(result)
+                }
+            } else if (args.containsKey(SHARING_IMAGE_KEY)) {
+                val result = arg<String>(SHARING_IMAGE_KEY)
+                SharingData.Image(uri = result)
+            } else if (args.containsKey(SHARING_FILE_KEY)) {
+                val result = arg<String>(SHARING_FILE_KEY)
+                SharingData.File(uri = result)
+            } else if (args.containsKey(SHARING_MULTIPLE_IMAGES_KEY)) {
+                val result = argStringList(SHARING_MULTIPLE_IMAGES_KEY)
+                SharingData.Images(uris = result)
+            } else if (args.containsKey(SHARING_MULTIPLE_FILES_KEY)) {
+                val result = argStringList(SHARING_MULTIPLE_FILES_KEY)
+                SharingData.Files(uris = result)
+            } else {
+                throw IllegalStateException("Unexpcted shared data")
+            }
         }
-    }
 
     @Inject
     lateinit var factory: AddToAnytypeViewModel.Factory
@@ -56,6 +76,24 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         when(option) {
                             SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
                             SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
+                            SAVE_AS_IMAGE -> vm.onShareMedia(listOf(sharedData.data))
+                            SAVE_AS_FILE -> vm.onShareMedia(listOf(sharedData.data))
+                            SAVE_AS_IMAGES -> {
+                                val data = sharedData
+                                if (data is SharingData.Images) {
+                                    vm.onShareMedia(uris = data.uris)
+                                } else {
+                                    toast("Unexpected data format")
+                                }
+                            }
+                            SAVE_AS_FILES -> {
+                                val data = sharedData
+                                if (data is SharingData.Files) {
+                                    vm.onShareMedia(uris = data.uris)
+                                } else {
+                                    toast("Unexpected data format")
+                                }
+                            }
                         }
                     },
                     onCancelClicked = {
@@ -120,9 +158,30 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
-        private const val SHARING_DATE_KEY = "arg.sharing.data-key"
-        fun new(data: String) : SharingFragment = SharingFragment().apply {
-            arguments = bundleOf(SHARING_DATE_KEY to data)
+        private const val SHARING_TEXT_KEY = "arg.sharing.text-key"
+        private const val SHARING_IMAGE_KEY = "arg.sharing.image-key"
+        private const val SHARING_FILE_KEY = "arg.sharing.file-key"
+        private const val SHARING_MULTIPLE_IMAGES_KEY = "arg.sharing.multiple-images-key"
+        private const val SHARING_MULTIPLE_FILES_KEY = "arg.sharing.multiple-files-key"
+
+        fun text(data: String) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_TEXT_KEY to data)
+        }
+
+        fun image(uri: String) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_IMAGE_KEY to uri)
+        }
+
+        fun images(uris: List<String>) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_MULTIPLE_IMAGES_KEY to ArrayList(uris))
+        }
+
+        fun files(uris: List<String>) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_MULTIPLE_FILES_KEY to ArrayList(uris))
+        }
+
+        fun file(uri: String) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_FILE_KEY to uri)
         }
     }
 }

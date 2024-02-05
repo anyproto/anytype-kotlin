@@ -13,6 +13,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Parcelable
 import android.provider.MediaStore
 import android.text.Editable
 import android.text.InputType
@@ -374,6 +375,25 @@ fun Fragment.shareFile(uri: Uri) {
             toast("Could not open file: ${e.message}")
         }
         Timber.e(e, "Error while opening file")
+    }
+}
+
+fun Intent.parseActionSendMultipleUris() : List<String> {
+    val extras = getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM) ?: arrayListOf()
+    return extras.mapNotNull { extra ->
+        if (extra is Uri)
+            extra.toString()
+        else
+            null
+    }
+}
+
+fun Intent.parseActionSendUri() : String? {
+    val extra = getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
+    return if (extra is Uri) {
+        extra.toString()
+    } else {
+        null
     }
 }
 

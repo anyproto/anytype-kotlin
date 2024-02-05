@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -55,4 +56,5 @@ interface AddToAnytypeDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
     fun awaitAccountStartedManager(): AwaitAccountStartManager
     fun analytics(): Analytics
+    fun fileSharer(): FileSharer
 }

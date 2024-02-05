@@ -164,13 +164,49 @@ class MainViewModel(
         }
     }
 
-    fun onIntentShare(data: String) {
+    fun onIntentTextShare(data: String) {
         viewModelScope.launch {
             checkAuthorizationStatus(Unit).process(
                 failure = { e -> Timber.e(e, "Error while checking auth status") },
                 success = { status ->
                     if (status == AuthStatus.AUTHORIZED) {
-                        commands.emit(Command.AddToAnytype(data))
+                        commands.emit(Command.Sharing.Text(data))
+                    }
+                }
+            )
+        }
+    }
+
+    fun onIntentMultipleFilesShare(uris: List<String>) {
+        Timber.d("onIntentFileShare: $uris")
+        viewModelScope.launch {
+            checkAuthorizationStatus(Unit).process(
+                failure = { e -> Timber.e(e, "Error while checking auth status") },
+                success = { status ->
+                    if (status == AuthStatus.AUTHORIZED) {
+                        if (uris.size == 1) {
+                            commands.emit(Command.Sharing.File(uris.first()))
+                        } else {
+                            commands.emit(Command.Sharing.Files(uris))
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    fun onIntentMultipleImageShare(uris: List<String>) {
+        Timber.d("onIntentImageShare: $uris")
+        viewModelScope.launch {
+            checkAuthorizationStatus(Unit).process(
+                failure = { e -> Timber.e(e, "Error while checking auth status") },
+                success = { status ->
+                    if (status == AuthStatus.AUTHORIZED) {
+                        if (uris.size == 1) {
+                            commands.emit(Command.Sharing.Image(uris.first()))
+                        } else {
+                            commands.emit(Command.Sharing.Images(uris))
+                        }
                     }
                 }
             )
@@ -182,6 +218,12 @@ class MainViewModel(
         object LogoutDueToAccountDeletion : Command()
         class OpenCreateNewType(val type: Id) : Command()
         data class Error(val msg: String) : Command()
-        data class AddToAnytype(val data: String): Command()
+        sealed class Sharing : Command() {
+            data class Text(val data: String) : Sharing()
+            data class Image(val uri: String): Sharing()
+            data class Images(val uris: List<String>): Sharing()
+            data class File(val uri: String): Sharing()
+            data class Files(val uris: List<String>): Sharing()
+        }
     }
 }

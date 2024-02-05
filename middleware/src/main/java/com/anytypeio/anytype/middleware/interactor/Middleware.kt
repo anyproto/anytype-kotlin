@@ -34,6 +34,8 @@ import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
+import com.anytypeio.anytype.middleware.mappers.MBFile
+import com.anytypeio.anytype.middleware.mappers.MBFileType
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
 import com.anytypeio.anytype.middleware.mappers.MNetworkMode
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
@@ -821,7 +823,8 @@ class Middleware @Inject constructor(
         val type = command.type.toMiddlewareModel()
         val request = Rpc.File.Upload.Request(
             localPath = command.path,
-            type = type
+            type = type,
+            spaceId = command.space?.id.orEmpty()
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.fileUpload(request)

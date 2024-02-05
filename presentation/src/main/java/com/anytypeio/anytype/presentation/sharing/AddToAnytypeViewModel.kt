@@ -138,37 +138,48 @@ class AddToAnytypeViewModel(
                 }
             }
             val startTime = System.currentTimeMillis()
-            createPrefilledNote.async(
-                CreatePrefilledNote.Params(
-                    text = "Your files:",
-                    space = targetSpaceId,
-                    details = mapOf(
-                        Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
-                    ),
-                    attachments = files
-                )
-            ).fold(
-                onSuccess = { result ->
-                    sendAnalyticsObjectCreateEvent(
-                        analytics = analytics,
-                        objType = MarketplaceObjectTypeIds.NOTE,
-                        route = EventsDictionary.Routes.sharingExtension,
-                        startTime = startTime
-                    )
-                    if (targetSpaceId == spaceManager.get()) {
-                        navigation.emit(OpenObjectNavigation.OpenEditor(result))
-                    } else {
-                        with(commands) {
-                            emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
-                            emit(Command.Dismiss)
-                        }
+            if (files.size == 1) {
+                if (targetSpaceId == spaceManager.get()) {
+                    navigation.emit(OpenObjectNavigation.OpenEditor(files.first()))
+                } else {
+                    with(commands) {
+                        emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
+                        emit(Command.Dismiss)
                     }
-                },
-                onFailure = {
-                    Timber.d(it, "Error while creating note")
-                    sendToast("Error while creating note: ${it.msg()}")
                 }
-            )
+            } else {
+                createPrefilledNote.async(
+                    CreatePrefilledNote.Params(
+                        text = "Your files:",
+                        space = targetSpaceId,
+                        details = mapOf(
+                            Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                        ),
+                        attachments = files
+                    )
+                ).fold(
+                    onSuccess = { result ->
+                        sendAnalyticsObjectCreateEvent(
+                            analytics = analytics,
+                            objType = MarketplaceObjectTypeIds.NOTE,
+                            route = EventsDictionary.Routes.sharingExtension,
+                            startTime = startTime
+                        )
+                        if (targetSpaceId == spaceManager.get()) {
+                            navigation.emit(OpenObjectNavigation.OpenEditor(result))
+                        } else {
+                            with(commands) {
+                                emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
+                                emit(Command.Dismiss)
+                            }
+                        }
+                    },
+                    onFailure = {
+                        Timber.d(it, "Error while creating note")
+                        sendToast("Error while creating note: ${it.msg()}")
+                    }
+                )
+            }
         }
     }
 

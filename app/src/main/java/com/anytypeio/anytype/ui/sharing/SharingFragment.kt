@@ -28,31 +28,32 @@ import javax.inject.Inject
 
 class SharingFragment : BaseBottomSheetComposeFragment() {
 
-    private val sharedData : SharingData get() {
-        val args = requireArguments()
-        return if (args.containsKey(SHARING_TEXT_KEY)) {
-            val result = arg<String>(SHARING_TEXT_KEY)
-            if (URLUtil.isValidUrl(result)) {
-                SharingData.Url(result)
+    private val sharedData: SharingData
+        get() {
+            val args = requireArguments()
+            return if (args.containsKey(SHARING_TEXT_KEY)) {
+                val result = arg<String>(SHARING_TEXT_KEY)
+                if (URLUtil.isValidUrl(result)) {
+                    SharingData.Url(result)
+                } else {
+                    SharingData.Raw(result)
+                }
+            } else if (args.containsKey(SHARING_IMAGE_KEY)) {
+                val result = arg<String>(SHARING_IMAGE_KEY)
+                SharingData.Image(uri = result)
+            } else if (args.containsKey(SHARING_FILE_KEY)) {
+                val result = arg<String>(SHARING_FILE_KEY)
+                SharingData.File(uri = result)
+            } else if (args.containsKey(SHARING_MULTIPLE_IMAGES_KEY)) {
+                val result = argStringList(SHARING_MULTIPLE_IMAGES_KEY)
+                SharingData.Images(uris = result)
+            } else if (args.containsKey(SHARING_MULTIPLE_FILES_KEY)) {
+                val result = argStringList(SHARING_MULTIPLE_FILES_KEY)
+                SharingData.Files(uris = result)
             } else {
-                SharingData.Raw(result)
+                throw IllegalStateException("Unexpected result")
             }
-        } else if (args.containsKey(SHARING_IMAGE_KEY)) {
-            val result = arg<String>(SHARING_IMAGE_KEY)
-            SharingData.Image(uri = result)
-        } else if (args.containsKey(SHARING_FILE_KEY)) {
-            val result = arg<String>(SHARING_FILE_KEY)
-            SharingData.File(uri = result)
-        }else if (args.containsKey(SHARING_MULTIPLE_IMAGES_KEY)) {
-            val result = argStringList(SHARING_MULTIPLE_IMAGES_KEY)
-            SharingData.Images(uris = result)
-        } else if (args.containsKey(SHARING_MULTIPLE_FILES_KEY)) {
-            val result = argStringList(SHARING_MULTIPLE_FILES_KEY)
-            SharingData.Files(uris = result)
-        } else {
-            throw IllegalStateException("Unexpected result")
         }
-    }
 
     @Inject
     lateinit var factory: AddToAnytypeViewModel.Factory

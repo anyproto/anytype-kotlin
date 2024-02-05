@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,10 +29,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.AlertDescription
+import com.anytypeio.anytype.core_ui.foundation.AlertIcon
+import com.anytypeio.anytype.core_ui.foundation.AlertTitle
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.SearchField
@@ -60,13 +69,37 @@ fun TagOrStatusValueScreen(
                 .padding(bottom = 20.dp)
         ) {
             Header(state = state, action = action)
-            SearchField(
-                onFocused = {},
-                onQueryChanged = onQueryChanged
-            )
-            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
+            Search(state = state, onQueryChanged = onQueryChanged)
             RelationsLazyList(state = state, action = action)
         }
+    }
+}
+
+@Composable
+private fun Search(
+    state: TagStatusViewState,
+    onQueryChanged: (String) -> Unit
+) {
+    when (state) {
+        is TagStatusViewState.Content -> {
+            if (state.isRelationEditable) {
+                SearchField(
+                    onFocused = {},
+                    onQueryChanged = onQueryChanged
+                )
+                Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
+            }
+        }
+        is TagStatusViewState.Empty -> {
+            if (state.isRelationEditable) {
+                SearchField(
+                    onFocused = {},
+                    onQueryChanged = onQueryChanged
+                )
+                Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
+            }
+        }
+        else -> { /* Do nothing */}
     }
 }
 
@@ -149,7 +182,7 @@ private fun Header(state: TagStatusViewState, action: (TagStatusAction) -> Unit)
 fun RelationsLazyList(state: TagStatusViewState, action: (TagStatusAction) -> Unit) {
     when (state) {
         is TagStatusViewState.Content -> RelationsViewContent(state = state, action = action)
-        is TagStatusViewState.Empty -> RelationsViewEmpty()
+        is TagStatusViewState.Empty -> RelationsViewEmpty(state = state, action = action)
         is TagStatusViewState.Loading -> RelationsViewLoading()
     }
 }
@@ -180,8 +213,46 @@ fun RelationsViewContent(
 }
 
 @Composable
-fun RelationsViewEmpty() {
-    // TODO
+fun RelationsViewEmpty(
+    state: TagStatusViewState.Empty,
+    action: (TagStatusAction) -> Unit
+) {
+    val icon = AlertConfig.Icon(
+        GRADIENT_TYPE_RED,
+        icon = R.drawable.ic_alert_error
+    )
+    if (state.isRelationEditable) {
+        Column {
+            Spacer(modifier = Modifier.height(154.dp))
+            AlertIcon(icon)
+            Spacer(modifier = Modifier.height(12.dp))
+            AlertTitle(
+                title = stringResource(id = R.string.options_empty_title),
+                style = BodyCalloutMedium
+            )
+            AlertDescription(
+                description = stringResource(id = R.string.options_empty_description),
+                style = BodyCalloutMedium
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            ButtonSecondary(
+                text = stringResource(id = R.string.create),
+                onClick = { action(TagStatusAction.Create) },
+                size = ButtonSize.Small,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
+        }
+    } else {
+        Column {
+            Spacer(modifier = Modifier.height(87.dp))
+            AlertIcon(icon)
+            Spacer(modifier = Modifier.height(12.dp))
+            AlertTitle(
+                title = stringResource(id = R.string.options_empty_not_editable),
+                style = BodyCalloutMedium
+            )
+        }
+    }
 }
 
 @Composable

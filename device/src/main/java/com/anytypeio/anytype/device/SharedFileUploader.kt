@@ -1,11 +1,10 @@
 package com.anytypeio.anytype.device
 
 import android.content.Context
-import android.content.Intent
 import android.net.Uri
-import android.os.Parcelable
 import android.provider.OpenableColumns
 import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.localization.R
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
@@ -16,14 +15,14 @@ class SharedFileUploader @Inject constructor(
 ) : FileSharer {
 
     override fun getPath(uri: String): String {
-        Timber.d("Getting path for: ${uri}")
+        if (BuildConfig.DEBUG) Timber.d("Getting path for: ${uri}")
         val parsed = Uri.parse(uri)
         checkNotNull(parsed)
-        return parsePathFromFile(parsed)
+        return parsePathFromUri(parsed)
     }
 
-    private fun parsePathFromFile(extra: Uri) : String {
-        val name = if (extra.scheme == "content") {
+    private fun parsePathFromUri(extra: Uri) : String {
+        val name = if (extra.scheme == CONTENT_URI_SCHEME) {
             context.contentResolver.query(
                 extra,
                 null,
@@ -36,10 +35,10 @@ class SharedFileUploader @Inject constructor(
                     if (idx != -1) {
                         cursor.getString(idx)
                     } else {
-                        "Untitled"
+                        context.resources.getString(R.string.untitled)
                     }
                 } else {
-                    "Untitled"
+                    context.resources.getString(R.string.untitled)
                 }
             }
         } else {
@@ -65,6 +64,10 @@ class SharedFileUploader @Inject constructor(
         }
 
         return path
+    }
+
+    companion object {
+        const val CONTENT_URI_SCHEME = "content"
     }
 
 }

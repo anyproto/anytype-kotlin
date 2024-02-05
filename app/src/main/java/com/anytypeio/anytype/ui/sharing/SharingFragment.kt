@@ -43,7 +43,10 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
         } else if (args.containsKey(SHARING_MULTIPLE_IMAGES_KEY)) {
             val result = argStringList(SHARING_MULTIPLE_IMAGES_KEY)
             SharingData.Images(uris = result)
-        }else {
+        } else if (args.containsKey(SHARING_MULTIPLE_FILES_KEY)) {
+            val result = argStringList(SHARING_MULTIPLE_FILES_KEY)
+            SharingData.Files(uris = result)
+        } else {
             throw IllegalStateException("Unexpected result")
         }
     }
@@ -66,14 +69,17 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                 AddToAnytypeScreen(
                     data = sharedData,
                     onDoneClicked = { option ->
-//                        when(option) {
-//                            SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
-//                            SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
-//                            SAVE_AS_IMAGE -> vm.onUploadImage(sharedData.data)
-//                        }
-                                    vm.onShareImages(
-                                        uris = (sharedData as SharingData.Images).uris
-                                    )
+                        when(option) {
+                            SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
+                            SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
+                            SAVE_AS_IMAGE -> vm.onUploadImage(sharedData.data)
+                            SAVE_AS_IMAGES -> vm.onShareMultipleImages(
+                                uris = (sharedData as SharingData.Images).uris
+                            )
+                            SAVE_AS_FILES -> vm.onShareMultipleImages(
+                                uris = (sharedData as SharingData.Files).uris
+                            )
+                        }
                     },
                     onCancelClicked = {
                         vm.onCancelClicked().also {
@@ -140,6 +146,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
         private const val SHARING_TEXT_KEY = "arg.sharing.text-key"
         private const val SHARING_IMAGE_KEY = "arg.sharing.image-key"
         private const val SHARING_MULTIPLE_IMAGES_KEY = "arg.sharing.multiple-images-key"
+        private const val SHARING_MULTIPLE_FILES_KEY = "arg.sharing.multiple-files-key"
 
         fun text(data: String) : SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_TEXT_KEY to data)
@@ -151,6 +158,10 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
 
         fun images(uris: List<String>) : SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_MULTIPLE_IMAGES_KEY to ArrayList(uris))
+        }
+
+        fun files(uris: List<String>) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_MULTIPLE_FILES_KEY to ArrayList(uris))
         }
     }
 }

@@ -22,6 +22,8 @@ import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
+import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.componentManager
@@ -132,6 +134,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     SHARE_DIALOG_LABEL
                                 )
                             }
+                            is Command.Sharing.Files -> {
+                                SharingFragment.files(command.uris).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
                             is Command.Error -> {
                                 toast(command.msg)
                             }
@@ -205,170 +213,47 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     private fun proceedWithShareIntent(intent: Intent) {
-        Timber.d("Got intent: $intent")
+        if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: $intent")
         when {
             intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
                 vm.onIntentTextShare(intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty())
             }
             intent.type?.startsWith("image/") == true -> {
-                if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-                    val extras = intent
-                        .getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
-                        ?: arrayListOf()
-                    val uris = extras.mapNotNull { extra ->
-                        if (extra is Uri)
-                            extra.toString()
-                        else
-                            null
-                    }
-                    Timber.d("Parsed multiple uris: ${uris}")
-                    vm.onIntentMultipleImageShare(uris)
-                } else {
-                    proceedWithReceivingImage(intent)
-                }
+                proceedWithImageShareIntent(intent)
             }
             intent.type?.startsWith("application/") == true -> {
-                if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-                    // TODO
-                } else {
-                    proceedWithReceivingFile(intent)
-                }
-                Mimetype.MIME_FILE_ALL
+                proceedWithFileShareIntent(intent)
             }
             intent.type == Mimetype.MIME_FILE_ALL.value -> {
-                if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-                    val extras = intent
-                        .getParcelableArrayListExtra<Parcelable>(Intent.EXTRA_STREAM)
-                        ?: arrayListOf()
-                    val uris = extras.mapNotNull { extra ->
-                        if (extra is Uri)
-                            extra.toString()
-                        else
-                            null
-                    }
-                    Timber.d("Parsed multiple uris: ${uris}")
-                    vm.onIntentMultipleImageShare(uris)
-                }
+                proceedWithFileShareIntent(intent)
             }
             else -> Timber.e("Unexpected scenario: ${intent.type}")
         }
     }
 
-    private fun proceedWithReceivingFile(intent: Intent) {
-        val extra = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
-        if (extra is Uri) {
-            val name = if (extra.scheme == "content") {
-                contentResolver.query(
-                    extra,
-                    null,
-                    null,
-                    null,
-                    null
-                ).use { cursor ->
-                    if (cursor != null && cursor.moveToFirst()) {
-                        val idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                        if (idx != -1) {
-                            cursor.getString(idx)
-                        } else {
-                            "Untitled"
-                        }
-                    } else {
-                        "Untitled"
-                    }
-                }
+    private fun proceedWithFileShareIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+            vm.onIntentMultipleFilesShare(intent.parseActionSendMultipleUris())
+        } else {
+            val uri = intent.parseActionSendUri()
+            if (uri != null) {
+                vm.onIntentMultipleFilesShare(listOf(uri))
             } else {
-                Timber.w("Not content scheme")
-                extra.path!!.substring(extra.path!!.lastIndexOf("/"))
+                toast("Could not parse URI")
             }
-            val inputStream = contentResolver.openInputStream(extra)
-            var path = ""
-            inputStream?.use { input ->
-                val newFile = File(cacheDir?.path + "/" + name);
-                FileOutputStream(newFile).use { output ->
-                    val buffer = ByteArray(1024)
-                    var read: Int = input.read(buffer)
-                    while (read != -1) {
-                        output.write(buffer, 0, read)
-                        read = input.read(buffer)
-                    }
-                }
-                path = newFile.path
-            }
-
-            val parsed = runCatching { path }
-            Timber.d("Parsed APPLICATION uri: ${parsed.getOrNull()} for path: ${extra.path} with scheme: ${extra.scheme}")
-            parsed.fold(
-                onSuccess = {
-                    vm.onIntentImageShare(it)
-                },
-                onFailure = {
-                    Timber.e(it, "Error while parsing path")
-                }
-            )
         }
     }
 
-    private fun proceedWithReceivingImage(intent: Intent) {
-        val extra = intent.getParcelableExtra<Parcelable>(Intent.EXTRA_STREAM)
-        if (extra is Uri) {
-            Timber.d("Uri path: ${extra.path}")
-            val name = if (extra.scheme == "content") {
-                contentResolver.query(
-                    extra,
-                    null,
-                    null,
-                    null,
-                    null
-                ).use { cursor ->
-                    val result = if (cursor != null && cursor.moveToFirst()) {
-                        val idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                        if (idx != -1) {
-                            cursor.getString(idx)
-                        } else {
-                            "Untitled"
-                        }
-                    } else {
-                        "Untitled"
-                    }
-                    cursor?.close()
-                    result
-                }
-            } else {
-                extra.path!!.substring(extra.path!!.lastIndexOf("/"))
-            }
-            Timber.d("Extracted name: $name")
-            val inputStream = contentResolver.openInputStream(extra)
-            val cacheDir = context.getExternalFilesDirTemp()
-            if (cacheDir != null && !cacheDir.exists()) {
-                Timber.d("Created temp dir")
-                cacheDir.mkdirs()
-            }
-            var path = ""
-            inputStream?.use { input ->
-                val newFile = File(cacheDir?.path + "/" + name);
-                FileOutputStream(newFile).use { output ->
-                    val buffer = ByteArray(1024)
-                    var read: Int = input.read(buffer)
-                    while (read != -1) {
-                        output.write(buffer, 0, read)
-                        read = input.read(buffer)
-                    }
-                }
-                path = newFile.path
-            }
-
-            val parsed = runCatching { path }
-            Timber.d("Parse IMAGE uri: ${parsed.getOrNull()} for path: ${extra.path} with scheme: ${extra.scheme}")
-            parsed.fold(
-                onSuccess = {
-                    vm.onIntentImageShare(it)
-                },
-                onFailure = {
-                    Timber.e(it, "Error while parsing path")
-                }
-            )
+    private fun proceedWithImageShareIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+            vm.onIntentMultipleImageShare(uris = intent.parseActionSendMultipleUris())
         } else {
-            Timber.w("URI not found")
+            val uri = intent.parseActionSendUri()
+            if (uri != null) {
+                vm.onIntentMultipleImageShare(listOf(uri))
+            } else {
+                toast("Could not parse URI")
+            }
         }
     }
 

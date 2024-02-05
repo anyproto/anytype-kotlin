@@ -117,9 +117,8 @@ class AddToAnytypeViewModel(
         }
     }
 
-    fun onShareImages(uris: List<String>) {
+    fun onShareMultipleImages(uris: List<String>) {
         viewModelScope.launch(Dispatchers.IO) {
-            delay(3000)
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
                 view.isSelected
             }
@@ -141,7 +140,7 @@ class AddToAnytypeViewModel(
             val startTime = System.currentTimeMillis()
             createPrefilledNote.async(
                 CreatePrefilledNote.Params(
-                    text = "Here are your files",
+                    text = "Your files:",
                     space = targetSpaceId,
                     details = mapOf(
                         Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()

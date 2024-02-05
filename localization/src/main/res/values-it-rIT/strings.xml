@@ -1083,4 +1083,6 @@
     <string name="clipboard_panel_create_object_from_clipboard">Crea un oggetto dagli appunti</string>
     <string name="block_media_error">Qualcosa è andato storto, per favore riprova</string>
     <string name="relation_value_create_new">Crea \"%1$s\"</string>
+    <string name="option_widget_create">Crea opzione</string>
+    <string name="option_widget_edit">Modifica opzione</string>
 </resources>

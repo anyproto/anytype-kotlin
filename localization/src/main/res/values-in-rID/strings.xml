@@ -1078,4 +1078,6 @@
     <string name="clipboard_panel_create_object_from_clipboard">Buat objek dari papan kerani</string>
     <string name="block_media_error">Something went wrong, please try again</string>
     <string name="relation_value_create_new">Buat \"%1$s\"</string>
+    <string name="option_widget_create">Create option</string>
+    <string name="option_widget_edit">Edit option</string>
 </resources>

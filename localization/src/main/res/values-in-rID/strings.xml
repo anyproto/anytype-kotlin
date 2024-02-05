@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Unggah sebuah gambar</string>
     <string name="hint_upload_file">Unggah sebuah berkas</string>
     <string name="hint_upload_audio">Unggah audio</string>
-    <string name="hint_add_a_web_bookmark">Tambahkan sebuah penanda web</string>
+    <string name="hint_add_a_web_bookmark">Add bookmark</string>
     <string name="hint_bullet">Daftar bertitik</string>
     <string name="hint_numbered_list">Daftar urut</string>
     <string name="hint_toggle">Balok bukaan</string>
@@ -1035,6 +1035,10 @@
     <string name="sharing_menu_save_as_section_name">Simpan sebagai</string>
     <string name="sharing_menu_save_as_note_option">Catatan</string>
     <string name="sharing_menu_save_as_bookmark_option">Markah</string>
+    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_file_option">Berkas</string>
+    <string name="sharing_menu_save_as_images_option">Images</string>
+    <string name="sharing_menu_save_as_files_option">Files</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Tambah ke Anytype</string>
     <string name="sharing_menu_toast_object_added">Objek baru ditambahkan ke ruang \'%1$s\'</string>

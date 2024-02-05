@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Carica una foto</string>
     <string name="hint_upload_file">Carica un file</string>
     <string name="hint_upload_audio">Carica un audio</string>
-    <string name="hint_add_a_web_bookmark">Aggiungi un segnalibro web</string>
+    <string name="hint_add_a_web_bookmark">Add bookmark</string>
     <string name="hint_bullet">Elemento di elenco puntato</string>
     <string name="hint_numbered_list">Elemento di elenco numerato</string>
     <string name="hint_toggle">Blocco espandibile</string>
@@ -1037,6 +1037,10 @@
     <string name="sharing_menu_save_as_section_name">Salva come</string>
     <string name="sharing_menu_save_as_note_option">Nota</string>
     <string name="sharing_menu_save_as_bookmark_option">Segnalibro</string>
+    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_file_option">File</string>
+    <string name="sharing_menu_save_as_images_option">Images</string>
+    <string name="sharing_menu_save_as_files_option">Files</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Aggiungi a Anytype</string>
     <string name="sharing_menu_toast_object_added">Nuovo oggetto aggiunto allo spazio \'%1$s\'</string>

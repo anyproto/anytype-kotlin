@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Importer une image</string>
     <string name="hint_upload_file">Importer un fichier</string>
     <string name="hint_upload_audio">Envoyer un fichier audio</string>
-    <string name="hint_add_a_web_bookmark">Ajouter un signet web</string>
+    <string name="hint_add_a_web_bookmark">Add bookmark</string>
     <string name="hint_bullet">Élément de liste à puces</string>
     <string name="hint_numbered_list">Élément de liste numérotée</string>
     <string name="hint_toggle">Bloc dépliable</string>
@@ -739,7 +739,7 @@
     <string name="anytype_analytics">Analytiques de Anytype</string>
     <string name="anytype_analytics_msg">Understanding how people use Anytype helps us improve the product. This version of Anytype includes the analytics code that protects your privacy.\nIt doesn\'t record the actual document\'s content but still allows us to understand how you use Anytype.\nStay subscribed to our mailing list, as we will soon announce a new release that enables you to opt-out.</string>
     <string name="retry">Réessayer</string>
-    <string name="try_again">Try again</string>
+    <string name="try_again">Essayez de nouveau</string>
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Annuler la suppression</string>
     <string name="logout_and_clear_local_data">Se déconnecter et effacer les données locales</string>
@@ -1037,6 +1037,10 @@
     <string name="sharing_menu_save_as_section_name">Enregistrer sous</string>
     <string name="sharing_menu_save_as_note_option">Note</string>
     <string name="sharing_menu_save_as_bookmark_option">Marque-page</string>
+    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_file_option">Fichier</string>
+    <string name="sharing_menu_save_as_images_option">Images</string>
+    <string name="sharing_menu_save_as_files_option">Files</string>
     <string name="sharing_menu_data">Données</string>
     <string name="sharing_menu_add_to_anytype_header_title">Ajouter à Anytype</string>
     <string name="sharing_menu_toast_object_added">Un nouvel objet est ajouté à l\'espace \'%1$s\'</string>
@@ -1080,7 +1084,7 @@
     <string name="any_object_creation_menu_move_left">Déplacer à gauche</string>
     <string name="any_object_creation_menu_move_right">Déplacer à droite</string>
     <string name="clipboard_panel_create_object_from_clipboard">Créer un objet depuis le presse-papiers</string>
-    <string name="block_media_error">Something went wrong, please try again</string>
+    <string name="block_media_error">Une erreur s\'est produite, merci de réessayer</string>
     <string name="relation_value_create_new">Créer \"%1$s\"</string>
     <string name="option_widget_create">Créer une option</string>
     <string name="option_widget_edit">Éditer l\'option</string>

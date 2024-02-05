@@ -78,12 +78,22 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                             SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
                             SAVE_AS_IMAGE -> vm.onShareMedia(listOf(sharedData.data))
                             SAVE_AS_FILE -> vm.onShareMedia(listOf(sharedData.data))
-                            SAVE_AS_IMAGES -> vm.onShareMedia(
-                                uris = (sharedData as SharingData.Images).uris
-                            )
-                            SAVE_AS_FILES -> vm.onShareMedia(
-                                uris = (sharedData as SharingData.Files).uris
-                            )
+                            SAVE_AS_IMAGES -> {
+                                val data = sharedData
+                                if (data is SharingData.Images) {
+                                    vm.onShareMedia(uris = data.uris)
+                                } else {
+                                    toast("Unexpected data format")
+                                }
+                            }
+                            SAVE_AS_FILES -> {
+                                val data = sharedData
+                                if (data is SharingData.Files) {
+                                    vm.onShareMedia(uris = data.uris)
+                                } else {
+                                    toast("Unexpected data format")
+                                }
+                            }
                         }
                     },
                     onCancelClicked = {

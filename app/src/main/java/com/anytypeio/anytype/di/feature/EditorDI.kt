@@ -186,7 +186,7 @@ interface EditorSubComponent {
     fun linkToObjectOrWebBuilder(): LinkToObjectOrWebSubComponent.Builder
 
     fun tagStatusObjectComponent(): TagOrStatusValueObjectComponent.Builder
-    fun optionObjectComponent(): OptionObjectComponent.Builder
+    fun optionObjectComponent(): CreateOrEditOptionObjectComponent.Builder
 }
 
 

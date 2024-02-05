@@ -14,7 +14,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 
-class OptionViewModel(
+class CreateOrEditOptionViewModel(
     private val viewModelParams: ViewModelParams,
     private val values: ObjectValueProvider,
     private val createOption: CreateRelationOption,

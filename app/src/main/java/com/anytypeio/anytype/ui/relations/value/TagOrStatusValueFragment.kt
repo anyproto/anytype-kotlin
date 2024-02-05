@@ -83,7 +83,7 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
     private fun observeCommands(command: Command) {
         when (command) {
             is Command.OpenOptionScreen -> {
-                val arg = OptionFragment.args(
+                val arg = CreateOrEditOptionFragment.args(
                     ctx = command.ctx,
                     objectId = command.objectId,
                     relationKey = command.relationKey,

@@ -7,12 +7,12 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.relations.CreateRelationOption
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.relations.option.OptionViewModel
-import com.anytypeio.anytype.presentation.relations.option.OptionViewModelFactory
+import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
+import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModelFactory
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.relations.value.OptionFragment
+import com.anytypeio.anytype.ui.relations.value.CreateOrEditOptionFragment
 import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
@@ -21,22 +21,22 @@ import javax.inject.Named
 
 @PerModal
 @Subcomponent(
-    modules = [OptionObjectModule::class]
+    modules = [CreateOrEditOptionObjectModule::class]
 )
-interface OptionObjectComponent {
+interface CreateOrEditOptionObjectComponent {
 
     @Subcomponent.Builder
     interface Builder {
         @BindsInstance
-        fun params(params: OptionViewModel.ViewModelParams): Builder
-        fun build(): OptionObjectComponent
+        fun params(params: CreateOrEditOptionViewModel.ViewModelParams): Builder
+        fun build(): CreateOrEditOptionObjectComponent
     }
 
-    fun inject(fragment: OptionFragment)
+    fun inject(fragment: CreateOrEditOptionFragment)
 }
 
 @Module
-object OptionObjectModule {
+object CreateOrEditOptionObjectModule {
 
     @JvmStatic
     @Provides
@@ -49,14 +49,14 @@ object OptionObjectModule {
     @Provides
     @PerModal
     fun provideFactory(
-        params: OptionViewModel.ViewModelParams,
+        params: CreateOrEditOptionViewModel.ViewModelParams,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         setObjectDetails: SetObjectDetails,
         dispatcher: Dispatcher<Payload>,
         spaceManager: SpaceManager,
         analytics: Analytics,
         createOption: CreateRelationOption
-    ): OptionViewModelFactory = OptionViewModelFactory(
+    ): CreateOrEditOptionViewModelFactory = CreateOrEditOptionViewModelFactory(
         params = params,
         values = values,
         createOption = createOption,

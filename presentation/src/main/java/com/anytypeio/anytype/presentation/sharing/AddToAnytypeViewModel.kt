@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.CLICK_ONBOARDING_TO
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.NO_VALUE
@@ -130,7 +131,9 @@ class AddToAnytypeViewModel(
                 uploadFile.async(
                     UploadFile.Params(
                         path = path,
-                        space = SpaceId(targetSpaceId)
+                        space = SpaceId(targetSpaceId),
+                        // Temporary workaround to fix issue on the MW side.
+                        type = Block.Content.File.Type.NONE
                     )
                 ).onSuccess { obj ->
                     files.add(obj)

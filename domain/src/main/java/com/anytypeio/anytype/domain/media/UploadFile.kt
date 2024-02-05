@@ -17,10 +17,14 @@ class UploadFile @Inject constructor(
     override suspend fun doWork(params: Params) : Id = repo.uploadFile(
         command = Command.UploadFile(
             path = params.path,
-            type = Block.Content.File.Type.FILE,
+            type = params.type,
             space = params.space
         )
     )
 
-    data class Params(val path: String, val space: SpaceId)
+    data class Params(
+        val path: String,
+        val space: SpaceId,
+        val type: Block.Content.File.Type = Block.Content.File.Type.FILE,
+    )
 }

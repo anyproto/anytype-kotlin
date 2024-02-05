@@ -134,6 +134,9 @@ EditDataViewViewerFragment : BaseBottomSheetFragment<FragmentEditDataViewViewerB
             EditDataViewViewerViewModel.ViewState.Calendar -> {
                 toast("TODO")
             }
+            EditDataViewViewerViewModel.ViewState.Graph -> {
+                toast("TODO")
+            }
         }
     }
 

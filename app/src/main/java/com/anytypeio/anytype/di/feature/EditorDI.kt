@@ -184,6 +184,9 @@ interface EditorSubComponent {
     fun setBlockTextValueComponent(): SetBlockTextValueSubComponent.Builder
 
     fun linkToObjectOrWebBuilder(): LinkToObjectOrWebSubComponent.Builder
+
+    fun tagStatusObjectComponent(): TagOrStatusValueObjectComponent.Builder
+    fun optionObjectComponent(): CreateOrEditOptionObjectComponent.Builder
 }
 
 

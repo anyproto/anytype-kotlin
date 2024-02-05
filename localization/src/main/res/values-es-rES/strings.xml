@@ -739,6 +739,7 @@
     <string name="anytype_analytics">Analíticas de Anytype</string>
     <string name="anytype_analytics_msg">Entender como la gente usa Anytype nos permite mejorar. Esta versión de Anytype incluye código para que las analíticas sean privadas. \n No se incluye ningún dato de ningún documento, pero igualmente nos ayuda a entender como la gente usa nuestro producto. \n Suscríbete a nuestra lista email para enterarte sobre las nuevas versiones con más opciones de privacidad.</string>
     <string name="retry">Reintentar</string>
+    <string name="try_again">Try again</string>
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Cancelar la eliminación</string>
     <string name="logout_and_clear_local_data">Cerrar sesión y eliminar datos en dispositivo</string>
@@ -1079,4 +1080,6 @@
     <string name="any_object_creation_menu_move_left">Mover a la izquierda</string>
     <string name="any_object_creation_menu_move_right">Mover a la derecha</string>
     <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
+    <string name="block_media_error">Something went wrong, please try again</string>
+    <string name="relation_value_create_new">Create \"%1$s\"</string>
 </resources>

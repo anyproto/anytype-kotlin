@@ -140,7 +140,6 @@ class AddToAnytypeViewModel(
                     files.add(obj)
                 }
             }
-            val startTime = System.currentTimeMillis()
             if (files.size == 1) {
                 if (targetSpaceId == spaceManager.get()) {
                     navigation.emit(OpenObjectNavigation.OpenEditor(files.first()))
@@ -151,6 +150,7 @@ class AddToAnytypeViewModel(
                     }
                 }
             } else {
+                val startTime = System.currentTimeMillis()
                 createPrefilledNote.async(
                     CreatePrefilledNote.Params(
                         text = EMPTY_STRING_VALUE,

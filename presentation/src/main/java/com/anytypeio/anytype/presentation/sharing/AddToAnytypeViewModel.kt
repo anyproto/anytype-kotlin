@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
@@ -152,7 +153,7 @@ class AddToAnytypeViewModel(
             } else {
                 createPrefilledNote.async(
                     CreatePrefilledNote.Params(
-                        text = "Your files:",
+                        text = EMPTY_STRING_VALUE,
                         space = targetSpaceId,
                         details = mapOf(
                             Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()

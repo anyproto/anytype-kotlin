@@ -34,32 +34,27 @@ class CreateOrEditOptionViewModel(
 
     val command = MutableSharedFlow<Command>(replay = 0)
     val viewState: MutableStateFlow<CreateOrEditOptionScreenViewState> =
-        if (viewModelParams.optionId == null) {
-            val color = if (viewModelParams.color != null) {
-                ThemeColor.fromCode(viewModelParams.color)
-            } else {
-                ThemeColor.values().drop(1).random()
-            }
-            MutableStateFlow(
-                CreateOrEditOptionScreenViewState.Create(
-                    text = viewModelParams.name.orEmpty(),
-                    color = color
-                )
+        MutableStateFlow(initialViewState())
+
+    private fun initialViewState(): CreateOrEditOptionScreenViewState {
+        val optionId = viewModelParams.optionId
+        val color = getOptionColor()
+        return if (optionId != null) {
+            Timber.d("Editing option with id: $optionId")
+            CreateOrEditOptionScreenViewState.Edit(
+                optionId = optionId,
+                text = viewModelParams.name.orEmpty(),
+                color = color
             )
+
         } else {
-            val color = if (viewModelParams.color != null) {
-                ThemeColor.fromCode(viewModelParams.color)
-            } else {
-                ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
-            }
-            MutableStateFlow(
-                CreateOrEditOptionScreenViewState.Edit(
-                    optionId = viewModelParams.optionId,
-                    text = viewModelParams.name.orEmpty(),
-                    color = color
-                )
+            Timber.d("Creating new option")
+            CreateOrEditOptionScreenViewState.Create(
+                text = viewModelParams.name.orEmpty(),
+                color = color
             )
         }
+    }
 
     fun updateName(name: String) {
         viewState.value = when (val state = viewState.value) {
@@ -90,20 +85,19 @@ class CreateOrEditOptionViewModel(
                 name = viewState.value.text,
                 color = viewState.value.color.code
             )
-            if (params.name.isEmpty()) {
-                return@launch
+            if (params.name.isNotEmpty()) {
+                createOption.invoke(params).proceed(
+                    success = { option ->
+                        proceedWithAddingTagToObject(
+                            ctx = viewModelParams.ctx,
+                            objectId = viewModelParams.objectId,
+                            relationKey = viewModelParams.relationKey,
+                            option = option
+                        )
+                    },
+                    failure = { Timber.e(it, "Error while creating option") }
+                )
             }
-            createOption.invoke(params).proceed(
-                success = { option ->
-                    proceedWithAddingTagToObject(
-                        ctx = viewModelParams.ctx,
-                        objectId = viewModelParams.objectId,
-                        relationKey = viewModelParams.relationKey,
-                        option = option
-                    )
-                },
-                failure = { Timber.e(it, "Error while creating option") }
-            )
         }
     }
 
@@ -156,6 +150,15 @@ class CreateOrEditOptionViewModel(
                 command.emit(Command.Dismiss)
             }
         )
+    }
+
+    private fun getOptionColor(): ThemeColor {
+        val color = viewModelParams.color
+        return if (color != null) {
+            ThemeColor.fromCode(color)
+        } else {
+            ThemeColor.values().filter { it != ThemeColor.DEFAULT }.random()
+        }
     }
 
     data class ViewModelParams(

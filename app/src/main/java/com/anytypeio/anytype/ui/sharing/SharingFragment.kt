@@ -36,7 +36,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                 if (URLUtil.isValidUrl(result)) {
                     SharingData.Url(result)
                 } else {
-                    SharingData.Raw(result)
+                    SharingData.Text(result)
                 }
             } else if (args.containsKey(SHARING_IMAGE_KEY)) {
                 val result = arg<String>(SHARING_IMAGE_KEY)
@@ -51,7 +51,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                 val result = argStringList(SHARING_MULTIPLE_FILES_KEY)
                 SharingData.Files(uris = result)
             } else {
-                throw IllegalStateException("Unexpected result")
+                throw IllegalStateException("Unexpcted shared data")
             }
         }
 

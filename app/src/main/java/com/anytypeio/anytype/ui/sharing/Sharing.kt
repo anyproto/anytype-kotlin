@@ -63,7 +63,7 @@ fun AddToAnytypeScreenUrlPreview() {
 @Composable
 fun AddToAnytypeScreenNotePreview() {
     AddToAnytypeScreen(
-        data = SharingData.Raw("The Work of Art in the Age of its Technological Reproducibility"),
+        data = SharingData.Text("The Work of Art in the Age of its Technological Reproducibility"),
         onCancelClicked = {},
         onDoneClicked = {},
         spaces = emptyList(),
@@ -86,7 +86,7 @@ fun AddToAnytypeScreen(
         is SharingData.File -> listOf(SAVE_AS_FILE)
         is SharingData.Images -> listOf(SAVE_AS_IMAGES)
         is SharingData.Files -> listOf(SAVE_AS_FILES)
-        else -> listOf(SAVE_AS_NOTE)
+        is SharingData.Text -> listOf(SAVE_AS_NOTE)
     }
     var selectedIndex by remember {
         mutableStateOf(
@@ -96,7 +96,7 @@ fun AddToAnytypeScreen(
                 is SharingData.File -> SAVE_AS_FILE
                 is SharingData.Images -> SAVE_AS_IMAGES
                 is SharingData.Files -> SAVE_AS_FILES
-                else -> SAVE_AS_NOTE
+                is SharingData.Text -> SAVE_AS_NOTE
             }
         )
     }
@@ -414,7 +414,7 @@ sealed class SharingData {
         override val data: String
             get() = url
     }
-    data class Raw(val raw: String) : SharingData() {
+    data class Text(val raw: String) : SharingData() {
         override val data: String
             get() = raw
     }

@@ -83,6 +83,7 @@ fun AddToAnytypeScreen(
     val items = when (data) {
         is SharingData.Url -> listOf(SAVE_AS_NOTE, SAVE_AS_BOOKMARK)
         is SharingData.Image -> listOf(SAVE_AS_IMAGE)
+        is SharingData.File -> listOf(SAVE_AS_FILE)
         is SharingData.Images -> listOf(SAVE_AS_IMAGES)
         is SharingData.Files -> listOf(SAVE_AS_FILES)
         else -> listOf(SAVE_AS_NOTE)
@@ -92,6 +93,7 @@ fun AddToAnytypeScreen(
             when(data) {
                 is SharingData.Url -> SAVE_AS_BOOKMARK
                 is SharingData.Image -> SAVE_AS_IMAGE
+                is SharingData.File -> SAVE_AS_FILE
                 is SharingData.Images -> SAVE_AS_IMAGES
                 is SharingData.Files -> SAVE_AS_FILES
                 else -> SAVE_AS_NOTE
@@ -120,6 +122,7 @@ fun AddToAnytypeScreen(
                 text = when (selectedIndex) {
                     SAVE_AS_BOOKMARK -> stringResource(id = R.string.sharing_menu_save_as_bookmark_option)
                     SAVE_AS_IMAGE -> stringResource(id = R.string.sharing_menu_save_as_image_option)
+                    SAVE_AS_FILE -> stringResource(id = R.string.sharing_menu_save_as_file_option)
                     SAVE_AS_IMAGES -> stringResource(id = R.string.sharing_menu_save_as_images_option)
                     SAVE_AS_FILES -> stringResource(id = R.string.sharing_menu_save_as_files_option)
                     else -> stringResource(id = R.string.sharing_menu_save_as_note_option)
@@ -400,8 +403,9 @@ private fun SmallSpaceIcon(
 const val SAVE_AS_NOTE = 0
 const val SAVE_AS_BOOKMARK = 1
 const val SAVE_AS_IMAGE = 2
-const val SAVE_AS_IMAGES = 3
-const val SAVE_AS_FILES = 4
+const val SAVE_AS_FILE = 3
+const val SAVE_AS_IMAGES = 4
+const val SAVE_AS_FILES = 5
 typealias SaveAsOption = Int
 
 sealed class SharingData {

@@ -266,32 +266,6 @@ class AddToAnytypeViewModel(
         }
     }
 
-    fun onUploadImage(path: String) {
-        Timber.d("Attempt to share image: $path")
-        viewModelScope.launch {
-            val targetSpaceView = spaceViews.value.firstOrNull { view ->
-                view.isSelected
-            }
-            val targetSpaceId = targetSpaceView?.obj?.targetSpaceId!!
-            val params = UploadFile.Params(
-                path = path,
-                space = SpaceId(targetSpaceId)
-            )
-            Timber.d("Uploading file with params: $params")
-            uploadFile.async(params).fold(
-                onSuccess = { obj: Id ->
-                    Timber.d("Successfully upload file")
-                    if (targetSpaceId == spaceManager.get()) {
-                        navigation.emit(OpenObjectNavigation.OpenEditor(obj))
-                    }
-                },
-                onFailure = {
-                    Timber.e(it, "Error while uploading file")
-                }
-            )
-        }
-    }
-
     fun onSelectSpaceClicked(view: SpaceView) {
         Timber.d("onSelectSpaceClicked: ${view.obj.targetSpaceId}")
         viewModelScope.launch {

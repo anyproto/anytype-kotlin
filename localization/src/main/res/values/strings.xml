@@ -1193,6 +1193,7 @@
     <string name="sharing_menu_save_as_note_option">Note</string>
     <string name="sharing_menu_save_as_bookmark_option">Bookmark</string>
     <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_file_option">File</string>
     <string name="sharing_menu_save_as_images_option">Images</string>
     <string name="sharing_menu_save_as_files_option">Files</string>
     <string name="sharing_menu_data">Data</string>

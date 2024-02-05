@@ -75,7 +75,8 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         when(option) {
                             SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
                             SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
-                            SAVE_AS_IMAGE -> vm.onUploadImage(sharedData.data)
+                            SAVE_AS_IMAGE -> vm.onShareMedia(listOf(sharedData.data))
+                            SAVE_AS_FILE -> vm.onShareMedia(listOf(sharedData.data))
                             SAVE_AS_IMAGES -> vm.onShareMedia(
                                 uris = (sharedData as SharingData.Images).uris
                             )

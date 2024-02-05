@@ -72,12 +72,12 @@ class CreateOrEditOptionViewModel(
 
     fun onButtonClick() {
         when (viewState.value) {
-            is CreateOrEditOptionScreenViewState.Create -> createOption()
-            is CreateOrEditOptionScreenViewState.Edit -> updateOption()
+            is CreateOrEditOptionScreenViewState.Create -> proceedWithCreatingOption()
+            is CreateOrEditOptionScreenViewState.Edit -> proceedWithUpdatingOption()
         }
     }
 
-    private fun createOption() {
+    private fun proceedWithCreatingOption() {
         viewModelScope.launch {
             val params = CreateRelationOption.Params(
                 space = spaceManager.get(),
@@ -101,7 +101,7 @@ class CreateOrEditOptionViewModel(
         }
     }
 
-    private fun updateOption() {
+    private fun proceedWithUpdatingOption() {
         val optionId = viewModelParams.optionId ?: return
         viewModelScope.launch {
             val params = SetObjectDetails.Params(

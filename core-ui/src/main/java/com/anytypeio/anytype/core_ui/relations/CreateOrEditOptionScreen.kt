@@ -68,43 +68,14 @@ fun CreateOrEditOptionScreen(
     onColorChanged: (ThemeColor) -> Unit
 ) {
     val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
 
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        contentAlignment = Alignment.TopCenter,
-    ) {
+    val currentState by rememberUpdatedState(state)
+    val keyboardController = LocalSoftwareKeyboardController.current
 
-        val currentState by rememberUpdatedState(state)
-        val keyboardController = LocalSoftwareKeyboardController.current
+    var selectedColor by remember { mutableStateOf(currentState.color) }
+    var editableText by remember { mutableStateOf(currentState.text) }
 
-        OptionWidgetContent(
-            state = currentState,
-            onButtonClicked = onButtonClicked,
-            focusRequester = focusRequester,
-            keyboardController = keyboardController,
-            onTextChanged = onTextChanged,
-            onColorChanged = onColorChanged
-        )
-    }
-}
-
-@OptIn(ExperimentalComposeUiApi::class)
-@Composable
-fun OptionWidgetContent(
-    state: CreateOrEditOptionScreenViewState,
-    onButtonClicked: () -> Unit,
-    focusRequester: FocusRequester,
-    keyboardController: SoftwareKeyboardController?,
-    onTextChanged: (String) -> Unit,
-    onColorChanged: (ThemeColor) -> Unit
-) {
-    var selectedColor by remember { mutableStateOf(state.color) }
-    var editableText by remember { mutableStateOf(state.text) }
-
-    val (title, buttonText) = getTexts(state)
+    val (title, buttonText) = getTexts(currentState)
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -114,8 +85,8 @@ fun OptionWidgetContent(
     ) {
         Header(text = title)
         TextInput(
-            initialValue = state.text,
-            color = state.color,
+            initialValue = currentState.text,
+            color = currentState.color,
             onTextChanged = {
                 editableText = it
                 onTextChanged(it)

@@ -12,9 +12,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_ui.relations.CreateOrEditOptionScreen
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.argStringOrNull
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -54,11 +56,17 @@ class CreateOrEditOptionFragment : BaseBottomSheetComposeFragment() {
                     colors = MaterialTheme.colors.copy(
                         surface = colorResource(id = R.color.context_menu_background)
                     )
-                ) {}
+                ) {
+                    CreateOrEditOptionScreen(
+                        state = vm.viewState.collectAsStateWithLifecycle().value,
+                        onButtonClicked = { vm.onButtonClick() },
+                        onTextChanged = { vm.updateName(it) },
+                        onColorChanged = { vm.updateColor(it) }
+                    )
+                }
             }
         }
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

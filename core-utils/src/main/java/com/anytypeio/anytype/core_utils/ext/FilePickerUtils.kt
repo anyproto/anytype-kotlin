@@ -14,7 +14,7 @@ object FilePickerUtils {
             Mimetype.MIME_VIDEO_ALL -> context.isPermissionGranted(getPermissionToRequestForVideos())
             Mimetype.MIME_IMAGE_ALL -> context.isPermissionGranted(getPermissionToRequestForImages())
             Mimetype.MIME_IMAGE_AND_VIDEO -> context.isPermissionGranted(getPermissionToRequestForImagesAndVideos())
-            Mimetype.MIME_FILE_ALL, Mimetype.MIME_YAML -> {
+            else -> {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     true
                 } else {
@@ -37,6 +37,7 @@ object FilePickerUtils {
             Mimetype.MIME_FILE_ALL -> getPermissionToRequestForFiles()
             Mimetype.MIME_IMAGE_AND_VIDEO -> getPermissionToRequestForImagesAndVideos()
             Mimetype.MIME_YAML -> getPermissionToRequestForFiles()
+            else -> getPermissionToRequestForFiles()
         }
     }
 

@@ -151,7 +151,6 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
-import com.anytypeio.anytype.ui.relations.value.TagStatusFragment
 import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.google.android.material.bottomsheet.BottomSheetBehavior

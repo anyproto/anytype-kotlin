@@ -13,8 +13,8 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
 
-class TagStatusViewModelFactory @Inject constructor(
-    private val params: TagStatusViewModel.ViewModelParams,
+class TagOrStatusValueViewModelFactory @Inject constructor(
+    private val params: TagOrStatusValueViewModel.ViewModelParams,
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val storage: Editor.Storage,
@@ -27,7 +27,7 @@ class TagStatusViewModelFactory @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
         modelClass: Class<T>
-    ) = TagStatusViewModel(
+    ) = TagOrStatusValueViewModel(
         viewModelParams = params,
         relations = relations,
         values = values,

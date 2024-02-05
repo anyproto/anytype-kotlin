@@ -103,7 +103,7 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.relations.option.OptionViewModel
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModel
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
@@ -950,7 +950,7 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val tagStatusObjectComponent = ComponentWithParams { params: TagStatusViewModel.ViewModelParams ->
+    val tagStatusObjectComponent = ComponentWithParams { params: TagOrStatusValueViewModel.ViewModelParams ->
         editorComponent.get(params.ctx)
             .tagStatusObjectComponent()
             .params(params)

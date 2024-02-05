@@ -32,7 +32,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class TagStatusViewModel(
+class TagOrStatusValueViewModel(
     private val viewModelParams: ViewModelParams,
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,

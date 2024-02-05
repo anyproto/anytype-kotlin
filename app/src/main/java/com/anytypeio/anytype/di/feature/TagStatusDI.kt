@@ -14,10 +14,10 @@ import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.SUB_MY_OPTIONS
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModel
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModelFactory
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.ui.relations.value.TagStatusFragment
+import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
@@ -26,22 +26,22 @@ import javax.inject.Named
 
 @PerModal
 @Subcomponent(
-    modules = [TagStatusObjectModule::class]
+    modules = [TagOrStatusValueObjectModule::class]
 )
-interface TagStatusObjectComponent {
+interface TagOrStatusValueObjectComponent {
 
     @Subcomponent.Builder
     interface Builder {
         @BindsInstance
-        fun params(params: TagStatusViewModel.ViewModelParams): Builder
-        fun build(): TagStatusObjectComponent
+        fun params(params: TagOrStatusValueViewModel.ViewModelParams): Builder
+        fun build(): TagOrStatusValueObjectComponent
     }
 
-    fun inject(fragment: TagStatusFragment)
+    fun inject(fragment: TagOrStatusValueFragment)
 }
 
 @Module
-object TagStatusObjectModule {
+object TagOrStatusValueObjectModule {
 
     @JvmStatic
     @Provides
@@ -70,9 +70,9 @@ object TagStatusObjectModule {
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         spaceManager: SpaceManager,
-        params: TagStatusViewModel.ViewModelParams,
+        params: TagOrStatusValueViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer
-    ): TagStatusViewModelFactory = TagStatusViewModelFactory(
+    ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
         storage = storage,

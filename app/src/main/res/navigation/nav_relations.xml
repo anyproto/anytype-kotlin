@@ -6,7 +6,7 @@
 
     <dialog
         android:id="@+id/tagStatusScreen"
-        android:name="com.anytypeio.anytype.ui.relations.value.TagStatusFragment"
+        android:name="com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment"
         android:label="Tag status screen" />
 
     <dialog

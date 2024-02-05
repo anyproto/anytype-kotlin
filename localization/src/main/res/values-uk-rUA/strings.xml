@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Завантажити зображення</string>
     <string name="hint_upload_file">Завантажити файл</string>
     <string name="hint_upload_audio">Upload an audio</string>
-    <string name="hint_add_a_web_bookmark">Додати вебзакладку</string>
+    <string name="hint_add_a_web_bookmark">Add bookmark</string>
     <string name="hint_bullet">Елемент маркованого списку</string>
     <string name="hint_numbered_list">Елемент нумерованого списку</string>
     <string name="hint_toggle">Перемкнути блок</string>
@@ -1041,6 +1041,10 @@
     <string name="sharing_menu_save_as_section_name">Save as</string>
     <string name="sharing_menu_save_as_note_option">Нотатка</string>
     <string name="sharing_menu_save_as_bookmark_option">Закладка</string>
+    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_file_option">Файл</string>
+    <string name="sharing_menu_save_as_images_option">Images</string>
+    <string name="sharing_menu_save_as_files_option">Files</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Додати до Anytype</string>
     <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>

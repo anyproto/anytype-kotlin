@@ -39,8 +39,11 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
             }
         } else if (args.containsKey(SHARING_IMAGE_KEY)) {
             val result = arg<String>(SHARING_IMAGE_KEY)
-            SharingData.Image(path = result)
-        } else if (args.containsKey(SHARING_MULTIPLE_IMAGES_KEY)) {
+            SharingData.Image(uri = result)
+        } else if (args.containsKey(SHARING_FILE_KEY)) {
+            val result = arg<String>(SHARING_FILE_KEY)
+            SharingData.File(uri = result)
+        }else if (args.containsKey(SHARING_MULTIPLE_IMAGES_KEY)) {
             val result = argStringList(SHARING_MULTIPLE_IMAGES_KEY)
             SharingData.Images(uris = result)
         } else if (args.containsKey(SHARING_MULTIPLE_FILES_KEY)) {
@@ -73,10 +76,10 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                             SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
                             SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
                             SAVE_AS_IMAGE -> vm.onUploadImage(sharedData.data)
-                            SAVE_AS_IMAGES -> vm.onShareMultipleImages(
+                            SAVE_AS_IMAGES -> vm.onShareMedia(
                                 uris = (sharedData as SharingData.Images).uris
                             )
-                            SAVE_AS_FILES -> vm.onShareMultipleImages(
+                            SAVE_AS_FILES -> vm.onShareMedia(
                                 uris = (sharedData as SharingData.Files).uris
                             )
                         }
@@ -145,6 +148,7 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
     companion object {
         private const val SHARING_TEXT_KEY = "arg.sharing.text-key"
         private const val SHARING_IMAGE_KEY = "arg.sharing.image-key"
+        private const val SHARING_FILE_KEY = "arg.sharing.file-key"
         private const val SHARING_MULTIPLE_IMAGES_KEY = "arg.sharing.multiple-images-key"
         private const val SHARING_MULTIPLE_FILES_KEY = "arg.sharing.multiple-files-key"
 
@@ -152,8 +156,8 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
             arguments = bundleOf(SHARING_TEXT_KEY to data)
         }
 
-        fun image(image: String) : SharingFragment = SharingFragment().apply {
-            arguments = bundleOf(SHARING_IMAGE_KEY to image)
+        fun image(uri: String) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_IMAGE_KEY to uri)
         }
 
         fun images(uris: List<String>) : SharingFragment = SharingFragment().apply {
@@ -162,6 +166,10 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
 
         fun files(uris: List<String>) : SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_MULTIPLE_FILES_KEY to ArrayList(uris))
+        }
+
+        fun file(uri: String) : SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_FILE_KEY to uri)
         }
     }
 }

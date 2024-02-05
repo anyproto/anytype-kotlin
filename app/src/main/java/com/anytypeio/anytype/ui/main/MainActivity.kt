@@ -123,7 +123,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 )
                             }
                             is Command.Sharing.Image -> {
-                                SharingFragment.image(command.path).show(
+                                SharingFragment.image(command.uri).show(
                                     supportFragmentManager,
                                     SHARE_DIALOG_LABEL
                                 )
@@ -136,6 +136,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             }
                             is Command.Sharing.Files -> {
                                 SharingFragment.files(command.uris).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
+                            is Command.Sharing.File -> {
+                                SharingFragment.file(command.uri).show(
                                     supportFragmentManager,
                                     SHARE_DIALOG_LABEL
                                 )

@@ -414,9 +414,9 @@ sealed class SharingData {
         override val data: String
             get() = raw
     }
-    data class Image(val path: String) : SharingData() {
+    data class Image(val uri: String) : SharingData() {
         override val data: String
-            get() = path
+            get() = uri
     }
 
     data class Images(val uris: List<String>): SharingData() {
@@ -427,5 +427,10 @@ sealed class SharingData {
     data class Files(val uris: List<String>): SharingData() {
         override val data: String
             get() = uris.toString()
+    }
+
+    data class File(val uri: String): SharingData() {
+        override val data: String
+            get() = uri
     }
 }

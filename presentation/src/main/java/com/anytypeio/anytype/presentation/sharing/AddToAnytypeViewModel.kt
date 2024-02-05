@@ -37,7 +37,6 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -117,7 +116,7 @@ class AddToAnytypeViewModel(
         }
     }
 
-    fun onShareMultipleImages(uris: List<String>) {
+    fun onShareMedia(uris: List<String>) {
         viewModelScope.launch(Dispatchers.IO) {
             val targetSpaceView = spaceViews.value.firstOrNull { view ->
                 view.isSelected

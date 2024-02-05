@@ -148,6 +148,16 @@ class TagOrStatusValueViewModel(
                     )
                 )
             }
+            TagStatusAction.Create -> {
+                emitCommand(
+                    Command.OpenOptionScreen(
+                        text = "",
+                        relationKey = viewModelParams.relationKey,
+                        ctx = viewModelParams.ctx,
+                        objectId = viewModelParams.objectId
+                    )
+                )
+            }
         }
     }
 
@@ -426,6 +436,7 @@ sealed class TagStatusAction {
     data class Edit(val item: RelationsListItem.Item) : TagStatusAction()
     data class Delete(val optionId: Id) : TagStatusAction()
     data class Duplicate(val item: RelationsListItem.Item) : TagStatusAction()
+    object Create : TagStatusAction()
 }
 
 enum class RelationContext { OBJECT, OBJECT_SET, DATA_VIEW }

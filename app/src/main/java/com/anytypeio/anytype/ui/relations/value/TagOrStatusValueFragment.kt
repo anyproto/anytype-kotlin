@@ -12,11 +12,14 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_ui.relations.RelationsLazyList
+import com.anytypeio.anytype.core_ui.relations.TagOrStatusValueScreen
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -55,11 +58,11 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
                     surface = colorResource(id = R.color.context_menu_background)
                 )
             ) {
-//                RelationsValueScreen(
-//                    state = vm.viewState.collectAsStateWithLifecycle().value,
-//                    action = vm::onAction,
-//                    onQueryChanged = vm::onQueryChanged
-//                )
+                TagOrStatusValueScreen(
+                    state = vm.viewState.collectAsStateWithLifecycle().value,
+                    action = vm::onAction,
+                    onQueryChanged = vm::onQueryChanged
+                )
             }
         }
     }

@@ -11,8 +11,8 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
 
-class OptionViewModelFactory  @Inject constructor(
-    private val params: OptionViewModel.ViewModelParams,
+class CreateOrEditOptionViewModelFactory  @Inject constructor(
+    private val params: CreateOrEditOptionViewModel.ViewModelParams,
     private val values: ObjectValueProvider,
     private val createOption: CreateRelationOption,
     private val setObjectDetails: SetObjectDetails,
@@ -23,7 +23,7 @@ class OptionViewModelFactory  @Inject constructor(
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
         modelClass: Class<T>
-    ) = OptionViewModel(
+    ) = CreateOrEditOptionViewModel(
         viewModelParams = params,
         values = values,
         createOption = createOption,

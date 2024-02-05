@@ -20,17 +20,17 @@ import com.anytypeio.anytype.core_utils.ext.argStringOrNull
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.relations.option.OptionViewModel
-import com.anytypeio.anytype.presentation.relations.option.OptionViewModelFactory
+import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
+import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModelFactory
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
-class OptionFragment : BaseBottomSheetComposeFragment() {
+class CreateOrEditOptionFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
-    lateinit var factory: OptionViewModelFactory
-    private val vm by viewModels<OptionViewModel> { factory }
+    lateinit var factory: CreateOrEditOptionViewModelFactory
+    private val vm by viewModels<CreateOrEditOptionViewModel> { factory }
 
     private val ctx get() = argString(CTX_KEY)
     private val objectId get() = argString(OBJECT_ID_KEY)
@@ -71,14 +71,14 @@ class OptionFragment : BaseBottomSheetComposeFragment() {
         jobs += lifecycleScope.subscribe(vm.command) { observeCommand(it) }
     }
 
-    private fun observeCommand(command: OptionViewModel.Command) {
+    private fun observeCommand(command: CreateOrEditOptionViewModel.Command) {
         when (command) {
-            is OptionViewModel.Command.Dismiss -> dismiss()
+            is CreateOrEditOptionViewModel.Command.Dismiss -> dismiss()
         }
     }
 
     override fun injectDependencies() {
-        val params = OptionViewModel.ViewModelParams(
+        val params = CreateOrEditOptionViewModel.ViewModelParams(
             ctx = ctx,
             relationKey = relationKey,
             optionId = optionId,
@@ -93,7 +93,7 @@ class OptionFragment : BaseBottomSheetComposeFragment() {
         componentManager().optionObjectComponent.release()
     }
 
-    private fun inject(params: OptionViewModel.ViewModelParams) {
+    private fun inject(params: CreateOrEditOptionViewModel.ViewModelParams) {
         when (relationContext) {
             RelationContext.OBJECT -> {
                 componentManager()

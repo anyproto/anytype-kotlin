@@ -739,6 +739,7 @@
     <string name="anytype_analytics">Anytype analyse</string>
     <string name="anytype_analytics_msg">Begrip over hoe mensen Anytype gebruiken helpt ons het product te verbeteren. Deze versie van Anytype bevat analysecode die jouw privacy beschermt.\nHet registreert niet de inhoud van het eigenlijke document, maar staat ons toe om te begrijpen hoe je Anytype gebruikt.\nBlijf geabonneerd op onze mailinglijst, aangezien we binnenkort een nieuwe release zullen aankondigen waarmee je je hiervoor kunt afmelden.</string>
     <string name="retry">Probeer opnieuw</string>
+    <string name="try_again">Try again</string>
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Annuleer verwijdering</string>
     <string name="logout_and_clear_local_data">Log uit en wis lokale gegevens</string>
@@ -1079,5 +1080,6 @@
     <string name="any_object_creation_menu_move_left">Verplaats naar links</string>
     <string name="any_object_creation_menu_move_right">Verplaats naar rechts</string>
     <string name="clipboard_panel_create_object_from_clipboard">Maak object aan vanaf klembord</string>
-    <string name="relation_value_create_new">Create \"%1$s\"</string>
+    <string name="block_media_error">Something went wrong, please try again</string>
+    <string name="relation_value_create_new">Maak \"%1$s\" aan</string>
 </resources>

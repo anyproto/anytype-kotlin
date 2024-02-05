@@ -224,10 +224,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
                 vm.onIntentTextShare(intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty())
             }
-            intent.type?.startsWith("image/") == true -> {
+            intent.type?.startsWith(SHARE_IMAGE_INTENT_PATTERN) == true -> {
                 proceedWithImageShareIntent(intent)
             }
-            intent.type?.startsWith("application/") == true -> {
+            intent.type?.startsWith(SHARE_FILE_INTENT_PATTERN) == true -> {
                 proceedWithFileShareIntent(intent)
             }
             intent.type == Mimetype.MIME_FILE_ALL.value -> {
@@ -327,5 +327,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     companion object {
         const val AUTO_UPDATE_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"
         const val SHARE_DIALOG_LABEL = "anytype.dialog.share.label"
+        const val SHARE_IMAGE_INTENT_PATTERN = "image/"
+        const val SHARE_FILE_INTENT_PATTERN = "application/"
+
     }
 }

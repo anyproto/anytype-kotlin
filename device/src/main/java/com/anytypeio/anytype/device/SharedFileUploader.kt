@@ -15,10 +15,14 @@ class SharedFileUploader @Inject constructor(
 ) : FileSharer {
 
     override fun getPath(uri: String): String {
-        if (BuildConfig.DEBUG) Timber.d("Getting path for: ${uri}")
+        if (BuildConfig.DEBUG) Timber.d("Getting path for: $uri")
         val parsed = Uri.parse(uri)
         checkNotNull(parsed)
         return parsePathFromUri(parsed)
+    }
+
+    override fun clear() {
+        TODO("Not yet implemented")
     }
 
     private fun parsePathFromUri(extra: Uri) : String {
@@ -42,7 +46,12 @@ class SharedFileUploader @Inject constructor(
                 }
             }
         } else {
-            extra.path!!.substring(extra.path!!.lastIndexOf("/"))
+            val rawPath = extra.path
+            if (rawPath != null) {
+                rawPath.substring(rawPath.lastIndexOf("/"))
+            } else {
+                ""
+            }
         }
         val inputStream = context.contentResolver.openInputStream(extra)
         val cacheDir = context.getExternalFilesDir(null)

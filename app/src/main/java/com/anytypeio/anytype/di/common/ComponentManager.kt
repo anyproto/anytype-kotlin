@@ -102,7 +102,8 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModel
+import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
@@ -949,9 +950,16 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val tagStatusObjectComponent = ComponentWithParams { params: TagStatusViewModel.Params ->
+    val tagStatusObjectComponent = ComponentWithParams { params: TagOrStatusValueViewModel.ViewModelParams ->
         editorComponent.get(params.ctx)
             .tagStatusObjectComponent()
+            .params(params)
+            .build()
+    }
+
+    val optionObjectComponent = ComponentWithParams { params: CreateOrEditOptionViewModel.ViewModelParams ->
+        editorComponent.get(params.ctx)
+            .optionObjectComponent()
             .params(params)
             .build()
     }

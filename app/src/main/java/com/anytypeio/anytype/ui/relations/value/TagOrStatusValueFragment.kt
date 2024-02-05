@@ -12,26 +12,28 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_ui.relations.RelationsValueScreen
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.Command
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModel
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewModelFactory
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModelFactory
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
-class TagStatusFragment : BaseBottomSheetComposeFragment() {
+class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
 
     @Inject
-    lateinit var factory: TagStatusViewModelFactory
-    private val vm by viewModels<TagStatusViewModel> { factory }
+    lateinit var factory: TagOrStatusValueViewModelFactory
+    private val vm by viewModels<TagOrStatusValueViewModel> { factory }
 
     private val ctx get() = argString(CTX_KEY)
     private val relationKey get() = argString(RELATION_KEY)
@@ -53,22 +55,50 @@ class TagStatusFragment : BaseBottomSheetComposeFragment() {
                     surface = colorResource(id = R.color.context_menu_background)
                 )
             ) {
-                RelationsValueScreen(
-                    state = vm.viewState.collectAsStateWithLifecycle().value,
-                    action = vm::onAction,
-                    onQueryChanged = vm::onQueryChanged
-                )
+//                RelationsValueScreen(
+//                    state = vm.viewState.collectAsStateWithLifecycle().value,
+//                    action = vm::onAction,
+//                    onQueryChanged = vm::onQueryChanged
+//                )
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        expand()
     }
 
     override fun onStart() {
         super.onStart()
         vm.onStart()
+        jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
+    private fun observeCommands(command: Command) {
+        when (command) {
+            is Command.OpenOptionScreen -> {
+                val arg = CreateOrEditOptionFragment.args(
+                    ctx = command.ctx,
+                    objectId = command.objectId,
+                    relationKey = command.relationKey,
+                    optionId = command.optionId,
+                    color = command.color,
+                    text = command.text,
+                    relationContext = relationContext
+                )
+                findNavController().navigate(R.id.optionScreen, arg)
+            }
+        }
     }
 
     override fun injectDependencies() {
-        val params = TagStatusViewModel.Params(
+        val params = TagOrStatusValueViewModel.ViewModelParams(
             ctx = ctx,
             objectId = objectId,
             relationKey = relationKey,
@@ -91,7 +121,7 @@ class TagStatusFragment : BaseBottomSheetComposeFragment() {
             relationKey: Key,
             isLocked: Boolean,
             relationContext: RelationContext
-        ) = TagStatusFragment().apply {
+        ) = TagOrStatusValueFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
                 OBJECT_ID_KEY to objectId,

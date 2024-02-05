@@ -72,6 +72,7 @@
 
     <include app:graph="@navigation/nav_editor_modal" />
     <include app:graph="@navigation/nav_templates_modal" />
+    <include app:graph="@navigation/nav_relations" />
 
     <navigation
         android:id="@+id/dataViewNavigation"

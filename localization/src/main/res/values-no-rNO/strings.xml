@@ -1088,5 +1088,11 @@
     <string name="relation_value_create_new">Create \"%1$s\"</string>
     <string name="option_widget_create">Opprett alternativ</string>
     <string name="option_widget_edit">Rediger valg</string>
+    <string name="options_empty_description">Fant ingenting. Opprett første alternativ for å starte.</string>
+    <string name="options_empty_title">Ingen valg</string>
+    <string name="options_empty_not_editable">Relasjonen er tom</string>
+    <string name="options_delete_title">Er du sikker?</string>
+    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="hint_enter_name">Skriv inn navn...</string>
     <string name="create_object">Opprett objekt</string>
 </resources>

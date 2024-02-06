@@ -18,7 +18,6 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_ui.relations.RelationsLazyList
 import com.anytypeio.anytype.core_ui.relations.TagOrStatusValueScreen
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -96,6 +95,18 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
                     relationContext = relationContext
                 )
                 findNavController().navigate(R.id.optionScreen, arg)
+            }
+
+            is Command.DeleteOption -> {
+                val dialog = DeleteOptionWarningFragment.new(command.optionId)
+                dialog.onDeletionAccepted = { optionId ->
+                    vm.proceedWithDeleteOptions(optionId)
+                    dialog.dismiss()
+                }
+                dialog.onDeletionCancelled = {
+                    dialog.dismiss()
+                }
+                dialog.show(childFragmentManager, null)
             }
         }
     }

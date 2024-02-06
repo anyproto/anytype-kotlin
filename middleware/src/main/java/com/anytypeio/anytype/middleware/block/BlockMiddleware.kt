@@ -855,4 +855,8 @@ class BlockMiddleware(
     override suspend fun debugStackGoroutines(path: String) {
         return middleware.debugStackGoroutines(path)
     }
+
+    override suspend fun deleteRelationOption(command: Command.DeleteRelationOptions) {
+        return middleware.deleteRelationOptions(command)
+    }
 }

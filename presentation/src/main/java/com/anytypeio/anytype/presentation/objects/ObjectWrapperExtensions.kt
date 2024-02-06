@@ -314,7 +314,7 @@ suspend fun ObjectWrapper.Basic.files(
     }
     ids.forEach { id ->
         val obj = storeOfObjects.get(id)
-        if (obj != null && obj.isDeleted != true) {
+        if (obj != null) {
             result.add(
                 FileView(
                     id = obj.id,
@@ -348,9 +348,7 @@ suspend fun ObjectWrapper.Basic.objects(
     }
     ids.forEach { id ->
         val wrapper = storeOfObjects.get(id) ?: return@forEach
-        if (wrapper.isDeleted != true) {
-            result.add(wrapper.toObjectView(urlBuilder))
-        }
+        result.add(wrapper.toObjectView(urlBuilder))
     }
     return result
 }

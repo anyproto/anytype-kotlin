@@ -474,9 +474,7 @@ fun ObjectWrapper.Relation.toObjects(
             val raw = details[id]?.map
             if (!raw.isNullOrEmpty()) {
                 val wrapper = ObjectWrapper.Basic(raw)
-                if (wrapper.isDeleted != true) {
-                    add(wrapper.toObjectView(urlBuilder))
-                }
+                add(wrapper.toObjectView(urlBuilder))
             }
         }
     }

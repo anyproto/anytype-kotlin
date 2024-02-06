@@ -264,7 +264,7 @@ suspend fun ObjectWrapper.Basic.statuses(
     }
     keys.forEach { key ->
         val option = storeOfObjects.get(key)
-        if (option != null) {
+        if (option != null && option.isDeleted != true) {
             result.add(
                 StatusView(
                     id = option.id,
@@ -289,7 +289,7 @@ suspend fun ObjectWrapper.Basic.tags(
     }
     keys.forEach { key ->
         val option = storeOfObjects.get(key)
-        if (option != null) {
+        if (option != null && option.isDeleted != true) {
             result.add(
                 TagView(
                     id = option.id,
@@ -314,7 +314,7 @@ suspend fun ObjectWrapper.Basic.files(
     }
     ids.forEach { id ->
         val obj = storeOfObjects.get(id)
-        if (obj != null) {
+        if (obj != null && obj.isDeleted != true) {
             result.add(
                 FileView(
                     id = obj.id,
@@ -348,7 +348,9 @@ suspend fun ObjectWrapper.Basic.objects(
     }
     ids.forEach { id ->
         val wrapper = storeOfObjects.get(id) ?: return@forEach
-        result.add(wrapper.toObjectView(urlBuilder))
+        if (wrapper.isDeleted != true) {
+            result.add(wrapper.toObjectView(urlBuilder))
+        }
     }
     return result
 }

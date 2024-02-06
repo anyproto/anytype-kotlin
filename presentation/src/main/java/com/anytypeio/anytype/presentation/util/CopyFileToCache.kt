@@ -308,7 +308,7 @@ private fun Context.deleteTemporaryFolder() {
 /**
  * Return /storage/emulated/0/Android/data/package/files/$TEMPORARY_DIRECTORY_NAME directory
  */
-private fun Context.getExternalFilesDirTemp(): File? = getExternalFilesDir(TEMPORARY_DIRECTORY_NAME)
+fun Context.getExternalFilesDirTemp(): File? = getExternalFilesDir(TEMPORARY_DIRECTORY_NAME)
 
 /**
  * Return /storage/emulated/0/Android/data/io.anytype.app/files/networkModeConfig directory

@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Last opp et bilde</string>
     <string name="hint_upload_file">Last opp en fil</string>
     <string name="hint_upload_audio">Last opp en lyd</string>
-    <string name="hint_add_a_web_bookmark">Legg til bokmerke</string>
+    <string name="hint_add_a_web_bookmark">Add bookmark</string>
     <string name="hint_bullet">Punktliste-element</string>
     <string name="hint_numbered_list">Nummerert liste-element</string>
     <string name="hint_toggle">Ekspanderbar blokk</string>
@@ -1037,6 +1037,10 @@
     <string name="sharing_menu_save_as_section_name">Save as</string>
     <string name="sharing_menu_save_as_note_option">Notat</string>
     <string name="sharing_menu_save_as_bookmark_option">Bokmerke</string>
+    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_file_option">Fil</string>
+    <string name="sharing_menu_save_as_images_option">Images</string>
+    <string name="sharing_menu_save_as_files_option">Files</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Legg til Anytype</string>
     <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>

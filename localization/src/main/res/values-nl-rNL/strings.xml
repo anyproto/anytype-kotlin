@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Upload een afbeelding</string>
     <string name="hint_upload_file">Upload een bestand</string>
     <string name="hint_upload_audio">Upload audio</string>
-    <string name="hint_add_a_web_bookmark">Voeg een webbladwijzer toe</string>
+    <string name="hint_add_a_web_bookmark">Add bookmark</string>
     <string name="hint_bullet">Item van opsommingslijst</string>
     <string name="hint_numbered_list">Item van genummerde lijst</string>
     <string name="hint_toggle">Open/sluit blok</string>
@@ -1037,6 +1037,10 @@
     <string name="sharing_menu_save_as_section_name">Sla op als</string>
     <string name="sharing_menu_save_as_note_option">Notitie</string>
     <string name="sharing_menu_save_as_bookmark_option">Bladwijzer</string>
+    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_file_option">Bestand</string>
+    <string name="sharing_menu_save_as_images_option">Images</string>
+    <string name="sharing_menu_save_as_files_option">Files</string>
     <string name="sharing_menu_data">Gegevens</string>
     <string name="sharing_menu_add_to_anytype_header_title">Voeg toe aan Anytype</string>
     <string name="sharing_menu_toast_object_added">Nieuw object wordt toegevoegd aan de ruimte \'%1$s\'</string>

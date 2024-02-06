@@ -11,14 +11,21 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.CLICK_ONBOARDING_TO
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.NO_VALUE
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onSuccess
+import com.anytypeio.anytype.domain.device.FileSharer
+import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
@@ -31,6 +38,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,7 +56,9 @@ class AddToAnytypeViewModel(
     private val getSpaceViews: GetSpaceViews,
     private val urlBuilder: UrlBuilder,
     private val awaitAccountStartManager: AwaitAccountStartManager,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val uploadFile: UploadFile,
+    private val fileSharer: FileSharer
 ) : BaseViewModel() {
 
     private val selectedSpaceId = MutableStateFlow(NO_VALUE)
@@ -105,6 +115,74 @@ class AddToAnytypeViewModel(
                 }.collect { views ->
                     spaceViews.value = views
                 }
+        }
+    }
+
+    fun onShareMedia(uris: List<String>) {
+        viewModelScope.launch(Dispatchers.IO) {
+            val targetSpaceView = spaceViews.value.firstOrNull { view ->
+                view.isSelected
+            }
+            val targetSpaceId = targetSpaceView?.obj?.targetSpaceId!!
+            val paths = uris.mapNotNull { uri ->
+                fileSharer.getPath(uri)
+            }
+            val files = mutableListOf<Id>()
+            paths.forEach { path ->
+                uploadFile.async(
+                    UploadFile.Params(
+                        path = path,
+                        space = SpaceId(targetSpaceId),
+                        // Temporary workaround to fix issue on the MW side.
+                        type = Block.Content.File.Type.NONE
+                    )
+                ).onSuccess { obj ->
+                    files.add(obj)
+                }
+            }
+            if (files.size == 1) {
+                if (targetSpaceId == spaceManager.get()) {
+                    navigation.emit(OpenObjectNavigation.OpenEditor(files.first()))
+                } else {
+                    with(commands) {
+                        emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
+                        emit(Command.Dismiss)
+                    }
+                }
+            } else {
+                val startTime = System.currentTimeMillis()
+                createPrefilledNote.async(
+                    CreatePrefilledNote.Params(
+                        text = EMPTY_STRING_VALUE,
+                        space = targetSpaceId,
+                        details = mapOf(
+                            Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                        ),
+                        attachments = files
+                    )
+                ).fold(
+                    onSuccess = { result ->
+                        sendAnalyticsObjectCreateEvent(
+                            analytics = analytics,
+                            objType = MarketplaceObjectTypeIds.NOTE,
+                            route = EventsDictionary.Routes.sharingExtension,
+                            startTime = startTime
+                        )
+                        if (targetSpaceId == spaceManager.get()) {
+                            navigation.emit(OpenObjectNavigation.OpenEditor(result))
+                        } else {
+                            with(commands) {
+                                emit(Command.ObjectAddToSpaceToast(targetSpaceView.obj.name))
+                                emit(Command.Dismiss)
+                            }
+                        }
+                    },
+                    onFailure = {
+                        Timber.d(it, "Error while creating note")
+                        sendToast("Error while creating note: ${it.msg()}")
+                    }
+                )
+            }
         }
     }
 
@@ -225,7 +303,9 @@ class AddToAnytypeViewModel(
         private val getSpaceViews: GetSpaceViews,
         private val urlBuilder: UrlBuilder,
         private val awaitAccountStartManager: AwaitAccountStartManager,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val uploadFile: UploadFile,
+        private val fileSharer: FileSharer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -236,7 +316,9 @@ class AddToAnytypeViewModel(
                 getSpaceViews = getSpaceViews,
                 urlBuilder = urlBuilder,
                 awaitAccountStartManager = awaitAccountStartManager,
-                analytics = analytics
+                analytics = analytics,
+                uploadFile = uploadFile,
+                fileSharer = fileSharer
             ) as T
         }
     }

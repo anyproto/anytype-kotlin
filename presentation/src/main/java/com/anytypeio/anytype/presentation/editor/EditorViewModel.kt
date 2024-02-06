@@ -3109,6 +3109,7 @@ class EditorViewModel(
             ObjectType.Layout.NOTE,
             ObjectType.Layout.TODO,
             ObjectType.Layout.FILE,
+            ObjectType.Layout.IMAGE,
             ObjectType.Layout.BOOKMARK -> {
                 proceedWithOpeningObject(target = target)
             }

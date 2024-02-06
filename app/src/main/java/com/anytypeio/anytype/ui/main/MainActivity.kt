@@ -3,8 +3,11 @@ package com.anytypeio.anytype.ui.main
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Parcelable
+import android.provider.OpenableColumns
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.os.bundleOf
@@ -18,6 +21,9 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
+import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.componentManager
@@ -31,12 +37,15 @@ import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
+import com.anytypeio.anytype.presentation.util.getExternalFilesDirTemp
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.github.javiersantos.appupdater.AppUpdater
 import com.github.javiersantos.appupdater.enums.UpdateFrom
+import java.io.File
+import java.io.FileOutputStream
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -107,8 +116,32 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         )
                                     )
                             }
-                            is Command.AddToAnytype -> {
-                                SharingFragment.new(command.data).show(
+                            is Command.Sharing.Text -> {
+                                SharingFragment.text(command.data).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
+                            is Command.Sharing.Image -> {
+                                SharingFragment.image(command.uri).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
+                            is Command.Sharing.Images -> {
+                                SharingFragment.images(command.uris).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
+                            is Command.Sharing.Files -> {
+                                SharingFragment.files(command.uris).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
+                            is Command.Sharing.File -> {
+                                SharingFragment.file(command.uri).show(
                                     supportFragmentManager,
                                     SHARE_DIALOG_LABEL
                                 )
@@ -121,8 +154,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 }
             }
         }
-        if (savedInstanceState == null && intent.action == Intent.ACTION_SEND) {
-            proceedWithShareIntent(intent)
+        if (savedInstanceState == null) {
+            val action = intent.action
+            if (action == Intent.ACTION_SEND || action == Intent.ACTION_SEND_MULTIPLE) {
+                proceedWithShareIntent(intent)
+            }
         }
     }
 
@@ -172,6 +208,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                 Intent.ACTION_SEND -> {
                     proceedWithShareIntent(intent)
                 }
+                Intent.ACTION_SEND_MULTIPLE -> {
+                    proceedWithShareIntent(intent)
+                }
             }
         }
         if (BuildConfig.DEBUG) {
@@ -180,8 +219,47 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     private fun proceedWithShareIntent(intent: Intent) {
-        intent.getStringExtra(Intent.EXTRA_TEXT)?.let {
-            vm.onIntentShare(it)
+        if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: $intent")
+        when {
+            intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
+                vm.onIntentTextShare(intent.getStringExtra(Intent.EXTRA_TEXT).orEmpty())
+            }
+            intent.type?.startsWith(SHARE_IMAGE_INTENT_PATTERN) == true -> {
+                proceedWithImageShareIntent(intent)
+            }
+            intent.type?.startsWith(SHARE_FILE_INTENT_PATTERN) == true -> {
+                proceedWithFileShareIntent(intent)
+            }
+            intent.type == Mimetype.MIME_FILE_ALL.value -> {
+                proceedWithFileShareIntent(intent)
+            }
+            else -> Timber.e("Unexpected scenario: ${intent.type}")
+        }
+    }
+
+    private fun proceedWithFileShareIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+            vm.onIntentMultipleFilesShare(intent.parseActionSendMultipleUris())
+        } else {
+            val uri = intent.parseActionSendUri()
+            if (uri != null) {
+                vm.onIntentMultipleFilesShare(listOf(uri))
+            } else {
+                toast("Could not parse URI")
+            }
+        }
+    }
+
+    private fun proceedWithImageShareIntent(intent: Intent) {
+        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+            vm.onIntentMultipleImageShare(uris = intent.parseActionSendMultipleUris())
+        } else {
+            val uri = intent.parseActionSendUri()
+            if (uri != null) {
+                vm.onIntentMultipleImageShare(listOf(uri))
+            } else {
+                toast("Could not parse URI")
+            }
         }
     }
 
@@ -249,5 +327,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     companion object {
         const val AUTO_UPDATE_URL = "https://fra1.digitaloceanspaces.com/anytype-release/latest-android.json"
         const val SHARE_DIALOG_LABEL = "anytype.dialog.share.label"
+        const val SHARE_IMAGE_INTENT_PATTERN = "image/"
+        const val SHARE_FILE_INTENT_PATTERN = "application/"
+
     }
 }

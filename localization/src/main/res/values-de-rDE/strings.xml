@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Bild hochladen</string>
     <string name="hint_upload_file">Datei hochladen</string>
     <string name="hint_upload_audio">Audio hochladen</string>
-    <string name="hint_add_a_web_bookmark">Ein Web-Lesezeichen hinzufügen</string>
+    <string name="hint_add_a_web_bookmark">Add bookmark</string>
     <string name="hint_bullet">Aufzählung</string>
     <string name="hint_numbered_list">Nummerierung</string>
     <string name="hint_toggle">Block wechseln</string>
@@ -1037,6 +1037,10 @@
     <string name="sharing_menu_save_as_section_name">Speichern als</string>
     <string name="sharing_menu_save_as_note_option">Notiz</string>
     <string name="sharing_menu_save_as_bookmark_option">Lesezeichen</string>
+    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_file_option">Datei</string>
+    <string name="sharing_menu_save_as_images_option">Images</string>
+    <string name="sharing_menu_save_as_files_option">Files</string>
     <string name="sharing_menu_data">Daten</string>
     <string name="sharing_menu_add_to_anytype_header_title">Zu Anytype hinzufügen</string>
     <string name="sharing_menu_toast_object_added">Neues Objekt wird dem Space ‚%1$s‘ hinzugefügt</string>

@@ -193,7 +193,7 @@
     <string name="hint_upload_image">Upload a picture</string>
     <string name="hint_upload_file">Upload a file</string>
     <string name="hint_upload_audio">Upload an audio</string>
-    <string name="hint_add_a_web_bookmark">Add a web bookmark</string>
+    <string name="hint_add_a_web_bookmark">Add bookmark</string>
     <string name="hint_bullet">Bulleted list item</string>
     <string name="hint_numbered_list">Numbered list item</string>
     <string name="hint_toggle">Toggle block</string>
@@ -1192,6 +1192,10 @@
     <string name="sharing_menu_save_as_section_name">Save as</string>
     <string name="sharing_menu_save_as_note_option">Note</string>
     <string name="sharing_menu_save_as_bookmark_option">Bookmark</string>
+    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_file_option">File</string>
+    <string name="sharing_menu_save_as_images_option">Images</string>
+    <string name="sharing_menu_save_as_files_option">Files</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Add to Anytype</string>
     <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>

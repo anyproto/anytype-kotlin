@@ -21,6 +21,7 @@ sealed class Command {
     ) : Command()
 
     class UploadFile(
+        val space: SpaceId? = null,
         val path: String,
         val type: Block.Content.File.Type?
     )

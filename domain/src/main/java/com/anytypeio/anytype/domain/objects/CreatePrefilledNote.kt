@@ -40,6 +40,19 @@ class CreatePrefilledNote @Inject constructor(
                 target = NO_VALUE
             )
         )
+        params.attachments.forEach { attachment ->
+            repo.create(
+                command = Command.Create(
+                    context = obj.id,
+                    prototype = Block.Prototype.Link(
+                        target = attachment,
+                        cardStyle = Block.Content.Link.CardStyle.CARD
+                    ),
+                    position = Position.NONE,
+                    target = NO_VALUE
+                )
+            )
+        }
         return obj.id
     }
 
@@ -50,6 +63,7 @@ class CreatePrefilledNote @Inject constructor(
         val space: Id,
         val text: String,
         val details: Struct,
-        val customType: TypeKey? = null
+        val customType: TypeKey? = null,
+        val attachments: List<Id> = emptyList()
     )
 }

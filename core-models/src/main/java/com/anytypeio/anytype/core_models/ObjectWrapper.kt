@@ -25,7 +25,7 @@ sealed class ObjectWrapper {
         val name: String? by default
 
         val iconEmoji: String? by default
-        val iconImage: String? = getValue(Relations.ICON_IMAGE)
+        val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? by default
 
         val coverId: String? by default
@@ -150,7 +150,7 @@ sealed class ObjectWrapper {
         val description: String? by default
         val source: String? by default
         val iconEmoji: String? by default
-        val iconImage: String? = getValue(Relations.ICON_IMAGE)
+        val iconImage: String? = getSingleValue(Relations.ICON_IMAGE)
         val picture: String? by default
         val isArchived: Boolean? by default
         val isDeleted: Boolean? by default
@@ -246,7 +246,7 @@ sealed class ObjectWrapper {
 
         val id: Id by default
         val name: String? by default
-        val iconImage: String? get() = getValue(Relations.ICON_IMAGE)
+        val iconImage: String? get() = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? by default
         val targetSpaceId: String? by default
 

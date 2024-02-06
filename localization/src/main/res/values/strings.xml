@@ -1259,4 +1259,5 @@
 
     <string name="option_widget_create">Create option</string>
     <string name="option_widget_edit">Edit option</string>
+    <string name="create_object">Create object</string>
 </resources>

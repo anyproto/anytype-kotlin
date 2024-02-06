@@ -72,7 +72,9 @@ class LibraryFragment : BaseComposeFragment() {
                             findNavController().popBackStack()
                         },
                         onCreateObjectLongClicked = {
-                            val dialog = SelectObjectTypeFragment().apply {
+                            val dialog = SelectObjectTypeFragment.new(
+                                flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
+                            ).apply {
                                 onTypeSelected = {
                                     vm.onCreateObjectOfTypeClicked(it)
                                 }

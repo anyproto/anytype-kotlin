@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -34,6 +35,7 @@ import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.types.SetPinnedObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
@@ -423,17 +425,17 @@ class SelectObjectTypeViewModel(
                     space = space,
                     details = mapOf(
                         Relations.ORIGIN to ObjectOrigin.CLIPBOARD.code.toDouble()
-                    )
+                    ),
+                    customType = defaultObjectType ?: TypeKey(ObjectTypeUniqueKeys.NOTE)
                 )
             ).fold(
                 onSuccess = { result ->
-                    // TODO select correct route
-//                    sendAnalyticsObjectCreateEvent(
-//                        analytics = analytics,
-//                        objType = MarketplaceObjectTypeIds.NOTE,
-//                        route = EventsDictionary.Routes.sharingExtension,
-//                        startTime = startTime
-//                    )
+                    sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        objType = defaultObjectType?.key ?: ObjectTypeUniqueKeys.NOTE,
+                        route = EventsDictionary.Routes.sharingExtension,
+                        startTime = startTime
+                    )
                     navigation.emit(OpenObjectNavigation.OpenEditor(result))
                 },
                 onFailure = {

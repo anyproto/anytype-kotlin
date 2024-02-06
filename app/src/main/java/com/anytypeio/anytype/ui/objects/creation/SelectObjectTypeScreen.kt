@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
@@ -57,6 +58,7 @@ import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.EmptyState
 import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_RED
+import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -64,6 +66,7 @@ import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.SelectTypeView
 import com.anytypeio.anytype.presentation.objects.SelectTypeViewState
+import com.anytypeio.anytype.ui.spaces.Header
 
 @Preview
 @Composable
@@ -77,12 +80,14 @@ fun PreviewScreen() {
         onPinOnTopClicked = {},
         onSetDefaultTypeClicked = {},
         onMoveLeftClicked = {},
-        onMoveRightClicked = {}
+        onMoveRightClicked = {},
+        title = "Create object"
     )
 }
 
 @Composable
 fun SelectObjectTypeScreen(
+    title: String,
     onTypeClicked: (SelectTypeView.Type) -> Unit,
     onUnpinTypeClicked: (SelectTypeView.Type) -> Unit,
     onPinOnTopClicked: (SelectTypeView.Type) -> Unit,
@@ -103,6 +108,7 @@ fun SelectObjectTypeScreen(
                 .padding(vertical = 6.dp)
                 .verticalScroll(rememberScrollState())
         )
+        Toolbar(title = title)
         SearchField(
             onQueryChanged = onQueryChanged,
             onFocused = onFocused
@@ -555,6 +561,7 @@ fun ClipboardBottomToolbar(
         modifier = modifier
             .fillMaxWidth()
             .height(48.dp)
+            .background(color = colorResource(id = R.color.background_secondary))
             .clickable { onToolbarClicked() }
     ) {
         Image(

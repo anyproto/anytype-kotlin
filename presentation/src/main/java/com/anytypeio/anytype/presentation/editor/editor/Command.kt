@@ -104,6 +104,13 @@ sealed class Command {
                 val target: Id,
                 val relationKey: Key,
             ) : OpenObjectRelationScreen.Value()
+
+            data class TagOrStatus(
+                val ctx: Id,
+                val target: Id,
+                val relationKey: Key,
+                val isLocked: Boolean = false
+            ) : OpenObjectRelationScreen.Value()
         }
     }
 

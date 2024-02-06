@@ -123,6 +123,7 @@ import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.sync.SyncStatusView
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
@@ -151,6 +152,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
+import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -1151,6 +1153,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     fr.showChildFragment()
                 }
                 is Command.OpenObjectTypeMenu -> openObjectTypeMenu(command)
+                is Command.OpenObjectRelationScreen.Value.TagOrStatus -> {
+                    findNavController().safeNavigate(
+                        R.id.pageScreen,
+                        R.id.nav_relations,
+                        bundleOf(
+                            TagOrStatusValueFragment.CTX_KEY to command.ctx,
+                            TagOrStatusValueFragment.OBJECT_ID_KEY to command.target,
+                            TagOrStatusValueFragment.RELATION_KEY to command.relationKey,
+                            TagOrStatusValueFragment.IS_LOCKED_KEY to command.isLocked,
+                            TagOrStatusValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT
+                        )
+                    )
+                }
             }
         }
     }

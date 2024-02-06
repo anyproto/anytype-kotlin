@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
@@ -868,7 +867,16 @@ class ObjectSetViewModel(
                         )
                     )
                 }
-                is CellView.Tag, is CellView.Status, is CellView.File -> {
+                is CellView.Tag, is CellView.Status -> {
+                    dispatch(
+                        ObjectSetCommand.Modal.EditTagOrStatusCell(
+                            ctx = context,
+                            target = cell.id,
+                            relationKey = cell.relationKey
+                        )
+                    )
+                }
+                is CellView.File -> {
                     dispatch(
                         ObjectSetCommand.Modal.EditRelationCell(
                             ctx = context,

@@ -98,7 +98,11 @@ class CreateOrEditOptionFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun releaseDependencies() {
-        componentManager().optionObjectComponent.release()
+        when (relationContext) {
+            RelationContext.OBJECT -> componentManager().optionObjectComponent.release()
+            RelationContext.OBJECT_SET -> componentManager().optionSetComponent.release()
+            RelationContext.DATA_VIEW -> componentManager().optionDataViewComponent.release()
+        }
     }
 
     private fun inject(params: CreateOrEditOptionViewModel.ViewModelParams) {

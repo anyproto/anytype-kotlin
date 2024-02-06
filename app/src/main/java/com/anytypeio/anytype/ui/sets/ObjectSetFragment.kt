@@ -966,6 +966,16 @@ open class ObjectSetFragment :
                     )
                 )
             }
+            is ObjectSetCommand.Modal.EditTagOrStatusCell -> {
+                val bundle = bundleOf(
+                    TagOrStatusValueFragment.CTX_KEY to command.ctx,
+                    TagOrStatusValueFragment.OBJECT_ID_KEY to command.target,
+                    TagOrStatusValueFragment.RELATION_KEY to command.relationKey,
+                    TagOrStatusValueFragment.IS_LOCKED_KEY to false,
+                    TagOrStatusValueFragment.RELATION_CONTEXT_KEY to RelationContext.DATA_VIEW
+                )
+                findNavController().safeNavigate(R.id.objectSetScreen, R.id.nav_relations, bundle)
+            }
             is ObjectSetCommand.Modal.OpenSettings -> {
                 val fr = ObjectSetSettingsFragment.new(
                     ctx = command.ctx,

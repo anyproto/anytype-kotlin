@@ -62,6 +62,12 @@ sealed class ObjectSetCommand {
             val viewer: Id
         ) : Modal()
 
+        data class EditTagOrStatusCell(
+            val ctx: Id,
+            val target: Id,
+            val relationKey: Key
+        ) : Modal()
+
         data class SetNameForCreatedObject(val ctx: Id, val target: Id) : Modal()
 
         data class CreateBookmark(val ctx: Id) : Modal()

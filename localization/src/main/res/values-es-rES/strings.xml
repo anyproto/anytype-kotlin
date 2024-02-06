@@ -1092,7 +1092,7 @@
     <string name="options_empty_title">No options</string>
     <string name="options_empty_not_editable">The relation is empty</string>
     <string name="options_delete_title">¿Estás seguro?</string>
-    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="options_delete_description">La opción se eliminará permanentemente de tu espacio</string>
     <string name="hint_enter_name">Enter name...</string>
     <string name="create_object">Crear objeto</string>
 </resources>

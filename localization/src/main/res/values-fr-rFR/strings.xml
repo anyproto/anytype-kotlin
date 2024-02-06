@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Importer une image</string>
     <string name="hint_upload_file">Importer un fichier</string>
     <string name="hint_upload_audio">Envoyer un fichier audio</string>
-    <string name="hint_add_a_web_bookmark">Add bookmark</string>
+    <string name="hint_add_a_web_bookmark">Ajouter un signet</string>
     <string name="hint_bullet">Élément de liste à puces</string>
     <string name="hint_numbered_list">Élément de liste numérotée</string>
     <string name="hint_toggle">Bloc dépliable</string>
@@ -1040,7 +1040,7 @@
     <string name="sharing_menu_save_as_image_option">Image</string>
     <string name="sharing_menu_save_as_file_option">Fichier</string>
     <string name="sharing_menu_save_as_images_option">Images</string>
-    <string name="sharing_menu_save_as_files_option">Files</string>
+    <string name="sharing_menu_save_as_files_option">Fichiers</string>
     <string name="sharing_menu_data">Données</string>
     <string name="sharing_menu_add_to_anytype_header_title">Ajouter à Anytype</string>
     <string name="sharing_menu_toast_object_added">Un nouvel objet est ajouté à l\'espace \'%1$s\'</string>
@@ -1092,7 +1092,7 @@
     <string name="options_empty_title">Aucune option</string>
     <string name="options_empty_not_editable">La relation est vide</string>
     <string name="options_delete_title">Êtes-vous sûr ?</string>
-    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="options_delete_description">L\'option sera définitivement retirée de votre espace</string>
     <string name="hint_enter_name">Saisir un nom...</string>
     <string name="create_object">Créer un objet</string>
 </resources>

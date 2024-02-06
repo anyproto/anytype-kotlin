@@ -1089,4 +1089,11 @@
     <string name="relation_value_create_new">Crea \"%1$s\"</string>
     <string name="option_widget_create">Crea opzione</string>
     <string name="option_widget_edit">Modifica opzione</string>
+    <string name="options_empty_description">Nessun risultato. Crea la prima opzione per iniziare.</string>
+    <string name="options_empty_title">Nessuna opzione</string>
+    <string name="options_empty_not_editable">La relazione è vuota</string>
+    <string name="options_delete_title">Sei sicuro/a?</string>
+    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="hint_enter_name">Inserisci nome...</string>
+    <string name="create_object">Crea oggetto</string>
 </resources>

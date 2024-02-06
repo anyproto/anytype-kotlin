@@ -1745,4 +1745,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun deleteRelationOptions(request: Rpc.Relation.ListRemoveOption.Request): Rpc.Relation.ListRemoveOption.Response {
+        val encoded = Service.relationListRemoveOption(
+            Rpc.Relation.ListRemoveOption.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Relation.ListRemoveOption.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Relation.ListRemoveOption.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

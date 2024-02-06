@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -62,6 +63,17 @@ object TagOrStatusValueObjectModule {
     @JvmStatic
     @Provides
     @PerModal
+    fun provideDeleteRelationOptions(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DeleteRelationOptions = DeleteRelationOptions(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerModal
     fun provideFactory(
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
@@ -71,7 +83,8 @@ object TagOrStatusValueObjectModule {
         analytics: Analytics,
         spaceManager: SpaceManager,
         params: TagOrStatusValueViewModel.ViewModelParams,
-        @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer
+        @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
+        deleteRelationOptions: DeleteRelationOptions
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
@@ -81,6 +94,7 @@ object TagOrStatusValueObjectModule {
         dispatcher = dispatcher,
         analytics = analytics,
         spaceManager = spaceManager,
-        subscription = subscription
+        subscription = subscription,
+        deleteRelationOptions = deleteRelationOptions
     )
 }

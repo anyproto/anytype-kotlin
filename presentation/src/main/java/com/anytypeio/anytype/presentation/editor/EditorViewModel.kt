@@ -7099,6 +7099,16 @@ class EditorViewModel(
                     )
                 )
             }
+            Relation.Format.TAG, Relation.Format.STATUS -> {
+                dispatch(
+                    Command.OpenObjectRelationScreen.Value.TagOrStatus(
+                        ctx = context,
+                        target = context,
+                        relationKey = relation.key,
+                        isLocked = mode == EditorMode.Locked
+                    )
+                )
+            }
             else -> {
                 dispatch(
                     Command.OpenObjectRelationScreen.Value.Default(

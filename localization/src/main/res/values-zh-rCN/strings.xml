@@ -1084,5 +1084,11 @@
     <string name="relation_value_create_new">创建 “%1$s”</string>
     <string name="option_widget_create">创建选项</string>
     <string name="option_widget_edit">编辑选项</string>
+    <string name="options_empty_description">什么也没有。创建第一个选项以开始。</string>
+    <string name="options_empty_title">无选项</string>
+    <string name="options_empty_not_editable">关联是空的</string>
+    <string name="options_delete_title">是否确定?</string>
+    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="hint_enter_name">输入名称...</string>
     <string name="create_object">创建对象</string>
 </resources>

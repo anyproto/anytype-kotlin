@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -29,7 +30,12 @@ class CreateObjectViewModel(private val createObject: CreateObject) : ViewModel(
                     Timber.e(e, "Error while creating a new object with type:$type")
                 },
                 onSuccess = { result ->
-                    createObjectStatus.emit(State.Success(result.objectId))
+                    createObjectStatus.emit(
+                        State.Success(
+                            id = result.objectId,
+                            layout = result.obj.layout
+                        )
+                    )
                 }
             )
         }
@@ -45,7 +51,7 @@ class CreateObjectViewModel(private val createObject: CreateObject) : ViewModel(
     }
 
     sealed class State {
-        data class Success(val id: String) : State()
+        data class Success(val id: String, val layout: ObjectType.Layout?) : State()
         data class Error(val msg: String) : State()
     }
 

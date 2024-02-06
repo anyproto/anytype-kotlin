@@ -1088,5 +1088,11 @@
     <string name="relation_value_create_new">„%1$s“ erstellen</string>
     <string name="option_widget_create">Option erstellen</string>
     <string name="option_widget_edit">Option bearbeiten</string>
+    <string name="options_empty_description">Nichts gefunden. Erstelle zuerst eine Option zum Starten.</string>
+    <string name="options_empty_title">Keine Optionen</string>
+    <string name="options_empty_not_editable">Die Relation ist leer</string>
+    <string name="options_delete_title">Sind Sie sicher?</string>
+    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="hint_enter_name">Name eingeben...</string>
     <string name="create_object">Objekt erstellen</string>
 </resources>

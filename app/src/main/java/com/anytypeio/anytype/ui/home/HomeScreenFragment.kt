@@ -92,7 +92,9 @@ class HomeScreenFragment : BaseComposeFragment() {
                     ),
                     onCreateNewObjectLongClicked = throttledClick(
                         onClick = {
-                            val dialog = SelectObjectTypeFragment().apply {
+                            val dialog = SelectObjectTypeFragment.new(
+                                flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
+                            ).apply {
                                 onTypeSelected = {
                                     vm.onCreateNewObjectClicked(it)
                                     dismiss()

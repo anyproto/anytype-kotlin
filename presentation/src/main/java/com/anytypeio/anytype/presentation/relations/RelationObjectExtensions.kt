@@ -178,13 +178,15 @@ fun statusRelation(
         if (optionId != null) {
             val map = details.details[optionId]?.map ?: return null
             val optionDetails = ObjectWrapper.Basic(map)
-            add(
-                StatusView(
-                    id = optionId,
-                    status = optionDetails.name.orEmpty(),
-                    color = optionDetails.relationOptionColor.orEmpty()
+            if (optionDetails.isDeleted != true) {
+                add(
+                    StatusView(
+                        id = optionId,
+                        status = optionDetails.name.orEmpty(),
+                        color = optionDetails.relationOptionColor.orEmpty()
+                    )
                 )
-            )
+            }
         }
     }
     return ObjectRelationView.Status(
@@ -210,12 +212,14 @@ fun tagRelation(
     tagIds.forEach { id ->
         val map = details.details[id]?.map ?: emptyMap()
         val optionDetails = ObjectWrapper.Basic(map)
-        val tagView = TagView(
-            id = id,
-            tag = optionDetails.name.orEmpty(),
-            color = optionDetails.relationOptionColor.orEmpty()
-        )
-        tagViews.add(tagView)
+        if (optionDetails.isDeleted != true) {
+            val tagView = TagView(
+                id = id,
+                tag = optionDetails.name.orEmpty(),
+                color = optionDetails.relationOptionColor.orEmpty()
+            )
+            tagViews.add(tagView)
+        }
     }
     return ObjectRelationView.Tags(
         id = relationDetails.id,

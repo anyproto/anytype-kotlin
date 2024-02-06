@@ -78,7 +78,11 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun objectCreateObjectType(request: Rpc.Object.CreateObjectType.Request): Rpc.Object.CreateObjectType.Response
 
+    @Throws(Exception::class)
     fun objectCreateRelationOption(request: Rpc.Object.CreateRelationOption.Request): Rpc.Object.CreateRelationOption.Response
+
+    @Throws(Exception::class)
+    fun deleteRelationOptions(request: Rpc.Relation.ListRemoveOption.Request): Rpc.Relation.ListRemoveOption.Response
 
     @Throws(Exception::class)
     fun objectCreateSet(request: Rpc.Object.CreateSet.Request): Rpc.Object.CreateSet.Response

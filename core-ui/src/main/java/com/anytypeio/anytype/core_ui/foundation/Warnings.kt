@@ -28,6 +28,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
@@ -130,10 +131,10 @@ fun GenericAlert(
 }
 
 @Composable
-fun AlertDescription(description: String) {
+fun AlertDescription(description: String, style : TextStyle = BodyRegular) {
     Text(
         text = description,
-        style = BodyRegular,
+        style = style,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
@@ -143,10 +144,10 @@ fun AlertDescription(description: String) {
 }
 
 @Composable
-fun AlertTitle(title: String) {
+fun AlertTitle(title: String, style: TextStyle = HeadlineHeading) {
     Text(
         text = title,
-        style = HeadlineHeading,
+        style = style,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),

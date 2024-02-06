@@ -24,7 +24,9 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.clipboard
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -39,6 +41,7 @@ import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
 
@@ -46,6 +49,8 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
     lateinit var factory: SelectObjectTypeViewModel.Factory
 
     private val excludedTypeKeys get() = argOrNull<List<Key>>(EXCLUDED_TYPE_KEYS_ARG_KEY)
+
+    private val flow get() = arg<FlowType>(FLOW_TYPE_KEY)
 
     private val vm by viewModels<SelectObjectTypeViewModel> { factory }
 
@@ -107,7 +112,8 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
                     onFocused = {
                         skipCollapsed()
                         expand()
-                    }
+                    },
+                    title = resolveScreenTitle()
                 )
                 when(vm.clipboardToolbarViewState.collectAsStateWithLifecycle().value) {
                     is ClipboardToolbarViewState.CreateBookmark -> {
@@ -164,6 +170,12 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
+    private fun resolveScreenTitle() : String = when(val type = flow) {
+        FLOW_CHANGE_TYPE -> getString(R.string.change_type)
+        FLOW_CREATE_OBJECT -> getString(R.string.create_object)
+        else -> EMPTY_STRING_VALUE.also { Timber.w("Unexpected flow type: $type") }
+    }
+
     override fun onResume() {
         super.onResume()
         with(clipboard()) {
@@ -206,18 +218,30 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
-        const val EXCLUDED_TYPE_KEYS_ARG_KEY = "arg.create-object-of-type.excluded-type-keys"
+
+        const val EXCLUDED_TYPE_KEYS_ARG_KEY = "arg.select-object-type.excluded-type-keys"
+        const val FLOW_TYPE_KEY = "arg.select-object-type.flow-type"
         const val DROP_DOWN_MENU_ACTION_DELAY = 100L
+
+        const val FLOW_CREATE_OBJECT = 0
+        const val FLOW_CHANGE_TYPE = 1
 
         fun newInstance(
             excludedTypeKeys: List<Key>,
-            onTypeSelected: (ObjectWrapper.Type) -> Unit
+            onTypeSelected: (ObjectWrapper.Type) -> Unit,
+            flow: FlowType = FLOW_CHANGE_TYPE
         ): SelectObjectTypeFragment = SelectObjectTypeFragment().apply {
             this.onTypeSelected = onTypeSelected
-            arguments =
-                bundleOf(
-                    EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys
-                )
+            arguments = bundleOf(
+                    EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys,
+                    FLOW_TYPE_KEY to flow
+            )
+        }
+
+        fun new(flow: FlowType = FLOW_CREATE_OBJECT) = SelectObjectTypeFragment().apply {
+            arguments = bundleOf(FLOW_TYPE_KEY to flow)
         }
     }
 }
+
+typealias FlowType = Int

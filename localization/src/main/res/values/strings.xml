@@ -1267,4 +1267,5 @@
     <string name="options_delete_description">The option will be permanently removed from your space</string>
     <string name="hint_enter_name">Enter name...</string>
 
+    <string name="create_object">Create object</string>
 </resources>

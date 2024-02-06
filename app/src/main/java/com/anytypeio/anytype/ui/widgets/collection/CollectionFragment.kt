@@ -55,7 +55,9 @@ class CollectionFragment : BaseComposeFragment() {
                     CollectionScreen(
                         vm = vm,
                         onCreateObjectLongClicked = {
-                            val dialog = SelectObjectTypeFragment().apply {
+                            val dialog = SelectObjectTypeFragment.new(
+                                flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
+                            ).apply {
                                 onTypeSelected = {
                                     vm.onAddClicked(it)
                                 }

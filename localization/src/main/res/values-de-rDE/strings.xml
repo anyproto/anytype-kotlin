@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Bild hochladen</string>
     <string name="hint_upload_file">Datei hochladen</string>
     <string name="hint_upload_audio">Audio hochladen</string>
-    <string name="hint_add_a_web_bookmark">Add bookmark</string>
+    <string name="hint_add_a_web_bookmark">Lesezeichen hinzufügen</string>
     <string name="hint_bullet">Aufzählung</string>
     <string name="hint_numbered_list">Nummerierung</string>
     <string name="hint_toggle">Block wechseln</string>
@@ -739,7 +739,7 @@
     <string name="anytype_analytics">Anytype Analytik</string>
     <string name="anytype_analytics_msg">Zu verstehen wie Anytype genutzt wird, hilft uns das Produkt zu verbessern. Diese Version von Anytype enthält Analysecode, der deine Privatsphäre schützt. \n Der Inhalt der Dokumente wird nicht aufgezeichnet. Auch so können wir verstehen wie du Anytype nutzt.\n Bleib auf unserer Mailingliste, da wir bald einen Release ankündigen, welcher eine Analysefreie Option hat.</string>
     <string name="retry">Erneut versuchen</string>
-    <string name="try_again">Try again</string>
+    <string name="try_again">Erneut versuchen</string>
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Löschung abbrechen</string>
     <string name="logout_and_clear_local_data">Abmelden und lokale Daten löschen</string>
@@ -1037,10 +1037,10 @@
     <string name="sharing_menu_save_as_section_name">Speichern als</string>
     <string name="sharing_menu_save_as_note_option">Notiz</string>
     <string name="sharing_menu_save_as_bookmark_option">Lesezeichen</string>
-    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_image_option">Bild</string>
     <string name="sharing_menu_save_as_file_option">Datei</string>
-    <string name="sharing_menu_save_as_images_option">Images</string>
-    <string name="sharing_menu_save_as_files_option">Files</string>
+    <string name="sharing_menu_save_as_images_option">Bilder</string>
+    <string name="sharing_menu_save_as_files_option">Dateien</string>
     <string name="sharing_menu_data">Daten</string>
     <string name="sharing_menu_add_to_anytype_header_title">Zu Anytype hinzufügen</string>
     <string name="sharing_menu_toast_object_added">Neues Objekt wird dem Space ‚%1$s‘ hinzugefügt</string>
@@ -1084,8 +1084,9 @@
     <string name="any_object_creation_menu_move_left">Nach links verschieben</string>
     <string name="any_object_creation_menu_move_right">Nach rechts verschieben</string>
     <string name="clipboard_panel_create_object_from_clipboard">Objekt aus der Zwischenablage erstellen</string>
-    <string name="block_media_error">Something went wrong, please try again</string>
+    <string name="block_media_error">Etwas ist schiefgelaufen, bitte versuche es noch einmal</string>
     <string name="relation_value_create_new">„%1$s“ erstellen</string>
     <string name="option_widget_create">Option erstellen</string>
     <string name="option_widget_edit">Option bearbeiten</string>
+    <string name="create_object">Objekt erstellen</string>
 </resources>

@@ -1088,4 +1088,5 @@
     <string name="relation_value_create_new">Create \"%1$s\"</string>
     <string name="option_widget_create">Create option</string>
     <string name="option_widget_edit">Edit option</string>
+    <string name="create_object">Crear objeto</string>
 </resources>

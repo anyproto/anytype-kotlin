@@ -427,7 +427,7 @@ suspend fun ObjectWrapper.Relation.toTags(
     return buildList {
         ids.forEach { id ->
             val option = store.get(id)?.let { ObjectWrapper.Option(it.map) }
-            if (option != null) {
+            if (option != null && option.isDeleted != true) {
                 add(
                     TagView(
                         id = option.id,
@@ -449,7 +449,7 @@ suspend fun ObjectWrapper.Relation.toStatus(
     val filter : Id? = value.values<Id>().firstOrNull()
     return if (filter != null) {
         val option = store.get(filter)?.let { ObjectWrapper.Option(it.map) }
-        if (option != null) {
+        if (option != null && option.isDeleted != true) {
             StatusView(
                 id = option.id,
                 status = option.name.orEmpty(),

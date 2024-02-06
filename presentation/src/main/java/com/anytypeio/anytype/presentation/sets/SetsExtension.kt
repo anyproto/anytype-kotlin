@@ -344,7 +344,7 @@ fun Struct.buildTagViews(
     }
     tags.forEach { id ->
         val option = options.find { it.id == id }
-        if (option != null) {
+        if (option != null && option.isDeleted != true) {
             add(
                 TagView(
                     id = option.id,
@@ -367,7 +367,7 @@ fun Struct.buildStatusViews(
     }
     if (status != null) {
         options.forEach { o ->
-            if (o.id == status) {
+            if (o.id == status && o.isDeleted != true) {
                 add(
                     StatusView(
                         id = o.id,

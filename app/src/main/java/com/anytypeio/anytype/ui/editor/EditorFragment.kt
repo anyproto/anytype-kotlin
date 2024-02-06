@@ -164,6 +164,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -612,7 +613,9 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .btnAddDoc
             .longClicks(withHaptic = true)
             .onEach {
-                val dialog = SelectObjectTypeFragment().apply {
+                val dialog = SelectObjectTypeFragment.new(
+                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
+                ).apply {
                     onTypeSelected = {
                         vm.onAddNewDocumentClicked(it)
                     }
@@ -1044,7 +1047,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     hideKeyboard()
                     val dialog = SelectObjectTypeFragment.newInstance(
                         excludedTypeKeys = command.excludedTypes,
-                        onTypeSelected = vm::onObjectTypeChanged
+                        onTypeSelected = vm::onObjectTypeChanged,
+                        flow = SelectObjectTypeFragment.FLOW_CHANGE_TYPE
                     )
                     dialog.show(childFragmentManager, null)
                 }

@@ -315,7 +315,9 @@ open class ObjectSetFragment :
                 .btnAddDoc
                 .longClicks(withHaptic = true)
                 .onEach {
-                    val dialog = SelectObjectTypeFragment().apply {
+                    val dialog = SelectObjectTypeFragment.new(
+                        flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
+                    ).apply {
                         onTypeSelected = {
                             vm.onAddNewDocumentClicked(it)
                         }

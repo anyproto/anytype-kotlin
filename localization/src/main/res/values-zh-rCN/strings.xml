@@ -171,7 +171,7 @@
     <string name="hint_upload_image">上传图像</string>
     <string name="hint_upload_file">上传文件</string>
     <string name="hint_upload_audio">上传音频</string>
-    <string name="hint_add_a_web_bookmark">Add bookmark</string>
+    <string name="hint_add_a_web_bookmark">添加书签</string>
     <string name="hint_bullet">项目符号列表项</string>
     <string name="hint_numbered_list">编号列表项</string>
     <string name="hint_toggle">切换块</string>

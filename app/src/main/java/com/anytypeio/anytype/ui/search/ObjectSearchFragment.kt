@@ -51,7 +51,12 @@ class ObjectSearchFragment :
 
     private val searchAdapter by lazy {
         DefaultObjectViewAdapter(
-            onDefaultObjectClicked = vm::onObjectClicked
+            onDefaultObjectClicked = vm::onObjectClicked,
+            onCurrentListChanged = { prevSize, newSize ->
+                if (prevSize != 0 && newSize != 0) {
+                    binding.recyclerView.smoothScrollToPosition(0)
+                }
+            }
         )
     }
 

@@ -105,6 +105,8 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
                 }
                 dialog.show(childFragmentManager, null)
             }
+
+            Command.Dismiss -> dismiss()
         }
     }
 

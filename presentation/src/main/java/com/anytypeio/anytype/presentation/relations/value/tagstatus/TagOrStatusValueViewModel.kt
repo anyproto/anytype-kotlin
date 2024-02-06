@@ -24,6 +24,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -173,8 +174,9 @@ class TagOrStatusValueViewModel(
         }
     }
 
-    private fun emitCommand(command: Command) {
+    private fun emitCommand(command: Command, delay: Long = 0L) {
         viewModelScope.launch {
+            delay(delay)
             commands.emit(command)
         }
     }
@@ -333,6 +335,7 @@ class TagOrStatusValueViewModel(
                 success = {
                     dispatcher.send(it)
                     sendAnalyticsRelationValueEvent(analytics)
+                    emitCommand(command = Command.Dismiss, delay = 300L)
                 }
             )
         }
@@ -425,6 +428,8 @@ sealed class Command {
     ) : Command()
 
     data class DeleteOption(val optionId: Id) : Command()
+
+    object Dismiss : Command()
 }
 
 sealed class TagStatusViewState {

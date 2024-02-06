@@ -1088,4 +1088,5 @@
     <string name="relation_value_create_new">Maak \"%1$s\" aan</string>
     <string name="option_widget_create">Maak optie aan</string>
     <string name="option_widget_edit">Bewerk optie</string>
+    <string name="create_object">Maak object aan</string>
 </resources>

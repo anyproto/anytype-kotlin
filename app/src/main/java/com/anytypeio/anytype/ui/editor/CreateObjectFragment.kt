@@ -9,6 +9,7 @@ import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -16,6 +17,8 @@ import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentCreateObjectBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.CreateObjectViewModel
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import javax.inject.Inject
 
 class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.fragment_create_object) {
@@ -36,11 +39,20 @@ class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.
                     val navOptions = NavOptions.Builder()
                         .setPopUpTo(R.id.createObjectFragment, true)
                         .build()
-                    findNavController().navigate(
-                        R.id.objectNavigation,
-                        bundleOf(EditorFragment.ID_KEY to state.id),
-                        navOptions
-                    )
+                    val layout = state.layout
+                    if (layout == ObjectType.Layout.COLLECTION || layout == ObjectType.Layout.SET) {
+                        findNavController().navigate(
+                            R.id.dataViewNavigation,
+                            bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to state.id),
+                            navOptions
+                        )
+                    } else {
+                        findNavController().navigate(
+                            R.id.objectNavigation,
+                            bundleOf(EditorFragment.ID_KEY to state.id),
+                            navOptions
+                        )
+                    }
                 }
             }
         }

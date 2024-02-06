@@ -238,6 +238,7 @@ sealed class ObjectWrapper {
         val id: Id by default
         val name: String? by default
         val color: String = relationOptionColor.orEmpty()
+        val isDeleted: Boolean? by default
     }
 
     data class SpaceView(override val map: Struct) : ObjectWrapper() {

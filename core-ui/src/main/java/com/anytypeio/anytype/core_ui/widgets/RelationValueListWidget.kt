@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.view.marginStart
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
@@ -378,6 +379,7 @@ class RelationValueListWidget @JvmOverloads constructor(
         icon1.visible()
         val icon = if (relation.isChecked) ObjectIcon.Checkbox(true) else ObjectIcon.Checkbox(false)
         icon1.setIcon(icon = icon)
+        setupSingleTextItem(name = relation.name, marginStart = defaultObjectMargin)
     }
     //endregion
 

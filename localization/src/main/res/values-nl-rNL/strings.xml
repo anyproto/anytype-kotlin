@@ -1088,4 +1088,11 @@
     <string name="relation_value_create_new">Maak \"%1$s\" aan</string>
     <string name="option_widget_create">Maak optie aan</string>
     <string name="option_widget_edit">Bewerk optie</string>
+    <string name="options_empty_description">Niets gevonden. Maak een eerste optie aan om te starten.</string>
+    <string name="options_empty_title">Geen opties</string>
+    <string name="options_empty_not_editable">De relatie is leeg</string>
+    <string name="options_delete_title">Weet je het zeker?</string>
+    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="hint_enter_name">Voer naam... in</string>
+    <string name="create_object">Maak object aan</string>
 </resources>

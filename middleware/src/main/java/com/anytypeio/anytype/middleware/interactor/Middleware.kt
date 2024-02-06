@@ -2345,6 +2345,18 @@ class Middleware @Inject constructor(
         return response.id
     }
 
+    @Throws
+    fun deleteRelationOptions(
+        command: Command.DeleteRelationOptions
+    ) {
+        val request = Rpc.Relation.ListRemoveOption.Request(
+            optionIds = command.optionIds
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.deleteRelationOptions(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
     @Throws(Exception::class)
     fun debugStackGoroutines(path: String) {
         val request = Rpc.Debug.StackGoroutines.Request(

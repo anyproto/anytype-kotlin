@@ -1614,7 +1614,14 @@ class ObjectSetViewModel(
                     )
                 }
                 RelationFormat.STATUS,
-                RelationFormat.TAG,
+                RelationFormat.TAG -> {
+                    _commands.emit(
+                        ObjectSetCommand.Modal.EditTagOrStatusRelationValue(
+                            ctx = context,
+                            relation = relation.key
+                        )
+                    )
+                }
                 RelationFormat.FILE,
                 RelationFormat.OBJECT -> {
                     _commands.emit(

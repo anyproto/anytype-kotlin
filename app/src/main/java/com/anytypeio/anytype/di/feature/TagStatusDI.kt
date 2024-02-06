@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.SUB_MY_OPTIONS
@@ -78,7 +77,6 @@ object TagOrStatusValueObjectModule {
     fun provideFactory(
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
-        storage: Editor.Storage,
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
@@ -89,7 +87,6 @@ object TagOrStatusValueObjectModule {
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
-        storage = storage,
         relations = relations,
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
@@ -154,7 +151,6 @@ object TagOrStatusValueSetModule {
     fun provideFactory(
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
-        storage: Editor.Storage,
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
@@ -165,7 +161,6 @@ object TagOrStatusValueSetModule {
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
-        storage = storage,
         relations = relations,
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
@@ -230,7 +225,6 @@ object TagOrStatusValueDataViewModule {
     fun provideFactory(
         @Named(ObjectRelationProvider.DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
-        storage: Editor.Storage,
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
@@ -241,7 +235,6 @@ object TagOrStatusValueDataViewModule {
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
-        storage = storage,
         relations = relations,
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,

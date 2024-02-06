@@ -103,14 +103,15 @@ class CreateOrEditOptionFragment : BaseBottomSheetComposeFragment() {
 
     private fun inject(params: CreateOrEditOptionViewModel.ViewModelParams) {
         when (relationContext) {
-            RelationContext.OBJECT -> {
-                componentManager()
-                    .optionObjectComponent.get(params)
-                    .inject(this)
-            }
-
-            RelationContext.OBJECT_SET -> TODO()
-            RelationContext.DATA_VIEW -> TODO()
+            RelationContext.OBJECT -> componentManager()
+                .optionObjectComponent.get(params)
+                .inject(this)
+            RelationContext.OBJECT_SET -> componentManager()
+                .optionSetComponent.get(params)
+                .inject(this)
+            RelationContext.DATA_VIEW -> componentManager()
+                .optionDataViewComponent.get(params)
+                .inject(this)
         }
     }
 

@@ -158,6 +158,11 @@ interface ObjectSetSubComponent {
     fun createDataViewViewerSubComponent(): CreateDataViewViewerSubComponent.Builder
     fun editDataViewViewerComponent(): EditDataViewViewerSubComponent.Builder
     fun manageViewerComponent(): ManageViewerSubComponent.Builder
+
+    fun tagStatusSetComponent(): TagOrStatusValueSetComponent.Builder
+    fun tagStatusDataViewComponent(): TagOrStatusValueDataViewComponent.Builder
+    fun optionSetComponent(): CreateOrEditOptionSetComponent.Builder
+    fun optionDataViewComponent(): CreateOrEditOptionDataViewComponent.Builder
 }
 
 @Module(

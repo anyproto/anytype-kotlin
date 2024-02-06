@@ -119,9 +119,21 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
             isLocked = isLocked,
             relationContext = relationContext
         )
-        componentManager()
-            .tagStatusObjectComponent.get(params)
-            .inject(this)
+        inject(params)
+    }
+
+    private fun inject(params: TagOrStatusValueViewModel.ViewModelParams) {
+        when (relationContext) {
+            RelationContext.OBJECT -> componentManager()
+                .tagStatusObjectComponent.get(params)
+                .inject(this)
+            RelationContext.OBJECT_SET -> componentManager()
+                .tagStatusSetComponent.get(params)
+                .inject(this)
+            RelationContext.DATA_VIEW -> componentManager()
+                .tagStatusDataViewComponent.get(params)
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {

@@ -1096,5 +1096,11 @@
     <string name="relation_value_create_new">Create \"%1$s\"</string>
     <string name="option_widget_create">Create option</string>
     <string name="option_widget_edit">Edit option</string>
+    <string name="options_empty_description">Nothing found. Create first option to start.</string>
+    <string name="options_empty_title">No options</string>
+    <string name="options_empty_not_editable">The relation is empty</string>
+    <string name="options_delete_title">Ви впевнені?</string>
+    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="hint_enter_name">Enter name...</string>
     <string name="create_object">Створити об\'єкт</string>
 </resources>

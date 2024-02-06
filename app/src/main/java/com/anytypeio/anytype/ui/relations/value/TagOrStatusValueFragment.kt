@@ -96,6 +96,18 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
                 )
                 findNavController().navigate(R.id.optionScreen, arg)
             }
+
+            is Command.DeleteOption -> {
+                val dialog = DeleteOptionWarningFragment.new(command.optionId)
+                dialog.onDeletionAccepted = { optionId ->
+                    vm.proceedWithDeleteOptions(optionId)
+                    dialog.dismiss()
+                }
+                dialog.onDeletionCancelled = {
+                    dialog.dismiss()
+                }
+                dialog.show(childFragmentManager, null)
+            }
         }
     }
 

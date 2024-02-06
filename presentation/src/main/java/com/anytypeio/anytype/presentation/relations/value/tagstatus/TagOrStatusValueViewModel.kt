@@ -11,9 +11,11 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.editor.Editor
@@ -41,7 +43,8 @@ class TagOrStatusValueViewModel(
     private val setObjectDetails: UpdateDetail,
     private val analytics: Analytics,
     private val spaceManager: SpaceManager,
-    private val subscription: StorelessSubscriptionContainer
+    private val subscription: StorelessSubscriptionContainer,
+    private val deleteRelationOptions: DeleteRelationOptions
 ) : BaseViewModel() {
 
     val viewState = MutableStateFlow<TagStatusViewState>(TagStatusViewState.Loading)
@@ -97,6 +100,16 @@ class TagOrStatusValueViewModel(
         }
     }
 
+    fun proceedWithDeleteOptions(optionId: Id) {
+        viewModelScope.launch {
+            val params = DeleteRelationOptions.Params(listOf(optionId))
+            deleteRelationOptions.execute(params).fold(
+                onSuccess = { Timber.d("Options deleted successfully") },
+                onFailure = { Timber.e(it, "Error while deleting options") }
+            )
+        }
+    }
+
     fun onAction(action: TagStatusAction) {
         Timber.d("TagStatusViewModel onAction, action: $action")
         if (isRelationNotEditable) {
@@ -122,7 +135,9 @@ class TagOrStatusValueViewModel(
                     objectId = viewModelParams.objectId
                 )
             )
-            is TagStatusAction.Delete -> TODO()
+            is TagStatusAction.Delete -> {
+                emitCommand(Command.DeleteOption(action.optionId))
+            }
             is TagStatusAction.Duplicate -> {
                 val item = action.item
                 emitCommand(
@@ -412,6 +427,8 @@ sealed class Command {
         val color: String? = null,
         val text: String? = null,
     ) : Command()
+
+    data class DeleteOption(val optionId: Id) : Command()
 }
 
 sealed class TagStatusViewState {

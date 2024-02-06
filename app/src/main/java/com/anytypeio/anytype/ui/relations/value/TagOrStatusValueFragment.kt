@@ -10,14 +10,11 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.relations.TagOrStatusValueScreen
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -119,32 +116,32 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
             isLocked = isLocked,
             relationContext = relationContext
         )
-        componentManager()
-            .tagStatusObjectComponent.get(params)
-            .inject(this)
+        inject(params)
+    }
+
+    private fun inject(params: TagOrStatusValueViewModel.ViewModelParams) {
+        when (relationContext) {
+            RelationContext.OBJECT -> componentManager()
+                .tagStatusObjectComponent.get(params)
+                .inject(this)
+            RelationContext.OBJECT_SET -> componentManager()
+                .tagStatusSetComponent.get(params)
+                .inject(this)
+            RelationContext.DATA_VIEW -> componentManager()
+                .tagStatusDataViewComponent.get(params)
+                .inject(this)
+        }
     }
 
     override fun releaseDependencies() {
-        componentManager().tagStatusObjectComponent.release()
+        when (relationContext) {
+            RelationContext.OBJECT -> componentManager().tagStatusObjectComponent.release()
+            RelationContext.OBJECT_SET -> componentManager().tagStatusSetComponent.release()
+            RelationContext.DATA_VIEW -> componentManager().tagStatusDataViewComponent.release()
+        }
     }
 
     companion object {
-        fun new(
-            ctx: Id,
-            objectId: Id,
-            relationKey: Key,
-            isLocked: Boolean,
-            relationContext: RelationContext
-        ) = TagOrStatusValueFragment().apply {
-            arguments = bundleOf(
-                CTX_KEY to ctx,
-                OBJECT_ID_KEY to objectId,
-                RELATION_KEY to relationKey,
-                IS_LOCKED_KEY to isLocked,
-                RELATION_CONTEXT_KEY to relationContext
-            )
-        }
-
         const val CTX_KEY = "arg.tag-status.ctx"
         const val RELATION_KEY = "arg.tag-status.relation.key"
         const val OBJECT_ID_KEY = "arg.tag-status.object"

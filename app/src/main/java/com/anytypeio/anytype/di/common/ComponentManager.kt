@@ -957,9 +957,37 @@ class ComponentManager(
             .build()
     }
 
+    val tagStatusSetComponent = ComponentWithParams { params: TagOrStatusValueViewModel.ViewModelParams ->
+        objectSetComponent.get(params.ctx)
+            .tagStatusSetComponent()
+            .params(params)
+            .build()
+    }
+
+    val tagStatusDataViewComponent = ComponentWithParams { params: TagOrStatusValueViewModel.ViewModelParams ->
+        objectSetComponent.get(params.ctx)
+            .tagStatusDataViewComponent()
+            .params(params)
+            .build()
+    }
+
     val optionObjectComponent = ComponentWithParams { params: CreateOrEditOptionViewModel.ViewModelParams ->
         editorComponent.get(params.ctx)
             .optionObjectComponent()
+            .params(params)
+            .build()
+    }
+
+    val optionSetComponent = ComponentWithParams { params: CreateOrEditOptionViewModel.ViewModelParams ->
+        objectSetComponent.get(params.ctx)
+            .optionSetComponent()
+            .params(params)
+            .build()
+    }
+
+    val optionDataViewComponent = ComponentWithParams { params: CreateOrEditOptionViewModel.ViewModelParams ->
+        objectSetComponent.get(params.ctx)
+            .optionDataViewComponent()
             .params(params)
             .build()
     }

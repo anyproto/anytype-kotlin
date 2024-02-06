@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
@@ -18,7 +17,6 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -38,7 +36,6 @@ class TagOrStatusValueViewModel(
     private val viewModelParams: ViewModelParams,
     private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
-    private val storage: Editor.Storage,
     private val dispatcher: Dispatcher<Payload>,
     private val setObjectDetails: UpdateDetail,
     private val analytics: Analytics,
@@ -394,7 +391,6 @@ class TagOrStatusValueViewModel(
 
     private fun setupIsRelationNotEditable(relation: ObjectWrapper.Relation) {
         isRelationNotEditable = viewModelParams.isLocked
-                || storage.objectRestrictions.current().contains(ObjectRestriction.RELATIONS)
                 || relation.isReadonlyValue
                 || relation.isHidden == true
                 || relation.isDeleted == true

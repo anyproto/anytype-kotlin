@@ -92,7 +92,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
 
             viewModel.commands.test {
                 val command = awaitItem()
-                assertIs<ObjectSetCommand.Modal.EditRelationCell>(command)
+                assertIs<ObjectSetCommand.Modal.EditTagOrStatusCell>(command)
             }
         }
     }

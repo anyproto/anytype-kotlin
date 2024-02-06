@@ -8,6 +8,7 @@ import android.widget.EditText
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.argStringOrNull
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
@@ -30,7 +32,9 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.ObjectRelationListViewModelFactory
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
+import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.onStart
@@ -134,7 +138,7 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 )
                 fr.showChildFragment()
             }
-            is Command.EditTagFileObjectRelationValue -> {
+            is Command.EditFileObjectRelationValue -> {
                 if (isSetFlow) {
                     val fr = RelationValueDVFragment().apply {
                         arguments = RelationValueDVFragment.args(
@@ -166,28 +170,16 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 }
                 dismiss()
             }
-            is Command.EditStatusRelationValue -> {
-                if (isSetFlow) {
-                    val fr = RelationValueDVFragment().apply {
-                        arguments = RelationValueDVFragment.args(
-                            ctx = command.ctx,
-                            target = command.target,
-                            relation = command.relationKey,
-                            targetTypes = command.targetObjectTypes,
-                            isIntrinsic = true
-                        )
-                    }
-                    fr.showChildFragment()
-                } else {
-                    val fr = RelationStatusValueFragment.new(
-                        ctx = ctx,
-                        target = command.target,
-                        relationKey = command.relationKey,
-                        targetObjectTypes = command.targetObjectTypes,
-                        isLocked = command.isLocked
-                    )
-                    fr.showChildFragment()
-                }
+            is Command.EditTagOrStatusRelationValue -> {
+                val relationContext = if (isSetFlow) RelationContext.OBJECT_SET else RelationContext.OBJECT
+                val bundle = bundleOf(
+                    TagOrStatusValueFragment.CTX_KEY to command.ctx,
+                    TagOrStatusValueFragment.OBJECT_ID_KEY to command.target,
+                    TagOrStatusValueFragment.RELATION_KEY to command.relationKey,
+                    TagOrStatusValueFragment.IS_LOCKED_KEY to command.isLocked,
+                    TagOrStatusValueFragment.RELATION_CONTEXT_KEY to relationContext
+                )
+                findNavController().safeNavigate(R.id.objectRelationListScreen, R.id.nav_relations, bundle)
             }
         }
     }

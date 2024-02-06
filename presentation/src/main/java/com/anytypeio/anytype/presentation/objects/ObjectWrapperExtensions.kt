@@ -264,7 +264,7 @@ suspend fun ObjectWrapper.Basic.statuses(
     }
     keys.forEach { key ->
         val option = storeOfObjects.get(key)
-        if (option != null) {
+        if (option != null && option.isDeleted != true) {
             result.add(
                 StatusView(
                     id = option.id,
@@ -289,7 +289,7 @@ suspend fun ObjectWrapper.Basic.tags(
     }
     keys.forEach { key ->
         val option = storeOfObjects.get(key)
-        if (option != null) {
+        if (option != null && option.isDeleted != true) {
             result.add(
                 TagView(
                     id = option.id,

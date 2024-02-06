@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
+    android:layout_height="18dp"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
-    android:paddingBottom="@dimen/dp_4"
     android:paddingStart="@dimen/dp_8">
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
         android:id="@+id/icon1"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
         android:layout_gravity="center_vertical"
-        app:checkboxSize="16dp"
-        app:emojiSize="16dp"
+        app:checkboxSize="14dp"
+        app:emojiSize="14dp"
         app:hasEmojiRounded8Background="false"
         app:hasInitialRounded8Background="true"
         app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
-        app:imageSize="16dp"
-        app:initialTextSize="12sp"
+        app:imageSize="14dp"
+        app:initialTextSize="11sp"
         android:visibility="gone"
         tools:visibility="gone"/>
 
@@ -40,17 +39,17 @@
 
     <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
         android:id="@+id/icon2"
-        android:layout_width="16dp"
-        android:layout_height="16dp"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
         android:layout_marginStart="@dimen/dp_6"
         android:layout_gravity="center_vertical"
-        app:checkboxSize="16dp"
-        app:emojiSize="16dp"
+        app:checkboxSize="14dp"
+        app:emojiSize="14dp"
         app:hasEmojiRounded8Background="false"
         app:hasInitialRounded8Background="true"
         app:imageCornerRadius="@dimen/list_item_object_image_corner_radius_small"
-        app:imageSize="16dp"
-        app:initialTextSize="12sp"
+        app:imageSize="14dp"
+        app:initialTextSize="11sp"
         android:visibility="gone"
         tools:visibility="gone"/>
 

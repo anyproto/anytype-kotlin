@@ -69,6 +69,8 @@ class AddToAnytypeViewModel(
     val spaceViews = MutableStateFlow<List<SpaceView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
 
+    val state = MutableStateFlow<ViewState>(ViewState.Init)
+
     init {
         viewModelScope.launch {
             analytics.registerEvent(
@@ -137,7 +139,7 @@ class AddToAnytypeViewModel(
                         type = Block.Content.File.Type.NONE
                     )
                 ).onSuccess { obj ->
-                    files.add(obj)
+                    files.add(obj.id)
                 }
             }
             if (files.size == 1) {
@@ -296,6 +298,14 @@ class AddToAnytypeViewModel(
         }
     }
 
+    fun onSharedData(uris: List<String>) {
+        viewModelScope.launch {
+            state.value = ViewState.Default(
+                uris.mapNotNull { uri -> fileSharer.getDisplayName(uri) }.toString()
+            )
+        }
+    }
+
     class Factory @Inject constructor(
         private val createBookmarkObject: CreateBookmarkObject,
         private val createPrefilledNote: CreatePrefilledNote,
@@ -334,5 +344,10 @@ class AddToAnytypeViewModel(
         data class ObjectAddToSpaceToast(
             val spaceName: String?
         ) : Command()
+    }
+
+    sealed class ViewState {
+        object Init : ViewState()
+        data class Default(val content: String) : ViewState()
     }
 }

@@ -80,7 +80,7 @@ interface BlockRemote {
     suspend fun paste(command: Command.Paste): Response.Clipboard.Paste
     suspend fun copy(command: Command.Copy): Response.Clipboard.Copy
 
-    suspend fun uploadFile(command: Command.UploadFile): Id
+    suspend fun uploadFile(command: Command.UploadFile): ObjectWrapper.File
     suspend fun downloadFile(command: Command.DownloadFile): String
 
     suspend fun setRelationKey(command: Command.SetRelationKey): Payload

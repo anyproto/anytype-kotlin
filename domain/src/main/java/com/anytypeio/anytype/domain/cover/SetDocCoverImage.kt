@@ -15,7 +15,7 @@ class SetDocCoverImage(
     override suspend fun run(params: Params) = safe {
         when (params) {
             is Params.FromPath -> {
-                val hash = repo.uploadFile(
+                val file = repo.uploadFile(
                     command = Command.UploadFile(
                         path = params.path,
                         type = Block.Content.File.Type.IMAGE,
@@ -24,7 +24,7 @@ class SetDocCoverImage(
                 )
                 repo.setDocumentCoverImage(
                     ctx = params.context,
-                    hash = hash
+                    hash = file.id
                 )
             }
             is Params.FromHash -> {

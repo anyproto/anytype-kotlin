@@ -55,7 +55,8 @@ fun AddToAnytypeScreenUrlPreview() {
         onCancelClicked = {},
         onDoneClicked = {},
         spaces = emptyList(),
-        onSelectSpaceClicked = {}
+        onSelectSpaceClicked = {},
+        content = "https://en.wikipedia.org/wiki/Walter_Benjamin"
     )
 }
 
@@ -67,12 +68,14 @@ fun AddToAnytypeScreenNotePreview() {
         onCancelClicked = {},
         onDoneClicked = {},
         spaces = emptyList(),
-        onSelectSpaceClicked = {}
+        onSelectSpaceClicked = {},
+        content = ""
     )
 }
 
 @Composable
 fun AddToAnytypeScreen(
+    content: String,
     spaces: List<SpaceView>,
     data: SharingData,
     onCancelClicked: () -> Unit,
@@ -103,7 +106,7 @@ fun AddToAnytypeScreen(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Header()
-        DataSection(data)
+        DataSection(content)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -199,7 +202,7 @@ fun AddToAnytypeScreen(
 }
 
 @Composable
-private fun DataSection(data: SharingData) {
+private fun DataSection(content: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -222,7 +225,7 @@ private fun DataSection(data: SharingData) {
                 )
         )
         Text(
-            text = data.data,
+            text = content,
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier.padding(

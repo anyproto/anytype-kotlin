@@ -268,12 +268,7 @@ sealed class ObjectWrapper {
             null
     }
 
-    inline fun <reified T> getSingleValue(relation: Key): T? =
-        when (val value = map.getOrDefault(relation, null)) {
-            is T -> value
-            is List<*> -> value.typeOf<T>().firstOrNull()
-            else -> null
-        }
+    inline fun <reified T> getSingleValue(relation: Key): T? = map.getSingleValue(relation)
 
     inline fun <reified T> getValues(relation: Key): List<T> {
         return when (val value = map.getOrDefault(relation, emptyList<T>())) {
@@ -311,3 +306,10 @@ sealed class ObjectWrapper {
         val isDeleted: Boolean? by default
     }
 }
+
+inline fun <reified T> Struct.getSingleValue(relation: Key): T? =
+    when (val value = getOrDefault(relation, null)) {
+        is T -> value
+        is List<*> -> value.typeOf<T>().firstOrNull()
+        else -> null
+    }

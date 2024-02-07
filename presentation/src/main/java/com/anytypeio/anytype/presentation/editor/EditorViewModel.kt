@@ -47,6 +47,7 @@ import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.core_models.ext.supportNesting
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.updateTextContent
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -480,7 +481,9 @@ class EditorViewModel(
     ) {
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
-                picture = action.img
+                picture = action.img,
+                // TODO re-fact to use space id from arguments or target space id of this object
+                space = SpaceId(spaceManager.get())
             )
         ).process(
             failure = {

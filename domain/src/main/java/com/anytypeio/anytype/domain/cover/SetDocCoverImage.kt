@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
@@ -17,7 +18,8 @@ class SetDocCoverImage(
                 val hash = repo.uploadFile(
                     command = Command.UploadFile(
                         path = params.path,
-                        type = Block.Content.File.Type.IMAGE
+                        type = Block.Content.File.Type.IMAGE,
+                        space = params.space
                     )
                 )
                 repo.setDocumentCoverImage(
@@ -36,13 +38,22 @@ class SetDocCoverImage(
 
     /**
      * Params for for setting document's image cover
-     * @property path image path in file system
-     * @property context id of the context for this operation
      */
     sealed class Params {
         abstract val context: String
-
-        data class FromPath(override val context: String, val path: String) : Params()
-        data class FromHash(override val context: String, val hash: Hash) : Params()
+        /**
+         * @property path image path in file system
+         * @property context id of the context for this operation
+         * @property space target space
+         */
+        data class FromPath(
+            override val context: String,
+            val path: String,
+            val space: SpaceId
+        ) : Params()
+        data class FromHash(
+            override val context: String,
+            val hash: Hash
+        ) : Params()
     }
 }

@@ -24,7 +24,7 @@ data class Block(
      * Block fields containing useful block properties.
      * @property map map containing fields
      */
-    data class Fields(val map: Map<String, Any?>) {
+    data class Fields(val map: Struct) {
 
         private val default = map.withDefault { null }
 
@@ -32,9 +32,9 @@ data class Block(
         val name: String? by default
         val iconEmoji: String? by default
         val iconOption: Double? by default
-        val coverId: String? by default
+        val coverId: Id? by default
         val coverType: Double? by default
-        val iconImage: String? by default
+        val iconImage: Id? get() = map.getSingleValue<Id>(Relations.ICON_IMAGE)
         val isArchived: Boolean? by default
         val isLocked: Boolean? by default
         val isDeleted: Boolean? by default

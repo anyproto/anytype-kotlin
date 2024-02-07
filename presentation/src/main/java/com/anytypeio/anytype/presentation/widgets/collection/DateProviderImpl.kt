@@ -1,14 +1,15 @@
 package com.anytypeio.anytype.presentation.widgets.collection
 
 import android.text.format.DateUtils
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
-import java.sql.Time
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
 import javax.inject.Inject
+import timber.log.Timber
 
 class DateProviderImpl @Inject constructor() : DateProvider {
 
@@ -83,4 +84,19 @@ class DateProviderImpl @Inject constructor() : DateProvider {
         DateUtils.DAY_IN_MILLIS,
         DateUtils.FORMAT_ABBREV_RELATIVE
     )
+
+    /**
+     * Adjusts the given timestamp to the start of the day in the user's local time zone.
+     *
+     * @param timestamp The original timestamp in seconds.
+     * @return The timestamp representing the start of the day in the user's time zone, in milliseconds.
+     */
+    override fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis {
+        Timber.d("adjustToStartOfDayInUserTimeZone: $timestamp")
+        val instant = Instant.ofEpochSecond(timestamp)
+        val userZoneDateTime = instant.atZone(ZoneId.systemDefault())
+        val startOfDayInUserZone = userZoneDateTime.toLocalDate().atStartOfDay(ZoneId.systemDefault())
+        Timber.d("startOfDayInUserZone: $startOfDayInUserZone")
+        return startOfDayInUserZone.toInstant().toEpochMilli()
+    }
 }

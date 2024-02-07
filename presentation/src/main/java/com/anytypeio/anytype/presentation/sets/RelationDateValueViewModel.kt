@@ -69,13 +69,13 @@ class RelationDateValueViewModel(
     }
 
     fun onExactDayClicked() {
-        viewModelScope.launch {
-            commands.emit(
-                DateValueCommand.OpenDatePicker(
-                    timeInSeconds = views.value.timeInSeconds
-                )
-            )
-        }
+//        viewModelScope.launch {
+//            commands.emit(
+//                DateValueCommand.OpenDatePicker(
+//                    timeInSeconds = views.value.timeInSeconds
+//                )
+//            )
+//        }
     }
 
     fun onNoDateClicked() {
@@ -83,13 +83,13 @@ class RelationDateValueViewModel(
     }
 
     fun onActionClicked() {
-        viewModelScope.launch {
-            commands.emit(
-                DateValueCommand.DispatchResult(
-                    timeInSeconds = views.value.timeInSeconds?.toDouble()
-                )
-            )
-        }
+//        viewModelScope.launch {
+//            commands.emit(
+//                DateValueCommand.DispatchResult(
+//                    timeInSeconds = views.value.timeInSeconds?.toDouble()
+//                )
+//            )
+//        }
     }
 
     private fun setName(name: String?) {
@@ -114,7 +114,7 @@ class RelationDateValueViewModel(
                 isYesterday = isYesterday,
                 isTomorrow = isTomorrow,
                 exactDayFormat = exactDayFormat,
-                timeInSeconds = timeInSeconds
+                timeInSeconds = dateProvider.adjustToStartOfDayInUserTimeZone(timeInSeconds)
             )
         } else {
             _views.value = views.value.copy(

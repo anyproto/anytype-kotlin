@@ -8,9 +8,7 @@ import com.anytypeio.anytype.presentation.relations.providers.FakeObjectValuePro
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.widgets.collection.DateProviderImpl
 import java.time.Duration
-import java.time.LocalDate
 import kotlin.test.assertEquals
-import kotlin.test.expect
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import net.lachlanmckee.timberjunit.TimberTestRule
 import org.junit.Before
@@ -52,7 +50,7 @@ class RelationDateValueViewModelTest {
 
     @Test
     fun `should be 01-01-1970`() {
-        viewModel.setDate(994)
+        viewModel.setState(994)
 
         val result = viewModel.views.value
 
@@ -71,7 +69,7 @@ class RelationDateValueViewModelTest {
 
     @Test
     fun `should be 07-07-1989`() {
-        viewModel.setDate(615815721)
+        viewModel.setState(615815721)
 
         val result = viewModel.views.value
 
@@ -90,7 +88,7 @@ class RelationDateValueViewModelTest {
 
     @Test
     fun `should be 07-07-2031`() {
-        viewModel.setDate(1941191721)
+        viewModel.setState(1941191721)
 
         val result = viewModel.views.value
 
@@ -112,7 +110,7 @@ class RelationDateValueViewModelTest {
 
         val yesterdayTimestamp = dateProvider.getTimestampForYesterdayAtStartOfDay()
 
-        viewModel.setDate(yesterdayTimestamp)
+        viewModel.setState(yesterdayTimestamp)
 
         val result = viewModel.views.value
 
@@ -135,7 +133,7 @@ class RelationDateValueViewModelTest {
         val yesterdayTimestamp = dateProvider.getTimestampForYesterdayAtStartOfDay() + 43200
         Timber.d("yesterdayTimestamp: $yesterdayTimestamp")
 
-        viewModel.setDate(yesterdayTimestamp)
+        viewModel.setState(yesterdayTimestamp)
 
         val result = viewModel.views.value
 
@@ -158,7 +156,7 @@ class RelationDateValueViewModelTest {
         val yesterdayTimestamp = dateProvider.getTimestampForYesterdayAtStartOfDay() + 86399
         Timber.d("yesterdayTimestamp: $yesterdayTimestamp")
 
-        viewModel.setDate(yesterdayTimestamp)
+        viewModel.setState(yesterdayTimestamp)
 
         val result = viewModel.views.value
 
@@ -180,7 +178,7 @@ class RelationDateValueViewModelTest {
 
         val todayTimestamp = dateProvider.getTimestampForTodayAtStartOfDay()
 
-        viewModel.setDate(todayTimestamp)
+        viewModel.setState(todayTimestamp)
 
         val result = viewModel.views.value
 
@@ -202,7 +200,7 @@ class RelationDateValueViewModelTest {
 
         val todayTimestamp = dateProvider.getTimestampForTodayAtStartOfDay() + 43200
 
-        viewModel.setDate(todayTimestamp)
+        viewModel.setState(todayTimestamp)
 
         val result = viewModel.views.value
 
@@ -224,7 +222,7 @@ class RelationDateValueViewModelTest {
 
         val todayTimestamp = dateProvider.getTimestampForTodayAtStartOfDay() + 86399
 
-        viewModel.setDate(todayTimestamp)
+        viewModel.setState(todayTimestamp)
 
         val result = viewModel.views.value
 
@@ -246,7 +244,7 @@ class RelationDateValueViewModelTest {
 
         val tomorrowTimestamp = dateProvider.getTimestampForTomorrowAtStartOfDay()
 
-        viewModel.setDate(tomorrowTimestamp)
+        viewModel.setState(tomorrowTimestamp)
 
         val result = viewModel.views.value
 
@@ -268,7 +266,7 @@ class RelationDateValueViewModelTest {
 
         val tomorrowTimestamp = dateProvider.getTimestampForTomorrowAtStartOfDay() + 43200
 
-        viewModel.setDate(tomorrowTimestamp)
+        viewModel.setState(tomorrowTimestamp)
 
         val result = viewModel.views.value
 
@@ -290,7 +288,7 @@ class RelationDateValueViewModelTest {
 
         val tomorrowTimestamp = dateProvider.getTimestampForTomorrowAtStartOfDay() + 86399
 
-        viewModel.setDate(tomorrowTimestamp)
+        viewModel.setState(tomorrowTimestamp)
 
         val result = viewModel.views.value
 

@@ -18,7 +18,8 @@ import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 
 class DefaultObjectViewAdapter(
     private val onDefaultObjectClicked: (DefaultObjectView) -> Unit,
-    private val onBundledWidgetSourceClicked: (BundledWidgetSourceView) -> Unit = {}
+    private val onBundledWidgetSourceClicked: (BundledWidgetSourceView) -> Unit = {},
+    private val onCurrentListChanged: (Int, Int) -> Unit = { prevSize, newSize -> }
 ) : ListAdapter<DefaultSearchItem, DefaultObjectViewAdapter.ObjectViewHolder>(Differ) {
 
     override fun onCreateViewHolder(
@@ -88,6 +89,14 @@ class DefaultObjectViewAdapter(
         is ObjectSearchSection -> TYPE_SECTION
         is BundledWidgetSourceView -> TYPE_BUNDLED_WIDGET_SOURCE
         else -> throw IllegalStateException("Unexpected item type: ${item.javaClass.name}")
+    }
+
+    override fun onCurrentListChanged(
+        previousList: MutableList<DefaultSearchItem>,
+        currentList: MutableList<DefaultSearchItem>
+    ) {
+        super.onCurrentListChanged(previousList, currentList)
+        onCurrentListChanged(previousList.size, currentList.size)
     }
 
     open class ObjectViewHolder(val view: View) : RecyclerView.ViewHolder(view)

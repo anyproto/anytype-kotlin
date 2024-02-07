@@ -24,6 +24,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -50,9 +51,13 @@ class TagOrStatusValueViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val jobs = mutableListOf<Job>()
 
+    private val initialIds = mutableListOf<Id>()
+    private var isInitialSortDone = false
+
     fun onStart() {
         Timber.d("onStart, params: $viewModelParams")
         jobs += viewModelScope.launch {
+            setupInitialIds()
             val relation = relations.get(relation = viewModelParams.relationKey)
             val spaces = listOf(spaceManager.get())
             val searchParams = StoreSearchParams(
@@ -74,13 +79,29 @@ class TagOrStatusValueViewModel(
                 setupIsRelationNotEditable(relation)
                 initViewState(
                     relation = relation,
-                    record = record,
                     options = options
                         .map { ObjectWrapper.Option(map = it.map) }
                         .filter { it.name?.contains(query, true) == true },
-                    query = query
+                    query = query,
+                    ids = getRecordValues(record)
                 )
             }.collect()
+        }
+    }
+
+    private fun setupInitialIds() {
+        viewModelScope.launch {
+            val ids = getRecordValues(
+                values.get(
+                    ctx = viewModelParams.ctx,
+                    target = viewModelParams.objectId
+                )
+            )
+            initialIds.clear()
+            initialIds.addAll(ids)
+            if (initialIds.isEmpty()) {
+                emitCommand(Command.Expand)
+            }
         }
     }
 
@@ -173,8 +194,9 @@ class TagOrStatusValueViewModel(
         }
     }
 
-    private fun emitCommand(command: Command) {
+    private fun emitCommand(command: Command, delay: Long = 0L) {
         viewModelScope.launch {
+            delay(delay)
             commands.emit(command)
         }
     }
@@ -220,18 +242,13 @@ class TagOrStatusValueViewModel(
 
     private fun initViewState(
         relation: ObjectWrapper.Relation,
-        record: Map<String, Any?>,
+        ids: List<Id>,
         options: List<ObjectWrapper.Option>,
         query: String
     ) {
         val result = mutableListOf<RelationsListItem>()
         when (relation.format) {
             Relation.Format.STATUS -> {
-                val ids: List<Id> = when (val value = record[viewModelParams.relationKey]) {
-                    is Id -> listOf(value)
-                    is List<*> -> value.typeOf()
-                    else -> emptyList()
-                }
                 result.addAll(
                     mapStatusOptions(
                         ids = ids,
@@ -240,11 +257,6 @@ class TagOrStatusValueViewModel(
                 )
             }
             Relation.Format.TAG -> {
-                val ids: List<Id> = when (val value = record[viewModelParams.relationKey]) {
-                    is Id -> listOf(value)
-                    is List<*> -> value.typeOf()
-                    else -> emptyList()
-                }
                 result.addAll(
                     mapTagOptions(
                         ids = ids,
@@ -271,6 +283,14 @@ class TagOrStatusValueViewModel(
                 title = relation.name.orEmpty(),
                 items = result
             )
+        }
+    }
+
+    private fun getRecordValues(record: Map<String, Any?>): List<Id> {
+        return when (val value = record[viewModelParams.relationKey]) {
+            is Id -> listOf(value)
+            is List<*> -> value.typeOf()
+            else -> emptyList()
         }
     }
 
@@ -333,6 +353,7 @@ class TagOrStatusValueViewModel(
                 success = {
                     dispatcher.send(it)
                     sendAnalyticsRelationValueEvent(analytics)
+                    emitCommand(command = Command.Dismiss, delay = DELAY_UNTIL_CLOSE)
                 }
             )
         }
@@ -369,7 +390,22 @@ class TagOrStatusValueViewModel(
             isSelected = isSelected,
             number = number
         )
-    }.sortedBy { it.number }
+    }.let { mappedOptions ->
+        if (!isInitialSortDone) {
+            isInitialSortDone = true
+            mappedOptions.sortedWith(
+                compareBy(
+                    { !initialIds.contains(it.optionId) },
+                    { it.number })
+            )
+        } else {
+            mappedOptions.sortedWith(
+                compareBy(
+                    { !initialIds.contains(it.optionId) },
+                    { initialIds.indexOf(it.optionId) })
+            )
+        }
+    }
 
     private fun mapStatusOptions(
         ids: List<Id>,
@@ -425,6 +461,10 @@ sealed class Command {
     ) : Command()
 
     data class DeleteOption(val optionId: Id) : Command()
+
+    object Dismiss : Command()
+
+    object Expand : Command()
 }
 
 sealed class TagStatusViewState {
@@ -489,3 +529,4 @@ sealed class RelationsListItem {
 }
 
 const val SUB_MY_OPTIONS = "subscription.relation_options"
+const val DELAY_UNTIL_CLOSE = 300L

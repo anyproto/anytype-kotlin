@@ -148,22 +148,22 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
         super.onStart()
         when(val data = sharedData) {
             is SharingData.File -> {
-
+                vm.onSharedMediaData(listOf(data.uri))
             }
             is SharingData.Files -> {
-                vm.onSharedData(data.uris)
+                vm.onSharedMediaData(data.uris)
             }
             is SharingData.Image -> {
-
+                vm.onSharedMediaData(listOf(data.uri))
             }
             is SharingData.Images -> {
-
+                vm.onSharedMediaData(data.uris)
             }
             is SharingData.Text -> {
-
+                vm.onSharedTextData(data.raw)
             }
             is SharingData.Url -> {
-
+                vm.onSharedTextData(data.url)
             }
         }
     }

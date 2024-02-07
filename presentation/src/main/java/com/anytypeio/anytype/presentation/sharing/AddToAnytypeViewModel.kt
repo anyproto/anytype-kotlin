@@ -298,11 +298,19 @@ class AddToAnytypeViewModel(
         }
     }
 
-    fun onSharedData(uris: List<String>) {
+    fun onSharedMediaData(uris: List<String>) {
         viewModelScope.launch {
             state.value = ViewState.Default(
-                uris.mapNotNull { uri -> fileSharer.getDisplayName(uri) }.toString()
+                uris.mapNotNull { uri ->
+                    fileSharer.getDisplayName(uri)
+                }.joinToString(separator = ", ")
             )
+        }
+    }
+
+    fun onSharedTextData(text: String) {
+        viewModelScope.launch {
+            state.value = ViewState.Default(text)
         }
     }
 

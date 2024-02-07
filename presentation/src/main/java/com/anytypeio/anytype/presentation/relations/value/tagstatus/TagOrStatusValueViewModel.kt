@@ -353,7 +353,7 @@ class TagOrStatusValueViewModel(
                 success = {
                     dispatcher.send(it)
                     sendAnalyticsRelationValueEvent(analytics)
-                    emitCommand(command = Command.Dismiss, delay = 300L)
+                    emitCommand(command = Command.Dismiss, delay = DELAY_UNTIL_CLOSE)
                 }
             )
         }
@@ -529,3 +529,4 @@ sealed class RelationsListItem {
 }
 
 const val SUB_MY_OPTIONS = "subscription.relation_options"
+const val DELAY_UNTIL_CLOSE = 300L

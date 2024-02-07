@@ -303,7 +303,7 @@ class AddToAnytypeViewModel(
             state.value = ViewState.Default(
                 uris.mapNotNull { uri ->
                     fileSharer.getDisplayName(uri)
-                }.joinToString(separator = ", ")
+                }.joinToString(separator = FILE_NAME_SEPARATOR)
             )
         }
     }
@@ -357,5 +357,9 @@ class AddToAnytypeViewModel(
     sealed class ViewState {
         object Init : ViewState()
         data class Default(val content: String) : ViewState()
+    }
+
+    companion object {
+        const val FILE_NAME_SEPARATOR = ", "
     }
 }

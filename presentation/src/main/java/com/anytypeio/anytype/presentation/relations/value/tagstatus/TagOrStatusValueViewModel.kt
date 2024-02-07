@@ -97,7 +97,11 @@ class TagOrStatusValueViewModel(
                     target = viewModelParams.objectId
                 )
             )
+            initialIds.clear()
             initialIds.addAll(ids)
+            if (initialIds.isEmpty()) {
+                emitCommand(Command.Expand)
+            }
         }
     }
 
@@ -459,6 +463,8 @@ sealed class Command {
     data class DeleteOption(val optionId: Id) : Command()
 
     object Dismiss : Command()
+
+    object Expand : Command()
 }
 
 sealed class TagStatusViewState {

@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationCont
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModelFactory
 import com.anytypeio.anytype.ui.settings.typography
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import javax.inject.Inject
 
 class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
@@ -65,13 +66,13 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        expand()
+        setupCollapsedHeight()
     }
 
     override fun onStart() {
+        jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         super.onStart()
         vm.onStart()
-        jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
     }
 
     override fun onStop() {
@@ -107,6 +108,7 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
             }
 
             Command.Dismiss -> dismiss()
+            Command.Expand -> expand()
         }
     }
 
@@ -141,6 +143,11 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
             RelationContext.OBJECT_SET -> componentManager().tagStatusSetComponent.release()
             RelationContext.DATA_VIEW -> componentManager().tagStatusDataViewComponent.release()
         }
+    }
+
+    private fun setupCollapsedHeight() {
+        val height = resources.displayMetrics.heightPixels / 2
+        (dialog as? BottomSheetDialog)?.behavior?.peekHeight = height
     }
 
     companion object {

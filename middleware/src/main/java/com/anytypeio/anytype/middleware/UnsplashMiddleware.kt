@@ -5,6 +5,7 @@ import anytype.Rpc.Unsplash.Search
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.UnsplashImage
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashRemote
 import com.anytypeio.anytype.middleware.interactor.MiddlewareProtobufLogger
 import com.anytypeio.anytype.middleware.mappers.core
@@ -25,8 +26,10 @@ class UnsplashMiddleware @Inject constructor(
         return response.pictures.map { p -> p.core() }
     }
 
-    override fun download(id: Id): Hash {
-        val request = Download.Request(pictureId = id).also { logger.logRequest(it) }
+    override fun download(space: SpaceId, id: Id): Hash {
+        val request = Download.Request(pictureId = id, spaceId = space.id).also {
+            logger.logRequest(it)
+        }
         val response = service.unsplashDownload(request = request).also { logger.logResponse(it) }
         return response.objectId
     }

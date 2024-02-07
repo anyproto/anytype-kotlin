@@ -6,11 +6,13 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
 import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverColor
 import com.anytypeio.anytype.domain.cover.SetDocCoverGradient
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveCoverEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetCoverEvent
@@ -26,7 +28,8 @@ abstract class SelectCoverViewModel(
     private val removeCover: RemoveDocCover,
     private val dispatcher: Dispatcher<Payload>,
     private val getCoverGradientCollection: GetCoverGradientCollection,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<DocCoverGalleryView>>(emptyList())
@@ -60,7 +63,9 @@ abstract class SelectCoverViewModel(
             setCoverImage(
                 SetDocCoverImage.Params.FromPath(
                     context = ctx,
-                    path = path
+                    path = path,
+                    // TODO use space provided in arguments
+                    space = SpaceId(spaceManager.get())
                 )
             ).proceed(
                 failure = {
@@ -170,7 +175,8 @@ class SelectCoverObjectViewModel(
     private val removeCover: RemoveDocCover,
     private val dispatcher: Dispatcher<Payload>,
     private val getCoverGradientCollection: GetCoverGradientCollection,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val spaceManager: SpaceManager
 ) : SelectCoverViewModel(
     setCoverColor = setCoverColor,
     setCoverImage = setCoverImage,
@@ -178,7 +184,8 @@ class SelectCoverObjectViewModel(
     removeCover = removeCover,
     dispatcher = dispatcher,
     getCoverGradientCollection = getCoverGradientCollection,
-    analytics = analytics
+    analytics = analytics,
+    spaceManager = spaceManager
 ) {
 
     class Factory(
@@ -188,7 +195,8 @@ class SelectCoverObjectViewModel(
         private val removeCover: RemoveDocCover,
         private val dispatcher: Dispatcher<Payload>,
         private val getCoverGradientCollection: GetCoverGradientCollection,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -200,7 +208,8 @@ class SelectCoverObjectViewModel(
                 removeCover = removeCover,
                 dispatcher = dispatcher,
                 getCoverGradientCollection = getCoverGradientCollection,
-                analytics = analytics
+                analytics = analytics,
+                spaceManager = spaceManager
             ) as T
         }
     }
@@ -213,7 +222,8 @@ class SelectCoverObjectSetViewModel(
     private val removeCover: RemoveDocCover,
     private val dispatcher: Dispatcher<Payload>,
     private val getCoverGradientCollection: GetCoverGradientCollection,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val spaceManager: SpaceManager
 ) : SelectCoverViewModel(
     setCoverColor = setCoverColor,
     setCoverImage = setCoverImage,
@@ -221,7 +231,8 @@ class SelectCoverObjectSetViewModel(
     removeCover = removeCover,
     dispatcher = dispatcher,
     getCoverGradientCollection = getCoverGradientCollection,
-    analytics = analytics
+    analytics = analytics,
+    spaceManager = spaceManager
 ) {
 
     class Factory(
@@ -231,7 +242,8 @@ class SelectCoverObjectSetViewModel(
         private val removeCover: RemoveDocCover,
         private val dispatcher: Dispatcher<Payload>,
         private val getCoverGradientCollection: GetCoverGradientCollection,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
 
         @Suppress("UNCHECKED_CAST")
@@ -243,7 +255,8 @@ class SelectCoverObjectSetViewModel(
                 removeCover = removeCover,
                 dispatcher = dispatcher,
                 getCoverGradientCollection = getCoverGradientCollection,
-                analytics = analytics
+                analytics = analytics,
+                spaceManager = spaceManager
             ) as T
         }
     }

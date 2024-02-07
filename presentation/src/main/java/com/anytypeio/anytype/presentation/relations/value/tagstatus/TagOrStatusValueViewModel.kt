@@ -51,9 +51,13 @@ class TagOrStatusValueViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val jobs = mutableListOf<Job>()
 
+    private val initialIds = mutableListOf<Id>()
+    private var isInitialSortDone = false
+
     fun onStart() {
         Timber.d("onStart, params: $viewModelParams")
         jobs += viewModelScope.launch {
+            setupInitialIds()
             val relation = relations.get(relation = viewModelParams.relationKey)
             val spaces = listOf(spaceManager.get())
             val searchParams = StoreSearchParams(
@@ -75,13 +79,25 @@ class TagOrStatusValueViewModel(
                 setupIsRelationNotEditable(relation)
                 initViewState(
                     relation = relation,
-                    record = record,
                     options = options
                         .map { ObjectWrapper.Option(map = it.map) }
                         .filter { it.name?.contains(query, true) == true },
-                    query = query
+                    query = query,
+                    ids = getRecordValues(record)
                 )
             }.collect()
+        }
+    }
+
+    private fun setupInitialIds() {
+        viewModelScope.launch {
+            val ids = getRecordValues(
+                values.get(
+                    ctx = viewModelParams.ctx,
+                    target = viewModelParams.objectId
+                )
+            )
+            initialIds.addAll(ids)
         }
     }
 
@@ -222,18 +238,13 @@ class TagOrStatusValueViewModel(
 
     private fun initViewState(
         relation: ObjectWrapper.Relation,
-        record: Map<String, Any?>,
+        ids: List<Id>,
         options: List<ObjectWrapper.Option>,
         query: String
     ) {
         val result = mutableListOf<RelationsListItem>()
         when (relation.format) {
             Relation.Format.STATUS -> {
-                val ids: List<Id> = when (val value = record[viewModelParams.relationKey]) {
-                    is Id -> listOf(value)
-                    is List<*> -> value.typeOf()
-                    else -> emptyList()
-                }
                 result.addAll(
                     mapStatusOptions(
                         ids = ids,
@@ -242,11 +253,6 @@ class TagOrStatusValueViewModel(
                 )
             }
             Relation.Format.TAG -> {
-                val ids: List<Id> = when (val value = record[viewModelParams.relationKey]) {
-                    is Id -> listOf(value)
-                    is List<*> -> value.typeOf()
-                    else -> emptyList()
-                }
                 result.addAll(
                     mapTagOptions(
                         ids = ids,
@@ -273,6 +279,14 @@ class TagOrStatusValueViewModel(
                 title = relation.name.orEmpty(),
                 items = result
             )
+        }
+    }
+
+    private fun getRecordValues(record: Map<String, Any?>): List<Id> {
+        return when (val value = record[viewModelParams.relationKey]) {
+            is Id -> listOf(value)
+            is List<*> -> value.typeOf()
+            else -> emptyList()
         }
     }
 
@@ -372,7 +386,22 @@ class TagOrStatusValueViewModel(
             isSelected = isSelected,
             number = number
         )
-    }.sortedBy { it.number }
+    }.let { mappedOptions ->
+        if (!isInitialSortDone) {
+            isInitialSortDone = true
+            mappedOptions.sortedWith(
+                compareBy(
+                    { !initialIds.contains(it.optionId) },
+                    { it.number })
+            )
+        } else {
+            mappedOptions.sortedWith(
+                compareBy(
+                    { !initialIds.contains(it.optionId) },
+                    { initialIds.indexOf(it.optionId) })
+            )
+        }
+    }
 
     private fun mapStatusOptions(
         ids: List<Id>,

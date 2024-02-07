@@ -85,6 +85,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
+import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -113,6 +114,7 @@ import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
+import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.ManageViewerFragment
@@ -930,6 +932,16 @@ open class ObjectSetFragment :
                 }
                 fr.showChildFragment()
             }
+            is ObjectSetCommand.Modal.EditTagOrStatusRelationValue -> {
+                val bundle = bundleOf(
+                    TagOrStatusValueFragment.CTX_KEY to command.ctx,
+                    TagOrStatusValueFragment.OBJECT_ID_KEY to command.ctx,
+                    TagOrStatusValueFragment.RELATION_KEY to command.relation,
+                    TagOrStatusValueFragment.IS_LOCKED_KEY to false,
+                    TagOrStatusValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT_SET
+                )
+                findNavController().safeNavigate(R.id.objectSetScreen, R.id.nav_relations, bundle)
+            }
             is ObjectSetCommand.Modal.EditGridDateCell -> {
                 val fr = RelationDateValueFragment.new(
                     ctx = ctx,
@@ -953,6 +965,16 @@ open class ObjectSetFragment :
                         RelationValueBaseFragment.IS_LOCKED_KEY to false
                     )
                 )
+            }
+            is ObjectSetCommand.Modal.EditTagOrStatusCell -> {
+                val bundle = bundleOf(
+                    TagOrStatusValueFragment.CTX_KEY to command.ctx,
+                    TagOrStatusValueFragment.OBJECT_ID_KEY to command.target,
+                    TagOrStatusValueFragment.RELATION_KEY to command.relationKey,
+                    TagOrStatusValueFragment.IS_LOCKED_KEY to false,
+                    TagOrStatusValueFragment.RELATION_CONTEXT_KEY to RelationContext.DATA_VIEW
+                )
+                findNavController().safeNavigate(R.id.objectSetScreen, R.id.nav_relations, bundle)
             }
             is ObjectSetCommand.Modal.OpenSettings -> {
                 val fr = ObjectSetSettingsFragment.new(

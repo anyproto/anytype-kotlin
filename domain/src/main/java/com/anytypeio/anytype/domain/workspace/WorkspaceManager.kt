@@ -33,7 +33,7 @@ interface WorkspaceManager {
 interface SpaceManager {
 
     suspend fun get(): Id
-    suspend fun set(space: Id)
+    suspend fun set(space: Id): Result<Config>
     fun getConfig(): Config?
     fun getType(space: Id): SpaceType
     fun observe() : Flow<Config>
@@ -77,14 +77,16 @@ interface SpaceManager {
             }
         }
 
-        override suspend fun set(space: Id)  = withContext(dispatchers.io) {
-            runCatching { repo.getSpaceConfig(space) }.fold(
-                onSuccess = { config ->
-                    info[space] = config
-                    currentSpace.value = space
-                },
-                onFailure = logger::logException
-            )
+        override suspend fun set(space: Id) : Result<Config> = withContext(dispatchers.io) {
+            runCatching { repo.getSpaceConfig(space) }.also { result ->
+                result.fold(
+                    onSuccess = { config ->
+                        info[space] = config
+                        currentSpace.value = space
+                    },
+                    onFailure = logger::logException
+                )
+            }
         }
 
         override fun observe(): Flow<Config> {

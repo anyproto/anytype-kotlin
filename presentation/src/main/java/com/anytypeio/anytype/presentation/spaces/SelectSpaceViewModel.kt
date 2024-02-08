@@ -194,13 +194,19 @@ class SelectSpaceViewModel(
             Timber.d("Setting space: $view")
             if (!view.isSelected) {
                 analytics.sendEvent(eventName = EventsDictionary.switchSpace)
-                spaceManager.set(view.space)
-                saveCurrentSpace.async(SaveCurrentSpace.Params(SpaceId(view.space))).fold(
-                    onFailure = {
-                        Timber.e(it, "Error while saving current space in user settings")
-                    },
+                spaceManager.set(view.space).fold(
                     onSuccess = {
-                        commands.emit(Command.SwitchToNewSpace)
+                        saveCurrentSpace.async(SaveCurrentSpace.Params(SpaceId(view.space))).fold(
+                            onFailure = {
+                                Timber.e(it, "Error while saving current space in user settings")
+                            },
+                            onSuccess = {
+                                commands.emit(Command.SwitchToNewSpace)
+                            }
+                        )
+                    },
+                    onFailure = {
+                        Timber.e(it, "Could not select space")
                     }
                 )
             } else {

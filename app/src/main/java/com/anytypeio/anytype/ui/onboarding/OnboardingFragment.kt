@@ -335,8 +335,12 @@ class OnboardingFragment : Fragment() {
                             navController.popBackStack()
                         }
                     }
-                    is OnboardingMnemonicLoginViewModel.SideEffect.Error -> {
+                    is OnboardingMnemonicLoginViewModel.SideEffect.Error.Unknown -> {
                         errorText.value = effect.msg
+                        isErrorDialogVisible.value = true
+                    }
+                    is OnboardingMnemonicLoginViewModel.SideEffect.Error.InvalidMnemonic -> {
+                        errorText.value = getString(R.string.error_invalid_recovery_phrase)
                         isErrorDialogVisible.value = true
                     }
                 }

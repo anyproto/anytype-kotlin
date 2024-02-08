@@ -95,7 +95,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
             ).proceed(
                 failure = { error ->
                     sideEffects.emit(
-                        SideEffect.Error(
+                        SideEffect.Error.Unknown(
                             "Error while login: ${error.message}"
                         )
                     ).also {
@@ -122,7 +122,7 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 fnL = { error ->
                     viewModelScope.launch {
                         sideEffects.emit(
-                            SideEffect.Error(
+                            SideEffect.Error.Unknown(
                                 "Error while login: ${error.message}"
                             )
                         ).also {
@@ -261,7 +261,10 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
     }
 
     sealed class SideEffect {
-        data class Error(val msg: String): SideEffect()
+        sealed class Error : SideEffect() {
+            object InvalidMnemonic : Error()
+            data class Unknown(val msg: String): SideEffect()
+        }
         object Exit: SideEffect()
     }
 

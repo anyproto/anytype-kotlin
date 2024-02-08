@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.service
 
 import anytype.Rpc
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
+import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
@@ -1197,7 +1198,12 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Wallet.Convert.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Wallet.Convert.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when (error.code) {
+                Rpc.Wallet.Convert.Response.Error.Code.BAD_INPUT -> {
+                    throw LoginException.InvalidMnemonic
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }
@@ -1219,7 +1225,12 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Wallet.Recover.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Wallet.Recover.Response.Error.Code.NULL) {
-            throw Exception(error.description)
+            when (error.code) {
+                Rpc.Wallet.Recover.Response.Error.Code.BAD_INPUT -> {
+                    throw LoginException.InvalidMnemonic
+                }
+                else -> throw Exception(error.description)
+            }
         } else {
             return response
         }

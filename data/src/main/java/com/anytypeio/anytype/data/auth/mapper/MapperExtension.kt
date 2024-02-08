@@ -2,10 +2,8 @@ package com.anytypeio.anytype.data.auth.mapper
 
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.data.auth.model.AccountEntity
-import com.anytypeio.anytype.data.auth.model.FeaturesConfigEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.domain.auth.model.Wallet
-import com.anytypeio.anytype.core_models.FeaturesConfig
 
 fun AccountEntity.toDomain(): Account {
     return Account(
@@ -13,15 +11,6 @@ fun AccountEntity.toDomain(): Account {
         name = name,
         color = color,
         avatar = null
-    )
-}
-
-fun FeaturesConfigEntity.toDomain(): FeaturesConfig {
-    return FeaturesConfig(
-        enableDataView = enableDataView,
-        enableDebug = enableDebug,
-        enablePrereleaseChannel = enableChannelSwitch,
-        enableSpaces = enableSpaces
     )
 }
 

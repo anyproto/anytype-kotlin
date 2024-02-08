@@ -8,7 +8,6 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
@@ -57,7 +56,6 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun pathProvider(): PathProvider
     fun crashReporter(): CrashReporter
     fun configStorage(): ConfigStorage
-    fun featureConfigProvider(): FeaturesConfigProvider
     fun metricsProvider(): MetricsProvider
     fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun relationsSubscriptionManager(): RelationsSubscriptionManager

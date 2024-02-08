@@ -3,7 +3,6 @@ package com.anytypeio.anytype.data
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.StubAccount
 import com.anytypeio.anytype.core_models.StubAccountSetup
-import com.anytypeio.anytype.core_models.StubFeatureConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
 import com.anytypeio.anytype.data.auth.repo.AuthCache
@@ -66,16 +65,13 @@ class AuthDataRepositoryTest {
 
         val account = StubAccount()
 
-        val features = StubFeatureConfig()
-
         authRemote.stub {
             val command = Command.AccountSelect(
                 id = id,
                 path = path
             )
             onBlocking { selectAccount(command) } doReturn StubAccountSetup(
-                account = account,
-                features = features
+                account = account
             )
         }
 

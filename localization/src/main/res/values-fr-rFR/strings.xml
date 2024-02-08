@@ -1096,6 +1096,6 @@
     <string name="hint_enter_name">Saisir un nom...</string>
     <string name="create_object">Créer un objet</string>
     <!--region ONBOARDING ERRORS -->
-    <string name="error_invalid_recovery_phrase">Invalid recovery phrase</string>
+    <string name="error_invalid_recovery_phrase">La phrase de récupération est invalide</string>
     <!--endregion-->
 </resources>

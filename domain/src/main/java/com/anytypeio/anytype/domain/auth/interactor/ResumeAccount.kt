@@ -6,7 +6,6 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 
@@ -17,7 +16,6 @@ class ResumeAccount(
     private val repository: AuthRepository,
     private val pathProvider: PathProvider,
     private val configStorage: ConfigStorage,
-    private val featuresConfigProvider: FeaturesConfigProvider,
     private val metricsProvider: MetricsProvider,
     private val awaitAccountStartManager: AwaitAccountStartManager
 ) : BaseUseCase<Id, BaseUseCase.None>() {
@@ -43,12 +41,6 @@ class ResumeAccount(
             networkConfigFilePath = networkMode.storedFilePath
         )
         val result = repository.selectAccount(command).let { setup ->
-            featuresConfigProvider.set(
-                enableDataView = setup.features.enableDataView ?: false,
-                enableDebug = setup.features.enableDebug ?: false,
-                enableChannelSwitch = setup.features.enablePrereleaseChannel ?: false,
-                enableSpaces = setup.features.enableSpaces ?: false
-            )
             configStorage.set(config = setup.config)
             setup.account.id
         }

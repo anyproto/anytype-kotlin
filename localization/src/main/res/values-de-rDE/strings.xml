@@ -1095,4 +1095,7 @@
     <string name="options_delete_description">The option will be permanently removed from your space</string>
     <string name="hint_enter_name">Name eingeben...</string>
     <string name="create_object">Objekt erstellen</string>
+    <!--region ONBOARDING ERRORS -->
+    <string name="error_invalid_recovery_phrase">Invalid recovery phrase</string>
+    <!--endregion-->
 </resources>

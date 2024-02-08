@@ -15,7 +15,6 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -72,7 +71,6 @@ object SplashModule {
     fun provideLaunchAccountUseCase(
         authRepository: AuthRepository,
         pathProvider: PathProvider,
-        featuresConfigProvider: FeaturesConfigProvider,
         configStorage: ConfigStorage,
         spaceManager: SpaceManager,
         metricsProvider: MetricsProvider,
@@ -81,7 +79,6 @@ object SplashModule {
     ): LaunchAccount = LaunchAccount(
         repository = authRepository,
         pathProvider = pathProvider,
-        featuresConfigProvider = featuresConfigProvider,
         configStorage = configStorage,
         spaceManager = spaceManager,
         metricsProvider = metricsProvider,
@@ -185,7 +182,6 @@ interface SplashDependencies : ComponentDependencies {
     fun objectTypesSubscriptionManager(): ObjectTypesSubscriptionManager
     fun authRepository(): AuthRepository
     fun pathProvider(): PathProvider
-    fun featuresConfigProvider(): FeaturesConfigProvider
     fun featureToggles(): FeatureToggles
     fun configStorage(): ConfigStorage
     fun userSettingsRepository(): UserSettingsRepository

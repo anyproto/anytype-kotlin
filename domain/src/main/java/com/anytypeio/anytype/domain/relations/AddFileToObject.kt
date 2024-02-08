@@ -13,14 +13,14 @@ class AddFileToObject(
 ) : BaseUseCase<Payload, AddFileToObject.Params>() {
 
     override suspend fun run(params: Params): Either<Throwable, Payload> = safe {
-        val hash = repo.uploadFile(
+        val file = repo.uploadFile(
             command = Command.UploadFile(
                 path = params.path,
                 type = null
             )
         )
         val obj = params.obj
-        val remaining = obj[params.relation].addIds(listOf(hash))
+        val remaining = obj[params.relation].addIds(listOf(file.id))
         repo.setObjectDetail(
             ctx = params.ctx,
             key = params.relation,

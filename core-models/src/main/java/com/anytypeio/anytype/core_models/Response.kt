@@ -31,7 +31,8 @@ sealed class Response {
 
     sealed class Media : Response() {
         class Upload(
-            val objectId: Id
+            val objectId: Id,
+            val details: Struct
         )
     }
 

@@ -34,8 +34,6 @@ import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
 import com.anytypeio.anytype.middleware.const.Constants
-import com.anytypeio.anytype.middleware.mappers.MBFile
-import com.anytypeio.anytype.middleware.mappers.MBFileType
 import com.anytypeio.anytype.middleware.mappers.MDVFilter
 import com.anytypeio.anytype.middleware.mappers.MNetworkMode
 import com.anytypeio.anytype.middleware.mappers.MRelationFormat
@@ -819,7 +817,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun fileUpload(command: Command.UploadFile): Response.Media.Upload {
+    fun fileUpload(command: Command.UploadFile): ObjectWrapper.File {
         val type = command.type.toMiddlewareModel()
         val request = Rpc.File.Upload.Request(
             localPath = command.path,
@@ -829,7 +827,7 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.fileUpload(request)
         if (BuildConfig.DEBUG) logResponse(response)
-        return Response.Media.Upload(response.objectId)
+        return ObjectWrapper.File(response.details.orEmpty())
     }
 
     @Throws(Exception::class)
@@ -1449,7 +1447,7 @@ class Middleware @Inject constructor(
 
         val imageDetail = Rpc.Object.SetDetails.Detail(
             key = Relations.ICON_IMAGE,
-            value_ = command.hash
+            value_ = command.id
         )
         val emojiDetail = Rpc.Object.SetDetails.Detail(
             key = Relations.ICON_EMOJI,

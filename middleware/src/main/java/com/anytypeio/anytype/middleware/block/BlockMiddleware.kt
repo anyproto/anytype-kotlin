@@ -220,7 +220,7 @@ class BlockMiddleware(
 
     override suspend fun uploadFile(
         command: Command.UploadFile
-    ): String = middleware.fileUpload(command).objectId
+    ): ObjectWrapper.File = middleware.fileUpload(command)
 
     override suspend fun downloadFile(
         command: Command.DownloadFile

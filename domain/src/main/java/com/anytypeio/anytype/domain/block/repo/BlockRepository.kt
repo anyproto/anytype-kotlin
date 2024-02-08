@@ -33,7 +33,7 @@ import com.anytypeio.anytype.domain.page.Undo
 
 interface BlockRepository {
 
-    suspend fun uploadFile(command: Command.UploadFile): Id
+    suspend fun uploadFile(command: Command.UploadFile): ObjectWrapper.File
     suspend fun downloadFile(command: Command.DownloadFile): String
 
     suspend fun move(command: Command.Move): Payload

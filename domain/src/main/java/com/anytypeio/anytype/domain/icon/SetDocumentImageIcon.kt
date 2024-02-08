@@ -10,7 +10,7 @@ class SetDocumentImageIcon(
 ) : SetImageIcon<Id>() {
 
     override suspend fun run(params: Params<Id>) = safe {
-        val hash = repo.uploadFile(
+        val file = repo.uploadFile(
             command = Command.UploadFile(
                 path = params.path,
                 type = Block.Content.File.Type.IMAGE
@@ -18,10 +18,10 @@ class SetDocumentImageIcon(
         )
         val payload = repo.setDocumentImageIcon(
             command = Command.SetDocumentImageIcon(
-                hash = hash,
+                id = file.id,
                 context = params.target
             )
         )
-        Pair(payload, hash)
+        Pair(payload, file.id)
     }
 }

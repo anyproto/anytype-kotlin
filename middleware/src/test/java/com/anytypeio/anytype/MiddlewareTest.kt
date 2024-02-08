@@ -285,14 +285,14 @@ class MiddlewareTest {
 
         val command = Command.SetDocumentImageIcon(
             context = MockDataFactory.randomUuid(),
-            hash = MockDataFactory.randomUuid()
+            id = MockDataFactory.randomUuid()
         )
 
         val response = Rpc.Object.SetDetails.Response(event = ResponseEvent())
 
         val imageIconKey = "iconImage"
 
-        val imageIconValue = command.hash
+        val imageIconValue = command.id
 
         val imageIconDetail = Rpc.Object.SetDetails.Detail(imageIconKey, imageIconValue)
 

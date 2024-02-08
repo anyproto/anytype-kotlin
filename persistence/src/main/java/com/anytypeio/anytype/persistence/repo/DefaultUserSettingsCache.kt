@@ -24,6 +24,7 @@ import com.anytypeio.anytype.persistence.model.asWallpaper
 import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.SpacePrefSerializer
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 class DefaultUserSettingsCache(
@@ -248,6 +249,63 @@ class DefaultUserSettingsCache(
 
         context.spacePrefsStore.updateData {
             SpacePreferences(emptyMap())
+        }
+    }
+
+    override suspend fun setLastOpenedObject(id: Id, space: SpaceId) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+
+            val updated = givenSpacePreference.copy(
+                lastOpenedObject = id
+            )
+
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+
+            SpacePreferences(
+                preferences = result
+            )
+        }
+    }
+
+    override suspend fun getLastOpenedObject(space: SpaceId): Pair<Id, SpaceId>? {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                val lastOpenedObject = preferences
+                    .preferences[space.id]
+                    ?.lastOpenedObject
+                if (lastOpenedObject != null)
+                    Pair(lastOpenedObject, space)
+                else
+                    null
+            }
+            .first()
+    }
+
+    override suspend fun clearLastOpenedObject(space: SpaceId) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+
+            val updated = givenSpacePreference.copy(
+                lastOpenedObject = null
+            )
+
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+
+            SpacePreferences(
+                preferences = result
+            )
         }
     }
 

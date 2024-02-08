@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.model.Wallet
 import kotlinx.coroutines.flow.Flow
 
@@ -58,8 +59,11 @@ interface AuthRepository {
 
     suspend fun getVersion(): String
 
+    @Deprecated("To be deleted")
     suspend fun saveLastOpenedObjectId(id: Id)
+    @Deprecated("To be deleted")
     suspend fun getLastOpenedObjectId() : Id?
+    @Deprecated("To be deleted")
     suspend fun clearLastOpenedObject()
 
     suspend fun getNetworkMode(): NetworkModeConfig

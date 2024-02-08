@@ -78,12 +78,12 @@ object HomeScreenModule {
     @PerScreen
     fun openObject(
         repo: BlockRepository,
-        auth: AuthRepository,
+        settings: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers
     ): OpenObject = OpenObject(
         repo = repo,
         dispatchers = dispatchers,
-        auth = auth
+        settings = settings
     )
 
     @JvmStatic

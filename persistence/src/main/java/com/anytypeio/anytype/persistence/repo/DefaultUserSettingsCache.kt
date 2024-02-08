@@ -256,34 +256,28 @@ class DefaultUserSettingsCache(
         context.spacePrefsStore.updateData { existingPreferences ->
             val givenSpacePreference = existingPreferences
                 .preferences
-                .getOrDefault(key = space.id, defaultValue = SpacePreference())
-
+                .getOrDefault(
+                    key = space.id,
+                    defaultValue = SpacePreference()
+                )
             val updated = givenSpacePreference.copy(
                 lastOpenedObject = id
             )
-
             val result = buildMap {
                 putAll(existingPreferences.preferences)
                 put(key = space.id, updated)
             }
-
-            SpacePreferences(
-                preferences = result
-            )
+            SpacePreferences(preferences = result)
         }
     }
 
-    override suspend fun getLastOpenedObject(space: SpaceId): Pair<Id, SpaceId>? {
+    override suspend fun getLastOpenedObject(space: SpaceId): Id? {
         return context.spacePrefsStore
             .data
             .map { preferences ->
-                val lastOpenedObject = preferences
+                preferences
                     .preferences[space.id]
                     ?.lastOpenedObject
-                if (lastOpenedObject != null)
-                    Pair(lastOpenedObject, space)
-                else
-                    null
             }
             .first()
     }
@@ -293,16 +287,13 @@ class DefaultUserSettingsCache(
             val givenSpacePreference = existingPreferences
                 .preferences
                 .getOrDefault(key = space.id, defaultValue = SpacePreference())
-
             val updated = givenSpacePreference.copy(
                 lastOpenedObject = null
             )
-
             val result = buildMap {
                 putAll(existingPreferences.preferences)
                 put(key = space.id, updated)
             }
-
             SpacePreferences(
                 preferences = result
             )

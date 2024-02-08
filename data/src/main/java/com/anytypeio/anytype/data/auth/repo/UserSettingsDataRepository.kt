@@ -62,11 +62,11 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         cache.setLastOpenedObject(id, space)
     }
 
-    override suspend fun getLastOpenedObject(space: SpaceId): Pair<Id, SpaceId>? {
+    override suspend fun getLastOpenedObject(space: SpaceId): Id? {
         return cache.getLastOpenedObject(space)
     }
 
     override suspend fun clearLastOpenedObject(space: SpaceId) {
-        TODO("Not yet implemented")
+        cache.clearLastOpenedObject(space)
     }
 }

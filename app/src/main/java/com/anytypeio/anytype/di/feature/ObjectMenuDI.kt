@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateFields
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
 import com.anytypeio.anytype.domain.dashboard.interactor.RemoveFromFavorite
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -238,9 +239,13 @@ object ObjectSetMenuModule {
     @PerDialog
     fun provideOpenPage(
         repo: BlockRepository,
-        auth: AuthRepository,
+        settings: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers
-    ): OpenPage = OpenPage(repo, auth, dispatchers)
+    ): OpenPage = OpenPage(
+        repo = repo,
+        settings = settings,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @Provides

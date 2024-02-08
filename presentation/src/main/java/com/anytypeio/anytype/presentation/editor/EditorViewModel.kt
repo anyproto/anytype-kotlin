@@ -1024,7 +1024,8 @@ class EditorViewModel(
         viewModelScope.launch {
             val params = OpenPage.Params(
                 obj = id,
-                saveAsLastOpened = saveAsLastOpened
+                saveAsLastOpened = saveAsLastOpened,
+                space = SpaceId(spaceManager.get())
             )
             openPage.async(params).fold(
                 onSuccess = { result ->

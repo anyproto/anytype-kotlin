@@ -18,7 +18,7 @@ interface UserSettingsCache {
     fun getPinnedObjectTypes(space: SpaceId) : Flow<List<TypeId>>
 
     suspend fun setLastOpenedObject(id: Id, space: SpaceId)
-    suspend fun getLastOpenedObject(space: SpaceId) : Pair<Id, SpaceId>?
+    suspend fun getLastOpenedObject(space: SpaceId) : Id?
     suspend fun clearLastOpenedObject(space: SpaceId)
 
     suspend fun setWallpaper(space: Id, wallpaper: Wallpaper)

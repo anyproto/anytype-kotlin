@@ -9,6 +9,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.exceptions.AccountIsDeletedException
+import com.anytypeio.anytype.core_models.exceptions.LoginException
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.domain.auth.interactor.ConvertWallet
@@ -93,13 +94,13 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
             convertWallet(
                 params = ConvertWallet.Request(entropy)
             ).proceed(
-                failure = { error ->
-                    sideEffects.emit(
-                        SideEffect.Error.Unknown(
-                            "Error while login: ${error.message}"
-                        )
-                    ).also {
-                        Timber.e(error, "Error while convert wallet")
+                failure = { exception ->
+                    val error = when(exception) {
+                        LoginException.InvalidMnemonic -> SideEffect.Error.InvalidMnemonic
+                        else -> SideEffect.Error.Unknown("Error while login: ${exception.message}")
+                    }
+                    sideEffects.emit(error).also {
+                        Timber.e(exception, "Error while convert wallet")
                     }
                 },
                 success = { mnemonic -> proceedWithRecoveringWallet(mnemonic) }
@@ -119,17 +120,16 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
                 fnR = {
                     proceedWithSavingMnemonic(chain)
                 },
-                fnL = { error ->
+                fnL = { exception ->
                     viewModelScope.launch {
-                        sideEffects.emit(
-                            SideEffect.Error.Unknown(
-                                "Error while login: ${error.message}"
-                            )
-                        ).also {
-                            Timber.e(error, "Error while recovering wallet")
+                        val error = when(exception) {
+                            LoginException.InvalidMnemonic -> SideEffect.Error.InvalidMnemonic
+                            else -> SideEffect.Error.Unknown("Error while login: ${exception.message}")
+                        }
+                        sideEffects.emit(error).also {
+                            Timber.e(exception, "Error while convert wallet")
                         }
                     }
-
                 }
             )
         }

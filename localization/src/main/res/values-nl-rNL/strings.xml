@@ -1095,4 +1095,7 @@
     <string name="options_delete_description">De optie zal permanent worden verwijderd uit jouw ruimte</string>
     <string name="hint_enter_name">Voer naam... in</string>
     <string name="create_object">Maak object aan</string>
+    <!--region ONBOARDING ERRORS -->
+    <string name="error_invalid_recovery_phrase">Invalid recovery phrase</string>
+    <!--endregion-->
 </resources>

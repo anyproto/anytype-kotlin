@@ -1092,7 +1092,7 @@
     <string name="options_empty_title">Nenhuma opção</string>
     <string name="options_empty_not_editable">A relação está vazia</string>
     <string name="options_delete_title">Você tem certeza?</string>
-    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="options_delete_description">A opção será removida permanentemente do seu espaço</string>
     <string name="hint_enter_name">Inserir nome...</string>
     <string name="create_object">Criar objeto</string>
     <!--region ONBOARDING ERRORS -->

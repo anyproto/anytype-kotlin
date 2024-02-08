@@ -11,7 +11,7 @@ class SetTextBlockImage(
     override suspend fun run(
         params: Params<TextBlockTarget>
     ) = safe {
-        val hash = repo.uploadFile(
+        val file = repo.uploadFile(
             command = Command.UploadFile(
                 path = params.path,
                 type = Block.Content.File.Type.IMAGE
@@ -19,11 +19,11 @@ class SetTextBlockImage(
         )
         val payload = repo.setTextIcon(
             command = Command.SetTextIcon(
-                icon = Command.SetTextIcon.Icon.Image(hash),
+                icon = Command.SetTextIcon.Icon.Image(file.id),
                 context = params.target.context,
                 blockId = params.target.blockId
             )
         )
-        Pair(payload, hash)
+        Pair(payload, file.id)
     }
 }

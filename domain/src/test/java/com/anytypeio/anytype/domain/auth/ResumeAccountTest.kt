@@ -6,7 +6,6 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
@@ -24,9 +23,6 @@ class ResumeAccountTest {
 
     @Mock
     lateinit var repo: AuthRepository
-
-    @Mock
-    lateinit var featuresConfigProvider: FeaturesConfigProvider
 
     @Mock
     lateinit var configStorage: ConfigStorage
@@ -53,7 +49,6 @@ class ResumeAccountTest {
         resumeAccount = ResumeAccount(
             repository = repo,
             configStorage = configStorage,
-            featuresConfigProvider = featuresConfigProvider,
             pathProvider = pathProvider,
             metricsProvider = metricsProvider,
             awaitAccountStartManager = awaitAccountStartManager

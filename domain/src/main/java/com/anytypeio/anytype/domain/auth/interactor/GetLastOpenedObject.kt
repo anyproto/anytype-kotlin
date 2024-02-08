@@ -54,7 +54,7 @@ class GetLastOpenedObject(
         object Empty : Response()
 
         /**
-         * The last opened object could not be found. It might habe been deleted.
+         * The last opened object could not be found. It might have been deleted.
          */
         data class NotFound(val id: Id) : Response()
 

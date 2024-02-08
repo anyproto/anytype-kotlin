@@ -11,7 +11,6 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -87,14 +86,12 @@ object MainEntryModule {
         authRepository: AuthRepository,
         pathProvider: PathProvider,
         configStorage: ConfigStorage,
-        featuresConfigProvider: FeaturesConfigProvider,
         metricsProvider: MetricsProvider,
         awaitAccountStartManager: AwaitAccountStartManager
     ): ResumeAccount = ResumeAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         configStorage = configStorage,
-        featuresConfigProvider = featuresConfigProvider,
         metricsProvider = metricsProvider,
         awaitAccountStartManager = awaitAccountStartManager
     )

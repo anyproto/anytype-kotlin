@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Config
-import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.middleware.mappers.config
 import com.anytypeio.anytype.middleware.mappers.core
 
@@ -23,7 +22,6 @@ fun Rpc.Account.Create.Response.toAccountSetup() : AccountSetup {
             color = acc.avatar?.color,
             avatar = null
         ),
-        features = FeaturesConfig(),
         config = info.config(),
         status = status?.core() ?: AccountStatus.Unknown
     )
@@ -43,7 +41,6 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
             color = acc.avatar?.color,
             avatar = null
         ),
-        features = FeaturesConfig(),
         config = Config(
             home = info.homeObjectId,
             profile = info.profileObjectId,

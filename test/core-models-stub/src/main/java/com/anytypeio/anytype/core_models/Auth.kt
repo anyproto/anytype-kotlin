@@ -5,11 +5,9 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 fun StubAccountSetup(
     account : Account = StubAccount(),
     config: Config = StubConfig(),
-    features: FeaturesConfig = StubFeatureConfig(),
     status: AccountStatus = AccountStatus.Active
 ) : AccountSetup = AccountSetup(
     account = account,
-    features = features,
     status = status,
     config = config
 )
@@ -48,16 +46,4 @@ fun StubConfig(
     analytics = analytics,
     device = device,
     network = network
-)
-
-fun StubFeatureConfig(
-    enableDataView: Boolean? = MockDataFactory.randomBoolean(),
-    enableDebug: Boolean? = MockDataFactory.randomBoolean(),
-    enableChannelSwitch: Boolean? = MockDataFactory.randomBoolean(),
-    enableSpaces: Boolean? = MockDataFactory.randomBoolean()
-) : FeaturesConfig = FeaturesConfig(
-    enableDataView = enableDataView,
-    enableDebug = enableDebug,
-    enablePrereleaseChannel = enableChannelSwitch,
-    enableSpaces = enableSpaces
 )

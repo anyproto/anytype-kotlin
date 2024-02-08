@@ -306,12 +306,12 @@ sealed class Command {
 
     /**
      * Command for setting document's image icon
-     * @property hash image hash
+     * @property id image hash
      * @property context id of the context for this operation
      */
     data class SetDocumentImageIcon(
         val context: Id,
-        val hash: Hash
+        val id: Hash
     )
 
     /**

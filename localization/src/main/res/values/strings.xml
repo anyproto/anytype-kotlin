@@ -1268,4 +1268,13 @@
     <string name="hint_enter_name">Enter name...</string>
 
     <string name="create_object">Create object</string>
+
+    <!--region ONBOARDING ERRORS -->
+
+    <string name="error_invalid_recovery_phrase">Invalid recovery phrase</string>
+
+    <!--endregion-->
+
+
+
 </resources>

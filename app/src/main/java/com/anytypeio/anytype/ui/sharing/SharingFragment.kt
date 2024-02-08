@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.webkit.URLUtil
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -25,6 +26,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.settings.typography
 import java.lang.IllegalStateException
 import javax.inject.Inject
+import kotlinx.coroutines.flow.map
 
 class SharingFragment : BaseBottomSheetComposeFragment() {
 
@@ -71,6 +73,12 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 AddToAnytypeScreen(
+                    content = vm.state.map { state ->
+                        when (state) {
+                            is AddToAnytypeViewModel.ViewState.Default -> state.content
+                            AddToAnytypeViewModel.ViewState.Init -> ""
+                        }
+                    }.collectAsState(initial = "").value,
                     data = sharedData,
                     onDoneClicked = { option ->
                         when(option) {
@@ -132,6 +140,30 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
                         proceedWithCommand(command)
                     }
                 }
+            }
+        }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        when(val data = sharedData) {
+            is SharingData.File -> {
+                vm.onSharedMediaData(listOf(data.uri))
+            }
+            is SharingData.Files -> {
+                vm.onSharedMediaData(data.uris)
+            }
+            is SharingData.Image -> {
+                vm.onSharedMediaData(listOf(data.uri))
+            }
+            is SharingData.Images -> {
+                vm.onSharedMediaData(data.uris)
+            }
+            is SharingData.Text -> {
+                vm.onSharedTextData(data.raw)
+            }
+            is SharingData.Url -> {
+                vm.onSharedTextData(data.url)
             }
         }
     }

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
@@ -375,7 +376,9 @@ class ObjectSetViewModel(
     ) {
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
-                picture = action.img
+                picture = action.img,
+                // TODO re-fact to use space id from arguments or target space id of this object
+                space = SpaceId(spaceManager.get())
             )
         ).process(
             failure = {

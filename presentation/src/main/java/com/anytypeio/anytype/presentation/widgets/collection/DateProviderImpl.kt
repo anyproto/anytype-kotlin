@@ -8,8 +8,9 @@ import com.anytypeio.anytype.domain.misc.DateType
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.util.Calendar
+import java.util.TimeZone
 import javax.inject.Inject
-import timber.log.Timber
 
 class DateProviderImpl @Inject constructor() : DateProvider {
 
@@ -85,18 +86,46 @@ class DateProviderImpl @Inject constructor() : DateProvider {
         DateUtils.FORMAT_ABBREV_RELATIVE
     )
 
-    /**
-     * Adjusts the given timestamp to the start of the day in the user's local time zone.
-     *
-     * @param timestamp The original timestamp in seconds.
-     * @return The timestamp representing the start of the day in the user's time zone, in milliseconds.
-     */
     override fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis {
-        Timber.d("adjustToStartOfDayInUserTimeZone: $timestamp")
-        val instant = Instant.ofEpochSecond(timestamp)
-        val userZoneDateTime = instant.atZone(ZoneId.systemDefault())
-        val startOfDayInUserZone = userZoneDateTime.toLocalDate().atStartOfDay(ZoneId.systemDefault())
-        Timber.d("startOfDayInUserZone: $startOfDayInUserZone")
-        return startOfDayInUserZone.toInstant().toEpochMilli()
+
+        // Convert to milliseconds
+        val originalTimestampMillis = timestamp * 1000
+
+        // Get the current time zone of the user
+        val userTimeZone = TimeZone.getDefault()
+
+        // Create a Calendar instance for UTC
+        val calendarUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
+        calendarUTC.timeInMillis = originalTimestampMillis
+
+        // Create a Calendar instance for the user's time zone
+        val calendarUser = Calendar.getInstance(userTimeZone)
+        calendarUser.timeInMillis = originalTimestampMillis
+
+        // Adjust the date considering the difference in time zones
+        val offset = userTimeZone.getOffset(calendarUTC.timeInMillis) - TimeZone.getTimeZone("UTC").getOffset(calendarUTC.timeInMillis)
+        val adjustedTimestampMillis = calendarUTC.timeInMillis + offset
+        return adjustedTimestampMillis
+    }
+
+    override fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis): TimeInSeconds {
+        // Create a Calendar instance for UTC with the given timestamp
+        val calendarUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            timeInMillis = timestamp
+        }
+
+        // Create a Calendar instance for the local time zone, setting the time to the UTC calendar's time
+        val calendarLocal = Calendar.getInstance().apply {
+            timeInMillis = calendarUTC.timeInMillis
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        // Convert the local start of the day back to seconds
+        return calendarLocal.timeInMillis / 1000
     }
 }
+
+

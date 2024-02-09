@@ -17,6 +17,7 @@ interface DateProvider {
     fun getTimestampForWeekAheadAtStartOfDay(): TimeInSeconds
     fun getTimestampForWeekAgoAtStartOfDay(): TimeInSeconds
     fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis
+    fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis): TimeInSeconds
 }
 
 interface DateTypeNameProvider {

@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_ui.relations
 
-import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -13,18 +13,18 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
-import androidx.compose.material3.DatePickerFormatter
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -37,22 +37,28 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.sets.DateValueView
-import java.time.Instant
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.util.Calendar
-import java.util.TimeZone
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DatePickerContent(state: DateValueView) {
+fun DatePickerContent(
+    state: DateValueView,
+    onDateSelected: (Long) -> Unit,
+    onClear: () -> Unit,
+    onTodayClicked: () -> Unit,
+    onTomorrowClicked: () -> Unit
+){
+
+    val timeInSeconds = remember { mutableStateOf(state.timeInSeconds) }
 
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = state.timeInSeconds,
-        initialDisplayedMonthMillis = state.timeInSeconds
+        initialSelectedDateMillis = timeInSeconds.value
     )
+    LaunchedEffect(datePickerState.selectedDateMillis) {
+        if (datePickerState.selectedDateMillis != null) {
+            onDateSelected(datePickerState.selectedDateMillis!!)
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -63,14 +69,16 @@ fun DatePickerContent(state: DateValueView) {
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
     ) {
-        Header(title = state.title.orEmpty())
+        Header(title = state.title.orEmpty(), onClear = onClear)
         val datePickerColors = DatePickerDefaults.colors(
             todayContentColor = colorResource(id = R.color.glyph_accent),
+            todayDateBorderColor = Color.Transparent,
             selectedDayContainerColor = colorResource(id = R.color.palette_very_light_orange),
             selectedDayContentColor = colorResource(id = R.color.glyph_accent),
             subheadContentColor = colorResource(id = R.color.amp_blue),
             headlineContentColor = colorResource(id = R.color.palette_system_green),
         )
+        //https://issuetracker.google.com/issues/281859606
         CompositionLocalProvider(LocalContentColor provides colorResource(id = R.color.glyph_accent)) {
             DatePicker(
                 state = datePickerState,
@@ -80,31 +88,34 @@ fun DatePickerContent(state: DateValueView) {
                 title = null,
                 headline = null,
                 showModeToggle = false,
-                colors = datePickerColors,
-                dateFormatter = DatePickerFormatter(
-                    selectedDateSkeleton = "MMMM d, yyyy"
-                )
+                colors = datePickerColors
             )
         }
         Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
         Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
+                .noRippleClickable { onTodayClicked() },
             color = colorResource(id = R.color.text_primary),
             text = stringResource(id = R.string.today),
-            style = UXBody,
-            modifier = Modifier.padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
+            style = UXBody
         )
         Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
         Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
+                .noRippleClickable { onTomorrowClicked() },
             color = colorResource(id = R.color.text_primary),
             text = stringResource(id = R.string.tomorrow),
-            style = UXBody,
-            modifier = Modifier.padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
+            style = UXBody
         )
     }
 }
 
 @Composable
-private fun Header(title : String) {
+private fun Header(title : String, onClear: () -> Unit) {
 
     // Dragger at the top, centered
     Box(
@@ -127,7 +138,7 @@ private fun Header(title : String) {
                 .wrapContentWidth()
                 .fillMaxHeight()
                 .align(Alignment.CenterStart)
-                .noRippleClickable { }
+                .clickable { onClear() }
             ) {
                 androidx.compose.material.Text(
                     modifier = Modifier
@@ -146,7 +157,6 @@ private fun Header(title : String) {
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(horizontal = 74.dp),
-            //text = getTitle(state = state),
             text = title,
             style = Title1.copy(),
             color = colorResource(R.color.text_primary),

@@ -37,11 +37,9 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
         RelationContext.OBJECT -> componentManager()
             .objectValueObjectComponent.get(params)
             .inject(this)
-
         RelationContext.OBJECT_SET -> componentManager()
             .objectValueSetComponent.get(params)
             .inject(this)
-
         RelationContext.DATA_VIEW -> componentManager()
             .objectValueDataViewComponent.get(params)
             .inject(this)

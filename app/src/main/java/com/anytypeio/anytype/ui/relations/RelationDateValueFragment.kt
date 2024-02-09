@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.relations
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -63,7 +64,13 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
                     surface = colorResource(id = R.color.context_menu_background)
                 )
             ) {
-                DatePickerContent(vm.views.collectAsStateWithLifecycle().value)
+                DatePickerContent(
+                    state = vm.views.collectAsStateWithLifecycle().value,
+                    onDateSelected = vm::onDateSelected,
+                    onClear = vm::onClearClicked,
+                    onTodayClicked = vm::onTodayClicked,
+                    onTomorrowClicked = vm::onTomorrowClicked
+                )
             }
         }
     }
@@ -147,7 +154,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
                 timeInSeconds = timeInSeconds
             )
         }
-        dismiss()
+        //dismiss()
     }
 
     private fun setTransparentBackground() {

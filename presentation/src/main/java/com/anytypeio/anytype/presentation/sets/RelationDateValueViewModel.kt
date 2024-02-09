@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.presentation.sets
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
@@ -45,6 +47,7 @@ class RelationDateValueViewModel(
                 relations.observe(relationKey),
                 values.subscribe(ctx = ctx, target = objectId)
             ) { relation, value ->
+                Log.d("Test1983", "combine: value: ${value[relationKey]}")
                 setName(relation.name)
                 setDate(timeInSeconds = DateParser.parse(value[relationKey]))
             }
@@ -57,11 +60,23 @@ class RelationDateValueViewModel(
     }
 
     fun onTodayClicked() {
-        setDate(timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay())
+        viewModelScope.launch {
+            commands.emit(
+                DateValueCommand.DispatchResult(
+                    timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay().toDouble()
+                )
+            )
+        }
     }
 
     fun onTomorrowClicked() {
-        setDate(timeInSeconds = dateProvider.getTimestampForTomorrowAtStartOfDay())
+        viewModelScope.launch {
+            commands.emit(
+                DateValueCommand.DispatchResult(
+                    timeInSeconds = dateProvider.getTimestampForTomorrowAtStartOfDay().toDouble()
+                )
+            )
+        }
     }
 
     fun onYesterdayClicked() {
@@ -77,6 +92,30 @@ class RelationDateValueViewModel(
 //            )
 //        }
     }
+
+    fun onDateSelected(selectedDate: TimeInMillis) {
+        val properDate = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(timestamp = selectedDate)
+        viewModelScope.launch {
+            commands.emit(
+                DateValueCommand.DispatchResult(
+                    timeInSeconds = properDate.toDouble()
+                )
+            )
+        }
+    }
+
+    fun onClearClicked() {
+        setDate(timeInSeconds = null)
+        viewModelScope.launch {
+            commands.emit(
+                DateValueCommand.DispatchResult(
+                    timeInSeconds = null
+                )
+            )
+        }
+    }
+
+
 
     fun onNoDateClicked() {
         setDate(timeInSeconds = null)
@@ -98,7 +137,7 @@ class RelationDateValueViewModel(
         )
     }
 
-    fun setDate(timeInSeconds: Long?) {
+    private fun setDate(timeInSeconds: Long?) {
         if (timeInSeconds != null) {
             val dateType = dateProvider.calculateDateType(timeInSeconds)
             val isToday = dateType == DateType.TODAY
@@ -114,7 +153,7 @@ class RelationDateValueViewModel(
                 isYesterday = isYesterday,
                 isTomorrow = isTomorrow,
                 exactDayFormat = exactDayFormat,
-                timeInSeconds = dateProvider.adjustToStartOfDayInUserTimeZone(timeInSeconds)
+                timeInMillis = dateProvider.adjustToStartOfDayInUserTimeZone(timeInSeconds)
             )
         } else {
             _views.value = views.value.copy(
@@ -122,7 +161,7 @@ class RelationDateValueViewModel(
                 isYesterday = false,
                 isTomorrow = false,
                 exactDayFormat = null,
-                timeInSeconds = null
+                timeInMillis = null
             )
         }
     }
@@ -150,5 +189,5 @@ data class DateValueView(
     val isYesterday: Boolean = false,
     val isTomorrow: Boolean = false,
     val exactDayFormat: String? = null,
-    val timeInSeconds: Long? = null
+    val timeInMillis: TimeInMillis? = null
 )

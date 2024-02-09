@@ -49,14 +49,14 @@ fun DatePickerContent(
     onTomorrowClicked: () -> Unit
 ){
 
-    val timeInSeconds = remember { mutableStateOf(state.timeInSeconds) }
+    val timeInMillis = remember { mutableStateOf(state.timeInMillis) }
 
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = timeInSeconds.value
+        initialSelectedDateMillis = timeInMillis.value
     )
     LaunchedEffect(datePickerState.selectedDateMillis) {
         if (datePickerState.selectedDateMillis != null) {
-            onDateSelected(datePickerState.selectedDateMillis!!)
+            //onDateSelected(datePickerState.selectedDateMillis!!)
         }
     }
     Column(

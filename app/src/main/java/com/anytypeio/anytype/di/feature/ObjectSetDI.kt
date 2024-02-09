@@ -163,6 +163,10 @@ interface ObjectSetSubComponent {
     fun tagStatusDataViewComponent(): TagOrStatusValueDataViewComponent.Builder
     fun optionSetComponent(): CreateOrEditOptionSetComponent.Builder
     fun optionDataViewComponent(): CreateOrEditOptionDataViewComponent.Builder
+    fun attachmentSetComponent(): AttachmentValueSetComponent.Builder
+    fun attachmentDataViewComponent(): AttachmentValueDataViewComponent.Builder
+    fun objectValueSetComponent(): ObjectValueSetComponent.Builder
+    fun objectValueDataViewComponent(): ObjectValueDataViewComponent.Builder
 }
 
 @Module(

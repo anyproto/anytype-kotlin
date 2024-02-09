@@ -103,6 +103,8 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
+import com.anytypeio.anytype.presentation.relations.value.attachment.AttachmentValueViewModel
+import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
@@ -988,6 +990,48 @@ class ComponentManager(
     val optionDataViewComponent = ComponentWithParams { params: CreateOrEditOptionViewModel.ViewModelParams ->
         objectSetComponent.get(params.ctx)
             .optionDataViewComponent()
+            .params(params)
+            .build()
+    }
+
+    val objectValueObjectComponent = ComponentWithParams { params: ObjectValueViewModel.ViewModelParams ->
+        editorComponent.get(params.ctx)
+            .objectValueComponent()
+            .params(params)
+            .build()
+    }
+
+    val objectValueSetComponent = ComponentWithParams { params: ObjectValueViewModel.ViewModelParams ->
+        objectSetComponent.get(params.ctx)
+            .objectValueSetComponent()
+            .params(params)
+            .build()
+    }
+
+    val objectValueDataViewComponent = ComponentWithParams { params: ObjectValueViewModel.ViewModelParams ->
+        objectSetComponent.get(params.ctx)
+            .objectValueDataViewComponent()
+            .params(params)
+            .build()
+    }
+
+    val attachmentObjectComponent = ComponentWithParams { params: AttachmentValueViewModel.ViewModelParams ->
+        editorComponent.get(params.ctx)
+            .attachmentValueObjectComponent()
+            .params(params)
+            .build()
+    }
+
+    val attachmentSetComponent = ComponentWithParams { params: AttachmentValueViewModel.ViewModelParams ->
+        objectSetComponent.get(params.ctx)
+            .attachmentSetComponent()
+            .params(params)
+            .build()
+    }
+
+    val attachmentDataViewComponent = ComponentWithParams { params: AttachmentValueViewModel.ViewModelParams ->
+        objectSetComponent.get(params.ctx)
+            .attachmentDataViewComponent()
             .params(params)
             .build()
     }

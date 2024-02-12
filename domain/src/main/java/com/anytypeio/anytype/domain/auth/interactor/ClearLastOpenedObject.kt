@@ -1,15 +1,20 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
-import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 
 /**
  * Use case for clearing last open object's id from user session.
- * @see GetLastOpenedObject
  * @see SaveLastOpenedObject
  */
 class ClearLastOpenedObject(
-    private val repo: AuthRepository
-) : BaseUseCase<Unit, BaseUseCase.None>() {
-    override suspend fun run(params: None) = safe { repo.clearLastOpenedObject() }
+    private val repo: UserSettingsRepository
+) : BaseUseCase<Unit, ClearLastOpenedObject.Params>() {
+
+    override suspend fun run(params: Params) = safe {
+        repo.clearLastOpenedObject(params.space)
+    }
+
+    data class Params(val space: SpaceId)
 }

@@ -1094,11 +1094,11 @@
     <string name="clipboard_panel_create_object_from_clipboard">Создать объект из буфера обмена</string>
     <string name="block_media_error">Что-то пошло не так, пожалуйста, попробуйте еще раз.</string>
     <string name="relation_value_create_new">Создать %1$s\"</string>
-    <string name="option_widget_create">Create option</string>
+    <string name="option_widget_create">Создать параметр</string>
     <string name="option_widget_edit">Edit option</string>
-    <string name="options_empty_description">Nothing found. Create first option to start.</string>
-    <string name="options_empty_title">No options</string>
-    <string name="options_empty_not_editable">The relation is empty</string>
+    <string name="options_empty_description">Ничего не найдено. Создайте первую опцию для начала.</string>
+    <string name="options_empty_title">Опций нет</string>
+    <string name="options_empty_not_editable">Отношение пустое</string>
     <string name="options_delete_title">Вы уверены?</string>
     <string name="options_delete_description">The option will be permanently removed from your space</string>
     <string name="hint_enter_name">Enter name...</string>

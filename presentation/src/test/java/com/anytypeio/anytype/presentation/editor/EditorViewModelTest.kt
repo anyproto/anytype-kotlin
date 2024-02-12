@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.parseThemeTextColor
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
@@ -400,6 +401,11 @@ open class EditorViewModelTest {
         MockitoAnnotations.openMocks(this)
         builder = UrlBuilder(gateway)
         stubNetworkMode()
+        spaceManager.stub {
+            onBlocking {
+                get()
+            } doReturn spaceId
+        }
     }
 
     @Test
@@ -416,7 +422,11 @@ open class EditorViewModelTest {
 
     @Test
     fun `should start opening page when requested`() {
-        val param = OpenPage.Params(root, true)
+        val param = OpenPage.Params(
+            obj = root,
+            saveAsLastOpened = true,
+            space = SpaceId(spaceId)
+        )
 
         stubInterceptEvents()
         givenViewModel()
@@ -2773,7 +2783,7 @@ open class EditorViewModelTest {
     }
 
     @Test
-    fun `should start closing page after successful archive operation`() {
+    fun `should start closing page after successful archive operation`() = runTest {
 
         // SETUP
 
@@ -2805,25 +2815,21 @@ open class EditorViewModelTest {
         }
 
         stubObserveEvents(flow)
-        stubOpenPage()
+        stubOpenPage(context = root)
         stubClosePage()
         givenViewModel()
 
         vm.onStart(root)
 
-        coroutineTestRule.advanceTime(100)
-
-        stubClosePage()
+        coroutineTestRule.advanceTime(300)
 
         // TESTING
 
         vm.proceedWithExitingBack()
 
-        runBlockingTest {
-            verify(closePage, times(1)).async(
-                params = eq(root)
-            )
-        }
+        verify(closePage, times(1)).async(
+            params = eq(root)
+        )
     }
 
     @Test
@@ -3648,7 +3654,7 @@ open class EditorViewModelTest {
     ) {
 
         closePage.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(Unit)
+            onBlocking { async(root) } doReturn Resultat.success(Unit)
         }
 
         exception?.let {
@@ -3677,7 +3683,15 @@ open class EditorViewModelTest {
         events: List<Event> = emptyList()
     ) {
         openPage.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(
+            onBlocking {
+                async(
+                    OpenPage.Params(
+                        obj = context,
+                        space = SpaceId(spaceId),
+                        saveAsLastOpened = true
+                    )
+                )
+            } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = context,

@@ -3,13 +3,14 @@ package com.anytypeio.anytype.presentation.splash
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
-import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -58,9 +59,6 @@ class SplashViewModelTest {
     lateinit var repo: BlockRepository
 
     @Mock
-    lateinit var auth: AuthRepository
-
-    @Mock
     lateinit var settings: UserSettingsRepository
 
     private lateinit var getLastOpenedObject: GetLastOpenedObject
@@ -90,6 +88,8 @@ class SplashViewModelTest {
 
     lateinit var vm: SplashViewModel
 
+    val defaultSpaceConfig = StubConfig()
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
@@ -97,6 +97,7 @@ class SplashViewModelTest {
             settings = settings,
             blockRepo = repo
         )
+        stubSpaceManager()
     }
 
     private fun initViewModel() {
@@ -196,11 +197,20 @@ class SplashViewModelTest {
     }
 
     private fun stubGetLastOpenedObject() {
-        auth.stub {
+        settings.stub {
             onBlocking {
-                getLastOpenedObjectId()
+                getLastOpenedObject(
+                    space = SpaceId(defaultSpaceConfig.space)
+                )
             } doReturn null
         }
     }
 
+    private fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking {
+                get()
+            } doReturn defaultSpaceConfig.space
+        }
+    }
 }

@@ -493,14 +493,15 @@ open class EditorPresentationTestSetup {
         details: Block.Details = Block.Details(),
         relations: List<Relation> = emptyList(),
         objectRestrictions: List<ObjectRestriction> = emptyList(),
-        relationLinks: List<RelationLink> = emptyList()
+        relationLinks: List<RelationLink> = emptyList(),
+        spaceId: SpaceId = SpaceId("")
     ) {
         openPage.stub {
             onBlocking { async(
                 OpenPage.Params(
                     obj = root,
                     saveAsLastOpened = true,
-                    space = SpaceId("")
+                    space = spaceId
                 )
             ) } doReturn Resultat.success(
                 Result.Success(

@@ -32,6 +32,7 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

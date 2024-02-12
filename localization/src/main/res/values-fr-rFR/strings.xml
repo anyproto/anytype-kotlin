@@ -131,7 +131,7 @@
     <string name="sort">Trier</string>
     <string name="sort_empty_state">Pas de tri ici. Vous pouvez en ajouter</string>
     <string name="filter_empty_state">Aucun filtre ici. Vous pouvez en ajouter</string>
-    <string name="relation_status_value_empty_state">No related options here. You can add some</string>
+    <string name="relation_status_value_empty_state">Pas d\'options associées ici. Vous pouvez en ajouter</string>
     <string name="filter_by">Filtrer par</string>
     <string name="filter">Filtre</string>
     <string name="modal_view">Vue</string>
@@ -927,8 +927,8 @@
     <string name="widget_type_tree_description">Hierarchical structure of object</string>
     <string name="widget_type_link">Lien</string>
     <string name="widget_type_link_description">Compact version of the object</string>
-    <string name="widget_type_list_description">Widget with list view of set object</string>
-    <string name="widget_type_compact_list_description">Widget with list view of set object</string>
+    <string name="widget_type_list_description">Widget avec vue en liste d\'un set d\'objets</string>
+    <string name="widget_type_compact_list_description">Widget avec vue en liste d\'un set d\'objets</string>
     <string name="widget_type_list">Liste</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Changer la Source</string>

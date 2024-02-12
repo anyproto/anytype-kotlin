@@ -3,7 +3,6 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -40,10 +39,6 @@ interface AuthDataStore {
 
     suspend fun getVersion(): String
     suspend fun setMetrics(platform: String, version: String)
-
-    suspend fun saveLastOpenedObject(id: Id)
-    suspend fun getLastOpenedObject() : Id?
-    suspend fun clearLastOpenedObject()
 
     suspend fun getNetworkMode(): NetworkModeConfig
     suspend fun setNetworkMode(modeConfig: NetworkModeConfig)

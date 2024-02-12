@@ -160,28 +160,21 @@ class AddObjectRelationViewModel(
     ) {
         viewModelScope.launch {
             val filters = mutableListOf<DVFilter>()
+            val spaces = buildList {
+                val config = spaceManager.getConfig()
+                if (config != null) {
+                    add(config.space)
+                    add(config.techSpace)
+                } else {
+                    add(spaceManager.get())
+                }
+            }
             filters.addAll(
                 ObjectSearchConstants.filterAddObjectToRelation(
-                    space = spaceManager.get()
+                    spaces = spaces,
+                    targetTypes = targetTypes
                 )
             )
-            if (targetTypes.isEmpty()) {
-                filters.add(
-                    DVFilter(
-                        relation = Relations.LAYOUT,
-                        condition = DVFilterCondition.IN,
-                        value = SupportedLayouts.layouts.map { it.code.toDouble() }
-                    )
-                )
-            } else {
-                filters.add(
-                    DVFilter(
-                        relation = Relations.TYPE,
-                        condition = DVFilterCondition.IN,
-                        value = targetTypes
-                    )
-                )
-            }
             searchObjects(
                 SearchObjects.Params(
                     sorts = ObjectSearchConstants.sortAddObjectToRelation,

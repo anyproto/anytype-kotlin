@@ -207,6 +207,7 @@ fun RelationsViewContent(
                     is RelationsListItem.Item.Status -> StatusItem(item, action)
                     is RelationsListItem.CreateItem.Status -> ItemTagOrStatusCreate(item, action)
                     is RelationsListItem.CreateItem.Tag -> ItemTagOrStatusCreate(item, action)
+                    is RelationsListItem.Object -> ObjectItem(item, action)
                 }
             })
     }

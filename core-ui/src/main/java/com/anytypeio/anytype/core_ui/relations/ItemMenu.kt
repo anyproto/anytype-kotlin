@@ -19,7 +19,7 @@ import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAct
 
 @Composable
 fun ItemMenu(
-    item: RelationsListItem.Item?,
+    item: RelationsListItem?,
     action: (TagStatusAction) -> Unit,
     isMenuExpanded: MutableState<Boolean>
 ) {
@@ -61,7 +61,7 @@ fun ItemMenu(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
                 onClick = {
                     isMenuExpanded.value = false
-                    action(TagStatusAction.Delete(item.optionId))
+                    action(TagStatusAction.Delete(item))
                 },
             ) {
                 Text(

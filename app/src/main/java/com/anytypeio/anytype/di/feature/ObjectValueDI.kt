@@ -3,12 +3,16 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModelFactory
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import dagger.BindsInstance
@@ -37,6 +41,10 @@ interface ObjectValueObjectComponent {
 @Module
 object ObjectValueObjectModule {
 
+    @Provides
+    @PerModal
+    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
+
     @JvmStatic
     @Provides
     @PerModal
@@ -47,7 +55,11 @@ object ObjectValueObjectModule {
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         spaceManager: SpaceManager,
-        params: ObjectValueViewModel.ViewModelParams
+        params: ObjectValueViewModel.ViewModelParams,
+        subscription: StorelessSubscriptionContainer,
+        urlBuilder: UrlBuilder,
+        storeOfObjectTypes: StoreOfObjectTypes,
+        gradientProvider: SpaceGradientProvider
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -55,7 +67,11 @@ object ObjectValueObjectModule {
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        subscription = subscription,
+        urlBuilder = urlBuilder,
+        storeOfObjectTypes = storeOfObjectTypes,
+        gradientProvider = gradientProvider
     )
 }
 //endregion
@@ -80,6 +96,10 @@ interface ObjectValueSetComponent {
 @Module
 object ObjectValueSetModule {
 
+    @Provides
+    @PerModal
+    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
+
     @JvmStatic
     @Provides
     @PerModal
@@ -90,7 +110,11 @@ object ObjectValueSetModule {
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         spaceManager: SpaceManager,
-        params: ObjectValueViewModel.ViewModelParams
+        params: ObjectValueViewModel.ViewModelParams,
+        subscription: StorelessSubscriptionContainer,
+        urlBuilder: UrlBuilder,
+        storeOfObjectTypes: StoreOfObjectTypes,
+        gradientProvider: SpaceGradientProvider
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -98,7 +122,11 @@ object ObjectValueSetModule {
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        subscription = subscription,
+        urlBuilder = urlBuilder,
+        storeOfObjectTypes = storeOfObjectTypes,
+        gradientProvider = gradientProvider
     )
 }
 //endregion
@@ -123,6 +151,10 @@ interface ObjectValueDataViewComponent {
 @Module
 object ObjectValueDataViewModule {
 
+    @Provides
+    @PerModal
+    fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
+
     @JvmStatic
     @Provides
     @PerModal
@@ -133,7 +165,11 @@ object ObjectValueDataViewModule {
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         spaceManager: SpaceManager,
-        params: ObjectValueViewModel.ViewModelParams
+        params: ObjectValueViewModel.ViewModelParams,
+        subscription: StorelessSubscriptionContainer,
+        urlBuilder: UrlBuilder,
+        storeOfObjectTypes: StoreOfObjectTypes,
+        gradientProvider: SpaceGradientProvider
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -141,7 +177,11 @@ object ObjectValueDataViewModule {
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
-        spaceManager = spaceManager
+        spaceManager = spaceManager,
+        subscription = subscription,
+        urlBuilder = urlBuilder,
+        storeOfObjectTypes = storeOfObjectTypes,
+        gradientProvider = gradientProvider
     )
 }
 //endregion

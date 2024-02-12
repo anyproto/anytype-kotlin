@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -154,32 +155,38 @@ class TagOrStatusValueViewModel(
                 )
             )
             is TagStatusAction.Delete -> {
-                emitCommand(Command.DeleteOption(action.optionId))
+                if (action.item is RelationsListItem.Item) {
+                    proceedWithDeleteOptions(action.item.optionId)
+                }
             }
             is TagStatusAction.Duplicate -> {
-                val item = action.item
-                emitCommand(
-                    Command.OpenOptionScreen(
-                        color = item.color.code,
-                        text = item.name,
-                        relationKey = viewModelParams.relationKey,
-                        ctx = viewModelParams.ctx,
-                        objectId = viewModelParams.objectId
+                if (action.item is RelationsListItem.Item) {
+                    val item = action.item
+                    emitCommand(
+                        Command.OpenOptionScreen(
+                            color = item.color.code,
+                            text = item.name,
+                            relationKey = viewModelParams.relationKey,
+                            ctx = viewModelParams.ctx,
+                            objectId = viewModelParams.objectId
+                        )
                     )
-                )
+                }
             }
             is TagStatusAction.Edit -> {
-                val item = action.item
-                emitCommand(
-                    Command.OpenOptionScreen(
-                        optionId = item.optionId,
-                        color = item.color.code,
-                        text = item.name,
-                        relationKey = viewModelParams.relationKey,
-                        ctx = viewModelParams.ctx,
-                        objectId = viewModelParams.objectId
+                if (action.item is RelationsListItem.Item) {
+                    val item = action.item
+                    emitCommand(
+                        Command.OpenOptionScreen(
+                            optionId = item.optionId,
+                            color = item.color.code,
+                            text = item.name,
+                            relationKey = viewModelParams.relationKey,
+                            ctx = viewModelParams.ctx,
+                            objectId = viewModelParams.objectId
+                        )
                     )
-                )
+                }
             }
             TagStatusAction.Create -> {
                 emitCommand(
@@ -237,6 +244,8 @@ class TagOrStatusValueViewModel(
                     )
                 )
             }
+
+            is RelationsListItem.Object -> {}
         }
     }
 
@@ -486,9 +495,9 @@ sealed class TagStatusAction {
     data class LongClick(val item: RelationsListItem.Item) : TagStatusAction()
     object Clear : TagStatusAction()
     object Plus : TagStatusAction()
-    data class Edit(val item: RelationsListItem.Item) : TagStatusAction()
-    data class Delete(val optionId: Id) : TagStatusAction()
-    data class Duplicate(val item: RelationsListItem.Item) : TagStatusAction()
+    data class Edit(val item: RelationsListItem) : TagStatusAction()
+    data class Delete(val item: RelationsListItem) : TagStatusAction()
+    data class Duplicate(val item: RelationsListItem) : TagStatusAction()
     object Create : TagStatusAction()
 }
 
@@ -519,6 +528,12 @@ sealed class RelationsListItem {
             override val isSelected: Boolean
         ) : Item()
     }
+
+    data class Object(
+        val view: DefaultObjectView,
+        val isSelected: Boolean,
+        val number: Int = Int.MAX_VALUE
+    ) : RelationsListItem()
 
     sealed class CreateItem(
         val text: String

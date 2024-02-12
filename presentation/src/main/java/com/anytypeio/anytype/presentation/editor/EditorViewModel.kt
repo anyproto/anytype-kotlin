@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.editor
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -3926,6 +3927,16 @@ class EditorViewModel(
                                             )
                                         )
                                     }
+                                    Relation.Format.OBJECT -> {
+                                        dispatch(
+                                            Command.OpenObjectRelationScreen.Value.ObjectValue(
+                                                ctx = context,
+                                                target = context,
+                                                relationKey = relation.key,
+                                                isLocked = mode == EditorMode.Locked
+                                            )
+                                        )
+                                    }
                                     else -> {
                                         dispatch(
                                             Command.OpenObjectRelationScreen.Value.Default(
@@ -3938,9 +3949,6 @@ class EditorViewModel(
                                         )
                                     }
                                 }
-                                proceedWithRelationBlockClicked(
-                                    relationView = clicked.relation
-                                )
                             }
                         }
                     }
@@ -7112,6 +7120,16 @@ class EditorViewModel(
                     )
                 )
             }
+//            Relation.Format.OBJECT -> {
+//                dispatch(
+//                    Command.OpenObjectRelationScreen.Value.ObjectValue(
+//                        ctx = context,
+//                        target = context,
+//                        relationKey = relation.key,
+//                        isLocked = mode == EditorMode.Locked
+//                    )
+//                )
+//            }
             else -> {
                 dispatch(
                     Command.OpenObjectRelationScreen.Value.Default(

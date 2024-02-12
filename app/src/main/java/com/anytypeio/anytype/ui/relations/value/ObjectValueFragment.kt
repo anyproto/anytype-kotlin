@@ -22,6 +22,11 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
     private val isLocked get() = argBoolean(IS_LOCKED_KEY)
     private val relationContext get() = requireArguments().getSerializable(RELATION_CONTEXT_KEY) as RelationContext
 
+    override fun onStart() {
+        super.onStart()
+        vm.onStart()
+    }
+
     override fun injectDependencies() {
         val params = ObjectValueViewModel.ViewModelParams(
             ctx = ctx,

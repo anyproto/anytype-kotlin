@@ -187,6 +187,8 @@ interface EditorSubComponent {
 
     fun tagStatusObjectComponent(): TagOrStatusValueObjectComponent.Builder
     fun optionObjectComponent(): CreateOrEditOptionObjectComponent.Builder
+    fun attachmentValueObjectComponent(): AttachmentValueObjectComponent.Builder
+    fun objectValueComponent(): ObjectValueObjectComponent.Builder
 }
 
 

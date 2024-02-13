@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
+import com.anytypeio.anytype.presentation.relations.values
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -106,6 +107,7 @@ class ObjectValueViewModel(
     fun onStop() {
         jobs.forEach { it.cancel() }
         jobs.clear()
+        isInitialSortDone = false
         initialIds.clear()
     }
 
@@ -226,15 +228,26 @@ class ObjectValueViewModel(
 
     private fun onDeleteAction(item: ObjectValueItem.Object) {
         viewModelScope.launch {
-            val params = SetObjectListIsArchived.Params(
-                targets = listOf(item.view.id),
-                isArchived = true
-            )
-            objectListIsArchived.async(params).fold(
-                onSuccess = { Timber.d("Object ${item.view.id} archived") },
-                onFailure = { Timber.e(it, "Error while archiving object") }
-            )
+            val isSelected = item.isSelected
+            if (isSelected) {
+                removeObjectValue(item)  {
+                   proceedWithObjectDeletion(item)
+                }
+            } else {
+                proceedWithObjectDeletion(item)
+            }
         }
+    }
+
+    private suspend fun proceedWithObjectDeletion(item: ObjectValueItem.Object) {
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(item.view.id),
+            isArchived = true
+        )
+        objectListIsArchived.async(params).fold(
+            onSuccess = { Timber.d("Object ${item.view.id} archived") },
+            onFailure = { Timber.e(it, "Error while archiving object") }
+        )
     }
 
     private fun onClearAction() {
@@ -266,7 +279,7 @@ class ObjectValueViewModel(
 
     private fun onClickAction(item: ObjectValueItem.Object) {
         if (item.isSelected) {
-            removeObjectValue(item)
+            viewModelScope.launch { removeObjectValue(item) }
         } else {
             addObjectValue(item)
         }
@@ -299,24 +312,23 @@ class ObjectValueViewModel(
         }
     }
 
-    private fun removeObjectValue(item: ObjectValueItem.Object) {
-        viewModelScope.launch {
-            val obj = values.get(ctx = viewModelParams.ctx, target = viewModelParams.objectId)
-            val value = obj[viewModelParams.relationKey].filterIdsById(item.view.id)
-            setObjectDetails(
-                UpdateDetail.Params(
-                    target = viewModelParams.objectId,
-                    key = viewModelParams.relationKey,
-                    value = value
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while removing object ${item.view.id}") },
-                success = {
-                    dispatcher.send(it)
-                    sendAnalyticsRelationValueEvent(analytics)
-                }
+    private suspend fun removeObjectValue(item: ObjectValueItem.Object, action: suspend () -> Unit = {}) {
+        val obj = values.get(ctx = viewModelParams.ctx, target = viewModelParams.objectId)
+        val value = obj[viewModelParams.relationKey].filterIdsById(item.view.id)
+        setObjectDetails(
+            UpdateDetail.Params(
+                target = viewModelParams.objectId,
+                key = viewModelParams.relationKey,
+                value = value
             )
-        }
+        ).process(
+            failure = { Timber.e(it, "Error while removing object ${item.view.id}") },
+            success = {
+                dispatcher.send(it)
+                viewModelScope.sendAnalyticsRelationValueEvent(analytics)
+                action()
+            }
+        )
     }
     //endregion
 

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.getSpaces
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -37,15 +38,7 @@ class LinkToObjectViewModel(
         limit = SEARCH_LIMIT,
         filters = ObjectSearchConstants.getFilterLinkTo(
             ignore = ignore,
-            spaces = buildList {
-                val config = spaceManager.getConfig()
-                if (config != null) {
-                    add(config.space)
-                    add(config.techSpace)
-                } else {
-                    add(spaceManager.get())
-                }
-            }
+            spaces = spaceManager.getSpaces()
         ),
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = EMPTY_QUERY,

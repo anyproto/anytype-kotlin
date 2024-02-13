@@ -3,18 +3,15 @@ package com.anytypeio.anytype.presentation.relations.add
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.DVFilter
-import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
+import com.anytypeio.anytype.domain.workspace.getSpaces
 import com.anytypeio.anytype.presentation.objects.toRelationObjectValueView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -159,29 +156,10 @@ class AddObjectRelationViewModel(
         targetTypes: List<Id>
     ) {
         viewModelScope.launch {
-            val filters = mutableListOf<DVFilter>()
-            filters.addAll(
-                ObjectSearchConstants.filterAddObjectToRelation(
-                    space = spaceManager.get()
-                )
+            val filters = ObjectSearchConstants.filterAddObjectToRelation(
+                spaces = spaceManager.getSpaces(),
+                targetTypes = targetTypes
             )
-            if (targetTypes.isEmpty()) {
-                filters.add(
-                    DVFilter(
-                        relation = Relations.LAYOUT,
-                        condition = DVFilterCondition.IN,
-                        value = SupportedLayouts.layouts.map { it.code.toDouble() }
-                    )
-                )
-            } else {
-                filters.add(
-                    DVFilter(
-                        relation = Relations.TYPE,
-                        condition = DVFilterCondition.IN,
-                        value = targetTypes
-                    )
-                )
-            }
             searchObjects(
                 SearchObjects.Params(
                     sorts = ObjectSearchConstants.sortAddObjectToRelation,

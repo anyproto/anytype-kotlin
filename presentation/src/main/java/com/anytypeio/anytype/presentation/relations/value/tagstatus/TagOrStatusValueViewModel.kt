@@ -57,7 +57,6 @@ class TagOrStatusValueViewModel(
     fun onStart() {
         Timber.d("onStart, params: $viewModelParams")
         jobs += viewModelScope.launch {
-            setupInitialIds()
             val relation = relations.get(relation = viewModelParams.relationKey)
             val spaces = listOf(spaceManager.get())
             val searchParams = StoreSearchParams(
@@ -95,22 +94,6 @@ class TagOrStatusValueViewModel(
                     ids = ids
                 )
             }.collect()
-        }
-    }
-
-    private fun setupInitialIds() {
-        viewModelScope.launch {
-            val ids = getRecordValues(
-                values.get(
-                    ctx = viewModelParams.ctx,
-                    target = viewModelParams.objectId
-                )
-            )
-            initialIds.clear()
-            initialIds.addAll(ids)
-            if (initialIds.isEmpty()) {
-                emitCommand(Command.Expand)
-            }
         }
     }
 
@@ -427,6 +410,7 @@ class TagOrStatusValueViewModel(
     ) = options.map { option ->
         val index = ids.indexOf(option.id)
         val isSelected = index != -1
+        isInitialSortDone = true
         RelationsListItem.Item.Status(
             optionId = option.id,
             name = option.name.orEmpty(),

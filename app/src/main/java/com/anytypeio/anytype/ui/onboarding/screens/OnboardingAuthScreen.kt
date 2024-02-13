@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.onboarding.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,7 +59,7 @@ fun AuthScreenWrapper(
         onLoginClicked = vm::onLoginClicked,
         onPrivacyPolicyClicked = vm::onPrivacyPolicyClicked,
         onTermsOfUseClicked = vm::onTermsOfUseClicked,
-        onSettingsClicked = TODO()
+        onSettingsClicked = vm::onSettingsClicked
     )
 }
 
@@ -93,6 +94,14 @@ fun AuthScreen(
                 onTermsOfUseClicked = onTermsOfUseClicked
             )
         }
+        Image(
+            painter = painterResource(id = R.drawable.ic_onboarding_settings),
+            contentDescription = "Onboarding settings",
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .padding(top = 8.dp, end = 16.dp)
+                .clickable { onSettingsClicked() }
+        )
     }
 }
 

@@ -372,7 +372,8 @@ class TagOrStatusValueViewModel(
                 success = {
                     dispatcher.send(it)
                     sendAnalyticsRelationValueEvent(analytics)
-                })
+                }
+            )
         }
     }
 
@@ -528,5 +529,5 @@ sealed class RelationsListItem {
     }
 }
 
-const val SUB_MY_OPTIONS = "subscription.relation_options"
+const val SUB_MY_OPTIONS = "subscription.relation-options"
 const val DELAY_UNTIL_CLOSE = 300L

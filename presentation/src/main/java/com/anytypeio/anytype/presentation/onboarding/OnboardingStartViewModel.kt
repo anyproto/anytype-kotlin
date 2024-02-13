@@ -42,6 +42,10 @@ class OnboardingStartViewModel @Inject constructor(
         viewModelScope.launch { sideEffects.emit(SideEffect.OpenTermsOfUse) }
     }
 
+    fun onSettingsClicked() {
+        viewModelScope.launch { sideEffects.emit(SideEffect.OpenNetworkSettings) }
+    }
+
     private fun navigateTo(destination: AuthNavigation) {
         viewModelScope.launch {
             navigation.emit(destination)

@@ -167,33 +167,54 @@ object ObjectSearchConstants {
     //endregion
 
     //region ADD OBJECT TO RELATION VALUE
-    fun filterAddObjectToRelation(space: Id) = listOf(
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.TYPE_UNIQUE_KEY,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = ObjectTypeUniqueKeys.TEMPLATE
-        ),
-        DVFilter(
-            relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+    fun filterAddObjectToRelation(spaces: List<Id>, targetTypes: List<Id>) = buildList {
+        addAll(
+            listOf(
+                DVFilter(
+                    relation = Relations.IS_ARCHIVED,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                ),
+                DVFilter(
+                    relation = Relations.IS_HIDDEN,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                ),
+                DVFilter(
+                    relation = Relations.IS_DELETED,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                ),
+                DVFilter(
+                    relation = Relations.TYPE_UNIQUE_KEY,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = ObjectTypeUniqueKeys.TEMPLATE
+                ),
+                DVFilter(
+                    relation = Relations.SPACE_ID,
+                    condition = DVFilterCondition.IN,
+                    value = spaces
+                )
+            )
         )
-    )
+        if (targetTypes.isEmpty()) {
+            add(
+                DVFilter(
+                    relation = Relations.LAYOUT,
+                    condition = DVFilterCondition.IN,
+                    value = SupportedLayouts.layouts.map { it.code.toDouble() }
+                )
+            )
+        } else {
+            add(
+                DVFilter(
+                    relation = Relations.TYPE,
+                    condition = DVFilterCondition.IN,
+                    value = targetTypes
+                )
+            )
+        }
+    }
 
     val sortAddObjectToRelation = listOf(
         DVSort(

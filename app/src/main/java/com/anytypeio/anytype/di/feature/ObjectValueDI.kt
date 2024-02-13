@@ -3,9 +3,13 @@ package com.anytypeio.anytype.di.feature
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -41,9 +45,18 @@ interface ObjectValueObjectComponent {
 @Module
 object ObjectValueObjectModule {
 
+    @JvmStatic
     @Provides
     @PerModal
     fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
+
+    @JvmStatic
+    @PerModal
+    @Provides
+    fun getSetObjectListIsArchived(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
 
     @JvmStatic
     @Provides
@@ -59,7 +72,9 @@ object ObjectValueObjectModule {
         subscription: StorelessSubscriptionContainer,
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
-        gradientProvider: SpaceGradientProvider
+        gradientProvider: SpaceGradientProvider,
+        objectListIsArchived: SetObjectListIsArchived,
+        duplicateObject: DuplicateObject
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -71,7 +86,9 @@ object ObjectValueObjectModule {
         subscription = subscription,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider
+        gradientProvider = gradientProvider,
+        objectListIsArchived = objectListIsArchived,
+        duplicateObject = duplicateObject
     )
 }
 //endregion
@@ -96,6 +113,7 @@ interface ObjectValueSetComponent {
 @Module
 object ObjectValueSetModule {
 
+    @JvmStatic
     @Provides
     @PerModal
     fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
@@ -114,7 +132,9 @@ object ObjectValueSetModule {
         subscription: StorelessSubscriptionContainer,
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
-        gradientProvider: SpaceGradientProvider
+        gradientProvider: SpaceGradientProvider,
+        objectListIsArchived: SetObjectListIsArchived,
+        duplicateObject: DuplicateObject
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -126,7 +146,9 @@ object ObjectValueSetModule {
         subscription = subscription,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider
+        gradientProvider = gradientProvider,
+        objectListIsArchived = objectListIsArchived,
+        duplicateObject = duplicateObject
     )
 }
 //endregion
@@ -151,6 +173,7 @@ interface ObjectValueDataViewComponent {
 @Module
 object ObjectValueDataViewModule {
 
+    @JvmStatic
     @Provides
     @PerModal
     fun provideSpaceGradientProvider(): SpaceGradientProvider = SpaceGradientProvider.Default
@@ -169,7 +192,9 @@ object ObjectValueDataViewModule {
         subscription: StorelessSubscriptionContainer,
         urlBuilder: UrlBuilder,
         storeOfObjectTypes: StoreOfObjectTypes,
-        gradientProvider: SpaceGradientProvider
+        gradientProvider: SpaceGradientProvider,
+        objectListIsArchived: SetObjectListIsArchived,
+        duplicateObject: DuplicateObject
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -181,7 +206,9 @@ object ObjectValueDataViewModule {
         subscription = subscription,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider
+        gradientProvider = gradientProvider,
+        objectListIsArchived = objectListIsArchived,
+        duplicateObject = duplicateObject
     )
 }
 //endregion

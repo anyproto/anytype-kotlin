@@ -6,7 +6,9 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -26,7 +28,9 @@ class ObjectValueViewModelFactory @Inject constructor(
     private val subscription: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val gradientProvider: SpaceGradientProvider
+    private val gradientProvider: SpaceGradientProvider,
+    private val objectListIsArchived: SetObjectListIsArchived,
+    private val duplicateObject: DuplicateObject
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -42,6 +46,8 @@ class ObjectValueViewModelFactory @Inject constructor(
         subscription = subscription,
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes,
-        gradientProvider = gradientProvider
+        gradientProvider = gradientProvider,
+        objectListIsArchived = objectListIsArchived,
+        duplicateObject = duplicateObject
     ) as T
 }

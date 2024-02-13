@@ -47,7 +47,7 @@ class TagOrStatusValueViewModel(
 
     val viewState = MutableStateFlow<TagStatusViewState>(TagStatusViewState.Loading)
     private val query = MutableSharedFlow<String>(replay = 0)
-    private var isRelationNotEditable = false
+    private var isEditableRelation = false
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val jobs = mutableListOf<Job>()
 
@@ -130,7 +130,7 @@ class TagOrStatusValueViewModel(
 
     fun onAction(action: TagStatusAction) {
         Timber.d("TagStatusViewModel onAction, action: $action")
-        if (isRelationNotEditable) {
+        if (!isEditableRelation) {
             Timber.d("TagStatusViewModel onAction, relation is not editable")
             sendToast("Relation is not editable")
             return
@@ -274,12 +274,12 @@ class TagOrStatusValueViewModel(
 
         viewState.value = if (result.isEmpty()) {
             TagStatusViewState.Empty(
-                isRelationEditable = !isRelationNotEditable,
+                isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
             )
         } else {
             TagStatusViewState.Content(
-                isRelationEditable = !isRelationNotEditable,
+                isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
                 items = result
             )
@@ -426,12 +426,12 @@ class TagOrStatusValueViewModel(
     }
 
     private fun setupIsRelationNotEditable(relation: ObjectWrapper.Relation) {
-        isRelationNotEditable = viewModelParams.isLocked
+        isEditableRelation = !(viewModelParams.isLocked
                 || relation.isReadonlyValue
                 || relation.isHidden == true
                 || relation.isDeleted == true
                 || relation.isArchived == true
-                || !relation.isValid
+                || !relation.isValid)
     }
 
     override fun onCleared() {

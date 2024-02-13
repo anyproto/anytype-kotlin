@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -54,9 +53,8 @@ class TagOrStatusValueViewModel(
     private val initialIds = mutableListOf<Id>()
     private var isInitialSortDone = false
 
-    fun onStart() {
-        Timber.d("onStart, params: $viewModelParams")
-        jobs += viewModelScope.launch {
+    init {
+        viewModelScope.launch {
             val relation = relations.get(relation = viewModelParams.relationKey)
             val spaces = listOf(spaceManager.get())
             val searchParams = StoreSearchParams(
@@ -95,15 +93,6 @@ class TagOrStatusValueViewModel(
                 )
             }.collect()
         }
-    }
-
-    fun onStop() {
-        viewModelScope.launch {
-            subscription.unsubscribe(listOf(SUB_MY_OPTIONS))
-        }
-        jobs.cancel()
-        isInitialSortDone = false
-        initialIds.clear()
     }
 
     fun onQueryChanged(input: String) {

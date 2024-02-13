@@ -31,7 +31,19 @@ class OnboardingNetworkSetupDialog : BaseBottomSheetComposeFragment() {
                 typography = typography
             ) {
                 NetworkSetupScreen(
-                    config = NetworkModeConfig()
+                    config = NetworkModeConfig(),
+                    onSelfHostNetworkClicked = {
+
+                    },
+                    onSetSelfHostConfigConfigClicked = {
+
+                    },
+                    onLocalOnlyClicked = {
+
+                    },
+                    onAnytypeNetworkClicked = {
+
+                    }
                 )
             }
         }

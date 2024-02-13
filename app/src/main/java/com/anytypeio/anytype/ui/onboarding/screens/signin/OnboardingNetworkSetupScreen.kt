@@ -37,18 +37,32 @@ import com.anytypeio.anytype.ui.spaces.Section
 @Preview
 @Composable
 fun DefaultNetworkSetupScreenPreview() {
-    NetworkSetupScreen(NetworkModeConfig())
+    NetworkSetupScreen(
+        config = NetworkModeConfig(
+            networkMode = NetworkMode.DEFAULT,
+            userFilePath = null,
+            storedFilePath = null
+        ),
+        onAnytypeNetworkClicked = {},
+        onLocalOnlyClicked = {},
+        onSelfHostNetworkClicked = {},
+        onSetSelfHostConfigConfigClicked = {}
+    )
 }
 
 @Preview
 @Composable
 fun SelfHostNetworkSetupScreenPreview() {
     NetworkSetupScreen(
-        NetworkModeConfig(
+        config = NetworkModeConfig(
             networkMode = NetworkMode.CUSTOM,
             userFilePath = null,
             storedFilePath = null
-        )
+        ),
+        onAnytypeNetworkClicked = {},
+        onLocalOnlyClicked = {},
+        onSelfHostNetworkClicked = {},
+        onSetSelfHostConfigConfigClicked = {}
     )
 }
 
@@ -56,11 +70,15 @@ fun SelfHostNetworkSetupScreenPreview() {
 @Composable
 fun SelfHostNetworkWithPathSetupScreenPreview() {
     NetworkSetupScreen(
-        NetworkModeConfig(
+        config = NetworkModeConfig(
             networkMode = NetworkMode.CUSTOM,
             userFilePath = null,
             storedFilePath = null
-        )
+        ),
+        onAnytypeNetworkClicked = {},
+        onLocalOnlyClicked = {},
+        onSelfHostNetworkClicked = {},
+        onSetSelfHostConfigConfigClicked = {}
     )
 }
 
@@ -68,17 +86,25 @@ fun SelfHostNetworkWithPathSetupScreenPreview() {
 @Composable
 fun LocalNetworkWithPathSetupScreenPreview() {
     NetworkSetupScreen(
-        NetworkModeConfig(
+        config = NetworkModeConfig(
             networkMode = NetworkMode.LOCAL,
             userFilePath = null,
             storedFilePath = null
-        )
+        ),
+        onAnytypeNetworkClicked = {},
+        onLocalOnlyClicked = {},
+        onSelfHostNetworkClicked = {},
+        onSetSelfHostConfigConfigClicked = {}
     )
 }
 
 @Composable
 fun NetworkSetupScreen(
-    config: NetworkModeConfig
+    config: NetworkModeConfig,
+    onLocalOnlyClicked: () -> Unit,
+    onAnytypeNetworkClicked: () -> Unit,
+    onSelfHostNetworkClicked: () -> Unit,
+    onSetSelfHostConfigConfigClicked: () -> Unit
 ) {
     Column(
         modifier = Modifier

@@ -119,7 +119,7 @@ interface SpaceManager {
     }
 }
 
-suspend fun SpaceManager.getSpaces(): List<Id> {
+suspend fun SpaceManager.getSpaceWithTechSpace(): List<Id> {
     val config = getConfig()
     return if (config != null) {
         listOf(config.space, config.techSpace)

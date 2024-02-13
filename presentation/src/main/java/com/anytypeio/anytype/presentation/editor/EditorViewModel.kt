@@ -99,7 +99,7 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaces
+import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -5945,7 +5945,7 @@ class EditorViewModel(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
-                    spaces = spaceManager.getSpaces(),
+                    spaces = spaceManager.getSpaceWithTechSpace(),
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,

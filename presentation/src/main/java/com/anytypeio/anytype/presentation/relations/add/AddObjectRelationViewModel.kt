@@ -11,7 +11,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaces
+import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.objects.toRelationObjectValueView
 import com.anytypeio.anytype.presentation.relations.RelationValueView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
@@ -157,7 +157,7 @@ class AddObjectRelationViewModel(
     ) {
         viewModelScope.launch {
             val filters = ObjectSearchConstants.filterAddObjectToRelation(
-                spaces = spaceManager.getSpaces(),
+                spaces = spaceManager.getSpaceWithTechSpace(),
                 targetTypes = targetTypes
             )
             searchObjects(

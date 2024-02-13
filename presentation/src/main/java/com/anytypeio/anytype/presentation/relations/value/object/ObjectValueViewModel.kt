@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
@@ -85,12 +84,18 @@ class ObjectValueViewModel(
                 query.onStart { emit("") },
                 subscription.subscribe(searchParams)
             ) { record, query, objects ->
+                val ids = getRecordValues(record)
                 if (!isInitialSortDone) {
-                    setupInitialIds(record)
+                    initialIds.clear()
+                    if (ids.isNotEmpty()) {
+                        initialIds.addAll(ids)
+                    } else {
+                        emitCommand(Command.Expand)
+                    }
                 }
                 initViewState(
                     relation = relation,
-                    ids = getRecordValues(record),
+                    ids = ids,
                     objects = objects,
                     query = query
                 )
@@ -102,17 +107,6 @@ class ObjectValueViewModel(
         jobs.forEach { it.cancel() }
         jobs.clear()
         initialIds.clear()
-    }
-
-    private fun setupInitialIds(record: Struct) {
-        viewModelScope.launch {
-            val ids = getRecordValues(record)
-            if (ids.isNotEmpty()) {
-                initialIds.addAll(ids)
-            } else {
-                emitCommand(Command.Expand)
-            }
-        }
     }
 
     private fun emitCommand(command: Command, delay: Long = 0L) {
@@ -169,13 +163,15 @@ class ObjectValueViewModel(
         if (query.isNotBlank() && obj.name?.contains(query, true) == false) return@mapNotNull null
         val index = ids.indexOf(obj.id)
         val isSelected = index != -1
+        val number = if (isSelected) index + 1 else Int.MAX_VALUE
         ObjectValueItem.Object(
             view = obj.toView(
                 urlBuilder = urlBuilder,
                 objectTypes = storeOfObjectTypes.getAll(),
                 gradientProvider = gradientProvider
             ),
-            isSelected = isSelected
+            isSelected = isSelected,
+            number = number
         )
     }.let { mappedOptions ->
         if (!isInitialSortDone) {

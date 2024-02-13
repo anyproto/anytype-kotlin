@@ -6,11 +6,14 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.CreateRelationOption
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -29,7 +32,8 @@ class CreateOrEditOptionViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val dispatcher: Dispatcher<Payload>,
     private val spaceManager: SpaceManager,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val storeOfRelations: StoreOfRelations
 ) : BaseViewModel() {
 
     val command = MutableSharedFlow<Command>(replay = 0)
@@ -88,7 +92,7 @@ class CreateOrEditOptionViewModel(
             if (params.name.isNotEmpty()) {
                 createOption.invoke(params).proceed(
                     success = { option ->
-                        proceedWithAddingTagToObject(
+                        proceedWithAddingTagOrStatusToObject(
                             ctx = viewModelParams.ctx,
                             objectId = viewModelParams.objectId,
                             relationKey = viewModelParams.relationKey,
@@ -122,22 +126,16 @@ class CreateOrEditOptionViewModel(
         }
     }
 
-    private suspend fun proceedWithAddingTagToObject(
+    private suspend fun proceedWithAddingTagOrStatusToObject(
         ctx: Id,
         objectId: Id,
         relationKey: Key,
         option: ObjectWrapper.Option
     ) {
         Timber.d("Adding option to object with id: $objectId")
+        val relation = storeOfRelations.getByKey(relationKey) ?: return
         val obj = values.get(target = objectId, ctx = ctx)
-        val result = mutableListOf<Id>()
-        val value = obj[relationKey]
-        if (value is List<*>) {
-            result.addAll(value.typeOf())
-        } else if (value is Id) {
-            result.add(value)
-        }
-        result.add(option.id)
+        val result = updatedValues(option.id, relation, obj)
         val params = SetObjectDetails.Params(
             ctx = objectId,
             details = mapOf(relationKey to result)
@@ -150,6 +148,30 @@ class CreateOrEditOptionViewModel(
                 command.emit(Command.Dismiss)
             }
         )
+    }
+
+    private fun updatedValues(
+        newOptionId: Id,
+        relation: ObjectWrapper.Relation,
+        obj: Struct
+    ): List<Id> {
+        return when (relation.format) {
+            Relation.Format.STATUS -> {
+                listOf(newOptionId)
+            }
+            Relation.Format.TAG -> {
+                val result = mutableListOf<Id>()
+                val value = obj[relation.key]
+                if (value is List<*>) {
+                    result.addAll(value.typeOf())
+                } else if (value is Id) {
+                    result.add(value)
+                }
+                result.add(newOptionId)
+                return result
+            }
+            else -> throw IllegalArgumentException("Unsupported relation format: ${relation.format}")
+        }
     }
 
     private fun getOptionColor(): ThemeColor {

@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.CreateRelationOption
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -19,6 +20,7 @@ class CreateOrEditOptionViewModelFactory  @Inject constructor(
     private val dispatcher: Dispatcher<Payload>,
     private val spaceManager: SpaceManager,
     private val analytics: Analytics,
+    private val storeOfRelations: StoreOfRelations
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -31,5 +33,6 @@ class CreateOrEditOptionViewModelFactory  @Inject constructor(
         dispatcher = dispatcher,
         spaceManager = spaceManager,
         analytics = analytics,
+        storeOfRelations = storeOfRelations
     ) as T
 }

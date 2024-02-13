@@ -255,7 +255,8 @@ fun SpaceNameInput(
 
 @Composable
 fun Section(
-    title: String
+    title: String,
+    color: Color = colorResource(id = R.color.text_secondary)
 ) {
     Box(modifier = Modifier
         .height(52.dp)
@@ -268,7 +269,7 @@ fun Section(
                 )
                 .align(Alignment.BottomStart),
             text = title,
-            color = colorResource(id = R.color.text_secondary),
+            color = color,
             style = Caption1Regular
         )
     }

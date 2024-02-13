@@ -2,6 +2,10 @@ package com.anytypeio.anytype.core_ui
 
 import androidx.compose.ui.graphics.Color
 
+val NetworkSettingTitleColor = Color(0xFFD4D4D4)
+val NetworkSettingDescriptionColor = Color(0xFF949494)
+val NetworkSettingCardColor = Color(0xff252525)
+
 val OnboardingSubtitleColor = Color(0xFF505050)
 
 val OnBoardingTextPrimaryColor = Color(0xFFF3F2EC)

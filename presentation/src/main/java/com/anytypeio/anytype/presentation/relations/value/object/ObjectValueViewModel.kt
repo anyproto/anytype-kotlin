@@ -26,7 +26,6 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProv
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
-import com.anytypeio.anytype.presentation.relations.values
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -59,7 +58,7 @@ class ObjectValueViewModel(
 
     val viewState = MutableStateFlow<ObjectValueViewState>(ObjectValueViewState.Loading)
     private val query = MutableSharedFlow<String>(replay = 0)
-    private var isRelationNotEditable = false
+    private var isEditableRelation = false
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val jobs = mutableListOf<Job>()
 
@@ -85,6 +84,7 @@ class ObjectValueViewModel(
                 query.onStart { emit("") },
                 subscription.subscribe(searchParams)
             ) { record, query, objects ->
+                setupIsRelationNotEditable(relation)
                 val ids = getRecordValues(record)
                 if (!isInitialSortDone) {
                     initialIds.clear()
@@ -124,6 +124,15 @@ class ObjectValueViewModel(
         }
     }
 
+    private fun setupIsRelationNotEditable(relation: ObjectWrapper.Relation) {
+        isEditableRelation = !(viewModelParams.isLocked
+                || relation.isReadonlyValue
+                || relation.isHidden == true
+                || relation.isDeleted == true
+                || relation.isArchived == true
+                || !relation.isValid)
+    }
+
     private suspend fun initViewState(
         relation: ObjectWrapper.Relation,
         ids: List<Id>,
@@ -133,7 +142,7 @@ class ObjectValueViewModel(
         val views = mapObjects(ids, objects, query)
         viewState.value = if (views.isNotEmpty()) {
             ObjectValueViewState.Content(
-                isRelationEditable = !isRelationNotEditable,
+                isRelationEditable = !isEditableRelation,
                 title = relation.name.orEmpty(),
                 items = buildList {
                     val typeNames = mutableListOf<String>()
@@ -150,7 +159,7 @@ class ObjectValueViewModel(
             )
         } else {
             ObjectValueViewState.Empty(
-                isRelationEditable = !isRelationNotEditable,
+                isRelationEditable = !isEditableRelation,
                 title = relation.name.orEmpty(),
             )
         }
@@ -203,7 +212,7 @@ class ObjectValueViewModel(
     //region ACTIONS
     fun onAction(action: ObjectValueItemAction) {
         Timber.d("onAction, action: $action")
-        if (isRelationNotEditable) {
+        if (!isEditableRelation) {
             Timber.d("ObjectValueViewModel onAction, relation is not editable")
             sendToast("Relation is not editable")
             return

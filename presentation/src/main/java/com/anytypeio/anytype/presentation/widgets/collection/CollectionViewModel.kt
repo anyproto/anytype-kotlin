@@ -40,6 +40,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
@@ -245,17 +246,7 @@ class CollectionViewModel(
         return StoreSearchParams(
             subscription = subscription.id,
             keys = subscription.keys,
-            filters = subscription.filters(
-                buildList {
-                    val config = spaceManager.getConfig()
-                    if (config != null) {
-                        add(config.space)
-                        add(config.techSpace)
-                    } else {
-                        add(spaceManager.get())
-                    }
-                }
-            ),
+            filters = subscription.filters(spaceManager.getSpaceWithTechSpace()),
             sorts = subscription.sorts,
             limit = subscription.limit
         )

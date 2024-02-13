@@ -60,6 +60,7 @@ class OnboardingStartViewModel @Inject constructor(
     sealed class SideEffect {
         object OpenPrivacyPolicy : SideEffect()
         object OpenTermsOfUse : SideEffect()
+        object OpenNetworkSettings : SideEffect()
     }
 
     class Factory @Inject constructor(

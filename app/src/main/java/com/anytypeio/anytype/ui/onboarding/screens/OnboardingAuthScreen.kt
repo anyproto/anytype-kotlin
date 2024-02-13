@@ -44,7 +44,8 @@ fun AuthScreenPreview() {
         onLoginClicked = {},
         onJoinClicked = {},
         onPrivacyPolicyClicked = {},
-        onTermsOfUseClicked = {}
+        onTermsOfUseClicked = {},
+        onSettingsClicked = {}
     )
 }
 
@@ -56,7 +57,8 @@ fun AuthScreenWrapper(
         onJoinClicked = vm::onJoinClicked,
         onLoginClicked = vm::onLoginClicked,
         onPrivacyPolicyClicked = vm::onPrivacyPolicyClicked,
-        onTermsOfUseClicked = vm::onTermsOfUseClicked
+        onTermsOfUseClicked = vm::onTermsOfUseClicked,
+        onSettingsClicked = TODO()
     )
 }
 
@@ -65,7 +67,8 @@ fun AuthScreen(
     onJoinClicked: () -> Unit,
     onLoginClicked: () -> Unit,
     onPrivacyPolicyClicked: () -> Unit,
-    onTermsOfUseClicked: () -> Unit
+    onTermsOfUseClicked: () -> Unit,
+    onSettingsClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()

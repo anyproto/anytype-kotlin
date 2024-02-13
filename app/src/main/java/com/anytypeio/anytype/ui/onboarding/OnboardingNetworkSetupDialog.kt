@@ -33,16 +33,16 @@ class OnboardingNetworkSetupDialog : BaseBottomSheetComposeFragment() {
                 NetworkSetupScreen(
                     config = NetworkModeConfig(),
                     onSelfHostNetworkClicked = {
-
+                        // TODO
                     },
                     onSetSelfHostConfigConfigClicked = {
-
+                        // TODO
                     },
                     onLocalOnlyClicked = {
-
+                        // TODO
                     },
                     onAnytypeNetworkClicked = {
-
+                        // TODO
                     }
                 )
             }

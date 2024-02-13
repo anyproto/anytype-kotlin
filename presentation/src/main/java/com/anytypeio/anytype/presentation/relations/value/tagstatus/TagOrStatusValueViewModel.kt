@@ -77,13 +77,22 @@ class TagOrStatusValueViewModel(
                 subscription.subscribe(searchParams)
             ) { record, query, options ->
                 setupIsRelationNotEditable(relation)
+                val ids = getRecordValues(record)
+                if (!isInitialSortDone) {
+                    initialIds.clear()
+                    if (ids.isNotEmpty()) {
+                        initialIds.addAll(ids)
+                    } else {
+                        emitCommand(Command.Expand)
+                    }
+                }
                 initViewState(
                     relation = relation,
                     options = options
                         .map { ObjectWrapper.Option(map = it.map) }
                         .filter { it.name?.contains(query, true) == true },
                     query = query,
-                    ids = getRecordValues(record)
+                    ids = ids
                 )
             }.collect()
         }
@@ -110,6 +119,8 @@ class TagOrStatusValueViewModel(
             subscription.unsubscribe(listOf(SUB_MY_OPTIONS))
         }
         jobs.cancel()
+        isInitialSortDone = false
+        initialIds.clear()
     }
 
     fun onQueryChanged(input: String) {
@@ -122,7 +133,10 @@ class TagOrStatusValueViewModel(
         viewModelScope.launch {
             val params = DeleteRelationOptions.Params(listOf(optionId))
             deleteRelationOptions.execute(params).fold(
-                onSuccess = { Timber.d("Options deleted successfully") },
+                onSuccess = {
+                    Timber.d("Options deleted successfully")
+                    removeTag(optionId)
+                },
                 onFailure = { Timber.e(it, "Error while deleting options") }
             )
         }

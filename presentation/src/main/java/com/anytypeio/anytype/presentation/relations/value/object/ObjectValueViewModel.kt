@@ -219,7 +219,7 @@ class ObjectValueViewModel(
         when (action) {
             ObjectValueItemAction.Clear -> onClearAction()
             is ObjectValueItemAction.Click -> onClickAction(action.item)
-            is ObjectValueItemAction.Delete -> onDeleteAction(action.item)
+            is ObjectValueItemAction.Delete -> emitCommand(Command.DeleteObject(action.item.view.id))
             is ObjectValueItemAction.Duplicate -> onDuplicateAction(action.item)
             is ObjectValueItemAction.Open -> onOpenObjectAction(action.item)
         }
@@ -234,12 +234,15 @@ class ObjectValueViewModel(
         }
     }
 
-    private fun onDeleteAction(item: ObjectValueItem.Object) {
+    fun onDeleteAction(objectId: Id) {
+        val state = viewState.value as? ObjectValueViewState.Content ?: return
+        val item = state.items.filterIsInstance<ObjectValueItem.Object>()
+            .firstOrNull { it.view.id == objectId } ?: return
         viewModelScope.launch {
             val isSelected = item.isSelected
             if (isSelected) {
-                removeObjectValue(item)  {
-                   proceedWithObjectDeletion(item)
+                removeObjectValue(item) {
+                    proceedWithObjectDeletion(item)
                 }
             } else {
                 proceedWithObjectDeletion(item)
@@ -353,6 +356,7 @@ class ObjectValueViewModel(
         object Expand : Command()
         data class OpenObject(val id: Id) : Command()
         data class OpenSet(val id: Id) : Command()
+        data class DeleteObject(val id: Id) : Command()
     }
 }
 

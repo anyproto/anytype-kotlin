@@ -99,6 +99,20 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
             dismiss()
         }
         ObjectValueViewModel.Command.Expand -> expand()
+        is ObjectValueViewModel.Command.DeleteObject -> {
+            val dialog = DeleteOptionWarningFragment.new(
+                optionId = command.id,
+                descriptionString = R.string.object_values_delete_description
+            )
+            dialog.onDeletionAccepted = { optionId ->
+                vm.onDeleteAction(optionId)
+                dialog.dismiss()
+            }
+            dialog.onDeletionCancelled = {
+                dialog.dismiss()
+            }
+            dialog.show(childFragmentManager, null)
+        }
     }
 
     override fun injectDependencies() {

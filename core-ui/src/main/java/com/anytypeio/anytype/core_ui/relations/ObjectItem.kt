@@ -1,13 +1,12 @@
 package com.anytypeio.anytype.core_ui.relations
 
-import android.view.LayoutInflater
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -21,38 +20,42 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
-import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAction
+import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueItem
+import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueItemAction
 
 @Composable
 fun ObjectItem(
-    item: RelationsListItem.Object,
-    action: (TagStatusAction) -> Unit
+    item: ObjectValueItem.Object,
+    action: (ObjectValueItemAction) -> Unit
 ) {
     val haptics = LocalHapticFeedback.current
     val isMenuExpanded = remember { mutableStateOf(false) }
-    CommonContainer(
+    Box(
         modifier = Modifier
+            .height(72.dp)
+            .padding(horizontal = 16.dp)
             .noRippleCombinedClickable(
-                onClick = { action(TagStatusAction.Click(item)) },
+                onClick = { action(ObjectValueItemAction.Click(item)) },
                 onLongClicked = {
                     haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                     isMenuExpanded.value = !isMenuExpanded.value
                 }
             )
     ) {
-        ObjectIconText(item = item,
+        ObjectIconText(
+            item = item,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 16.dp, end = 56.dp)
+                .padding(end = 40.dp)
                 .align(alignment = Alignment.CenterStart)
         )
         CircleIcon(
@@ -62,37 +65,46 @@ fun ObjectItem(
                 .size(24.dp)
                 .align(Alignment.CenterEnd)
         )
-        Divider(modifier = Modifier.align(Alignment.BottomCenter))
+        Divider(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            paddingStart = 4.dp,
+            paddingEnd = 4.dp
+        )
         ItemMenu(
-            item = item,
-            action = action,
-            isMenuExpanded = isMenuExpanded
+            action = {
+                when (it) {
+                    ItemMenuAction.Delete -> action(ObjectValueItemAction.Delete(item))
+                    ItemMenuAction.Duplicate -> action(ObjectValueItemAction.Duplicate(item))
+                    ItemMenuAction.Open -> action(ObjectValueItemAction.Open(item))
+                    ItemMenuAction.Edit -> {}
+                }
+            },
+            isMenuExpanded = isMenuExpanded,
+            showOpen = true
         )
     }
 }
 
 @Composable
-fun ObjectIconText(modifier: Modifier, item: RelationsListItem.Object) {
+fun ObjectIconText(modifier: Modifier, item: ObjectValueItem.Object) {
     Row(
         modifier = modifier
     ) {
-        Box(
-            modifier = Modifier
-                .padding(0.dp, 12.dp, 12.dp, 12.dp)
-                .size(48.dp)
-                .align(Alignment.CenterVertically)
-        ) {
-            Icon(icon = item.view.icon)
-        }
+        ListWidgetObjectIcon(
+            modifier = Modifier.padding(end = 12.dp).size(42.dp),
+            icon = item.view.icon,
+            onTaskIconClicked = { }
+        )
         Column(
             modifier = Modifier
+                .fillMaxWidth()
                 .align(Alignment.CenterVertically)
-                .padding(0.dp, 0.dp, 60.dp, 0.dp)
         ) {
 
             val name = item.view.name.trim().ifBlank { stringResource(R.string.untitled) }
 
             Text(
+                modifier = Modifier.fillMaxWidth(),
                 text = name,
                 style = PreviewTitle2Medium,
                 color = colorResource(id = R.color.text_primary),
@@ -103,6 +115,7 @@ fun ObjectIconText(modifier: Modifier, item: RelationsListItem.Object) {
             val typeName = item.view.typeName
             if (!typeName.isNullOrBlank()) {
                 Text(
+                    modifier = Modifier.fillMaxWidth(),
                     text = typeName,
                     style = Relations3,
                     color = colorResource(id = R.color.text_secondary),
@@ -115,14 +128,27 @@ fun ObjectIconText(modifier: Modifier, item: RelationsListItem.Object) {
 }
 
 @Composable
-fun Icon(icon: ObjectIcon?) {
-    icon?.let {
-        AndroidView(factory = { ctx ->
-            val iconWidget = LayoutInflater.from(ctx)
-                .inflate(R.layout.collections_icon, null) as ObjectIconWidget
-            iconWidget.setIcon(it)
-            iconWidget
-        })
+fun ObjectTypeItem(
+    item: ObjectValueItem.ObjectType
+) {
+    Box(modifier = Modifier.height(52.dp)) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 20.dp, end = 20.dp, bottom = 8.dp)
+                .align(Alignment.BottomStart),
+            text = "${stringResource(id = R.string.object_type)}: ${item.name}",
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_secondary),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Divider(modifier = Modifier
+            .align(Alignment.BottomCenter)
+            .padding(
+                start = 4.dp,
+                end = 4.dp)
+        )
     }
 }
 
@@ -130,14 +156,15 @@ fun Icon(icon: ObjectIcon?) {
 @Preview(showBackground = true)
 fun PreviewObjectItem() {
     ObjectItem(
-        item = RelationsListItem.Object(
+        item = ObjectValueItem.Object(
             view = DefaultObjectView(
                 id = "1",
                 name = "Object",
                 type = "Type",
                 typeName = "Type Name",
                 description = "Description",
-                icon = ObjectIcon.Basic.Emoji("\uD83D\uDCA1")),
+                icon = ObjectIcon.Basic.Emoji("\uD83D\uDCA1")
+            ),
             isSelected = true,
             number = 1,
         ),

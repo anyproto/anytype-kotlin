@@ -6,27 +6,33 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_utils.ext.typeOf
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaces
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
+import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewState
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.sets.toObjectView
+import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
@@ -46,14 +52,19 @@ class ObjectValueViewModel(
     private val subscription: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val gradientProvider: SpaceGradientProvider
-): BaseViewModel() {
+    private val gradientProvider: SpaceGradientProvider,
+    private val objectListIsArchived: SetObjectListIsArchived,
+    private val duplicateObject: DuplicateObject
+) : BaseViewModel() {
 
     val viewState = MutableStateFlow<ObjectValueViewState>(ObjectValueViewState.Loading)
     private val query = MutableSharedFlow<String>(replay = 0)
     private var isRelationNotEditable = false
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val jobs = mutableListOf<Job>()
+
+    private val initialIds = mutableListOf<Id>()
+    private var isInitialSortDone = false
 
     fun onStart() {
         jobs += viewModelScope.launch {
@@ -74,8 +85,46 @@ class ObjectValueViewModel(
                 query.onStart { emit("") },
                 subscription.subscribe(searchParams)
             ) { record, query, objects ->
-                Timber.d("objects: ${objects.size}")
+                if (!isInitialSortDone) {
+                    setupInitialIds(record)
+                }
+                initViewState(
+                    relation = relation,
+                    ids = getRecordValues(record),
+                    objects = objects,
+                    query = query
+                )
             }.collect()
+        }
+    }
+
+    fun onStop() {
+        jobs.forEach { it.cancel() }
+        jobs.clear()
+        initialIds.clear()
+    }
+
+    private fun setupInitialIds(record: Struct) {
+        viewModelScope.launch {
+            val ids = getRecordValues(record)
+            if (ids.isNotEmpty()) {
+                initialIds.addAll(ids)
+            } else {
+                emitCommand(Command.Expand)
+            }
+        }
+    }
+
+    private fun emitCommand(command: Command, delay: Long = 0L) {
+        viewModelScope.launch {
+            delay(delay)
+            commands.emit(command)
+        }
+    }
+
+    fun onQueryChanged(input: String) {
+        viewModelScope.launch {
+            query.emit(input)
         }
     }
 
@@ -85,31 +134,42 @@ class ObjectValueViewModel(
         objects: List<ObjectWrapper.Basic>,
         query: String
     ) {
-        val result = mutableListOf<RelationsListItem>()
-        result.addAll(mapObjects(ids, objects))
-
-        viewState.value = if (result.isEmpty()) {
-            ObjectValueViewState.Empty(
-                isRelationEditable = !isRelationNotEditable,
-                title = relation.name.orEmpty(),
-            )
-        } else {
+        val views = mapObjects(ids, objects, query)
+        viewState.value = if (views.isNotEmpty()) {
             ObjectValueViewState.Content(
                 isRelationEditable = !isRelationNotEditable,
                 title = relation.name.orEmpty(),
-                items = result
+                items = buildList {
+                    val typeNames = mutableListOf<String>()
+                    relation.relationFormatObjectTypes.forEach { it ->
+                        storeOfObjectTypes.get(it)?.let { type ->
+                            val name = type.name
+                            if (!name.isNullOrBlank()) typeNames.add(name)
+                        }
+                    }
+                    val objectTypeNames = typeNames.joinToString(", ")
+                    add(ObjectValueItem.ObjectType(name = objectTypeNames))
+                    addAll(views)
+                }
+            )
+        } else {
+            ObjectValueViewState.Empty(
+                isRelationEditable = !isRelationNotEditable,
+                title = relation.name.orEmpty(),
             )
         }
     }
 
     private suspend fun mapObjects(
         ids: List<Id>,
-        objects: List<ObjectWrapper.Basic>
-    ): List<RelationsListItem> = objects.mapNotNull { obj ->
+        objects: List<ObjectWrapper.Basic>,
+        query: String
+    ): List<ObjectValueItem.Object> = objects.mapNotNull { obj ->
         if (!obj.isValid) return@mapNotNull null
+        if (query.isNotBlank() && obj.name?.contains(query, true) == false) return@mapNotNull null
         val index = ids.indexOf(obj.id)
         val isSelected = index != -1
-        RelationsListItem.Object(
+        ObjectValueItem.Object(
             view = obj.toView(
                 urlBuilder = urlBuilder,
                 objectTypes = storeOfObjectTypes.getAll(),
@@ -117,7 +177,152 @@ class ObjectValueViewModel(
             ),
             isSelected = isSelected
         )
+    }.let { mappedOptions ->
+        if (!isInitialSortDone) {
+            isInitialSortDone = true
+            mappedOptions.sortedWith(
+                compareBy(
+                    { !initialIds.contains(it.view.id) },
+                    { it.number })
+            )
+        } else {
+            mappedOptions.sortedWith(
+                compareBy(
+                    { !initialIds.contains(it.view.id) },
+                    { initialIds.indexOf(it.view.id) })
+            )
+        }
     }
+
+    private fun getRecordValues(record: Map<String, Any?>): List<Id> {
+        return when (val value = record[viewModelParams.relationKey]) {
+            is Id -> listOf(value)
+            is List<*> -> value.typeOf()
+            else -> emptyList()
+        }
+    }
+
+    //region ACTIONS
+    fun onAction(action: ObjectValueItemAction) {
+        Timber.d("onAction, action: $action")
+        if (isRelationNotEditable) {
+            Timber.d("ObjectValueViewModel onAction, relation is not editable")
+            sendToast("Relation is not editable")
+            return
+        }
+        when (action) {
+            ObjectValueItemAction.Clear -> onClearAction()
+            is ObjectValueItemAction.Click -> onClickAction(action.item)
+            is ObjectValueItemAction.Delete -> onDeleteAction(action.item)
+            is ObjectValueItemAction.Duplicate -> onDuplicateAction(action.item)
+            is ObjectValueItemAction.Open -> onOpenObjectAction(action.item)
+        }
+    }
+
+    private fun onDuplicateAction(item: ObjectValueItem.Object) {
+        viewModelScope.launch {
+            duplicateObject(item.view.id).process(
+                success = { Timber.d("Object ${item.view.id} duplicated") },
+                failure = { Timber.e(it, "Error while duplicating object") }
+            )
+        }
+    }
+
+    private fun onDeleteAction(item: ObjectValueItem.Object) {
+        viewModelScope.launch {
+            val params = SetObjectListIsArchived.Params(
+                targets = listOf(item.view.id),
+                isArchived = true
+            )
+            objectListIsArchived.async(params).fold(
+                onSuccess = { Timber.d("Object ${item.view.id} archived") },
+                onFailure = { Timber.e(it, "Error while archiving object") }
+            )
+        }
+    }
+
+    private fun onClearAction() {
+        viewModelScope.launch {
+            val params = UpdateDetail.Params(
+                target = viewModelParams.objectId,
+                key = viewModelParams.relationKey,
+                value = null
+            )
+            setObjectDetails(params).process(
+                failure = { Timber.e(it, "Error while clearing objects") },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                })
+        }
+    }
+
+    private fun onOpenObjectAction(item: ObjectValueItem.Object) {
+        viewModelScope.launch {
+            val layout = item.view.layout
+            if (layout.isDataView()) {
+                commands.emit(Command.OpenSet(item.view.id))
+            } else {
+                commands.emit(Command.OpenObject(item.view.id))
+            }
+        }
+    }
+
+    private fun onClickAction(item: ObjectValueItem.Object) {
+        if (item.isSelected) {
+            removeObjectValue(item)
+        } else {
+            addObjectValue(item)
+        }
+    }
+
+    private fun addObjectValue(item: ObjectValueItem.Object) {
+        viewModelScope.launch {
+            val obj = values.get(ctx = viewModelParams.ctx, target = viewModelParams.objectId)
+            val result = mutableListOf<Id>()
+            val value = obj[viewModelParams.relationKey]
+            if (value is List<*>) {
+                result.addAll(value.typeOf())
+            } else if (value is Id) {
+                result.add(value)
+            }
+            result.add(item.view.id)
+            setObjectDetails(
+                UpdateDetail.Params(
+                    target = viewModelParams.objectId,
+                    key = viewModelParams.relationKey,
+                    value = result
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while adding object") },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
+            )
+        }
+    }
+
+    private fun removeObjectValue(item: ObjectValueItem.Object) {
+        viewModelScope.launch {
+            val obj = values.get(ctx = viewModelParams.ctx, target = viewModelParams.objectId)
+            val value = obj[viewModelParams.relationKey].filterIdsById(item.view.id)
+            setObjectDetails(
+                UpdateDetail.Params(
+                    target = viewModelParams.objectId,
+                    key = viewModelParams.relationKey,
+                    value = value
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while removing object ${item.view.id}") },
+                success = {
+                    dispatcher.send(it)
+                    sendAnalyticsRelationValueEvent(analytics)
+                }
+            )
+        }
+    }
+    //endregion
 
     data class ViewModelParams(
         val ctx: Id,
@@ -126,6 +331,13 @@ class ObjectValueViewModel(
         val isLocked: Boolean,
         val relationContext: RelationContext
     )
+
+    sealed class Command {
+        object Dismiss : Command()
+        object Expand : Command()
+        data class OpenObject(val id: Id) : Command()
+        data class OpenSet(val id: Id) : Command()
+    }
 }
 
 sealed class ObjectValueViewState {
@@ -136,15 +348,27 @@ sealed class ObjectValueViewState {
 
     data class Content(
         val title: String,
-        val items: List<RelationsListItem>,
+        val items: List<ObjectValueItem>,
         val isRelationEditable: Boolean,
         val showItemMenu: RelationsListItem? = null
     ) : ObjectValueViewState()
 }
 
-sealed class Command {
-    object Dismiss : Command()
-    object Expand : Command()
+sealed class ObjectValueItemAction {
+    data class Click(val item: ObjectValueItem.Object) : ObjectValueItemAction()
+    data class Delete(val item: ObjectValueItem.Object) : ObjectValueItemAction()
+    data class Duplicate(val item: ObjectValueItem.Object) : ObjectValueItemAction()
+    data class Open(val item: ObjectValueItem.Object) : ObjectValueItemAction()
+    object Clear : ObjectValueItemAction()
+}
+
+sealed class ObjectValueItem {
+    data class ObjectType(val name: String) : ObjectValueItem()
+    data class Object(
+        val view: DefaultObjectView,
+        val isSelected: Boolean,
+        val number: Int = Int.MAX_VALUE
+    ) : ObjectValueItem()
 }
 
 const val SUB_RELATION_VALUE_OBJECTS = "subscription.values.objects"

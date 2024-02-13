@@ -25,7 +25,6 @@ import com.anytypeio.anytype.presentation.objects.toView
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -142,7 +141,7 @@ class ObjectValueViewModel(
         val views = mapObjects(ids, objects, query)
         viewState.value = if (views.isNotEmpty()) {
             ObjectValueViewState.Content(
-                isRelationEditable = !isEditableRelation,
+                isEditableRelation = isEditableRelation,
                 title = relation.name.orEmpty(),
                 items = buildList {
                     val typeNames = mutableListOf<String>()
@@ -159,7 +158,7 @@ class ObjectValueViewModel(
             )
         } else {
             ObjectValueViewState.Empty(
-                isRelationEditable = !isEditableRelation,
+                isEditableRelation = isEditableRelation,
                 title = relation.name.orEmpty(),
             )
         }
@@ -360,14 +359,16 @@ class ObjectValueViewModel(
 sealed class ObjectValueViewState {
 
     object Loading : ObjectValueViewState()
-    data class Empty(val title: String, val isRelationEditable: Boolean) :
-        ObjectValueViewState()
+
+    data class Empty(
+        val title: String,
+        val isEditableRelation: Boolean
+    ) : ObjectValueViewState()
 
     data class Content(
         val title: String,
+        val isEditableRelation: Boolean,
         val items: List<ObjectValueItem>,
-        val isRelationEditable: Boolean,
-        val showItemMenu: RelationsListItem? = null
     ) : ObjectValueViewState()
 }
 

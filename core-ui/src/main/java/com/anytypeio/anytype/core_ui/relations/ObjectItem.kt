@@ -7,6 +7,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -24,6 +26,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -67,8 +70,8 @@ fun ObjectItem(
         )
         Divider(
             modifier = Modifier.align(Alignment.BottomCenter),
-            paddingStart = 4.dp,
-            paddingEnd = 4.dp
+            paddingStart = 0.dp,
+            paddingEnd = 0.dp
         )
         ItemMenu(
             action = {
@@ -91,7 +94,9 @@ fun ObjectIconText(modifier: Modifier, item: ObjectValueItem.Object) {
         modifier = modifier
     ) {
         ListWidgetObjectIcon(
-            modifier = Modifier.padding(end = 12.dp).size(42.dp),
+            modifier = Modifier
+                .padding(end = 12.dp)
+                .size(42.dp),
             icon = item.view.icon,
             onTaskIconClicked = { }
         )
@@ -131,23 +136,34 @@ fun ObjectIconText(modifier: Modifier, item: ObjectValueItem.Object) {
 fun ObjectTypeItem(
     item: ObjectValueItem.ObjectType
 ) {
-    Box(modifier = Modifier.height(52.dp)) {
-        Text(
+    Box {
+        Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp, bottom = 8.dp)
-                .align(Alignment.BottomStart),
-            text = "${stringResource(id = R.string.object_type)}: ${item.name}",
-            style = Caption1Medium,
-            color = colorResource(id = R.color.text_secondary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Divider(modifier = Modifier
-            .align(Alignment.BottomCenter)
-            .padding(
-                start = 4.dp,
-                end = 4.dp)
+                .padding(start = 20.dp, bottom = 8.dp, top = 26.dp, end = 20.dp),
+        ) {
+            Text(
+                modifier = Modifier
+                    .wrapContentWidth(),
+                text = "${stringResource(id = R.string.object_type)}: ",
+                style = Caption1Regular,
+                color = colorResource(id = R.color.text_secondary)
+            )
+            Text(
+                modifier = Modifier
+                    .wrapContentHeight(align = Alignment.Bottom)
+                    .fillMaxWidth(),
+                text = item.name,
+                style = Caption1Medium,
+                color = colorResource(id = R.color.text_secondary)
+            )
+        }
+        Divider(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(
+                    start = 0.dp,
+                    end = 0.dp
+                )
         )
     }
 }

@@ -5,7 +5,7 @@ import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueIt
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewState
 
 @Composable
-fun ObjectValueScreen(
+fun RelationObjectValueScreen(
     state: ObjectValueViewState,
     action: (ObjectValueItemAction) -> Unit,
     onQueryChanged: (String) -> Unit

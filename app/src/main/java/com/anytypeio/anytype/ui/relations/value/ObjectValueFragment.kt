@@ -16,7 +16,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.relations.ObjectValueScreen
+import com.anytypeio.anytype.core_ui.relations.RelationObjectValueScreen
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -57,7 +57,7 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
                     surface = colorResource(id = R.color.context_menu_background)
                 )
             ) {
-                ObjectValueScreen(
+                RelationObjectValueScreen(
                     state = vm.viewState.collectAsStateWithLifecycle().value,
                     action = vm::onAction,
                     onQueryChanged = vm::onQueryChanged

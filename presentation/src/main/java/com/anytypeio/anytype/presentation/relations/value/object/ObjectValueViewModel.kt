@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.workspace.getSpaces
+import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationValueEvent
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
@@ -71,7 +71,7 @@ class ObjectValueViewModel(
                 subscription = SUB_RELATION_VALUE_OBJECTS,
                 keys = ObjectSearchConstants.defaultKeys,
                 filters = ObjectSearchConstants.filterAddObjectToRelation(
-                    spaces = spaceManager.getSpaces(),
+                    spaces = spaceManager.getSpaceWithTechSpace(),
                     targetTypes = relation.relationFormatObjectTypes
                 )
             )

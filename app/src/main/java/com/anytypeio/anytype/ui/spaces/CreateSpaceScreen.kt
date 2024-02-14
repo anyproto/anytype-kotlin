@@ -35,6 +35,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
@@ -256,7 +257,8 @@ fun SpaceNameInput(
 @Composable
 fun Section(
     title: String,
-    color: Color = colorResource(id = R.color.text_secondary)
+    color: Color = colorResource(id = R.color.text_secondary),
+    textPaddingStart: Dp = 20.dp
 ) {
     Box(modifier = Modifier
         .height(52.dp)
@@ -264,7 +266,7 @@ fun Section(
         Text(
             modifier = Modifier
                 .padding(
-                    start = 20.dp,
+                    start = textPaddingStart,
                     bottom = 8.dp
                 )
                 .align(Alignment.BottomStart),

@@ -51,6 +51,14 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
     private val localeProvider: LocaleProvider
 ) : BaseViewModel() {
 
+    init {
+        viewModelScope.launch {
+            sendAnalyticsOnboardingScreenEvent(analytics,
+                EventsDictionary.ScreenOnboardingStep.VOID
+            )
+        }
+    }
+
     val state = MutableStateFlow<ScreenState>(ScreenState.Idle)
     val navigation = MutableSharedFlow<Navigation>()
 
@@ -111,7 +119,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                     state.value = ScreenState.Idle
                 },
                 onSuccess = {
-                    analytics.sendEvent(eventName = EventsDictionary.createSpace)
                     createAccountAnalytics(startTime)
                     val config = configStorage.getOrNull()
                     if (config != null) {
@@ -134,14 +141,16 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         val config = configStorage.getOrNull()
         if (config != null) {
             viewModelScope.launch {
-                sendAnalyticsOnboardingScreenEvent(analytics,
-                    EventsDictionary.ScreenOnboardingStep.SOUL_CREATING
-                )
+                analytics.sendEvent(eventName = EventsDictionary.createSpace)
                 setSpaceDetails.async(
                     SetSpaceDetails.Params(
                         space = SpaceId(config.space),
                         details = mapOf(Relations.NAME to name)
                     )
+                ).fold(
+                    onFailure = {
+                        Timber.e(it, "Error while setting space details")
+                    }
                 )
                 setObjectDetails.async(
                     SetObjectDetails.Params(
@@ -151,16 +160,14 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                     onFailure = {
                         Timber.e(it, "Error while setting profile name details")
                         navigation.emit(Navigation.NavigateToMnemonic)
-                        sendAnalyticsOnboardingScreen()
                         // Workaround for leaving screen in loading state to wait screen transition
-                        delay(OnboardingVoidViewModel.LOADING_AFTER_SUCCESS_DELAY)
+                        delay(LOADING_AFTER_SUCCESS_DELAY)
                         state.value = ScreenState.Success
                     },
                     onSuccess = {
                         navigation.emit(Navigation.NavigateToMnemonic)
-                        sendAnalyticsOnboardingScreen()
                         // Workaround for leaving screen in loading state to wait screen transition
-                        delay(OnboardingVoidViewModel.LOADING_AFTER_SUCCESS_DELAY)
+                        delay(LOADING_AFTER_SUCCESS_DELAY)
                         state.value = ScreenState.Success
                     }
                 )
@@ -194,12 +201,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
                 }
             )
         }
-    }
-
-    private fun sendAnalyticsOnboardingScreen() {
-        viewModelScope.sendAnalyticsOnboardingScreenEvent(analytics,
-            EventsDictionary.ScreenOnboardingStep.PHRASE
-        )
     }
 
     class Factory @Inject constructor(

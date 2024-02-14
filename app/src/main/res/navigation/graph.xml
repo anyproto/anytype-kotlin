@@ -68,6 +68,11 @@
             android:id="@+id/relationCreateFromScratchForObjectBlockFragment"
             android:name="com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectBlockFragment"
             android:label="RelationCreateFromScratchForObjectBlockFragment" />
+
+        <dialog
+            android:id="@+id/objectValueScreen"
+            android:name="com.anytypeio.anytype.ui.relations.value.ObjectValueFragment"
+            android:label="Relation-Object-Value-Screen" />
     </navigation>
 
     <include app:graph="@navigation/nav_editor_modal" />

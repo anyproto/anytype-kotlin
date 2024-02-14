@@ -14,26 +14,41 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyCallout
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAction
 
 @Composable
 fun ItemMenu(
-    item: RelationsListItem.Item?,
-    action: (TagStatusAction) -> Unit,
-    isMenuExpanded: MutableState<Boolean>
+    action: (ItemMenuAction) -> Unit,
+    isMenuExpanded: MutableState<Boolean>,
+    showEdit: Boolean = false,
+    showOpen: Boolean = false,
 ) {
-    if (item != null) {
-        DropdownMenu(
-            expanded = isMenuExpanded.value,
-            onDismissRequest = { isMenuExpanded.value = false },
-            modifier = Modifier.width(220.dp)
-        ) {
+    DropdownMenu(
+        expanded = isMenuExpanded.value,
+        onDismissRequest = { isMenuExpanded.value = false },
+        modifier = Modifier.width(220.dp)
+    ) {
+        if (showOpen) {
             DropdownMenuItem(
                 contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
                 onClick = {
                     isMenuExpanded.value = false
-                    action(TagStatusAction.Edit(item))
+                    action(ItemMenuAction.Open)
+                },
+            ) {
+                Text(
+                    text = stringResource(R.string.open_object),
+                    style = BodyCallout,
+                    color = colorResource(id = R.color.text_primary),
+                )
+            }
+            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
+        }
+        if (showEdit) {
+            DropdownMenuItem(
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
+                onClick = {
+                    isMenuExpanded.value = false
+                    action(ItemMenuAction.Edit)
                 },
             ) {
                 Text(
@@ -42,34 +57,41 @@ fun ItemMenu(
                     color = colorResource(id = R.color.text_primary),
                 )
             }
-            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
-            DropdownMenuItem(
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
-                onClick = {
-                    isMenuExpanded.value = false
-                    action(TagStatusAction.Duplicate(item))
-                }
-            ) {
-                Text(
-                    text = stringResource(R.string.duplicate),
-                    style = BodyCallout,
-                    color = colorResource(id = R.color.text_primary),
-                )
+        }
+        Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
+        DropdownMenuItem(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
+            onClick = {
+                isMenuExpanded.value = false
+                action(ItemMenuAction.Duplicate)
             }
-            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
-            DropdownMenuItem(
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
-                onClick = {
-                    isMenuExpanded.value = false
-                    action(TagStatusAction.Delete(item.optionId))
-                },
-            ) {
-                Text(
-                    text = stringResource(R.string.delete),
-                    style = BodyCallout,
-                    color = colorResource(id = R.color.palette_system_red),
-                )
-            }
+        ) {
+            Text(
+                text = stringResource(R.string.duplicate),
+                style = BodyCallout,
+                color = colorResource(id = R.color.text_primary),
+            )
+        }
+        Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
+        DropdownMenuItem(
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
+            onClick = {
+                isMenuExpanded.value = false
+                action(ItemMenuAction.Delete)
+            },
+        ) {
+            Text(
+                text = stringResource(R.string.delete),
+                style = BodyCallout,
+                color = colorResource(id = R.color.palette_system_red),
+            )
         }
     }
+}
+
+sealed class ItemMenuAction {
+    object Open : ItemMenuAction()
+    object Edit : ItemMenuAction()
+    object Duplicate : ItemMenuAction()
+    object Delete : ItemMenuAction()
 }

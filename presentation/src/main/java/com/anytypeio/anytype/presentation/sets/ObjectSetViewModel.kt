@@ -56,6 +56,7 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -452,15 +453,7 @@ class ObjectSetViewModel(
                                 currentViewerId = view,
                                 offset = offset,
                                 context = context,
-                                spaces = buildList {
-                                    val config = spaceManager.getConfig()
-                                    if (config != null) {
-                                        add(config.space)
-                                        add(config.techSpace)
-                                    } else {
-                                        add(spaceManager.get())
-                                    }
-                                },
+                                spaces = spaceManager.getSpaceWithTechSpace(),
                                 dataViewRelationLinks = state.dataViewContent.relationLinks
                             )
                         } else {
@@ -476,15 +469,7 @@ class ObjectSetViewModel(
                                 currentViewerId = view,
                                 offset = offset,
                                 context = context,
-                                spaces = buildList {
-                                   val config = spaceManager.getConfig()
-                                   if (config != null) {
-                                       add(config.space)
-                                       add(config.techSpace)
-                                   } else {
-                                       add(spaceManager.get())
-                                   }
-                                },
+                                spaces = spaceManager.getSpaceWithTechSpace(),
                                 dataViewRelationLinks = state.dataViewContent.relationLinks
                             )
                         } else {

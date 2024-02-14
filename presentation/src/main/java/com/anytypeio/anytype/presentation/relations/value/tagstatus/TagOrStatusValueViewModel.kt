@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -47,17 +46,15 @@ class TagOrStatusValueViewModel(
 
     val viewState = MutableStateFlow<TagStatusViewState>(TagStatusViewState.Loading)
     private val query = MutableSharedFlow<String>(replay = 0)
-    private var isRelationNotEditable = false
+    private var isEditableRelation = false
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val jobs = mutableListOf<Job>()
 
     private val initialIds = mutableListOf<Id>()
     private var isInitialSortDone = false
 
-    fun onStart() {
-        Timber.d("onStart, params: $viewModelParams")
-        jobs += viewModelScope.launch {
-            setupInitialIds()
+    init {
+        viewModelScope.launch {
             val relation = relations.get(relation = viewModelParams.relationKey)
             val spaces = listOf(spaceManager.get())
             val searchParams = StoreSearchParams(
@@ -77,39 +74,25 @@ class TagOrStatusValueViewModel(
                 subscription.subscribe(searchParams)
             ) { record, query, options ->
                 setupIsRelationNotEditable(relation)
+                val ids = getRecordValues(record)
+                if (!isInitialSortDone) {
+                    initialIds.clear()
+                    if (ids.isNotEmpty()) {
+                        initialIds.addAll(ids)
+                    } else {
+                        emitCommand(Command.Expand)
+                    }
+                }
                 initViewState(
                     relation = relation,
                     options = options
                         .map { ObjectWrapper.Option(map = it.map) }
                         .filter { it.name?.contains(query, true) == true },
                     query = query,
-                    ids = getRecordValues(record)
+                    ids = ids
                 )
             }.collect()
         }
-    }
-
-    private fun setupInitialIds() {
-        viewModelScope.launch {
-            val ids = getRecordValues(
-                values.get(
-                    ctx = viewModelParams.ctx,
-                    target = viewModelParams.objectId
-                )
-            )
-            initialIds.clear()
-            initialIds.addAll(ids)
-            if (initialIds.isEmpty()) {
-                emitCommand(Command.Expand)
-            }
-        }
-    }
-
-    fun onStop() {
-        viewModelScope.launch {
-            subscription.unsubscribe(listOf(SUB_MY_OPTIONS))
-        }
-        jobs.cancel()
     }
 
     fun onQueryChanged(input: String) {
@@ -122,7 +105,10 @@ class TagOrStatusValueViewModel(
         viewModelScope.launch {
             val params = DeleteRelationOptions.Params(listOf(optionId))
             deleteRelationOptions.execute(params).fold(
-                onSuccess = { Timber.d("Options deleted successfully") },
+                onSuccess = {
+                    Timber.d("Options deleted successfully")
+                    removeTag(optionId)
+                },
                 onFailure = { Timber.e(it, "Error while deleting options") }
             )
         }
@@ -130,7 +116,7 @@ class TagOrStatusValueViewModel(
 
     fun onAction(action: TagStatusAction) {
         Timber.d("TagStatusViewModel onAction, action: $action")
-        if (isRelationNotEditable) {
+        if (!isEditableRelation) {
             Timber.d("TagStatusViewModel onAction, relation is not editable")
             sendToast("Relation is not editable")
             return
@@ -274,12 +260,12 @@ class TagOrStatusValueViewModel(
 
         viewState.value = if (result.isEmpty()) {
             TagStatusViewState.Empty(
-                isRelationEditable = !isRelationNotEditable,
+                isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
             )
         } else {
             TagStatusViewState.Content(
-                isRelationEditable = !isRelationNotEditable,
+                isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
                 items = result
             )
@@ -413,6 +399,7 @@ class TagOrStatusValueViewModel(
     ) = options.map { option ->
         val index = ids.indexOf(option.id)
         val isSelected = index != -1
+        isInitialSortDone = true
         RelationsListItem.Item.Status(
             optionId = option.id,
             name = option.name.orEmpty(),
@@ -426,12 +413,12 @@ class TagOrStatusValueViewModel(
     }
 
     private fun setupIsRelationNotEditable(relation: ObjectWrapper.Relation) {
-        isRelationNotEditable = viewModelParams.isLocked
+        isEditableRelation = !(viewModelParams.isLocked
                 || relation.isReadonlyValue
                 || relation.isHidden == true
                 || relation.isDeleted == true
                 || relation.isArchived == true
-                || !relation.isValid
+                || !relation.isValid)
     }
 
     override fun onCleared() {

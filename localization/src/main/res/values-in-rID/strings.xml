@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Unggah sebuah gambar</string>
     <string name="hint_upload_file">Unggah sebuah berkas</string>
     <string name="hint_upload_audio">Unggah audio</string>
-    <string name="hint_add_a_web_bookmark">Add bookmark</string>
+    <string name="hint_add_a_web_bookmark">Tambahkan markah</string>
     <string name="hint_bullet">Daftar bertitik</string>
     <string name="hint_numbered_list">Daftar urut</string>
     <string name="hint_toggle">Balok bukaan</string>
@@ -738,7 +738,7 @@
     <string name="anytype_analytics">Anytype Analytics</string>
     <string name="anytype_analytics_msg">Understanding how people use Anytype helps us improve the product. This version of Anytype includes the analytics code that protects your privacy.\nIt doesn\'t record the actual document\'s content but still allows us to understand how you use Anytype.\nStay subscribed to our mailing list, as we will soon announce a new release that enables you to opt-out.</string>
     <string name="retry">Coba lagi</string>
-    <string name="try_again">Try again</string>
+    <string name="try_again">Coba lagi</string>
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Batalkan penghapusan</string>
     <string name="logout_and_clear_local_data">Logout and clear local data</string>
@@ -1035,10 +1035,10 @@
     <string name="sharing_menu_save_as_section_name">Simpan sebagai</string>
     <string name="sharing_menu_save_as_note_option">Catatan</string>
     <string name="sharing_menu_save_as_bookmark_option">Markah</string>
-    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_image_option">Gambar</string>
     <string name="sharing_menu_save_as_file_option">Berkas</string>
-    <string name="sharing_menu_save_as_images_option">Images</string>
-    <string name="sharing_menu_save_as_files_option">Files</string>
+    <string name="sharing_menu_save_as_images_option">Gambar</string>
+    <string name="sharing_menu_save_as_files_option">Berkas</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Tambah ke Anytype</string>
     <string name="sharing_menu_toast_object_added">Objek baru ditambahkan ke ruang \'%1$s\'</string>
@@ -1080,7 +1080,7 @@
     <string name="any_object_creation_menu_move_left">Pindah ke kiri</string>
     <string name="any_object_creation_menu_move_right">Pindah ke kanan</string>
     <string name="clipboard_panel_create_object_from_clipboard">Buat objek dari papan kerani</string>
-    <string name="block_media_error">Something went wrong, please try again</string>
+    <string name="block_media_error">Terjadi kesalahan, silakan coba lagi</string>
     <string name="relation_value_create_new">Buat \"%1$s\"</string>
     <string name="option_widget_create">Create option</string>
     <string name="option_widget_edit">Edit option</string>
@@ -1088,10 +1088,15 @@
     <string name="options_empty_title">No options</string>
     <string name="options_empty_not_editable">The relation is empty</string>
     <string name="options_delete_title">Apakah kamu yakin?</string>
-    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="options_delete_description">Opsi ini akan dihapus secara permanen dari ruangmu</string>
+    <string name="object_values_empty_description">Objects not found</string>
+    <string name="object_values_empty_title">No values</string>
+    <string name="object_values_empty_not_editable">The relation is empty</string>
+    <string name="object_values_delete_title">Apakah kamu yakin?</string>
+    <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Enter name...</string>
     <string name="create_object">Buat objek</string>
     <!--region ONBOARDING ERRORS -->
-    <string name="error_invalid_recovery_phrase">Invalid recovery phrase</string>
+    <string name="error_invalid_recovery_phrase">Frasa pemulihan tidak valid</string>
     <!--endregion-->
 </resources>

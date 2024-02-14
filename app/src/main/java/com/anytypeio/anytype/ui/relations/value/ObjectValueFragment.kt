@@ -1,13 +1,34 @@
 package com.anytypeio.anytype.ui.relations.value
 
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.relations.RelationObjectValueScreen
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
+import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModelFactory
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
+import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import com.anytypeio.anytype.ui.settings.typography
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import javax.inject.Inject
 
 class ObjectValueFragment : BaseBottomSheetComposeFragment() {
@@ -21,6 +42,78 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
     private val objectId get() = argString(OBJECT_ID_KEY)
     private val isLocked get() = argBoolean(IS_LOCKED_KEY)
     private val relationContext get() = requireArguments().getSerializable(RELATION_CONTEXT_KEY) as RelationContext
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            MaterialTheme(
+                typography = typography,
+                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp)),
+                colors = MaterialTheme.colors.copy(
+                    surface = colorResource(id = R.color.context_menu_background)
+                )
+            ) {
+                RelationObjectValueScreen(
+                    state = vm.viewState.collectAsStateWithLifecycle().value,
+                    action = vm::onAction,
+                    onQueryChanged = vm::onQueryChanged
+                )
+            }
+        }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupCollapsedHeight()
+    }
+
+    override fun onStart() {
+        jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
+        super.onStart()
+        vm.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
+    }
+
+    private fun observeCommands(command: ObjectValueViewModel.Command) = when (command) {
+        ObjectValueViewModel.Command.Dismiss -> dismiss()
+        is ObjectValueViewModel.Command.OpenObject -> {
+            findNavController().navigate(
+                R.id.objectNavigation,
+                bundleOf(EditorFragment.ID_KEY to command.id)
+            )
+            dismiss()
+        }
+        is ObjectValueViewModel.Command.OpenSet -> {
+            findNavController().navigate(
+                R.id.dataViewNavigation,
+                bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.id)
+            )
+            dismiss()
+        }
+        ObjectValueViewModel.Command.Expand -> expand()
+        is ObjectValueViewModel.Command.DeleteObject -> {
+            val dialog = DeleteOptionWarningFragment.new(
+                optionId = command.id,
+                descriptionString = R.string.object_values_delete_description
+            )
+            dialog.onDeletionAccepted = { optionId ->
+                vm.onDeleteAction(optionId)
+                dialog.dismiss()
+            }
+            dialog.onDeletionCancelled = {
+                dialog.dismiss()
+            }
+            dialog.show(childFragmentManager, null)
+        }
+    }
 
     override fun injectDependencies() {
         val params = ObjectValueViewModel.ViewModelParams(
@@ -49,6 +142,11 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
         RelationContext.OBJECT -> componentManager().objectValueObjectComponent.release()
         RelationContext.OBJECT_SET -> componentManager().objectValueSetComponent.release()
         RelationContext.DATA_VIEW -> componentManager().objectValueDataViewComponent.release()
+    }
+
+    private fun setupCollapsedHeight() {
+        val height = resources.displayMetrics.heightPixels / 2
+        (dialog as? BottomSheetDialog)?.behavior?.peekHeight = height
     }
 
     companion object {

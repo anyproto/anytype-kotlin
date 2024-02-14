@@ -39,6 +39,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarningLoading
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_utils.ext.argInt
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -47,6 +48,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 class DeleteOptionWarningFragment : BaseBottomSheetComposeFragment() {
 
     private val optionId get() = argString(OPTION_IDS_KEY)
+    private val descriptionString get() = argInt(DESCRIPTION_STRING_KEY)
 
     var onDeletionAccepted: (Id) -> Unit = {}
     var onDeletionCancelled: () -> Unit = {}
@@ -100,13 +102,20 @@ class DeleteOptionWarningFragment : BaseBottomSheetComposeFragment() {
                                 modifier = Modifier.fillMaxWidth(),
                                 text = stringResource(id = R.string.options_delete_title),
                                 style = HeadlineHeading,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                color = colorResource(id = R.color.text_primary)
                             )
+                            val description = if (descriptionString != 0) {
+                                stringResource(id = descriptionString)
+                            } else {
+                                stringResource(id = R.string.options_delete_description)
+                            }
                             Text(
                                 modifier = Modifier.fillMaxWidth(),
-                                text = stringResource(id = R.string.options_delete_description),
+                                text = description,
                                 style = BodyRegular,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Center,
+                                color = colorResource(id = R.color.text_primary)
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Row(
@@ -159,8 +168,13 @@ class DeleteOptionWarningFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val OPTION_IDS_KEY = "option.warning.optionIds"
-        fun new(optionId: Id) = DeleteOptionWarningFragment().apply {
-            arguments = bundleOf(OPTION_IDS_KEY to optionId)
-        }
+        const val DESCRIPTION_STRING_KEY = "option.warning.descriptionString"
+        fun new(optionId: Id, descriptionString: Int? = null) =
+            DeleteOptionWarningFragment().apply {
+                arguments = bundleOf(
+                    OPTION_IDS_KEY to optionId,
+                    DESCRIPTION_STRING_KEY to descriptionString
+                )
+            }
     }
 }

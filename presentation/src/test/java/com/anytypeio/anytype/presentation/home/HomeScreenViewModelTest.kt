@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -226,6 +227,7 @@ class HomeScreenViewModelTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
+        stubSpaceManager()
     }
 
     @Test
@@ -267,7 +269,13 @@ class HomeScreenViewModelTest {
             )
             vm.onStart()
             val secondTimeState = awaitItem()
-            verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+            verify(openObject, times(1)).stream(
+                OpenObject.Params(
+                    obj = WIDGET_OBJECT_ID,
+                    saveAsLastOpened = false,
+                    spaceId = SpaceId(defaultSpaceConfig.space)
+                )
+            )
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
@@ -329,7 +337,13 @@ class HomeScreenViewModelTest {
                     },
                     actual = secondTimeItem
                 )
-                verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+                verify(openObject, times(1)).stream(
+                    OpenObject.Params(
+                        obj = WIDGET_OBJECT_ID,
+                        saveAsLastOpened = false,
+                        spaceId = SpaceId(defaultSpaceConfig.space)
+                    )
+                )
             }
         }
 
@@ -416,7 +430,13 @@ class HomeScreenViewModelTest {
                 },
                 actual = secondTimeState
             )
-            verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+            verify(openObject, times(1)).stream(
+                OpenObject.Params(
+                    obj = WIDGET_OBJECT_ID,
+                    saveAsLastOpened = false,
+                    spaceId = SpaceId(defaultSpaceConfig.space)
+                )
+            )
         }
     }
 
@@ -1071,7 +1091,13 @@ class HomeScreenViewModelTest {
                 },
                 actual = secondTimeState
             )
-            verify(openObject, times(1)).stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+            verify(openObject, times(1)).stream(
+                OpenObject.Params(
+                    obj = WIDGET_OBJECT_ID,
+                    saveAsLastOpened = false,
+                    spaceId = SpaceId(defaultSpaceConfig.space)
+                )
+            )
         }
     }
 
@@ -2617,7 +2643,13 @@ class HomeScreenViewModelTest {
     private fun stubOpenWidgetObject(givenObjectView: ObjectView) {
         openObject.stub {
             on {
-                stream(OpenObject.Params(WIDGET_OBJECT_ID, false))
+                stream(
+                    OpenObject.Params(
+                        WIDGET_OBJECT_ID,
+                        false,
+                        SpaceId(defaultSpaceConfig.space)
+                    )
+                )
             } doReturn flowOf(
                 Resultat.Success(
                     value = givenObjectView

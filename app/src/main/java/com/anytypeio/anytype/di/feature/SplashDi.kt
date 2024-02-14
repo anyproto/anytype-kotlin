@@ -103,10 +103,10 @@ object SplashModule {
     @PerScreen
     fun getLastOpenedObject(
         repo: BlockRepository,
-        auth: AuthRepository
+        userSettingsRepository: UserSettingsRepository
     ): GetLastOpenedObject = GetLastOpenedObject(
-        authRepo = auth,
-        blockRepo = repo
+        settings = userSettingsRepository,
+        blockRepo = repo,
     )
 
     @JvmStatic

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.AddToFavorite
@@ -265,7 +266,9 @@ abstract class ObjectMenuViewModelBase(
                 AddBackLinkToObject.Params(
                     objectToLink = myself,
                     objectToPlaceLink = addTo,
-                    saveAsLastOpened = true
+                    saveAsLastOpened = true,
+                    // TODO resolve space from screen args or from object details
+                    spaceId = SpaceId(spaceManager.get())
                 )
             ).fold(
                 onSuccess = { obj ->

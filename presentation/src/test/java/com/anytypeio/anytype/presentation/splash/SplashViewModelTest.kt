@@ -3,20 +3,23 @@ package com.anytypeio.anytype.presentation.splash
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
-import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
@@ -56,7 +59,7 @@ class SplashViewModelTest {
     lateinit var repo: BlockRepository
 
     @Mock
-    lateinit var auth: AuthRepository
+    lateinit var settings: UserSettingsRepository
 
     private lateinit var getLastOpenedObject: GetLastOpenedObject
 
@@ -80,15 +83,21 @@ class SplashViewModelTest {
     @Mock
     lateinit var localeProvider: LocaleProvider
 
+    @Mock
+    lateinit var spaceManager: SpaceManager
+
     lateinit var vm: SplashViewModel
+
+    val defaultSpaceConfig = StubConfig()
 
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
         getLastOpenedObject = GetLastOpenedObject(
-            authRepo = auth,
+            settings = settings,
             blockRepo = repo
         )
+        stubSpaceManager()
     }
 
     private fun initViewModel() {
@@ -104,7 +113,8 @@ class SplashViewModelTest {
             featureToggles = featureToggles,
             crashReporter = crashReporter,
             spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
-            localeProvider = localeProvider
+            localeProvider = localeProvider,
+            spaceManager = spaceManager
         )
     }
 
@@ -187,11 +197,20 @@ class SplashViewModelTest {
     }
 
     private fun stubGetLastOpenedObject() {
-        auth.stub {
+        settings.stub {
             onBlocking {
-                getLastOpenedObjectId()
+                getLastOpenedObject(
+                    space = SpaceId(defaultSpaceConfig.space)
+                )
             } doReturn null
         }
     }
 
+    private fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking {
+                get()
+            } doReturn defaultSpaceConfig.space
+        }
+    }
 }

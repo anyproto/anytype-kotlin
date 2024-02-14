@@ -204,7 +204,8 @@ class HomeScreenViewModel(
             openObject.stream(
                 OpenObject.Params(
                     obj = config.widgets,
-                    saveAsLastOpened = false
+                    saveAsLastOpened = false,
+                    spaceId = SpaceId(config.space)
                 )
             )
         }

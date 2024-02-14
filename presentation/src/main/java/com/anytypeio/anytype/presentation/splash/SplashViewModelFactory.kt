@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 
 /**
@@ -33,7 +34,8 @@ class SplashViewModelFactory @Inject constructor(
     private val featureToggles: FeatureToggles,
     private val crashReporter: CrashReporter,
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
-    private val localeProvider: LocaleProvider
+    private val localeProvider: LocaleProvider,
+    private val spaceManager: SpaceManager
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -50,6 +52,7 @@ class SplashViewModelFactory @Inject constructor(
             featureToggles = featureToggles,
             crashReporter = crashReporter,
             spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
-            localeProvider = localeProvider
+            localeProvider = localeProvider,
+            spaceManager = spaceManager
         ) as T
 }

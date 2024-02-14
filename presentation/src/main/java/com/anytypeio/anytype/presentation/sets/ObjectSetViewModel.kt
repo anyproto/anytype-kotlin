@@ -1604,7 +1604,7 @@ class ObjectSetViewModel(
                 RelationFormat.FILE,
                 RelationFormat.OBJECT -> {
                     _commands.emit(
-                        ObjectSetCommand.Modal.EditIntrinsicRelationValue(
+                        ObjectSetCommand.Modal.EditObjectRelationValue(
                             ctx = context,
                             relation = relation.key
                         )

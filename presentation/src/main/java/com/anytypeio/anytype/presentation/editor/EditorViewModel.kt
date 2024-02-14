@@ -3934,7 +3934,7 @@ class EditorViewModel(
                                                 target = context,
                                                 relationKey = relation.key,
                                                 isLocked = mode == EditorMode.Locked
-                                            ).also { Timber.d("Opening object relation screen :$it") }
+                                            )
                                         )
                                     }
                                     else -> {

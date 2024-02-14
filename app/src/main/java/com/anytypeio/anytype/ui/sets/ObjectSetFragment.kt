@@ -921,7 +921,7 @@ open class ObjectSetFragment :
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
-            is ObjectSetCommand.Modal.EditIntrinsicRelationValue -> {
+            is ObjectSetCommand.Modal.EditObjectRelationValue -> {
                 findNavController().safeNavigate(
                     R.id.objectSetScreen,
                     R.id.objectValueScreen,

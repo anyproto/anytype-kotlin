@@ -88,7 +88,7 @@ sealed class ObjectSetCommand {
             val relation: Key
         ) : Modal()
 
-        data class EditIntrinsicRelationValue(
+        data class EditObjectRelationValue(
             val ctx: Id,
             val relation: Key
         ) : Modal()

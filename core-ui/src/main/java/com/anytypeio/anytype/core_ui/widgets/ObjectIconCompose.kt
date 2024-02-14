@@ -116,7 +116,7 @@ private fun DefaultProfileAvatarIcon(
             .size(iconSize)
             .background(
                 shape = CircleShape,
-                color = colorResource(id = R.color.shape_primary)
+                color = colorResource(id = R.color.text_tertiary)
             )
     ) {
         Text(

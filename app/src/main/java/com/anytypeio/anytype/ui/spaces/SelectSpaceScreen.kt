@@ -261,7 +261,7 @@ fun SelectSpaceProfileIcon(
                 modifier = modifier
                     .size(32.dp)
                     .clip(RoundedCornerShape(16.dp))
-                    .background(colorResource(id = R.color.shape_primary))
+                    .background(colorResource(id = R.color.text_tertiary))
                     .noRippleClickable {
                         onProfileIconClick.invoke()
                     }

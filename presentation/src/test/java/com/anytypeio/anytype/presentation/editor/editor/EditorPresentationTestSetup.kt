@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -492,10 +493,17 @@ open class EditorPresentationTestSetup {
         details: Block.Details = Block.Details(),
         relations: List<Relation> = emptyList(),
         objectRestrictions: List<ObjectRestriction> = emptyList(),
-        relationLinks: List<RelationLink> = emptyList()
+        relationLinks: List<RelationLink> = emptyList(),
+        spaceId: SpaceId = SpaceId("")
     ) {
         openPage.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(
+            onBlocking { async(
+                OpenPage.Params(
+                    obj = root,
+                    saveAsLastOpened = true,
+                    space = spaceId
+                )
+            ) } doReturn Resultat.success(
                 Result.Success(
                     Payload(
                         context = root,

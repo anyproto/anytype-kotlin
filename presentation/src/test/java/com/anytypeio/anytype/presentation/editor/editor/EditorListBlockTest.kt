@@ -8,7 +8,6 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.SplitBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
@@ -46,6 +45,7 @@ class EditorListBlockTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     @Test

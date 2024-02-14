@@ -18,7 +18,6 @@ import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.getProperName
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
-import net.bytebuddy.utility.RandomString
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -35,18 +34,18 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
+    val space = ""
+
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        stubSpaceManager()
+        stubSpaceManager(space = space)
     }
 
     @After
     fun after() {
         coroutineTestRule.advanceTime(TEXT_CHANGES_DEBOUNCE_DURATION)
     }
-
-    val space = "spaceId-${RandomString.make(10)}"
 
     @Test
     fun `should invoke CreateBlockLinkWithObject UseCase on clicked on object type item with bottom position when text block is not empty`() {
@@ -63,7 +62,7 @@ class EditorSlashWidgetObjectTypeTest : EditorPresentationTestSetup() {
         stubSearchObjects(listOf(type1, type2, type3))
         stubCreateBlockLinkWithObject(root, a.id)
         stubOpenDocument(doc)
-        stubSpaceManager(space = space)
+        stubSpaceManager("")
 
         val vm = buildViewModel()
         vm.onStart(root)

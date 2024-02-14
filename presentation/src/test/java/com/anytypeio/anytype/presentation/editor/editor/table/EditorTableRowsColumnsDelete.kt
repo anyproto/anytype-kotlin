@@ -33,6 +33,7 @@ class EditorTableRowsColumnsDelete : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     private var tableId = MockDataFactory.randomUuid()

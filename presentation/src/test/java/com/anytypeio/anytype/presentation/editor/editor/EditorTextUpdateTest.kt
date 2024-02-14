@@ -30,6 +30,7 @@ class EditorTextUpdateTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     val title = Block(

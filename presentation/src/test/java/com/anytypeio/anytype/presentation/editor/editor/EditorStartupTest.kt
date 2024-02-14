@@ -20,6 +20,7 @@ class EditorStartupTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     @Test

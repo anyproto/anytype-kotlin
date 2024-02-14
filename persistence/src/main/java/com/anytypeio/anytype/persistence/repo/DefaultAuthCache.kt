@@ -92,18 +92,6 @@ class DefaultAuthCache(
         encryptedPrefs.edit().putString(CURRENT_ACCOUNT_ID_KEY, id).apply()
     }
 
-    override suspend fun saveLastOpenedObject(id: String) {
-        encryptedPrefs.edit().putString(LAST_OPENED_OBJECT_KEY, id).apply()
-    }
-
-    override suspend fun getLastOpenedObject(): String? {
-        return encryptedPrefs.getString(LAST_OPENED_OBJECT_KEY, null)
-    }
-
-    override suspend fun clearLastOpenedObject() {
-        encryptedPrefs.edit().remove(LAST_OPENED_OBJECT_KEY).apply()
-    }
-
     override suspend fun getNetworkMode(): NetworkModeConfig = networkModeProvider.get()
     override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
         networkModeProvider.set(modeConfig)

@@ -15,7 +15,6 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.domain.block.interactor.UnlinkBlocks
 import com.anytypeio.anytype.domain.clipboard.Copy
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubLinkContent
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.MockBlockFactory.link
@@ -67,6 +66,7 @@ class EditorMultiSelectModeTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     @Test

@@ -52,10 +52,19 @@ fun List<ObjectWrapper.Basic>.toViews(
     objectTypes: List<ObjectWrapper.Type>,
     gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
 ): List<DefaultObjectView> = map { obj ->
+    obj.toView(urlBuilder, objectTypes, gradientProvider)
+}
+
+fun ObjectWrapper.Basic.toView(
+    urlBuilder: UrlBuilder,
+    objectTypes: List<ObjectWrapper.Type>,
+    gradientProvider: SpaceGradientProvider = SpaceGradientProvider.Default
+): DefaultObjectView {
+    val obj = this
     val typeUrl = obj.getProperType()
     val isProfile = typeUrl == MarketplaceObjectTypeIds.PROFILE
     val layout = obj.getProperLayout()
-    DefaultObjectView(
+    return DefaultObjectView(
         id = obj.id,
         name = obj.getProperName(),
         description = obj.description,

@@ -131,7 +131,7 @@
     <string name="sort">Trier</string>
     <string name="sort_empty_state">Pas de tri ici. Vous pouvez en ajouter</string>
     <string name="filter_empty_state">Aucun filtre ici. Vous pouvez en ajouter</string>
-    <string name="relation_status_value_empty_state">No related options here. You can add some</string>
+    <string name="relation_status_value_empty_state">Pas d\'options associées ici. Vous pouvez en ajouter</string>
     <string name="filter_by">Filtrer par</string>
     <string name="filter">Filtre</string>
     <string name="modal_view">Vue</string>
@@ -927,8 +927,8 @@
     <string name="widget_type_tree_description">Hierarchical structure of object</string>
     <string name="widget_type_link">Lien</string>
     <string name="widget_type_link_description">Compact version of the object</string>
-    <string name="widget_type_list_description">Widget with list view of set object</string>
-    <string name="widget_type_compact_list_description">Widget with list view of set object</string>
+    <string name="widget_type_list_description">Widget avec vue en liste d\'un set d\'objets</string>
+    <string name="widget_type_compact_list_description">Widget avec vue en liste d\'un set d\'objets</string>
     <string name="widget_type_list">Liste</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Changer la Source</string>
@@ -1093,6 +1093,24 @@
     <string name="options_empty_not_editable">La relation est vide</string>
     <string name="options_delete_title">Êtes-vous sûr ?</string>
     <string name="options_delete_description">L\'option sera définitivement retirée de votre espace</string>
+    <string name="object_values_empty_description">Objects not found</string>
+    <string name="object_values_empty_title">No values</string>
+    <string name="object_values_empty_not_editable">La relation est vide</string>
+    <string name="object_values_delete_title">Êtes-vous sûr ?</string>
+    <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Saisir un nom...</string>
     <string name="create_object">Créer un objet</string>
+    <!--region ONBOARDING ERRORS -->
+    <string name="error_invalid_recovery_phrase">La phrase de récupération est invalide</string>
+    <string name="network">Réseau</string>
+    <string name="network_settings_anytype_network">Anytype network</string>
+    <string name="network_settings_anytype_network_description">Backup to the network managed by Anytype</string>
+    <string name="network_settings_local_only">Local seulement</string>
+    <string name="network_settings_local_only_description">Don\'t back up; sync within local network</string>
+    <string name="network_settings_self_host">Auto-hébergé</string>
+    <string name="network_settings_self_host_description">Back up to your self-hosted network</string>
+    <string name="network_settings_networks_section">Réseaux</string>
+    <string name="network_settings_provide_config_hint">Tap to provide your network config</string>
+    <string name="network_settings_self_host_config">Current config: %1$s</string>
+    <!--endregion-->
 </resources>

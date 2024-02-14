@@ -111,6 +111,13 @@ sealed class Command {
                 val relationKey: Key,
                 val isLocked: Boolean = false
             ) : OpenObjectRelationScreen.Value()
+
+            data class ObjectValue(
+                val ctx: Id,
+                val target: Id,
+                val relationKey: Key,
+                val isLocked: Boolean = false
+            ) : Value()
         }
     }
 

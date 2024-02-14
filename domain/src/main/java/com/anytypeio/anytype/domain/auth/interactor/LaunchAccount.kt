@@ -1,12 +1,12 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
@@ -23,14 +23,13 @@ class LaunchAccount @Inject constructor(
     private val pathProvider: PathProvider,
     private val context: CoroutineContext = Dispatchers.IO,
     private val configStorage: ConfigStorage,
-    private val featuresConfigProvider: FeaturesConfigProvider,
     private val spaceManager: SpaceManager,
     private val metricsProvider: MetricsProvider,
     private val settings: UserSettingsRepository,
     private val awaitAccountStartManager: AwaitAccountStartManager
-) : BaseUseCase<String, BaseUseCase.None>(context) {
+) : BaseUseCase<Id, BaseUseCase.None>(context) {
 
-    override suspend fun run(params: None) = try {
+    override suspend fun run(params: None) = safe {
         repository.setMetrics(
             version = metricsProvider.getVersion(),
             platform = metricsProvider.getPlatform()
@@ -44,25 +43,22 @@ class LaunchAccount @Inject constructor(
             networkMode = networkMode.networkMode,
             networkConfigFilePath = networkMode.storedFilePath
         )
+
         repository.selectAccount(command).let { setup ->
             repository.updateAccount(setup.account)
-            featuresConfigProvider.set(
-                enableDataView = setup.features.enableDataView ?: false,
-                enableDebug = setup.features.enableDebug ?: false,
-                enableChannelSwitch = setup.features.enablePrereleaseChannel ?: false,
-                enableSpaces = setup.features.enableSpaces ?: false
-            )
             configStorage.set(config = setup.config)
             val lastSessionSpace = settings.getCurrentSpace()
             if (lastSessionSpace != null) {
-                spaceManager.set(lastSessionSpace.id)
+                val result = spaceManager.set(lastSessionSpace.id)
+                if (result.isFailure) {
+                    // Falling back to the default space
+                    spaceManager.set(setup.config.space)
+                }
             } else {
                 spaceManager.set(setup.config.space)
             }
             awaitAccountStartManager.setIsStarted(true)
-            Either.Right(setup.config.analytics)
+            setup.config.analytics
         }
-    } catch (e: Throwable) {
-        Either.Left(e)
     }
 }

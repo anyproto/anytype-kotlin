@@ -28,6 +28,28 @@ class SharedFileUploader @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    override suspend fun getDisplayName(uri: String): String? = withContext(dispatchers.io) {
+        val parsed = Uri.parse(uri)
+        context.contentResolver.query(
+            parsed,
+            null,
+            null,
+            null,
+            null
+        ).use { cursor ->
+            if (cursor != null && cursor.moveToFirst()) {
+                val idx = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+                if (idx != -1) {
+                    cursor.getString(idx)
+                } else {
+                    context.resources.getString(R.string.untitled)
+                }
+            } else {
+                context.resources.getString(R.string.untitled)
+            }
+        }
+    }
+
     private fun parsePathFromUri(extra: Uri) : String {
         val name = if (extra.scheme == CONTENT_URI_SCHEME) {
             context.contentResolver.query(

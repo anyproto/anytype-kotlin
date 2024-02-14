@@ -67,12 +67,12 @@ object CollectionModule {
     @PerScreen
     fun openObject(
         repo: BlockRepository,
-        auth: AuthRepository,
+        settingsRepository: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers
     ): OpenObject = OpenObject(
         repo = repo,
         dispatchers = dispatchers,
-        auth = auth
+        settings = settingsRepository
     )
 
     @JvmStatic

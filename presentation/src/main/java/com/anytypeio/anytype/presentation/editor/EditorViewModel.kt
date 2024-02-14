@@ -47,6 +47,7 @@ import com.anytypeio.anytype.core_models.ext.sortByType
 import com.anytypeio.anytype.core_models.ext.supportNesting
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.updateTextContent
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -98,6 +99,7 @@ import com.anytypeio.anytype.domain.templates.ApplyTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.InterceptFileLimitEvents
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -480,7 +482,9 @@ class EditorViewModel(
     ) {
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
-                picture = action.img
+                picture = action.img,
+                // TODO re-fact to use space id from arguments or target space id of this object
+                space = SpaceId(spaceManager.get())
             )
         ).process(
             failure = {
@@ -1021,7 +1025,8 @@ class EditorViewModel(
         viewModelScope.launch {
             val params = OpenPage.Params(
                 obj = id,
-                saveAsLastOpened = saveAsLastOpened
+                saveAsLastOpened = saveAsLastOpened,
+                space = SpaceId(spaceManager.get())
             )
             openPage.async(params).fold(
                 onSuccess = { result ->
@@ -3918,7 +3923,17 @@ class EditorViewModel(
                                             Command.OpenObjectRelationScreen.Value.TagOrStatus(
                                                 ctx = context,
                                                 target = context,
-                                                relationKey = relationId,
+                                                relationKey = relation.key,
+                                                isLocked = mode == EditorMode.Locked
+                                            )
+                                        )
+                                    }
+                                    Relation.Format.OBJECT, Relation.Format.FILE -> {
+                                        dispatch(
+                                            Command.OpenObjectRelationScreen.Value.ObjectValue(
+                                                ctx = context,
+                                                target = context,
+                                                relationKey = relation.key,
                                                 isLocked = mode == EditorMode.Locked
                                             )
                                         )
@@ -3935,9 +3950,6 @@ class EditorViewModel(
                                         )
                                     }
                                 }
-                                proceedWithRelationBlockClicked(
-                                    relationView = clicked.relation
-                                )
                             }
                         }
                     }
@@ -5941,15 +5953,7 @@ class EditorViewModel(
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
                     ignore = context,
-                    spaces = buildList {
-                        val config = spaceManager.getConfig()
-                        if (config != null) {
-                            add(config.space)
-                            add(config.techSpace)
-                        } else {
-                            add(spaceManager.get())
-                        }
-                    }
+                    spaces = spaceManager.getSpaceWithTechSpace(),
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
@@ -7102,6 +7106,16 @@ class EditorViewModel(
             Relation.Format.TAG, Relation.Format.STATUS -> {
                 dispatch(
                     Command.OpenObjectRelationScreen.Value.TagOrStatus(
+                        ctx = context,
+                        target = context,
+                        relationKey = relation.key,
+                        isLocked = mode == EditorMode.Locked
+                    )
+                )
+            }
+            Relation.Format.OBJECT, Relation.Format.FILE -> {
+                dispatch(
+                    Command.OpenObjectRelationScreen.Value.ObjectValue(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,

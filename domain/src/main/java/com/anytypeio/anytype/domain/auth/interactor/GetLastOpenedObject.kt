@@ -1,12 +1,15 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 
 /**
  * Use case for fetching last open object's id for restoring user session.
@@ -14,35 +17,31 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
  * @see ClearLastOpenedObject
  */
 class GetLastOpenedObject(
-    private val authRepo: AuthRepository,
+    private val settings: UserSettingsRepository,
     private val blockRepo: BlockRepository
-) : BaseUseCase<GetLastOpenedObject.Response, BaseUseCase.None>() {
+) : BaseUseCase<GetLastOpenedObject.Response, GetLastOpenedObject.Params>() {
 
-    override suspend fun run(params: None) = safe {
-        val lastOpenObjectId = authRepo.getLastOpenedObjectId()
-        if (lastOpenObjectId == null) {
+    override suspend fun run(params: Params) = safe {
+        val lastOpenObject = settings.getLastOpenedObject(space = params.space)
+        if (lastOpenObject == null) {
             Response.Empty
         } else {
             val searchResults = blockRepo.searchObjects(
-                offset = 0,
                 limit = 1,
-                sorts = emptyList(),
                 filters = listOf(
-                    Block.Content.DataView.Filter(
+                    DVFilter(
                         relation = Relations.ID,
-                        condition = Block.Content.DataView.Filter.Condition.EQUAL,
-                        operator = Block.Content.DataView.Filter.Operator.AND,
-                        value = lastOpenObjectId
+                        condition = DVFilterCondition.IN,
+                        value = listOf(lastOpenObject, params.space.id)
                     )
-                ),
-                fulltext = ""
+                )
             )
             val wrappedObjects = searchResults.map { ObjectWrapper.Basic(it) }
-            val lastOpenedObject = wrappedObjects.firstOrNull { it.id == lastOpenObjectId }
+            val lastOpenedObject = wrappedObjects.firstOrNull { it.id == lastOpenObject }
             if (lastOpenedObject != null) {
                 Response.Success(lastOpenedObject)
             } else {
-                Response.NotFound(lastOpenObjectId)
+                Response.NotFound(lastOpenObject)
             }
         }
     }
@@ -54,7 +53,7 @@ class GetLastOpenedObject(
         object Empty : Response()
 
         /**
-         * The last opened object could not be found. It might habe been deleted.
+         * The last opened object could not be found. It might have been deleted.
          */
         data class NotFound(val id: Id) : Response()
 
@@ -63,4 +62,6 @@ class GetLastOpenedObject(
          */
         data class Success(val obj: ObjectWrapper.Basic) : Response()
     }
+
+    data class Params(val space: SpaceId)
 }

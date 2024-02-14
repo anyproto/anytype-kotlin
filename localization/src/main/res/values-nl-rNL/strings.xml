@@ -1093,6 +1093,24 @@
     <string name="options_empty_not_editable">De relatie is leeg</string>
     <string name="options_delete_title">Weet je het zeker?</string>
     <string name="options_delete_description">De optie zal permanent worden verwijderd uit jouw ruimte</string>
+    <string name="object_values_empty_description">Objecten niet gevonden</string>
+    <string name="object_values_empty_title">Geen waarden</string>
+    <string name="object_values_empty_not_editable">De relatie is leeg</string>
+    <string name="object_values_delete_title">Weet je het zeker?</string>
+    <string name="object_values_delete_description">Het object zal naar de prullenbak worden verplaatst.</string>
     <string name="hint_enter_name">Voer naam... in</string>
     <string name="create_object">Maak object aan</string>
+    <!--region ONBOARDING ERRORS -->
+    <string name="error_invalid_recovery_phrase">Ongeldige herstelzin</string>
+    <string name="network">Netwerk</string>
+    <string name="network_settings_anytype_network">Anytype netwerk</string>
+    <string name="network_settings_anytype_network_description">Back-up naar het netwerk beheerd door Anytype</string>
+    <string name="network_settings_local_only">Alleen lokaal</string>
+    <string name="network_settings_local_only_description">Maak geen back-up; synchroniseer binnen een lokaal netwerk</string>
+    <string name="network_settings_self_host">Zelfgehost</string>
+    <string name="network_settings_self_host_description">Back-up naar zelfgehost netwerk</string>
+    <string name="network_settings_networks_section">Netwerken</string>
+    <string name="network_settings_provide_config_hint">Tik om je netwerkinstellingen aan te geven</string>
+    <string name="network_settings_self_host_config">Huidige instellingen: %1$s</string>
+    <!--endregion-->
 </resources>

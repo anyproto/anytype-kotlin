@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.CoroutineTestRule
-import com.anytypeio.anytype.core_models.FeaturesConfig
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.StubConfig
@@ -14,7 +13,6 @@ import com.anytypeio.anytype.domain.auth.interactor.SelectAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.workspace.WorkspaceManager
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -42,9 +40,6 @@ class StartAccountTest {
     lateinit var repo: AuthRepository
 
     @Mock
-    lateinit var featuresConfigProvider: FeaturesConfigProvider
-
-    @Mock
     lateinit var configStorage: ConfigStorage
 
     @Mock
@@ -69,7 +64,6 @@ class StartAccountTest {
         selectAccount = SelectAccount(
             repository = repo,
             configStorage = configStorage,
-            featuresConfigProvider = featuresConfigProvider,
             metricsProvider = metricsProvider,
             awaitAccountStartManager = awaitAccountStartManager
         )
@@ -93,12 +87,6 @@ class StartAccountTest {
             color = null
         )
 
-        val featuresConfig = FeaturesConfig(
-            enableDataView = false,
-            enableDebug = false,
-            enablePrereleaseChannel = false
-        )
-
         repo.stub {
             onBlocking {
                 getNetworkMode()
@@ -117,7 +105,6 @@ class StartAccountTest {
                 selectAccount(command)
             } doReturn AccountSetup(
                 account = account,
-                features = featuresConfig,
                 status = AccountStatus.Active,
                 config = config
             )
@@ -169,12 +156,6 @@ class StartAccountTest {
             color = null
         )
 
-        val featuresConfig = FeaturesConfig(
-            enableDataView = false,
-            enableDebug = false,
-            enablePrereleaseChannel = false
-        )
-
         repo.stub {
             onBlocking {
                 getNetworkMode()
@@ -193,7 +174,6 @@ class StartAccountTest {
                 selectAccount(command)
             } doReturn AccountSetup(
                 account = account,
-                features = featuresConfig,
                 status = AccountStatus.Active,
                 config = config
             )
@@ -222,12 +202,6 @@ class StartAccountTest {
             color = null
         )
 
-        val featuresConfig = FeaturesConfig(
-            enableDataView = null,
-            enableDebug = null,
-            enablePrereleaseChannel = null
-        )
-
         repo.stub {
             onBlocking {
                 getNetworkMode()
@@ -246,20 +220,12 @@ class StartAccountTest {
                 selectAccount(command)
             } doReturn AccountSetup(
                 account = account,
-                features = featuresConfig,
                 status = AccountStatus.Active,
                 config = config
             )
         }
 
         val result = selectAccount.run(params)
-
-        verify(featuresConfigProvider, times(1)).set(
-            enableDataView = false,
-            enableDebug = false,
-            enableChannelSwitch = false,
-            enableSpaces = false
-        )
 
         assertTrue { result == Either.Right(Pair(config.analytics, AccountStatus.Active)) }
     }
@@ -282,12 +248,6 @@ class StartAccountTest {
             color = null
         )
 
-        val featuresConfig = FeaturesConfig(
-            enableDataView = true,
-            enableDebug = false,
-            enablePrereleaseChannel = true
-        )
-
         repo.stub {
             onBlocking {
                 getNetworkMode()
@@ -306,20 +266,12 @@ class StartAccountTest {
                 selectAccount(command)
             } doReturn AccountSetup(
                 account = account,
-                features = featuresConfig,
                 status = AccountStatus.Active,
                 config = config
             )
         }
 
         val result = selectAccount.run(params)
-
-        verify(featuresConfigProvider, times(1)).set(
-            enableDataView = true,
-            enableDebug = false,
-            enableChannelSwitch = true,
-            enableSpaces = false
-        )
 
         assertTrue { result == Either.Right(Pair(config.analytics, AccountStatus.Active)) }
     }
@@ -342,12 +294,6 @@ class StartAccountTest {
             color = null
         )
 
-        val featuresConfig = FeaturesConfig(
-            enableDataView = true,
-            enableDebug = false,
-            enablePrereleaseChannel = true
-        )
-
         repo.stub {
             onBlocking {
                 getNetworkMode()
@@ -366,20 +312,12 @@ class StartAccountTest {
                 selectAccount(command)
             } doReturn AccountSetup(
                 account = account,
-                features = featuresConfig,
                 status = AccountStatus.Active,
                 config = config
             )
         }
 
         val result = selectAccount.run(params)
-
-        verify(featuresConfigProvider, times(1)).set(
-            enableDataView = true,
-            enableDebug = false,
-            enableChannelSwitch = true,
-            enableSpaces = false
-        )
 
         assertTrue { result == Either.Right(Pair(config.analytics, AccountStatus.Active)) }
     }
@@ -400,12 +338,6 @@ class StartAccountTest {
             name = MockDataFactory.randomString(),
             avatar = null,
             color = null
-        )
-
-        val featuresConfig = FeaturesConfig(
-            enableDataView = true,
-            enableDebug = false,
-            enablePrereleaseChannel = true
         )
 
         val storedFilePath = MockDataFactory.randomString()
@@ -432,20 +364,12 @@ class StartAccountTest {
                 selectAccount(command)
             } doReturn AccountSetup(
                 account = account,
-                features = featuresConfig,
                 status = AccountStatus.Active,
                 config = config
             )
         }
 
         val result = selectAccount.run(params)
-
-        verify(featuresConfigProvider, times(1)).set(
-            enableDataView = true,
-            enableDebug = false,
-            enableChannelSwitch = true,
-            enableSpaces = false
-        )
 
         assertTrue { result == Either.Right(Pair(config.analytics, AccountStatus.Active)) }
     }

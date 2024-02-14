@@ -187,6 +187,8 @@ interface EditorSubComponent {
 
     fun tagStatusObjectComponent(): TagOrStatusValueObjectComponent.Builder
     fun optionObjectComponent(): CreateOrEditOptionObjectComponent.Builder
+    fun attachmentValueObjectComponent(): AttachmentValueObjectComponent.Builder
+    fun objectValueComponent(): ObjectValueObjectComponent.Builder
 }
 
 
@@ -497,9 +499,13 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideOpenPage(
         repo: BlockRepository,
-        auth: AuthRepository,
+        settings: UserSettingsRepository,
         dispatchers: AppCoroutineDispatchers
-    ): OpenPage = OpenPage(repo, auth, dispatchers)
+    ): OpenPage = OpenPage(
+        repo = repo,
+        settings = settings,
+        dispatchers = dispatchers
+    )
 
     @JvmStatic
     @Provides

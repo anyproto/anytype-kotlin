@@ -29,7 +29,6 @@ import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -56,7 +55,6 @@ import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.emojifier.data.DefaultDocumentEmojiIconProvider
-import com.anytypeio.anytype.ext.DefaultDateHelper
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -108,6 +106,9 @@ abstract class TestObjectSetSetup {
 
     @Mock
     lateinit var auth: AuthRepository
+
+    @Mock
+    lateinit var settingsRepository: UserSettingsRepository
 
     @Mock
     lateinit var userSettingsRepository: UserSettingsRepository
@@ -223,7 +224,7 @@ abstract class TestObjectSetSetup {
 
         setDataViewQuery = SetDataViewQuery(repo)
         updateText = UpdateText(repo)
-        openObjectSet = OpenObjectSet(repo, auth)
+        openObjectSet = OpenObjectSet(repo, userSettingsRepository)
         getDefaultObjectType = GetDefaultObjectType(
             userSettingsRepository = userSettingsRepository,
             blockRepository = repo,

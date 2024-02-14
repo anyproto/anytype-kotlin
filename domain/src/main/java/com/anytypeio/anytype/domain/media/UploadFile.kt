@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.media
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -12,9 +13,9 @@ import javax.inject.Inject
 class UploadFile @Inject constructor(
     private val repo: BlockRepository,
     private val dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<UploadFile.Params, Id>(dispatchers.io) {
+) : ResultInteractor<UploadFile.Params, ObjectWrapper.File>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params) : Id = repo.uploadFile(
+    override suspend fun doWork(params: Params) : ObjectWrapper.File = repo.uploadFile(
         command = Command.UploadFile(
             path = params.path,
             type = params.type,

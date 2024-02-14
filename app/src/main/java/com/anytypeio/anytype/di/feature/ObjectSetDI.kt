@@ -16,7 +16,6 @@ import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerCardSizeSelectSubcomponent
 import com.anytypeio.anytype.di.feature.sets.viewer.ViewerImagePreviewSelectSubcomponent
-import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
@@ -163,6 +162,10 @@ interface ObjectSetSubComponent {
     fun tagStatusDataViewComponent(): TagOrStatusValueDataViewComponent.Builder
     fun optionSetComponent(): CreateOrEditOptionSetComponent.Builder
     fun optionDataViewComponent(): CreateOrEditOptionDataViewComponent.Builder
+    fun attachmentSetComponent(): AttachmentValueSetComponent.Builder
+    fun attachmentDataViewComponent(): AttachmentValueDataViewComponent.Builder
+    fun objectValueSetComponent(): ObjectValueSetComponent.Builder
+    fun objectValueDataViewComponent(): ObjectValueDataViewComponent.Builder
 }
 
 @Module(
@@ -346,8 +349,11 @@ object ObjectSetModule {
     @PerScreen
     fun provideOpenObjectSetUseCase(
         repo: BlockRepository,
-        auth: AuthRepository
-    ): OpenObjectSet = OpenObjectSet(repo = repo, auth = auth)
+        settings: UserSettingsRepository
+    ): OpenObjectSet = OpenObjectSet(
+        repo = repo,
+        settings = settings
+    )
 
     @JvmStatic
     @Provides

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
@@ -55,6 +56,7 @@ import com.anytypeio.anytype.domain.status.InterceptThreadStatus
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -375,7 +377,9 @@ class ObjectSetViewModel(
     ) {
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
-                picture = action.img
+                picture = action.img,
+                // TODO re-fact to use space id from arguments or target space id of this object
+                space = SpaceId(spaceManager.get())
             )
         ).process(
             failure = {
@@ -449,15 +453,7 @@ class ObjectSetViewModel(
                                 currentViewerId = view,
                                 offset = offset,
                                 context = context,
-                                spaces = buildList {
-                                    val config = spaceManager.getConfig()
-                                    if (config != null) {
-                                        add(config.space)
-                                        add(config.techSpace)
-                                    } else {
-                                        add(spaceManager.get())
-                                    }
-                                },
+                                spaces = spaceManager.getSpaceWithTechSpace(),
                                 dataViewRelationLinks = state.dataViewContent.relationLinks
                             )
                         } else {
@@ -473,15 +469,7 @@ class ObjectSetViewModel(
                                 currentViewerId = view,
                                 offset = offset,
                                 context = context,
-                                spaces = buildList {
-                                   val config = spaceManager.getConfig()
-                                   if (config != null) {
-                                       add(config.space)
-                                       add(config.techSpace)
-                                   } else {
-                                       add(spaceManager.get())
-                                   }
-                                },
+                                spaces = spaceManager.getSpaceWithTechSpace(),
                                 dataViewRelationLinks = state.dataViewContent.relationLinks
                             )
                         } else {
@@ -513,7 +501,13 @@ class ObjectSetViewModel(
         Timber.d("proceedWithOpeningCurrentObject, ctx:[$ctx]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            openObjectSet(ctx).process(
+            openObjectSet(
+                OpenObjectSet.Params(
+                    obj = ctx,
+                    // TODO resolve space id
+                    space = SpaceId(spaceManager.get())
+                )
+            ).process(
                 success = { result ->
                     when (result) {
                         is Result.Failure -> {
@@ -876,30 +870,13 @@ class ObjectSetViewModel(
                         )
                     )
                 }
-                is CellView.File -> {
-                    dispatch(
-                        ObjectSetCommand.Modal.EditRelationCell(
-                            ctx = context,
-                            target = cell.id,
-                            dataview = dataViewBlock.id,
-                            relationKey = cell.relationKey,
-                            viewer = viewer.id,
-                            targetObjectTypes = emptyList()
-                        )
-                    )
-                }
-                is CellView.Object -> {
+                is CellView.Object, is CellView.File -> {
                     if (cell.relationKey != Relations.TYPE) {
-                        val targetObjectTypes = mutableListOf<String>()
-                        targetObjectTypes.addAll(relation.relationFormatObjectTypes)
                         dispatch(
-                            ObjectSetCommand.Modal.EditRelationCell(
+                            ObjectSetCommand.Modal.EditObjectCell(
                                 ctx = context,
                                 target = cell.id,
-                                dataview = dataViewBlock.id,
-                                relationKey = cell.relationKey,
-                                viewer = viewer.id,
-                                targetObjectTypes = targetObjectTypes
+                                relationKey = cell.relationKey
                             )
                         )
                     } else {
@@ -1633,7 +1610,7 @@ class ObjectSetViewModel(
                 RelationFormat.FILE,
                 RelationFormat.OBJECT -> {
                     _commands.emit(
-                        ObjectSetCommand.Modal.EditIntrinsicRelationValue(
+                        ObjectSetCommand.Modal.EditObjectRelationValue(
                             ctx = context,
                             relation = relation.key
                         )

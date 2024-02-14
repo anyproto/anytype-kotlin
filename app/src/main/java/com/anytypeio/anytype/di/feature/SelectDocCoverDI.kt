@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.cover.RemoveDocCover
 import com.anytypeio.anytype.domain.cover.SetDocCoverColor
 import com.anytypeio.anytype.domain.cover.SetDocCoverGradient
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectSetViewModel
 import com.anytypeio.anytype.presentation.editor.cover.SelectCoverObjectViewModel
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -65,7 +66,8 @@ object SelectCoverObjectModule {
         removeCover: RemoveDocCover,
         dispatcher: Dispatcher<Payload>,
         getCoverGradientCollection: GetCoverGradientCollection,
-        analytics: Analytics
+        analytics: Analytics,
+        spaceManager: SpaceManager
     ): SelectCoverObjectViewModel.Factory = SelectCoverObjectViewModel.Factory(
         setCoverImage = setCoverImage,
         setCoverColor = setCoverColor,
@@ -73,7 +75,8 @@ object SelectCoverObjectModule {
         removeCover = removeCover,
         dispatcher = dispatcher,
         getCoverGradientCollection = getCoverGradientCollection,
-        analytics = analytics
+        analytics = analytics,
+        spaceManager = spaceManager
     )
 
     @JvmStatic
@@ -129,7 +132,8 @@ object SelectCoverObjectSetModule {
         removeCover: RemoveDocCover,
         dispatcher: Dispatcher<Payload>,
         getCoverGradientCollection: GetCoverGradientCollection,
-        analytics: Analytics
+        analytics: Analytics,
+        spaceManager: SpaceManager
     ): SelectCoverObjectSetViewModel.Factory = SelectCoverObjectSetViewModel.Factory(
         setCoverImage = setCoverImage,
         setCoverColor = setCoverColor,
@@ -137,7 +141,8 @@ object SelectCoverObjectSetModule {
         removeCover = removeCover,
         dispatcher = dispatcher,
         getCoverGradientCollection = getCoverGradientCollection,
-        analytics = analytics
+        analytics = analytics,
+        spaceManager = spaceManager
     )
 
     @JvmStatic

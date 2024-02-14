@@ -38,7 +38,10 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
 
 @Composable
-fun Toolbar(title: String) {
+fun Toolbar(
+    title: String,
+    color: Color = colorResource(R.color.text_primary)
+) {
     Box(
         Modifier
             .fillMaxWidth()
@@ -48,7 +51,7 @@ fun Toolbar(title: String) {
         Text(
             text = title,
             style = Title1,
-            color = colorResource(R.color.text_primary)
+            color = color
         )
     }
 }
@@ -73,12 +76,13 @@ fun Dragger(
 
 @Composable
 fun Divider(
+    modifier: Modifier = Modifier,
     paddingStart: Dp = 20.dp,
     paddingEnd: Dp = 20.dp,
     visible: Boolean = true
 ) {
     Box(
-        Modifier
+        modifier = modifier
             .alpha(if (visible) 1f else 0f)
             .padding(start = paddingStart, end = paddingEnd)
             .background(color = colorResource(R.color.shape_primary))

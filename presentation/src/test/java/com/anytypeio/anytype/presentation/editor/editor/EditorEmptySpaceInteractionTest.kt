@@ -56,6 +56,8 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
+        stubGetNetworkMode()
     }
 
     @Test
@@ -168,6 +170,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         val link = StubLinkToObjectBlock()
 
         val root = StubSmartBlock(
+            id = root,
             children = listOf(
                 header.id,
                 link.id
@@ -182,6 +185,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         stubInterceptThreadStatus()
         stubOpenDocument(doc)
         stubCreateBlock(root.id)
+        stubGetNetworkMode()
 
         val vm = buildViewModel()
 

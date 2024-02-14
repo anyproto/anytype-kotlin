@@ -7,7 +7,6 @@ import androidx.security.crypto.MasterKeys
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.app.DefaultMetricsProvider
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
-import com.anytypeio.anytype.data.auth.config.DefaultFeaturesConfigProvider
 import com.anytypeio.anytype.data.auth.repo.AuthCache
 import com.anytypeio.anytype.data.auth.repo.AuthCacheDataStore
 import com.anytypeio.anytype.data.auth.repo.AuthDataRepository
@@ -28,7 +27,6 @@ import com.anytypeio.anytype.device.DefaultBuildProvider
 import com.anytypeio.anytype.device.DefaultPathProvider
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
 import com.anytypeio.anytype.domain.config.InfrastructureRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugConfig
@@ -257,13 +255,6 @@ object DataModule {
     @Provides
     @Singleton
     fun provideMiddlewareFactory(): MiddlewareFactory = MiddlewareFactory()
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideFeaturesConfigProvider(): FeaturesConfigProvider {
-        return DefaultFeaturesConfigProvider()
-    }
 
     @JvmStatic
     @Provides

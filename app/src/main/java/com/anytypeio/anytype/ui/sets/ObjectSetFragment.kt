@@ -114,6 +114,7 @@ import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
 import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
+import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment
 import com.anytypeio.anytype.ui.sets.modals.EditDataViewViewerFragment
@@ -921,16 +922,17 @@ open class ObjectSetFragment :
                 fr.showChildFragment(EMPTY_TAG)
             }
             is ObjectSetCommand.Modal.EditIntrinsicRelationValue -> {
-                val fr = RelationValueDVFragment().apply {
-                    arguments = RelationValueDVFragment.args(
-                        ctx = command.ctx,
-                        target = command.ctx,
-                        isIntrinsic = true,
-                        targetTypes = emptyList(),
-                        relation = command.relation
+                findNavController().safeNavigate(
+                    R.id.objectSetScreen,
+                    R.id.objectValueScreen,
+                    bundleOf(
+                        ObjectValueFragment.CTX_KEY to command.ctx,
+                        ObjectValueFragment.OBJECT_ID_KEY to command.ctx,
+                        ObjectValueFragment.RELATION_KEY to command.relation,
+                        ObjectValueFragment.IS_LOCKED_KEY to false,
+                        ObjectValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT_SET
                     )
-                }
-                fr.showChildFragment()
+                )
             }
             is ObjectSetCommand.Modal.EditTagOrStatusRelationValue -> {
                 val bundle = bundleOf(
@@ -951,18 +953,16 @@ open class ObjectSetFragment :
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
-            is ObjectSetCommand.Modal.EditRelationCell -> {
+            is ObjectSetCommand.Modal.EditObjectCell -> {
                 findNavController().safeNavigate(
                     R.id.objectSetScreen,
-                    R.id.dataViewRelationValueScreen,
+                    R.id.objectValueScreen,
                     bundleOf(
-                        RelationValueBaseFragment.CTX_KEY to command.ctx,
-                        RelationValueBaseFragment.TARGET_KEY to command.target,
-                        RelationValueBaseFragment.DV_KEY to command.dataview,
-                        RelationValueBaseFragment.RELATION_KEY to command.relationKey,
-                        RelationValueBaseFragment.VIEWER_KEY to command.viewer,
-                        RelationValueBaseFragment.TARGET_TYPES_KEY to command.targetObjectTypes,
-                        RelationValueBaseFragment.IS_LOCKED_KEY to false
+                        ObjectValueFragment.CTX_KEY to command.ctx,
+                        ObjectValueFragment.OBJECT_ID_KEY to command.target,
+                        ObjectValueFragment.RELATION_KEY to command.relationKey,
+                        ObjectValueFragment.IS_LOCKED_KEY to false,
+                        ObjectValueFragment.RELATION_CONTEXT_KEY to RelationContext.DATA_VIEW
                     )
                 )
             }

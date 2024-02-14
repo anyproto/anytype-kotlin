@@ -144,6 +144,10 @@
         <dialog
             android:id="@+id/setUrlForNewBookmark"
             android:name="com.anytypeio.anytype.ui.sets.modals.SetObjectCreateBookmarkRecordFragment" />
+        <dialog
+            android:id="@+id/objectValueScreen"
+            android:name="com.anytypeio.anytype.ui.relations.value.ObjectValueFragment"
+            android:label="Relation-Object-Value-Screen" />
     </navigation>
 
     <fragment

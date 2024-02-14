@@ -864,30 +864,13 @@ class ObjectSetViewModel(
                         )
                     )
                 }
-                is CellView.File -> {
-                    dispatch(
-                        ObjectSetCommand.Modal.EditRelationCell(
-                            ctx = context,
-                            target = cell.id,
-                            dataview = dataViewBlock.id,
-                            relationKey = cell.relationKey,
-                            viewer = viewer.id,
-                            targetObjectTypes = emptyList()
-                        )
-                    )
-                }
-                is CellView.Object -> {
-                    if (cell.relationKey != Relations.TYPE) {
-                        val targetObjectTypes = mutableListOf<String>()
-                        targetObjectTypes.addAll(relation.relationFormatObjectTypes)
+                is CellView.Object, is CellView.File -> {
+                    if (cell.relationKey != ObjectTypeIds.OBJECT_TYPE) {
                         dispatch(
-                            ObjectSetCommand.Modal.EditRelationCell(
+                            ObjectSetCommand.Modal.EditObjectCell(
                                 ctx = context,
                                 target = cell.id,
-                                dataview = dataViewBlock.id,
-                                relationKey = cell.relationKey,
-                                viewer = viewer.id,
-                                targetObjectTypes = targetObjectTypes
+                                relationKey = cell.relationKey
                             )
                         )
                     } else {

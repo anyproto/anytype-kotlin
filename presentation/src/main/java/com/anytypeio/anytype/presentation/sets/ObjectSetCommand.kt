@@ -53,13 +53,10 @@ sealed class ObjectSetCommand {
             val objectId: Id
         ) : Modal()
 
-        data class EditRelationCell(
+        data class EditObjectCell(
             val ctx: Id,
-            val dataview: Id,
             val target: Id,
-            val relationKey: Key,
-            val targetObjectTypes: List<Id>,
-            val viewer: Id
+            val relationKey: Key
         ) : Modal()
 
         data class EditTagOrStatusCell(

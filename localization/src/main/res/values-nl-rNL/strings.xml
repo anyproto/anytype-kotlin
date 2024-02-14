@@ -1093,11 +1093,11 @@
     <string name="options_empty_not_editable">De relatie is leeg</string>
     <string name="options_delete_title">Weet je het zeker?</string>
     <string name="options_delete_description">De optie zal permanent worden verwijderd uit jouw ruimte</string>
-    <string name="object_values_empty_description">Objects not found</string>
-    <string name="object_values_empty_title">No values</string>
+    <string name="object_values_empty_description">Objecten niet gevonden</string>
+    <string name="object_values_empty_title">Geen waarden</string>
     <string name="object_values_empty_not_editable">De relatie is leeg</string>
     <string name="object_values_delete_title">Weet je het zeker?</string>
-    <string name="object_values_delete_description">The object will be moved to the Bin.</string>
+    <string name="object_values_delete_description">Het object zal naar de prullenbak worden verplaatst.</string>
     <string name="hint_enter_name">Voer naam... in</string>
     <string name="create_object">Maak object aan</string>
     <!--region ONBOARDING ERRORS -->

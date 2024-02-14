@@ -226,13 +226,13 @@ private fun SelfHostCard(
         if (config.networkMode == NetworkMode.CUSTOM) {
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Tap to provide your network config",
+                text = stringResource(R.string.network_settings_provide_config_hint),
                 style = Caption1Medium,
                 color = colorResource(id = R.color.palette_system_red),
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .fillMaxWidth()
-                    .noRippleClickable { onSelfHostNetworkClicked() }
+                    .noRippleClickable { onProvideConfigClicked() }
             )
         }
         Spacer(modifier = Modifier.height(14.dp))

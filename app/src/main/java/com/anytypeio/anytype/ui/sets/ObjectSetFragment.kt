@@ -112,8 +112,6 @@ import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment.TextValueEditReceiver
-import com.anytypeio.anytype.ui.relations.RelationValueBaseFragment
-import com.anytypeio.anytype.ui.relations.RelationValueDVFragment
 import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import com.anytypeio.anytype.ui.sets.modals.CreateDataViewViewerFragment

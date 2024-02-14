@@ -865,7 +865,7 @@ class ObjectSetViewModel(
                     )
                 }
                 is CellView.Object, is CellView.File -> {
-                    if (cell.relationKey != ObjectTypeIds.OBJECT_TYPE) {
+                    if (cell.relationKey != Relations.TYPE) {
                         dispatch(
                             ObjectSetCommand.Modal.EditObjectCell(
                                 ctx = context,

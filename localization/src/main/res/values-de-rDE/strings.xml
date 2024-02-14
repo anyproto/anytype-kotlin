@@ -1102,5 +1102,13 @@
     <string name="create_object">Objekt erstellen</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Ungültige Wiederherstellungsphrase</string>
+    <string name="network">Netzwerk</string>
+    <string name="network_settings_anytype_network">Anytype network</string>
+    <string name="network_settings_anytype_network_description">Backup to the network managed by Anytype</string>
+    <string name="network_settings_local_only">Nur lokal</string>
+    <string name="network_settings_local_only_description">Don\'t back up; sync within local network</string>
+    <string name="network_settings_self_host">Selbst gehostet</string>
+    <string name="network_settings_self_host_description">Back up to your self-hosted network</string>
+    <string name="network_settings_networks_section">Netzwerke</string>
     <!--endregion-->
 </resources>

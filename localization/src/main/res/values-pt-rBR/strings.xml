@@ -1093,6 +1093,11 @@
     <string name="options_empty_not_editable">A relação está vazia</string>
     <string name="options_delete_title">Você tem certeza?</string>
     <string name="options_delete_description">A opção será removida permanentemente do seu espaço</string>
+    <string name="object_values_empty_description">Objects not found</string>
+    <string name="object_values_empty_title">No values</string>
+    <string name="object_values_empty_not_editable">A relação está vazia</string>
+    <string name="object_values_delete_title">Você tem certeza?</string>
+    <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Inserir nome...</string>
     <string name="create_object">Criar objeto</string>
     <!--region ONBOARDING ERRORS -->

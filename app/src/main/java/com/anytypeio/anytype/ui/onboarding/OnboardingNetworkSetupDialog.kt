@@ -11,7 +11,6 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.preference.Preference
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.NetworkModeConstants
 import com.anytypeio.anytype.core_utils.const.FileConstants
@@ -27,7 +26,6 @@ import javax.inject.Inject
 class OnboardingNetworkSetupDialog : BaseBottomSheetComposeFragment() {
 
     private lateinit var pickerDelegate: PickerDelegate
-    private lateinit var filePathPreference: Preference
 
     @Inject
     lateinit var factory: PreferencesViewModel.Factory

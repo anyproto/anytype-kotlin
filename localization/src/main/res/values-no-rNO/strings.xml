@@ -1102,5 +1102,13 @@
     <string name="create_object">Opprett objekt</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Ugyldig gjenopprettingsfrase</string>
+    <string name="network">Nettverk</string>
+    <string name="network_settings_anytype_network">Anytype network</string>
+    <string name="network_settings_anytype_network_description">Backup to the network managed by Anytype</string>
+    <string name="network_settings_local_only">Kun lokalt</string>
+    <string name="network_settings_local_only_description">Don\'t back up; sync within local network</string>
+    <string name="network_settings_self_host">Self-hosted</string>
+    <string name="network_settings_self_host_description">Back up to your self-hosted network</string>
+    <string name="network_settings_networks_section">Nettverk</string>
     <!--endregion-->
 </resources>

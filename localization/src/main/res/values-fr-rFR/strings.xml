@@ -1102,5 +1102,13 @@
     <string name="create_object">Créer un objet</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">La phrase de récupération est invalide</string>
+    <string name="network">Réseau</string>
+    <string name="network_settings_anytype_network">Anytype network</string>
+    <string name="network_settings_anytype_network_description">Backup to the network managed by Anytype</string>
+    <string name="network_settings_local_only">Local seulement</string>
+    <string name="network_settings_local_only_description">Don\'t back up; sync within local network</string>
+    <string name="network_settings_self_host">Auto-hébergé</string>
+    <string name="network_settings_self_host_description">Back up to your self-hosted network</string>
+    <string name="network_settings_networks_section">Réseaux</string>
     <!--endregion-->
 </resources>

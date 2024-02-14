@@ -59,9 +59,16 @@ fun StatusItem(
         )
         Divider(modifier = Modifier.align(Alignment.BottomCenter))
         ItemMenu(
-            item = state,
-            action = action,
-            isMenuExpanded = isMenuExpanded
+            action = {
+                when (it) {
+                    ItemMenuAction.Delete -> action(TagStatusAction.Delete(state.optionId))
+                    ItemMenuAction.Duplicate -> action(TagStatusAction.Duplicate(state))
+                    ItemMenuAction.Edit -> action(TagStatusAction.Edit(state))
+                    ItemMenuAction.Open -> {}
+                }
+            },
+            isMenuExpanded = isMenuExpanded,
+            showEdit = true
         )
     }
 }

@@ -1094,6 +1094,11 @@
     <string name="options_empty_not_editable">La relazione è vuota</string>
     <string name="options_delete_title">Sei sicuro/a?</string>
     <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="object_values_empty_description">Objects not found</string>
+    <string name="object_values_empty_title">No values</string>
+    <string name="object_values_empty_not_editable">La relazione è vuota</string>
+    <string name="object_values_delete_title">Sei sicuro/a?</string>
+    <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Inserisci nome...</string>
     <string name="create_object">Crea oggetto</string>
     <!--region ONBOARDING ERRORS -->

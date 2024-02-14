@@ -501,7 +501,13 @@ class ObjectSetViewModel(
         Timber.d("proceedWithOpeningCurrentObject, ctx:[$ctx]")
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
-            openObjectSet(ctx).process(
+            openObjectSet(
+                OpenObjectSet.Params(
+                    obj = ctx,
+                    // TODO resolve space id
+                    space = SpaceId(spaceManager.get())
+                )
+            ).process(
                 success = { result ->
                     when (result) {
                         is Result.Failure -> {

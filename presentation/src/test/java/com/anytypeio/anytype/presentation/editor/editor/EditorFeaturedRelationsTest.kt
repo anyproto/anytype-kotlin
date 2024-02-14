@@ -47,6 +47,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     @After
@@ -114,6 +115,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         )
 
         stubInterceptEvents()
+        stubSpaceManager()
         stubInterceptThreadStatus()
         stubSearchObjects()
         stubOpenDocument(

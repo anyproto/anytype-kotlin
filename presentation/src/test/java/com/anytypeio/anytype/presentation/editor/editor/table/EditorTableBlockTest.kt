@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.editor.editor.mention.MentionEvent
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
+import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -27,7 +28,6 @@ import org.junit.Test
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.inOrder
 import org.mockito.kotlin.verifyNoInteractions
-import kotlin.test.assertEquals
 
 class EditorTableBlockTest : EditorPresentationTestSetup() {
 
@@ -40,6 +40,7 @@ class EditorTableBlockTest : EditorPresentationTestSetup() {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
+        stubSpaceManager()
     }
 
     private var tableId = MockDataFactory.randomUuid()

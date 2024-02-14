@@ -49,6 +49,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubGetNetworkMode()
+        stubSpaceManager()
     }
 
     @Test

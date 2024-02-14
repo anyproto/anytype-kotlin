@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -24,7 +25,8 @@ class AddBackLinkToObject(
     override suspend fun doWork(params: Params): ObjectWrapper.Basic {
         val openPageParams = OpenPage.Params(
             obj = params.objectToPlaceLink,
-            saveAsLastOpened = params.saveAsLastOpened
+            saveAsLastOpened = params.saveAsLastOpened,
+            space = params.spaceId
         )
         when (val result = openPage.run(openPageParams)) {
             is Result.Success -> {
@@ -64,6 +66,7 @@ class AddBackLinkToObject(
     data class Params(
         val objectToLink: Id,
         val objectToPlaceLink: Id,
-        val saveAsLastOpened: Boolean
+        val saveAsLastOpened: Boolean,
+        val spaceId: SpaceId
     )
 }

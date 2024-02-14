@@ -1089,6 +1089,11 @@
     <string name="options_empty_not_editable">The relation is empty</string>
     <string name="options_delete_title">Apakah kamu yakin?</string>
     <string name="options_delete_description">Opsi ini akan dihapus secara permanen dari ruangmu</string>
+    <string name="object_values_empty_description">Objects not found</string>
+    <string name="object_values_empty_title">No values</string>
+    <string name="object_values_empty_not_editable">The relation is empty</string>
+    <string name="object_values_delete_title">Apakah kamu yakin?</string>
+    <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Enter name...</string>
     <string name="create_object">Buat objek</string>
     <!--region ONBOARDING ERRORS -->

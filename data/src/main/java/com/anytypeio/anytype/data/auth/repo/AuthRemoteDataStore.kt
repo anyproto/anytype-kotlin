@@ -3,7 +3,6 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 import com.anytypeio.anytype.data.auth.model.WalletEntity
@@ -84,18 +83,6 @@ class AuthRemoteDataStore(
             platform = platform,
             version = version
         )
-    }
-
-    override suspend fun saveLastOpenedObject(id: Id) {
-        throw UnsupportedOperationException()
-    }
-
-    override suspend fun getLastOpenedObject(): Id? {
-        throw UnsupportedOperationException()
-    }
-
-    override suspend fun clearLastOpenedObject() {
-        throw UnsupportedOperationException()
     }
 
     override suspend fun getNetworkMode(): NetworkModeConfig {

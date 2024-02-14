@@ -69,17 +69,7 @@ class ObjectValueFragment : BaseBottomSheetComposeFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupCollapsedHeight()
-    }
-
-    override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
-        super.onStart()
-        vm.onStart()
-    }
-
-    override fun onStop() {
-        super.onStop()
-        vm.onStop()
     }
 
     private fun observeCommands(command: ObjectValueViewModel.Command) = when (command) {

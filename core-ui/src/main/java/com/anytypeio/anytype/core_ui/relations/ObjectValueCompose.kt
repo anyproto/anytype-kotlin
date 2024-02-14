@@ -19,6 +19,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -49,6 +51,7 @@ fun RelationObjectValueScreen(
 ) {
     Box(
         modifier = Modifier
+            .nestedScroll(rememberNestedScrollInteropConnection())
             .fillMaxWidth()
             .wrapContentHeight()
             .background(

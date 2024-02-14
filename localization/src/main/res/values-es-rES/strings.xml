@@ -1110,5 +1110,7 @@
     <string name="network_settings_self_host">Alojado por el usuario</string>
     <string name="network_settings_self_host_description">Back up to your self-hosted network</string>
     <string name="network_settings_networks_section">Redes</string>
+    <string name="network_settings_provide_config_hint">Tap to provide your network config</string>
+    <string name="network_settings_self_host_config">Current config: %1$s</string>
     <!--endregion-->
 </resources>

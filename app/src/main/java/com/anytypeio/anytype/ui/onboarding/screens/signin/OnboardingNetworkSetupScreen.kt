@@ -2,12 +2,14 @@ package com.anytypeio.anytype.ui.onboarding.screens.signin
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,7 +33,9 @@ import com.anytypeio.anytype.core_ui.NetworkSettingTitleColor
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.ui.spaces.Section
 
 @Preview
@@ -121,106 +125,163 @@ fun NetworkSetupScreen(
             title = stringResource(id = R.string.network),
             color = colorResource(id = R.color.text_white)
         )
-        Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .background(color = NetworkSettingCardColor)
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-        ) {
-            Spacer(modifier = Modifier.height(14.dp))
-            Row(
-                modifier = Modifier.padding(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.network_settings_anytype_network),
-                    style = BodyCalloutRegular,
-                    color = NetworkSettingTitleColor,
-                    modifier = Modifier.weight(1.0f)
-                )
-                if (config.networkMode == NetworkMode.DEFAULT) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_network_settings_checked),
-                        contentDescription = "Check icon"
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(id = R.string.network_settings_anytype_network_description),
-                style = BodyCalloutRegular,
-                color = NetworkSettingDescriptionColor
-            )
-            Spacer(modifier = Modifier.height(14.dp))
-        }
+        AnytypeNetworkCard(onAnytypeNetworkClicked, config)
         Section(
             title = stringResource(id = R.string.network_settings_networks_section),
             color = NetworkSettingDescriptionColor
         )
-        Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(16.dp))
-                .fillMaxWidth()
-                .background(color = NetworkSettingCardColor)
-        ) {
-            Spacer(modifier = Modifier.height(14.dp))
-            Row(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.network_settings_self_host),
-                    style = BodyCalloutRegular,
-                    color = NetworkSettingTitleColor,
-                    modifier = Modifier.weight(1.0f)
-                )
-                if (config.networkMode == NetworkMode.CUSTOM) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_network_settings_checked),
-                        contentDescription = "Check icon"
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(id = R.string.network_settings_self_host_description),
-                style = BodyCalloutRegular,
-                color = NetworkSettingDescriptionColor,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
-            Spacer(modifier = Modifier.height(14.dp))
-            Divider(
-                paddingStart = 20.dp,
-                paddingEnd = 0.dp
-            )
-            Spacer(modifier = Modifier.height(14.dp))
-            Row(
-                modifier = Modifier.padding(horizontal = 20.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(id = R.string.network_settings_local_only),
-                    style = BodyCalloutRegular,
-                    color = NetworkSettingTitleColor,
-                    modifier = Modifier.weight(1.0f)
-                )
-                if (config.networkMode == NetworkMode.LOCAL) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_network_settings_checked),
-                        contentDescription = "Check icon"
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(id = R.string.network_settings_local_only_description),
-                style = BodyCalloutRegular,
-                color = NetworkSettingDescriptionColor,
-                modifier = Modifier.padding(horizontal = 20.dp)
-            )
-            Spacer(modifier = Modifier.height(14.dp))
-        }
+        SelfHostCard(
+            config = config,
+            onSelfHostNetworkClicked = onSelfHostNetworkClicked,
+            onProvideConfigClicked = onSetSelfHostConfigConfigClicked
+        )
+        LocalOnlyCard(onLocalOnlyClicked, config)
         Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+@Composable
+private fun LocalOnlyCard(
+    onLocalOnlyClicked: () -> Unit,
+    config: NetworkModeConfig
+) {
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
+            .fillMaxWidth()
+            .background(color = NetworkSettingCardColor)
+            .clickable { onLocalOnlyClicked() }
+    ) {
+        Spacer(modifier = Modifier.height(14.dp))
+        Row(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.network_settings_local_only),
+                style = BodyCalloutRegular,
+                color = NetworkSettingTitleColor,
+                modifier = Modifier.weight(1.0f)
+            )
+            if (config.networkMode == NetworkMode.LOCAL) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_network_settings_checked),
+                    contentDescription = "Check icon"
+                )
+            } else {
+                Spacer(modifier = Modifier.size(24.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(id = R.string.network_settings_local_only_description),
+            style = BodyCalloutRegular,
+            color = NetworkSettingDescriptionColor,
+            modifier = Modifier.padding(horizontal = 20.dp)
+        )
+        Spacer(modifier = Modifier.height(14.dp))
+    }
+}
+
+@Composable
+private fun SelfHostCard(
+    onSelfHostNetworkClicked: () -> Unit,
+    onProvideConfigClicked: () -> Unit,
+    config: NetworkModeConfig
+) {
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
+            .fillMaxWidth()
+            .background(color = NetworkSettingCardColor)
+            .clickable { onSelfHostNetworkClicked() }
+    ) {
+        Spacer(modifier = Modifier.height(14.dp))
+        Row(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.network_settings_self_host),
+                style = BodyCalloutRegular,
+                color = NetworkSettingTitleColor,
+                modifier = Modifier.weight(1.0f)
+            )
+            if (config.networkMode == NetworkMode.CUSTOM) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_network_settings_checked),
+                    contentDescription = "Check icon"
+                )
+            } else {
+                Spacer(modifier = Modifier.size(24.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(id = R.string.network_settings_self_host_description),
+            style = BodyCalloutRegular,
+            color = NetworkSettingDescriptionColor,
+            modifier = Modifier.padding(horizontal = 20.dp)
+        )
+        if (config.networkMode == NetworkMode.CUSTOM) {
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Tap to provide your network config",
+                style = Caption1Medium,
+                color = colorResource(id = R.color.palette_system_red),
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .fillMaxWidth()
+                    .noRippleClickable { onSelfHostNetworkClicked() }
+            )
+        }
+        Spacer(modifier = Modifier.height(14.dp))
+        Divider(
+            paddingStart = 20.dp,
+            paddingEnd = 0.dp
+        )
+    }
+}
+
+@Composable
+private fun AnytypeNetworkCard(
+    onAnytypeNetworkClicked: () -> Unit,
+    config: NetworkModeConfig
+) {
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .clickable { onAnytypeNetworkClicked() }
+            .background(color = NetworkSettingCardColor)
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
+    ) {
+        Spacer(modifier = Modifier.height(14.dp))
+        Row(
+            modifier = Modifier.padding(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(id = R.string.network_settings_anytype_network),
+                style = BodyCalloutRegular,
+                color = NetworkSettingTitleColor,
+                modifier = Modifier.weight(1.0f)
+            )
+            if (config.networkMode == NetworkMode.DEFAULT) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_network_settings_checked),
+                    contentDescription = "Check icon"
+                )
+            } else {
+                Spacer(modifier = Modifier.size(24.dp))
+            }
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(id = R.string.network_settings_anytype_network_description),
+            style = BodyCalloutRegular,
+            color = NetworkSettingDescriptionColor
+        )
+        Spacer(modifier = Modifier.height(14.dp))
     }
 }

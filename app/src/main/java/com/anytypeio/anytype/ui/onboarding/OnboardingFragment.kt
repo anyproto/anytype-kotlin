@@ -521,6 +521,10 @@ class OnboardingFragment : Fragment() {
                             Timber.e(e, "Error while opening terms of use")
                         }
                     }
+                    SideEffect.OpenNetworkSettings -> {
+                        val dialog = OnboardingNetworkSetupDialog()
+                        dialog.show(childFragmentManager, "")
+                    }
                 }
             }
         }

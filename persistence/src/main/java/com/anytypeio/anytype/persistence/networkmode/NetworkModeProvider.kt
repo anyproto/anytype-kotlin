@@ -13,6 +13,7 @@ import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.
 interface NetworkModeProvider {
     fun set(networkModeConfig: NetworkModeConfig)
     fun get(): NetworkModeConfig
+    fun clear()
 }
 
 class DefaultNetworkModeProvider(private val sharedPreferences: SharedPreferences) :
@@ -58,6 +59,10 @@ class DefaultNetworkModeProvider(private val sharedPreferences: SharedPreference
         } else {
             NetworkModeConfig(networkMode, null, null)
         }
+    }
+
+    override fun clear() {
+        // TODO?
     }
 
     object NetworkModeConstants {

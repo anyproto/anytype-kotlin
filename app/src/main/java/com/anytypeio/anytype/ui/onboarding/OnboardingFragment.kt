@@ -467,6 +467,9 @@ class OnboardingFragment : Fragment() {
             onCheckLaterClicked = {
                 findNavController().navigate(R.id.action_openHome)
             },
+            onGoToAppClicked = {
+                findNavController().navigate(R.id.action_openHome)
+            },
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
             mnemonicColorPalette = mnemonicColorPalette

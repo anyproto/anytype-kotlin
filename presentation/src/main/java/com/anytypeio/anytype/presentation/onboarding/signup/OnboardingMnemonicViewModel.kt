@@ -59,6 +59,17 @@ class OnboardingMnemonicViewModel @Inject constructor(
         }
     }
 
+    fun onGoToTheAppClicked() {
+        viewModelScope.launch {
+            val config = configStorage.getOrNull()
+            if (config != null) {
+                analytics.sendOpenAccountEvent(
+                    analytics = config.analytics
+                )
+            }
+        }
+    }
+
     private suspend fun proceedWithMnemonicPhrase() {
         getMnemonic.invoke(Unit).proceed(
             failure = { e -> Timber.e(e, "Error while getting mnemonic") },

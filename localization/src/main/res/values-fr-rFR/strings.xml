@@ -1093,6 +1093,11 @@
     <string name="options_empty_not_editable">La relation est vide</string>
     <string name="options_delete_title">Êtes-vous sûr ?</string>
     <string name="options_delete_description">L\'option sera définitivement retirée de votre espace</string>
+    <string name="object_values_empty_description">Objects not found</string>
+    <string name="object_values_empty_title">No values</string>
+    <string name="object_values_empty_not_editable">La relation est vide</string>
+    <string name="object_values_delete_title">Êtes-vous sûr ?</string>
+    <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Saisir un nom...</string>
     <string name="create_object">Créer un objet</string>
     <!--region ONBOARDING ERRORS -->

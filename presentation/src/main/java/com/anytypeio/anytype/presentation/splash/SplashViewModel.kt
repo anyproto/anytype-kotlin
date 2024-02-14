@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsDictionary.openAccount
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
@@ -14,7 +15,6 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
-import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.exceptions.MigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -157,6 +158,7 @@ class SplashViewModel(
 
     fun onIntentCreateNewObject(type: Key) {
         viewModelScope.launch {
+            val startTime = System.currentTimeMillis()
             createObject.execute(
                 CreateObject.Param(type = TypeKey(type))
             ).fold(
@@ -165,6 +167,13 @@ class SplashViewModel(
                     proceedWithNavigation()
                 },
                 onSuccess = { result ->
+                    sendAnalyticsObjectCreateEvent(
+                        objType = type,
+                        analytics = analytics,
+                        route = EventsDictionary.Routes.home,
+                        startTime = startTime,
+                        view = EventsDictionary.View.viewHome,
+                    )
                     if (type == COLLECTION || type == SET) {
                         commands.emit(Command.NavigateToObjectSet(result.objectId))
                     } else {

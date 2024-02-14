@@ -3923,7 +3923,17 @@ class EditorViewModel(
                                             Command.OpenObjectRelationScreen.Value.TagOrStatus(
                                                 ctx = context,
                                                 target = context,
-                                                relationKey = relationId,
+                                                relationKey = relation.key,
+                                                isLocked = mode == EditorMode.Locked
+                                            )
+                                        )
+                                    }
+                                    Relation.Format.OBJECT, Relation.Format.FILE -> {
+                                        dispatch(
+                                            Command.OpenObjectRelationScreen.Value.ObjectValue(
+                                                ctx = context,
+                                                target = context,
+                                                relationKey = relation.key,
                                                 isLocked = mode == EditorMode.Locked
                                             )
                                         )
@@ -3940,9 +3950,6 @@ class EditorViewModel(
                                         )
                                     }
                                 }
-                                proceedWithRelationBlockClicked(
-                                    relationView = clicked.relation
-                                )
                             }
                         }
                     }
@@ -7099,6 +7106,16 @@ class EditorViewModel(
             Relation.Format.TAG, Relation.Format.STATUS -> {
                 dispatch(
                     Command.OpenObjectRelationScreen.Value.TagOrStatus(
+                        ctx = context,
+                        target = context,
+                        relationKey = relation.key,
+                        isLocked = mode == EditorMode.Locked
+                    )
+                )
+            }
+            Relation.Format.OBJECT, Relation.Format.FILE -> {
+                dispatch(
+                    Command.OpenObjectRelationScreen.Value.ObjectValue(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,

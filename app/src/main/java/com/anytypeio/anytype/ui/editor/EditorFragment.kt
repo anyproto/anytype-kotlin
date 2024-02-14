@@ -152,6 +152,7 @@ import com.anytypeio.anytype.ui.relations.RelationAddToObjectBlockFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
 import com.anytypeio.anytype.ui.relations.RelationValueFragment
+import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import com.anytypeio.anytype.ui.spaces.SelectSpaceFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
@@ -1163,6 +1164,19 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             TagOrStatusValueFragment.RELATION_KEY to command.relationKey,
                             TagOrStatusValueFragment.IS_LOCKED_KEY to command.isLocked,
                             TagOrStatusValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT
+                        )
+                    )
+                }
+                is Command.OpenObjectRelationScreen.Value.ObjectValue -> {
+                    findNavController().safeNavigate(
+                        R.id.pageScreen,
+                        R.id.objectValueScreen,
+                        bundleOf(
+                            ObjectValueFragment.CTX_KEY to command.ctx,
+                            ObjectValueFragment.OBJECT_ID_KEY to command.target,
+                            ObjectValueFragment.RELATION_KEY to command.relationKey,
+                            ObjectValueFragment.IS_LOCKED_KEY to command.isLocked,
+                            ObjectValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT
                         )
                     )
                 }

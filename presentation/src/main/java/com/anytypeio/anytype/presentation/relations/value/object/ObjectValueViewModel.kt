@@ -29,7 +29,6 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -59,13 +58,12 @@ class ObjectValueViewModel(
     private val query = MutableSharedFlow<String>(replay = 0)
     private var isEditableRelation = false
     val commands = MutableSharedFlow<Command>(replay = 0)
-    private val jobs = mutableListOf<Job>()
 
     private val initialIds = mutableListOf<Id>()
     private var isInitialSortDone = false
 
-    fun onStart() {
-        jobs += viewModelScope.launch {
+    init {
+        viewModelScope.launch {
             val relation = relations.get(relation = viewModelParams.relationKey)
             val searchParams = StoreSearchParams(
                 subscription = SUB_RELATION_VALUE_OBJECTS,
@@ -101,13 +99,6 @@ class ObjectValueViewModel(
                 )
             }.collect()
         }
-    }
-
-    fun onStop() {
-        jobs.forEach { it.cancel() }
-        jobs.clear()
-        isInitialSortDone = false
-        initialIds.clear()
     }
 
     private fun emitCommand(command: Command, delay: Long = 0L) {

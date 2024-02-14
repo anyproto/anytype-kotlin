@@ -870,30 +870,13 @@ class ObjectSetViewModel(
                         )
                     )
                 }
-                is CellView.File -> {
-                    dispatch(
-                        ObjectSetCommand.Modal.EditRelationCell(
-                            ctx = context,
-                            target = cell.id,
-                            dataview = dataViewBlock.id,
-                            relationKey = cell.relationKey,
-                            viewer = viewer.id,
-                            targetObjectTypes = emptyList()
-                        )
-                    )
-                }
-                is CellView.Object -> {
+                is CellView.Object, is CellView.File -> {
                     if (cell.relationKey != Relations.TYPE) {
-                        val targetObjectTypes = mutableListOf<String>()
-                        targetObjectTypes.addAll(relation.relationFormatObjectTypes)
                         dispatch(
-                            ObjectSetCommand.Modal.EditRelationCell(
+                            ObjectSetCommand.Modal.EditObjectCell(
                                 ctx = context,
                                 target = cell.id,
-                                dataview = dataViewBlock.id,
-                                relationKey = cell.relationKey,
-                                viewer = viewer.id,
-                                targetObjectTypes = targetObjectTypes
+                                relationKey = cell.relationKey
                             )
                         )
                     } else {
@@ -1627,7 +1610,7 @@ class ObjectSetViewModel(
                 RelationFormat.FILE,
                 RelationFormat.OBJECT -> {
                     _commands.emit(
-                        ObjectSetCommand.Modal.EditIntrinsicRelationValue(
+                        ObjectSetCommand.Modal.EditObjectRelationValue(
                             ctx = context,
                             relation = relation.key
                         )

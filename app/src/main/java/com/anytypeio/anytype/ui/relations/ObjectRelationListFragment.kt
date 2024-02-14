@@ -34,6 +34,7 @@ import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel.Command
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.editor.OnFragmentInteractionListener
+import com.anytypeio.anytype.ui.relations.value.ObjectValueFragment
 import com.anytypeio.anytype.ui.relations.value.TagOrStatusValueFragment
 import javax.inject.Inject
 import kotlinx.coroutines.flow.combine
@@ -139,27 +140,18 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                 fr.showChildFragment()
             }
             is Command.EditFileObjectRelationValue -> {
-                if (isSetFlow) {
-                    val fr = RelationValueDVFragment().apply {
-                        arguments = RelationValueDVFragment.args(
-                            ctx = command.ctx,
-                            target = command.target,
-                            relation = command.relationKey,
-                            targetTypes = command.targetObjectTypes,
-                            isIntrinsic = true
-                        )
-                    }
-                    fr.showChildFragment()
-                } else {
-                    val fr = RelationValueFragment.new(
-                        ctx = ctx,
-                        target = command.target,
-                        relationKey = command.relationKey,
-                        targetObjectTypes = command.targetObjectTypes,
-                        isLocked = command.isLocked
+                val relationContext = if (isSetFlow) RelationContext.OBJECT_SET else RelationContext.OBJECT
+                findNavController().safeNavigate(
+                    R.id.objectRelationListScreen,
+                    R.id.objectValueScreen,
+                    bundleOf(
+                        ObjectValueFragment.CTX_KEY to command.ctx,
+                        ObjectValueFragment.OBJECT_ID_KEY to command.target,
+                        ObjectValueFragment.RELATION_KEY to command.relationKey,
+                        ObjectValueFragment.IS_LOCKED_KEY to command.isLocked,
+                        ObjectValueFragment.RELATION_CONTEXT_KEY to relationContext
                     )
-                    fr.showChildFragment()
-                }
+                )
             }
             is Command.SetRelationKey -> {
                 withParent<OnFragmentInteractionListener> {

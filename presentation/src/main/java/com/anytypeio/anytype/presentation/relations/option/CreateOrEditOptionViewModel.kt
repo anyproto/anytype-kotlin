@@ -160,15 +160,15 @@ class CreateOrEditOptionViewModel(
                 listOf(newOptionId)
             }
             Relation.Format.TAG -> {
-                val result = mutableListOf<Id>()
-                val value = obj[relation.key]
-                if (value is List<*>) {
-                    result.addAll(value.typeOf())
-                } else if (value is Id) {
-                    result.add(value)
+                buildList {
+                    val value = obj[relation.key]
+                    if (value is List<*>) {
+                        addAll(value.typeOf())
+                    } else if (value is Id) {
+                        add(value)
+                    }
+                    add(newOptionId)
                 }
-                result.add(newOptionId)
-                return result
             }
             else -> throw IllegalArgumentException("Unsupported relation format: ${relation.format}")
         }

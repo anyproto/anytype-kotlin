@@ -466,7 +466,6 @@ class OnboardingFragment : Fragment() {
             viewModel = vm,
             onCheckLaterClicked = {
                 findNavController().navigate(R.id.action_openHome)
-                vm.sendAnalyticsOnboardingScreen()
             },
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
@@ -533,7 +532,6 @@ class OnboardingFragment : Fragment() {
                 when (navigation) {
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
                         navController.navigate(OnboardingNavigation.setProfileName)
-                        vm.sendAnalyticsOnboardingScreen()
                     }
 
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignIn -> {

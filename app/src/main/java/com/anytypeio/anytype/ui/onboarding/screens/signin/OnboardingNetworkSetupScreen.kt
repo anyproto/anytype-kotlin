@@ -129,7 +129,8 @@ fun NetworkSetupScreen(
         AnytypeNetworkCard(onAnytypeNetworkClicked, config)
         Section(
             title = stringResource(id = R.string.network_settings_networks_section),
-            color = NetworkSettingDescriptionColor
+            color = NetworkSettingDescriptionColor,
+            textPaddingStart = 0.dp
         )
         SelfHostCard(
             config = config,

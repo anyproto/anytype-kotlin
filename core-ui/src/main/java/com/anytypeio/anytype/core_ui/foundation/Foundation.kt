@@ -38,7 +38,10 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title1
 
 @Composable
-fun Toolbar(title: String) {
+fun Toolbar(
+    title: String,
+    color: Color = colorResource(R.color.text_primary)
+) {
     Box(
         Modifier
             .fillMaxWidth()
@@ -48,7 +51,7 @@ fun Toolbar(title: String) {
         Text(
             text = title,
             style = Title1,
-            color = colorResource(R.color.text_primary)
+            color = color
         )
     }
 }

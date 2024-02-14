@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -225,15 +226,33 @@ private fun SelfHostCard(
         )
         if (config.networkMode == NetworkMode.CUSTOM) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = stringResource(R.string.network_settings_provide_config_hint),
-                style = Caption1Medium,
-                color = colorResource(id = R.color.palette_system_red),
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-                    .noRippleClickable { onProvideConfigClicked() }
-            )
+            val configName = config.userFilePath
+            if (configName.isNullOrEmpty()) {
+                Text(
+                    text = stringResource(R.string.network_settings_provide_config_hint),
+                    style = Caption1Medium,
+                    color = colorResource(id = R.color.palette_system_red),
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
+                        .noRippleClickable { onProvideConfigClicked() }
+                )
+            } else {
+                Text(
+                    text = stringResource(
+                        id = R.string.network_settings_self_host_config,
+                        configName
+                    ),
+                    style = Caption1Medium,
+                    color = colorResource(id = R.color.palette_system_green),
+                    modifier = Modifier
+                        .padding(horizontal = 20.dp)
+                        .fillMaxWidth()
+                        .noRippleClickable { onProvideConfigClicked() },
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
         Spacer(modifier = Modifier.height(14.dp))
         Divider(

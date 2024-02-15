@@ -1232,9 +1232,24 @@ class ObjectSetViewModel(
         }
     }
 
-    fun onIconClicked() {
+    fun onObjectIconClicked() {
         Timber.d("onIconClicked, ")
-        dispatch(ObjectSetCommand.Modal.OpenIconActionMenu(target = context))
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val struct = state.details[context]
+        val wrapper = ObjectWrapper.Basic(struct?.map.orEmpty())
+        val space = wrapper.spaceId
+        if (space != null) {
+            dispatch(
+                ObjectSetCommand.Modal.OpenIconActionMenu(
+                    target = context,
+                    space = space
+                )
+            )
+        } else {
+            Timber.e("Space not found").also {
+                toast("Space not found")
+            }
+        }
     }
 
     fun onCoverClicked() {

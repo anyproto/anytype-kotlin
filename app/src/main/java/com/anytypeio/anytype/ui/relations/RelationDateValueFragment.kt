@@ -1,13 +1,11 @@
 package com.anytypeio.anytype.ui.relations
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material3.DatePicker
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
@@ -22,21 +20,14 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.relations.DatePickerContent
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
-import com.anytypeio.anytype.core_utils.ext.gone
-import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
-import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
-import com.anytypeio.anytype.databinding.FragmentRelationDateValueBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.DateValueCommand
-import com.anytypeio.anytype.presentation.sets.DateValueView
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
 import com.anytypeio.anytype.ui.settings.typography
-import com.google.android.material.datepicker.MaterialDatePicker
 import javax.inject.Inject
 
 open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
@@ -108,7 +99,6 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
                 timeInSeconds = timeInSeconds
             )
         }
-        //dismiss()
     }
 
     override fun injectDependencies() {

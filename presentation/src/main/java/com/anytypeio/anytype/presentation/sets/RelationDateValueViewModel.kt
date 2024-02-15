@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -120,7 +119,6 @@ class RelationDateValueViewModel(
     }
 
     private fun setDate(timeInSeconds: Long?) {
-        Log.d("Test1983", "setDate: timeInSeconds: $timeInSeconds")
         if (timeInSeconds != null) {
             _views.value = _views.value.copy(
                 timeInMillis = dateProvider.adjustToStartOfDayInUserTimeZone(timeInSeconds)

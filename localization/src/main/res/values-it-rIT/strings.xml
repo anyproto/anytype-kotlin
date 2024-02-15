@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Carica una foto</string>
     <string name="hint_upload_file">Carica un file</string>
     <string name="hint_upload_audio">Carica un audio</string>
-    <string name="hint_add_a_web_bookmark">Add bookmark</string>
+    <string name="hint_add_a_web_bookmark">Aggiungi segnalibro</string>
     <string name="hint_bullet">Elemento di elenco puntato</string>
     <string name="hint_numbered_list">Elemento di elenco numerato</string>
     <string name="hint_toggle">Blocco espandibile</string>
@@ -1037,10 +1037,10 @@
     <string name="sharing_menu_save_as_section_name">Salva come</string>
     <string name="sharing_menu_save_as_note_option">Nota</string>
     <string name="sharing_menu_save_as_bookmark_option">Segnalibro</string>
-    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_image_option">Immagine</string>
     <string name="sharing_menu_save_as_file_option">File</string>
-    <string name="sharing_menu_save_as_images_option">Images</string>
-    <string name="sharing_menu_save_as_files_option">Files</string>
+    <string name="sharing_menu_save_as_images_option">Immagini</string>
+    <string name="sharing_menu_save_as_files_option">File</string>
     <string name="sharing_menu_data">Data</string>
     <string name="sharing_menu_add_to_anytype_header_title">Aggiungi a Anytype</string>
     <string name="sharing_menu_toast_object_added">Nuovo oggetto aggiunto allo spazio \'%1$s\'</string>
@@ -1093,7 +1093,7 @@
     <string name="options_empty_title">Nessuna opzione</string>
     <string name="options_empty_not_editable">La relazione è vuota</string>
     <string name="options_delete_title">Sei sicuro/a?</string>
-    <string name="options_delete_description">The option will be permanently removed from your space</string>
+    <string name="options_delete_description">L\'opzione verrà rimossa definitivamente dal tuo spazio</string>
     <string name="object_values_empty_description">Oggetti non trovati</string>
     <string name="object_values_empty_title">Nessun valore</string>
     <string name="object_values_empty_not_editable">La relazione è vuota</string>

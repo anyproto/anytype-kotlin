@@ -241,6 +241,9 @@ class TagOrStatusValueViewModel(
                         options = options
                     )
                 )
+                if (query.isNotBlank()) {
+                    result.add(RelationsListItem.CreateItem.Status(query))
+                }
             }
             Relation.Format.TAG -> {
                 result.addAll(

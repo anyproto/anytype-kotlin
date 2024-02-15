@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.relations.DatePickerContent
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.withParent
@@ -40,6 +41,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
     private val objectId get() = argString(OBJECT_ID)
     private val relationKey get() = argString(RELATION_KEY)
     private val flow get() = arg<Int>(FLOW_KEY)
+    private val isLocked get() = argBoolean(LOCKED_KEY)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,7 +71,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
     override fun onStart() {
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         super.onStart()
-        vm.onStart(ctx = ctx, objectId = objectId, relationKey = relationKey)
+        vm.onStart(ctx = ctx, objectId = objectId, relationKey = relationKey, isLocked = isLocked)
     }
 
     override fun onStop() {
@@ -135,19 +137,22 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
             ctx: Id,
             relationKey: Key,
             objectId: Id,
-            flow: Int = FLOW_DEFAULT
+            flow: Int = FLOW_DEFAULT,
+            isLocked: Boolean = false
         ) = RelationDateValueFragment().apply {
             arguments = bundleOf(
                 CONTEXT_ID to ctx,
                 RELATION_KEY to relationKey,
                 OBJECT_ID to objectId,
-                FLOW_KEY to flow
+                FLOW_KEY to flow,
+                LOCKED_KEY to isLocked
             )
         }
 
         const val CONTEXT_ID = "arg.relation.date.context"
         const val RELATION_KEY = "arg.relation.date.relation.key"
         const val OBJECT_ID = "arg.relation.date.object.id"
+        const val LOCKED_KEY = "arg.relation.date.object.locked"
 
         const val FLOW_KEY = "arg.relation.date.flow"
         const val FLOW_DEFAULT = 0

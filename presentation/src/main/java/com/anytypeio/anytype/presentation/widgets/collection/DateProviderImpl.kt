@@ -1,13 +1,16 @@
 package com.anytypeio.anytype.presentation.widgets.collection
 
 import android.text.format.DateUtils
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateType
-import java.sql.Time
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
+import java.util.Calendar
+import java.util.TimeZone
 import javax.inject.Inject
 
 class DateProviderImpl @Inject constructor() : DateProvider {
@@ -83,4 +86,32 @@ class DateProviderImpl @Inject constructor() : DateProvider {
         DateUtils.DAY_IN_MILLIS,
         DateUtils.FORMAT_ABBREV_RELATIVE
     )
+
+    override fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis {
+        val instant = Instant.ofEpochSecond(timestamp)
+        val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
+        val startOfDay = localDate.atStartOfDay()
+        return (startOfDay.toEpochSecond(ZoneOffset.UTC) * 1000)
+    }
+
+    override fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis): TimeInSeconds {
+        // Create a Calendar instance for UTC with the given timestamp
+        val calendarUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC")).apply {
+            timeInMillis = timestamp
+        }
+
+        // Create a Calendar instance for the local time zone, setting the time to the UTC calendar's time
+        val calendarLocal = Calendar.getInstance().apply {
+            timeInMillis = calendarUTC.timeInMillis
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+
+        // Convert the local start of the day back to seconds
+        return calendarLocal.timeInMillis / 1000
+    }
 }
+
+

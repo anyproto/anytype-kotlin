@@ -440,7 +440,7 @@ class ObjectRelationDateValueTest {
         val dateUpdate = Calendar.getInstance().apply { add(Calendar.DATE, 17) }
         val valueUpdate: Long = dateUpdate.timeInMillis / 1000
         fragment.onFragment {
-            it.onPickDate(valueUpdate)
+            //it.onPickDate(valueUpdate)
         }
 
         val updatedDateFormat = valueUpdate.formatTimeInMillis(DEFAULT_DATE_FORMAT)

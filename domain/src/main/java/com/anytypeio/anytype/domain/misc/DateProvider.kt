@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.misc
 
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 
 
@@ -15,6 +16,8 @@ interface DateProvider {
     fun getTimestampForYesterdayAtStartOfDay(): TimeInSeconds
     fun getTimestampForWeekAheadAtStartOfDay(): TimeInSeconds
     fun getTimestampForWeekAgoAtStartOfDay(): TimeInSeconds
+    fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis
+    fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis): TimeInSeconds
 }
 
 interface DateTypeNameProvider {

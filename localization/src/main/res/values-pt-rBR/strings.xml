@@ -382,6 +382,7 @@
     <string name="default_object_type_title">Tipo de objeto padrão</string>
     <string name="name_layout_basic">Básico</string>
     <string name="name_layout_profile">Perfil</string>
+    <string name="name_layout_participant">Participant</string>
     <string name="name_layout_todo">Tarefa</string>
     <string name="name_layout_set">Conjunto</string>
     <string name="name_layout_collection">Coleção</string>

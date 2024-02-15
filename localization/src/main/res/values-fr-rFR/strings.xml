@@ -408,7 +408,7 @@
     <string name="layout_profile_name">Profil</string>
     <string name="layout_profile_description">Entreprises, contacts, amis et famille</string>
     <string name="layout_todo_name">Tâche</string>
-    <string name="layout_todo_description">Action-focused layout with a checkbox</string>
+    <string name="layout_todo_description">Mise en page axée sur l\'action avec une case à cocher</string>
     <string name="move_to_bin">Vers la corbeille</string>
     <string name="undoredo">Annuler/Rétablir</string>
     <string name="object_removal_process">Processus de suppression d\'objet</string>

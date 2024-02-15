@@ -1093,24 +1093,24 @@
     <string name="options_empty_not_editable">A relação está vazia</string>
     <string name="options_delete_title">Você tem certeza?</string>
     <string name="options_delete_description">A opção será removida permanentemente do seu espaço</string>
-    <string name="object_values_empty_description">Objects not found</string>
-    <string name="object_values_empty_title">No values</string>
+    <string name="object_values_empty_description">Objetos não encontrados</string>
+    <string name="object_values_empty_title">Nenhum valor</string>
     <string name="object_values_empty_not_editable">A relação está vazia</string>
     <string name="object_values_delete_title">Você tem certeza?</string>
-    <string name="object_values_delete_description">The object will be moved to the Bin.</string>
+    <string name="object_values_delete_description">O objeto será movido para o Lixo.</string>
     <string name="hint_enter_name">Inserir nome...</string>
     <string name="create_object">Criar objeto</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Frase de recuperação inválida</string>
     <string name="network">Rede</string>
-    <string name="network_settings_anytype_network">Anytype network</string>
-    <string name="network_settings_anytype_network_description">Backup to the network managed by Anytype</string>
+    <string name="network_settings_anytype_network">Rede Anytype</string>
+    <string name="network_settings_anytype_network_description">Fazer backup para a rede gerenciada pelo Anytype</string>
     <string name="network_settings_local_only">Somente local</string>
-    <string name="network_settings_local_only_description">Don\'t back up; sync within local network</string>
+    <string name="network_settings_local_only_description">Não fazer backup; sincronizar pela rede local</string>
     <string name="network_settings_self_host">Auto-hospedado</string>
-    <string name="network_settings_self_host_description">Back up to your self-hosted network</string>
+    <string name="network_settings_self_host_description">Faça o backup na sua rede auto-hospedada</string>
     <string name="network_settings_networks_section">Redes</string>
-    <string name="network_settings_provide_config_hint">Tap to provide your network config</string>
-    <string name="network_settings_self_host_config">Current config: %1$s</string>
+    <string name="network_settings_provide_config_hint">Toque para fornecer sua configuração de rede</string>
+    <string name="network_settings_self_host_config">Configuração atual: %1$s</string>
     <!--endregion-->
 </resources>

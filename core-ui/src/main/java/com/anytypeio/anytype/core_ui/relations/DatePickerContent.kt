@@ -15,6 +15,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -43,21 +44,18 @@ import com.anytypeio.anytype.presentation.sets.DateValueView
 @Composable
 fun DatePickerContent(
     state: DateValueView,
-    onDateSelected: (Long) -> Unit,
+    onDateSelected: (Long?) -> Unit,
     onClear: () -> Unit,
     onTodayClicked: () -> Unit,
     onTomorrowClicked: () -> Unit
 ){
 
     val timeInMillis = remember { mutableStateOf(state.timeInMillis) }
-
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = timeInMillis.value
     )
     LaunchedEffect(datePickerState.selectedDateMillis) {
-        if (datePickerState.selectedDateMillis != null) {
-            //onDateSelected(datePickerState.selectedDateMillis!!)
-        }
+        onDateSelected(datePickerState.selectedDateMillis)
     }
     Column(
         modifier = Modifier
@@ -88,7 +86,7 @@ fun DatePickerContent(
                 title = null,
                 headline = null,
                 showModeToggle = false,
-                colors = datePickerColors
+                colors = datePickerColors,
             )
         }
         Divider(paddingStart = 0.dp, paddingEnd = 0.dp)

@@ -2105,8 +2105,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ctx = ctx,
             keys = obj.featuredRelations,
             details = details
-        )
-            .sortedByDescending { it.key == Relations.TYPE }
+        ).sortedByDescending { it.key == Relations.TYPE }
         return BlockView.FeaturedRelation(
             id = block.id,
             relations = views,

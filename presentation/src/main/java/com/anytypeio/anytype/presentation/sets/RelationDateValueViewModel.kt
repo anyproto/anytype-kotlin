@@ -57,20 +57,22 @@ class RelationDateValueViewModel(
 
     fun onTodayClicked() {
         setDate(timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay())
-//        viewModelScope.launch {
-//            commands.emit(
-//                DateValueCommand.DispatchResult(
-//                    timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay().toDouble()
-//                )
-//            )
-//        }
+        viewModelScope.launch {
+            commands.emit(
+                DateValueCommand.DispatchResult(
+                    timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay().toDouble(),
+                    dismiss = true
+                )
+            )
+        }
     }
 
     fun onTomorrowClicked() {
         viewModelScope.launch {
             commands.emit(
                 DateValueCommand.DispatchResult(
-                    timeInSeconds = dateProvider.getTimestampForTomorrowAtStartOfDay().toDouble()
+                    timeInSeconds = dateProvider.getTimestampForTomorrowAtStartOfDay().toDouble(),
+                    dismiss = true
                 )
             )
         }

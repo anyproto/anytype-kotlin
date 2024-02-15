@@ -435,7 +435,7 @@ fun ProfileImageBlock(
                 modifier = Modifier
                     .size(96.dp)
                     .clip(RoundedCornerShape(48.dp))
-                    .background(colorResource(id = R.color.shape_primary))
+                    .background(colorResource(id = R.color.text_tertiary))
                     .noRippleClickable {
                         onProfileIconClick.invoke()
                     }

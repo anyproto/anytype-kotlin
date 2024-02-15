@@ -460,20 +460,29 @@ class EditorViewModel(
 
     override fun onPickedDocImageFromDevice(ctx: Id, path: String) {
         viewModelScope.launch {
-            setDocImageIcon(
-                SetImageIcon.Params(
-                    target = ctx,
-                    path = path
+            val obj = orchestrator.stores.details.getAsObject(ctx)
+            val space = obj?.targetSpaceId
+            if (space != null) {
+                setDocImageIcon(
+                    SetImageIcon.Params(
+                        target = ctx,
+                        path = path,
+                        spaceId = SpaceId(space)
+                    )
+                ).process(
+                    failure = {
+                        sendToast("Can't update object icon image")
+                        Timber.e(it, "Error while setting image icon")
+                    },
+                    success = { (payload, _) ->
+                        dispatcher.send(payload)
+                    }
                 )
-            ).process(
-                failure = {
-                    sendToast("Can't update object icon image")
-                    Timber.e(it, "Error while setting image icon")
-                },
-                success = { (payload, _) ->
-                    dispatcher.send(payload)
+            } else {
+                Timber.e("Space not found").also {
+                    sendToast("Space not found")
                 }
-            )
+            }
         }
     }
 

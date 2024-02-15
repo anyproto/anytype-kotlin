@@ -136,7 +136,7 @@ sealed class ObjectWrapper {
 
         val notDeletedNorArchived get() = (isDeleted != true && isArchived != true)
 
-        val targetSpaceId: String? by default
+        val targetSpaceId: Id? by default
 
         val backlinks get() = getValues<Id>(Relations.BACKLINKS)
     }

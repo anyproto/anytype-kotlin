@@ -224,6 +224,16 @@ class SelectSpaceViewModel(
         }
     }
 
+    fun onProfileSettingsClicked() {
+        viewModelScope.launch {
+            commands.emit(
+                Command.NavigateToProfileSettings(
+                    space = spaceManager.get()
+                )
+            )
+        }
+    }
+
     private fun proceedWithUnsubscribing() {
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(
@@ -287,4 +297,5 @@ sealed class Command {
     object CreateSpace : Command()
     object Dismiss : Command()
     object SwitchToNewSpace: Command()
+    data class NavigateToProfileSettings(val space: Id) : Command()
 }

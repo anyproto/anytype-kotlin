@@ -1508,7 +1508,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     color = block.textColor()
                 )
             }
-            ObjectType.Layout.PROFILE -> {
+            ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {
                 BlockView.Title.Profile(
                     mode = blockMode,
                     id = block.id,

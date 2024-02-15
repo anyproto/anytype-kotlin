@@ -9,6 +9,7 @@ sealed class ObjectSetCommand {
 
         data class Menu(
             val ctx: Id,
+            val space: Id,
             val isArchived: Boolean,
             val isFavorite: Boolean
         ) : Modal()

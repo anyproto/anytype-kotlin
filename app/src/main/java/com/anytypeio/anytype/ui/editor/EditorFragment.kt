@@ -167,7 +167,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -1180,6 +1179,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         )
                     )
                 }
+                is Command.SetObjectIcon -> {
+                    findNavController().safeNavigate(
+                        R.id.pageScreen,
+                        R.id.objectIconPickerScreen,
+                        bundleOf(
+                            IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
+                            IconPickerFragmentBase.ARG_SPACE_ID_KEY to command.space
+                        )
+                    )
+                }
             }
         }
     }
@@ -2008,13 +2017,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onSetIconClicked() {
-        findNavController().safeNavigate(
-            R.id.pageScreen,
-            R.id.objectIconPickerScreen,
-            bundleOf(
-                IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
-            )
-        )
+        vm.onSetObjectIconClicked()
     }
 
     override fun onLayoutClicked() {

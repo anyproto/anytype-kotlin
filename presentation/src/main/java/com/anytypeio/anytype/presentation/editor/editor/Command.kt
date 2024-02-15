@@ -61,8 +61,9 @@ sealed class Command {
         val isTemplate: Boolean
     ) : Command()
 
-    data class OpenCoverGallery(val ctx: String) : Command()
-    data class OpenObjectLayout(val ctx: String) : Command()
+    data class OpenCoverGallery(val ctx: Id) : Command()
+    data class OpenObjectLayout(val ctx: Id) : Command()
+    data class SetObjectIcon(val ctx: Id, val space: Id) : Command()
 
     object AlertDialog : Command()
 

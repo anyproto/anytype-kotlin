@@ -44,6 +44,7 @@ abstract class ObjectMenuBaseFragment :
     BacklinkAction {
 
     protected val ctx get() = arg<Id>(CTX_KEY)
+    protected val space get() = arg<Id>(SPACE_KEY)
     private val isArchived get() = arg<Boolean>(IS_ARCHIVED_KEY)
     private val isFavorite get() = arg<Boolean>(IS_FAVORITE_KEY)
     private val isLocked get() = arg<Boolean>(IS_LOCKED_KEY)
@@ -287,6 +288,7 @@ abstract class ObjectMenuBaseFragment :
 
     companion object {
         const val CTX_KEY = "arg.doc-menu-bottom-sheet.ctx"
+        const val SPACE_KEY = "arg.doc-menu-bottom-sheet.space"
         const val IS_ARCHIVED_KEY = "arg.doc-menu-bottom-sheet.is-archived"
         const val IS_FAVORITE_KEY = "arg.doc-menu-bottom-sheet.is-favorite"
         const val IS_LOCKED_KEY = "arg.doc-menu-bottom-sheet.is-locked"

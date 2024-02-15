@@ -461,7 +461,7 @@ class EditorViewModel(
     override fun onPickedDocImageFromDevice(ctx: Id, path: String) {
         viewModelScope.launch {
             val obj = orchestrator.stores.details.getAsObject(ctx)
-            val space = obj?.targetSpaceId
+            val space = obj?.spaceId
             if (space != null) {
                 setDocImageIcon(
                     SetImageIcon.Params(
@@ -3260,6 +3260,20 @@ class EditorViewModel(
             dispatch(Command.OpenCoverGallery(context))
         } else {
             sendToast("Cannot change cover: your object is locked.")
+        }
+    }
+
+    fun onSetObjectIconClicked() {
+        viewModelScope.launch {
+            val obj = orchestrator.stores.details.getAsObject(context)
+            val space = obj?.spaceId
+            if (space != null) {
+                dispatch(Command.SetObjectIcon(ctx = context, space = space))
+            } else {
+                Timber.e("Space not found").also {
+                    sendToast("Space not found")
+                }
+            }
         }
     }
 

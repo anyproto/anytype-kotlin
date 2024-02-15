@@ -528,7 +528,7 @@ abstract class RelationValueBaseViewModel(
         viewModelScope.launch {
             isLoading.emit(true)
             val obj = ObjectWrapper.Basic(values.get(ctx = ctx, target = target))
-            val space = obj.targetSpaceId
+            val space = obj.spaceId
             if (space != null) {
                 addFileToObject(
                     params = AddFileToObject.Params(

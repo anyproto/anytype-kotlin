@@ -1021,7 +1021,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         target = command.target,
                         relationKey = command.relationKey,
                         targetObjectTypes = command.targetObjectTypes,
-                        isLocked = command.isLocked
+                        isLocked = command.isNotEditableValue
                     )
                     fr.showChildFragment()
                 }
@@ -1031,7 +1031,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         ctx = command.ctx,
                         relationKey = command.relationKey,
                         objectId = command.target,
-                        isLocked = command.isLocked
+                        isLocked = command.isNotEditableValue
                     )
                     fr.showChildFragment()
                 }
@@ -1163,7 +1163,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             TagOrStatusValueFragment.CTX_KEY to command.ctx,
                             TagOrStatusValueFragment.OBJECT_ID_KEY to command.target,
                             TagOrStatusValueFragment.RELATION_KEY to command.relationKey,
-                            TagOrStatusValueFragment.IS_LOCKED_KEY to command.isLocked,
+                            TagOrStatusValueFragment.IS_LOCKED_KEY to command.isNotEditableValue,
                             TagOrStatusValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT
                         )
                     )
@@ -1176,7 +1176,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             ObjectValueFragment.CTX_KEY to command.ctx,
                             ObjectValueFragment.OBJECT_ID_KEY to command.target,
                             ObjectValueFragment.RELATION_KEY to command.relationKey,
-                            ObjectValueFragment.IS_LOCKED_KEY to command.isLocked,
+                            ObjectValueFragment.IS_LOCKED_KEY to command.isNotEditableValue,
                             ObjectValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT
                         )
                     )

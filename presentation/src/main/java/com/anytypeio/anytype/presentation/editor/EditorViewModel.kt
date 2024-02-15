@@ -3927,7 +3927,7 @@ class EditorViewModel(
                                                 ctx = context,
                                                 target = context,
                                                 relationKey = relationId,
-                                                isLocked = mode == EditorMode.Locked
+                                                isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
                                             )
                                         )
                                     }
@@ -3946,17 +3946,19 @@ class EditorViewModel(
                                             Command.OpenObjectRelationScreen.Value.Date(
                                                 ctx = context,
                                                 target = context,
-                                                relationKey = relationId
+                                                relationKey = relationId,
+                                                isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
                                             )
                                         )
                                     }
                                     Relation.Format.TAG, Relation.Format.STATUS -> {
+                                        val isLocked = mode == EditorMode.Locked || restrictions.contains(ObjectRestriction.DETAILS)
                                         dispatch(
                                             Command.OpenObjectRelationScreen.Value.TagOrStatus(
                                                 ctx = context,
                                                 target = context,
                                                 relationKey = relation.key,
-                                                isLocked = mode == EditorMode.Locked
+                                                isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
                                             )
                                         )
                                     }
@@ -3966,7 +3968,7 @@ class EditorViewModel(
                                                 ctx = context,
                                                 target = context,
                                                 relationKey = relation.key,
-                                                isLocked = mode == EditorMode.Locked
+                                                isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
                                             )
                                         )
                                     }
@@ -3977,7 +3979,7 @@ class EditorViewModel(
                                                 target = context,
                                                 relationKey = relationId,
                                                 targetObjectTypes = relation.relationFormatObjectTypes,
-                                                isLocked = mode == EditorMode.Locked
+                                                isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
                                             )
                                         )
                                     }
@@ -7113,6 +7115,7 @@ class EditorViewModel(
         relation: ObjectWrapper.Relation,
         relationView: ObjectRelationView
     ) {
+        val restrictions = orchestrator.stores.objectRestrictions.current()
         when (relation.format) {
             RelationFormat.SHORT_TEXT,
             RelationFormat.LONG_TEXT,
@@ -7125,7 +7128,7 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isLocked = mode == EditorMode.Locked
+                        isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
                     )
                 )
             }
@@ -7142,7 +7145,8 @@ class EditorViewModel(
                     Command.OpenObjectRelationScreen.Value.Date(
                         ctx = context,
                         target = context,
-                        relationKey = relation.key
+                        relationKey = relation.key,
+                        isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
                     )
                 )
             }
@@ -7152,7 +7156,7 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isLocked = mode == EditorMode.Locked
+                        isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
                     )
                 )
             }
@@ -7162,7 +7166,7 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isLocked = mode == EditorMode.Locked
+                        isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
                     )
                 )
             }
@@ -7173,7 +7177,7 @@ class EditorViewModel(
                         target = context,
                         relationKey = relation.key,
                         targetObjectTypes = relation.relationFormatObjectTypes,
-                        isLocked = mode == EditorMode.Locked
+                        isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
                     )
                 )
             }
@@ -7235,6 +7239,10 @@ class EditorViewModel(
         return obj.internalFlags
     }
     //endregion
+
+    private fun isNotEditableObjectRelationValue(objRestrictions: List<ObjectRestriction>): Boolean {
+        return mode == EditorMode.Locked || objRestrictions.contains(ObjectRestriction.DETAILS)
+    }
 }
 
 private const val NO_POSITION = -1

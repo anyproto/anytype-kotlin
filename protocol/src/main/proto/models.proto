@@ -44,6 +44,7 @@ enum SmartBlockType {
     SpaceView = 0x212;
 
     Identity = 0x214;
+    Participant = 0x216;
     MissingObject = 0x207;
 
     FileObject = 0x215;
@@ -725,8 +726,9 @@ message ObjectType {
         video = 16;
         date = 17;
         spaceView = 18;
+        participant = 19;
 
-        database = 20; // to be released later
+        pdf = 20;
     }
 }
 
@@ -905,6 +907,37 @@ enum SpaceStatus {
     RemoteDeleted = 6;
     // SpaceDeleted - the space should be deleted in the network
     SpaceDeleted = 7;
+    // SpaceActive - the space is active in the network
+    SpaceActive = 8;
+    // SpaceJoining - the account is joining the space
+    SpaceJoining = 9;
+}
+
+message ParticipantPermissionChange {
+    string identity = 1;
+    ParticipantPermissions perms = 2;
+}
+
+enum ParticipantPermissions {
+    Reader = 0;
+    Writer = 1;
+    Owner = 2;
+    NoPermissions = 3;
+}
+
+enum ParticipantStatus {
+    Joining = 0;
+    Active = 1;
+    Removed = 2;
+    Declined = 3;
+    Removing = 4;
+    Canceled = 5;
+}
+
+enum SpaceAccessType {
+    Private = 0;
+    Personal = 1;
+    Shared = 2;
 }
 
 message Metadata {
@@ -928,6 +961,7 @@ message Notification {
         Import import = 6;
         Export export = 8;
         GalleryImport galleryImport = 9;
+        RequestToJoin requestToJoin = 10;
     }
     string space = 7;
 
@@ -954,6 +988,13 @@ message Notification {
         model.Import.ErrorCode errorCode = 2;
         string spaceId = 3;
         string name = 4;
+    }
+
+    message RequestToJoin {
+        string spaceId = 1;
+        string identity = 2;
+        string identityName = 3;
+        string identityIcon = 4;
     }
 
     enum Status {
@@ -1002,14 +1043,36 @@ message Import {
     }
 }
 
-message FileEncryptionKey {
-    string path = 1;
-    string key = 2;
+message Invite {
+    bytes payload = 1;
+    bytes signature = 2;
+}
+
+message InvitePayload {
+    string creatorIdentity = 1;
+    string creatorName = 2;
+    bytes inviteKey = 3;
+    string spaceId = 4;
+    string spaceName = 5;
+    string spaceIconCid = 6;
+    repeated FileEncryptionKey spaceIconEncryptionKeys = 7;
+}
+
+message IdentityProfile {
+    string identity = 1;
+    string name = 2;
+    string iconCid = 3;
+    repeated FileEncryptionKey iconEncryptionKeys = 4;
 }
 
 message FileInfo {
     string fileId = 1;
     repeated FileEncryptionKey encryptionKeys = 2;
+}
+
+message FileEncryptionKey {
+  string path = 1;
+  string key = 2;
 }
 
 enum ImageKind {
@@ -1021,4 +1084,20 @@ enum ImageKind {
 enum FileIndexingStatus {
     NotIndexed = 0;
     Indexed = 1;
+    NotFound = 2;
+}
+
+message ManifestInfo {
+    string schema = 1;
+    string id = 2;
+    string name = 3;
+    string author = 4;
+    string license = 5;
+    string title = 6;
+    string description = 7;
+    repeated string screenshots = 8;
+    string downloadLink = 9;
+    int32 fileSize = 10;
+    repeated string categories = 11;
+    string language = 12;
 }

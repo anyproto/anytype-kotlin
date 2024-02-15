@@ -384,6 +384,7 @@
     <string name="default_object_type_title">Тип объекта по умолчанию</string>
     <string name="name_layout_basic">Базовый</string>
     <string name="name_layout_profile">Профиль</string>
+    <string name="name_layout_participant">Participant</string>
     <string name="name_layout_todo">Задача</string>
     <string name="name_layout_set">Набор</string>
     <string name="name_layout_collection">Коллекция</string>

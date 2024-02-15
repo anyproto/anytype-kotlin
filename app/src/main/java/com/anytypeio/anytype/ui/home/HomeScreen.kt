@@ -618,7 +618,7 @@ fun HomeScreenBottomToolbar(
                         modifier = Modifier
                             .size(24.dp)
                             .clip(CircleShape)
-                            .background(colorResource(id = R.color.shape_primary))
+                            .background(colorResource(id = R.color.text_tertiary))
                             .noRippleClickable { onProfileClicked() }
                             .align(Alignment.Center)
                     ) {

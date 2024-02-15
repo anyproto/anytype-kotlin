@@ -4,7 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.icon.RemoveIcon
 import com.anytypeio.anytype.domain.icon.SetEmojiIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
@@ -62,13 +64,14 @@ class ObjectIconPickerViewModel<Iconable>(
         }
     }
 
-    override fun onPickedFromDevice(iconable: Iconable, path: String) {
+    override fun onPickedFromDevice(iconable: Iconable, path: String, space: Id) {
         viewModelScope.launch {
             state.value = ViewState.Loading
             setImageIcon(
                 SetImageIcon.Params(
                     target = iconable,
-                    path = path
+                    path = path,
+                    spaceId = SpaceId(space)
                 )
             ).process(
                 failure = {

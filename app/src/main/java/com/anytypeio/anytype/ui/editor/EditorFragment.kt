@@ -167,7 +167,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
@@ -316,7 +315,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 )
             },
             onTextInputClicked = vm::onTextInputClicked,
-            onPageIconClicked = vm::onPageIconClicked,
+            onPageIconClicked = vm::onObjectIconClicked,
             onCoverClicked = vm::onAddCoverClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
@@ -895,13 +894,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         context = ctx, blockId = command.block
                     ).showChildFragment()
                 }
-                Command.OpenDocumentEmojiIconPicker -> {
+                is Command.OpenDocumentEmojiIconPicker -> {
                     hideSoftInput()
                     findNavController().safeNavigate(
                         R.id.pageScreen,
                         R.id.action_pageScreen_to_objectIconPickerScreen,
                         bundleOf(
-                            IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
+                            IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to command.ctx,
+                            IconPickerFragmentBase.ARG_SPACE_ID_KEY to command.space,
                         )
                     )
                 }
@@ -937,7 +937,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
                     val fr = ObjectMenuFragment.new(
-                        ctx = ctx,
+                        ctx = command.ctx,
+                        space = command.space,
                         isArchived = command.isArchived,
                         isFavorite = command.isFavorite,
                         isLocked = command.isLocked,
@@ -1177,6 +1178,16 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             ObjectValueFragment.RELATION_KEY to command.relationKey,
                             ObjectValueFragment.IS_LOCKED_KEY to command.isLocked,
                             ObjectValueFragment.RELATION_CONTEXT_KEY to RelationContext.OBJECT
+                        )
+                    )
+                }
+                is Command.SetObjectIcon -> {
+                    findNavController().safeNavigate(
+                        R.id.pageScreen,
+                        R.id.objectIconPickerScreen,
+                        bundleOf(
+                            IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
+                            IconPickerFragmentBase.ARG_SPACE_ID_KEY to command.space
                         )
                     )
                 }
@@ -2008,13 +2019,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     override fun onSetIconClicked() {
-        findNavController().safeNavigate(
-            R.id.pageScreen,
-            R.id.objectIconPickerScreen,
-            bundleOf(
-                IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
-            )
-        )
+        vm.onSetObjectIconClicked()
     }
 
     override fun onLayoutClicked() {

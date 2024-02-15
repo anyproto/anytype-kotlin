@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -59,6 +60,14 @@ interface Store<T> {
     class Details : State<Block.Details>(Block.Details()) {
         suspend fun add(target: Id, fields: Block.Fields) {
             update(current().copy(details = current().details + mapOf(target to fields)))
+        }
+        fun getAsObject(target: Id) : ObjectWrapper.Basic? {
+            val struct = current().details[target]
+            return if (struct != null && struct.map.isNotEmpty()) {
+                ObjectWrapper.Basic(struct.map)
+            } else {
+                null
+            }
         }
     }
 

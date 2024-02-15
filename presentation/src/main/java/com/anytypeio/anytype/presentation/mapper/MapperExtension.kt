@@ -705,7 +705,11 @@ fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = mapNotNull { layo
         )
         ObjectType.Layout.IMAGE -> ObjectLayoutView.Image(id = layout.code, isSelected = false)
         ObjectType.Layout.NOTE -> ObjectLayoutView.Note(id = layout.code, isSelected = false)
-        ObjectType.Layout.DATABASE -> ObjectLayoutView.Database(
+        ObjectType.Layout.PDF -> ObjectLayoutView.PDF(
+            id = layout.code,
+            isSelected = false
+        )
+        ObjectType.Layout.PARTICIPANT -> ObjectLayoutView.Participant(
             id = layout.code,
             isSelected = false
         )
@@ -721,7 +725,6 @@ fun List<ObjectType.Layout>.toView(): List<ObjectLayoutView> = mapNotNull { layo
 fun ObjectLayoutView.toObjectLayout() = when (this) {
     is ObjectLayoutView.Basic -> ObjectType.Layout.BASIC
     is ObjectLayoutView.Dashboard -> ObjectType.Layout.DASHBOARD
-    is ObjectLayoutView.Database -> ObjectType.Layout.DATABASE
     is ObjectLayoutView.File -> ObjectType.Layout.FILE
     is ObjectLayoutView.Image -> ObjectType.Layout.IMAGE
     is ObjectLayoutView.Note -> ObjectType.Layout.NOTE
@@ -732,4 +735,6 @@ fun ObjectLayoutView.toObjectLayout() = when (this) {
     is ObjectLayoutView.Space -> ObjectType.Layout.SPACE
     is ObjectLayoutView.Todo -> ObjectType.Layout.TODO
     is ObjectLayoutView.Bookmark -> ObjectType.Layout.BOOKMARK
+    is ObjectLayoutView.PDF -> ObjectType.Layout.PDF
+    is ObjectLayoutView.Participant -> ObjectType.Layout.PARTICIPANT
 }

@@ -100,7 +100,7 @@ sealed class ObjectIcon {
                     !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
                     else -> Basic.Avatar(obj.name.orEmpty())
                 }
-                ObjectType.Layout.PROFILE -> if (!img.isNullOrBlank()) {
+                ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> if (!img.isNullOrBlank()) {
                     Profile.Image(hash = builder.thumbnail(img))
                 } else {
                     Profile.Avatar(name = obj.name.orEmpty())
@@ -128,7 +128,7 @@ sealed class ObjectIcon {
                 ObjectType.Layout.RELATION -> None
                 ObjectType.Layout.DASHBOARD -> None
                 ObjectType.Layout.SPACE -> None
-                ObjectType.Layout.DATABASE -> None
+                ObjectType.Layout.PDF -> None
                 else -> None
             }
         }

@@ -454,7 +454,6 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.FILE -> MOTypeLayout.file_
     ObjectType.Layout.RELATION -> MOTypeLayout.relation
     ObjectType.Layout.DASHBOARD -> MOTypeLayout.dashboard
-    ObjectType.Layout.DATABASE -> MOTypeLayout.database
     ObjectType.Layout.IMAGE -> MOTypeLayout.image
     ObjectType.Layout.NOTE -> MOTypeLayout.note
     ObjectType.Layout.SPACE -> MOTypeLayout.space
@@ -466,6 +465,8 @@ fun ObjectType.Layout.toMiddlewareModel(): MOTypeLayout = when (this) {
     ObjectType.Layout.RELATION_OPTION -> MOTypeLayout.relationOption
     ObjectType.Layout.RELATION_OPTION_LIST -> MOTypeLayout.relationOptionsList
     ObjectType.Layout.SPACE_VIEW -> MOTypeLayout.spaceView
+    ObjectType.Layout.PARTICIPANT -> MOTypeLayout.participant
+    ObjectType.Layout.PDF -> MOTypeLayout.pdf
 }
 
 fun Relation.Format.toMiddlewareModel(): MRelationFormat = when (this) {

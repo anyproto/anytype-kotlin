@@ -1,12 +1,12 @@
 [versions]
-middlewareVersion = "v0.31.4"
+middlewareVersion = "v0.32.0-rc2"
 kotlinVersion = '1.8.22'
 
 androidxCoreVersion = "1.12.0"
 
 androidxComposeVersion = '1.5.0'
 composeKotlinCompilerVersion = '1.4.8'
-composeMaterial3Version = '1.1.2'
+composeMaterial3Version = '1.2.0'
 composeMaterialVersion = '1.5.0'
 composeConstraintLayoutVersion = '1.0.1'
 

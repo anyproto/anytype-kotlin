@@ -328,7 +328,8 @@ class MentionExtTest {
                 ObjectType.Layout.IMAGE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.NOTE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.SPACE -> equalsMentionNoIcon(mark, layout)
-                ObjectType.Layout.DATABASE -> equalsMentionNoIcon(mark, layout)
+                ObjectType.Layout.PDF -> equalsMentionNoIcon(mark, layout)
+                ObjectType.Layout.PARTICIPANT -> equalsMentionNoIcon(mark, layout)
                 else -> {}
             }
         }

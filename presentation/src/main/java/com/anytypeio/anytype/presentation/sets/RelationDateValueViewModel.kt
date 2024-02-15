@@ -5,12 +5,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_utils.const.DateConst.DEFAULT_DATE_FORMAT
-import com.anytypeio.anytype.core_utils.ext.cancel
-import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
+import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.ext.DateParser
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.DateType
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import kotlinx.coroutines.Job
@@ -58,35 +56,57 @@ class RelationDateValueViewModel(
 
     fun onTodayClicked() {
         setDate(timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay())
+        viewModelScope.launch {
+            commands.emit(
+                DateValueCommand.DispatchResult(
+                    timeInSeconds = dateProvider.getTimestampForTodayAtStartOfDay().toDouble(),
+                    dismiss = true
+                )
+            )
+        }
     }
 
     fun onTomorrowClicked() {
-        setDate(timeInSeconds = dateProvider.getTimestampForTomorrowAtStartOfDay())
+        viewModelScope.launch {
+            commands.emit(
+                DateValueCommand.DispatchResult(
+                    timeInSeconds = dateProvider.getTimestampForTomorrowAtStartOfDay().toDouble(),
+                    dismiss = true
+                )
+            )
+        }
     }
 
     fun onYesterdayClicked() {
         setDate(timeInSeconds = dateProvider.getTimestampForYesterdayAtStartOfDay())
     }
 
-    fun onExactDayClicked() {
-        viewModelScope.launch {
-            commands.emit(
-                DateValueCommand.OpenDatePicker(
-                    timeInSeconds = views.value.timeInSeconds
+    fun onDateSelected(selectedDate: TimeInMillis?) {
+        if (selectedDate != null) {
+            val properDate = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(timestamp = selectedDate)
+            viewModelScope.launch {
+                commands.emit(
+                    DateValueCommand.DispatchResult(timeInSeconds = properDate.toDouble())
                 )
-            )
+            }
+        } else {
+            viewModelScope.launch {
+                commands.emit(
+                    DateValueCommand.DispatchResult(
+                        timeInSeconds = null
+                    )
+                )
+            }
         }
     }
 
-    fun onNoDateClicked() {
+    fun onClearClicked() {
         setDate(timeInSeconds = null)
-    }
-
-    fun onActionClicked() {
         viewModelScope.launch {
             commands.emit(
                 DateValueCommand.DispatchResult(
-                    timeInSeconds = views.value.timeInSeconds?.toDouble()
+                    timeInSeconds = null,
+                    dismiss = true
                 )
             )
         }
@@ -98,31 +118,14 @@ class RelationDateValueViewModel(
         )
     }
 
-    fun setDate(timeInSeconds: Long?) {
+    private fun setDate(timeInSeconds: Long?) {
         if (timeInSeconds != null) {
-            val dateType = dateProvider.calculateDateType(timeInSeconds)
-            val isToday = dateType == DateType.TODAY
-            val isTomorrow = dateType == DateType.TOMORROW
-            val isYesterday = dateType == DateType.YESTERDAY
-
-            var exactDayFormat: String? = null
-            if (!isToday && !isTomorrow && !isYesterday) {
-                exactDayFormat = (timeInSeconds * 1000).formatTimeInMillis(DEFAULT_DATE_FORMAT)
-            }
-            _views.value = views.value.copy(
-                isToday = isToday,
-                isYesterday = isYesterday,
-                isTomorrow = isTomorrow,
-                exactDayFormat = exactDayFormat,
-                timeInSeconds = timeInSeconds
+            _views.value = _views.value.copy(
+                timeInMillis = dateProvider.adjustToStartOfDayInUserTimeZone(timeInSeconds)
             )
         } else {
-            _views.value = views.value.copy(
-                isToday = false,
-                isYesterday = false,
-                isTomorrow = false,
-                exactDayFormat = null,
-                timeInSeconds = null
+            _views.value = _views.value.copy(
+                timeInMillis = null
             )
         }
     }
@@ -140,15 +143,11 @@ class RelationDateValueViewModel(
 }
 
 sealed class DateValueCommand {
-    data class DispatchResult(val timeInSeconds: Double?) : DateValueCommand()
+    data class DispatchResult(val timeInSeconds: Double?, val dismiss: Boolean = false) : DateValueCommand()
     data class OpenDatePicker(val timeInSeconds: Long?) : DateValueCommand()
 }
 
 data class DateValueView(
     val title: String? = null,
-    val isToday: Boolean = false,
-    val isYesterday: Boolean = false,
-    val isTomorrow: Boolean = false,
-    val exactDayFormat: String? = null,
-    val timeInSeconds: Long? = null
+    val timeInMillis: TimeInMillis? = null
 )

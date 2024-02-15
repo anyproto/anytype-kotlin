@@ -35,6 +35,9 @@ abstract class IconPickerFragmentBase<T> :
     protected val context: Id
         get() = arg(ARG_CONTEXT_ID_KEY)
 
+    protected val space: Id
+        get() = arg(ARG_SPACE_ID_KEY)
+
     /**
      * The target for which we choose icon
      * i.e. Object, callout text block
@@ -145,7 +148,8 @@ abstract class IconPickerFragmentBase<T> :
                 val path = uri.parseImagePath(requireContext())
                 vm.onPickedFromDevice(
                     iconable = target,
-                    path = path
+                    path = path,
+                    space = space
                 )
             } catch (e: Exception) {
                 toast("Error while parsing path for cover image")
@@ -175,6 +179,7 @@ abstract class IconPickerFragmentBase<T> :
         private const val UNEXPECTED_VIEW_TYPE_MESSAGE = "Unexpected view type"
 
         const val ARG_CONTEXT_ID_KEY = "arg.picker.context.id"
+        const val ARG_SPACE_ID_KEY = "arg.picker.space.id"
 
         private const val SELECT_IMAGE_CODE = 1
     }

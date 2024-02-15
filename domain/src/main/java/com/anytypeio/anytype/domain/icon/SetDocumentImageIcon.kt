@@ -13,7 +13,8 @@ class SetDocumentImageIcon(
         val file = repo.uploadFile(
             command = Command.UploadFile(
                 path = params.path,
-                type = Block.Content.File.Type.IMAGE
+                type = Block.Content.File.Type.IMAGE,
+                space = params.spaceId
             )
         )
         val payload = repo.setDocumentImageIcon(

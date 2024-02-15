@@ -53,6 +53,7 @@ import com.anytypeio.anytype.ui.onboarding.MnemonicStub
 fun MnemonicPhraseScreenWrapper(
     viewModel: OnboardingMnemonicViewModel,
     onCheckLaterClicked: () -> Unit,
+    onGoToAppClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     vm: OnboardingMnemonicViewModel,
     mnemonicColorPalette: List<Color>
@@ -67,7 +68,12 @@ fun MnemonicPhraseScreenWrapper(
             }
         },
         copyMnemonicToClipboard = copyMnemonicToClipboard,
-        mnemonicColorPalette = mnemonicColorPalette
+        mnemonicColorPalette = mnemonicColorPalette,
+        onGoToAppClicked = {
+            onGoToAppClicked().also {
+                vm.onGoToTheAppClicked()
+            }
+        }
     )
 }
 
@@ -82,7 +88,8 @@ fun PreviewMnemonicPhraseScreen() {
         reviewMnemonic = { /*TODO*/ },
         onCheckLaterClicked = { /*TODO*/ },
         copyMnemonicToClipboard = {},
-        mnemonicColorPalette = emptyList()
+        mnemonicColorPalette = emptyList(),
+        onGoToAppClicked = {}
     )
 }
 
@@ -92,6 +99,7 @@ fun MnemonicPhraseScreen(
     state: OnboardingMnemonicViewModel.State,
     reviewMnemonic: () -> Unit,
     onCheckLaterClicked: () -> Unit,
+    onGoToAppClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
     mnemonicColorPalette: List<Color>
 ) {
@@ -117,6 +125,7 @@ fun MnemonicPhraseScreen(
             modifier = Modifier.align(Alignment.BottomCenter),
             openMnemonic = reviewMnemonic,
             onCheckLaterClicked = onCheckLaterClicked,
+            onGoToAppClicked = onGoToAppClicked,
             state = state
         )
     }
@@ -161,6 +170,7 @@ fun MnemonicButtons(
     modifier: Modifier = Modifier,
     openMnemonic: () -> Unit,
     onCheckLaterClicked: () -> Unit,
+    onGoToAppClicked: () -> Unit,
     state: OnboardingMnemonicViewModel.State
 ) {
     Column(modifier.wrapContentHeight()) {
@@ -171,7 +181,7 @@ fun MnemonicButtons(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
-                    onClick = { onCheckLaterClicked.invoke() },
+                    onClick = { onGoToAppClicked() },
                     size = ButtonSize.Large
                 )
             }

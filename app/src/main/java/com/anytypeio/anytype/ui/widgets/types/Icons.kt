@@ -42,7 +42,7 @@ fun TreeWidgetObjectIcon(
                     .width(18.dp)
                     .background(
                         shape = CircleShape,
-                        color = colorResource(id = R.color.shape_primary)
+                        color = colorResource(id = R.color.text_tertiary)
                     )
             ) {
                 Text(

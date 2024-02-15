@@ -381,6 +381,7 @@
     <string name="default_object_type_title">默认对象类型</string>
     <string name="name_layout_basic">基本</string>
     <string name="name_layout_profile">概要</string>
+    <string name="name_layout_participant">Participant</string>
     <string name="name_layout_todo">任务</string>
     <string name="name_layout_set">集合</string>
     <string name="name_layout_collection">集锦</string>

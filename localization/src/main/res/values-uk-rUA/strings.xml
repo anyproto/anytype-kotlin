@@ -384,6 +384,7 @@
     <string name="default_object_type_title">Стандартний тип об\'єкта</string>
     <string name="name_layout_basic">Базовий</string>
     <string name="name_layout_profile">Обліковий запис</string>
+    <string name="name_layout_participant">Participant</string>
     <string name="name_layout_todo">Задача</string>
     <string name="name_layout_set">Набір</string>
     <string name="name_layout_collection">Колекція</string>

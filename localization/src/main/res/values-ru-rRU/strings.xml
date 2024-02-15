@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Загрузить изображение</string>
     <string name="hint_upload_file">Загрузить файл</string>
     <string name="hint_upload_audio">Загрузить аудио</string>
-    <string name="hint_add_a_web_bookmark">Add bookmark</string>
+    <string name="hint_add_a_web_bookmark">Добавить закладку</string>
     <string name="hint_bullet">Маркированный список</string>
     <string name="hint_numbered_list">Нумерованный список</string>
     <string name="hint_toggle">Переключить блокировку</string>

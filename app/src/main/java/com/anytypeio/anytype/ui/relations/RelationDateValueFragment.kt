@@ -75,26 +75,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
         }
     }
 
-//    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-//        super.onViewCreated(view, savedInstanceState)
-//        setTransparentBackground()
-//        with(binding) {
-//            btnBottomAction.setOnClickListener { vm.onActionClicked() }
-//            tvNoDate.setOnClickListener { vm.onNoDateClicked() }
-//            ivExactDayCheck.setOnClickListener { vm.onExactDayClicked() }
-//            tvExactDay.setOnClickListener { vm.onExactDayClicked() }
-//            tvDate.setOnClickListener { vm.onExactDayClicked() }
-//            tvToday.setOnClickListener { vm.onTodayClicked() }
-//            ivTodayCheck.setOnClickListener { vm.onTodayClicked() }
-//            tvTomorrow.setOnClickListener { vm.onTomorrowClicked() }
-//            ivTomorrowCheck.setOnClickListener { vm.onTomorrowClicked() }
-//            tvYesterday.setOnClickListener { vm.onYesterdayClicked() }
-//            ivYesterdayCheck.setOnClickListener { vm.onYesterdayClicked() }
-//        }
-//    }
-
     override fun onStart() {
-        jobs += lifecycleScope.subscribe(vm.views) { observeState(it) }
         jobs += lifecycleScope.subscribe(vm.commands) { observeCommands(it) }
         super.onStart()
         vm.onStart(ctx = ctx, objectId = objectId, relationKey = relationKey)
@@ -103,34 +84,6 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
     override fun onStop() {
         super.onStop()
         vm.onStop()
-    }
-
-    private fun observeState(state: DateValueView) {
-//        with(binding) {
-//            tvRelationHeader.text = state.title
-//            ivNoDateCheck.gone()
-//            ivTodayCheck.gone()
-//            ivYesterdayCheck.gone()
-//            ivTomorrowCheck.gone()
-//            ivExactDayCheck.gone()
-//            tvDate.text = null
-//            if (state.isToday) {
-//                ivTodayCheck.visible()
-//            }
-//            if (state.isYesterday) {
-//                ivYesterdayCheck.visible()
-//            }
-//            if (state.isTomorrow) {
-//                ivTomorrowCheck.visible()
-//            }
-//            if (state.exactDayFormat != null) {
-//                tvDate.text = state.exactDayFormat
-//                ivExactDayCheck.visible()
-//            }
-//            if (state.timeInSeconds == null) {
-//                ivNoDateCheck.visible()
-//            }
-//        }
     }
 
     private fun observeCommands(command: DateValueCommand) {
@@ -156,14 +109,6 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
         }
         //dismiss()
     }
-
-    private fun setTransparentBackground() {
-        dialog?.window?.setBackgroundDrawableResource(android.R.color.transparent)
-    }
-
-//    override fun onPickDate(timeInSeconds: Long) {
-//        vm.setDate(timeInSeconds)
-//    }
 
     override fun injectDependencies() {
         when (flow) {

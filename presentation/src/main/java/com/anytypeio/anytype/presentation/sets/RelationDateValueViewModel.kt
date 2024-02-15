@@ -83,24 +83,22 @@ class RelationDateValueViewModel(
         setDate(timeInSeconds = dateProvider.getTimestampForYesterdayAtStartOfDay())
     }
 
-    fun onExactDayClicked() {
-//        viewModelScope.launch {
-//            commands.emit(
-//                DateValueCommand.OpenDatePicker(
-//                    timeInSeconds = views.value.timeInSeconds
-//                )
-//            )
-//        }
-    }
-
-    fun onDateSelected(selectedDate: TimeInMillis) {
-        val properDate = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(timestamp = selectedDate)
-        viewModelScope.launch {
-            commands.emit(
-                DateValueCommand.DispatchResult(
-                    timeInSeconds = properDate.toDouble()
+    fun onDateSelected(selectedDate: TimeInMillis?) {
+        if (selectedDate != null) {
+            val properDate = dateProvider.adjustFromStartOfDayInUserTimeZoneToUTC(timestamp = selectedDate)
+            viewModelScope.launch {
+                commands.emit(
+                    DateValueCommand.DispatchResult(timeInSeconds = properDate.toDouble())
                 )
-            )
+            }
+        } else {
+            viewModelScope.launch {
+                commands.emit(
+                    DateValueCommand.DispatchResult(
+                        timeInSeconds = null
+                    )
+                )
+            }
         }
     }
 
@@ -113,22 +111,6 @@ class RelationDateValueViewModel(
                 )
             )
         }
-    }
-
-
-
-    fun onNoDateClicked() {
-        setDate(timeInSeconds = null)
-    }
-
-    fun onActionClicked() {
-//        viewModelScope.launch {
-//            commands.emit(
-//                DateValueCommand.DispatchResult(
-//                    timeInSeconds = views.value.timeInSeconds?.toDouble()
-//                )
-//            )
-//        }
     }
 
     private fun setName(name: String?) {

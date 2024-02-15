@@ -136,7 +136,10 @@ sealed class ObjectWrapper {
 
         val notDeletedNorArchived get() = (isDeleted != true && isArchived != true)
 
-        val targetSpaceId: String? by default
+        val spaceId: Id? by default
+
+        // N.B. Only used for space view objects
+        val targetSpaceId: Id? by default
 
         val backlinks get() = getValues<Id>(Relations.BACKLINKS)
     }
@@ -248,6 +251,8 @@ sealed class ObjectWrapper {
         val name: String? by default
         val iconImage: String? get() = getSingleValue(Relations.ICON_IMAGE)
         val iconOption: Double? by default
+
+        // N.B. Only used for space view objects
         val targetSpaceId: String? by default
 
         val spaceAccountStatus: SpaceStatus

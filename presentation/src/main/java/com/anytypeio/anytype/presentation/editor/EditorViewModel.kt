@@ -460,20 +460,29 @@ class EditorViewModel(
 
     override fun onPickedDocImageFromDevice(ctx: Id, path: String) {
         viewModelScope.launch {
-            setDocImageIcon(
-                SetImageIcon.Params(
-                    target = ctx,
-                    path = path
+            val obj = orchestrator.stores.details.getAsObject(ctx)
+            val space = obj?.spaceId
+            if (space != null) {
+                setDocImageIcon(
+                    SetImageIcon.Params(
+                        target = ctx,
+                        path = path,
+                        spaceId = SpaceId(space)
+                    )
+                ).process(
+                    failure = {
+                        sendToast("Can't update object icon image")
+                        Timber.e(it, "Error while setting image icon")
+                    },
+                    success = { (payload, _) ->
+                        dispatcher.send(payload)
+                    }
                 )
-            ).process(
-                failure = {
-                    sendToast("Can't update object icon image")
-                    Timber.e(it, "Error while setting image icon")
-                },
-                success = { (payload, _) ->
-                    dispatcher.send(payload)
+            } else {
+                Timber.e("Space not found").also {
+                    sendToast("Space not found")
                 }
-            )
+            }
         }
     }
 
@@ -1516,10 +1525,17 @@ class EditorViewModel(
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
         val isTemplate = isObjectTemplate()
+        val space = wrapper.spaceId
+        if (space == null) {
+            sendToast("Space not found")
+            return
+        }
         when {
             isTemplate -> {
                 dispatch(
                     command = Command.OpenDocumentMenu(
+                        ctx = context,
+                        space = space,
                         isArchived = false,
                         isFavorite = false,
                         isLocked = false,
@@ -1531,6 +1547,8 @@ class EditorViewModel(
             else -> {
                 dispatch(
                     command = Command.OpenDocumentMenu(
+                        ctx = context,
+                        space = space,
                         isArchived = details[context]?.isArchived ?: false,
                         isFavorite = details[context]?.isFavorite ?: false,
                         isLocked = mode == EditorMode.Locked,
@@ -3254,6 +3272,20 @@ class EditorViewModel(
         }
     }
 
+    fun onSetObjectIconClicked() {
+        viewModelScope.launch {
+            val obj = orchestrator.stores.details.getAsObject(context)
+            val space = obj?.spaceId
+            if (space != null) {
+                dispatch(Command.SetObjectIcon(ctx = context, space = space))
+            } else {
+                Timber.e("Space not found").also {
+                    sendToast("Space not found")
+                }
+            }
+        }
+    }
+
     fun onLayoutClicked() {
         Timber.d("onLayoutClicked, ")
         dispatch(Command.OpenObjectLayout(context))
@@ -4137,7 +4169,7 @@ class EditorViewModel(
         currentMediaUploadDescription = uploadMediaDescription
     }
 
-    fun onPageIconClicked() {
+    fun onObjectIconClicked() {
         Timber.d("onPageIconClicked, ")
         if (mode == EditorMode.Locked) {
             sendToast("Unlock your object to change its icon")
@@ -4147,7 +4179,18 @@ class EditorViewModel(
         val isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
         if (isDetailsAllowed) {
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
-            dispatch(Command.OpenDocumentEmojiIconPicker)
+            val obj = orchestrator.stores.details.getAsObject(context)
+            val space = obj?.spaceId
+            if (space != null) {
+                dispatch(
+                    Command.OpenDocumentEmojiIconPicker(
+                        ctx = context,
+                        space = space
+                    )
+                )
+            } else {
+                sendToast("Space not found")
+            }
         } else {
             sendToast(NOT_ALLOWED_FOR_OBJECT)
         }

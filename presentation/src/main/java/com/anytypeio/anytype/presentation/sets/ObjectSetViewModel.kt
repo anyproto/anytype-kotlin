@@ -1212,18 +1212,44 @@ class ObjectSetViewModel(
     fun onMenuClicked() {
         Timber.d("onMenuClicked, ")
         val state = stateReducer.state.value.dataViewState() ?: return
-        dispatch(
-            ObjectSetCommand.Modal.Menu(
-                ctx = context,
-                isArchived = state.details[context]?.isArchived ?: false,
-                isFavorite = state.details[context]?.isFavorite ?: false,
+        val struct = state.details[context]?.map ?: return
+        val wrapper = ObjectWrapper.Basic(struct)
+        Timber.d("Wrapper: $wrapper")
+        val space = wrapper.spaceId
+        if (space != null) {
+            dispatch(
+                ObjectSetCommand.Modal.Menu(
+                    ctx = context,
+                    space = space,
+                    isArchived = state.details[context]?.isArchived ?: false,
+                    isFavorite = state.details[context]?.isFavorite ?: false,
+                )
             )
-        )
+        } else {
+            Timber.e("Space not found").also {
+                toast("Space not found")
+            }
+        }
     }
 
-    fun onIconClicked() {
+    fun onObjectIconClicked() {
         Timber.d("onIconClicked, ")
-        dispatch(ObjectSetCommand.Modal.OpenIconActionMenu(target = context))
+        val state = stateReducer.state.value.dataViewState() ?: return
+        val struct = state.details[context]
+        val wrapper = ObjectWrapper.Basic(struct?.map.orEmpty())
+        val space = wrapper.spaceId
+        if (space != null) {
+            dispatch(
+                ObjectSetCommand.Modal.OpenIconActionMenu(
+                    target = context,
+                    space = space
+                )
+            )
+        } else {
+            Timber.e("Space not found").also {
+                toast("Space not found")
+            }
+        }
     }
 
     fun onCoverClicked() {

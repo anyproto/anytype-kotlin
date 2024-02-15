@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.interactor.MiddlewareFactory
@@ -512,12 +513,14 @@ class MiddlewareTest {
 
         val command = Command.UploadFile(
             path = path,
-            type = CBlockFileType.IMAGE
+            type = CBlockFileType.IMAGE,
+            space = SpaceId(MockDataFactory.randomUuid())
         )
 
         val request = Rpc.File.Upload.Request(
             localPath = path,
-            type = Block.Content.File.Type.Image
+            type = Block.Content.File.Type.Image,
+            spaceId = command.space.id
         )
 
         service.stub {
@@ -541,12 +544,14 @@ class MiddlewareTest {
 
         val command = Command.UploadFile(
             path = path,
-            type = CBlockFileType.FILE
+            type = CBlockFileType.FILE,
+            space = SpaceId(MockDataFactory.randomUuid())
         )
 
         val request = Rpc.File.Upload.Request(
             localPath = path,
-            type = Block.Content.File.Type.File
+            type = Block.Content.File.Type.File,
+            spaceId = command.space.id
         )
 
         service.stub {
@@ -570,12 +575,14 @@ class MiddlewareTest {
 
         val command = Command.UploadFile(
             path = path,
-            type = CBlockFileType.VIDEO
+            type = CBlockFileType.VIDEO,
+            space = SpaceId(MockDataFactory.randomUuid())
         )
 
         val request = Rpc.File.Upload.Request(
             localPath = path,
-            type = Block.Content.File.Type.Video
+            type = Block.Content.File.Type.Video,
+            spaceId = command.space.id
         )
 
         service.stub {

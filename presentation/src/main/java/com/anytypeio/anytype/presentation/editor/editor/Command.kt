@@ -10,7 +10,10 @@ sealed class Command {
 
     data class OpenDocumentImagePicker(val mimeType: Mimetype) : Command()
 
-    object OpenDocumentEmojiIconPicker : Command()
+    data class OpenDocumentEmojiIconPicker(
+        val ctx: Id,
+        val space: Id
+    ) : Command()
 
     data class OpenTextBlockIconPicker(val block: Id) : Command()
 
@@ -54,6 +57,8 @@ sealed class Command {
     ) : Command()
 
     data class OpenDocumentMenu(
+        val ctx: Id,
+        val space: Id,
         val isArchived: Boolean,
         val isFavorite: Boolean,
         val isLocked: Boolean,
@@ -61,8 +66,9 @@ sealed class Command {
         val isTemplate: Boolean
     ) : Command()
 
-    data class OpenCoverGallery(val ctx: String) : Command()
-    data class OpenObjectLayout(val ctx: String) : Command()
+    data class OpenCoverGallery(val ctx: Id) : Command()
+    data class OpenObjectLayout(val ctx: Id) : Command()
+    data class SetObjectIcon(val ctx: Id, val space: Id) : Command()
 
     object AlertDialog : Command()
 

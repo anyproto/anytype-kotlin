@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.icon
 
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.BaseUseCase
 
 abstract class SetImageIcon<T> : BaseUseCase<Pair<Payload, Hash>, SetImageIcon.Params<T>>() {
@@ -12,6 +13,7 @@ abstract class SetImageIcon<T> : BaseUseCase<Pair<Payload, Hash>, SetImageIcon.P
      */
     data class Params<T>(
         val target: T,
-        val path: String
+        val path: String,
+        val spaceId: SpaceId
     )
 }

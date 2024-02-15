@@ -39,6 +39,7 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
 
         fun new(
             ctx: Id,
+            space: Id,
             isArchived: Boolean,
             isFavorite: Boolean,
             isLocked: Boolean,
@@ -47,6 +48,7 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
         ) = ObjectMenuFragment().apply {
             arguments = bundleOf(
                 CTX_KEY to ctx,
+                SPACE_KEY to space,
                 IS_ARCHIVED_KEY to isArchived,
                 IS_FAVORITE_KEY to isFavorite,
                 IS_LOCKED_KEY to isLocked,

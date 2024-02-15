@@ -7,7 +7,9 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
@@ -132,15 +134,19 @@ class ProfileSettingsViewModel(
         }
     }
 
-    fun onPickedImageFromDevice(path: String) {
+    fun onPickedImageFromDevice(path: String, space: Id) {
         viewModelScope.launch {
             setImageIcon(
-                SetImageIcon.Params(target = profileId, path = path)
+                SetImageIcon.Params(
+                    target = profileId,
+                    path = path,
+                    spaceId = SpaceId(space)
+                )
             ).process(
                 failure = {
                     Timber.e("Error while setting image icon")
                 },
-                success = { (payload, _) ->
+                success = {
                     // do nothing
                 }
             )

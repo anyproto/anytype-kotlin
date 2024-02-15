@@ -68,7 +68,8 @@ fun StatusItem(
                 }
             },
             isMenuExpanded = isMenuExpanded,
-            showEdit = true
+            showEdit = true,
+            showDuplicate = true
         )
     }
 }

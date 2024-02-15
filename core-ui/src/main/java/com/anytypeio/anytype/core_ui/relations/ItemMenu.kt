@@ -21,6 +21,7 @@ fun ItemMenu(
     isMenuExpanded: MutableState<Boolean>,
     showEdit: Boolean = false,
     showOpen: Boolean = false,
+    showDuplicate: Boolean = false
 ) {
     DropdownMenu(
         expanded = isMenuExpanded.value,
@@ -57,22 +58,24 @@ fun ItemMenu(
                     color = colorResource(id = R.color.text_primary),
                 )
             }
+            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
         }
-        Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
-        DropdownMenuItem(
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
-            onClick = {
-                isMenuExpanded.value = false
-                action(ItemMenuAction.Duplicate)
+        if (showDuplicate)  {
+            DropdownMenuItem(
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
+                onClick = {
+                    isMenuExpanded.value = false
+                    action(ItemMenuAction.Duplicate)
+                }
+            ) {
+                Text(
+                    text = stringResource(R.string.duplicate),
+                    style = BodyCallout,
+                    color = colorResource(id = R.color.text_primary),
+                )
             }
-        ) {
-            Text(
-                text = stringResource(R.string.duplicate),
-                style = BodyCallout,
-                color = colorResource(id = R.color.text_primary),
-            )
+            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
         }
-        Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
         DropdownMenuItem(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 11.dp),
             onClick = {

@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
@@ -32,6 +33,7 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueItem
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueItemAction
 
@@ -73,6 +75,7 @@ fun ObjectItem(
             paddingStart = 0.dp,
             paddingEnd = 0.dp
         )
+        val isFileLayout = SupportedLayouts.fileLayouts.contains(item.view.layout)
         ItemMenu(
             action = {
                 when (it) {
@@ -83,7 +86,8 @@ fun ObjectItem(
                 }
             },
             isMenuExpanded = isMenuExpanded,
-            showOpen = true
+            showOpen = true,
+            showDuplicate = !isFileLayout
         )
     }
 }

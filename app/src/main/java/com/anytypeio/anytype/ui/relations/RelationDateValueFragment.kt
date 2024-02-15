@@ -90,6 +90,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
         when (command) {
             is DateValueCommand.DispatchResult -> {
                 dispatchResultAndDismiss(command.timeInSeconds)
+                if (command.dismiss) dismiss()
             }
             is DateValueCommand.OpenDatePicker -> {
                 DatePickerFragment.new(command.timeInSeconds)

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.relations
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -15,7 +16,6 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -54,8 +54,16 @@ fun DatePickerContent(
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = timeInMillis.value
     )
+
+    val isFirstLoad = remember { mutableStateOf(true) }
+
     LaunchedEffect(datePickerState.selectedDateMillis) {
-        onDateSelected(datePickerState.selectedDateMillis)
+        Log.d("Test1983", "DatePickerContent: selectedDateMillis: ${datePickerState.selectedDateMillis}")
+        if (!isFirstLoad.value) {
+            onDateSelected(datePickerState.selectedDateMillis)
+        } else {
+            isFirstLoad.value = false
+        }
     }
     Column(
         modifier = Modifier

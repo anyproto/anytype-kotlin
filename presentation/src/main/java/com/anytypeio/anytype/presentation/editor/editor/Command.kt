@@ -54,6 +54,8 @@ sealed class Command {
     ) : Command()
 
     data class OpenDocumentMenu(
+        val ctx: Id,
+        val space: Id,
         val isArchived: Boolean,
         val isFavorite: Boolean,
         val isLocked: Boolean,

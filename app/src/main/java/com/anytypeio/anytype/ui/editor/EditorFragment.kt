@@ -936,7 +936,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
                     val fr = ObjectMenuFragment.new(
-                        ctx = ctx,
+                        ctx = command.ctx,
+                        space = command.space,
                         isArchived = command.isArchived,
                         isFavorite = command.isFavorite,
                         isLocked = command.isLocked,

@@ -1525,10 +1525,17 @@ class EditorViewModel(
         val details = orchestrator.stores.details.current().details
         val wrapper = ObjectWrapper.Basic(details[context]?.map.orEmpty())
         val isTemplate = isObjectTemplate()
+        val space = wrapper.spaceId
+        if (space == null) {
+            sendToast("Space not found")
+            return
+        }
         when {
             isTemplate -> {
                 dispatch(
                     command = Command.OpenDocumentMenu(
+                        ctx = context,
+                        space = space,
                         isArchived = false,
                         isFavorite = false,
                         isLocked = false,
@@ -1540,6 +1547,8 @@ class EditorViewModel(
             else -> {
                 dispatch(
                     command = Command.OpenDocumentMenu(
+                        ctx = context,
+                        space = space,
                         isArchived = details[context]?.isArchived ?: false,
                         isFavorite = details[context]?.isFavorite ?: false,
                         isLocked = mode == EditorMode.Locked,

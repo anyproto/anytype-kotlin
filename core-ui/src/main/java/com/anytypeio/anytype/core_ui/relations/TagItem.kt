@@ -72,7 +72,8 @@ fun TagItem(
                 }
             },
             isMenuExpanded = isMenuExpanded,
-            showEdit = true
+            showEdit = true,
+            showDuplicate = true
         )
     }
 }

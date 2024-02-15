@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.misc.DateType
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.util.Calendar
 import java.util.TimeZone
 import javax.inject.Inject
@@ -87,25 +88,10 @@ class DateProviderImpl @Inject constructor() : DateProvider {
     )
 
     override fun adjustToStartOfDayInUserTimeZone(timestamp: TimeInSeconds): TimeInMillis {
-
-        // Convert to milliseconds
-        val originalTimestampMillis = timestamp * 1000
-
-        // Get the current time zone of the user
-        val userTimeZone = TimeZone.getDefault()
-
-        // Create a Calendar instance for UTC
-        val calendarUTC = Calendar.getInstance(TimeZone.getTimeZone("UTC"))
-        calendarUTC.timeInMillis = originalTimestampMillis
-
-        // Create a Calendar instance for the user's time zone
-        val calendarUser = Calendar.getInstance(userTimeZone)
-        calendarUser.timeInMillis = originalTimestampMillis
-
-        // Adjust the date considering the difference in time zones
-        val offset = userTimeZone.getOffset(calendarUTC.timeInMillis) - TimeZone.getTimeZone("UTC").getOffset(calendarUTC.timeInMillis)
-        val adjustedTimestampMillis = calendarUTC.timeInMillis + offset
-        return adjustedTimestampMillis
+        val instant = Instant.ofEpochSecond(timestamp)
+        val localDate = instant.atZone(ZoneId.systemDefault()).toLocalDate()
+        val startOfDay = localDate.atStartOfDay()
+        return (startOfDay.toEpochSecond(ZoneOffset.UTC) * 1000)
     }
 
     override fun adjustFromStartOfDayInUserTimeZoneToUTC(timestamp: TimeInMillis): TimeInSeconds {

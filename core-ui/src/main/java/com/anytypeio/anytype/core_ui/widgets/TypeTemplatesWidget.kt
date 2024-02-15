@@ -657,7 +657,7 @@ private fun TemplateItemCoverAndIcon(item: TemplateView.Template) {
         TemplateItemCoverGradient(item = item)
         when (item.layout) {
             ObjectType.Layout.TODO -> {}
-            ObjectType.Layout.PROFILE -> {
+            ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {
                 Box(
                     modifier = Modifier
                         .wrapContentWidth()

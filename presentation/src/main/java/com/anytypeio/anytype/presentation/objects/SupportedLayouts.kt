@@ -9,6 +9,7 @@ object SupportedLayouts {
         ObjectType.Layout.IMAGE,
         ObjectType.Layout.VIDEO,
         ObjectType.Layout.PROFILE,
+        ObjectType.Layout.PARTICIPANT,
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION,
         ObjectType.Layout.TODO,
@@ -18,6 +19,7 @@ object SupportedLayouts {
     val editorLayouts = listOf(
         ObjectType.Layout.BASIC,
         ObjectType.Layout.PROFILE,
+        ObjectType.Layout.PARTICIPANT,
         ObjectType.Layout.TODO,
         ObjectType.Layout.NOTE,
         ObjectType.Layout.BOOKMARK
@@ -41,6 +43,7 @@ object SupportedLayouts {
     val createObjectLayouts = listOf(
         ObjectType.Layout.BASIC,
         ObjectType.Layout.PROFILE,
+        ObjectType.Layout.PARTICIPANT,
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION,
         ObjectType.Layout.TODO,

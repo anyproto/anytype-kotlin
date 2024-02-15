@@ -65,7 +65,15 @@ sealed class ObjectLayoutView {
         override fun copy(isSelected: Boolean) = copy(id = id, isSelected = isSelected)
     }
 
-    data class Database(
+    data class Participant(
+        override val id: Int,
+        override val isSelected: Boolean
+    ) :
+        ObjectLayoutView() {
+        override fun copy(isSelected: Boolean) = copy(id = id, isSelected = isSelected)
+    }
+
+    data class PDF(
         override val id: Int,
         override val isSelected: Boolean
     ) :

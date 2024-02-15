@@ -4169,7 +4169,7 @@ class EditorViewModel(
         currentMediaUploadDescription = uploadMediaDescription
     }
 
-    fun onPageIconClicked() {
+    fun onObjectIconClicked() {
         Timber.d("onPageIconClicked, ")
         if (mode == EditorMode.Locked) {
             sendToast("Unlock your object to change its icon")
@@ -4179,7 +4179,18 @@ class EditorViewModel(
         val isDetailsAllowed = restrictions.none { it == ObjectRestriction.DETAILS }
         if (isDetailsAllowed) {
             controlPanelInteractor.onEvent(ControlPanelMachine.Event.OnDocumentIconClicked)
-            dispatch(Command.OpenDocumentEmojiIconPicker)
+            val obj = orchestrator.stores.details.getAsObject(context)
+            val space = obj?.spaceId
+            if (space != null) {
+                dispatch(
+                    Command.OpenDocumentEmojiIconPicker(
+                        ctx = context,
+                        space = space
+                    )
+                )
+            } else {
+                sendToast("Space not found")
+            }
         } else {
             sendToast(NOT_ALLOWED_FOR_OBJECT)
         }

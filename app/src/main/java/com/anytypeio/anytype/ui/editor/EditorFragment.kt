@@ -315,7 +315,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 )
             },
             onTextInputClicked = vm::onTextInputClicked,
-            onPageIconClicked = vm::onPageIconClicked,
+            onPageIconClicked = vm::onObjectIconClicked,
             onCoverClicked = vm::onAddCoverClicked,
             onTogglePlaceholderClicked = vm::onTogglePlaceholderClicked,
             onToggleClicked = vm::onToggleClicked,
@@ -894,13 +894,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         context = ctx, blockId = command.block
                     ).showChildFragment()
                 }
-                Command.OpenDocumentEmojiIconPicker -> {
+                is Command.OpenDocumentEmojiIconPicker -> {
                     hideSoftInput()
                     findNavController().safeNavigate(
                         R.id.pageScreen,
                         R.id.action_pageScreen_to_objectIconPickerScreen,
                         bundleOf(
-                            IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
+                            IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to command.ctx,
+                            IconPickerFragmentBase.ARG_SPACE_ID_KEY to command.space,
                         )
                     )
                 }

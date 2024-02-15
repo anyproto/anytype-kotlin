@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.addIds
 import com.anytypeio.anytype.core_models.ext.getValues
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -526,25 +527,33 @@ abstract class RelationValueBaseViewModel(
     ) {
         viewModelScope.launch {
             isLoading.emit(true)
-            val obj = values.get(ctx = ctx, target = target)
-            addFileToObject(
-                params = AddFileToObject.Params(
-                    ctx = target,
-                    relation = relationKey,
-                    obj = obj,
-                    path = filePath
+            val obj = ObjectWrapper.Basic(values.get(ctx = ctx, target = target))
+            val space = obj.spaceId
+            if (space != null) {
+                addFileToObject(
+                    params = AddFileToObject.Params(
+                        ctx = target,
+                        relation = relationKey,
+                        obj = obj.map,
+                        path = filePath,
+                        space = SpaceId(space)
+                    )
+                ).process(
+                    failure = {
+                        isLoading.emit(false)
+                        Timber.e(it, "Error while adding new file to object")
+                    },
+                    success = {
+                        isLoading.emit(false)
+                        Timber.d("Successfully add new file to object")
+                        dispatcher.send(it)
+                    }
                 )
-            ).process(
-                failure = {
-                    isLoading.emit(false)
-                    Timber.e(it, "Error while adding new file to object")
-                },
-                success = {
-                    isLoading.emit(false)
-                    Timber.d("Successfully add new file to object")
-                    dispatcher.send(it)
+            } else {
+                Timber.e("Space not found for relation value").also {
+                    sendToast("Space not found")
                 }
-            )
+            }
         }
     }
 

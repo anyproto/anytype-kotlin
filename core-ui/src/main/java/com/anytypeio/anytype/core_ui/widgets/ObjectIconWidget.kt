@@ -183,7 +183,7 @@ class ObjectIconWidget @JvmOverloads constructor(
             composeView.gone()
             initialContainer.setBackgroundResource(R.drawable.object_in_list_background_profile_initial)
             initial.setTextColor(context.color(R.color.text_white))
-            initial.setHintTextColor(context.color(R.color.text_tertiary))
+            initial.setHintTextColor(context.color(R.color.text_white))
             initial.text = name.firstOrNull()?.uppercaseChar()?.toString()
         }
     }

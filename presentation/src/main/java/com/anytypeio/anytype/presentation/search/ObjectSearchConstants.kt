@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -582,6 +581,7 @@ object ObjectSearchConstants {
     val defaultKeys = listOf(
         Relations.ID,
         Relations.SPACE_ID,
+        Relations.TARGET_SPACE_ID,
         Relations.UNIQUE_KEY,
         Relations.NAME,
         Relations.ICON_IMAGE,
@@ -610,6 +610,8 @@ object ObjectSearchConstants {
 
     val defaultDataViewKeys = listOf(
         Relations.ID,
+        Relations.SPACE_ID,
+        Relations.TARGET_SPACE_ID,
         Relations.IDENTITY_PROFILE_LINK,
         Relations.NAME,
         Relations.ICON_IMAGE,
@@ -633,6 +635,7 @@ object ObjectSearchConstants {
     val defaultRelationKeys = listOf(
         Relations.ID,
         Relations.SPACE_ID,
+        Relations.TARGET_SPACE_ID,
         Relations.UNIQUE_KEY,
         Relations.NAME,
         Relations.DESCRIPTION,

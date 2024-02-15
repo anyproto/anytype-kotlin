@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.types.icon_picker
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.picker.IconPickerViewModel
@@ -23,8 +24,8 @@ class TypeIconPickerViewModel(
         actions.value = EmojiPickerAction.RemoveEmoji
     }
 
-    override fun onPickedFromDevice(iconable: Unit, path: String) {
-        // do nothing
+    override fun onPickedFromDevice(iconable: Unit, path: String, space: Id) {
+        // Do nothing
     }
 
     sealed class EmojiPickerAction {

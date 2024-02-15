@@ -264,10 +264,11 @@ fun ObjectLayoutView.getName(): Int? = when (this) {
     is ObjectLayoutView.Image -> null
     is ObjectLayoutView.Note -> R.string.name_layout_note
     is ObjectLayoutView.Profile -> R.string.name_layout_profile
+    is ObjectLayoutView.Participant -> R.string.name_layout_participant
     is ObjectLayoutView.Set -> R.string.name_layout_set
     is ObjectLayoutView.Todo -> R.string.name_layout_todo
     is ObjectLayoutView.Dashboard -> null
-    is ObjectLayoutView.Database -> null
+    is ObjectLayoutView.PDF -> null
     is ObjectLayoutView.File -> null
     is ObjectLayoutView.ObjectType -> null
     is ObjectLayoutView.Relation -> null

@@ -15,10 +15,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.shareFile
@@ -36,6 +38,8 @@ import javax.inject.Inject
 import timber.log.Timber
 
 class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
+
+    private val space: Id get() = arg(SPACE_ID_KEY)
 
     @Inject
     lateinit var factory: ProfileSettingsViewModel.Factory
@@ -145,7 +149,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         if (uri != null) {
             try {
                 val path = uri.parseImagePath(requireContext())
-                vm.onPickedImageFromDevice(path = path)
+                vm.onPickedImageFromDevice(path = path, space = space)
             } catch (e: Exception) {
                 toast("Error while parsing path for cover image")
                 Timber.d(e, "Error while parsing path for cover image")
@@ -161,6 +165,10 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
     override fun releaseDependencies() {
         componentManager().profileComponent.release()
+    }
+
+    companion object {
+        const val SPACE_ID_KEY = "arg.profile-settings.space-id"
     }
 }
 

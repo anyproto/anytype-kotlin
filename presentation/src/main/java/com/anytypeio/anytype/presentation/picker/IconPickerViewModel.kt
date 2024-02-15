@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.picker
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
@@ -41,7 +42,7 @@ abstract class IconPickerViewModel<Iconable>(
 
     abstract fun setEmoji(iconable: Iconable, emojiUnicode: String)
     abstract fun onRemoveClicked(iconable: Iconable)
-    abstract fun onPickedFromDevice(iconable: Iconable, path: String)
+    abstract fun onPickedFromDevice(iconable: Iconable, path: String, space: Id)
 
     init {
         viewModelScope.launch {

@@ -9,6 +9,7 @@ sealed class ObjectSetCommand {
 
         data class Menu(
             val ctx: Id,
+            val space: Id,
             val isArchived: Boolean,
             val isFavorite: Boolean
         ) : Modal()
@@ -70,7 +71,8 @@ sealed class ObjectSetCommand {
         data class CreateBookmark(val ctx: Id) : Modal()
 
         data class OpenIconActionMenu(
-            val target: Id
+            val target: Id,
+            val space: Id
         ) : Modal()
 
         data class OpenCoverActionMenu(

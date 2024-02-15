@@ -718,7 +718,7 @@ open class ObjectSetFragment :
             if (header.title.emoji != null) visible() else gone()
             jobs += this.clicks()
                 .throttleFirst()
-                .onEach { vm.onIconClicked() }
+                .onEach { vm.onObjectIconClicked() }
                 .launchIn(lifecycleScope)
         }
 
@@ -726,7 +726,7 @@ open class ObjectSetFragment :
             if (header.title.image != null) visible() else gone()
             jobs += this.clicks()
                 .throttleFirst()
-                .onEach { vm.onIconClicked() }
+                .onEach { vm.onObjectIconClicked() }
                 .launchIn(lifecycleScope)
         }
 
@@ -894,6 +894,7 @@ open class ObjectSetFragment :
                     R.id.objectSetMainMenuScreen,
                     bundleOf(
                         ObjectMenuBaseFragment.CTX_KEY to command.ctx,
+                        ObjectMenuBaseFragment.SPACE_KEY to command.space,
                         ObjectMenuBaseFragment.IS_ARCHIVED_KEY to command.isArchived,
                         ObjectMenuBaseFragment.IS_FAVORITE_KEY to command.isFavorite,
                         ObjectMenuBaseFragment.IS_LOCKED_KEY to false,
@@ -1019,7 +1020,8 @@ open class ObjectSetFragment :
                     R.id.objectSetScreen,
                     R.id.action_objectSetScreen_to_objectSetIconPickerScreen,
                     bundleOf(
-                        IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
+                        IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to command.target,
+                        IconPickerFragmentBase.ARG_SPACE_ID_KEY to command.space,
                     )
                 )
             }

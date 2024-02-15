@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.relations
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -50,15 +49,13 @@ fun DatePickerContent(
     onTomorrowClicked: () -> Unit
 ){
 
-    val timeInMillis = remember { mutableStateOf(state.timeInMillis) }
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = timeInMillis.value
+        initialSelectedDateMillis = state.timeInMillis
     )
 
     val isFirstLoad = remember { mutableStateOf(true) }
 
     LaunchedEffect(datePickerState.selectedDateMillis) {
-        Log.d("Test1983", "DatePickerContent: selectedDateMillis: ${datePickerState.selectedDateMillis}")
         if (!isFirstLoad.value) {
             onDateSelected(datePickerState.selectedDateMillis)
         } else {

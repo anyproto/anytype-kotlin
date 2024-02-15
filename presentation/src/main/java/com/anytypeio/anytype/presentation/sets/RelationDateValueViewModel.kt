@@ -44,7 +44,6 @@ class RelationDateValueViewModel(
                 relations.observe(relationKey),
                 values.subscribe(ctx = ctx, target = objectId)
             ) { relation, value ->
-                Log.d("Test1983", "combine: value: ${value[relationKey]}")
                 setName(relation.name)
                 setDate(timeInSeconds = DateParser.parse(value[relationKey]))
             }
@@ -119,12 +118,13 @@ class RelationDateValueViewModel(
     }
 
     private fun setDate(timeInSeconds: Long?) {
+        Log.d("Test1983", "setDate: timeInSeconds: $timeInSeconds")
         if (timeInSeconds != null) {
-            _views.value = views.value.copy(
+            _views.value = _views.value.copy(
                 timeInMillis = dateProvider.adjustToStartOfDayInUserTimeZone(timeInSeconds)
             )
         } else {
-            _views.value = views.value.copy(
+            _views.value = _views.value.copy(
                 timeInMillis = null
             )
         }

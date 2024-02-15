@@ -382,6 +382,7 @@
     <string name="default_object_type_title">Standard Objekttyp</string>
     <string name="name_layout_basic">Einfach</string>
     <string name="name_layout_profile">Profil</string>
+    <string name="name_layout_participant">Participant</string>
     <string name="name_layout_todo">Aufgabe</string>
     <string name="name_layout_set">Set</string>
     <string name="name_layout_collection">Sammlung</string>

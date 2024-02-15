@@ -426,6 +426,7 @@
     <string name="default_object_type_title">Default object type</string>
     <string name="name_layout_basic">Basic</string>
     <string name="name_layout_profile">Profile</string>
+    <string name="name_layout_participant">Participant</string>
     <string name="name_layout_todo">Task</string>
     <string name="name_layout_set">Set</string>
     <string name="name_layout_collection">Collection</string>

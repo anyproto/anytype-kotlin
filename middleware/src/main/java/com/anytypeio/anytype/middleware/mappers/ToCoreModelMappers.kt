@@ -644,7 +644,6 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.file_ -> ObjectType.Layout.FILE
     MOTypeLayout.relation -> ObjectType.Layout.RELATION
     MOTypeLayout.dashboard -> ObjectType.Layout.DASHBOARD
-    MOTypeLayout.database -> ObjectType.Layout.DATABASE
     MOTypeLayout.image -> ObjectType.Layout.IMAGE
     MOTypeLayout.note -> ObjectType.Layout.NOTE
     MOTypeLayout.space -> ObjectType.Layout.SPACE
@@ -654,8 +653,10 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.date -> ObjectType.Layout.DATE
     MOTypeLayout.collection -> ObjectType.Layout.COLLECTION
     MOTypeLayout.relationOption -> ObjectType.Layout.RELATION_OPTION
-    MOTypeLayout.relationOptionsList -> TODO()
+    MOTypeLayout.participant -> ObjectType.Layout.PARTICIPANT
+    MOTypeLayout.relationOptionsList -> ObjectType.Layout.RELATION_OPTION_LIST
     MOTypeLayout.spaceView -> ObjectType.Layout.SPACE_VIEW
+    MOTypeLayout.pdf -> ObjectType.Layout.PDF
 }
 
 fun MRelationDataSource.source(): Relation.Source = when (this) {

@@ -98,6 +98,8 @@ message Event {
 
             Notification.Send notificationSend = 114;
             Notification.Update notificationUpdate = 115;
+
+            Payload.Broadcast payloadBroadcast = 116;
         }
     }
 
@@ -1038,6 +1040,12 @@ message Event {
         }
         message Update {
             anytype.model.Notification notification = 1;
+        }
+    }
+
+    message Payload {
+        message Broadcast {
+            string payload = 1;
         }
     }
 }

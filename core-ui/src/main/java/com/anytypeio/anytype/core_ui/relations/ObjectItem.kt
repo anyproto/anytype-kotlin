@@ -40,7 +40,8 @@ import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueIt
 @Composable
 fun ObjectItem(
     item: ObjectValueItem.Object,
-    action: (ObjectValueItemAction) -> Unit
+    action: (ObjectValueItemAction) -> Unit,
+    isEditable: Boolean
 ) {
     val haptics = LocalHapticFeedback.current
     val isMenuExpanded = remember { mutableStateOf(false) }
@@ -51,8 +52,10 @@ fun ObjectItem(
             .noRippleCombinedClickable(
                 onClick = { action(ObjectValueItemAction.Click(item)) },
                 onLongClicked = {
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    isMenuExpanded.value = !isMenuExpanded.value
+                    if (isEditable) {
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        isMenuExpanded.value = !isMenuExpanded.value
+                    }
                 }
             )
     ) {
@@ -188,6 +191,7 @@ fun PreviewObjectItem() {
             isSelected = true,
             number = 1,
         ),
-        action = {}
+        action = {},
+        isEditable = true
     )
 }

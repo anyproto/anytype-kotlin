@@ -364,11 +364,6 @@ class RelationListViewModel(
                 Timber.w("Couldn't find relation in store by id:${view.id}")
                 return@launch
             }
-            if (relation.format != RelationFormat.OBJECT && relation.isReadonlyValue) {
-                _toasts.emit(NOT_ALLOWED_FOR_RELATION)
-                Timber.d("No interaction allowed with this relation")
-                return@launch
-            }
             when (relation.format) {
                 RelationFormat.SHORT_TEXT,
                 RelationFormat.LONG_TEXT,
@@ -387,6 +382,11 @@ class RelationListViewModel(
                     )
                 }
                 RelationFormat.CHECKBOX -> {
+                    if (relation.isReadonlyValue) {
+                        _toasts.emit(NOT_ALLOWED_FOR_RELATION)
+                        Timber.d("No interaction allowed with this relation")
+                        return@launch
+                    }
                     proceedWithTogglingRelationCheckboxValue(view, ctx)
                 }
                 RelationFormat.DATE -> {

@@ -33,7 +33,7 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `should show error toast when clicking on read-only cell, and edit the cell when it's not read-only`() =
+    fun `should edit the cell when it's not read-only and read-only`() =
         runTest {
             // SETUP
             stubSpaceManager(mockObjectSet.spaceId)
@@ -93,6 +93,8 @@ class ObjectSetCellTest : ObjectSetViewModelTestSetup() {
                 viewModel.commands.test {
                     val command = awaitItem()
                     assertIs<ObjectSetCommand.Modal.EditGridTextCell>(command)
+                    val command2 = awaitItem()
+                    assertIs<ObjectSetCommand.Modal.EditGridTextCell>(command2)
                 }
             }
         }

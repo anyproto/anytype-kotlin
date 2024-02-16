@@ -7062,11 +7062,6 @@ class EditorViewModel(
                 Timber.w("Couldn't find relation in store by id:${relationId}")
                 return@launch
             }
-            if (relation.format != RelationFormat.OBJECT && relation.isReadonlyValue) {
-                _toasts.emit(NOT_ALLOWED_FOR_RELATION)
-                Timber.d("No interaction allowed with this relation")
-                return@launch
-            }
             if (checkRelationIsInObject(relationView)) {
                 openRelationValueScreen(
                     relation = relation,
@@ -7080,7 +7075,6 @@ class EditorViewModel(
                     )
                 }
             }
-            openRelationValueScreen(relation, relationView)
         }
     }
 
@@ -7131,6 +7125,11 @@ class EditorViewModel(
             }
             RelationFormat.CHECKBOX -> {
                 check(relationView is ObjectRelationView.Checkbox)
+                if (relation.isReadonlyValue) {
+                    sendToast(NOT_ALLOWED_FOR_RELATION)
+                    Timber.d("No interaction allowed with this relation")
+                    return
+                }
                 proceedWithSetObjectDetails(
                     ctx = context,
                     key = relation.key,

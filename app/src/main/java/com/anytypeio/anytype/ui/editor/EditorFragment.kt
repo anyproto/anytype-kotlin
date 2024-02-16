@@ -1040,7 +1040,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val fr = RelationDateValueFragment.new(
                         ctx = command.ctx,
                         objectId = command.target,
-                        relationKey = command.relationKey
+                        relationKey = command.relationKey,
+                        isLocked = command.isNotEditableValue
                     )
                     fr.showChildFragment()
                 }

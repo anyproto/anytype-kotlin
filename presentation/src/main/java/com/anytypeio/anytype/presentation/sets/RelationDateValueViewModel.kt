@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -31,11 +32,13 @@ class RelationDateValueViewModel(
     val views: StateFlow<DateValueView> = _views
 
     private val jobs = mutableListOf<Job>()
+    private var isEditableRelation = false
 
     fun onStart(
         ctx: Id,
         relationKey: Key,
-        objectId: String
+        objectId: String,
+        isLocked: Boolean
     ) {
         Timber.d("onStart: ctx:[$ctx], relationKey:[$relationKey], objectId:[$objectId]")
         jobs += viewModelScope.launch {
@@ -43,6 +46,7 @@ class RelationDateValueViewModel(
                 relations.observe(relationKey),
                 values.subscribe(ctx = ctx, target = objectId)
             ) { relation, value ->
+                setupIsRelationNotEditable(isLocked, relation)
                 setName(relation.name)
                 setDate(timeInSeconds = DateParser.parse(value[relationKey]))
             }
@@ -130,6 +134,20 @@ class RelationDateValueViewModel(
         }
     }
 
+    private fun setupIsRelationNotEditable(isLocked: Boolean, relation: ObjectWrapper.Relation) {
+        if (isLocked
+            || relation.isReadonlyValue
+            || relation.isHidden == true
+            || relation.isDeleted == true
+            || relation.isArchived == true
+            || !relation.isValid
+        ) {
+            _views.value = views.value.copy(
+                isEditable = false
+            )
+        }
+    }
+
     class Factory(
         private val relations: ObjectRelationProvider,
         private val values: ObjectValueProvider,
@@ -149,5 +167,6 @@ sealed class DateValueCommand {
 
 data class DateValueView(
     val title: String? = null,
-    val timeInMillis: TimeInMillis? = null
+    val timeInMillis: TimeInMillis? = null,
+    val isEditable: Boolean = true
 )

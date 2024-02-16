@@ -1508,7 +1508,7 @@ class DefaultBlockViewRenderer @Inject constructor(
                     color = block.textColor()
                 )
             }
-            ObjectType.Layout.PROFILE -> {
+            ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {
                 BlockView.Title.Profile(
                     mode = blockMode,
                     id = block.id,
@@ -2105,8 +2105,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ctx = ctx,
             keys = obj.featuredRelations,
             details = details
-        )
-            .sortedByDescending { it.key == Relations.TYPE }
+        ).sortedByDescending { it.key == Relations.TYPE }
         return BlockView.FeaturedRelation(
             id = block.id,
             relations = views,

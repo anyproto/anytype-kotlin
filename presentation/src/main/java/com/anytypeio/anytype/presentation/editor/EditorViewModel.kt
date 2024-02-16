@@ -3900,88 +3900,17 @@ class EditorViewModel(
                 }
             }
             is ListenerType.Relation.Featured -> {
-                val restrictions = orchestrator.stores.objectRestrictions.current()
-                if (restrictions.contains(ObjectRestriction.RELATIONS)) {
-                    sendToast(NOT_ALLOWED_FOR_RELATION)
-                    return
-                }
                 when (mode) {
                     EditorMode.Edit, EditorMode.Locked -> {
                         viewModelScope.launch {
-                            val relationId = clicked.relation.id
-                            val relation = storeOfRelations.getById(relationId)
+                            val relation = storeOfRelations.getByKey(clicked.relation.key)
                             if (relation != null) {
-                                if (relation.format != RelationFormat.OBJECT && relation.isReadonlyValue) {
-                                    sendToast(NOT_ALLOWED_FOR_RELATION)
-                                    return@launch
-                                }
-                                when (relation.format) {
-                                    Relation.Format.SHORT_TEXT,
-                                    Relation.Format.LONG_TEXT,
-                                    Relation.Format.URL,
-                                    Relation.Format.PHONE,
-                                    Relation.Format.NUMBER,
-                                    Relation.Format.EMAIL -> {
-                                        dispatch(
-                                            Command.OpenObjectRelationScreen.Value.Text(
-                                                ctx = context,
-                                                target = context,
-                                                relationKey = relationId,
-                                                isLocked = mode == EditorMode.Locked
-                                            )
-                                        )
-                                    }
-                                    Relation.Format.CHECKBOX -> {
-                                        val view = clicked.relation
-                                        if (view is ObjectRelationView.Checkbox) {
-                                            proceedWithSetObjectDetails(
-                                                ctx = context,
-                                                key = relationId,
-                                                value = !view.isChecked
-                                            )
-                                        }
-                                    }
-                                    Relation.Format.DATE -> {
-                                        dispatch(
-                                            Command.OpenObjectRelationScreen.Value.Date(
-                                                ctx = context,
-                                                target = context,
-                                                relationKey = relationId
-                                            )
-                                        )
-                                    }
-                                    Relation.Format.TAG, Relation.Format.STATUS -> {
-                                        dispatch(
-                                            Command.OpenObjectRelationScreen.Value.TagOrStatus(
-                                                ctx = context,
-                                                target = context,
-                                                relationKey = relation.key,
-                                                isLocked = mode == EditorMode.Locked
-                                            )
-                                        )
-                                    }
-                                    Relation.Format.OBJECT, Relation.Format.FILE -> {
-                                        dispatch(
-                                            Command.OpenObjectRelationScreen.Value.ObjectValue(
-                                                ctx = context,
-                                                target = context,
-                                                relationKey = relation.key,
-                                                isLocked = mode == EditorMode.Locked
-                                            )
-                                        )
-                                    }
-                                    else -> {
-                                        dispatch(
-                                            Command.OpenObjectRelationScreen.Value.Default(
-                                                ctx = context,
-                                                target = context,
-                                                relationKey = relationId,
-                                                targetObjectTypes = relation.relationFormatObjectTypes,
-                                                isLocked = mode == EditorMode.Locked
-                                            )
-                                        )
-                                    }
-                                }
+                                openRelationValueScreen(
+                                    relation = relation,
+                                    relationView = clicked.relation,
+                                )
+                            } else {
+                                Timber.e("Relation not found in store by key${clicked.relation.key}")
                             }
                         }
                     }
@@ -7165,16 +7094,9 @@ class EditorViewModel(
                     )
                 )
             }
-            else -> {
-                dispatch(
-                    Command.OpenObjectRelationScreen.Value.Default(
-                        ctx = context,
-                        target = context,
-                        relationKey = relation.key,
-                        targetObjectTypes = relation.relationFormatObjectTypes,
-                        isLocked = mode == EditorMode.Locked
-                    )
-                )
+            Relation.Format.EMOJI, Relation.Format.RELATIONS, Relation.Format.UNDEFINED -> {
+                sendToast(NOT_ALLOWED_FOR_RELATION)
+                Timber.d("No interaction allowed with this relation")
             }
         }
     }

@@ -832,12 +832,6 @@ class ObjectSetViewModel(
                 return@launch
             }
 
-            if (relation.format != RelationFormat.OBJECT && relation.isReadonlyValue) {
-                Timber.d("onGridCellClicked, relation is ReadOnly")
-                toast(NOT_ALLOWED_CELL)
-                return@launch
-            }
-
             when (cell) {
                 is CellView.Description,
                 is CellView.Number,
@@ -884,6 +878,11 @@ class ObjectSetViewModel(
                     }
                 }
                 is CellView.Checkbox -> {
+                    if (relation.isReadonlyValue) {
+                        Timber.d("onGridCellClicked, relation is ReadOnly")
+                        toast(NOT_ALLOWED_CELL)
+                        return@launch
+                    }
                     setObjectDetails(
                         UpdateDetail.Params(
                             target = cell.id,
@@ -1593,11 +1592,6 @@ class ObjectSetViewModel(
                 Timber.w("Couldn't find relation in store by id:${view.id}")
                 return@launch
             }
-            if (relation.format != RelationFormat.OBJECT && relation.isReadonlyValue) {
-                toast(RelationListViewModel.NOT_ALLOWED_FOR_RELATION)
-                Timber.d("No interaction allowed with this relation")
-                return@launch
-            }
             when (relation.format) {
                 RelationFormat.SHORT_TEXT,
                 RelationFormat.LONG_TEXT,
@@ -1613,6 +1607,11 @@ class ObjectSetViewModel(
                     )
                 }
                 RelationFormat.CHECKBOX -> {
+                    if (relation.isReadonlyValue) {
+                        toast(RelationListViewModel.NOT_ALLOWED_FOR_RELATION)
+                        Timber.d("No interaction allowed with this relation")
+                        return@launch
+                    }
                     proceedWithTogglingRelationCheckboxValue(view, ctx)
                 }
                 RelationFormat.DATE -> {

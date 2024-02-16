@@ -381,7 +381,7 @@
     <string name="default_object_type_title">Tipe objek bawaan</string>
     <string name="name_layout_basic">Dasar</string>
     <string name="name_layout_profile">Profil</string>
-    <string name="name_layout_participant">Participant</string>
+    <string name="name_layout_participant">Peserta</string>
     <string name="name_layout_todo">Tugas</string>
     <string name="name_layout_set">Set</string>
     <string name="name_layout_collection">Koleksi</string>

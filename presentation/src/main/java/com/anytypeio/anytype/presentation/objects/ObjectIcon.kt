@@ -51,7 +51,7 @@ sealed class ObjectIcon {
                     !emoji.isNullOrBlank() -> Basic.Emoji(unicode = emoji)
                     else -> Basic.Avatar(obj.name.orEmpty())
                 }
-                ObjectType.Layout.PROFILE -> {
+                ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {
                     if (!img.isNullOrBlank()) {
                         Profile.Image(hash = builder.thumbnail(img))
                     } else {

@@ -134,9 +134,6 @@ fun ObjectWrapper.Basic.widgetElementIcon(
 ) : ObjectIcon {
     val img = iconImage
     val emoji = iconEmoji
-    val option = iconOption?.let { code ->
-        gradientProvider.get(code)
-    }
     return when (layout) {
         ObjectType.Layout.BASIC -> when {
             !img.isNullOrBlank() -> ObjectIcon.Basic.Image(hash = builder.thumbnail(img))
@@ -148,7 +145,7 @@ fun ObjectWrapper.Basic.widgetElementIcon(
             !emoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(unicode = emoji)
             else -> ObjectIcon.None
         }
-        ObjectType.Layout.PROFILE -> {
+        ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {
             if (!img.isNullOrBlank()) {
                 ObjectIcon.Profile.Image(hash = builder.thumbnail(img))
             } else {

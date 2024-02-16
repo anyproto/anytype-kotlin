@@ -198,11 +198,6 @@ class RelationListViewModel(
 
     fun onRelationClicked(ctx: Id, target: Id?, view: ObjectRelationView) {
         Timber.d("onRelationClicked, ctx: $ctx, target: $target, view: $view")
-        val isLocked = resolveIsLockedState(ctx)
-        if (isLocked) {
-            sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
-            return
-        }
         viewModelScope.launch {
             if (isInAddMode.value) {
                 onRelationClickedAddMode(target = target, view = view)
@@ -220,7 +215,7 @@ class RelationListViewModel(
 
     fun onCheckboxClicked(ctx: Id, view: ObjectRelationView) {
         Timber.d("onCheckboxClicked, ctx: $ctx, view: $view")
-        val isLocked = resolveIsLockedState(ctx)
+        val isLocked = resolveIsLockedStateOrDetailsRestriction(ctx)
         if (isLocked) {
             sendToast(RelationOperationError.LOCKED_OBJECT_MODIFICATION_ERROR)
             return
@@ -364,6 +359,7 @@ class RelationListViewModel(
                 Timber.w("Couldn't find relation in store by id:${view.id}")
                 return@launch
             }
+            val isLocked = resolveIsLockedStateOrDetailsRestriction(ctx)
             when (relation.format) {
                 RelationFormat.SHORT_TEXT,
                 RelationFormat.LONG_TEXT,
@@ -377,12 +373,12 @@ class RelationListViewModel(
                             relationId = relation.id,
                             relationKey = relation.key,
                             target = ctx,
-                            isLocked = resolveIsLockedState(ctx)
+                            isLocked = isLocked
                         )
                     )
                 }
                 RelationFormat.CHECKBOX -> {
-                    if (relation.isReadonlyValue) {
+                    if (isLocked || relation.isReadonlyValue) {
                         _toasts.emit(NOT_ALLOWED_FOR_RELATION)
                         Timber.d("No interaction allowed with this relation")
                         return@launch
@@ -395,7 +391,8 @@ class RelationListViewModel(
                             ctx = ctx,
                             relationId = relation.id,
                             relationKey = relation.key,
-                            target = ctx
+                            target = ctx,
+                            isLocked = isLocked
                         )
                     )
                 }
@@ -406,7 +403,7 @@ class RelationListViewModel(
                             relationId = relation.id,
                             relationKey = relation.key,
                             target = ctx,
-                            isLocked = resolveIsLockedState(ctx)
+                            isLocked = isLocked
                         )
                     )
                 }
@@ -419,7 +416,7 @@ class RelationListViewModel(
                             relationKey = relation.key,
                             target = ctx,
                             targetObjectTypes = relation.relationFormatObjectTypes,
-                            isLocked = resolveIsLockedState(ctx)
+                            isLocked = isLocked
                         )
                     )
                 }
@@ -434,7 +431,8 @@ class RelationListViewModel(
         }
     }
 
-    private fun resolveIsLockedState(ctx: Id): Boolean = lockedStateProvider.isLocked(ctx)
+    private fun resolveIsLockedStateOrDetailsRestriction(ctx: Id): Boolean =
+        lockedStateProvider.isLocked(ctx) || lockedStateProvider.isContainsDetailsRestriction()
 
     private fun proceedWithTogglingRelationCheckboxValue(view: ObjectRelationView, ctx: Id) {
         viewModelScope.launch {
@@ -528,7 +526,8 @@ class RelationListViewModel(
             val ctx: Id,
             val relationId: Id,
             val relationKey: Key,
-            val target: Id
+            val target: Id,
+            val isLocked: Boolean = false
         ) : Command()
 
         data class EditFileObjectRelationValue(

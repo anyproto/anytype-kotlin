@@ -7049,7 +7049,7 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
+                        isReadOnlyValue = isReadOnlyValue(restrictions)
                     )
                 )
             }
@@ -7072,7 +7072,7 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
+                        isReadOnlyValue = isReadOnlyValue(restrictions)
                     )
                 )
             }
@@ -7082,7 +7082,7 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
+                        isReadOnlyValue = isReadOnlyValue(restrictions)
                     )
                 )
             }
@@ -7092,7 +7092,7 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isNotEditableValue = isNotEditableObjectRelationValue(restrictions)
+                        isReadOnlyValue = isReadOnlyValue(restrictions)
                     )
                 )
             }
@@ -7159,7 +7159,7 @@ class EditorViewModel(
     }
     //endregion
 
-    private fun isNotEditableObjectRelationValue(objRestrictions: List<ObjectRestriction>): Boolean {
+    private fun isReadOnlyValue(objRestrictions: List<ObjectRestriction>): Boolean {
         return mode == EditorMode.Locked || objRestrictions.contains(ObjectRestriction.DETAILS)
     }
 }

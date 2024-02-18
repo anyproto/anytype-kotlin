@@ -125,7 +125,7 @@
     <string name="skip">Ignorer</string>
     <string name="add">Ajouter</string>
     <string name="duplicate">Dupliquer</string>
-    <string name="customize_view">Personnaliser la vue</string>
+    <string name="customize_view">Configurer la vue</string>
     <string name="kanban_view">Vue Kanban</string>
     <string name="properties">Propriétés</string>
     <string name="sort">Trier</string>
@@ -397,7 +397,7 @@
     <string name="no_data">Aucune donnée</string>
     <string name="no_source">Aucune source</string>
     <string name="deleted_object">Objet supprimé</string>
-    <string name="open_set">Open set</string>
+    <string name="open_set">Ouvrir le set</string>
     <string name="deleted">Supprimé</string>
     <string name="paste_link_or_search">Coller le lien ou rechercher des objets</string>
     <string name="paste_from_clipboard">Coller depuis le presse-papier</string>
@@ -424,7 +424,7 @@
     <string name="visible">Visible</string>
     <string name="card">Carte</string>
     <string name="inline">Inline</string>
-    <string name="set_view">Set View</string>
+    <string name="set_view">Définir la vue</string>
     <string name="inline_set">Set intégré</string>
     <string name="inline_collection">Collection intégrée</string>
     <string name="fit_image">Ajuster l\'image</string>
@@ -441,7 +441,7 @@
     <string name="next">Suivant</string>
     <string name="limit_object_types">Limiter les types d\'objet</string>
     <string name="deleted_account_msg">We\'re sorry to see you go. Once you request your account to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted account data is permanently removed from the backup node.</string>
-    <string name="swipe_down_to_skip">Swipe down to skip</string>
+    <string name="swipe_down_to_skip">Glisser vers le bas pour passer</string>
     <string name="show">Montrer</string>
     <string name="this_type_has_templates">This type has %1$d templates</string>
     <string name="item_relation_create_from_scratch_title">Type</string>
@@ -460,8 +460,8 @@
     <string name="simple_tables_widget_item_sort">Trier</string>
     <string name="simple_tables_widget_item_move_up">Monter</string>
     <string name="simple_tables_widget_item_move_down">Descendre</string>
-    <string name="simple_tables_widget_tab_cell">Cell</string>
-    <string name="simple_tables_widget_tab_row">Row</string>
+    <string name="simple_tables_widget_tab_cell">Cellule</string>
+    <string name="simple_tables_widget_tab_row">Ligne</string>
     <string name="simple_tables_widget_tab_column">Column</string>
     <string name="open_object">Ouvrir l\'objet</string>
     <string name="open_source">Ouvrir la source</string>
@@ -470,10 +470,10 @@
     <string name="copy_email">Copier l\'email</string>
     <string name="copy_phone_number">Copy phone numbler</string>
     <string name="send_email">Envoyer un e-mail</string>
-    <string name="call_phone_number">Call phone number</string>
+    <string name="call_phone_number">Appeler le numéro de téléphone</string>
     <string name="bookmark_icon">Bookmark icon</string>
-    <string name="one_selected_cell">1 cell selected</string>
-    <string name="number_selected_cells">%1$d cells selected</string>
+    <string name="one_selected_cell">1 cellule sélectionnée</string>
+    <string name="number_selected_cells">%1$d cellules sélectionnées</string>
     <string name="one_selected_column">1 column selected</string>
     <string name="number_selected_columns">%1$d columns selected</string>
     <string name="one_selected_row">1 row selected</string>
@@ -526,7 +526,7 @@
     <string name="menu_type_change">Changer le type</string>
     <string name="menu_type_open_set">Open set of %1$s</string>
     <string name="menu_type_create_set">Create set of %1$s</string>
-    <string name="toast_active_view_delete">Current view cannot be deleted</string>
+    <string name="toast_active_view_delete">Impossible de supprimer la vue actuelle</string>
     <string name="type_templates_widget_title">Créer un objet</string>
     <string name="view_layout_widget_title">Mise en page</string>
     <string name="view_layout_cover_widget_title">Couverture</string>
@@ -658,7 +658,7 @@
     <string name="filter_number_value_hint">Enter a numeric value</string>
     <string name="view_name">Nom de la vue</string>
     <string name="delete">Supprimer</string>
-    <string name="view_relations">View relations</string>
+    <string name="view_relations">Voir les relations</string>
     <string name="create">Créer</string>
     <string name="new_view">Nouvelle vue</string>
     <string name="coming_soon">Coming soon</string>

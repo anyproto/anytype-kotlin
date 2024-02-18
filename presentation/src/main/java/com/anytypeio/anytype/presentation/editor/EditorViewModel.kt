@@ -7036,6 +7036,7 @@ class EditorViewModel(
         relation: ObjectWrapper.Relation,
         relationView: ObjectRelationView
     ) {
+        val restrictions = orchestrator.stores.objectRestrictions.current()
         when (relation.format) {
             RelationFormat.SHORT_TEXT,
             RelationFormat.LONG_TEXT,
@@ -7048,7 +7049,7 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isLocked = mode == EditorMode.Locked
+                        isReadOnlyValue = isReadOnlyValue(restrictions)
                     )
                 )
             }
@@ -7070,7 +7071,8 @@ class EditorViewModel(
                     Command.OpenObjectRelationScreen.Value.Date(
                         ctx = context,
                         target = context,
-                        relationKey = relation.key
+                        relationKey = relation.key,
+                        isReadOnlyValue = isReadOnlyValue(restrictions)
                     )
                 )
             }
@@ -7080,7 +7082,7 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isLocked = mode == EditorMode.Locked
+                        isReadOnlyValue = isReadOnlyValue(restrictions)
                     )
                 )
             }
@@ -7090,7 +7092,7 @@ class EditorViewModel(
                         ctx = context,
                         target = context,
                         relationKey = relation.key,
-                        isLocked = mode == EditorMode.Locked
+                        isReadOnlyValue = isReadOnlyValue(restrictions)
                     )
                 )
             }
@@ -7156,6 +7158,10 @@ class EditorViewModel(
         return obj.internalFlags
     }
     //endregion
+
+    private fun isReadOnlyValue(objRestrictions: List<ObjectRestriction>): Boolean {
+        return mode == EditorMode.Locked || objRestrictions.contains(ObjectRestriction.DETAILS)
+    }
 }
 
 private const val NO_POSITION = -1

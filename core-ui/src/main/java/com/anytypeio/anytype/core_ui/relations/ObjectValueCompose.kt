@@ -94,7 +94,7 @@ fun RelationsViewContent(
             items = state.items,
             itemContent = { _, item ->
                 when (item) {
-                    is ObjectValueItem.Object -> ObjectItem(item, action)
+                    is ObjectValueItem.Object -> ObjectItem(item, action, state.isEditableRelation)
                     is ObjectValueItem.ObjectType -> ObjectTypeItem(item)
                 }
             })

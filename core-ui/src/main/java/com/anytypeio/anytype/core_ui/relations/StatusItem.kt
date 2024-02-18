@@ -29,7 +29,8 @@ import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAct
 @Composable
 fun StatusItem(
     state: RelationsListItem.Item.Status,
-    action: (TagStatusAction) -> Unit
+    action: (TagStatusAction) -> Unit,
+    isEditable: Boolean
 ) {
     val haptics = LocalHapticFeedback.current
     val isMenuExpanded = remember { mutableStateOf(false) }
@@ -38,8 +39,10 @@ fun StatusItem(
             .noRippleCombinedClickable(
                 onClick = { action(TagStatusAction.Click(state)) },
                 onLongClicked = {
-                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                    isMenuExpanded.value = !isMenuExpanded.value
+                    if (isEditable) {
+                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                        isMenuExpanded.value = !isMenuExpanded.value
+                    }
                 }
             )
     ) {
@@ -103,7 +106,8 @@ fun PreviewStatusItem() {
                 color = ThemeColor.RED,
                 isSelected = true
             ),
-            action = {}
+            action = {},
+            isEditable = true
         )
         StatusItem(
             state = RelationsListItem.Item.Status(
@@ -112,7 +116,8 @@ fun PreviewStatusItem() {
                 color = ThemeColor.TEAL,
                 isSelected = false
             ),
-            action = {}
+            action = {},
+            isEditable = true
         )
         ItemTagOrStatusCreate(
             state = RelationsListItem.CreateItem.Status(

@@ -15,6 +15,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
@@ -50,7 +51,12 @@ fun DatePickerContent(
 ){
 
     val datePickerState = rememberDatePickerState(
-        initialSelectedDateMillis = state.timeInMillis
+        initialSelectedDateMillis = state.timeInMillis,
+        selectableDates = object : SelectableDates {
+            override fun isSelectableDate(utcTimeMillis: Long): Boolean {
+                return state.isEditable
+            }
+        }
     )
 
     val isFirstLoad = remember { mutableStateOf(true) }
@@ -72,14 +78,15 @@ fun DatePickerContent(
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             )
     ) {
-        Header(title = state.title.orEmpty(), onClear = onClear)
+        Header(state = state, onClear = onClear)
         val datePickerColors = DatePickerDefaults.colors(
             todayContentColor = colorResource(id = R.color.glyph_accent),
             todayDateBorderColor = Color.Transparent,
             selectedDayContainerColor = colorResource(id = R.color.palette_very_light_orange),
             selectedDayContentColor = colorResource(id = R.color.glyph_accent),
-            subheadContentColor = colorResource(id = R.color.amp_blue),
-            headlineContentColor = colorResource(id = R.color.palette_system_green),
+            disabledDayContentColor = colorResource(id = R.color.glyph_inactive),
+            disabledSelectedDayContentColor = colorResource(id = R.color.glyph_inactive),
+            disabledSelectedDayContainerColor = colorResource(id = R.color.date_selected_inactive_color)
         )
         //https://issuetracker.google.com/issues/281859606
         CompositionLocalProvider(LocalContentColor provides colorResource(id = R.color.glyph_accent)) {
@@ -94,31 +101,33 @@ fun DatePickerContent(
                 colors = datePickerColors,
             )
         }
-        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
-                .noRippleClickable { onTodayClicked() },
-            color = colorResource(id = R.color.text_primary),
-            text = stringResource(id = R.string.today),
-            style = UXBody
-        )
-        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
-                .noRippleClickable { onTomorrowClicked() },
-            color = colorResource(id = R.color.text_primary),
-            text = stringResource(id = R.string.tomorrow),
-            style = UXBody
-        )
+        if (state.isEditable) {
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
+                    .noRippleClickable { onTodayClicked() },
+                color = colorResource(id = R.color.text_primary),
+                text = stringResource(id = R.string.today),
+                style = UXBody
+            )
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 11.dp, bottom = 11.dp)
+                    .noRippleClickable { onTomorrowClicked() },
+                color = colorResource(id = R.color.text_primary),
+                text = stringResource(id = R.string.tomorrow),
+                style = UXBody
+            )
+        }
     }
 }
 
 @Composable
-private fun Header(title : String, onClear: () -> Unit) {
+private fun Header(state: DateValueView, onClear: () -> Unit) {
 
     // Dragger at the top, centered
     Box(
@@ -135,7 +144,7 @@ private fun Header(title : String, onClear: () -> Unit) {
             .fillMaxWidth()
             .height(48.dp)
     ) {
-        if (true) {
+        if (state.isEditable) {
             // Left-aligned CLEAR button
             Box(modifier = Modifier
                 .wrapContentWidth()
@@ -160,7 +169,7 @@ private fun Header(title : String, onClear: () -> Unit) {
             modifier = Modifier
                 .align(Alignment.Center)
                 .padding(horizontal = 74.dp),
-            text = title,
+            text = state.title.orEmpty(),
             style = Title1.copy(),
             color = colorResource(R.color.text_primary),
             overflow = TextOverflow.Ellipsis,

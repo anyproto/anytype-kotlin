@@ -135,7 +135,8 @@ open class ObjectRelationListFragment : BaseBottomSheetFragment<FragmentRelation
                         RelationDateValueFragment.FLOW_SET_OR_COLLECTION
                     } else {
                         RelationDateValueFragment.FLOW_DEFAULT
-                    }
+                    },
+                    isLocked = command.isLocked
                 )
                 fr.showChildFragment()
             }

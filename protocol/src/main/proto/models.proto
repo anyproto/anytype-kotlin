@@ -1063,6 +1063,7 @@ message IdentityProfile {
     string name = 2;
     string iconCid = 3;
     repeated FileEncryptionKey iconEncryptionKeys = 4;
+    string description = 5;
 }
 
 message FileInfo {

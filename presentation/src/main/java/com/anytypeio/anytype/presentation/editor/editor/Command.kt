@@ -90,39 +90,41 @@ sealed class Command {
 
         data class RelationAdd(val ctx: String, val target: String) : OpenObjectRelationScreen()
         sealed class Value : OpenObjectRelationScreen() {
+            abstract val isReadOnlyValue: Boolean
             data class Default(
                 val ctx: Id,
                 val target: Id,
                 val relationKey: Key,
                 val targetObjectTypes: List<Id>,
-                val isLocked: Boolean
-            ) : OpenObjectRelationScreen.Value()
+                override val isReadOnlyValue: Boolean = false
+            ) : Value()
 
             data class Text(
                 val ctx: Id,
                 val target: Id,
                 val relationKey: Key,
-                val isLocked: Boolean = false
-            ) : OpenObjectRelationScreen.Value()
+                override val isReadOnlyValue: Boolean = false
+            ) : Value()
 
             data class Date(
                 val ctx: Id,
                 val target: Id,
                 val relationKey: Key,
-            ) : OpenObjectRelationScreen.Value()
+                override val isReadOnlyValue: Boolean = false
+            ) : Value()
 
             data class TagOrStatus(
                 val ctx: Id,
                 val target: Id,
                 val relationKey: Key,
-                val isLocked: Boolean = false
-            ) : OpenObjectRelationScreen.Value()
+                override val isReadOnlyValue: Boolean = false
+            ) : Value()
 
             data class ObjectValue(
                 val ctx: Id,
                 val target: Id,
                 val relationKey: Key,
-                val isLocked: Boolean = false
+                override val isReadOnlyValue: Boolean = false
             ) : Value()
         }
     }

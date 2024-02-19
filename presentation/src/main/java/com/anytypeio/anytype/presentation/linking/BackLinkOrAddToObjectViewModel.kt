@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -47,16 +48,19 @@ class BackLinkOrAddToObjectViewModel(
         ObjectType.Layout.COLLECTION
     )
 
-    override suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
-        limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.filtersBackLinkOrAddToObject(
-            ignore = ignore,
-            space = spaceManager.get()
-        ),
-        sorts = ObjectSearchConstants.sortBackLinkOrAddToObject,
-        fulltext = EMPTY_QUERY,
-        keys = ObjectSearchConstants.defaultKeys
-    )
+    override suspend fun getSearchObjectsParams(ignore: Id?): SearchObjects.Params {
+        val spaces = spaceManager.getSpaceWithTechSpace()
+        return SearchObjects.Params(
+            limit = SEARCH_LIMIT,
+            filters = ObjectSearchConstants.filtersBackLinkOrAddToObject(
+                ignore = ignore,
+                spaces = spaces
+            ),
+            sorts = ObjectSearchConstants.sortBackLinkOrAddToObject,
+            fulltext = EMPTY_QUERY,
+            keys = ObjectSearchConstants.defaultKeys
+        )
+    }
 
     override fun onObjectClicked(view: DefaultObjectView) {
         sendSearchResultEvent(view.id)

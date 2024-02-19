@@ -31,14 +31,16 @@ class PreferencesViewModel(
 ) : ViewModel(), PickerListener {
 
     val networkModeState = MutableStateFlow(NetworkModeConfig(NetworkMode.DEFAULT, "", ""))
+    val reserveMultiplexSetting = MutableStateFlow(false)
 
     fun onStart() {
         Timber.d("onStart")
         viewModelScope.launch {
             getNetworkMode.async(Unit).fold(
-                onSuccess = {
-                    networkModeState.value = it
-                    Timber.d("Successfully get network mode on Start: $it")
+                onSuccess = { config ->
+                    networkModeState.value = config
+                    reserveMultiplexSetting.value = config.useReserveMultiplexLib
+                    Timber.d("Successfully get network mode on Start: $config")
                 },
                 onFailure = {
                     Timber.e(it, "Failed to get network mode")
@@ -98,6 +100,18 @@ class PreferencesViewModel(
                     Timber.d("Successfully update network mode with config:$config")
                 },
                 onFailure = { Timber.e(it, "Failed to set network mode") }
+            )
+        }
+    }
+
+    fun onChangeMultiplexLibrary(useReserve: Boolean) {
+        Timber.d("onChangeMultiplexLibrary: $useReserve")
+        viewModelScope.launch {
+            val mode = networkModeState.value.copy(useReserveMultiplexLib = useReserve)
+            val params = SetNetworkMode.Params(mode)
+            setNetworkMode.async(params).fold(
+                onSuccess = {},
+                onFailure = { Timber.e(it, "Failed to update network mode ") }
             )
         }
     }

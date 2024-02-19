@@ -11,6 +11,8 @@ import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_CUSTOM
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_LOCAL
+import com.anytypeio.anytype.domain.account.FetchReserveMultiplexingSetting
+import com.anytypeio.anytype.domain.account.UpdateReserveMultiplexSetting
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.networkmode.SetNetworkMode
@@ -27,10 +29,13 @@ class PreferencesViewModel(
     private val copyFileToCache: CopyFileToCacheDirectory,
     private val getNetworkMode: GetNetworkMode,
     private val setNetworkMode: SetNetworkMode,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val fetchReserveMultiplexingSetting: FetchReserveMultiplexingSetting,
+    private val updateReserveMultiplexSetting: UpdateReserveMultiplexSetting
 ) : ViewModel(), PickerListener {
 
     val networkModeState = MutableStateFlow(NetworkModeConfig(NetworkMode.DEFAULT, "", ""))
+    val reserveMultiplexSetting = MutableStateFlow(false)
 
     fun onStart() {
         Timber.d("onStart")
@@ -44,6 +49,9 @@ class PreferencesViewModel(
                     Timber.e(it, "Failed to get network mode")
                 }
             )
+        }
+        viewModelScope.launch {
+            reserveMultiplexSetting.value = fetchReserveMultiplexingSetting.run(Unit)
         }
     }
 
@@ -102,6 +110,12 @@ class PreferencesViewModel(
         }
     }
 
+    fun onChangeMultiplexLibrary(useReserve: Boolean) {
+        viewModelScope.launch {
+            updateReserveMultiplexSetting.run(useReserve)
+        }
+    }
+
     override fun onStartCopyFileToCacheDir(uri: Uri) {
         Timber.d("onStartCopyFileToCacheDir: $uri")
         copyFileToCache.execute(
@@ -134,7 +148,9 @@ class PreferencesViewModel(
         private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
         private val getNetworkMode: GetNetworkMode,
         private val setNetworkMode: SetNetworkMode,
-        private val analytics: Analytics
+        private val analytics: Analytics,
+        private val fetchReserveMultiplexingSetting: FetchReserveMultiplexingSetting,
+        private val updateReserveMultiplexSetting: UpdateReserveMultiplexSetting
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -143,7 +159,9 @@ class PreferencesViewModel(
             copyFileToCache = copyFileToCacheDirectory,
             getNetworkMode = getNetworkMode,
             setNetworkMode = setNetworkMode,
-            analytics = analytics
+            analytics = analytics,
+            fetchReserveMultiplexingSetting = fetchReserveMultiplexingSetting,
+            updateReserveMultiplexSetting = updateReserveMultiplexSetting
         ) as T
     }
 }

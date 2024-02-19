@@ -64,7 +64,4 @@ interface AuthRepository {
 
     suspend fun getNetworkMode(): NetworkModeConfig
     suspend fun setNetworkMode(modeConfig: NetworkModeConfig)
-
-    suspend fun updateReserveMultiplexLibrary(useReserve: Boolean)
-    suspend fun fetchReserveMultiplexLibrary(): Boolean
 }

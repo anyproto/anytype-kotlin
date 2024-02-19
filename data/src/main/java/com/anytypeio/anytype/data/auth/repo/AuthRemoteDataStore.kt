@@ -105,12 +105,4 @@ class AuthRemoteDataStore(
     override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
         throw UnsupportedOperationException()
     }
-
-    override suspend fun updateReserveMultiplexLibrary(useReserve: Boolean) {
-        throw UnsupportedOperationException()
-    }
-
-    override suspend fun fetchReserveMultiplexLibrary(): Boolean {
-        throw UnsupportedOperationException()
-    }
 }

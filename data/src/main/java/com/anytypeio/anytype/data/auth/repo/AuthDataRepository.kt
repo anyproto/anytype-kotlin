@@ -110,12 +110,4 @@ class AuthDataRepository(
     override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
         factory.cache.setNetworkMode(modeConfig)
     }
-
-    override suspend fun updateReserveMultiplexLibrary(useReserve: Boolean) {
-        factory.cache.updateReserveMultiplexLibrary(useReserve)
-    }
-
-    override suspend fun fetchReserveMultiplexLibrary(): Boolean {
-        return factory.cache.fetchReserveMultiplexLibrary()
-    }
 }

@@ -109,21 +109,9 @@ class DefaultAuthCache(
         networkModeProvider.set(modeConfig)
     }
 
-    override suspend fun updateReserveMultiplexLibrary(useReserve: Boolean) {
-        defaultPrefs
-            .edit()
-            .putBoolean(RESERVE_MULTIPLEX_LIB, useReserve)
-            .apply()
-    }
-
-    override suspend fun fetchReserveMultiplexLibrary(): Boolean {
-        return defaultPrefs.getBoolean(RESERVE_MULTIPLEX_LIB, false)
-    }
-
     companion object {
         const val MNEMONIC_KEY = "mnemonic"
         const val LAST_OPENED_OBJECT_KEY = "last_opened_object"
         const val CURRENT_ACCOUNT_ID_KEY = "current_account"
-        const val RESERVE_MULTIPLEX_LIB = "reserve_multiplex_lib"
     }
 }

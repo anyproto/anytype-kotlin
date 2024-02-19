@@ -382,7 +382,7 @@
     <string name="default_object_type_title">Standaard objecttype</string>
     <string name="name_layout_basic">Basis</string>
     <string name="name_layout_profile">Profiel</string>
-    <string name="name_layout_participant">Participant</string>
+    <string name="name_layout_participant">Deelnemer</string>
     <string name="name_layout_todo">Taak</string>
     <string name="name_layout_set">Stel in</string>
     <string name="name_layout_collection">Verzameling</string>

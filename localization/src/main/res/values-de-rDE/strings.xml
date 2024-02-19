@@ -382,7 +382,7 @@
     <string name="default_object_type_title">Standard Objekttyp</string>
     <string name="name_layout_basic">Einfach</string>
     <string name="name_layout_profile">Profil</string>
-    <string name="name_layout_participant">Participant</string>
+    <string name="name_layout_participant">Teilnehmer</string>
     <string name="name_layout_todo">Aufgabe</string>
     <string name="name_layout_set">Set</string>
     <string name="name_layout_collection">Sammlung</string>
@@ -1094,24 +1094,24 @@
     <string name="options_empty_not_editable">Die Relation ist leer</string>
     <string name="options_delete_title">Sind Sie sicher?</string>
     <string name="options_delete_description">Die Option wird dauerhaft aus Ihrem Bereich entfernt.</string>
-    <string name="object_values_empty_description">Objects not found</string>
-    <string name="object_values_empty_title">No values</string>
+    <string name="object_values_empty_description">Objekte nicht gefunden</string>
+    <string name="object_values_empty_title">Keine Werte</string>
     <string name="object_values_empty_not_editable">Die Relation ist leer</string>
     <string name="object_values_delete_title">Sind Sie sicher?</string>
-    <string name="object_values_delete_description">The object will be moved to the Bin.</string>
+    <string name="object_values_delete_description">Das Objekt wird in den Papierkorb verschoben.</string>
     <string name="hint_enter_name">Name eingeben...</string>
     <string name="create_object">Objekt erstellen</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Ungültige Wiederherstellungsphrase</string>
     <string name="network">Netzwerk</string>
-    <string name="network_settings_anytype_network">Anytype network</string>
-    <string name="network_settings_anytype_network_description">Backup to the network managed by Anytype</string>
+    <string name="network_settings_anytype_network">Anytype-Netzwerk</string>
+    <string name="network_settings_anytype_network_description">In das von Anytype verwaltete Netzwerk sichern</string>
     <string name="network_settings_local_only">Nur lokal</string>
-    <string name="network_settings_local_only_description">Don\'t back up; sync within local network</string>
+    <string name="network_settings_local_only_description">Nicht sichern; im lokalen Netzwerk synchronisieren</string>
     <string name="network_settings_self_host">Selbst gehostet</string>
-    <string name="network_settings_self_host_description">Back up to your self-hosted network</string>
+    <string name="network_settings_self_host_description">In deinem selbst gehosteten Netzwerk sichern</string>
     <string name="network_settings_networks_section">Netzwerke</string>
     <string name="network_settings_provide_config_hint">Tap to provide your network config</string>
-    <string name="network_settings_self_host_config">Current config: %1$s</string>
+    <string name="network_settings_self_host_config">Aktuelle Konfiguration: %1$s</string>
     <!--endregion-->
 </resources>

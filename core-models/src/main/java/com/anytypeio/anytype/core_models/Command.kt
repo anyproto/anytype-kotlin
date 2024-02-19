@@ -11,7 +11,7 @@ sealed class Command {
         val icon: Int,
         val networkMode: NetworkMode = NetworkMode.DEFAULT,
         val networkConfigFilePath: String? = null,
-        val preferYamuxTransport: Boolean = false
+        val preferYamuxTransport: Boolean? = null
     ) : Command()
 
     data class AccountSelect(
@@ -19,7 +19,7 @@ sealed class Command {
         val path: String,
         val networkMode: NetworkMode = NetworkMode.DEFAULT,
         val networkConfigFilePath: String? = null,
-        val preferYamuxTransport: Boolean = false
+        val preferYamuxTransport: Boolean? = null
     ) : Command()
 
     class UploadFile(

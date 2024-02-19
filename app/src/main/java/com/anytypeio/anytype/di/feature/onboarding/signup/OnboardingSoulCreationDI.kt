@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.di.common.ComponentDependencies
-import com.anytypeio.anytype.domain.account.FetchReserveMultiplexingSetting
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.interactor.SetupWallet
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -61,14 +60,12 @@ object OnboardingSoulCreationModule {
         authRepository: AuthRepository,
         configStorage: ConfigStorage,
         metricsProvider: MetricsProvider,
-        dispatchers: AppCoroutineDispatchers,
-        fetchReserveMultiplexingSetting: FetchReserveMultiplexingSetting,
+        dispatchers: AppCoroutineDispatchers
     ): CreateAccount = CreateAccount(
         repository = authRepository,
         configStorage = configStorage,
         metricsProvider = metricsProvider,
-        dispatcher = dispatchers,
-        fetchReserveMultiplexingSetting = fetchReserveMultiplexingSetting
+        dispatcher = dispatchers
     )
 
     @JvmStatic

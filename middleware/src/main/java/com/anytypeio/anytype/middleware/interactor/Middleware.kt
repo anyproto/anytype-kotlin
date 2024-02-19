@@ -68,7 +68,7 @@ class Middleware @Inject constructor(
             icon = command.icon.toLong(),
             networkMode = command.networkMode.toMiddlewareModel(),
             networkCustomConfigFilePath = command.networkConfigFilePath.orEmpty(),
-            preferYamuxTransport = command.preferYamuxTransport
+            preferYamuxTransport = command.preferYamuxTransport ?: false
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.accountCreate(request)
@@ -88,7 +88,7 @@ class Middleware @Inject constructor(
             rootPath = command.path,
             networkMode = networkMode,
             networkCustomConfigFilePath = networkCustomConfigFilePath,
-            preferYamuxTransport = command.preferYamuxTransport
+            preferYamuxTransport = command.preferYamuxTransport ?: false
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.accountSelect(request)

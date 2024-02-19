@@ -11,8 +11,6 @@ import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_CUSTOM
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_LOCAL
-import com.anytypeio.anytype.domain.account.FetchReserveMultiplexingSetting
-import com.anytypeio.anytype.domain.account.UpdateReserveMultiplexSetting
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.networkmode.SetNetworkMode
@@ -29,9 +27,7 @@ class PreferencesViewModel(
     private val copyFileToCache: CopyFileToCacheDirectory,
     private val getNetworkMode: GetNetworkMode,
     private val setNetworkMode: SetNetworkMode,
-    private val analytics: Analytics,
-    private val fetchReserveMultiplexingSetting: FetchReserveMultiplexingSetting,
-    private val updateReserveMultiplexSetting: UpdateReserveMultiplexSetting
+    private val analytics: Analytics
 ) : ViewModel(), PickerListener {
 
     val networkModeState = MutableStateFlow(NetworkModeConfig(NetworkMode.DEFAULT, "", ""))
@@ -41,17 +37,15 @@ class PreferencesViewModel(
         Timber.d("onStart")
         viewModelScope.launch {
             getNetworkMode.async(Unit).fold(
-                onSuccess = {
-                    networkModeState.value = it
-                    Timber.d("Successfully get network mode on Start: $it")
+                onSuccess = { config ->
+                    networkModeState.value = config
+                    reserveMultiplexSetting.value = config.useReserveMiltiplexLibrary
+                    Timber.d("Successfully get network mode on Start: $config")
                 },
                 onFailure = {
                     Timber.e(it, "Failed to get network mode")
                 }
             )
-        }
-        viewModelScope.launch {
-            reserveMultiplexSetting.value = fetchReserveMultiplexingSetting.run(Unit)
         }
     }
 
@@ -111,8 +105,14 @@ class PreferencesViewModel(
     }
 
     fun onChangeMultiplexLibrary(useReserve: Boolean) {
+        Timber.d("onChangeMultiplexLibrary: $useReserve")
         viewModelScope.launch {
-            updateReserveMultiplexSetting.run(useReserve)
+            val mode = networkModeState.value.copy(useReserveMiltiplexLibrary = useReserve)
+            val params = SetNetworkMode.Params(mode)
+            setNetworkMode.async(params).fold(
+                onSuccess = {},
+                onFailure = { Timber.e(it, "Failed to update network mode ") }
+            )
         }
     }
 
@@ -148,9 +148,7 @@ class PreferencesViewModel(
         private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
         private val getNetworkMode: GetNetworkMode,
         private val setNetworkMode: SetNetworkMode,
-        private val analytics: Analytics,
-        private val fetchReserveMultiplexingSetting: FetchReserveMultiplexingSetting,
-        private val updateReserveMultiplexSetting: UpdateReserveMultiplexSetting
+        private val analytics: Analytics
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -159,9 +157,7 @@ class PreferencesViewModel(
             copyFileToCache = copyFileToCacheDirectory,
             getNetworkMode = getNetworkMode,
             setNetworkMode = setNetworkMode,
-            analytics = analytics,
-            fetchReserveMultiplexingSetting = fetchReserveMultiplexingSetting,
-            updateReserveMultiplexSetting = updateReserveMultiplexSetting
+            analytics = analytics
         ) as T
     }
 }

@@ -3133,7 +3133,8 @@ class EditorViewModel(
             ObjectType.Layout.TODO,
             ObjectType.Layout.FILE,
             ObjectType.Layout.IMAGE,
-            ObjectType.Layout.BOOKMARK -> {
+            ObjectType.Layout.BOOKMARK,
+            ObjectType.Layout.PARTICIPANT -> {
                 proceedWithOpeningObject(target = target)
             }
             ObjectType.Layout.PROFILE -> {

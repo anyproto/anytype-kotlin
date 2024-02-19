@@ -1224,4 +1224,6 @@
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
 
+    <string name="settings_use_yamux">Use a reserve multiplex library</string>
+
 </resources>

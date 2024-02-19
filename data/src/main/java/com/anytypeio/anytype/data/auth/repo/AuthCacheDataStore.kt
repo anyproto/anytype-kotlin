@@ -94,4 +94,12 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
     override suspend fun setNetworkMode(modeConfig: NetworkModeConfig) {
         cache.setNetworkMode(modeConfig)
     }
+
+    override suspend fun updateReserveMultiplexLibrary(useReserve: Boolean) {
+        cache.updateReserveMultiplexLibrary(useReserve)
+    }
+
+    override suspend fun fetchReserveMultiplexLibrary(): Boolean {
+        return cache.fetchReserveMultiplexLibrary()
+    }
 }

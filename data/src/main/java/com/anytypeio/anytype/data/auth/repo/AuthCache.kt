@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.data.auth.repo
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.data.auth.model.AccountEntity
 
@@ -26,4 +25,7 @@ interface AuthCache {
 
     suspend fun getNetworkMode(): NetworkModeConfig
     suspend fun setNetworkMode(modeConfig: NetworkModeConfig)
+
+    suspend fun updateReserveMultiplexLibrary(useReserve: Boolean)
+    suspend fun fetchReserveMultiplexLibrary(): Boolean
 }

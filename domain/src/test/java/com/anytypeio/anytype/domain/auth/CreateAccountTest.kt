@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.StubAccountSetup
+import com.anytypeio.anytype.domain.account.FetchReserveMultiplexingSetting
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -43,6 +44,8 @@ class CreateAccountTest {
 
     private lateinit var createAccount: CreateAccount
 
+    @Mock
+    lateinit var fetchReserveMultiplexingSetting: FetchReserveMultiplexingSetting
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -57,7 +60,8 @@ class CreateAccountTest {
             repository = repo,
             configStorage = configStorage,
             metricsProvider = metricsProvider,
-            dispatcher = dispatchers
+            dispatcher = dispatchers,
+            fetchReserveMultiplexingSetting = fetchReserveMultiplexingSetting
         )
     }
 

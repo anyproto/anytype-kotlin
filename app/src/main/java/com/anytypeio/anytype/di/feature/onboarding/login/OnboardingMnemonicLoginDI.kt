@@ -6,6 +6,8 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
+import com.anytypeio.anytype.domain.account.FetchReserveMultiplexingSetting
+import com.anytypeio.anytype.domain.account.UpdateReserveMultiplexSetting
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.FeaturesConfigProvider
@@ -64,4 +66,6 @@ interface OnboardingMnemonicLoginDependencies : ComponentDependencies {
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
     fun localeProvider(): LocaleProvider
     fun awaitAccountStartManager(): AwaitAccountStartManager
+    fun updateReserveMultiplexSetting(): UpdateReserveMultiplexSetting
+    fun fetchReserveMultiplexingSetting(): FetchReserveMultiplexingSetting
 }

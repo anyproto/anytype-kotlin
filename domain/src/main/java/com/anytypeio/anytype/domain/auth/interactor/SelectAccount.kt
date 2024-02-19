@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
+import com.anytypeio.anytype.domain.account.FetchReserveMultiplexingSetting
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -19,7 +20,8 @@ class SelectAccount @Inject constructor(
     private val configStorage: ConfigStorage,
     private val featuresConfigProvider: FeaturesConfigProvider,
     private val metricsProvider: MetricsProvider,
-    private val awaitAccountStartManager: AwaitAccountStartManager
+    private val awaitAccountStartManager: AwaitAccountStartManager,
+    private val fetchReserveMultiplexingSetting: FetchReserveMultiplexingSetting,
 ) : BaseUseCase<StartAccountResult, SelectAccount.Params>() {
 
     override suspend fun run(params: Params) = safe {
@@ -29,12 +31,14 @@ class SelectAccount @Inject constructor(
         )
 
         val networkMode = repository.getNetworkMode()
+        val useReserve = fetchReserveMultiplexingSetting.run(Unit)
 
         val command = Command.AccountSelect(
             id = params.id,
             path = params.path,
             networkMode = networkMode.networkMode,
-            networkConfigFilePath = networkMode.storedFilePath
+            networkConfigFilePath = networkMode.storedFilePath,
+            preferYamuxTransport = useReserve
         )
         val setup = repository.selectAccount(command)
         with(repository) {

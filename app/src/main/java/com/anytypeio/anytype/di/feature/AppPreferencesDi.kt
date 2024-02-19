@@ -4,6 +4,8 @@ import android.content.Context
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.account.FetchReserveMultiplexingSetting
+import com.anytypeio.anytype.domain.account.UpdateReserveMultiplexSetting
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -48,12 +50,16 @@ object AppPreferencesModule {
         copyFileToCacheDirectory: CopyFileToCacheDirectory,
         getNetworkMode: GetNetworkMode,
         setNetworkMode: SetNetworkMode,
-        analytics: Analytics
+        analytics: Analytics,
+        updateReserveMultiplexSetting: UpdateReserveMultiplexSetting,
+        fetchReserveMultiplexingSetting: FetchReserveMultiplexingSetting
     ): PreferencesViewModel.Factory = PreferencesViewModel.Factory(
         copyFileToCacheDirectory = copyFileToCacheDirectory,
         getNetworkMode = getNetworkMode,
         setNetworkMode = setNetworkMode,
-        analytics = analytics
+        analytics = analytics,
+        updateReserveMultiplexSetting = updateReserveMultiplexSetting,
+        fetchReserveMultiplexingSetting = fetchReserveMultiplexingSetting
     )
 }
 

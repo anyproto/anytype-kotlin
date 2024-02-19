@@ -8,13 +8,11 @@ import javax.inject.Inject
 class UpdateReserveMultiplexSetting @Inject constructor(
     private val repository: AuthRepository,
     dispatchers: AppCoroutineDispatchers,
-) : ResultInteractor<UpdateReserveMultiplexSetting.Params, Unit>(dispatchers.io) {
+) : ResultInteractor<Boolean, Unit>(dispatchers.io) {
 
-    override suspend fun doWork(params: Params) {
-        repository.updateReserveMultiplexLibrary(params.useReserve)
+    override suspend fun doWork(params: Boolean) {
+        repository.updateReserveMultiplexLibrary(params)
     }
-
-    data class Params(val useReserve: Boolean)
 }
 
 class FetchReserveMultiplexingSetting @Inject constructor(

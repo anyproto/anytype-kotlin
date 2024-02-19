@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.auth.interactor
 
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.domain.account.FetchReserveMultiplexingSetting
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -16,6 +17,7 @@ open class CreateAccount(
     // TODO rename config storage
     private val configStorage: ConfigStorage,
     private val metricsProvider: MetricsProvider,
+    private val fetchReserveMultiplexingSetting: FetchReserveMultiplexingSetting,
     dispatcher: AppCoroutineDispatchers
 ) : ResultInteractor<CreateAccount.Params, Account>(dispatcher.io) {
 
@@ -26,13 +28,15 @@ open class CreateAccount(
         )
 
         val networkMode = repository.getNetworkMode()
+        val useReserve = fetchReserveMultiplexingSetting.run(Unit)
 
         val command = Command.AccountCreate(
             name = params.name,
             avatarPath = params.avatarPath,
             icon = params.iconGradientValue,
             networkMode = networkMode.networkMode,
-            networkConfigFilePath = networkMode.storedFilePath
+            networkConfigFilePath = networkMode.storedFilePath,
+            preferYamuxTransport = useReserve
         )
         val setup = repository.createAccount(command)
         with(repository) {

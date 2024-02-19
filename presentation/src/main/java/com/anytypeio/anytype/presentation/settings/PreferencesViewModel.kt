@@ -39,7 +39,7 @@ class PreferencesViewModel(
             getNetworkMode.async(Unit).fold(
                 onSuccess = { config ->
                     networkModeState.value = config
-                    reserveMultiplexSetting.value = config.useReserveMiltiplexLibrary
+                    reserveMultiplexSetting.value = config.useReserveMultiplexLib
                     Timber.d("Successfully get network mode on Start: $config")
                 },
                 onFailure = {
@@ -107,7 +107,7 @@ class PreferencesViewModel(
     fun onChangeMultiplexLibrary(useReserve: Boolean) {
         Timber.d("onChangeMultiplexLibrary: $useReserve")
         viewModelScope.launch {
-            val mode = networkModeState.value.copy(useReserveMiltiplexLibrary = useReserve)
+            val mode = networkModeState.value.copy(useReserveMultiplexLib = useReserve)
             val params = SetNetworkMode.Params(mode)
             setNetworkMode.async(params).fold(
                 onSuccess = {},

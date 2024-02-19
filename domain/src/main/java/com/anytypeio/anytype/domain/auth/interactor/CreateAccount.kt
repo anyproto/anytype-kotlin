@@ -33,7 +33,7 @@ open class CreateAccount(
             icon = params.iconGradientValue,
             networkMode = networkMode.networkMode,
             networkConfigFilePath = networkMode.storedFilePath,
-            preferYamuxTransport = networkMode.useReserveMiltiplexLibrary
+            preferYamuxTransport = networkMode.useReserveMultiplexLib
         )
         val setup = repository.createAccount(command)
         with(repository) {

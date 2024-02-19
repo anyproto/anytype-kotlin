@@ -35,7 +35,7 @@ class SelectAccount @Inject constructor(
             path = params.path,
             networkMode = networkMode.networkMode,
             networkConfigFilePath = networkMode.storedFilePath,
-            preferYamuxTransport = networkMode.useReserveMiltiplexLibrary
+            preferYamuxTransport = networkMode.useReserveMultiplexLib
         )
         val setup = repository.selectAccount(command)
         with(repository) {

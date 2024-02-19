@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.CoroutineTestRule
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.StubAccountSetup
-import com.anytypeio.anytype.domain.account.FetchReserveMultiplexingSetting
 import com.anytypeio.anytype.domain.auth.interactor.CreateAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -44,8 +43,6 @@ class CreateAccountTest {
 
     private lateinit var createAccount: CreateAccount
 
-    @Mock
-    lateinit var fetchReserveMultiplexingSetting: FetchReserveMultiplexingSetting
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Before
@@ -60,10 +57,8 @@ class CreateAccountTest {
             repository = repo,
             configStorage = configStorage,
             metricsProvider = metricsProvider,
-            dispatcher = dispatchers,
-            fetchReserveMultiplexingSetting = fetchReserveMultiplexingSetting
+            dispatcher = dispatchers
         )
-        stubFetchReserveMultiplexingSetting()
     }
 
     @Test
@@ -92,7 +87,8 @@ class CreateAccountTest {
                     name = name,
                     avatarPath = path,
                     icon = icon,
-                    networkMode = NetworkMode.DEFAULT
+                    networkMode = NetworkMode.DEFAULT,
+                    preferYamuxTransport = false
                 )
                 onBlocking { createAccount(command) } doReturn setup
             }
@@ -108,7 +104,8 @@ class CreateAccountTest {
                 name = name,
                 avatarPath = path,
                 icon = icon,
-                networkMode = NetworkMode.DEFAULT
+                networkMode = NetworkMode.DEFAULT,
+                preferYamuxTransport = false
             )
             verify(repo, times(1)).getNetworkMode()
             verify(repo, times(1)).createAccount(command)
@@ -130,14 +127,6 @@ class CreateAccountTest {
             onBlocking {
                 getPlatform()
             } doReturn platform
-        }
-    }
-
-    private fun stubFetchReserveMultiplexingSetting(value: Boolean = false) {
-        fetchReserveMultiplexingSetting.stub {
-            onBlocking {
-                run(Unit)
-            } doReturn value
         }
     }
 }

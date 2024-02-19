@@ -78,6 +78,7 @@ class StartAccountTest {
             awaitAccountStartManager = awaitAccountStartManager,
             fetchReserveMultiplexingSetting = fetchReserveMultiplexingSetting
         )
+        stubFetchReserveMultiplexingSetting()
     }
 
     @Test
@@ -463,6 +464,14 @@ class StartAccountTest {
             onBlocking {
                 getPlatform()
             } doReturn platform
+        }
+    }
+
+    private fun stubFetchReserveMultiplexingSetting(value: Boolean = false) {
+        fetchReserveMultiplexingSetting.stub {
+            onBlocking {
+                run(Unit)
+            } doReturn value
         }
     }
 }

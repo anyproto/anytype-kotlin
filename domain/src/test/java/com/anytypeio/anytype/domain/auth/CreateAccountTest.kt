@@ -63,6 +63,7 @@ class CreateAccountTest {
             dispatcher = dispatchers,
             fetchReserveMultiplexingSetting = fetchReserveMultiplexingSetting
         )
+        stubFetchReserveMultiplexingSetting()
     }
 
     @Test
@@ -129,6 +130,14 @@ class CreateAccountTest {
             onBlocking {
                 getPlatform()
             } doReturn platform
+        }
+    }
+
+    private fun stubFetchReserveMultiplexingSetting(value: Boolean = false) {
+        fetchReserveMultiplexingSetting.stub {
+            onBlocking {
+                run(Unit)
+            } doReturn value
         }
     }
 }

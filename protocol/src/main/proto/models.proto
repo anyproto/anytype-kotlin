@@ -911,6 +911,8 @@ enum SpaceStatus {
     SpaceActive = 8;
     // SpaceJoining - the account is joining the space
     SpaceJoining = 9;
+    // SpaceRemoving - the account is removing from space or the space is removed from network
+    SpaceRemoving = 10;
 }
 
 message ParticipantPermissionChange {

@@ -103,14 +103,16 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
                 }
             }
             is SplashViewModel.Command.NavigateToObject -> {
+                findNavController().navigate(R.id.action_splashScreen_to_widgets)
                 findNavController().navigate(
-                    R.id.action_splashScreen_to_objectScreen,
+                    R.id.objectNavigation,
                     bundleOf(EditorFragment.ID_KEY to command.id),
                 )
             }
             is SplashViewModel.Command.NavigateToObjectSet -> {
+                findNavController().navigate(R.id.action_splashScreen_to_widgets)
                 findNavController().navigate(
-                    R.id.action_splashScreen_to_objectSetScreen,
+                    R.id.dataViewNavigation,
                     bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to command.id),
                 )
             }

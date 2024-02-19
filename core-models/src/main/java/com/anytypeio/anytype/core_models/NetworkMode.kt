@@ -7,7 +7,8 @@ enum class NetworkMode {
 data class NetworkModeConfig(
     val networkMode: NetworkMode = NetworkMode.DEFAULT,
     val userFilePath: String? = null,
-    val storedFilePath: String? = null
+    val storedFilePath: String? = null,
+    val useReserveMultiplexLib: Boolean = false
 )
 
 object NetworkModeConst {

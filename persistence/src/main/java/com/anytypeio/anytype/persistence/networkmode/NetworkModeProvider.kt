@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_LOCAL
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_APP_FILE_PATH_PREF
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_PREF
 import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.NETWORK_MODE_USER_FILE_PATH_PREF
+import com.anytypeio.anytype.persistence.networkmode.DefaultNetworkModeProvider.NetworkModeConstants.USE_RESERVE_MULTIPLEX_LIBRARY_PREF
 
 interface NetworkModeProvider {
     fun set(networkModeConfig: NetworkModeConfig)
@@ -35,11 +36,14 @@ class DefaultNetworkModeProvider(private val sharedPreferences: SharedPreference
             putString(NETWORK_MODE_PREF, modeValue)
             putString(NETWORK_MODE_USER_FILE_PATH_PREF, userFilePath)
             putString(NETWORK_MODE_APP_FILE_PATH_PREF, storedFilePath)
+            putBoolean(USE_RESERVE_MULTIPLEX_LIBRARY_PREF, networkModeConfig.useReserveMultiplexLib)
             apply()
         }
     }
 
     override fun get(): NetworkModeConfig {
+        val useReserveMultiplexLib = sharedPreferences.getBoolean(USE_RESERVE_MULTIPLEX_LIBRARY_PREF, false)
+
         val networkMode =
             when (sharedPreferences.getString(NETWORK_MODE_PREF, NETWORK_MODE_DEFAULT)) {
                 NETWORK_MODE_DEFAULT -> NetworkMode.DEFAULT
@@ -54,9 +58,19 @@ class DefaultNetworkModeProvider(private val sharedPreferences: SharedPreference
             val storedFilePath = sharedPreferences.getString(
                 NETWORK_MODE_APP_FILE_PATH_PREF, null
             )
-            NetworkModeConfig(networkMode, userFilePath, storedFilePath)
+            NetworkModeConfig(
+                networkMode = networkMode,
+                userFilePath = userFilePath,
+                storedFilePath = storedFilePath,
+                useReserveMultiplexLib = useReserveMultiplexLib
+            )
         } else {
-            NetworkModeConfig(networkMode, null, null)
+            NetworkModeConfig(
+                networkMode = networkMode,
+                userFilePath = null,
+                storedFilePath = null,
+                useReserveMultiplexLib = useReserveMultiplexLib
+            )
         }
     }
 
@@ -64,6 +78,7 @@ class DefaultNetworkModeProvider(private val sharedPreferences: SharedPreference
         const val NETWORK_MODE_PREF = "pref.network_mode"
         const val NETWORK_MODE_APP_FILE_PATH_PREF = "pref.network_config_file_path"
         const val NETWORK_MODE_USER_FILE_PATH_PREF = "pref.network_mode_user_config_file_path"
+        const val USE_RESERVE_MULTIPLEX_LIBRARY_PREF = "pref.use_reserve_multiplex_library"
 
         const val NAMED_NETWORK_MODE_PREFS = "network_mode"
     }

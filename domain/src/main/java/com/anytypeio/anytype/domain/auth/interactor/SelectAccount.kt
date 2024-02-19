@@ -31,14 +31,13 @@ class SelectAccount @Inject constructor(
         )
 
         val networkMode = repository.getNetworkMode()
-        val useReserve = fetchReserveMultiplexingSetting.run(Unit)
 
         val command = Command.AccountSelect(
             id = params.id,
             path = params.path,
             networkMode = networkMode.networkMode,
             networkConfigFilePath = networkMode.storedFilePath,
-            preferYamuxTransport = useReserve
+            preferYamuxTransport = fetchReserveMultiplexingSetting.run(Unit)
         )
         val setup = repository.selectAccount(command)
         with(repository) {

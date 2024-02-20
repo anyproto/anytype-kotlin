@@ -9,13 +9,12 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.library.StoreSearchParams
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.workspace.getSpaceWithTechSpace
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -34,6 +33,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -46,7 +46,7 @@ class ObjectValueViewModel(
     private val setObjectDetails: UpdateDetail,
     private val analytics: Analytics,
     private val spaceManager: SpaceManager,
-    private val subscription: StorelessSubscriptionContainer,
+    private val objectSearch: SearchObjects,
     private val urlBuilder: UrlBuilder,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val gradientProvider: SpaceGradientProvider,
@@ -63,25 +63,17 @@ class ObjectValueViewModel(
     private var isInitialSortDone = false
 
     init {
+        Timber.d("ObjectValueViewModel init, params: $viewModelParams")
         viewModelScope.launch {
             val relation = relations.get(relation = viewModelParams.relationKey)
-            val searchParams = StoreSearchParams(
-                subscription = SUB_RELATION_VALUE_OBJECTS,
-                keys = ObjectSearchConstants.defaultKeys,
-                filters = ObjectSearchConstants.filterAddObjectToRelation(
-                    spaces = spaceManager.getSpaceWithTechSpace(),
-                    targetTypes = relation.relationFormatObjectTypes
-                )
-            )
+            setupIsRelationNotEditable(relation)
             combine(
                 values.subscribe(
                     ctx = viewModelParams.ctx,
                     target = viewModelParams.objectId
                 ),
                 query.onStart { emit("") },
-                subscription.subscribe(searchParams)
-            ) { record, query, objects ->
-                setupIsRelationNotEditable(relation)
+            ) { record, query ->
                 val ids = getRecordValues(record)
                 if (!isInitialSortDone) {
                     initialIds.clear()
@@ -91,11 +83,26 @@ class ObjectValueViewModel(
                         emitCommand(Command.Expand)
                     }
                 }
-                initViewState(
-                    relation = relation,
-                    ids = ids,
-                    objects = objects,
-                    query = query
+                Pair(
+                    ids, SearchObjects.Params(
+                        keys = ObjectSearchConstants.defaultKeys,
+                        filters = ObjectSearchConstants.filterAddObjectToRelation(
+                            spaces = spaceManager.getSpaceWithTechSpace(),
+                            targetTypes = relation.relationFormatObjectTypes
+                        ),
+                        fulltext = query
+                    )
+                )
+            }.onEach { (ids, searchParams) ->
+                objectSearch(params = searchParams).proceed(
+                    success = { objects ->
+                        initViewState(
+                            relation = relation,
+                            ids = ids,
+                            objects = objects,
+                        )
+                    },
+                    failure = { Timber.e(it, "Error while searching objects") }
                 )
             }.collect()
         }

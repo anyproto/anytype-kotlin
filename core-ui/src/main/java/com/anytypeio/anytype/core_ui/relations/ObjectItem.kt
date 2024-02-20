@@ -66,13 +66,15 @@ fun ObjectItem(
                 .padding(end = 40.dp)
                 .align(alignment = Alignment.CenterStart)
         )
-        CircleIcon(
-            number = if (item.isSelected) item.number.toString() else null,
-            isSelected = item.isSelected,
-            modifier = Modifier
-                .size(24.dp)
-                .align(Alignment.CenterEnd)
-        )
+        if (isEditable) {
+            CircleIcon(
+                number = if (item.isSelected) item.number.toString() else null,
+                isSelected = item.isSelected,
+                modifier = Modifier
+                    .size(24.dp)
+                    .align(Alignment.CenterEnd)
+            )
+        }
         Divider(
             modifier = Modifier.align(Alignment.BottomCenter),
             paddingStart = 0.dp,

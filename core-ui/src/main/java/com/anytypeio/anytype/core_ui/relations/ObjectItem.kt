@@ -22,7 +22,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
@@ -52,10 +51,8 @@ fun ObjectItem(
             .noRippleCombinedClickable(
                 onClick = { action(ObjectValueItemAction.Click(item)) },
                 onLongClicked = {
-                    if (isEditable) {
-                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                        isMenuExpanded.value = !isMenuExpanded.value
-                    }
+                    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+                    isMenuExpanded.value = !isMenuExpanded.value
                 }
             )
     ) {
@@ -81,19 +78,35 @@ fun ObjectItem(
             paddingEnd = 0.dp
         )
         val isFileLayout = SupportedLayouts.fileLayouts.contains(item.view.layout)
-        ItemMenu(
-            action = {
-                when (it) {
-                    ItemMenuAction.Delete -> action(ObjectValueItemAction.Delete(item))
-                    ItemMenuAction.Duplicate -> action(ObjectValueItemAction.Duplicate(item))
-                    ItemMenuAction.Open -> action(ObjectValueItemAction.Open(item))
-                    ItemMenuAction.Edit -> {}
-                }
-            },
-            isMenuExpanded = isMenuExpanded,
-            showOpen = true,
-            showDuplicate = !isFileLayout
-        )
+        if (!isEditable) {
+            ItemMenu(
+                action = {
+                    when (it) {
+                        ItemMenuAction.Delete -> action(ObjectValueItemAction.Delete(item))
+                        ItemMenuAction.Duplicate -> action(ObjectValueItemAction.Duplicate(item))
+                        ItemMenuAction.Open -> action(ObjectValueItemAction.Open(item))
+                        ItemMenuAction.Edit -> {}
+                    }
+                },
+                isMenuExpanded = isMenuExpanded,
+                showOpen = true
+            )
+        } else {
+            ItemMenu(
+                action = {
+                    when (it) {
+                        ItemMenuAction.Delete -> action(ObjectValueItemAction.Delete(item))
+                        ItemMenuAction.Duplicate -> action(ObjectValueItemAction.Duplicate(item))
+                        ItemMenuAction.Open -> action(ObjectValueItemAction.Open(item))
+                        ItemMenuAction.Edit -> {}
+                    }
+                },
+                isMenuExpanded = isMenuExpanded,
+                showOpen = true,
+                showDuplicate = !isFileLayout,
+                showDelete = true
+            )
+        }
     }
 }
 

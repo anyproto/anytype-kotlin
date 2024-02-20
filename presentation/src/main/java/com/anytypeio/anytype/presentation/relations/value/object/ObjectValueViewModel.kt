@@ -54,8 +54,8 @@ class ObjectValueViewModel(
     private val duplicateObject: DuplicateObject
 ) : BaseViewModel() {
 
-    val viewState = MutableStateFlow<ObjectValueViewState>(ObjectValueViewState.Loading)
-    private val query = MutableSharedFlow<String>(replay = 0)
+    val viewState = MutableStateFlow<ObjectValueViewState>(ObjectValueViewState.Loading())
+    private val query = MutableSharedFlow<String>(replay = 1)
     private var isEditableRelation = false
     val commands = MutableSharedFlow<Command>(replay = 0)
 
@@ -228,6 +228,11 @@ class ObjectValueViewModel(
         }
     }
 
+    private fun refreshObjects() {
+        val currentQuery = query.replayCache.lastOrNull().orEmpty()
+        onQueryChanged(currentQuery)
+    }
+
     //region ACTIONS
     fun onAction(action: ObjectValueItemAction) {
         Timber.d("onAction, action: $action")
@@ -248,7 +253,10 @@ class ObjectValueViewModel(
     private fun onDuplicateAction(item: ObjectValueItem.Object) {
         viewModelScope.launch {
             duplicateObject(item.view.id).process(
-                success = { Timber.d("Object ${item.view.id} duplicated") },
+                success = {
+                    Timber.d("Object ${item.view.id} duplicated")
+                    refreshObjects()
+                },
                 failure = { Timber.e(it, "Error while duplicating object") }
             )
         }
@@ -276,7 +284,10 @@ class ObjectValueViewModel(
             isArchived = true
         )
         objectListIsArchived.async(params).fold(
-            onSuccess = { Timber.d("Object ${item.view.id} archived") },
+            onSuccess = {
+                Timber.d("Object ${item.view.id} archived")
+                refreshObjects()
+            },
             onFailure = { Timber.e(it, "Error while archiving object") }
         )
     }
@@ -381,17 +392,20 @@ class ObjectValueViewModel(
 }
 
 sealed class ObjectValueViewState {
+    abstract val isEditableRelation: Boolean
 
-    object Loading : ObjectValueViewState()
+    data class Loading(
+        override val isEditableRelation: Boolean = false
+    ) : ObjectValueViewState()
 
     data class Empty(
         val title: String,
-        val isEditableRelation: Boolean
+        override val isEditableRelation: Boolean
     ) : ObjectValueViewState()
 
     data class Content(
         val title: String,
-        val isEditableRelation: Boolean,
+        override val isEditableRelation: Boolean,
         val items: List<ObjectValueItem>,
     ) : ObjectValueViewState()
 }
@@ -412,5 +426,3 @@ sealed class ObjectValueItem {
         val number: Int = Int.MAX_VALUE
     ) : ObjectValueItem()
 }
-
-const val SUB_RELATION_VALUE_OBJECTS = "subscription.values.objects"

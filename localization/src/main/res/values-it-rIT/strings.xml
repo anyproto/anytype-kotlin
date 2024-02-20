@@ -382,7 +382,7 @@
     <string name="default_object_type_title">Tipo di oggetto predefinito</string>
     <string name="name_layout_basic">Base</string>
     <string name="name_layout_profile">Profilo</string>
-    <string name="name_layout_participant">Participant</string>
+    <string name="name_layout_participant">Partecipante</string>
     <string name="name_layout_todo">Attività</string>
     <string name="name_layout_set">Insieme</string>
     <string name="name_layout_collection">Collezione</string>

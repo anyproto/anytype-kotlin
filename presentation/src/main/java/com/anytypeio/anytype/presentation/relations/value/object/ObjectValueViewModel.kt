@@ -84,13 +84,10 @@ class ObjectValueViewModel(
                     }
                 }
                 Pair(
-                    ids, SearchObjects.Params(
-                        keys = ObjectSearchConstants.defaultKeys,
-                        filters = ObjectSearchConstants.filterAddObjectToRelation(
-                            spaces = spaceManager.getSpaceWithTechSpace(),
-                            targetTypes = relation.relationFormatObjectTypes
-                        ),
-                        fulltext = query
+                    ids, getSearchParams(
+                        relation = relation,
+                        query = query,
+                        ids = ids
                     )
                 )
             }.onEach { (ids, searchParams) ->
@@ -105,6 +102,31 @@ class ObjectValueViewModel(
                     failure = { Timber.e(it, "Error while searching objects") }
                 )
             }.collect()
+        }
+    }
+
+    private suspend fun getSearchParams(
+        relation: ObjectWrapper.Relation,
+        query: String,
+        ids: List<Id>
+    ): SearchObjects.Params {
+        return if (isEditableRelation) {
+            SearchObjects.Params(
+                keys = ObjectSearchConstants.defaultKeys,
+                filters = ObjectSearchConstants.filterAddObjectToRelation(
+                    spaces = spaceManager.getSpaceWithTechSpace(),
+                    targetTypes = relation.relationFormatObjectTypes
+                ),
+                fulltext = query
+            )
+        } else {
+            SearchObjects.Params(
+                keys = ObjectSearchConstants.defaultKeys,
+                filters = ObjectSearchConstants.filterObjectsByIds(
+                    spaces = spaceManager.getSpaceWithTechSpace(),
+                    ids = ids
+                )
+            )
         }
     }
 
@@ -134,7 +156,7 @@ class ObjectValueViewModel(
         relation: ObjectWrapper.Relation,
         ids: List<Id>,
         objects: List<ObjectWrapper.Basic>,
-        query: String
+        query: String = ""
     ) {
         val views = mapObjects(ids, objects, query)
         viewState.value = if (views.isNotEmpty()) {
@@ -150,7 +172,7 @@ class ObjectValueViewModel(
                         }
                     }
                     val objectTypeNames = typeNames.joinToString(", ")
-                    add(ObjectValueItem.ObjectType(name = objectTypeNames))
+                    if (isEditableRelation) add(ObjectValueItem.ObjectType(name = objectTypeNames))
                     addAll(views)
                 }
             )

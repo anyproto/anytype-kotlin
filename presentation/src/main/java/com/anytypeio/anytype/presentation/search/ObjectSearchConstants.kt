@@ -997,6 +997,39 @@ object ObjectSearchConstants {
         )
     )
 
+    fun filterObjectsByIds(ids: List<Id>, spaces: List<Id>) = listOf(
+        DVFilter(
+            relation = Relations.ID,
+            condition = DVFilterCondition.IN,
+            value = ids
+        ),
+        DVFilter(
+            relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE_UNIQUE_KEY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectTypeUniqueKeys.TEMPLATE
+        ),
+        DVFilter(
+            relation = Relations.SPACE_ID,
+            condition = DVFilterCondition.IN,
+            value = spaces
+        )
+    )
+
     val keysRelationOptions = listOf(
         Relations.ID,
         Relations.SPACE_ID,

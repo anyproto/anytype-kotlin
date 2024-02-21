@@ -161,7 +161,7 @@ class MentionSpan constructor(
         canvas.drawText(
             text.substring(start, end),
             textStartX,
-            y - transitionY,
+            y.toFloat(),
             paint
         )
     }

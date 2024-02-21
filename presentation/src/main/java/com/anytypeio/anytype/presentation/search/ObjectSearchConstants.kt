@@ -531,7 +531,7 @@ object ObjectSearchConstants {
     //endregion
 
     //region BACK LINK OR ADD TO OBJECT
-    fun filtersBackLinkOrAddToObject(ignore: Id?, space: Id) = listOf(
+    fun filtersBackLinkOrAddToObject(ignore: Id?, spaces: List<Id>) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
             condition = DVFilterCondition.NOT_EQUAL,
@@ -564,8 +564,8 @@ object ObjectSearchConstants {
         ),
         DVFilter(
             relation = Relations.SPACE_ID,
-            condition = DVFilterCondition.EQUAL,
-            value = space
+            condition = DVFilterCondition.IN,
+            value = spaces
         )
     )
 
@@ -989,6 +989,39 @@ object ObjectSearchConstants {
             relation = Relations.IS_HIDDEN,
             condition = DVFilterCondition.NOT_EQUAL,
             value = true
+        ),
+        DVFilter(
+            relation = Relations.SPACE_ID,
+            condition = DVFilterCondition.IN,
+            value = spaces
+        )
+    )
+
+    fun filterObjectsByIds(ids: List<Id>, spaces: List<Id>) = listOf(
+        DVFilter(
+            relation = Relations.ID,
+            condition = DVFilterCondition.IN,
+            value = ids
+        ),
+        DVFilter(
+            relation = Relations.IS_ARCHIVED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_HIDDEN,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.IS_DELETED,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = true
+        ),
+        DVFilter(
+            relation = Relations.TYPE_UNIQUE_KEY,
+            condition = DVFilterCondition.NOT_EQUAL,
+            value = ObjectTypeUniqueKeys.TEMPLATE
         ),
         DVFilter(
             relation = Relations.SPACE_ID,

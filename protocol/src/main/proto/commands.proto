@@ -5014,6 +5014,7 @@ message Rpc {
                 string blockId = 2;
                 string targetId = 3;
                 ResponseEvent event = 4;
+                google.protobuf.Struct details = 5;
 
                 message Error {
                     Code code = 1;

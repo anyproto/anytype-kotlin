@@ -58,9 +58,9 @@ sealed interface ListenerType {
     data class LinkToObjectLoading(val target: String) : ListenerType
     data class LinkToObjectCheckboxUpdate(val target: Id, val isChecked: Boolean) : ListenerType
 
-    data class Mention(val target: String) : ListenerType
+    data class Mention(val target: Id) : ListenerType
 
-    data class DividerClick(val target: String) : ListenerType
+    data class DividerClick(val target: Id) : ListenerType
 
     data class Latex(val id: Id) : ListenerType
 

@@ -107,16 +107,14 @@ class MentionSpan constructor(
         paint: Paint
     ) {
 
-        var transitionY = 0F
         val drawable = getCachedDrawable()
         val paintFontMetrics = paint.fontMetrics
 
         drawable?.let {
             val fontHeight = paintFontMetrics.descent - paintFontMetrics.ascent
             val centerY = y + paintFontMetrics.descent - fontHeight / 2
-            transitionY = centerY - imageSize / 2
             canvas.save()
-            canvas.translate(x, transitionY)
+            canvas.translate(x, centerY - imageSize / 2)
             it.draw(canvas)
             canvas.restore()
         }

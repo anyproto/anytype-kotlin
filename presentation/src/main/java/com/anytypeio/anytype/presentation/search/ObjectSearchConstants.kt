@@ -921,7 +921,8 @@ object ObjectSearchConstants {
                 ObjectType.Layout.IMAGE.code.toDouble(),
                 ObjectType.Layout.FILE.code.toDouble(),
                 ObjectType.Layout.VIDEO.code.toDouble(),
-                ObjectType.Layout.AUDIO.code.toDouble()
+                ObjectType.Layout.AUDIO.code.toDouble(),
+                ObjectType.Layout.PDF.code.toDouble()
             )
         ),
         DVFilter(

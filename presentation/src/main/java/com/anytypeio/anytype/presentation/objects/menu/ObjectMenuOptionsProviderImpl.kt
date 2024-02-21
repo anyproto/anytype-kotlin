@@ -55,6 +55,7 @@ class ObjectMenuOptionsProviderImpl(
                 ObjectType.Layout.IMAGE,
                 ObjectType.Layout.VIDEO,
                 ObjectType.Layout.AUDIO,
+                ObjectType.Layout.PDF,
                 ObjectType.Layout.SPACE,
                 ObjectType.Layout.SET,
                 ObjectType.Layout.COLLECTION,

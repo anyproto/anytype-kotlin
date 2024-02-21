@@ -14,7 +14,9 @@ object SupportedLayouts {
         ObjectType.Layout.COLLECTION,
         ObjectType.Layout.TODO,
         ObjectType.Layout.NOTE,
-        ObjectType.Layout.BOOKMARK
+        ObjectType.Layout.BOOKMARK,
+        ObjectType.Layout.AUDIO,
+        ObjectType.Layout.PDF
     )
     val editorLayouts = listOf(
         ObjectType.Layout.BASIC,
@@ -28,7 +30,8 @@ object SupportedLayouts {
         ObjectType.Layout.FILE,
         ObjectType.Layout.IMAGE,
         ObjectType.Layout.VIDEO,
-        ObjectType.Layout.AUDIO
+        ObjectType.Layout.AUDIO,
+        ObjectType.Layout.PDF
     )
 
     val systemLayouts = listOf(

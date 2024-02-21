@@ -275,7 +275,7 @@ class ObjectTypeChangeViewModel(
         GetObjectTypes.Params(
             filters = ObjectSearchConstants.filterTypes(
                 spaces = listOf(spaceManager.get()),
-                recommendedLayouts = SupportedLayouts.editorLayouts
+                recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
             ),
             sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
             query = query,

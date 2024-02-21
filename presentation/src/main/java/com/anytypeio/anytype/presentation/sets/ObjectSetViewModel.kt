@@ -1407,6 +1407,8 @@ class ObjectSetViewModel(
             ObjectType.Layout.IMAGE,
             ObjectType.Layout.FILE,
             ObjectType.Layout.VIDEO,
+            ObjectType.Layout.AUDIO,
+            ObjectType.Layout.PDF,
             ObjectType.Layout.BOOKMARK -> proceedWithOpeningObject(target)
             ObjectType.Layout.PROFILE -> proceedWithOpeningObject(identityProfileLink ?: target)
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {

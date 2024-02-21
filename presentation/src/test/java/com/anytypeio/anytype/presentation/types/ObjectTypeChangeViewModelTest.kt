@@ -114,7 +114,7 @@ class ObjectTypeChangeViewModelTest {
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
             spaces = listOf(spaceId),
-            recommendedLayouts = SupportedLayouts.editorLayouts
+            recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
         )
 
         // TESTING
@@ -156,7 +156,7 @@ class ObjectTypeChangeViewModelTest {
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
             spaces = listOf(spaceId),
-            recommendedLayouts = SupportedLayouts.editorLayouts
+            recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
@@ -250,7 +250,7 @@ class ObjectTypeChangeViewModelTest {
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
             spaces = listOf(spaceId),
-            recommendedLayouts = SupportedLayouts.editorLayouts
+            recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
@@ -422,7 +422,7 @@ class ObjectTypeChangeViewModelTest {
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
             spaces = listOf(space),
-            recommendedLayouts = SupportedLayouts.editorLayouts
+            recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
@@ -431,7 +431,7 @@ class ObjectTypeChangeViewModelTest {
             addAll(
                 ObjectSearchConstants.filterTypes(
                     spaces = listOf(MARKETPLACE_SPACE_ID),
-                    recommendedLayouts = SupportedLayouts.editorLayouts
+                    recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
                 )
             )
             add(

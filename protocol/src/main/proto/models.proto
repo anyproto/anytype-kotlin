@@ -964,6 +964,7 @@ message Notification {
         Export export = 8;
         GalleryImport galleryImport = 9;
         RequestToJoin requestToJoin = 10;
+        Test test = 11;
     }
     string space = 7;
 
@@ -998,6 +999,8 @@ message Notification {
         string identityName = 3;
         string identityIcon = 4;
     }
+
+    message Test {}
 
     enum Status {
         Created = 0;

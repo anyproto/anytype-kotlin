@@ -415,17 +415,21 @@ class DefaultBlockViewRenderer @Inject constructor(
                             val obj = ObjectWrapper.Basic(detail.map)
                             val featured = obj.featuredRelations
                             if (featured.contains(Relations.DESCRIPTION)) {
-                                mCounter = 0
-                                result.add(
-                                    description(
-                                        block = block,
-                                        content = content,
-                                        mode = mode,
-                                        restrictions = restrictions,
-                                        focus = focus,
-                                        objLayout = obj.layout
+                                if (obj.layout == ObjectType.Layout.PARTICIPANT && content.text.isEmpty()) {
+                                    Timber.d("Skipping description rendering for object with participant layout: text is empty")
+                                } else {
+                                    mCounter = 0
+                                    result.add(
+                                        description(
+                                            block = block,
+                                            content = content,
+                                            mode = mode,
+                                            restrictions = restrictions,
+                                            focus = focus,
+                                            objLayout = obj.layout
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
                         Content.Text.Style.CHECKBOX -> {

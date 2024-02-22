@@ -829,7 +829,6 @@ class DefaultBlockViewRenderer @Inject constructor(
         focus: Focus,
         objLayout: ObjectType.Layout?
     ): BlockView.Description {
-        Timber.d("Binding description block: $block")
         val blockMode = if (restrictions.contains(ObjectRestriction.RELATIONS)) {
             BlockView.Mode.READ
         } else {

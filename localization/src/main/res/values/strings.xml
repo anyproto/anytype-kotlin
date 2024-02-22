@@ -322,7 +322,7 @@
     <string name="relation_format_title">Title</string>
     <string name="relation_format_number">Number</string>
     <string name="relation_format_date">Date</string>
-    <string name="relation_format_status">Status</string>
+    <string name="relation_format_status">Select</string>
     <string name="relation_format_file">File</string>
     <string name="relation_format_checkbox">Checkbox</string>
     <string name="relation_format_url">Url</string>
@@ -337,7 +337,7 @@
     <string name="add_sort">Add a sort</string>
     <string name="apply">Apply</string>
     <string name="add_filter">Add a filter</string>
-    <string name="relation_format_tag">Tag</string>
+    <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">Unknown number of objects</string>
     <string name="sort_from_first_to_last">First → Last</string>
     <string name="sort_from_last_to_first">Last → First</string>

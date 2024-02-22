@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemListObjectBinding
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+import com.anytypeio.anytype.core_utils.ui.setOnThrottleClickListener
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -27,7 +28,7 @@ class DefaultObjectViewAdapter(
         viewType: Int
     ): ObjectViewHolder = when (viewType) {
         TYPE_ITEM -> ObjectItemViewHolder(inflate(parent, R.layout.item_list_object)).apply {
-            itemView.setOnClickListener {
+            itemView.setOnThrottleClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     val item = getItem(pos)
@@ -42,7 +43,7 @@ class DefaultObjectViewAdapter(
                 LayoutInflater.from(parent.context), parent, false
             )
         ).apply {
-            itemView.setOnClickListener {
+            itemView.setOnThrottleClickListener {
                 val pos = bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     val item = getItem(pos)

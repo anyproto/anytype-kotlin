@@ -63,7 +63,6 @@ fun Block.Content.Text.Mark.createMentionMarkup(
     val isArchived = obj.isArchived == true
 
     return when (obj.layout) {
-
         ObjectType.Layout.BASIC -> createBaseMentionMark(
             from = range.first,
             to = range.last,
@@ -73,8 +72,7 @@ fun Block.Content.Text.Mark.createMentionMarkup(
             urlBuilder = urlBuilder,
             isArchived = isArchived
         )
-
-        ObjectType.Layout.PROFILE -> {
+        ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> {
             if (image.isNullOrBlank()) {
                 Markup.Mark.Mention.Profile.WithInitials(
                     from = range.first,
@@ -93,7 +91,6 @@ fun Block.Content.Text.Mark.createMentionMarkup(
                 )
             }
         }
-
         ObjectType.Layout.TODO -> {
             if (obj.done == true) {
                 Markup.Mark.Mention.Task.Checked(
@@ -111,7 +108,6 @@ fun Block.Content.Text.Mark.createMentionMarkup(
                 )
             }
         }
-
         else -> createBaseMentionMark(
             from = range.first,
             to = range.last,

@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
@@ -66,7 +67,9 @@ fun SelectWidgetTypeScreen(
                     ),
                     icon = R.drawable.ic_widget_type_link,
                     isChecked = type.isSelected,
-                    onClick = { onViewClicked(type) }
+                    onClick = throttledClick(
+                        onClick = { onViewClicked(type) }
+                    )
                 )
                 is WidgetTypeView.List -> WidgetTypeItem(
                     title = stringResource(
@@ -77,7 +80,9 @@ fun SelectWidgetTypeScreen(
                     ),
                     icon = R.drawable.ic_widget_type_list,
                     isChecked = type.isSelected,
-                    onClick = { onViewClicked(type) }
+                    onClick = throttledClick(
+                        onClick = { onViewClicked(type) }
+                    )
                 )
                 is WidgetTypeView.CompactList -> WidgetTypeItem(
                     title = stringResource(
@@ -99,7 +104,9 @@ fun SelectWidgetTypeScreen(
                     ),
                     icon = R.drawable.ic_widget_type_tree,
                     isChecked = type.isSelected,
-                    onClick = { onViewClicked(type) }
+                    onClick = throttledClick(
+                        onClick = { onViewClicked(type) }
+                    )
                 )
             }
         }

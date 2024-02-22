@@ -419,6 +419,7 @@ class CollectionViewModel(
             val target = view.id
             when (view.layout) {
                 ObjectType.Layout.PROFILE,
+                ObjectType.Layout.PARTICIPANT,
                 ObjectType.Layout.BASIC,
                 ObjectType.Layout.TODO,
                 ObjectType.Layout.NOTE,

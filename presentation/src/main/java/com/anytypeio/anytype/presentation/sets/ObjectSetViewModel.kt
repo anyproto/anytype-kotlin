@@ -1409,7 +1409,8 @@ class ObjectSetViewModel(
             ObjectType.Layout.VIDEO,
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF,
-            ObjectType.Layout.BOOKMARK -> proceedWithOpeningObject(target)
+            ObjectType.Layout.BOOKMARK,
+            ObjectType.Layout.PARTICIPANT -> proceedWithOpeningObject(target)
             ObjectType.Layout.PROFILE -> proceedWithOpeningObject(identityProfileLink ?: target)
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 closeBlock.async(context).fold(

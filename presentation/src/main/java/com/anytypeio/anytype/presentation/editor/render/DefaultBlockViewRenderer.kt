@@ -830,7 +830,7 @@ class DefaultBlockViewRenderer @Inject constructor(
         } else {
             if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ
         }
-        val alignment = if (objLayout == ObjectType.Layout.PROFILE) Alignment.CENTER else Alignment.START
+        val alignment = if (objLayout?.isProfileOrParticipant() == true) Alignment.CENTER else Alignment.START
         return BlockView.Description(
             id = block.id,
             text = content.text,

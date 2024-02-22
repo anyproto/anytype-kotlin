@@ -322,7 +322,7 @@
     <string name="relation_format_title">Title</string>
     <string name="relation_format_number">Number</string>
     <string name="relation_format_date">Date</string>
-    <string name="relation_format_status">Status</string>
+    <string name="relation_format_status">Select</string>
     <string name="relation_format_file">File</string>
     <string name="relation_format_checkbox">Checkbox</string>
     <string name="relation_format_url">Url</string>

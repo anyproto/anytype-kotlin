@@ -26,6 +26,7 @@ message Rpc {
     message App {
         message GetVersion {
             message Request {
+                option (no_auth) = true;
             }
             message Response {
                 Error error = 1;
@@ -585,6 +586,7 @@ message Rpc {
                 bool disableLocalNetworkSync = 5; // Disable local network discovery
                 NetworkMode networkMode = 6; // optional, default is DefaultConfig
                 string networkCustomConfigFilePath = 7; // config path for the custom network mode            }
+                bool preferYamuxTransport = 8; // optional, default is false, recommended in case of problems with QUIC transport
             }
             /**
             * Middleware-to-front-end response for an account creation request, that can contain a NULL error and created account or a non-NULL error and an empty account
@@ -704,6 +706,7 @@ message Rpc {
                 bool disableLocalNetworkSync = 3; // Disable local network discovery
                 NetworkMode networkMode = 4; // optional, default is DefaultConfig
                 string networkCustomConfigFilePath = 5; // config path for the custom network mode
+                bool preferYamuxTransport = 6; // optional, default is false, recommended in case of problems with QUIC transport
             }
 
             /**
@@ -6269,6 +6272,26 @@ message Rpc {
             }
             message Response {
                 Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        INTERNAL_ERROR = 3;
+                    }
+                }
+            }
+        }
+
+        message Test {
+            message Request {}
+            message Response {
+                Error error = 1;
+                anytype.model.Notification notification = 2;
 
                 message Error {
                     Code code = 1;

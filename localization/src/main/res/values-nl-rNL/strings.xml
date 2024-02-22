@@ -970,7 +970,7 @@
     <string name="onboarding_terms_and_policy_terms">Voorwaarden\u00A0van\u00A0gebruik</string>
     <string name="onboarding_terms_and_policy_infix">" en "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Beleid</string>
-    <string name="onboarding_join_button_text">Neem deel</string>
+    <string name="onboarding_join_button_text">Sluit aan</string>
     <string name="onboarding_log_in_button_text">Aanmelden</string>
     <string name="onboarding_invite_code_title">Voer jouw uitnodigingscode in</string>
     <string name="onboarding_invite_code_description">Als je er geen hebt, ga dan naar anytype.io\nen schrijf je in op de wachtlijst.</string>

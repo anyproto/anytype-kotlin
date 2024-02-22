@@ -51,7 +51,7 @@ class SpaceDeletedStatusWatcher @Inject constructor(
                     val spaceView = result.let {
                         ObjectWrapper.SpaceView(it.map)
                     }
-                    if (spaceView.spaceAccountStatus == SpaceStatus.SPACE_DELETED) {
+                    if (spaceView.spaceAccountStatus.isDeletedOrRemoving()) {
                         logger.logWarning("Current space is deleted")
                         val accountConfig = configStorage.getOrNull()
                         if (accountConfig != null) {

@@ -317,7 +317,7 @@ class MentionExtTest {
         ObjectType.Layout.values().iterator().forEach { layout: ObjectType.Layout ->
             when (layout) {
                 ObjectType.Layout.BASIC -> equalsMentionBase(mark, layout)
-                ObjectType.Layout.PROFILE -> equalsMentionProfile(mark, layout)
+                ObjectType.Layout.PROFILE, ObjectType.Layout.PARTICIPANT -> equalsMentionProfile(mark, layout)
                 ObjectType.Layout.TODO -> equalsMentionTodo(mark, layout)
                 ObjectType.Layout.SET -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.COLLECTION -> equalsMentionNoIcon(mark, layout)
@@ -329,7 +329,6 @@ class MentionExtTest {
                 ObjectType.Layout.NOTE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.SPACE -> equalsMentionNoIcon(mark, layout)
                 ObjectType.Layout.PDF -> equalsMentionNoIcon(mark, layout)
-                ObjectType.Layout.PARTICIPANT -> equalsMentionNoIcon(mark, layout)
                 else -> {}
             }
         }

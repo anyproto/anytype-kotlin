@@ -528,7 +528,7 @@ private fun TemplateItemContent(item: TemplateView) {
                         TemplateItemTodoTitle(text = item.name)
                     } else {
                         if (item.isImageOrEmojiPresent()) {
-                            if (item.layout == ObjectType.Layout.PROFILE) {
+                            if (item.layout.isProfileOrParticipant()) {
                                 Box(
                                     modifier = Modifier
                                         .wrapContentWidth()

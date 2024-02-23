@@ -15,6 +15,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.NetworkModeConstants
 import com.anytypeio.anytype.core_utils.const.FileConstants
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.settings.PreferencesViewModel
@@ -60,6 +61,9 @@ class OnboardingNetworkSetupDialog : BaseBottomSheetComposeFragment() {
                     },
                     onAnytypeNetworkClicked = {
                         vm.proceedWithNetworkMode(NetworkModeConstants.NETWORK_MODE_DEFAULT)
+                    },
+                    onUseYamuxToggled = {
+                        toast("TODO")
                     }
                 )
             }

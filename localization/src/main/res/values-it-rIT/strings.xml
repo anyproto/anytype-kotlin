@@ -284,7 +284,7 @@
     <string name="relation_format_title">Titolo</string>
     <string name="relation_format_number">Numero</string>
     <string name="relation_format_date">Data</string>
-    <string name="relation_format_status">Stato</string>
+    <string name="relation_format_status">Seleziona</string>
     <string name="relation_format_file">File</string>
     <string name="relation_format_checkbox">Casella di scelta</string>
     <string name="relation_format_url">Url</string>
@@ -299,7 +299,7 @@
     <string name="add_sort">Aggiungi ordinamento</string>
     <string name="apply">Applica</string>
     <string name="add_filter">Aggiungi filtro</string>
-    <string name="relation_format_tag">Etichetta</string>
+    <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">Numero di oggetti sconosciuto</string>
     <string name="sort_from_first_to_last">Primo → Ultimo</string>
     <string name="sort_from_last_to_first">Ultimo → Primo</string>
@@ -1074,6 +1074,7 @@
     <string name="date_type_older">Meno recenti</string>
     <string name="dates_days_ago">%1$s giorni fa</string>
     <string name="dates_days_from">%1$s giorni da adesso</string>
+    <string name="settings_use_yamux">Use a reserve multiplex library</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">La vista Kanban non è ancora disponibile su mobile.\nCambia tipo di visualizzazione (Impostazioni -&gt; Vista) o crea una nuova per accedere ai tuoi dati.</string>
     <string name="error_calendar_view_not_supported">La vista Calendario non è ancora disponibile su mobile.\nCambia tipo di visualizzazione (Impostazioni -&gt; Vista) o crea una nuova per accedere ai tuoi dati.\"</string>
@@ -1112,6 +1113,7 @@
     <string name="network_settings_self_host">Self-hosted</string>
     <string name="network_settings_self_host_description">Effettua il backup sulla tua rete self-hosted</string>
     <string name="network_settings_networks_section">Reti</string>
+    <string name="network_settings_troubleshooting_section">Troubleshooting</string>
     <string name="network_settings_provide_config_hint">Tocca per fornire la tua configurazione di rete</string>
     <string name="network_settings_self_host_config">Configurazione attuale: %1$s</string>
     <!--endregion-->

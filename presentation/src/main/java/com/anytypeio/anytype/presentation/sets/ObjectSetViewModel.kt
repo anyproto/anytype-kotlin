@@ -531,7 +531,8 @@ class ObjectSetViewModel(
                                 state = stateReducer.state.value,
                                 analytics = analytics,
                                 event = ObjectStateAnalyticsEvent.OPEN_OBJECT,
-                                startTime = startTime
+                                startTime = startTime,
+                                currentViewId = session.currentViewerId.value
                             )
                         }
                     }

@@ -39,3 +39,32 @@ fun View.setOnThrottleClickListener(
         }
     )
 }
+
+/**
+ * Can be used for throttling clicks in compose code
+ */
+interface MultipleEventCutter {
+    fun processEvent(event: () -> Unit)
+    companion object
+}
+
+fun MultipleEventCutter.Companion.get(
+    interval: Long = OnThrottleClickListener.DEFAULT_INTERVAL
+): MultipleEventCutter = DefaultMultipleEventCutter(interval)
+
+
+private class DefaultMultipleEventCutter(
+    private val interval: Long
+) : MultipleEventCutter {
+    private val now: Long
+        get() = System.currentTimeMillis()
+
+    private var lastEventTimeMs: Long = 0
+
+    override fun processEvent(event: () -> Unit) {
+        if (now - lastEventTimeMs >= interval) {
+            event.invoke()
+        }
+        lastEventTimeMs = now
+    }
+}

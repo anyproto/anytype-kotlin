@@ -44,6 +44,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.TitleInter15
+import com.anytypeio.anytype.core_utils.ui.MultipleEventCutter
+import com.anytypeio.anytype.core_utils.ui.get
 import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel.SpaceView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
@@ -105,13 +107,20 @@ fun AddToAnytypeScreen(
     }
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        val throttler = remember {
+            MultipleEventCutter.Companion.get(interval = DROPDOWN_MENU_VISIBILITY_WINDOW_INTERVAL)
+        }
         Header()
         DataSection(content)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(76.dp)
-                .noRippleClickable { isSaveAsMenuExpanded = !isSaveAsMenuExpanded }
+                .noRippleClickable {
+                    throttler.processEvent {
+                        isSaveAsMenuExpanded = !isSaveAsMenuExpanded
+                    }
+                }
         ) {
             Text(
                 text = stringResource(R.string.sharing_menu_save_as_section_name),
@@ -139,7 +148,11 @@ fun AddToAnytypeScreen(
             if (items.size > 1) {
                 DropdownMenu(
                     expanded = isSaveAsMenuExpanded,
-                    onDismissRequest = { isSaveAsMenuExpanded = false },
+                    onDismissRequest = {
+                        throttler.processEvent {
+                            isSaveAsMenuExpanded = false
+                        }
+                    },
                     modifier = Modifier.background(
                         color = colorResource(id = R.color.background_secondary)
                     )
@@ -276,12 +289,17 @@ private fun CurrentSpaceSection(
     onSelectSpaceClicked: (SpaceView) -> Unit
 ) {
     var isSpaceSelectMenuExpanded by remember { mutableStateOf(false) }
+    val throttler = remember {
+        MultipleEventCutter.Companion.get(interval = DROPDOWN_MENU_VISIBILITY_WINDOW_INTERVAL)
+    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(76.dp)
             .noRippleClickable {
-                isSpaceSelectMenuExpanded = true
+                throttler.processEvent {
+                    isSpaceSelectMenuExpanded = true
+                }
             }
     ) {
         Text(
@@ -316,7 +334,11 @@ private fun CurrentSpaceSection(
         )
         DropdownMenu(
             expanded = isSpaceSelectMenuExpanded,
-            onDismissRequest = { isSpaceSelectMenuExpanded = false },
+            onDismissRequest = {
+                throttler.processEvent {
+                    isSpaceSelectMenuExpanded = false
+                }
+            },
             modifier = Modifier.background(
                 color = colorResource(id = R.color.background_secondary)
             )
@@ -441,3 +463,5 @@ sealed class SharingData {
             get() = uri
     }
 }
+
+const val DROPDOWN_MENU_VISIBILITY_WINDOW_INTERVAL = 150L

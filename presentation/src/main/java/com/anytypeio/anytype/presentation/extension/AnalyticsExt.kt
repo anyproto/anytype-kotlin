@@ -17,6 +17,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.editTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreateLink
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectDuplicate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectMoveToBin
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectScreenShow
@@ -79,7 +80,14 @@ fun Block.Prototype.getAnalyticsEvent(
             )
         }
         is Block.Prototype.Link -> {
-            Props(mapOf(EventsPropertiesKey.type to "link"))
+            return EventAnalytics.Anytype(
+                name = objectCreateLink,
+                duration = EventAnalytics.Duration(
+                    start = startTime,
+                    middleware = middlewareTime,
+                    render = renderTime
+                )
+            )
         }
         is Block.Prototype.Relation -> {
             Props(mapOf(EventsPropertiesKey.type to "relation"))

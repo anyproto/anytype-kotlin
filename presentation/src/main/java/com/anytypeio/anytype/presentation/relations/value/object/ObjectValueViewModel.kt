@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -201,7 +202,8 @@ class ObjectValueViewModel(
                 gradientProvider = gradientProvider
             ),
             isSelected = isSelected,
-            number = number
+            number = number,
+            restrictions = obj.restrictions
         )
     }.let { mappedOptions ->
         if (!isInitialSortDone) {
@@ -423,6 +425,7 @@ sealed class ObjectValueItem {
     data class Object(
         val view: DefaultObjectView,
         val isSelected: Boolean,
-        val number: Int = Int.MAX_VALUE
+        val number: Int = Int.MAX_VALUE,
+        val restrictions: List<ObjectRestriction> = emptyList()
     ) : ObjectValueItem()
 }

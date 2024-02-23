@@ -594,7 +594,8 @@ object ObjectSearchConstants {
         Relations.IS_HIDDEN,
         Relations.SNIPPET,
         Relations.DONE,
-        Relations.IDENTITY_PROFILE_LINK
+        Relations.IDENTITY_PROFILE_LINK,
+        Relations.RESTRICTIONS
     )
 
     val defaultOptionKeys = listOf(

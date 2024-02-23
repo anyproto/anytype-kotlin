@@ -100,7 +100,8 @@ class StartAccountTest {
                 val command = Command.AccountSelect(
                     id = id,
                     path = path,
-                    networkMode = NetworkMode.DEFAULT
+                    networkMode = NetworkMode.DEFAULT,
+                    preferYamuxTransport = false
                 )
                 selectAccount(command)
             } doReturn AccountSetup(
@@ -120,7 +121,8 @@ class StartAccountTest {
         val command = Command.AccountSelect(
             id = id,
             path = path,
-            networkMode = NetworkMode.DEFAULT
+            networkMode = NetworkMode.DEFAULT,
+            preferYamuxTransport = false
         )
 
         verify(repo, times(1)).getNetworkMode()
@@ -169,7 +171,8 @@ class StartAccountTest {
                 val command = Command.AccountSelect(
                     id = id,
                     path = path,
-                    networkMode = NetworkMode.DEFAULT
+                    networkMode = NetworkMode.DEFAULT,
+                    preferYamuxTransport = false
                 )
                 selectAccount(command)
             } doReturn AccountSetup(
@@ -215,7 +218,8 @@ class StartAccountTest {
                 val command = Command.AccountSelect(
                     id = id,
                     path = path,
-                    networkMode = NetworkMode.DEFAULT
+                    networkMode = NetworkMode.DEFAULT,
+                    preferYamuxTransport = false
                 )
                 selectAccount(command)
             } doReturn AccountSetup(
@@ -261,7 +265,8 @@ class StartAccountTest {
                 val command = Command.AccountSelect(
                     id = id,
                     path = path,
-                    networkMode = NetworkMode.DEFAULT
+                    networkMode = NetworkMode.DEFAULT,
+                    preferYamuxTransport = false
                 )
                 selectAccount(command)
             } doReturn AccountSetup(
@@ -307,7 +312,8 @@ class StartAccountTest {
                 val command = Command.AccountSelect(
                     id = id,
                     path = path,
-                    networkMode = NetworkMode.LOCAL
+                    networkMode = NetworkMode.LOCAL,
+                    preferYamuxTransport = false
                 )
                 selectAccount(command)
             } doReturn AccountSetup(
@@ -359,7 +365,8 @@ class StartAccountTest {
                     id = id,
                     path = path,
                     networkMode = NetworkMode.CUSTOM,
-                    networkConfigFilePath = storedFilePath
+                    networkConfigFilePath = storedFilePath,
+                    preferYamuxTransport = false
                 )
                 selectAccount(command)
             } doReturn AccountSetup(

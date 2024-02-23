@@ -21,6 +21,13 @@ interface ObjectMenuOptionsProvider {
                 hasRelations = true,
                 hasDiagnosticsVisibility = true
             )
+            val NONE = Options(
+                hasIcon = false,
+                hasCover = false,
+                hasLayout = false,
+                hasRelations = false,
+                hasDiagnosticsVisibility = false
+            )
         }
     }
 

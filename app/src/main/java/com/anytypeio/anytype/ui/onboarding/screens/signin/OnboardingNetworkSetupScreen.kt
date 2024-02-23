@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -51,7 +53,8 @@ fun DefaultNetworkSetupScreenPreview() {
         onAnytypeNetworkClicked = {},
         onLocalOnlyClicked = {},
         onSelfHostNetworkClicked = {},
-        onSetSelfHostConfigConfigClicked = {}
+        onSetSelfHostConfigConfigClicked = {},
+        onUseYamuxToggled = {}
     )
 }
 
@@ -67,7 +70,8 @@ fun SelfHostNetworkSetupScreenPreview() {
         onAnytypeNetworkClicked = {},
         onLocalOnlyClicked = {},
         onSelfHostNetworkClicked = {},
-        onSetSelfHostConfigConfigClicked = {}
+        onSetSelfHostConfigConfigClicked = {},
+        onUseYamuxToggled = {}
     )
 }
 
@@ -83,7 +87,8 @@ fun SelfHostNetworkWithPathSetupScreenPreview() {
         onAnytypeNetworkClicked = {},
         onLocalOnlyClicked = {},
         onSelfHostNetworkClicked = {},
-        onSetSelfHostConfigConfigClicked = {}
+        onSetSelfHostConfigConfigClicked = {},
+        onUseYamuxToggled = {}
     )
 }
 
@@ -99,7 +104,8 @@ fun LocalNetworkWithPathSetupScreenPreview() {
         onAnytypeNetworkClicked = {},
         onLocalOnlyClicked = {},
         onSelfHostNetworkClicked = {},
-        onSetSelfHostConfigConfigClicked = {}
+        onSetSelfHostConfigConfigClicked = {},
+        onUseYamuxToggled = {}
     )
 }
 
@@ -109,7 +115,8 @@ fun NetworkSetupScreen(
     onLocalOnlyClicked: () -> Unit,
     onAnytypeNetworkClicked: () -> Unit,
     onSelfHostNetworkClicked: () -> Unit,
-    onSetSelfHostConfigConfigClicked: () -> Unit
+    onSetSelfHostConfigConfigClicked: () -> Unit,
+    onUseYamuxToggled: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -138,7 +145,48 @@ fun NetworkSetupScreen(
             onProvideConfigClicked = onSetSelfHostConfigConfigClicked
         )
         LocalOnlyCard(onLocalOnlyClicked, config)
+        Section(
+            title = stringResource(id = R.string.network_settings_troubleshooting_section),
+            color = NetworkSettingDescriptionColor,
+            textPaddingStart = 0.dp
+        )
+        UseYamuxCard(onUseYamuxToggled)
         Spacer(modifier = Modifier.height(24.dp))
+    }
+}
+
+@Composable
+private fun UseYamuxCard(onUseYamuxToggled: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(16.dp))
+            .fillMaxWidth()
+            .background(color = NetworkSettingCardColor)
+            .noRippleClickable { onUseYamuxToggled() }
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(
+                horizontal = 20.dp,
+                vertical = 20.dp
+            )
+        ) {
+            Text(
+                text = stringResource(id = R.string.network_settings_use_),
+                style = BodyCalloutRegular,
+                color = NetworkSettingTitleColor,
+                modifier = Modifier.weight(1.0f)
+            )
+            // TODO use flag from network config
+            if (true) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_network_settings_checked),
+                    contentDescription = "Check icon"
+                )
+            } else {
+                Spacer(modifier = Modifier.size(24.dp))
+            }
+        }
     }
 }
 

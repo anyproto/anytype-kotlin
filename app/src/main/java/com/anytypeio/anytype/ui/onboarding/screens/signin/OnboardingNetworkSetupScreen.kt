@@ -13,13 +13,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -150,13 +148,13 @@ fun NetworkSetupScreen(
             color = NetworkSettingDescriptionColor,
             textPaddingStart = 0.dp
         )
-        UseYamuxCard(onUseYamuxToggled)
+        UseYamuxCard(config = config, onUseYamuxToggled = onUseYamuxToggled)
         Spacer(modifier = Modifier.height(24.dp))
     }
 }
 
 @Composable
-private fun UseYamuxCard(onUseYamuxToggled: () -> Unit) {
+private fun UseYamuxCard(config: NetworkModeConfig, onUseYamuxToggled: () -> Unit) {
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
@@ -172,13 +170,12 @@ private fun UseYamuxCard(onUseYamuxToggled: () -> Unit) {
             )
         ) {
             Text(
-                text = stringResource(id = R.string.network_settings_use_),
+                text = stringResource(id = R.string.settings_use_yamux),
                 style = BodyCalloutRegular,
                 color = NetworkSettingTitleColor,
                 modifier = Modifier.weight(1.0f)
             )
-            // TODO use flag from network config
-            if (true) {
+            if (config.useReserveMultiplexLib) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_network_settings_checked),
                     contentDescription = "Check icon"

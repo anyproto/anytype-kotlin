@@ -126,7 +126,7 @@ class PreferenceFragment : PreferenceFragmentCompat() {
             title = getString(R.string.settings_use_yamux)
             isIconSpaceReserved = false
             onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                vm.onChangeMultiplexLibrary(newValue as Boolean)
+                vm.onChangeMultiplexLibrary()
                 true
             }
         }

@@ -62,9 +62,7 @@ class OnboardingNetworkSetupDialog : BaseBottomSheetComposeFragment() {
                     onAnytypeNetworkClicked = {
                         vm.proceedWithNetworkMode(NetworkModeConstants.NETWORK_MODE_DEFAULT)
                     },
-                    onUseYamuxToggled = {
-                        toast("TODO")
-                    }
+                    onUseYamuxToggled = vm::onChangeMultiplexLibrary
                 )
             }
         }

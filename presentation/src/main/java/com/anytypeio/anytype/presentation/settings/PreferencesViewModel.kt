@@ -104,13 +104,14 @@ class PreferencesViewModel(
         }
     }
 
-    fun onChangeMultiplexLibrary(useReserve: Boolean) {
-        Timber.d("onChangeMultiplexLibrary: $useReserve")
+    fun onChangeMultiplexLibrary() {
+        val newValue = !networkModeState.value.useReserveMultiplexLib
+        Timber.d("onChangeMultiplexLibrary: $newValue")
         viewModelScope.launch {
-            val mode = networkModeState.value.copy(useReserveMultiplexLib = useReserve)
+            val mode = networkModeState.value.copy(useReserveMultiplexLib = newValue)
             val params = SetNetworkMode.Params(mode)
             setNetworkMode.async(params).fold(
-                onSuccess = {},
+                onSuccess = { networkModeState.value = mode },
                 onFailure = { Timber.e(it, "Failed to update network mode ") }
             )
         }

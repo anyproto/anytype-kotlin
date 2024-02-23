@@ -283,7 +283,7 @@
     <string name="relation_format_title">大标题</string>
     <string name="relation_format_number">数目</string>
     <string name="relation_format_date">日期</string>
-    <string name="relation_format_status">状态</string>
+    <string name="relation_format_status">选择</string>
     <string name="relation_format_file">文件</string>
     <string name="relation_format_checkbox">复选框</string>
     <string name="relation_format_url">URL</string>
@@ -298,7 +298,7 @@
     <string name="add_sort">添加排序</string>
     <string name="apply">应用</string>
     <string name="add_filter">添加筛选</string>
-    <string name="relation_format_tag">标签</string>
+    <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">未知数量的对象</string>
     <string name="sort_from_first_to_last">第一个→ 最后一个</string>
     <string name="sort_from_last_to_first">最后一个 → 第一个</string>
@@ -1070,6 +1070,7 @@
     <string name="date_type_older">较早的</string>
     <string name="dates_days_ago">%1$s 天前</string>
     <string name="dates_days_from">%1$s 天后</string>
+    <string name="settings_use_yamux">Use a reserve multiplex library</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">看板视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
     <string name="error_calendar_view_not_supported">日历视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
@@ -1107,6 +1108,7 @@
     <string name="network_settings_self_host">自托管</string>
     <string name="network_settings_self_host_description">备份到您的自托管网络</string>
     <string name="network_settings_networks_section">网络</string>
+    <string name="network_settings_troubleshooting_section">Troubleshooting</string>
     <string name="network_settings_provide_config_hint">点击提供您的网络配置</string>
     <string name="network_settings_self_host_config">当前配置：%1$s</string>
     <!--endregion-->

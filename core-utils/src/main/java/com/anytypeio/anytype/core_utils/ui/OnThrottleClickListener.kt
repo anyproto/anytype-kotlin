@@ -48,11 +48,13 @@ interface MultipleEventCutter {
     companion object
 }
 
-fun MultipleEventCutter.Companion.get(): MultipleEventCutter = DefaultMultipleEventCutter()
+fun MultipleEventCutter.Companion.get(
+    interval: Long = OnThrottleClickListener.DEFAULT_INTERVAL
+): MultipleEventCutter = DefaultMultipleEventCutter(interval)
 
 
 private class DefaultMultipleEventCutter(
-    private val interval: Long = OnThrottleClickListener.DEFAULT_INTERVAL
+    private val interval: Long
 ) : MultipleEventCutter {
     private val now: Long
         get() = System.currentTimeMillis()

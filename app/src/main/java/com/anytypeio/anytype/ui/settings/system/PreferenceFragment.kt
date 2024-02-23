@@ -10,7 +10,6 @@ import androidx.preference.DropDownPreference
 import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
-import androidx.preference.SwitchPreference
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConstants.NETWORK_MODE_CUSTOM
@@ -29,7 +28,6 @@ class PreferenceFragment : PreferenceFragmentCompat() {
     private lateinit var pickerDelegate: PickerDelegate
     private lateinit var filePathPreference: Preference
     private lateinit var networkModePreference: DropDownPreference
-    private lateinit var useYamuxPreference: SwitchPreference
 
     @Inject
     lateinit var factory: PreferencesViewModel.Factory
@@ -87,11 +85,6 @@ class PreferenceFragment : PreferenceFragmentCompat() {
                 }
             }
         }
-        with(lifecycleScope) {
-            subscribe(vm.reserveMultiplexSetting) { state ->
-                useYamuxPreference.isChecked = state
-            }
-        }
         vm.onStart()
     }
 
@@ -122,15 +115,6 @@ class PreferenceFragment : PreferenceFragmentCompat() {
             true
         }
         screen.addPreference(filePathPreference)
-        useYamuxPreference = SwitchPreference(context).apply {
-            title = getString(R.string.settings_use_yamux)
-            isIconSpaceReserved = false
-            onPreferenceChangeListener = Preference.OnPreferenceChangeListener { _, newValue ->
-                vm.onChangeMultiplexLibrary()
-                true
-            }
-        }
-        screen.addPreference(useYamuxPreference)
         preferenceScreen = screen
     }
 

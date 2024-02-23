@@ -41,9 +41,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
@@ -304,7 +304,6 @@ fun ViewerEditWidgetContent(
     }
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun NameTextField(
     state: ViewerEditWidgetUi.Data,
@@ -321,13 +320,20 @@ fun NameTextField(
         }
     }
 
+    val strokeColorActive = colorResource(id = R.color.widget_edit_view_stroke_color_active)
+    val strokeColorInactive = colorResource(id = R.color.widget_edit_view_stroke_color_inactive)
+
+    val strokeColor = remember {
+        mutableStateOf(strokeColorInactive)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .border(
-                width = 1.dp,
-                color = Color(0xFFE3E3E3),
+                width = 2.dp,
+                color = strokeColor.value,
                 shape = RoundedCornerShape(size = 10.dp)
             )
             .padding(start = 16.dp, end = 16.dp, top = 10.dp, bottom = 10.dp)
@@ -348,7 +354,14 @@ fun NameTextField(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .padding(start = 0.dp, top = 2.dp)
-                .focusRequester(focusRequester),
+                .focusRequester(focusRequester)
+                .onFocusChanged { focusState ->
+                    if (focusState.isFocused) {
+                        strokeColor.value = strokeColorActive
+                    } else {
+                        strokeColor.value = strokeColorInactive
+                    }
+                },
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Done
             ),

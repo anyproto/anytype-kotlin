@@ -286,7 +286,7 @@
     <string name="relation_format_title">Назва</string>
     <string name="relation_format_number">Число</string>
     <string name="relation_format_date">Дата</string>
-    <string name="relation_format_status">Статус</string>
+    <string name="relation_format_status">Select</string>
     <string name="relation_format_file">Файл</string>
     <string name="relation_format_checkbox">Прапорець</string>
     <string name="relation_format_url">Url</string>
@@ -301,7 +301,7 @@
     <string name="add_sort">Add a sort</string>
     <string name="apply">Застосувати</string>
     <string name="add_filter">Add a filter</string>
-    <string name="relation_format_tag">Мітка</string>
+    <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">Unknown number of objects</string>
     <string name="sort_from_first_to_last">First → Last</string>
     <string name="sort_from_last_to_first">Last → First</string>
@@ -1082,6 +1082,7 @@
     <string name="date_type_older">Older</string>
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
+    <string name="settings_use_yamux">Use a reserve multiplex library</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
@@ -1119,6 +1120,7 @@
     <string name="network_settings_self_host">Self-hosted</string>
     <string name="network_settings_self_host_description">Back up to your self-hosted network</string>
     <string name="network_settings_networks_section">Networks</string>
+    <string name="network_settings_troubleshooting_section">Troubleshooting</string>
     <string name="network_settings_provide_config_hint">Tap to provide your network config</string>
     <string name="network_settings_self_host_config">Current config: %1$s</string>
     <!--endregion-->

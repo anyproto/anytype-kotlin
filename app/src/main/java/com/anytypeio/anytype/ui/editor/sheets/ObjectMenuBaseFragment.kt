@@ -177,6 +177,7 @@ abstract class ObjectMenuBaseFragment :
             R.id.objectIconPickerScreen,
             bundleOf(
                 IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
+                IconPickerFragmentBase.ARG_SPACE_ID_KEY to space
             )
         )
     }

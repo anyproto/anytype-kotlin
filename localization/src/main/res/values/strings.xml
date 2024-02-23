@@ -1241,6 +1241,8 @@
     <string name="dates_days_ago">%1$s days ago</string>
     <string name="dates_days_from">%1$s days from now</string>
 
+    <string name="settings_use_yamux">Use a reserve multiplex library</string>
+
     <!--endregion-->
 
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -> View) or create a new one to access your data.</string>
@@ -1284,7 +1286,6 @@
     <string name="network_settings_anytype_network">Anytype network</string>
     <string name="network_settings_anytype_network_description">Backup to the network managed by Anytype</string>
     <string name="network_settings_local_only">Local-only</string>
-    <string name="network_settings_use_">Use Yamux transport for multiplexing</string>
     <string name="network_settings_local_only_description">Don\'t back up; sync within local network</string>
     <string name="network_settings_self_host">Self-hosted</string>
     <string name="network_settings_self_host_description">Back up to your self-hosted network</string>

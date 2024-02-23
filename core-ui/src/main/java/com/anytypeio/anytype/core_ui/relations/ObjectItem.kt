@@ -33,7 +33,6 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueItem
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueItemAction
 
@@ -78,7 +77,6 @@ fun ObjectItem(
             paddingStart = 0.dp,
             paddingEnd = 0.dp
         )
-        val isFileLayout = SupportedLayouts.fileLayouts.contains(item.view.layout)
         if (!isEditable) {
             ItemMenu(
                 action = {

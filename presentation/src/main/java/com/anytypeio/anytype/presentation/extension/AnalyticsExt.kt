@@ -17,6 +17,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.duplicateView
 import com.anytypeio.anytype.analytics.base.EventsDictionary.editTemplate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreate
+import com.anytypeio.anytype.analytics.base.EventsDictionary.objectCreateLink
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectDuplicate
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectMoveToBin
 import com.anytypeio.anytype.analytics.base.EventsDictionary.objectScreenShow
@@ -50,6 +51,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.sets.isChangingDefaultTypeAvailable
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import kotlinx.coroutines.CoroutineScope
@@ -78,7 +80,14 @@ fun Block.Prototype.getAnalyticsEvent(
             )
         }
         is Block.Prototype.Link -> {
-            Props(mapOf(EventsPropertiesKey.type to "link"))
+            return EventAnalytics.Anytype(
+                name = objectCreateLink,
+                duration = EventAnalytics.Duration(
+                    start = startTime,
+                    middleware = middlewareTime,
+                    render = renderTime
+                )
+            )
         }
         is Block.Prototype.Relation -> {
             Props(mapOf(EventsPropertiesKey.type to "relation"))
@@ -915,14 +924,20 @@ fun CoroutineScope.logEvent(
     event: ObjectStateAnalyticsEvent,
     startTime: Long? = null,
     type: String? = null,
-    condition: DVFilterCondition? = null
+    condition: DVFilterCondition? = null,
+    currentViewId: Id? = null
 ) {
     if (state !is ObjectState.DataView) return
     val middleTime = System.currentTimeMillis()
     val embedTypeDefault = "object"
-    val objectTypeDefault = when (state) {
-        is ObjectState.DataView.Collection -> "ot-collection"
-        is ObjectState.DataView.Set -> "ot-set"
+    val (objectTypeDefault, viewerType) = when (state) {
+        is ObjectState.DataView.Collection -> {
+            Pair("ot-collection", state.viewerByIdOrFirst(currentViewId)?.type?.formattedName)
+        }
+
+        is ObjectState.DataView.Set -> {
+            Pair("ot-set", state.viewerByIdOrFirst(currentViewId)?.type?.formattedName)
+        }
     }
     val scope = this
     when (event) {
@@ -932,14 +947,20 @@ fun CoroutineScope.logEvent(
                     analytics = analytics,
                     eventName = collectionScreenShow,
                     startTime = startTime,
-                    middleTime = middleTime
+                    middleTime = middleTime,
+                    props = buildProps(
+                        type = viewerType,
+                    )
                 )
                 is ObjectState.DataView.Set -> scope.sendEvent(
                     analytics = analytics,
                     eventName = setScreenShow,
                     startTime = startTime,
                     middleTime = middleTime,
-                    props = buildProps(embedType = embedTypeDefault)
+                    props = buildProps(
+                        embedType = embedTypeDefault,
+                        type = viewerType,
+                    )
                 )
             }
         }

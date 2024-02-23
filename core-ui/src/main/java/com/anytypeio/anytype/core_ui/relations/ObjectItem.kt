@@ -22,6 +22,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
@@ -92,6 +93,8 @@ fun ObjectItem(
                 showOpen = true
             )
         } else {
+            val showDuplicate = !item.restrictions.contains(ObjectRestriction.DUPLICATE)
+            val showDelete = !item.restrictions.contains(ObjectRestriction.DELETE)
             ItemMenu(
                 action = {
                     when (it) {
@@ -103,8 +106,8 @@ fun ObjectItem(
                 },
                 isMenuExpanded = isMenuExpanded,
                 showOpen = true,
-                showDuplicate = !isFileLayout,
-                showDelete = true
+                showDuplicate = showDuplicate,
+                showDelete = showDelete
             )
         }
     }

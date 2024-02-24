@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -38,14 +39,14 @@ fun ShareInviteLinkCard(
     Card {
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "Invite link",
+            text = stringResource(R.string.multiplayer_invite_link),
             style = Title1,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier.padding(horizontal = 20.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Send this link to invite others. Assign access rights upon their request approval",
+            text = stringResource(R.string.multiplayer_share_invite_link_description),
             style = BodyCalloutRegular,
             color = colorResource(id = R.color.text_primary),
             modifier = Modifier.padding(horizontal = 20.dp)
@@ -63,20 +64,26 @@ fun ShareInviteLinkCard(
                 style = BodyCalloutRegular,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                color = colorResource(id = R.color.text_secondary)
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier.fillMaxWidth()
             )
         }
         Divider()
         Spacer(modifier = Modifier.height(16.dp))
-        ButtonPrimary(
-            text = "Share invite link",
-            onClick = onShareInviteClicked,
-            size = ButtonSize.Large,
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(48.dp)
                 .padding(horizontal = 20.dp)
-        )
+        ) {
+            ButtonPrimary(
+                text = stringResource(R.string.multiplayer_share_invite_link),
+                onClick = onShareInviteClicked,
+                size = ButtonSize.Large,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            )
+        }
         Spacer(modifier = Modifier.height(20.dp))
     }
 }

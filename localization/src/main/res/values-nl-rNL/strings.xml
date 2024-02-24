@@ -1116,4 +1116,9 @@
     <string name="network_settings_provide_config_hint">Tik om je netwerkinstellingen aan te geven</string>
     <string name="network_settings_self_host_config">Huidige instellingen: %1$s</string>
     <!--endregion-->
+    <!--region MULTIPLAYER -->
+    <string name="multiplayer_share_invite_link">Deel uitnodigingslink</string>
+    <string name="multiplayer_share_invite_link_description">Stuur deze link om anderen uit te nodigen. Wijs toegangsrechten toe na hun goedkeuring.</string>
+    <string name="multiplayer_invite_link">Uitnodigingslink</string>
+    <!--endregion-->
 </resources>

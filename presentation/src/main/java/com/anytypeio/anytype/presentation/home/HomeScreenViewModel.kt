@@ -1341,6 +1341,10 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSpaceShareIconClicked(space: Id) {
+        viewModelScope.launch { commands.emit(Command.ShareSpace(SpaceId(space))) }
+    }
+
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
@@ -1495,6 +1499,8 @@ sealed class Command {
             const val UNDEFINED_LAYOUT_CODE = -1
         }
     }
+
+    data class ShareSpace(val space: SpaceId) : Command()
 
     sealed class Deeplink : Command() {
         object CannotImportExperience : Deeplink()

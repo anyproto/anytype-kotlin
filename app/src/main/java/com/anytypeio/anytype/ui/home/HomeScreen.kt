@@ -102,7 +102,8 @@ fun HomeScreen(
     onProfileClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
-    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit
+    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    onSpaceShareIconClicked: (Id) -> Unit
 ) {
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -121,7 +122,8 @@ fun HomeScreen(
             onOpenSpacesClicked = onOpenSpacesClicked,
             onSpaceWidgetClicked = onSpaceWidgetClicked,
             onMove = onMove,
-            onObjectCheckboxClicked = onObjectCheckboxClicked
+            onObjectCheckboxClicked = onObjectCheckboxClicked,
+            onSpaceShareIconClicked = onSpaceShareIconClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -188,7 +190,8 @@ private fun WidgetList(
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onOpenSpacesClicked: () -> Unit,
-    onSpaceWidgetClicked: () -> Unit
+    onSpaceWidgetClicked: () -> Unit,
+    onSpaceShareIconClicked: (Id) -> Unit
 ) {
     val views = remember { mutableStateOf(widgets) }
     views.value = widgets
@@ -225,7 +228,8 @@ private fun WidgetList(
                         onClick = onSpaceWidgetClicked,
                         name = item.space.name.orEmpty(),
                         icon = item.icon,
-                        spaceType = item.type
+                        spaceType = item.type,
+                        onSpaceShareIconClicked = { onSpaceShareIconClicked(item.space.id) }
                     )
                 }
                 is WidgetView.Tree -> {

@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceScreen
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -36,7 +38,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     ShareSpaceScreen(
-                        // TODO
+                        viewState = vm.viewState.collectAsStateWithLifecycle().value
                     )
                 }
             }
@@ -53,5 +55,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val SPACE_ID_KEY = "arg.share-space.space-id-key"
+        fun args(space: SpaceId) : Bundle = bundleOf(
+            SPACE_ID_KEY to space.id
+        )
     }
 }

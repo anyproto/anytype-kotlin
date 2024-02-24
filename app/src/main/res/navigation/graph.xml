@@ -534,5 +534,8 @@
         android:label="Migration-needed screen">
     </fragment>
 
+    <dialog
+        android:id="@+id/shareSpaceScreen"
+        android:name="com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment"/>
 
 </navigation>

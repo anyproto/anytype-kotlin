@@ -21,7 +21,8 @@ import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
-import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
+    import com.anytypeio.anytype.di.feature.multiplayer.ShareSpaceDependencies
+    import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
@@ -104,7 +105,8 @@ interface MainComponent :
     SelectObjectTypeDependencies,
     SpacesStorageDependencies,
     AppPreferencesDependencies,
-    AddToAnytypeDependencies {
+    AddToAnytypeDependencies,
+    ShareSpaceDependencies {
 
     fun inject(app: AndroidApplication)
 
@@ -279,4 +281,9 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(AddToAnytypeDependencies::class)
     abstract fun provideAddToAnytypeDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(ShareSpaceDependencies::class)
+    abstract fun provideShareSpaceDependencies(component: MainComponent): ComponentDependencies
 }

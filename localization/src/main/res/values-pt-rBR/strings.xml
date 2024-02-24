@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Enviar uma imagem</string>
     <string name="hint_upload_file">Enviar um arquivo</string>
     <string name="hint_upload_audio">Carregue arquivos de áudio</string>
-    <string name="hint_add_a_web_bookmark">Add bookmark</string>
+    <string name="hint_add_a_web_bookmark">Adicionar aos favoritos</string>
     <string name="hint_bullet">Item da lista com marcadores</string>
     <string name="hint_numbered_list">Item da lista numerada</string>
     <string name="hint_toggle">Alternar bloco</string>
@@ -299,7 +299,7 @@
     <string name="add_sort">Adicionar ordenação</string>
     <string name="apply">Aplicar</string>
     <string name="add_filter">Adicionar um filtro</string>
-    <string name="relation_format_tag">Multiselect</string>
+    <string name="relation_format_tag">Selecionar vários</string>
     <string name="unknown_number_of_objects">Número desconhecido de objetos</string>
     <string name="sort_from_first_to_last">Primeiro → Último</string>
     <string name="sort_from_last_to_first">Último → Primeiro</string>
@@ -382,7 +382,7 @@
     <string name="default_object_type_title">Tipo de objeto padrão</string>
     <string name="name_layout_basic">Básico</string>
     <string name="name_layout_profile">Perfil</string>
-    <string name="name_layout_participant">Participant</string>
+    <string name="name_layout_participant">Participante</string>
     <string name="name_layout_todo">Tarefa</string>
     <string name="name_layout_set">Conjunto</string>
     <string name="name_layout_collection">Coleção</string>
@@ -740,7 +740,7 @@
     <string name="anytype_analytics">Analítica do Anytype</string>
     <string name="anytype_analytics_msg">Entender como as pessoas usam Anytype nos ajuda a melhorar o produto. Esta versão do Anytype inclui o código de analytics que protege a sua privacidade.\nEle não registra o conteúdo real do documento, mas mesmo assim nos permite entender como você usa o Anytype.\nMantenha-se inscrito na nossa lista de email, pois em breve anunciaremos uma nova versão na qual será possível desistir de receber emails.</string>
     <string name="retry">Tente novamente</string>
-    <string name="try_again">Try again</string>
+    <string name="try_again">Tente novamente</string>
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Cancelar exclusão</string>
     <string name="logout_and_clear_local_data">Sair e limpar dados locais</string>
@@ -1038,10 +1038,10 @@
     <string name="sharing_menu_save_as_section_name">Salvar como</string>
     <string name="sharing_menu_save_as_note_option">Nota</string>
     <string name="sharing_menu_save_as_bookmark_option">Marcador</string>
-    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_image_option">Imagem</string>
     <string name="sharing_menu_save_as_file_option">Arquivo</string>
-    <string name="sharing_menu_save_as_images_option">Images</string>
-    <string name="sharing_menu_save_as_files_option">Files</string>
+    <string name="sharing_menu_save_as_images_option">Imagem</string>
+    <string name="sharing_menu_save_as_files_option">Arquivos</string>
     <string name="sharing_menu_data">Dados</string>
     <string name="sharing_menu_add_to_anytype_header_title">Adicionar ao Anytype</string>
     <string name="sharing_menu_toast_object_added">Novo objeto adicionado ao espaço \'%1$s\'</string>
@@ -1074,7 +1074,7 @@
     <string name="date_type_older">Mais antigo</string>
     <string name="dates_days_ago">Há %1$s dias</string>
     <string name="dates_days_from">Daqui a %1$s dias</string>
-    <string name="settings_use_yamux">Use a reserve multiplex library</string>
+    <string name="settings_use_yamux">Usar uma biblioteca multiplex reservada</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">O modo de exibição Kanban ainda não está disponível em aparelhos móveis. Mude o modo de exibição (Ajustes -&gt; Visualizar) ou crie um modo novo para acessar os seus dados.</string>
     <string name="error_calendar_view_not_supported">O modo de exibição Calendário ainda não está disponível em aparelhos móveis. Mude o modo de exibição (Ajustes -&gt; Visualizar) ou crie um modo novo para acessar os seus dados.</string>
@@ -1086,7 +1086,7 @@
     <string name="any_object_creation_menu_move_left">Mover à esquerda</string>
     <string name="any_object_creation_menu_move_right">Move à direita</string>
     <string name="clipboard_panel_create_object_from_clipboard">Criar objeto a partir da área de transferência.</string>
-    <string name="block_media_error">Something went wrong, please try again</string>
+    <string name="block_media_error">Algo deu errado. Por favor, tente novamente</string>
     <string name="relation_value_create_new">Criar \"%1$s\"</string>
     <string name="option_widget_create">Criar opção</string>
     <string name="option_widget_edit">Editar opção</string>
@@ -1112,7 +1112,7 @@
     <string name="network_settings_self_host">Auto-hospedado</string>
     <string name="network_settings_self_host_description">Faça o backup na sua rede auto-hospedada</string>
     <string name="network_settings_networks_section">Redes</string>
-    <string name="network_settings_troubleshooting_section">Troubleshooting</string>
+    <string name="network_settings_troubleshooting_section">Solução de Problemas</string>
     <string name="network_settings_provide_config_hint">Toque para fornecer sua configuração de rede</string>
     <string name="network_settings_self_host_config">Configuração atual: %1$s</string>
     <!--endregion-->

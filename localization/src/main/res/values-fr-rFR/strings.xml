@@ -1116,4 +1116,9 @@
     <string name="network_settings_provide_config_hint">Appuyez pour fournir votre configuration réseau</string>
     <string name="network_settings_self_host_config">Configuration actuelle : %1$s</string>
     <!--endregion-->
+    <!--region MULTIPLAYER -->
+    <string name="multiplayer_share_invite_link">Partager le lien d\'invitation</string>
+    <string name="multiplayer_share_invite_link_description">Envoyez ce lien pour inviter d\'autres personnes. Attribuez les droits d\'accès lors de l\'approbation de leur demande.\"</string>
+    <string name="multiplayer_invite_link">Lien d\'invitation</string>
+    <!--endregion-->
 </resources>

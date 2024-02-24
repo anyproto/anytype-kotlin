@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -11,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -26,7 +29,7 @@ import com.anytypeio.anytype.core_ui.views.Title1
 @Preview
 fun ShareInviteLinkCardPreview() {
     ShareInviteLinkCard(
-        link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssa3ifffsasssga3ifffsasssga3ifffsasssg",
+        link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssa3ifffsasssga3ifffsasssga3ifffsas",
         onShareInviteClicked = {},
     )
 }
@@ -38,12 +41,21 @@ fun ShareInviteLinkCard(
 ) {
     Card {
         Spacer(modifier = Modifier.height(20.dp))
-        Text(
-            text = stringResource(R.string.multiplayer_invite_link),
-            style = Title1,
-            color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.padding(horizontal = 20.dp)
-        )
+        Row(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.multiplayer_invite_link),
+                style = Title1,
+                color = colorResource(id = R.color.text_primary),
+                modifier = Modifier.weight(1.0f)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.ic_action_replace),
+                contentDescription = "Regenerate-invite icon"
+            )
+        }
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.multiplayer_share_invite_link_description),

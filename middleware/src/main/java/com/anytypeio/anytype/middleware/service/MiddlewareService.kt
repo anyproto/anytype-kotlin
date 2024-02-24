@@ -482,4 +482,41 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun nodeUsageInfo(request: Rpc.File.NodeUsage.Request): Rpc.File.NodeUsage.Response
     //endregion
+
+    //region MULTIPLAYER
+
+    @Throws(Exception::class)
+    fun spaceExit(request: Rpc.Space.Exit.Request): Rpc.Space.Exit.Response
+
+    @Throws(Exception::class)
+    fun spaceInviteGenerate(request: Rpc.Space.InviteGenerate.Request): Rpc.Space.InviteGenerate.Response
+
+    @Throws(Exception::class)
+    fun spaceInviteGetCurrent(request: Rpc.Space.InviteGetCurrent.Request): Rpc.Space.InviteGetCurrent.Response
+
+    @Throws(Exception::class)
+    fun spaceInviteRevoke(request: Rpc.Space.InviteRevoke.Request): Rpc.Space.InviteRevoke.Response
+
+    @Throws(Exception::class)
+    fun spaceInviteView(request: Rpc.Space.InviteView.Request): Rpc.Space.InviteView.Response
+
+    @Throws(Exception::class)
+    fun spaceJoin(request: Rpc.Space.Join.Request): Rpc.Space.Join.Response
+
+    @Throws(Exception::class)
+    fun spaceJoinCancel(request: Rpc.Space.JoinCancel.Request): Rpc.Space.JoinCancel.Response
+
+    @Throws(Exception::class)
+    fun spaceParticipantPermissionsChange(request: Rpc.Space.ParticipantPermissionsChange.Request): Rpc.Space.ParticipantPermissionsChange.Response
+
+    @Throws(Exception::class)
+    fun spaceParticipantRemove(request: Rpc.Space.ParticipantRemove.Request): Rpc.Space.ParticipantRemove.Response
+
+    @Throws(Exception::class)
+    fun spaceRequestApprove(request: Rpc.Space.RequestApprove.Request): Rpc.Space.RequestApprove.Response
+
+    @Throws(Exception::class)
+    fun spaceRequestDecline(request: Rpc.Space.RequestDecline.Request): Rpc.Space.RequestDecline.Response
+
+    //endregion
 }

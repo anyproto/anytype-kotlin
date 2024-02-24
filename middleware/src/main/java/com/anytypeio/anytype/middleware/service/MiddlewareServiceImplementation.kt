@@ -1769,4 +1769,141 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun spaceExit(request: Rpc.Space.Exit.Request): Rpc.Space.Exit.Response {
+        val encoded = Service.spaceExit(
+            Rpc.Space.Exit.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.Exit.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.Exit.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceInviteGenerate(request: Rpc.Space.InviteGenerate.Request): Rpc.Space.InviteGenerate.Response {
+        val encoded = Service.spaceInviteGenerate(
+            Rpc.Space.InviteGenerate.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.InviteGenerate.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.InviteGenerate.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceInviteGetCurrent(request: Rpc.Space.InviteGetCurrent.Request): Rpc.Space.InviteGetCurrent.Response {
+        val encoded = Service.spaceInviteGetCurrent(
+            Rpc.Space.InviteGetCurrent.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.InviteGetCurrent.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.InviteGetCurrent.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceInviteRevoke(request: Rpc.Space.InviteRevoke.Request): Rpc.Space.InviteRevoke.Response {
+        val encoded = Service.spaceInviteRevoke(
+            Rpc.Space.InviteRevoke.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.InviteRevoke.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.InviteRevoke.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceInviteView(request: Rpc.Space.InviteView.Request): Rpc.Space.InviteView.Response {
+        val encoded = Service.spaceInviteView(Rpc.Space.InviteView.Request.ADAPTER.encode(request))
+        val response = Rpc.Space.InviteView.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.InviteView.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceJoin(request: Rpc.Space.Join.Request): Rpc.Space.Join.Response {
+        val encoded = Service.spaceJoin(Rpc.Space.Join.Request.ADAPTER.encode(request))
+        val response = Rpc.Space.Join.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.Join.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceJoinCancel(request: Rpc.Space.JoinCancel.Request): Rpc.Space.JoinCancel.Response {
+        val encoded = Service.spaceJoinCancel(Rpc.Space.JoinCancel.Request.ADAPTER.encode(request))
+        val response = Rpc.Space.JoinCancel.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.JoinCancel.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceParticipantPermissionsChange(request: Rpc.Space.ParticipantPermissionsChange.Request): Rpc.Space.ParticipantPermissionsChange.Response {
+        val encoded = Service.spaceParticipantPermissionsChange(
+            Rpc.Space.ParticipantPermissionsChange.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.ParticipantPermissionsChange.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.ParticipantPermissionsChange.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceParticipantRemove(request: Rpc.Space.ParticipantRemove.Request): Rpc.Space.ParticipantRemove.Response {
+        val encoded = Service.spaceParticipantRemove(
+            Rpc.Space.ParticipantRemove.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.ParticipantRemove.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.ParticipantRemove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceRequestApprove(request: Rpc.Space.RequestApprove.Request): Rpc.Space.RequestApprove.Response {
+        val encoded = Service.spaceRequestApprove(
+            Rpc.Space.RequestApprove.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.RequestApprove.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.RequestApprove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun spaceRequestDecline(request: Rpc.Space.RequestDecline.Request): Rpc.Space.RequestDecline.Response {
+        val encoded = Service.spaceRequestDecline(
+            Rpc.Space.RequestDecline.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.RequestDecline.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.RequestDecline.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

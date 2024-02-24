@@ -298,7 +298,7 @@
     <string name="add_sort">Add a sort</string>
     <string name="apply">Terapkan</string>
     <string name="add_filter">Add a filter</string>
-    <string name="relation_format_tag">Multiselect</string>
+    <string name="relation_format_tag">Pilih banyak</string>
     <string name="unknown_number_of_objects">Unknown number of objects</string>
     <string name="sort_from_first_to_last">First → Last</string>
     <string name="sort_from_last_to_first">Last → First</string>
@@ -1108,7 +1108,7 @@
     <string name="network_settings_self_host">Swaladen</string>
     <string name="network_settings_self_host_description">Cadangkan ke jaringan yang kamu ladeni (host) sendiri</string>
     <string name="network_settings_networks_section">Jaringan</string>
-    <string name="network_settings_troubleshooting_section">Troubleshooting</string>
+    <string name="network_settings_troubleshooting_section">Penyelesaian Masalah</string>
     <string name="network_settings_provide_config_hint">Tekan untuk memasukkan konfigurasi jaringanmu</string>
     <string name="network_settings_self_host_config">Konfigurasi saat ini: %1$s</string>
     <!--endregion-->

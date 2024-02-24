@@ -36,7 +36,8 @@ fun SpaceWidgetCardPreview() {
         icon = SpaceIconView.Placeholder,
         name = "Research",
         spaceType = PRIVATE_SPACE_TYPE,
-        onSpaceShareIconClicked = {}
+        onSpaceShareIconClicked = {},
+        shareable = true
     )
 }
 
@@ -46,7 +47,8 @@ fun SpaceWidgetCard(
     name: String,
     icon: SpaceIconView,
     spaceType: SpaceType,
-    onSpaceShareIconClicked: () -> Unit
+    onSpaceShareIconClicked: () -> Unit,
+    shareable: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -100,16 +102,17 @@ fun SpaceWidgetCard(
             color = colorResource(id = R.color.text_secondary),
             maxLines = 1
         )
-
-        Image(
-            painter = painterResource(id = R.drawable.ic_space_widget_share_space_icon),
-            contentDescription = "Space share icon",
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 20.dp)
-                .noRippleClickable(
-                    onClick = throttledClick(onClick = { onSpaceShareIconClicked() })
-                )
-        )
+        if (shareable) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_space_widget_share_space_icon),
+                contentDescription = "Space share icon",
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 20.dp)
+                    .noRippleClickable(
+                        onClick = throttledClick(onClick = { onSpaceShareIconClicked() })
+                    )
+            )
+        }
     }
 }

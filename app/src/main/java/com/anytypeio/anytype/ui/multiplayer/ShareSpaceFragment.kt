@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.ui.multiplayer
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -38,9 +40,29 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     ShareSpaceScreen(
-                        viewState = vm.viewState.collectAsStateWithLifecycle().value
+                        viewState = vm.viewState.collectAsStateWithLifecycle().value,
+                        onRegenerateInviteLinkClicked = vm::onRegenerateInviteLinkClicked,
+                        onShareInviteLinkClicked = vm::onShareInviteLinkClicked
                     )
+                    LaunchedEffect(Unit) {
+                        vm.commands.collect { command ->
+                            proceedWithCommand(command)
+                        }
+                    }
                 }
+            }
+        }
+    }
+
+    private fun proceedWithCommand(command: ShareSpaceViewModel.Command) {
+        when (command) {
+            is ShareSpaceViewModel.Command.ShareInviteLink -> {
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, command.link)
+                    type = "text/plain"
+                }
+                startActivity(Intent.createChooser(intent, null))
             }
         }
     }

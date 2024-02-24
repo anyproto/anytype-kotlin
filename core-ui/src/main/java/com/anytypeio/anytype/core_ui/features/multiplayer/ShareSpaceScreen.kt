@@ -8,7 +8,9 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 
 @Composable
 fun ShareSpaceScreen(
-    viewState: ShareSpaceViewModel.ViewState
+    viewState: ShareSpaceViewModel.ViewState,
+    onRegenerateInviteLinkClicked: () -> Unit,
+    onShareInviteLinkClicked: (String) -> Unit
 ) {
     Box(modifier = Modifier.wrapContentSize()) {
         when(viewState) {
@@ -18,7 +20,10 @@ fun ShareSpaceScreen(
             is ShareSpaceViewModel.ViewState.Share -> {
                 ShareInviteLinkCard(
                     link = viewState.link,
-                    onShareInviteClicked = {}
+                    onShareInviteClicked = {
+                        onShareInviteLinkClicked(viewState.link)
+                    },
+                    onRegenerateInviteLinkClicked = onRegenerateInviteLinkClicked
                 )
             }
         }

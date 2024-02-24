@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -17,17 +18,31 @@ class ShareSpaceViewModel(
 ) : BaseViewModel() {
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
+    val commands = MutableSharedFlow<Command>()
 
     init {
+        proceedWithGeneratingInviteLink()
+    }
+
+    private fun proceedWithGeneratingInviteLink() {
         viewModelScope.launch {
             val link = generateSpaceInviteLink.async(params.space)
-            Timber.d("Got link: $link")
+            Timber.d("Generated link result: $link")
             viewState.value = ViewState.Share(
                 link = link.getOrNull()?.cid.orEmpty()
             )
         }
     }
 
+    fun onRegenerateInviteLinkClicked() {
+        proceedWithGeneratingInviteLink()
+    }
+
+    fun onShareInviteLinkClicked(link: String) {
+        viewModelScope.launch {
+            commands.emit(Command.ShareInviteLink(link))
+        }
+    }
 
     class Factory @Inject constructor(
         private val params: Params,
@@ -49,5 +64,9 @@ class ShareSpaceViewModel(
         data class Share(
             val link: String
         ): ViewState()
+    }
+
+    sealed class Command {
+        data class ShareInviteLink(val link: String) : Command()
     }
 }

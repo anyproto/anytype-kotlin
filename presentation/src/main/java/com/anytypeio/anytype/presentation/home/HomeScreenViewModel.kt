@@ -1341,8 +1341,15 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onSpaceShareIconClicked(space: Id) {
-        viewModelScope.launch { commands.emit(Command.ShareSpace(SpaceId(space))) }
+    fun onSpaceShareIconClicked(spaceView: ObjectWrapper.Basic) {
+        viewModelScope.launch {
+            val space = spaceView.targetSpaceId
+            if (space != null) {
+                commands.emit(Command.ShareSpace(SpaceId(space)))
+            } else {
+                sendToast("Space not found")
+            }
+        }
     }
 
     override fun onCleared() {

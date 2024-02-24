@@ -20,6 +20,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -31,13 +32,15 @@ fun ShareInviteLinkCardPreview() {
     ShareInviteLinkCard(
         link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssa3ifffsasssga3ifffsasssga3ifffsas",
         onShareInviteClicked = {},
+        onRegenerateInviteLinkClicked = {}
     )
 }
 
 @Composable
 fun ShareInviteLinkCard(
     link: String,
-    onShareInviteClicked: () -> Unit
+    onShareInviteClicked: () -> Unit,
+    onRegenerateInviteLinkClicked: () -> Unit
 ) {
     Card {
         Spacer(modifier = Modifier.height(20.dp))
@@ -53,7 +56,10 @@ fun ShareInviteLinkCard(
             )
             Image(
                 painter = painterResource(id = R.drawable.ic_action_replace),
-                contentDescription = "Regenerate-invite icon"
+                contentDescription = "Regenerate-invite icon",
+                modifier = Modifier.noRippleClickable {
+                    onRegenerateInviteLinkClicked()
+                }
             )
         }
         Spacer(modifier = Modifier.height(8.dp))

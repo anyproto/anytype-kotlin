@@ -1112,4 +1112,9 @@
     <string name="network_settings_provide_config_hint">Tekan untuk memasukkan konfigurasi jaringanmu</string>
     <string name="network_settings_self_host_config">Konfigurasi saat ini: %1$s</string>
     <!--endregion-->
+    <!--region MULTIPLAYER -->
+    <string name="multiplayer_share_invite_link">Bagikan tautan undangan</string>
+    <string name="multiplayer_share_invite_link_description">Kirimkan tautan ini untuk mengundang orang lain. Kamu bisa mengatur hak akses mereka setelah mereka menyetujui undangan</string>
+    <string name="multiplayer_invite_link">Tautan undangan</string>
+    <!--endregion-->
 </resources>

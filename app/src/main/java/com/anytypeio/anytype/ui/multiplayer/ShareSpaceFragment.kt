@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -14,7 +13,6 @@ import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.ui_settings.appearance.AppearanceScreen
 
 class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
 

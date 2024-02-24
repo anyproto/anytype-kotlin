@@ -1295,6 +1295,8 @@
     <string name="network_settings_troubleshooting_section">Troubleshooting</string>
     <string name="network_settings_provide_config_hint">Tap to provide your network config</string>
     <string name="network_settings_self_host_config">Current config: %1$s</string>
+    <string name="widget_types_show">Show types</string>
+    <string name="widget_types_hide">Hide types</string>
 
     <!--endregion-->
 

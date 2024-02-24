@@ -4,7 +4,7 @@
     android:viewportWidth="18"
     android:viewportHeight="18">
   <path
-      android:pathData="M4,7L9,12L14,7"
+      android:pathData="M14,11L9,6L4,11"
       android:strokeWidth="1.5"
       android:fillColor="#00000000"
       android:strokeColor="@color/glyph_active"

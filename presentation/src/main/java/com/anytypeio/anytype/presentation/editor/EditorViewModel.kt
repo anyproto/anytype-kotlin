@@ -4413,6 +4413,16 @@ class EditorViewModel(
                     Timber.e("Error while getting object type from objectTypes list")
                 }
             }
+
+            TypesWidgetItem.Collapse -> {
+                _typesWidgetState.value = _typesWidgetState.value.copy(expaned = false)
+            }
+            TypesWidgetItem.Done -> {
+                _typesWidgetState.value = _typesWidgetState.value.copy(visible = false)
+            }
+            TypesWidgetItem.Expand -> {
+                _typesWidgetState.value = _typesWidgetState.value.copy(expaned = true)
+            }
         }
     }
 
@@ -6015,12 +6025,16 @@ class EditorViewModel(
     //region OBJECT TYPES WIDGET
     data class TypesWidgetState(
         val items: List<TypesWidgetItem>,
-        val visible: Boolean
+        val visible: Boolean,
+        val expaned: Boolean = false
     )
 
     sealed class TypesWidgetItem {
         object Search : TypesWidgetItem()
+        object Done : TypesWidgetItem()
         data class Type(val item: ObjectTypeView) : TypesWidgetItem()
+        object Expand : TypesWidgetItem()
+        object Collapse : TypesWidgetItem()
     }
 
     private val _objectTypes = mutableListOf<ObjectWrapper.Type>()
@@ -6032,7 +6046,7 @@ class EditorViewModel(
         if (visible) {
             proceedWithGettingObjectTypesForTypesWidget()
         }
-        _typesWidgetState.value = _typesWidgetState.value.copy(visible = visible)
+        _typesWidgetState.value = _typesWidgetState.value.copy(visible = visible, expaned = false)
     }
 
     private fun onTypesWidgetSearchClicked() {

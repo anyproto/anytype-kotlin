@@ -1,0 +1,39 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M12,4.199m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+      android:fillColor="@color/glyph_active"/>
+  <path
+      android:pathData="M12,19.801m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+      android:fillColor="@color/glyph_active"/>
+  <path
+      android:pathData="M4.199,12m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+      android:fillColor="@color/glyph_active"/>
+  <path
+      android:pathData="M19.801,12m-3,0a3,3 0,1 1,6 0a3,3 0,1 1,-6 0"
+      android:fillColor="@color/glyph_active"/>
+  <path
+      android:pathData="M12.001,4.839m-1.2,0a1.2,1.2 0,1 1,2.4 0a1.2,1.2 0,1 1,-2.4 0"
+      android:fillColor="@color/glyph_active"/>
+  <path
+      android:pathData="M4.821,12.019m0,1.2a1.2,1.2 0,1 1,0 -2.4a1.2,1.2 0,1 1,0 2.4"
+      android:fillColor="@color/glyph_active"/>
+  <path
+      android:pathData="M19.184,12.019m0,1.2a1.2,1.2 0,1 1,0 -2.4a1.2,1.2 0,1 1,0 2.4"
+      android:fillColor="@color/glyph_active"/>
+  <path
+      android:pathData="M6.92,6.945m-0.849,0.849a1.2,1.2 0,1 1,1.697 -1.697a1.2,1.2 0,1 1,-1.697 1.697"
+      android:fillColor="@color/glyph_active"/>
+  <path
+      android:pathData="M17.076,17.102m-0.849,0.849a1.2,1.2 90,1 1,1.697 -1.697a1.2,1.2 0,1 1,-1.697 1.697"
+      android:fillColor="@color/glyph_active"/>
+  <path
+      android:pathData="M17.082,6.941m-0.849,-0.849a1.2,1.2 0,1 1,1.697 1.697a1.2,1.2 0,1 1,-1.697 -1.697"
+      android:fillColor="@color/glyph_active"/>
+  <path
+      android:pathData="M6.926,17.099m-0.849,-0.849a1.2,1.2 0,1 1,1.697 1.697a1.2,1.2 90,1 1,-1.697 -1.697"
+      android:fillColor="@color/glyph_active"/>
+</vector>

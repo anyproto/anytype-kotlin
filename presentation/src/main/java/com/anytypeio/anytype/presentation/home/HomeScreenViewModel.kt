@@ -1341,6 +1341,17 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSpaceShareIconClicked(spaceView: ObjectWrapper.Basic) {
+        viewModelScope.launch {
+            val space = spaceView.targetSpaceId
+            if (space != null) {
+                commands.emit(Command.ShareSpace(SpaceId(space)))
+            } else {
+                sendToast("Space not found")
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
@@ -1495,6 +1506,8 @@ sealed class Command {
             const val UNDEFINED_LAYOUT_CODE = -1
         }
     }
+
+    data class ShareSpace(val space: SpaceId) : Command()
 
     sealed class Deeplink : Command() {
         object CannotImportExperience : Deeplink()

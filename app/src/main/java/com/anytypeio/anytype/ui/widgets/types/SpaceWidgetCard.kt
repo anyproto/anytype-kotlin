@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.widgets.types
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,24 +12,43 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
 
+
+@Composable
+@Preview
+fun SpaceWidgetCardPreview() {
+    SpaceWidgetCard(
+        onClick = {},
+        icon = SpaceIconView.Placeholder,
+        name = "Research",
+        spaceType = PRIVATE_SPACE_TYPE,
+        onSpaceShareIconClicked = {},
+        shareable = true
+    )
+}
+
 @Composable
 fun SpaceWidgetCard(
     onClick: () -> Unit,
     name: String,
     icon: SpaceIconView,
-    spaceType: SpaceType
+    spaceType: SpaceType,
+    onSpaceShareIconClicked: () -> Unit,
+    shareable: Boolean
 ) {
     Box(
         modifier = Modifier
@@ -82,5 +102,17 @@ fun SpaceWidgetCard(
             color = colorResource(id = R.color.text_secondary),
             maxLines = 1
         )
+        if (shareable) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_space_widget_share_space_icon),
+                contentDescription = "Space share icon",
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 20.dp)
+                    .noRippleClickable(
+                        onClick = throttledClick(onClick = { onSpaceShareIconClicked() })
+                    )
+            )
+        }
     }
 }

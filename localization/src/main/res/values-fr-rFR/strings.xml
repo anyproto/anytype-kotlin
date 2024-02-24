@@ -284,7 +284,7 @@
     <string name="relation_format_title">Titre</string>
     <string name="relation_format_number">Nombre</string>
     <string name="relation_format_date">Date</string>
-    <string name="relation_format_status">Statut</string>
+    <string name="relation_format_status">Sélectionner</string>
     <string name="relation_format_file">Fichier</string>
     <string name="relation_format_checkbox">Case à cocher</string>
     <string name="relation_format_url">Url</string>
@@ -299,7 +299,7 @@
     <string name="add_sort">Ajouter un tri</string>
     <string name="apply">Appliquer</string>
     <string name="add_filter">Ajouter un filtre</string>
-    <string name="relation_format_tag">Tag</string>
+    <string name="relation_format_tag">Sélection multiple</string>
     <string name="unknown_number_of_objects">Nombre d\'objets inconnu</string>
     <string name="sort_from_first_to_last">Premier → Dernier</string>
     <string name="sort_from_last_to_first">Dernier → Premier</string>
@@ -1074,6 +1074,7 @@
     <string name="date_type_older">Plus ancien</string>
     <string name="dates_days_ago">Il y a %1$s jours</string>
     <string name="dates_days_from">Dans %1$s jours</string>
+    <string name="settings_use_yamux">Utiliser une bibliothèque multiplex de réserve</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">La vue Kanban n\'est pas encore disponible sur mobile.\nChanger le type de vue (Paramètres -&gt; Voir) ou en créer un nouveau pour accéder à vos données.</string>
     <string name="error_calendar_view_not_supported">La vue calendrier n\'est pas encore disponible sur mobile.\nChanger le type de vue (Paramètres -&gt; Voir) ou en créer un nouveau pour accéder à vos données.</string>
@@ -1111,6 +1112,7 @@
     <string name="network_settings_self_host">Auto-hébergé</string>
     <string name="network_settings_self_host_description">Sauvegarder vers votre réseau auto-hébergé</string>
     <string name="network_settings_networks_section">Réseaux</string>
+    <string name="network_settings_troubleshooting_section">Résolution de problèmes</string>
     <string name="network_settings_provide_config_hint">Appuyez pour fournir votre configuration réseau</string>
     <string name="network_settings_self_host_config">Configuration actuelle : %1$s</string>
     <!--endregion-->

@@ -284,7 +284,7 @@
     <string name="relation_format_title">Título</string>
     <string name="relation_format_number">Número</string>
     <string name="relation_format_date">Fecha</string>
-    <string name="relation_format_status">Estado</string>
+    <string name="relation_format_status">Seleccionar</string>
     <string name="relation_format_file">Archivo</string>
     <string name="relation_format_checkbox">Casilla de verificación</string>
     <string name="relation_format_url">Url</string>
@@ -299,7 +299,7 @@
     <string name="add_sort">Agregar clasificación </string>
     <string name="apply">Aplicar</string>
     <string name="add_filter">Añadir filtro</string>
-    <string name="relation_format_tag">Etiqueta</string>
+    <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">Número de objetos desconocido</string>
     <string name="sort_from_first_to_last">Primer → Final</string>
     <string name="sort_from_last_to_first">Final → Primer</string>
@@ -1074,6 +1074,7 @@
     <string name="date_type_older">Más antiguo</string>
     <string name="dates_days_ago">Hace %1$s días</string>
     <string name="dates_days_from">%1$s días desde ahora</string>
+    <string name="settings_use_yamux">Use a reserve multiplex library</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
@@ -1111,6 +1112,7 @@
     <string name="network_settings_self_host">Alojado por el usuario</string>
     <string name="network_settings_self_host_description">Back up to your self-hosted network</string>
     <string name="network_settings_networks_section">Redes</string>
+    <string name="network_settings_troubleshooting_section">Troubleshooting</string>
     <string name="network_settings_provide_config_hint">Tap to provide your network config</string>
     <string name="network_settings_self_host_config">Current config: %1$s</string>
     <!--endregion-->

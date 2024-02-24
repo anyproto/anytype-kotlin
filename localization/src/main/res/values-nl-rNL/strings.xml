@@ -284,7 +284,7 @@
     <string name="relation_format_title">Titel</string>
     <string name="relation_format_number">Nummer</string>
     <string name="relation_format_date">Datum</string>
-    <string name="relation_format_status">Status</string>
+    <string name="relation_format_status">Selecteer</string>
     <string name="relation_format_file">Bestand</string>
     <string name="relation_format_checkbox">Selectievak</string>
     <string name="relation_format_url">URL</string>
@@ -299,7 +299,7 @@
     <string name="add_sort">Voeg een sortering toe</string>
     <string name="apply">Pas toe</string>
     <string name="add_filter">Voeg een filter toe</string>
-    <string name="relation_format_tag">Tag</string>
+    <string name="relation_format_tag">Multiselect</string>
     <string name="unknown_number_of_objects">Onbekend aantal objecten</string>
     <string name="sort_from_first_to_last">Eerste → Laatste</string>
     <string name="sort_from_last_to_first">Laatste → Eerste</string>
@@ -1074,6 +1074,7 @@
     <string name="date_type_older">Ouder</string>
     <string name="dates_days_ago">%1$s dagen geleden</string>
     <string name="dates_days_from">%1$s dagen vanaf nu</string>
+    <string name="settings_use_yamux">Use a reserve multiplex library</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban weergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
     <string name="error_calendar_view_not_supported">Agendaweergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
@@ -1111,6 +1112,7 @@
     <string name="network_settings_self_host">Zelfgehost</string>
     <string name="network_settings_self_host_description">Back-up naar zelfgehost netwerk</string>
     <string name="network_settings_networks_section">Netwerken</string>
+    <string name="network_settings_troubleshooting_section">Troubleshooting</string>
     <string name="network_settings_provide_config_hint">Tik om je netwerkinstellingen aan te geven</string>
     <string name="network_settings_self_host_config">Huidige instellingen: %1$s</string>
     <!--endregion-->

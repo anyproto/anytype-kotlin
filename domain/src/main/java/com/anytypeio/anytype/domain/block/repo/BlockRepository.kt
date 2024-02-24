@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
@@ -429,4 +430,6 @@ interface BlockRepository {
     suspend fun createTemplateFromObject(ctx: Id): Id
     suspend fun debugStackGoroutines(path: String)
     suspend fun deleteRelationOption(command: Command.DeleteRelationOptions)
+
+    suspend fun generateSpaceInviteLink(space: SpaceId) : SpaceInviteLink
 }

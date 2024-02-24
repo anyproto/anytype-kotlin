@@ -6,7 +6,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class GenerateInviteLink(
+class GenerateSpaceInviteLink(
     private val dispatchers: AppCoroutineDispatchers,
     private val repo: BlockRepository
 ): ResultInteractor<SpaceId, SpaceInviteLink>(dispatchers.io) {

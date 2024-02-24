@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 interface BlockRemote {
@@ -382,4 +383,6 @@ interface BlockRemote {
     suspend fun debugStackGoroutines(path: String)
 
     suspend fun deleteRelationOption(command: Command.DeleteRelationOptions)
+
+    suspend fun generateSpaceInviteLink(space: SpaceId) : SpaceInviteLink
 }

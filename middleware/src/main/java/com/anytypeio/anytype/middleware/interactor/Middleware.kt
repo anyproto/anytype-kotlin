@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
@@ -2365,6 +2366,21 @@ class Middleware @Inject constructor(
         val response = service.debugStackGoroutines(request)
         if (BuildConfig.DEBUG) logResponse(response)
     }
+
+    @Throws(Exception::class)
+    fun generateSpaceInviteLink(space: SpaceId) : SpaceInviteLink {
+        val request = Rpc.Space.InviteGenerate.Request(
+            spaceId = space.id
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceInviteGenerate(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return SpaceInviteLink(
+            cid = response.inviteCid,
+            fileKey= response.inviteFileKey
+        )
+    }
+
 
     private fun logRequest(any: Any) {
         logger.logRequest(any).also {

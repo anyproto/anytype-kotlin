@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
@@ -26,11 +27,16 @@ class ShareSpaceViewModel(
 
     private fun proceedWithGeneratingInviteLink() {
         viewModelScope.launch {
-            val link = generateSpaceInviteLink.async(params.space)
-            Timber.d("Generated link result: $link")
-            viewState.value = ViewState.Share(
-                link = link.getOrNull()?.cid.orEmpty()
-            )
+            generateSpaceInviteLink
+                .async(params.space)
+                .fold(
+                    onSuccess = { link ->
+                        viewState.value = ViewState.Share(link = link.scheme)
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while generating invite link")
+                    }
+                )
         }
     }
 
@@ -38,9 +44,16 @@ class ShareSpaceViewModel(
         proceedWithGeneratingInviteLink()
     }
 
-    fun onShareInviteLinkClicked(link: String) {
+    fun onShareInviteLinkClicked() {
         viewModelScope.launch {
-            commands.emit(Command.ShareInviteLink(link))
+            when(val value = viewState.value) {
+                ViewState.Init -> {
+                    // Do nothing.
+                }
+                is ViewState.Share -> {
+                    commands.emit(Command.ShareInviteLink(value.link))
+                }
+            }
         }
     }
 
@@ -61,9 +74,7 @@ class ShareSpaceViewModel(
 
     sealed class ViewState {
         object Init : ViewState()
-        data class Share(
-            val link: String
-        ): ViewState()
+        data class Share(val link: String): ViewState()
     }
 
     sealed class Command {

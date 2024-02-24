@@ -2376,7 +2376,7 @@ class Middleware @Inject constructor(
         val response = service.spaceInviteGenerate(request)
         if (BuildConfig.DEBUG) logResponse(response)
         return SpaceInviteLink(
-            cid = response.inviteCid,
+            contentId = response.inviteCid,
             fileKey= response.inviteFileKey
         )
     }

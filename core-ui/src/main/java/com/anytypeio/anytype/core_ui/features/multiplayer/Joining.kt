@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -87,13 +88,20 @@ fun JoinSpaceScreen(
                 textStyle = PreviewTitle2Regular
             )
         }
-        Spacer(modifier = Modifier.height(30.dp))
-        ButtonPrimary(
-            onClick = throttledClick(onClick = { onRequestJoinSpaceClicked(commentInputValue) }),
-            size = ButtonSize.Large,
-            text = stringResource(R.string.multiplayer_space_request_to_join)
-        )
         Spacer(modifier = Modifier.height(20.dp))
+        Box(
+            modifier = Modifier.padding(top = 10.dp, start = 20.dp, end = 20.dp, bottom = 16.dp)
+        ) {
+            ButtonPrimary(
+                onClick = throttledClick(
+                    onClick = { onRequestJoinSpaceClicked(commentInputValue) }
+                ),
+                size = ButtonSize.Large,
+                text = stringResource(R.string.multiplayer_space_request_to_join),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        Spacer(modifier = Modifier.height(5.dp))
         Text(
             text = stringResource(R.string.mulitplayer_request_to_join_explanation),
             style = Caption1Regular,

@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -40,6 +41,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 fun JoinSpaceScreenPreview() {
     JoinSpaceScreen(
         onRequestJoinSpaceClicked = {},
+        onCloseClicked = {},
         spaceName = "Anytype Android App",
         createdByName = "Konstantin"
     )
@@ -48,6 +50,7 @@ fun JoinSpaceScreenPreview() {
 @Composable
 fun JoinSpaceScreen(
     onRequestJoinSpaceClicked: (String) -> Unit,
+    onCloseClicked: () -> Unit,
     spaceName: String,
     createdByName: String
 ) {
@@ -55,7 +58,7 @@ fun JoinSpaceScreen(
         modifier = Modifier.fillMaxSize()
     ) {
         var commentInputValue by remember { mutableStateOf("") }
-        Header()
+        Header(onCloseClicked = onCloseClicked)
         Text(
             style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
@@ -102,7 +105,9 @@ fun JoinSpaceScreen(
 }
 
 @Composable
-private fun Header() {
+private fun Header(
+    onCloseClicked: () -> Unit
+) {
     Box(
         modifier = Modifier
             .height(64.dp)
@@ -120,6 +125,7 @@ private fun Header() {
             modifier = Modifier
                 .align(Alignment.TopEnd)
                 .padding(top = 16.dp)
+                .noRippleClickable { onCloseClicked() }
         )
     }
 }

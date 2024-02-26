@@ -1102,6 +1102,7 @@
     <string name="object_values_delete_description">L\'objet sera déplacé dans la corbeille.</string>
     <string name="hint_enter_name">Saisir un nom...</string>
     <string name="create_object">Créer un objet</string>
+    <string name="msg_query_cannot_be_changed">Cette requête peut être modifiée uniquement sur le bureau</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">La phrase de récupération est invalide</string>
     <string name="network">Réseau</string>
@@ -1124,8 +1125,9 @@
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
     <string name="mulitplayer_request_to_join_explanation">Une fois que le propriétaire de l\'espace a approuvé votre demande, vous rejoindrez l\'espace avec les droits d\'accès déterminés par le propriétaire.</string>
     <string name="multiplayer_space_request_to_join">Demander à rejoindre</string>
-    <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
+    <string name="multiplayer_space_request_to_join_msg">Vous avez été invité à rejoindre l\'espace %1$s créé par %1$s. Envoyez une demande afin que le propriétaire de l\'espace puisse vous laisser entrer.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">Partager l\'espace</string>
+    <string name="multiplayer_members_and_requests">Membres et demandes</string>
     <!--endregion-->
 </resources>

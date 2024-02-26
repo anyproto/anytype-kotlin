@@ -1120,7 +1120,8 @@
     <string name="multiplayer_private_comment_for_a_space_owner">Tinggalkan komentar untuk pemilik ruang</string>
     <string name="mulitplayer_request_to_join_explanation">Ketika pemilik ruang menyetujui permintaanmu, kamu akan bergabung ke ruang ini dengan hak akses yang telah ditentukan.</string>
     <string name="multiplayer_space_request_to_join">Permintaan bergabung</string>
-    <string name="multiplayer_space_request_to_join_msg">Kamu diundang bergabung ke ruang %1$s buatan %1$s. Kirimkan permintaan supaya pemilik ruang dapat mengizinkanmu bergabung.</string>
+    <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Ketuk untuk menulis komentar</string>
+    <string name="multiplayer_share_space">Bagikan ruang</string>
     <!--endregion-->
 </resources>

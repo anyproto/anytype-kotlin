@@ -81,6 +81,9 @@ object Relations {
 
     const val IDENTITY_PROFILE_LINK = "identityProfileLink"
 
+    const val PARTICIPANT_STATUS = "participantStatus"
+    const val PARTICIPANT_PERMISSIONS = "participantPermissions"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

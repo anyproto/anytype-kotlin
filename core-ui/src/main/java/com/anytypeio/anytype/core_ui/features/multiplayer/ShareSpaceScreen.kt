@@ -89,7 +89,7 @@ fun ShareSpaceScreen(
             }
             item {
                 Section(
-                    title = stringResource(R.string.multiplayer_participants_and_requests)
+                    title = stringResource(R.string.multiplayer_members_and_requests)
                 )
             }
             participants.forEach { p ->

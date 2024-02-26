@@ -1103,6 +1103,7 @@
     <string name="object_values_delete_description">L\'oggetto verrà spostato nel Cestino.</string>
     <string name="hint_enter_name">Inserisci nome...</string>
     <string name="create_object">Crea oggetto</string>
+    <string name="msg_query_cannot_be_changed">Questa query può essere modificata solo su desktop</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Frase di recupero non valida</string>
     <string name="network">Rete</string>
@@ -1128,5 +1129,6 @@
     <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">Condividi lo spazio</string>
+    <string name="multiplayer_members_and_requests">Membri e richieste</string>
     <!--endregion-->
 </resources>

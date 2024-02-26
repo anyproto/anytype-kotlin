@@ -1098,6 +1098,7 @@
     <string name="object_values_delete_description">对象将被移动到回收站。</string>
     <string name="hint_enter_name">输入名称...</string>
     <string name="create_object">创建对象</string>
+    <string name="msg_query_cannot_be_changed">只能在桌面端更改此查询</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">恢复短语无效</string>
     <string name="network">网络</string>
@@ -1123,5 +1124,6 @@
     <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">共享空间</string>
+    <string name="multiplayer_members_and_requests">成员和请求</string>
     <!--endregion-->
 </resources>

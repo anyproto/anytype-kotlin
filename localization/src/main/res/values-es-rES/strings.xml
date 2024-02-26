@@ -1102,6 +1102,7 @@
     <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Enter name...</string>
     <string name="create_object">Crear objeto</string>
+    <string name="msg_query_cannot_be_changed">Esta consulta sólo puede cambiarse en el escritorio</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Invalid recovery phrase</string>
     <string name="network">Red</string>
@@ -1127,5 +1128,6 @@
     <string name="multiplayer_space_request_to_join_msg">Has sido invitado a unirte a %1$s espacio, creado por %1$s. Envía una solicitud para que el propietario del espacio pueda dejarte entrar.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">Share space</string>
+    <string name="multiplayer_members_and_requests">Members and requests</string>
     <!--endregion-->
 </resources>

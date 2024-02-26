@@ -1102,6 +1102,7 @@
     <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Skriv inn navn...</string>
     <string name="create_object">Opprett objekt</string>
+    <string name="msg_query_cannot_be_changed">Denne spørringen kan bare endres i skrivebordsappen</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Ugyldig gjenopprettingsfrase</string>
     <string name="network">Nettverk</string>
@@ -1127,5 +1128,6 @@
     <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">Del rom</string>
+    <string name="multiplayer_members_and_requests">Medlemmer og forespørsler</string>
     <!--endregion-->
 </resources>

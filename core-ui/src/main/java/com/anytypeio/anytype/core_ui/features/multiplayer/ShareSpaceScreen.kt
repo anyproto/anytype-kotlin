@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
@@ -76,7 +77,10 @@ fun ShareSpaceScreen(
                 item {
                     when(val config = member.config) {
                         is ShareSpaceMemberView.Config.Member -> {
-                            SpaceMember(participant = member)
+                            SpaceMember(
+                                member = member.obj,
+                                config = config
+                            )
                         }
                         is ShareSpaceMemberView.Config.Request -> {
                             SpaceMemberRequest(
@@ -111,7 +115,8 @@ fun ShareSpaceScreen(
 
 @Composable
 private fun SpaceMember(
-    participant: ShareSpaceMemberView
+    member: ObjectWrapper.Participant,
+    config: ShareSpaceMemberView.Config.Member
 ) {
     Row(
         modifier = Modifier
@@ -133,13 +138,24 @@ private fun SpaceMember(
                 .weight(1.0f)
         ) {
             Text(
-                text = participant.obj.name.orEmpty(),
+                text = member.name.orEmpty(),
                 style = PreviewTitle2Medium,
                 color = colorResource(id = R.color.text_primary)
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = "Can edit",
+                text = when(config) {
+                    ShareSpaceMemberView.Config.Member.Writer -> {
+                        stringResource(id = R.string.multiplayer_can_edit)
+                    }
+                    ShareSpaceMemberView.Config.Member.Owner -> {
+                        stringResource(id = R.string.multiplayer_owner)
+                    }
+                    ShareSpaceMemberView.Config.Member.Reader -> {
+                        stringResource(id = R.string.multiplayer_can_read)
+                    }
+                    else -> EMPTY_STRING_VALUE
+                },
                 style = Relations3,
                 color = colorResource(id = R.color.text_secondary)
             )
@@ -321,15 +337,14 @@ fun ShareSpaceScreenPreview() {
 
 @Composable
 @Preview
-private fun SpaceMemberPreview() {
+private fun SpaceOwnerMemberPreview() {
     SpaceMember(
-        participant = ShareSpaceMemberView(
-            obj = ObjectWrapper.Participant(
-                mapOf(
-                    Relations.ID to "2",
-                    Relations.NAME to "Evgenii"
-                )
+        member = ObjectWrapper.Participant(
+            mapOf(
+                Relations.ID to "2",
+                Relations.NAME to "Evgenii"
             )
-        )
+        ),
+        config = ShareSpaceMemberView.Config.Member.Owner
     )
 }

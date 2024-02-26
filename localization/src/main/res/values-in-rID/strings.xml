@@ -1098,6 +1098,7 @@
     <string name="object_values_delete_description">Objek ini akan dipindah ke Bak Sampah.</string>
     <string name="hint_enter_name">Enter name...</string>
     <string name="create_object">Buat objek</string>
+    <string name="msg_query_cannot_be_changed">Kueri ini bisa berubah hanya pada tampilan komputer</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Frasa pemulihan tidak valid</string>
     <string name="network">Jaringan</string>
@@ -1123,5 +1124,6 @@
     <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Ketuk untuk menulis komentar</string>
     <string name="multiplayer_share_space">Bagikan ruang</string>
+    <string name="multiplayer_members_and_requests">Members and requests</string>
     <!--endregion-->
 </resources>

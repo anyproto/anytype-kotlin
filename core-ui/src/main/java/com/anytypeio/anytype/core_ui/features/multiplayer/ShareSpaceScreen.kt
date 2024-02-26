@@ -188,11 +188,11 @@ private fun SpaceMemberRequest(
             }
             Text(
                 text = text,
-                color = dark(ThemeColor.BLUE),
+                color = dark(color),
                 modifier = Modifier
                     .wrapContentWidth()
                     .background(
-                        color = light(color = color),
+                        color = light(color),
                         shape = RoundedCornerShape(size = 3.dp)
                     )
                     .padding(start = 6.dp, end = 6.dp),
@@ -204,7 +204,7 @@ private fun SpaceMemberRequest(
         when(request) {
             ShareSpaceMemberView.Config.Request.Join -> {
                 ButtonSecondary(
-                    text = "View request",
+                    text = stringResource(R.string.multiplayer_view_request),
                     onClick = { /*TODO*/ },
                     size = ButtonSize.Small,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -212,7 +212,7 @@ private fun SpaceMemberRequest(
             }
             ShareSpaceMemberView.Config.Request.Unjoin -> {
                 ButtonSecondary(
-                    text = "Approve",
+                    text = stringResource(R.string.multiplayer_approve_request),
                     onClick = { /*TODO*/ },
                     size = ButtonSize.Small,
                     modifier = Modifier.align(Alignment.CenterVertically)

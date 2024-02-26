@@ -214,6 +214,7 @@ class ObjectSetViewModel(
     val viewerEditWidgetState = MutableStateFlow<ViewerEditWidgetUi>(ViewerEditWidgetUi.Init)
     val viewerLayoutWidgetState = MutableStateFlow(ViewerLayoutWidgetUi.init())
     private val widgetViewerId = MutableStateFlow<String?>(null)
+    val isTitleToolbarVisible = MutableStateFlow(false)
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
@@ -795,6 +796,14 @@ class ObjectSetViewModel(
                 Timber.e("Skipping dispatching title update, because set of objects was not ready.")
             }
         }
+    }
+
+    fun onTitleFocusChanged(hasFocus: Boolean) {
+        isTitleToolbarVisible.value = hasFocus
+    }
+
+    fun hideTitleToolbar() {
+        isTitleToolbarVisible.value = false
     }
 
     fun onDescriptionChanged(text: String) {

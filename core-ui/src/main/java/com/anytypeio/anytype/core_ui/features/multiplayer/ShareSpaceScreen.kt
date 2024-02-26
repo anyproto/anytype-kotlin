@@ -44,7 +44,7 @@ fun ShareSpaceScreenPreview() {
         participants = buildList {
             add(
                 ParticipantView(
-                    obj = ObjectWrapper.Basic(
+                    obj = ObjectWrapper.Participant(
                         mapOf(
                             Relations.ID to "1",
                             Relations.NAME to "Konstantin"
@@ -54,7 +54,7 @@ fun ShareSpaceScreenPreview() {
             )
             add(
                 ParticipantView(
-                    obj = ObjectWrapper.Basic(
+                    obj = ObjectWrapper.Participant(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Evgenii"
@@ -124,7 +124,7 @@ fun ShareSpaceScreen(
 private fun ParticipantPreview() {
     Participant(
         participant = ParticipantView(
-            obj = ObjectWrapper.Basic(
+            obj = ObjectWrapper.Participant(
                 mapOf(
                     Relations.ID to "2",
                     Relations.NAME to "Evgenii"

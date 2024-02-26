@@ -60,6 +60,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimarySmallIcon
 import com.anytypeio.anytype.core_ui.widgets.FeaturedRelationGroupWidget
 import com.anytypeio.anytype.core_ui.widgets.StatusBadgeWidget
 import com.anytypeio.anytype.core_ui.widgets.TypeTemplatesWidget
+import com.anytypeio.anytype.core_ui.widgets.dv.ObjectSetTitle
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerEditWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewerLayoutWidget
 import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
@@ -260,6 +261,7 @@ open class ObjectSetFragment :
                 title.apply {
                     hideKeyboard()
                     clearFocus()
+                    vm.hideTitleToolbar()
                 }
             }
             subscribe(menuButton.clicks().throttleFirst()) { vm.onMenuClicked() }
@@ -356,6 +358,10 @@ open class ObjectSetFragment :
             DefaultTextWatcher { vm.onTitleChanged(it.toString()) }
         )
 
+        title.onFocusChangeListener = View.OnFocusChangeListener { _, hasFocus ->
+            vm.onTitleFocusChanged(hasFocus)
+        }
+
         with(tvDescription) {
             syncFocusWithImeVisibility()
             addTextChangedListener(tvDescriptionTextWatcher)
@@ -422,6 +428,19 @@ open class ObjectSetFragment :
                 )
             }
         }
+
+        binding.titleWidget.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                ObjectSetTitle(
+                    isVisible = vm.isTitleToolbarVisible.collectAsStateWithLifecycle().value,
+                    doneAction = {
+                        vm.hideTitleToolbar()
+                        hideKeyboard()
+                    }
+                )
+            }
+        }
     }
 
     private fun setupWindowInsetAnimation() {
@@ -434,6 +453,9 @@ open class ObjectSetFragment :
                 dispatchMode = DISPATCH_MODE_STOP
             )
             binding.templatesWidget.syncTranslationWithImeVisibility(
+                dispatchMode = DISPATCH_MODE_STOP
+            )
+            binding.titleWidget.syncTranslationWithImeVisibility(
                 dispatchMode = DISPATCH_MODE_STOP
             )
         }

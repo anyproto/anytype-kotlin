@@ -1125,7 +1125,8 @@
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
     <string name="mulitplayer_request_to_join_explanation">Una volta che il proprietario dello spazio approva la tua richiesta, entrerai nello spazio con i diritti di accesso determinati dal proprietario.</string>
     <string name="multiplayer_space_request_to_join">Richiesta di adesione</string>
-    <string name="multiplayer_space_request_to_join_msg">You\'\ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
+    <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
+    <string name="multiplayer_share_space">Condividi lo spazio</string>
     <!--endregion-->
 </resources>

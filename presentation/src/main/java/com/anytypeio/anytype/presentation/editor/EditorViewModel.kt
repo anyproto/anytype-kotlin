@@ -1872,6 +1872,21 @@ class EditorViewModel(
             }
         }
 
+        val objectRestrictions = orchestrator.stores.objectRestrictions.current()
+        if (objectRestrictions.isNotEmpty()) {
+            if (objectRestrictions.contains(ObjectRestriction.BLOCKS)) {
+                excludedActions.add(ActionItemType.AddBelow)
+                excludedActions.add(ActionItemType.Delete)
+                excludedActions.add(ActionItemType.Duplicate)
+                excludedActions.add(ActionItemType.MoveTo)
+                excludedActions.add(ActionItemType.SAM)
+                excludedActions.add(ActionItemType.Style)
+                excludedActions.add(ActionItemType.Divider)
+                excludedActions.add(ActionItemType.DividerExtended)
+                excludedActions.add(ActionItemType.Paste)
+            }
+        }
+
         targetActions.removeAll(excludedActions)
 
         actions.value = if (needSortByDownloads) {

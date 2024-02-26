@@ -2,6 +2,8 @@ package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.Relations.RELATION_FORMAT_OBJECT_TYPES
 import com.anytypeio.anytype.core_models.ext.typeOf
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 
@@ -309,6 +311,25 @@ sealed class ObjectWrapper {
         val url: String? by default
         val isArchived: Boolean? by default
         val isDeleted: Boolean? by default
+    }
+
+    data class Participant(override val map: Struct): ObjectWrapper() {
+        private val default = map.withDefault { null }
+
+        val id: Id by default
+        val name: String? by default
+
+        val status
+            get() = getSingleValue<Double>(Relations.PARTICIPANT_STATUS)
+                .let { code ->
+                    ParticipantStatus.values().firstOrNull { it.code == code?.toInt() }
+                }
+
+        val permissions
+            get() = getSingleValue<Double>(Relations.PARTICIPANT_PERMISSIONS)
+                .let { code ->
+                    ParticipantPermissions.values().firstOrNull { it.code == code?.toInt() }
+                }
     }
 }
 

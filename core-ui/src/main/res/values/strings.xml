@@ -3,6 +3,4 @@
     <string-array name="certs">
         <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
     </string-array>
-    <string name="msg_query_cannot_be_changed">This query can be changed on desktop only</string>
-    <string name="multiplayer_participants_and_requests">Participants and requests</string>
 </resources>

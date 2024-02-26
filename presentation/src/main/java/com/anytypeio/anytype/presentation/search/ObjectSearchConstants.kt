@@ -60,6 +60,7 @@ object ObjectSearchConstants {
             includeTime = true
         )
     )
+
     //endregion
 
     //region LINK TO
@@ -729,6 +730,44 @@ object ObjectSearchConstants {
         }
     }
 
+    fun filterParticipants(spaces: List<Id>) : List<DVFilter> = buildList {
+        add(
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.LAYOUT,
+                condition = DVFilterCondition.EQUAL,
+                value = ObjectType.Layout.PARTICIPANT.code.toDouble()
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.SPACE_ID,
+                condition = DVFilterCondition.IN,
+                value = spaces
+            )
+        )
+    }
+
     fun defaultDataViewFilters(spaces: List<Id>) = buildList {
         add(
             DVFilter(
@@ -1032,11 +1071,25 @@ object ObjectSearchConstants {
         )
     )
 
+    fun sortByName() : DVSort = DVSort(
+        relationKey = Relations.NAME,
+        type = DVSortType.ASC
+    )
+
     val keysRelationOptions = listOf(
         Relations.ID,
         Relations.SPACE_ID,
         Relations.NAME,
         Relations.RELATION_OPTION_COLOR,
         Relations.RELATION_KEY
+    )
+
+    val participantKeys = listOf(
+        Relations.ID,
+        Relations.SPACE_ID,
+        Relations.NAME,
+        Relations.ICON_IMAGE,
+        Relations.PARTICIPANT_STATUS,
+        Relations.PARTICIPANT_PERMISSIONS
     )
 }

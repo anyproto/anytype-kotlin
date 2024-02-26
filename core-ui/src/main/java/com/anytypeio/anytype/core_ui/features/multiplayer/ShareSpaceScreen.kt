@@ -44,7 +44,7 @@ fun ShareSpaceScreenPreview() {
         participants = buildList {
             add(
                 ParticipantView(
-                    obj = ObjectWrapper.Basic(
+                    obj = ObjectWrapper.Participant(
                         mapOf(
                             Relations.ID to "1",
                             Relations.NAME to "Konstantin"
@@ -54,7 +54,7 @@ fun ShareSpaceScreenPreview() {
             )
             add(
                 ParticipantView(
-                    obj = ObjectWrapper.Basic(
+                    obj = ObjectWrapper.Participant(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Evgenii"
@@ -89,7 +89,7 @@ fun ShareSpaceScreen(
             }
             item {
                 Section(
-                    title = stringResource(R.string.multiplayer_participants_and_requests)
+                    title = stringResource(R.string.multiplayer_members_and_requests)
                 )
             }
             participants.forEach { p ->
@@ -124,7 +124,7 @@ fun ShareSpaceScreen(
 private fun ParticipantPreview() {
     Participant(
         participant = ParticipantView(
-            obj = ObjectWrapper.Basic(
+            obj = ObjectWrapper.Participant(
                 mapOf(
                     Relations.ID to "2",
                     Relations.NAME to "Evgenii"

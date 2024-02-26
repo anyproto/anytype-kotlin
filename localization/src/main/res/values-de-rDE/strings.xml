@@ -1102,6 +1102,7 @@
     <string name="object_values_delete_description">Das Objekt wird in den Papierkorb verschoben.</string>
     <string name="hint_enter_name">Name eingeben...</string>
     <string name="create_object">Objekt erstellen</string>
+    <string name="msg_query_cannot_be_changed">Diese Abfrage kann nur auf dem Desktop geändert werden</string>
     <!--region ONBOARDING ERRORS -->
     <string name="error_invalid_recovery_phrase">Ungültige Wiederherstellungsphrase</string>
     <string name="network">Netzwerk</string>
@@ -1127,5 +1128,6 @@
     <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">Share space</string>
+    <string name="multiplayer_members_and_requests">Mitglieder und Anfragen</string>
     <!--endregion-->
 </resources>

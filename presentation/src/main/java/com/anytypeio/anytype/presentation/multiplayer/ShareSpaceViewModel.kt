@@ -26,7 +26,7 @@ class ShareSpaceViewModel(
     private val container: StorelessSubscriptionContainer
 ) : BaseViewModel() {
 
-    val participants = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
+    val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
     val commands = MutableSharedFlow<Command>()
@@ -48,7 +48,7 @@ class ShareSpaceViewModel(
                     ShareSpaceMemberView.fromObject(ObjectWrapper.Participant(wrapper.map))
                 }
             }.collect {
-                participants.value = it
+                members.value = it
             }
         }
     }

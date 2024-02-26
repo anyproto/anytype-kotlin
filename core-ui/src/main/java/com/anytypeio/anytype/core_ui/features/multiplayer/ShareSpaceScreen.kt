@@ -46,7 +46,7 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 
 @Composable
 fun ShareSpaceScreen(
-    participants: List<ShareSpaceMemberView>,
+    members: List<ShareSpaceMemberView>,
     viewState: ShareSpaceViewModel.ViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit
@@ -70,9 +70,19 @@ fun ShareSpaceScreen(
                     title = stringResource(R.string.multiplayer_members_and_requests)
                 )
             }
-            participants.forEach { p ->
-                item { 
-                    SpaceMember(participant = p)
+            members.forEach { member ->
+                item {
+                    when(val config = member.config) {
+                        is ShareSpaceMemberView.Config.Member -> {
+                            SpaceMember(participant = member)
+                        }
+                        is ShareSpaceMemberView.Config.Request -> {
+                            SpaceMemberRequest(
+                                member = member.obj,
+                                request = config
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -252,7 +262,7 @@ fun ShareSpaceScreenPreview() {
         ),
         onShareInviteLinkClicked = {},
         onRegenerateInviteLinkClicked = {},
-        participants = buildList {
+        members = buildList {
             add(
                 ShareSpaceMemberView(
                     obj = ObjectWrapper.Participant(

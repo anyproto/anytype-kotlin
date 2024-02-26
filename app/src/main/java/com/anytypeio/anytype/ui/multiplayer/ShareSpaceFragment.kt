@@ -43,7 +43,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         viewState = vm.viewState.collectAsStateWithLifecycle().value,
                         onRegenerateInviteLinkClicked = vm::onRegenerateInviteLinkClicked,
                         onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
-                        participants = vm.participants.collectAsStateWithLifecycle().value
+                        members = vm.members.collectAsStateWithLifecycle().value
                     )
                     LaunchedEffect(Unit) {
                         vm.commands.collect { command ->

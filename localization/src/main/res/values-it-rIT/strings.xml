@@ -1121,5 +1121,11 @@
     <string name="multiplayer_share_invite_link">Condividi il link di invito</string>
     <string name="multiplayer_share_invite_link_description">Invia questo link per invitare gli altri. Assegna i diritti di accesso al momento dell\'approvazione della loro richiesta</string>
     <string name="multiplayer_invite_link">Link di invito</string>
+    <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>
+    <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
+    <string name="mulitplayer_request_to_join_explanation">Una volta che il proprietario dello spazio approva la tua richiesta, entrerai nello spazio con i diritti di accesso determinati dal proprietario.</string>
+    <string name="multiplayer_space_request_to_join">Richiesta di adesione</string>
+    <string name="multiplayer_space_request_to_join_msg">You\'\ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
+    <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <!--endregion-->
 </resources>

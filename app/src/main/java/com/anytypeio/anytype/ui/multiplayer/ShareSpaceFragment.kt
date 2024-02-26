@@ -42,7 +42,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     ShareSpaceScreen(
                         viewState = vm.viewState.collectAsStateWithLifecycle().value,
                         onRegenerateInviteLinkClicked = vm::onRegenerateInviteLinkClicked,
-                        onShareInviteLinkClicked = vm::onShareInviteLinkClicked
+                        onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
+                        participants = vm.participants.collectAsStateWithLifecycle().value
                     )
                     LaunchedEffect(Unit) {
                         vm.commands.collect { command ->
@@ -52,6 +53,12 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        expand()
     }
 
     private fun proceedWithCommand(command: ShareSpaceViewModel.Command) {

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
@@ -17,6 +18,8 @@ class ShareSpaceViewModel(
     private val params: Params,
     private val generateSpaceInviteLink: GenerateSpaceInviteLink
 ) : BaseViewModel() {
+
+    val participants = MutableStateFlow<List<ParticipantView>>(emptyList())
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
     val commands = MutableSharedFlow<Command>()
@@ -81,3 +84,7 @@ class ShareSpaceViewModel(
         data class ShareInviteLink(val link: String) : Command()
     }
 }
+
+data class ParticipantView(
+    val obj: ObjectWrapper.Basic
+)

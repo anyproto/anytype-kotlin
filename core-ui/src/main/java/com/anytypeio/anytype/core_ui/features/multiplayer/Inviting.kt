@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -32,17 +33,25 @@ fun ShareInviteLinkCardPreview() {
     ShareInviteLinkCard(
         link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssa3ifffsasssga3ifffsasssga3ifffsas",
         onShareInviteClicked = {},
-        onRegenerateInviteLinkClicked = {}
+        onRegenerateInviteLinkClicked = {},
+        modifier = Modifier
     )
 }
 
 @Composable
 fun ShareInviteLinkCard(
+    modifier: Modifier = Modifier,
     link: String,
     onShareInviteClicked: () -> Unit,
     onRegenerateInviteLinkClicked: () -> Unit
 ) {
-    Card {
+    Card(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.palette_light_blue)
+        )
+
+    ) {
         Spacer(modifier = Modifier.height(20.dp))
         Row(
             modifier = Modifier.padding(horizontal = 20.dp),

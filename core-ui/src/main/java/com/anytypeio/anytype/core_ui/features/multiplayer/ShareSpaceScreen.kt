@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -111,23 +113,24 @@ fun ShareSpaceScreen(
 private fun SpaceMember(
     participant: ShareSpaceMemberView
 ) {
-    Box(
+    Row(
         modifier = Modifier
             .height(72.dp)
             .fillMaxWidth()
     ) {
+        Spacer(modifier = Modifier.width(16.dp))
         Box(
             modifier = Modifier
-                .padding(start = 16.dp)
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(color = Color.Red)
-                .align(Alignment.CenterStart)
+                .background(color = Color.Blue)
+                .align(Alignment.CenterVertically)
         )
+        Spacer(modifier = Modifier.width(12.dp))
         Column(
             modifier = Modifier
-                .padding(start = 76.dp)
-                .align(Alignment.CenterStart)
+                .align(Alignment.CenterVertically)
+                .weight(1.0f)
         ) {
             Text(
                 text = participant.obj.name.orEmpty(),
@@ -141,6 +144,12 @@ private fun SpaceMember(
                 color = colorResource(id = R.color.text_secondary)
             )
         }
+        Image(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            painter = painterResource(id = R.drawable.ic_action_more),
+            contentDescription = "Menu button"
+        )
+        Spacer(modifier = Modifier.width(16.dp))
     }
 }
 
@@ -282,6 +291,28 @@ fun ShareSpaceScreenPreview() {
                             Relations.NAME to "Evgenii"
                         )
                     )
+                )
+            )
+            add(
+                ShareSpaceMemberView(
+                    obj = ObjectWrapper.Participant(
+                        mapOf(
+                            Relations.ID to "2",
+                            Relations.NAME to "Aleksey"
+                        )
+                    ),
+                    config = ShareSpaceMemberView.Config.Request.Unjoin
+                )
+            )
+            add(
+                ShareSpaceMemberView(
+                    obj = ObjectWrapper.Participant(
+                        mapOf(
+                            Relations.ID to "2",
+                            Relations.NAME to "Anton"
+                        )
+                    ),
+                    config = ShareSpaceMemberView.Config.Request.Join
                 )
             )
         }

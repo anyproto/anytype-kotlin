@@ -36,6 +36,7 @@ import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
@@ -52,7 +53,8 @@ fun ShareSpaceScreen(
     members: List<ShareSpaceMemberView>,
     viewState: ShareSpaceViewModel.ViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
-    onShareInviteLinkClicked: () -> Unit
+    onShareInviteLinkClicked: () -> Unit,
+    onRequestAction: (ShareSpaceMemberView.Config.Request) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -66,7 +68,17 @@ fun ShareSpaceScreen(
                 }
             }
             item {
-                Toolbar(title = stringResource(R.string.multiplayer_share_space))
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Toolbar(title = stringResource(R.string.multiplayer_share_space))
+                    Image(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 16.dp)
+                        ,
+                        painter = painterResource(id = R.drawable.ic_action_more),
+                        contentDescription = "Menu button"
+                    )
+                }
             }
             item {
                 Section(
@@ -85,7 +97,8 @@ fun ShareSpaceScreen(
                         is ShareSpaceMemberView.Config.Request -> {
                             SpaceMemberRequest(
                                 member = member.obj,
-                                request = config
+                                request = config,
+                                onRequestAction = onRequestAction
                             )
                         }
                     }
@@ -172,7 +185,8 @@ private fun SpaceMember(
 @Composable
 private fun SpaceMemberRequest(
     member: ObjectWrapper.Participant,
-    request: ShareSpaceMemberView.Config.Request
+    request: ShareSpaceMemberView.Config.Request,
+    onRequestAction: (ShareSpaceMemberView.Config.Request) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -230,7 +244,9 @@ private fun SpaceMemberRequest(
             ShareSpaceMemberView.Config.Request.Join -> {
                 ButtonSecondary(
                     text = stringResource(R.string.multiplayer_view_request),
-                    onClick = { /*TODO*/ },
+                    onClick = throttledClick(
+                        onClick = { onRequestAction(request) }
+                    ),
                     size = ButtonSize.Small,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
@@ -238,7 +254,9 @@ private fun SpaceMemberRequest(
             ShareSpaceMemberView.Config.Request.Unjoin -> {
                 ButtonSecondary(
                     text = stringResource(R.string.multiplayer_approve_request),
-                    onClick = { /*TODO*/ },
+                    onClick = throttledClick(
+                        onClick = { onRequestAction(request) }
+                    ),
                     size = ButtonSize.Small,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
@@ -259,7 +277,8 @@ fun SpaceJoinRequestPreview() {
                 Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
             )
         ),
-        request = ShareSpaceMemberView.Config.Request.Join
+        request = ShareSpaceMemberView.Config.Request.Join,
+        onRequestAction = {},
     )
 }
 
@@ -274,7 +293,8 @@ fun SpaceUnjoinRequestPreview() {
                 Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
             )
         ),
-        request = ShareSpaceMemberView.Config.Request.Unjoin
+        request = ShareSpaceMemberView.Config.Request.Unjoin,
+        onRequestAction = {},
     )
 }
 
@@ -287,6 +307,7 @@ fun ShareSpaceScreenPreview() {
         ),
         onShareInviteLinkClicked = {},
         onRegenerateInviteLinkClicked = {},
+        onRequestAction = {},
         members = buildList {
             add(
                 ShareSpaceMemberView(

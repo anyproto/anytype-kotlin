@@ -327,12 +327,19 @@ fun NameTextField(
         mutableStateOf(strokeColorInactive)
     }
 
+    val strokeWidthActive = 2.dp
+    val strokeWidthInactive = 1.dp
+
+    val strokeWidth = remember {
+        mutableStateOf(strokeWidthInactive)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .wrapContentHeight()
             .border(
-                width = 2.dp,
+                width = strokeWidth.value,
                 color = strokeColor.value,
                 shape = RoundedCornerShape(size = 10.dp)
             )
@@ -358,8 +365,10 @@ fun NameTextField(
                 .onFocusChanged { focusState ->
                     if (focusState.isFocused) {
                         strokeColor.value = strokeColorActive
+                        strokeWidth.value = strokeWidthActive
                     } else {
                         strokeColor.value = strokeColorInactive
+                        strokeWidth.value = strokeWidthInactive
                     }
                 },
             keyboardOptions = KeyboardOptions(

@@ -39,6 +39,8 @@ enum class ObjectRestriction(val code: Int) {
 
     DUPLICATE(8),
 
+    CREATE_OBJECT_OF_THIS_TYPE(9),
+
     NONE(0)
 
 }

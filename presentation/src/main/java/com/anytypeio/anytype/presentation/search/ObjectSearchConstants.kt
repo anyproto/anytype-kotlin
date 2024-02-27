@@ -630,7 +630,8 @@ object ObjectSearchConstants {
         Relations.COVER_ID,
         Relations.PAGE_COVER,
         Relations.FILE_EXT,
-        Relations.FILE_MIME_TYPE
+        Relations.FILE_MIME_TYPE,
+        Relations.RESTRICTIONS
     )
 
     val defaultRelationKeys = listOf(
@@ -784,7 +785,8 @@ object ObjectSearchConstants {
         Relations.SOURCE_OBJECT,
         Relations.RECOMMENDED_LAYOUT,
         Relations.DEFAULT_TEMPLATE_ID,
-        Relations.SPACE_ID
+        Relations.SPACE_ID,
+        Relations.RESTRICTIONS
     )
 
     //endregion

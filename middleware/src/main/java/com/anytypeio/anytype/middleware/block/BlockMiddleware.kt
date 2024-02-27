@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
@@ -863,5 +864,24 @@ class BlockMiddleware(
 
     override suspend fun generateSpaceInviteLink(space: SpaceId): SpaceInviteLink {
         return middleware.generateSpaceInviteLink(space)
+    }
+
+    override suspend fun approveSpaceRequest(
+        space: SpaceId,
+        identity: Id,
+        permissions: ParticipantPermissions
+    ) {
+        middleware.approveSpaceRequest(
+            space = space,
+            identity = identity,
+            permissions = permissions
+        )
+    }
+
+    override suspend fun declineSpaceRequest(space: SpaceId, identity: Id) {
+        middleware.declineSpaceRequest(
+            space = space,
+            identity = identity
+        )
     }
 }

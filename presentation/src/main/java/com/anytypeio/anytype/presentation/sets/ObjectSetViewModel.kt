@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -1037,6 +1038,10 @@ class ObjectSetViewModel(
                                 toast("Could not found key for given type")
                                 return
                             }
+                            if (wrapper.restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE)) {
+                                toast(TOAST_CREATE_OBJECT_RESTRICTS)
+                                return
+                            }
                             if (uniqueKey == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
                                     ObjectSetCommand.Modal.CreateBookmark(ctx = context)
@@ -1065,6 +1070,10 @@ class ObjectSetViewModel(
                                     ObjectSetCommand.Modal.CreateBookmark(ctx = context)
                                 )
                             } else {
+                                if (defaultObjectType.restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE)) {
+                                    toast(TOAST_CREATE_OBJECT_RESTRICTS)
+                                    return
+                                }
                                 val validTemplateId = templateChosenBy ?: defaultTemplate
                                 val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
                                     storeOfRelations = storeOfRelations,
@@ -1123,6 +1132,20 @@ class ObjectSetViewModel(
             dateProvider = dateProvider,
             dataViewRelationLinks = state.dataViewContent.relationLinks
         )
+
+        if (typeChosenByUser != null) {
+            val objType = storeOfObjectTypes.getByKey(typeChosenByUser.key)
+            if (objType != null && objType.restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE)) {
+                toast(TOAST_CREATE_OBJECT_RESTRICTS)
+                return
+            }
+        } else {
+            if (defaultObjectType?.restrictions?.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) == true) {
+                toast(TOAST_CREATE_OBJECT_RESTRICTS)
+                return
+            }
+        }
+
         val type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         val createObjectParams = CreateDataViewObject.Params.Collection(
             template = validTemplateId,
@@ -2663,6 +2686,7 @@ class ObjectSetViewModel(
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
+        const val TOAST_CREATE_OBJECT_RESTRICTS = "It's restricted to creating objects of this type"
         const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
     }

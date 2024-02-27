@@ -1,16 +1,21 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,60 +23,38 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.dark
+import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
-import com.anytypeio.anytype.presentation.multiplayer.ParticipantView
+import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 
 @Composable
-@Preview
-fun ShareSpaceScreenPreview() {
-    ShareSpaceScreen(
-        viewState = ShareSpaceViewModel.ViewState.Share(
-            link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssg..."
-        ),
-        onShareInviteLinkClicked = {},
-        onRegenerateInviteLinkClicked = {},
-        participants = buildList {
-            add(
-                ParticipantView(
-                    obj = ObjectWrapper.Participant(
-                        mapOf(
-                            Relations.ID to "1",
-                            Relations.NAME to "Konstantin"
-                        )
-                    )
-                )
-            )
-            add(
-                ParticipantView(
-                    obj = ObjectWrapper.Participant(
-                        mapOf(
-                            Relations.ID to "2",
-                            Relations.NAME to "Evgenii"
-                        )
-                    )
-                )
-            )
-        }
-    )
-}
-
-@Composable
 fun ShareSpaceScreen(
-    participants: List<ParticipantView>,
+    members: List<ShareSpaceMemberView>,
     viewState: ShareSpaceViewModel.ViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
-    onShareInviteLinkClicked: () -> Unit
+    onShareInviteLinkClicked: () -> Unit,
+    onRequestAction: (ShareSpaceMemberView.Config.Request) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -85,16 +68,40 @@ fun ShareSpaceScreen(
                 }
             }
             item {
-                Toolbar(title = stringResource(R.string.multiplayer_share_space))
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    Toolbar(title = stringResource(R.string.multiplayer_share_space))
+                    Image(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 16.dp)
+                        ,
+                        painter = painterResource(id = R.drawable.ic_action_more),
+                        contentDescription = "Menu button"
+                    )
+                }
             }
             item {
                 Section(
                     title = stringResource(R.string.multiplayer_members_and_requests)
                 )
             }
-            participants.forEach { p ->
-                item { 
-                    Participant(participant = p)
+            members.forEach { member ->
+                item {
+                    when(val config = member.config) {
+                        is ShareSpaceMemberView.Config.Member -> {
+                            SpaceMember(
+                                member = member.obj,
+                                config = config
+                            )
+                        }
+                        is ShareSpaceMemberView.Config.Request -> {
+                            SpaceMemberRequest(
+                                member = member.obj,
+                                request = config,
+                                onRequestAction = onRequestAction
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -120,53 +127,245 @@ fun ShareSpaceScreen(
 }
 
 @Composable
-@Preview
-private fun ParticipantPreview() {
-    Participant(
-        participant = ParticipantView(
-            obj = ObjectWrapper.Participant(
-                mapOf(
-                    Relations.ID to "2",
-                    Relations.NAME to "Evgenii"
-                )
-            )
-        )
-    )
-}
-
-@Composable
-private fun Participant(
-    participant: ParticipantView
+private fun SpaceMember(
+    member: ObjectWrapper.Participant,
+    config: ShareSpaceMemberView.Config.Member
 ) {
-    Box(
+    Row(
         modifier = Modifier
             .height(72.dp)
             .fillMaxWidth()
     ) {
+        Spacer(modifier = Modifier.width(16.dp))
         Box(
             modifier = Modifier
-                .padding(start = 16.dp)
                 .size(48.dp)
                 .clip(CircleShape)
-                .background(color = Color.Red)
-                .align(Alignment.CenterStart)
+                .background(color = Color.Blue)
+                .align(Alignment.CenterVertically)
         )
+        Spacer(modifier = Modifier.width(12.dp))
         Column(
             modifier = Modifier
-                .padding(start = 76.dp)
-                .align(Alignment.CenterStart)
+                .align(Alignment.CenterVertically)
+                .weight(1.0f)
         ) {
             Text(
-                text = participant.obj.name.orEmpty(),
+                text = member.name.orEmpty(),
                 style = PreviewTitle2Medium,
                 color = colorResource(id = R.color.text_primary)
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = "Can edit",
+                text = when(config) {
+                    ShareSpaceMemberView.Config.Member.Writer -> {
+                        stringResource(id = R.string.multiplayer_can_edit)
+                    }
+                    ShareSpaceMemberView.Config.Member.Owner -> {
+                        stringResource(id = R.string.multiplayer_owner)
+                    }
+                    ShareSpaceMemberView.Config.Member.Reader -> {
+                        stringResource(id = R.string.multiplayer_can_read)
+                    }
+                    else -> EMPTY_STRING_VALUE
+                },
                 style = Relations3,
                 color = colorResource(id = R.color.text_secondary)
             )
         }
+        Image(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            painter = painterResource(id = R.drawable.ic_action_more),
+            contentDescription = "Menu button"
+        )
+        Spacer(modifier = Modifier.width(16.dp))
     }
+}
+
+@Composable
+private fun SpaceMemberRequest(
+    member: ObjectWrapper.Participant,
+    request: ShareSpaceMemberView.Config.Request,
+    onRequestAction: (ShareSpaceMemberView.Config.Request) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .height(72.dp)
+            .fillMaxWidth()
+    ) {
+        Spacer(modifier = Modifier.width(16.dp))
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .background(color = Color.Red)
+                .align(Alignment.CenterVertically)
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Column(
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .weight(1.0f)
+        ) {
+            Text(
+                text = member.name.orEmpty(),
+                style = PreviewTitle2Medium,
+                color = colorResource(id = R.color.text_primary)
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            val color = when(request) {
+                ShareSpaceMemberView.Config.Request.Join -> ThemeColor.PINK
+                ShareSpaceMemberView.Config.Request.Unjoin -> ThemeColor.RED
+            }
+            val text = when(request) {
+                ShareSpaceMemberView.Config.Request.Join -> stringResource(
+                    id = R.string.multiplayer_joining_requested
+                )
+                ShareSpaceMemberView.Config.Request.Unjoin -> stringResource(
+                    id = R.string.multiplayer_unjoining_requested
+                )
+            }
+            Text(
+                text = text,
+                color = dark(color),
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .background(
+                        color = light(color),
+                        shape = RoundedCornerShape(size = 3.dp)
+                    )
+                    .padding(start = 6.dp, end = 6.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = Relations1
+            )
+        }
+        when(request) {
+            ShareSpaceMemberView.Config.Request.Join -> {
+                ButtonSecondary(
+                    text = stringResource(R.string.multiplayer_view_request),
+                    onClick = throttledClick(
+                        onClick = { onRequestAction(request) }
+                    ),
+                    size = ButtonSize.Small,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+            }
+            ShareSpaceMemberView.Config.Request.Unjoin -> {
+                ButtonSecondary(
+                    text = stringResource(R.string.multiplayer_approve_request),
+                    onClick = throttledClick(
+                        onClick = { onRequestAction(request) }
+                    ),
+                    size = ButtonSize.Small,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.width(16.dp))
+    }
+}
+
+@Composable
+@Preview
+fun SpaceJoinRequestPreview() {
+    SpaceMemberRequest(
+        member = ObjectWrapper.Participant(
+            mapOf(
+                Relations.ID to "1",
+                Relations.NAME to "Konstantin",
+                Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
+            )
+        ),
+        request = ShareSpaceMemberView.Config.Request.Join,
+        onRequestAction = {},
+    )
+}
+
+@Composable
+@Preview
+fun SpaceUnjoinRequestPreview() {
+    SpaceMemberRequest(
+        member = ObjectWrapper.Participant(
+            mapOf(
+                Relations.ID to "1",
+                Relations.NAME to "Konstantin",
+                Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
+            )
+        ),
+        request = ShareSpaceMemberView.Config.Request.Unjoin,
+        onRequestAction = {},
+    )
+}
+
+@Composable
+@Preview
+fun ShareSpaceScreenPreview() {
+    ShareSpaceScreen(
+        viewState = ShareSpaceViewModel.ViewState.Share(
+            link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssg..."
+        ),
+        onShareInviteLinkClicked = {},
+        onRegenerateInviteLinkClicked = {},
+        onRequestAction = {},
+        members = buildList {
+            add(
+                ShareSpaceMemberView(
+                    obj = ObjectWrapper.Participant(
+                        mapOf(
+                            Relations.ID to "1",
+                            Relations.NAME to "Konstantin",
+                            Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
+                        )
+                    )
+                )
+            )
+            add(
+                ShareSpaceMemberView(
+                    obj = ObjectWrapper.Participant(
+                        mapOf(
+                            Relations.ID to "2",
+                            Relations.NAME to "Evgenii"
+                        )
+                    )
+                )
+            )
+            add(
+                ShareSpaceMemberView(
+                    obj = ObjectWrapper.Participant(
+                        mapOf(
+                            Relations.ID to "2",
+                            Relations.NAME to "Aleksey"
+                        )
+                    ),
+                    config = ShareSpaceMemberView.Config.Request.Unjoin
+                )
+            )
+            add(
+                ShareSpaceMemberView(
+                    obj = ObjectWrapper.Participant(
+                        mapOf(
+                            Relations.ID to "2",
+                            Relations.NAME to "Anton"
+                        )
+                    ),
+                    config = ShareSpaceMemberView.Config.Request.Join
+                )
+            )
+        }
+    )
+}
+
+@Composable
+@Preview
+private fun SpaceOwnerMemberPreview() {
+    SpaceMember(
+        member = ObjectWrapper.Participant(
+            mapOf(
+                Relations.ID to "2",
+                Relations.NAME to "Evgenii"
+            )
+        ),
+        config = ShareSpaceMemberView.Config.Member.Owner
+    )
 }

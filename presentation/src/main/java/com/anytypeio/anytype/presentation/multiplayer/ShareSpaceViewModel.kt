@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -24,7 +26,7 @@ class ShareSpaceViewModel(
     private val container: StorelessSubscriptionContainer
 ) : BaseViewModel() {
 
-    val participants = MutableStateFlow<List<ParticipantView>>(emptyList())
+    val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
     val commands = MutableSharedFlow<Command>()
@@ -42,12 +44,11 @@ class ShareSpaceViewModel(
                     keys = ObjectSearchConstants.participantKeys
                 )
             ).map { results ->
-                results.map { wrapper ->
-                    ParticipantView(ObjectWrapper.Participant(wrapper.map))
+                results.mapNotNull { wrapper ->
+                    ShareSpaceMemberView.fromObject(ObjectWrapper.Participant(wrapper.map))
                 }
             }.collect {
-                Timber.d("Got participants: $it")
-                participants.value = it
+                members.value = it
             }
         }
     }
@@ -111,6 +112,61 @@ class ShareSpaceViewModel(
     }
 }
 
-data class ParticipantView(
-    val obj: ObjectWrapper.Participant
-)
+data class ShareSpaceMemberView(
+    val obj: ObjectWrapper.Participant,
+    val config: Config = Config.Member.Owner
+) {
+    sealed class Config {
+        sealed class Request : Config() {
+            object Join: Request()
+            object Unjoin: Request()
+        }
+        sealed class Member: Config() {
+            object Owner: Member()
+            object Writer: Member()
+            object Reader: Member()
+            object NoPermissions: Member()
+            object Unknown: Member()
+        }
+    }
+
+    companion object {
+        fun fromObject(obj: ObjectWrapper.Participant) : ShareSpaceMemberView? {
+            return when(obj.status) {
+                ParticipantStatus.ACTIVE -> {
+                    when(obj.permissions) {
+                        ParticipantPermissions.READER -> ShareSpaceMemberView(
+                            obj = obj,
+                            config = Config.Member.Reader
+                        )
+                        ParticipantPermissions.WRITER -> ShareSpaceMemberView(
+                            obj = obj,
+                            config = Config.Member.Writer
+                        )
+                        ParticipantPermissions.OWNER -> ShareSpaceMemberView(
+                            obj = obj,
+                            config = Config.Member.Owner
+                        )
+                        ParticipantPermissions.NO_PERMISSIONS -> ShareSpaceMemberView(
+                            obj = obj,
+                            config = Config.Member.NoPermissions
+                        )
+                        null -> ShareSpaceMemberView(
+                            obj = obj,
+                            config = Config.Member.Unknown
+                        )
+                    }
+                }
+                ParticipantStatus.JOINING -> ShareSpaceMemberView(
+                    obj = obj,
+                    config = Config.Request.Join
+                )
+                ParticipantStatus.REMOVING -> ShareSpaceMemberView(
+                    obj = obj,
+                    config = Config.Request.Unjoin
+                )
+                else -> null
+            }
+        }
+    }
+}

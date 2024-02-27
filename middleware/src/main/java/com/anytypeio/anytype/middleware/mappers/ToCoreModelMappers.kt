@@ -705,6 +705,7 @@ fun MObjectRestriction.toCoreModel(): ObjectRestriction = when (this) {
     MObjectRestriction.Template -> ObjectRestriction.TEMPLATE
     MObjectRestriction.None -> ObjectRestriction.NONE
     MObjectRestriction.Duplicate -> ObjectRestriction.DUPLICATE
+    MObjectRestriction.CreateObjectOfThisType -> ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE
 }
 
 fun MDVRestrictions.toCoreModel(): DataViewRestrictions {

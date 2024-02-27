@@ -49,7 +49,7 @@
     <string name="space">Espacio</string>
     <string name="space_name">Nombre del espacio</string>
     <string name="personal_space">Espacio personal</string>
-    <string name="space_settings_apply_random_gradient">Apply random gradient</string>
+    <string name="space_settings_apply_random_gradient">Aplicar degradado aleatorio</string>
     <string name="delete_space">Eliminar \'\' espacio</string>
     <string name="you_can_store">Puede almacenar hasta %1$s de sus archivos en nuestro nodo de copia de seguridad cifrado de forma gratuita. Si alcanza el límite, los archivos se almacenarán sólo localmente.</string>
     <string name="in_order_to_save">Para ahorrar espacio en tu dispositivo local, puedes subir todos tus archivos a nuestro nodo de copia de seguridad cifrada. Los archivos se cargarán de nuevo cuando los abras.</string>
@@ -171,7 +171,7 @@
     <string name="hint_upload_image">Subir una imagen</string>
     <string name="hint_upload_file">Subir un archivo</string>
     <string name="hint_upload_audio">Subir audio</string>
-    <string name="hint_add_a_web_bookmark">Add bookmark</string>
+    <string name="hint_add_a_web_bookmark">Añadir marcador</string>
     <string name="hint_bullet">Elemento de lista de viñetas</string>
     <string name="hint_numbered_list">Elemento de lista numerada</string>
     <string name="hint_toggle">Cambiar bloque</string>
@@ -299,7 +299,7 @@
     <string name="add_sort">Agregar clasificación </string>
     <string name="apply">Aplicar</string>
     <string name="add_filter">Añadir filtro</string>
-    <string name="relation_format_tag">Multiselect</string>
+    <string name="relation_format_tag">Selección múltiple</string>
     <string name="unknown_number_of_objects">Número de objetos desconocido</string>
     <string name="sort_from_first_to_last">Primer → Final</string>
     <string name="sort_from_last_to_first">Final → Primer</string>
@@ -382,7 +382,7 @@
     <string name="default_object_type_title">Tipo de objeto predeterminado</string>
     <string name="name_layout_basic">Básico</string>
     <string name="name_layout_profile">Perfil</string>
-    <string name="name_layout_participant">Participant</string>
+    <string name="name_layout_participant">Participante</string>
     <string name="name_layout_todo">Tarea</string>
     <string name="name_layout_set">Ajustar</string>
     <string name="name_layout_collection">Colección</string>
@@ -740,7 +740,7 @@
     <string name="anytype_analytics">Analíticas de Anytype</string>
     <string name="anytype_analytics_msg">Entender como la gente usa Anytype nos permite mejorar. Esta versión de Anytype incluye código para que las analíticas sean privadas. \n No se incluye ningún dato de ningún documento, pero igualmente nos ayuda a entender como la gente usa nuestro producto. \n Suscríbete a nuestra lista email para enterarte sobre las nuevas versiones con más opciones de privacidad.</string>
     <string name="retry">Reintentar</string>
-    <string name="try_again">Try again</string>
+    <string name="try_again">Inténtalo de nuevo</string>
     <string name="unsplash">Unsplash</string>
     <string name="cancel_deletion">Cancelar la eliminación</string>
     <string name="logout_and_clear_local_data">Cerrar sesión y eliminar datos en dispositivo</string>
@@ -1038,10 +1038,10 @@
     <string name="sharing_menu_save_as_section_name">Guardar como</string>
     <string name="sharing_menu_save_as_note_option">Nota</string>
     <string name="sharing_menu_save_as_bookmark_option">Marcador</string>
-    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_image_option">Imagen</string>
     <string name="sharing_menu_save_as_file_option">Archivo</string>
-    <string name="sharing_menu_save_as_images_option">Images</string>
-    <string name="sharing_menu_save_as_files_option">Files</string>
+    <string name="sharing_menu_save_as_images_option">Imágenes</string>
+    <string name="sharing_menu_save_as_files_option">Archivos</string>
     <string name="sharing_menu_data">Datos</string>
     <string name="sharing_menu_add_to_anytype_header_title">Añadir a Anytype</string>
     <string name="sharing_menu_toast_object_added">Nuevo objeto añadido al espacio \'%1$s\'</string>
@@ -1069,8 +1069,8 @@
     <string name="date_type_tomorrow">Mañana</string>
     <string name="date_type_today">Hoy</string>
     <string name="date_type_yesterday">Ayer</string>
-    <string name="date_type_previous_seven_days">Previous seven days</string>
-    <string name="date_type_previous_thirty_days">Previous thirty days</string>
+    <string name="date_type_previous_seven_days">Últimos 7 días</string>
+    <string name="date_type_previous_thirty_days">Últimos 30 días</string>
     <string name="date_type_older">Más antiguo</string>
     <string name="dates_days_ago">Hace %1$s días</string>
     <string name="dates_days_from">%1$s días desde ahora</string>

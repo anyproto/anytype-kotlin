@@ -663,6 +663,8 @@ message Restrictions {
         Template = 7;
         // restricts duplicate object
         Duplicate = 8;
+        // can be set only for types. Restricts creating objects of this type
+        CreateObjectOfThisType = 9;
     }
 
 
@@ -705,6 +707,7 @@ message ObjectType {
     bool installedByDefault = 11;
     string key = 12; // name of objectType (can be localized for bundled types)
     int64 revision = 13; // revision of system objectType. Used to check if we should change type content or not
+    bool restrictObjectCreation = 14; // restricts creating objects of this type for users
 
     enum Layout {
         basic = 0;

@@ -35,8 +35,11 @@ class GetSpaceViews @Inject constructor(
                 ),
                 DVFilter(
                     relation = Relations.SPACE_ACCOUNT_STATUS,
-                    value = SpaceStatus.SPACE_DELETED.code.toDouble(),
-                    condition = DVFilterCondition.NOT_EQUAL
+                    value = buildList {
+                        add(SpaceStatus.SPACE_DELETED.code.toDouble())
+                        add(SpaceStatus.SPACE_REMOVING.code.toDouble())
+                    },
+                    condition = DVFilterCondition.NOT_IN
                 ),
                 DVFilter(
                     relation = Relations.SPACE_LOCAL_STATUS,

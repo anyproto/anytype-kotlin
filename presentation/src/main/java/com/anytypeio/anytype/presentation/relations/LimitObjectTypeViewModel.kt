@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.EMPTY_QUERY
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -80,6 +81,11 @@ class LimitObjectTypeViewModel(
                             relation = Relations.IS_HIDDEN,
                             condition = DVFilterCondition.NOT_EQUAL,
                             value = true
+                        ),
+                        DVFilter(
+                            relation = Relations.RESTRICTIONS,
+                            condition = DVFilterCondition.NOT_IN,
+                            value = listOf(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE.code.toDouble())
                         )
                     ),
                     keys = listOf(

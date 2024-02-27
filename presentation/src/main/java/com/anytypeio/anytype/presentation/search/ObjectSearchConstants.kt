@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 /**
@@ -706,6 +707,11 @@ object ObjectSearchConstants {
                     DVFilter(
                         relation = Relations.UNIQUE_KEY,
                         condition = DVFilterCondition.NOT_EMPTY
+                    ),
+                    DVFilter(
+                        relation = Relations.RESTRICTIONS,
+                        condition = DVFilterCondition.NOT_IN,
+                        value = listOf(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE.code.toDouble())
                     )
                 )
             )

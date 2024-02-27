@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.GlobalScope
@@ -56,9 +57,19 @@ class ObjectTypesSubscriptionManager (
                     value = true
                 ),
                 DVFilter(
+                    relation = Relations.IS_HIDDEN,
+                    condition = DVFilterCondition.NOT_EQUAL,
+                    value = true
+                ),
+                DVFilter(
                     relation = Relations.UNIQUE_KEY,
                     condition = DVFilterCondition.NOT_EMPTY
                 ),
+                DVFilter(
+                    relation = Relations.RESTRICTIONS,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE.code.toDouble())
+                )
             ),
             limit = 0,
             offset = 0L,

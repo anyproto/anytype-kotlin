@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
-import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.NodeUsageInfo
@@ -24,6 +23,7 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
@@ -902,5 +902,24 @@ class BlockDataRepository(
 
     override suspend fun generateSpaceInviteLink(space: SpaceId): SpaceInviteLink {
         return remote.generateSpaceInviteLink(space)
+    }
+
+    override suspend fun approveSpaceRequest(
+        space: SpaceId,
+        identity: Id,
+        permissions: ParticipantPermissions
+    ) {
+        remote.approveSpaceRequest(
+            space = space,
+            identity = identity,
+            permissions = permissions
+        )
+    }
+
+    override suspend fun declineSpaceRequest(space: SpaceId, identity: Id) {
+        remote.declineSpaceRequest(
+            space = space,
+            identity = identity
+        )
     }
 }

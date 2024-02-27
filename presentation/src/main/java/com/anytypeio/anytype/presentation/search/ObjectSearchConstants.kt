@@ -1087,9 +1087,10 @@ object ObjectSearchConstants {
     val participantKeys = listOf(
         Relations.ID,
         Relations.SPACE_ID,
+        Relations.IDENTITY,
         Relations.NAME,
         Relations.ICON_IMAGE,
         Relations.PARTICIPANT_STATUS,
-        Relations.PARTICIPANT_PERMISSIONS
+        Relations.PARTICIPANT_PERMISSIONS,
     )
 }

@@ -22,6 +22,7 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
     import com.anytypeio.anytype.di.feature.multiplayer.ShareSpaceDependencies
+    import com.anytypeio.anytype.di.feature.multiplayer.SpaceJoinRequestDependencies
     import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
@@ -106,7 +107,9 @@ interface MainComponent :
     SpacesStorageDependencies,
     AppPreferencesDependencies,
     AddToAnytypeDependencies,
-    ShareSpaceDependencies {
+    ShareSpaceDependencies,
+    SpaceJoinRequestDependencies
+{
 
     fun inject(app: AndroidApplication)
 
@@ -286,4 +289,9 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(ShareSpaceDependencies::class)
     abstract fun provideShareSpaceDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SpaceJoinRequestDependencies::class)
+    abstract fun provideSpaceJoinRequestDependencies(component: MainComponent): ComponentDependencies
 }

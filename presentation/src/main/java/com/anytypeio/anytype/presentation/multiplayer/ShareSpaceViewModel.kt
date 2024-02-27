@@ -170,9 +170,3 @@ data class ShareSpaceMemberView(
         }
     }
 }
-
-data class SpaceJoinRequestView(
-    val memberName: String,
-    val spaceName: String,
-    val comment: String
-)

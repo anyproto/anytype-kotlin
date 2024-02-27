@@ -32,7 +32,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
-import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestView
+import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel.ViewState
 
 @Preview
 @Composable
@@ -41,17 +41,16 @@ fun SpaceJoinRequestScreenPreview() {
         onAddEditorClicked = {},
         onAddViewerClicked = {},
         onRejectClicked = {},
-        spaceJoinRequestView = SpaceJoinRequestView(
+        state = ViewState.Success(
             memberName = "Merk",
-            spaceName = "Investors",
-            comment = "Hi Zhanna. It’s Merk, you sent me the link. Have a great day."
+            spaceName = "Investors"
         )
     )
 }
 
 @Composable
 fun SpaceJoinRequestScreen(
-    spaceJoinRequestView: SpaceJoinRequestView,
+    state: ViewState.Success,
     onAddViewerClicked: () -> Unit,
     onAddEditorClicked: () -> Unit,
     onRejectClicked: () -> Unit,
@@ -81,8 +80,8 @@ fun SpaceJoinRequestScreen(
         Text(
             text = stringResource(
                 R.string.multiplayer_space_join_request_header,
-                spaceJoinRequestView.memberName,
-                spaceJoinRequestView.spaceName
+                state.memberName,
+                state.spaceName
             ),
             style = HeadlineHeading,
             textAlign = TextAlign.Center,
@@ -102,7 +101,7 @@ fun SpaceJoinRequestScreen(
                 )
         ) {
             Text(
-                text = spaceJoinRequestView.comment,
+                text = "",
                 style = BodyCalloutRegular,
                 color = colorResource(id = R.color.text_primary),
                 modifier = Modifier.padding(16.dp)

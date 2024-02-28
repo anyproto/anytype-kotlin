@@ -1116,6 +1116,8 @@
     <string name="network_settings_troubleshooting_section">Solução de Problemas</string>
     <string name="network_settings_provide_config_hint">Toque para fornecer sua configuração de rede</string>
     <string name="network_settings_self_host_config">Configuração atual: %1$s</string>
+    <string name="widget_types_show">Mostrar tipos</string>
+    <string name="widget_types_hide">Ocultar tipos</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Compartilhar link de convite</string>

@@ -1116,29 +1116,31 @@
     <string name="network_settings_troubleshooting_section">Résolution de problèmes</string>
     <string name="network_settings_provide_config_hint">Appuyez pour fournir votre configuration réseau</string>
     <string name="network_settings_self_host_config">Configuration actuelle : %1$s</string>
+    <string name="widget_types_show">Afficher les types</string>
+    <string name="widget_types_hide">Masquer les types</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Partager le lien d\'invitation</string>
     <string name="multiplayer_share_invite_link_description">Envoyez ce lien pour inviter d\'autres personnes. Attribuez les droits d\'accès lors de l\'approbation de leur demande.\"</string>
     <string name="multiplayer_invite_link">Lien d\'invitation</string>
     <string name="multiplayer_join_a_space">Rejoindre un espace</string>
-    <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
+    <string name="multiplayer_private_comment_for_a_space_owner">Commentaire privé pour un propriétaire d\'espace</string>
     <string name="mulitplayer_request_to_join_explanation">Une fois que le propriétaire de l\'espace a approuvé votre demande, vous rejoindrez l\'espace avec les droits d\'accès déterminés par le propriétaire.</string>
     <string name="multiplayer_space_request_to_join">Demander à rejoindre</string>
-    <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %2$s. Send a request so space owner can let you in.</string>
-    <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
+    <string name="multiplayer_space_request_to_join_msg">Vous avez été invité à rejoindre l\'espace %1$s créé par %2$s. Envoyez une demande afin que le propriétaire de l\'espace puisse vous laisser entrer.</string>
+    <string name="multiplayer_tap_to_write_request_to_join_comment">Tapotez pour écrire votre commentaire</string>
     <string name="multiplayer_share_space">Partager l\'espace</string>
     <string name="multiplayer_members_and_requests">Membres et demandes</string>
-    <string name="multiplayer_unjoining_requested">Unjoining requested</string>
-    <string name="multiplayer_joining_requested">Joining requested</string>
-    <string name="multiplayer_approve_request">Approve</string>
-    <string name="multiplayer_view_request">View request</string>
+    <string name="multiplayer_unjoining_requested">Désinscription demandée</string>
+    <string name="multiplayer_joining_requested">Inscription demandée</string>
+    <string name="multiplayer_approve_request">Approuver</string>
+    <string name="multiplayer_view_request">Afficher la demande</string>
     <string name="multiplayer_owner">Propriétaire</string>
     <string name="multiplayer_can_edit">Peut modifier</string>
-    <string name="multiplayer_can_read">Can read</string>
-    <string name="multiplayer_space_add_viewer">Add viewer</string>
-    <string name="multiplayer_space_add_editor">Add editor</string>
+    <string name="multiplayer_can_read">Peut lire</string>
+    <string name="multiplayer_space_add_viewer">Ajouter une visionneuse</string>
+    <string name="multiplayer_space_add_editor">Ajouter un éditeur</string>
     <string name="multiplayer_space_request_reject">Rejeter</string>
-    <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
+    <string name="multiplayer_space_join_request_header">%1$s a demandé à rejoindre l\'espace %2$s</string>
     <!--endregion-->
 </resources>

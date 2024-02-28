@@ -56,6 +56,7 @@ class TagOrStatusValueViewModel(
     init {
         viewModelScope.launch {
             val relation = relations.get(relation = viewModelParams.relationKey)
+            setupIsRelationNotEditable(relation)
             val spaces = listOf(spaceManager.get())
             val searchParams = StoreSearchParams(
                 subscription = SUB_MY_OPTIONS,
@@ -73,7 +74,6 @@ class TagOrStatusValueViewModel(
                 query.onStart { emit("") },
                 subscription.subscribe(searchParams)
             ) { record, query, options ->
-                setupIsRelationNotEditable(relation)
                 val ids = getRecordValues(record)
                 if (!isInitialSortDone) {
                     initialIds.clear()
@@ -85,13 +85,25 @@ class TagOrStatusValueViewModel(
                 }
                 initViewState(
                     relation = relation,
-                    options = options
-                        .map { ObjectWrapper.Option(map = it.map) }
-                        .filter { it.name?.contains(query, true) == true },
+                    options = filterOptions(query, options, ids),
                     query = query,
                     ids = ids
                 )
             }.collect()
+        }
+    }
+
+    private fun filterOptions(
+        query: String,
+        options: List<ObjectWrapper.Basic>,
+        ids: List<Id>
+    ): List<ObjectWrapper.Option> {
+        return if (isEditableRelation) {
+            options.map { ObjectWrapper.Option(map = it.map) }
+                .filter { it.name?.contains(query, true) == true }
+        } else {
+            options.map { ObjectWrapper.Option(map = it.map) }
+                .filter { ids.contains(it.id) }
         }
     }
 

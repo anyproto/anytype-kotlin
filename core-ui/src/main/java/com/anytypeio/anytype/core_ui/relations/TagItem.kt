@@ -33,7 +33,8 @@ import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAct
 fun TagItem(
     state: RelationsListItem.Item.Tag,
     action: (TagStatusAction) -> Unit,
-    isEditable: Boolean
+    isEditable: Boolean,
+    showDivider: Boolean = true
 ) {
     val haptics = LocalHapticFeedback.current
     val isMenuExpanded = remember { mutableStateOf(false) }
@@ -64,20 +65,23 @@ fun TagItem(
                 .size(24.dp)
                 .align(Alignment.CenterEnd)
         )
-        Divider(modifier = Modifier.align(Alignment.BottomCenter))
-        ItemMenu(
-            action = {
-                when (it) {
-                    ItemMenuAction.Delete -> action(TagStatusAction.Delete(state.optionId))
-                    ItemMenuAction.Duplicate -> action(TagStatusAction.Duplicate(state))
-                    ItemMenuAction.Edit -> action(TagStatusAction.Edit(state))
-                    ItemMenuAction.Open -> {}
-                }
-            },
-            isMenuExpanded = isMenuExpanded,
-            showEdit = true,
-            showDuplicate = true
-        )
+        if (showDivider) Divider(modifier = Modifier.align(Alignment.BottomCenter))
+        if (isEditable) {
+            ItemMenu(
+                action = {
+                    when (it) {
+                        ItemMenuAction.Delete -> action(TagStatusAction.Delete(state.optionId))
+                        ItemMenuAction.Duplicate -> action(TagStatusAction.Duplicate(state))
+                        ItemMenuAction.Edit -> action(TagStatusAction.Edit(state))
+                        ItemMenuAction.Open -> {}
+                    }
+                },
+                isMenuExpanded = isMenuExpanded,
+                showEdit = true,
+                showDuplicate = true,
+                showDelete = true
+            )
+        }
     }
 }
 

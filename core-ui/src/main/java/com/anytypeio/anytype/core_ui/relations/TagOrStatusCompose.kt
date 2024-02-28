@@ -204,10 +204,22 @@ fun RelationsViewContent(
     ) {
         itemsIndexed(
             items = state.items,
-            itemContent = { _, item ->
+            itemContent = { index, item ->
+                val isLastItem = index == state.items.size - 1
                 when (item) {
-                    is RelationsListItem.Item.Tag -> TagItem(item, action, state.isRelationEditable)
-                    is RelationsListItem.Item.Status -> StatusItem(item, action, state.isRelationEditable)
+                    is RelationsListItem.Item.Tag -> TagItem(
+                        state = item,
+                        action = action,
+                        isEditable = state.isRelationEditable,
+                        showDivider = !isLastItem
+                    )
+
+                    is RelationsListItem.Item.Status -> StatusItem(
+                        state = item,
+                        action = action,
+                        isEditable = state.isRelationEditable,
+                        showDivider = !isLastItem
+                    )
                     is RelationsListItem.CreateItem.Status -> ItemTagOrStatusCreate(item, action)
                     is RelationsListItem.CreateItem.Tag -> ItemTagOrStatusCreate(item, action)
                 }

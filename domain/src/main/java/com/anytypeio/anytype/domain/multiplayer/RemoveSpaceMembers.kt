@@ -7,13 +7,13 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 
-class RemoveMemberFromSpace @Inject constructor(
+class RemoveSpaceMembers @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-): ResultInteractor<RemoveMemberFromSpace.Params, Unit>(dispatchers.io) {
+): ResultInteractor<RemoveSpaceMembers.Params, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Params) {
-        repo.removeMembersFromSpace(
+        repo.removeSpaceMembers(
             space = params.space,
             identities = params.identities
         )

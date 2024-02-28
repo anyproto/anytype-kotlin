@@ -8,13 +8,13 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 
-class ChangeMemberPermissions @Inject constructor(
+class ChangeSpaceMemberPermissions @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
-) : ResultInteractor<ChangeMemberPermissions.Params, Unit>(dispatchers.io) {
+) : ResultInteractor<ChangeSpaceMemberPermissions.Params, Unit>(dispatchers.io) {
 
     override suspend fun doWork(params: Params) {
-        repo.changeMemberPermissions(
+        repo.changeSpaceMemberPermissions(
             space = params.space,
             identity = params.identity,
             permission = params.permission

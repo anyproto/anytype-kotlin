@@ -11,7 +11,9 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
@@ -24,6 +26,8 @@ import timber.log.Timber
 class ShareSpaceViewModel(
     private val params: Params,
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+    private val removeSpaceMembers: RemoveSpaceMembers,
+    private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
     private val container: StorelessSubscriptionContainer
 ) : BaseViewModel() {
 
@@ -111,12 +115,16 @@ class ShareSpaceViewModel(
     class Factory @Inject constructor(
         private val params: Params,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+        private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
+        private val removeSpaceMembers: RemoveSpaceMembers,
         private val container: StorelessSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
             params = params,
             generateSpaceInviteLink = generateSpaceInviteLink,
+            changeSpaceMemberPermissions = changeSpaceMemberPermissions,
+            removeSpaceMembers = removeSpaceMembers,
             container = container
         ) as T
     }

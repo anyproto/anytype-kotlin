@@ -2415,7 +2415,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun removeMembersFromSpace(
+    fun removeSpaceMembers(
         space: SpaceId,
         identities: List<Id>
     ) {
@@ -2429,7 +2429,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun changeMemberPermissions(space: SpaceId, identity: Id, permission: ParticipantPermissions) {
+    fun changeSpaceMemberPermissions(space: SpaceId, identity: Id, permission: ParticipantPermissions) {
         val request = Rpc.Space.ParticipantPermissionsChange.Request(
             spaceId = space.id,
             changes = listOf(

@@ -14,12 +14,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.SelectableDates
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,7 +46,7 @@ fun DatePickerContent(
     onClear: () -> Unit,
     onTodayClicked: () -> Unit,
     onTomorrowClicked: () -> Unit
-){
+) {
 
     val datePickerState = rememberDatePickerState(
         initialSelectedDateMillis = state.timeInMillis,
@@ -79,28 +77,42 @@ fun DatePickerContent(
             )
     ) {
         Header(state = state, onClear = onClear)
+
+        val todayContentColor = if (state.isEditable) {
+            colorResource(id = R.color.glyph_accent)
+        } else {
+            colorResource(id = R.color.glyph_inactive)
+        }
+
+        val navigationContentColor = if (state.isEditable) {
+            colorResource(id = R.color.glyph_accent)
+        } else {
+            colorResource(id = R.color.glyph_inactive)
+        }
+
         val datePickerColors = DatePickerDefaults.colors(
-            todayContentColor = colorResource(id = R.color.glyph_accent),
+            dayContentColor = colorResource(id = R.color.text_primary),
+            weekdayContentColor = colorResource(id = R.color.text_tertiary),
+            todayContentColor = todayContentColor,
             todayDateBorderColor = Color.Transparent,
             selectedDayContainerColor = colorResource(id = R.color.palette_very_light_orange),
             selectedDayContentColor = colorResource(id = R.color.glyph_accent),
-            disabledDayContentColor = colorResource(id = R.color.glyph_inactive),
+            disabledDayContentColor = colorResource(id = R.color.text_primary),
             disabledSelectedDayContentColor = colorResource(id = R.color.glyph_inactive),
-            disabledSelectedDayContainerColor = colorResource(id = R.color.date_selected_inactive_color)
+            disabledSelectedDayContainerColor = colorResource(id = R.color.date_selected_inactive_color),
+            navigationContentColor = navigationContentColor
         )
         //https://issuetracker.google.com/issues/281859606
-        CompositionLocalProvider(LocalContentColor provides colorResource(id = R.color.glyph_accent)) {
-            DatePicker(
-                state = datePickerState,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                title = null,
-                headline = null,
-                showModeToggle = false,
-                colors = datePickerColors,
-            )
-        }
+        DatePicker(
+            state = datePickerState,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            title = null,
+            headline = null,
+            showModeToggle = false,
+            colors = datePickerColors,
+        )
         if (state.isEditable) {
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
             Text(

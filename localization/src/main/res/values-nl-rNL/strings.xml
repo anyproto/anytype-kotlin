@@ -1116,6 +1116,8 @@
     <string name="network_settings_troubleshooting_section">Troubleshooting</string>
     <string name="network_settings_provide_config_hint">Tik om je netwerkinstellingen aan te geven</string>
     <string name="network_settings_self_host_config">Huidige instellingen: %1$s</string>
+    <string name="widget_types_show">Toon types</string>
+    <string name="widget_types_hide">Verberg types</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Deel uitnodigingslink</string>

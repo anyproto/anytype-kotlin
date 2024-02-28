@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
@@ -36,7 +37,7 @@ class ShareSpaceViewModel(
         viewModelScope.launch {
             container.subscribe(
                 StoreSearchParams(
-                    subscription = this::class.java.toGenericString(),
+                    subscription = SHARE_SPACE_SUBSCRIPTION,
                     filters = ObjectSearchConstants.filterParticipants(
                         spaces = listOf(params.space.id)
                     ),
@@ -85,6 +86,28 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onViewRequestClicked(view: ShareSpaceMemberView) {
+        viewModelScope.launch {
+            commands.emit(
+                Command.ViewJoinRequest(
+                    space = params.space,
+                    member = view.obj.id
+                )
+            )
+        }
+    }
+
+    fun onApproveUnjoinRequestClicked(view: ShareSpaceMemberView) {
+
+    }
+
+    override fun onCleared() {
+        viewModelScope.launch {
+            container.unsubscribe(subscriptions = listOf(SHARE_SPACE_SUBSCRIPTION))
+        }
+        super.onCleared()
+    }
+
     class Factory @Inject constructor(
         private val params: Params,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
@@ -109,6 +132,11 @@ class ShareSpaceViewModel(
 
     sealed class Command {
         data class ShareInviteLink(val link: String) : Command()
+        data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
+    }
+
+    companion object {
+        const val SHARE_SPACE_SUBSCRIPTION = "share-space-subscription"
     }
 }
 
@@ -170,9 +198,3 @@ data class ShareSpaceMemberView(
         }
     }
 }
-
-data class SpaceJoinRequestView(
-    val memberName: String,
-    val spaceName: String,
-    val comment: String
-)

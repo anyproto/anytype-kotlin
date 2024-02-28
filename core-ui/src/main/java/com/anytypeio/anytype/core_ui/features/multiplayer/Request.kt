@@ -32,7 +32,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
-import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestView
+import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel.ViewState
 
 @Preview
 @Composable
@@ -41,17 +41,16 @@ fun SpaceJoinRequestScreenPreview() {
         onAddEditorClicked = {},
         onAddViewerClicked = {},
         onRejectClicked = {},
-        spaceJoinRequestView = SpaceJoinRequestView(
+        state = ViewState.Success(
             memberName = "Merk",
-            spaceName = "Investors",
-            comment = "Hi Zhanna. It’s Merk, you sent me the link. Have a great day."
+            spaceName = "Investors"
         )
     )
 }
 
 @Composable
 fun SpaceJoinRequestScreen(
-    spaceJoinRequestView: SpaceJoinRequestView,
+    state: ViewState.Success,
     onAddViewerClicked: () -> Unit,
     onAddEditorClicked: () -> Unit,
     onRejectClicked: () -> Unit,
@@ -81,8 +80,8 @@ fun SpaceJoinRequestScreen(
         Text(
             text = stringResource(
                 R.string.multiplayer_space_join_request_header,
-                spaceJoinRequestView.memberName,
-                spaceJoinRequestView.spaceName
+                state.memberName,
+                state.spaceName
             ),
             style = HeadlineHeading,
             textAlign = TextAlign.Center,
@@ -91,36 +90,7 @@ fun SpaceJoinRequestScreen(
             ),
             color = colorResource(id = R.color.text_primary)
         )
-        Spacer(modifier = Modifier.height(12.dp))
-        Box(
-            modifier = Modifier
-                .height(IntrinsicSize.Min)
-                .padding(start = 20.dp, end = 20.dp)
-                .background(
-                    color = colorResource(id = R.color.shape_tertiary),
-                    shape = RoundedCornerShape(4.dp)
-                )
-        ) {
-            Text(
-                text = spaceJoinRequestView.comment,
-                style = BodyCalloutRegular,
-                color = colorResource(id = R.color.text_primary),
-                modifier = Modifier.padding(16.dp)
-            )
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(4.dp)
-                    .background(
-                        color = colorResource(id = R.color.glyph_active),
-                        shape = RoundedCornerShape(
-                            topStart = 4.dp,
-                            bottomStart = 4.dp
-                        )
-                    )
-            )
-        }
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(20.dp))
         ButtonSecondary(
             text = stringResource(R.string.multiplayer_space_add_viewer),
             onClick = throttledClick(
@@ -154,5 +124,37 @@ fun SpaceJoinRequestScreen(
                 .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@Composable
+private fun CommentView() {
+    Box(
+        modifier = Modifier
+            .height(IntrinsicSize.Min)
+            .padding(start = 20.dp, end = 20.dp)
+            .background(
+                color = colorResource(id = R.color.shape_tertiary),
+                shape = RoundedCornerShape(4.dp)
+            )
+    ) {
+        Text(
+            text = "",
+            style = BodyCalloutRegular,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier.padding(16.dp)
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(4.dp)
+                .background(
+                    color = colorResource(id = R.color.glyph_active),
+                    shape = RoundedCornerShape(
+                        topStart = 4.dp,
+                        bottomStart = 4.dp
+                    )
+                )
+        )
     }
 }

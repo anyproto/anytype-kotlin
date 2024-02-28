@@ -63,6 +63,7 @@ import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerShareSpaceComponent
+import com.anytypeio.anytype.di.feature.multiplayer.DaggerSpaceJoinRequestComponent
 import com.anytypeio.anytype.di.feature.objects.DaggerSelectObjectTypeComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingComponent
 import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponent
@@ -104,6 +105,7 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
+import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.attachment.AttachmentValueViewModel
@@ -1044,6 +1046,14 @@ class ComponentManager(
             .builder()
             .withDependencies(findComponentDependencies())
             .withParams(params = ShareSpaceViewModel.Params(space))
+            .build()
+    }
+
+    val spaceJoinRequestComponent = ComponentWithParams { params: SpaceJoinRequestViewModel.Params ->
+        DaggerSpaceJoinRequestComponent
+            .builder()
+            .withDependencies(findComponentDependencies())
+            .withParams(params = params)
             .build()
     }
 

@@ -54,7 +54,8 @@ fun ShareSpaceScreen(
     viewState: ShareSpaceViewModel.ViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
-    onRequestAction: (ShareSpaceMemberView.Config.Request) -> Unit
+    onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
+    onApproveUnjoinRequestClicked: (ShareSpaceMemberView) -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -98,7 +99,12 @@ fun ShareSpaceScreen(
                             SpaceMemberRequest(
                                 member = member.obj,
                                 request = config,
-                                onRequestAction = onRequestAction
+                                onViewRequestClicked = {
+                                    onViewRequestClicked(member)
+                                },
+                                onApproveUnjoinRequestClicked = {
+                                    onApproveUnjoinRequestClicked(member)
+                                }
                             )
                         }
                     }
@@ -186,7 +192,8 @@ private fun SpaceMember(
 private fun SpaceMemberRequest(
     member: ObjectWrapper.Participant,
     request: ShareSpaceMemberView.Config.Request,
-    onRequestAction: (ShareSpaceMemberView.Config.Request) -> Unit
+    onViewRequestClicked: () -> Unit,
+    onApproveUnjoinRequestClicked: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -245,7 +252,7 @@ private fun SpaceMemberRequest(
                 ButtonSecondary(
                     text = stringResource(R.string.multiplayer_view_request),
                     onClick = throttledClick(
-                        onClick = { onRequestAction(request) }
+                        onClick = { onViewRequestClicked() }
                     ),
                     size = ButtonSize.Small,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -255,7 +262,7 @@ private fun SpaceMemberRequest(
                 ButtonSecondary(
                     text = stringResource(R.string.multiplayer_approve_request),
                     onClick = throttledClick(
-                        onClick = { onRequestAction(request) }
+                        onClick = { onApproveUnjoinRequestClicked() }
                     ),
                     size = ButtonSize.Small,
                     modifier = Modifier.align(Alignment.CenterVertically)
@@ -278,7 +285,8 @@ fun SpaceJoinRequestPreview() {
             )
         ),
         request = ShareSpaceMemberView.Config.Request.Join,
-        onRequestAction = {},
+        onApproveUnjoinRequestClicked = {},
+        onViewRequestClicked = {}
     )
 }
 
@@ -294,7 +302,8 @@ fun SpaceUnjoinRequestPreview() {
             )
         ),
         request = ShareSpaceMemberView.Config.Request.Unjoin,
-        onRequestAction = {},
+        onApproveUnjoinRequestClicked = {},
+        onViewRequestClicked = {}
     )
 }
 
@@ -307,7 +316,6 @@ fun ShareSpaceScreenPreview() {
         ),
         onShareInviteLinkClicked = {},
         onRegenerateInviteLinkClicked = {},
-        onRequestAction = {},
         members = buildList {
             add(
                 ShareSpaceMemberView(
@@ -352,7 +360,9 @@ fun ShareSpaceScreenPreview() {
                     config = ShareSpaceMemberView.Config.Request.Join
                 )
             )
-        }
+        },
+        onApproveUnjoinRequestClicked = {},
+        onViewRequestClicked = {}
     )
 }
 

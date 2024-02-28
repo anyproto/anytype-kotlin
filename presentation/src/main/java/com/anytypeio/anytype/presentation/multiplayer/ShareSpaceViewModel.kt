@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.multiplayer
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
@@ -85,6 +86,14 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onViewRequestClicked(view: ShareSpaceMemberView) {
+
+    }
+
+    fun onApproveUnjoinRequestClicked(view: ShareSpaceMemberView) {
+
+    }
+
     class Factory @Inject constructor(
         private val params: Params,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
@@ -109,6 +118,7 @@ class ShareSpaceViewModel(
 
     sealed class Command {
         data class ShareInviteLink(val link: String) : Command()
+        data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
     }
 }
 

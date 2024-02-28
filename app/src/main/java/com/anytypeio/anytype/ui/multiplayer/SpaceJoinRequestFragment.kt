@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Id
@@ -79,8 +80,9 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
         fun args(
             space: SpaceId,
             member: Id
-        ) {
-
-        }
+        ): Bundle = bundleOf(
+            SPACE_ID_KEY to space.id,
+            MEMBER_ID_KEY to member
+        )
     }
 }

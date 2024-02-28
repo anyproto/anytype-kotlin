@@ -538,4 +538,8 @@
         android:id="@+id/shareSpaceScreen"
         android:name="com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment"/>
 
+    <dialog
+        android:id="@+id/spaceJoinRequestScreen"
+        android:name="com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment"/>
+
 </navigation>

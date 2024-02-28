@@ -12,10 +12,11 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.fragment.findNavController
+import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceScreen
 import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
@@ -45,9 +46,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onRegenerateInviteLinkClicked = vm::onRegenerateInviteLinkClicked,
                         onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
                         members = vm.members.collectAsStateWithLifecycle().value,
-                        onRequestAction = {
-                            toast("TODO")
-                        }
+                        onViewRequestClicked = vm::onViewRequestClicked,
+                        onApproveUnjoinRequestClicked = vm::onApproveUnjoinRequestClicked
                     )
                     LaunchedEffect(Unit) {
                         vm.commands.collect { command ->
@@ -74,6 +74,15 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     type = "text/plain"
                 }
                 startActivity(Intent.createChooser(intent, null))
+            }
+            is ShareSpaceViewModel.Command.ViewJoinRequest -> {
+                findNavController().navigate(
+                    resId = R.id.spaceJoinRequestScreen,
+                    args = SpaceJoinRequestFragment.args(
+                        space = command.space,
+                        member = command.member
+                    )
+                )
             }
         }
     }

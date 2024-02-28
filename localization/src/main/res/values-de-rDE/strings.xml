@@ -1116,6 +1116,8 @@
     <string name="network_settings_troubleshooting_section">Fehlerbehebung</string>
     <string name="network_settings_provide_config_hint">Tap to provide your network config</string>
     <string name="network_settings_self_host_config">Aktuelle Konfiguration: %1$s</string>
+    <string name="widget_types_show">Typen anzeigen</string>
+    <string name="widget_types_hide">Typen ausblenden</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Einladungslink teilen</string>

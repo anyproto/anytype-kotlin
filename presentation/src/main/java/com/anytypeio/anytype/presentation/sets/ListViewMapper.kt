@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sets
 
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
@@ -24,38 +23,6 @@ suspend fun DVViewer.buildListViews(
         val obj = store.get(id)
         if (obj != null) {
             when (obj.layout) {
-                ObjectType.Layout.BASIC,
-                ObjectType.Layout.SET,
-                ObjectType.Layout.COLLECTION,
-                ObjectType.Layout.OBJECT_TYPE,
-                ObjectType.Layout.RELATION,
-                ObjectType.Layout.FILE,
-                ObjectType.Layout.IMAGE,
-                ObjectType.Layout.NOTE,
-                ObjectType.Layout.BOOKMARK -> {
-                    val description = if (relations.any { it.key == Relations.DESCRIPTION }) {
-                        obj.description
-                    } else {
-                        null
-                    }
-                    Viewer.ListView.Item.Default(
-                        objectId = obj.id,
-                        relations = obj.relationsFilteredByHiddenAndDescription(
-                            relations = relations,
-                            urlBuilder = urlBuilder,
-                            settings = viewerRelations,
-                            storeOfObjects = store
-                        ),
-                        name = obj.getProperName(),
-                        icon = ObjectIcon.from(
-                            obj = obj,
-                            layout = obj.layout,
-                            builder = urlBuilder
-                        ),
-                        description = description,
-                        hideIcon = hideIcon
-                    )
-                }
                 ObjectType.Layout.PROFILE -> {
                     val description = if (relations.any { it.key == Relations.DESCRIPTION }) {
                         obj.description
@@ -99,7 +66,30 @@ suspend fun DVViewer.buildListViews(
                         description = description
                     )
                 }
-                else -> null
+                else -> {
+                    val description = if (relations.any { it.key == Relations.DESCRIPTION }) {
+                        obj.description
+                    } else {
+                        null
+                    }
+                    Viewer.ListView.Item.Default(
+                        objectId = obj.id,
+                        relations = obj.relationsFilteredByHiddenAndDescription(
+                            relations = relations,
+                            urlBuilder = urlBuilder,
+                            settings = viewerRelations,
+                            storeOfObjects = store
+                        ),
+                        name = obj.getProperName(),
+                        icon = ObjectIcon.from(
+                            obj = obj,
+                            layout = obj.layout,
+                            builder = urlBuilder
+                        ),
+                        description = description,
+                        hideIcon = hideIcon
+                    )
+                }
             }
         } else {
             null

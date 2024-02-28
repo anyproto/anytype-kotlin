@@ -17,6 +17,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceScreen
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
@@ -49,11 +50,14 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onViewRequestClicked = vm::onViewRequestClicked,
                         onApproveUnjoinRequestClicked = vm::onApproveUnjoinRequestClicked
                     )
-                    LaunchedEffect(Unit) {
-                        vm.commands.collect { command ->
-                            proceedWithCommand(command)
-                        }
+                }
+                LaunchedEffect(Unit) {
+                    vm.commands.collect { command ->
+                        proceedWithCommand(command)
                     }
+                }
+                LaunchedEffect(Unit) {
+                    vm.toasts.collect { toast(it) }
                 }
             }
         }

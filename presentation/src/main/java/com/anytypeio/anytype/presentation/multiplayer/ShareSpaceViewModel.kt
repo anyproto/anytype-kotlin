@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
-import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -37,7 +35,7 @@ class ShareSpaceViewModel(
         viewModelScope.launch {
             container.subscribe(
                 StoreSearchParams(
-                    subscription = this::class.java.toGenericString(),
+                    subscription = SHARE_SPACE_SUBSCRIPTION,
                     filters = ObjectSearchConstants.filterParticipants(
                         spaces = listOf(params.space.id)
                     ),
@@ -87,11 +85,25 @@ class ShareSpaceViewModel(
     }
 
     fun onViewRequestClicked(view: ShareSpaceMemberView) {
-
+        viewModelScope.launch {
+            commands.emit(
+                Command.ViewJoinRequest(
+                    space = params.space,
+                    member = view.obj.id
+                )
+            )
+        }
     }
 
     fun onApproveUnjoinRequestClicked(view: ShareSpaceMemberView) {
 
+    }
+
+    override fun onCleared() {
+        viewModelScope.launch {
+            container.unsubscribe(subscriptions = listOf(SHARE_SPACE_SUBSCRIPTION))
+        }
+        super.onCleared()
     }
 
     class Factory @Inject constructor(
@@ -120,6 +132,10 @@ class ShareSpaceViewModel(
         data class ShareInviteLink(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
     }
+
+    companion object {
+        const val SHARE_SPACE_SUBSCRIPTION = "share-space-subscription"
+    }
 }
 
 data class ShareSpaceMemberView(
@@ -142,41 +158,45 @@ data class ShareSpaceMemberView(
 
     companion object {
         fun fromObject(obj: ObjectWrapper.Participant) : ShareSpaceMemberView? {
-            return when(obj.status) {
-                ParticipantStatus.ACTIVE -> {
-                    when(obj.permissions) {
-                        ParticipantPermissions.READER -> ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Member.Reader
-                        )
-                        ParticipantPermissions.WRITER -> ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Member.Writer
-                        )
-                        ParticipantPermissions.OWNER -> ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Member.Owner
-                        )
-                        ParticipantPermissions.NO_PERMISSIONS -> ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Member.NoPermissions
-                        )
-                        null -> ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Member.Unknown
-                        )
-                    }
-                }
-                ParticipantStatus.JOINING -> ShareSpaceMemberView(
-                    obj = obj,
-                    config = Config.Request.Join
-                )
-                ParticipantStatus.REMOVING -> ShareSpaceMemberView(
-                    obj = obj,
-                    config = Config.Request.Unjoin
-                )
-                else -> null
-            }
+            return ShareSpaceMemberView(
+                obj = obj,
+                config = Config.Request.Join
+            )
+//            return when(obj.status) {
+//                ParticipantStatus.ACTIVE -> {
+//                    when(obj.permissions) {
+//                        ParticipantPermissions.READER -> ShareSpaceMemberView(
+//                            obj = obj,
+//                            config = Config.Member.Reader
+//                        )
+//                        ParticipantPermissions.WRITER -> ShareSpaceMemberView(
+//                            obj = obj,
+//                            config = Config.Member.Writer
+//                        )
+//                        ParticipantPermissions.OWNER -> ShareSpaceMemberView(
+//                            obj = obj,
+//                            config = Config.Member.Owner
+//                        )
+//                        ParticipantPermissions.NO_PERMISSIONS -> ShareSpaceMemberView(
+//                            obj = obj,
+//                            config = Config.Member.NoPermissions
+//                        )
+//                        null -> ShareSpaceMemberView(
+//                            obj = obj,
+//                            config = Config.Member.Unknown
+//                        )
+//                    }
+//                }
+//                ParticipantStatus.JOINING -> ShareSpaceMemberView(
+//                    obj = obj,
+//                    config = Config.Request.Join
+//                )
+//                ParticipantStatus.REMOVING -> ShareSpaceMemberView(
+//                    obj = obj,
+//                    config = Config.Request.Unjoin
+//                )
+//                else -> null
+//            }
         }
     }
 }

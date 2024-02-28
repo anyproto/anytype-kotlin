@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.multiplayer.ApproveJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.DeclineSpaceJoinRequest
@@ -77,8 +78,10 @@ class SpaceJoinRequestViewModel(
                         )
                     )
                 ).process(
-                    failure = {
-                        Timber.e(it, "Error while fetching space data and member data")
+                    failure = { e ->
+                        Timber.e(e, "Error while fetching space data and member data").also {
+                            sendToast(e.msg())
+                        }
                     },
                     success = { wrappers ->
                         val spaceView = wrappers.firstOrNull { it.id == config.spaceView }
@@ -131,8 +134,10 @@ class SpaceJoinRequestViewModel(
                         onSuccess = {
                             isDismissed.value = true
                         },
-                        onFailure = {
-                            Timber.e(it, "Error while approving join-space request")
+                        onFailure = { e ->
+                            Timber.e(e, "Error while approving join-space request").also {
+                                sendToast(e.msg())
+                            }
                         }
                     )
                 }
@@ -160,8 +165,10 @@ class SpaceJoinRequestViewModel(
                         onSuccess = {
                             isDismissed.value = true
                         },
-                        onFailure = {
-                            Timber.e(it, "Error while approving join-space request")
+                        onFailure = { e ->
+                            Timber.e(e, "Error while approving join-space request").also {
+                                sendToast(e.msg())
+                            }
                         }
                     )
                 }
@@ -189,8 +196,10 @@ class SpaceJoinRequestViewModel(
                         onSuccess = {
                             isDismissed.value = true
                         },
-                        onFailure = {
-                            Timber.e(it, "Error while approving join-space request")
+                        onFailure = { e ->
+                            Timber.e(e, "Error while approving join-space request").also {
+                                sendToast(e.msg())
+                            }
                         }
                     )
                 }

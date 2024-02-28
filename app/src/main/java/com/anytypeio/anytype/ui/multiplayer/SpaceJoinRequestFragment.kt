@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
@@ -14,6 +15,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.SpaceJoinRequestScreen
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
@@ -54,6 +56,9 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
                                 onRejectClicked = vm::onRejectRequestClicked
                             )
                         }
+                    }
+                    LaunchedEffect(Unit) {
+                        vm.toasts.collect { toast(it) }
                     }
                 }
             }

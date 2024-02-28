@@ -1112,6 +1112,8 @@
     <string name="network_settings_troubleshooting_section">Penyelesaian Masalah</string>
     <string name="network_settings_provide_config_hint">Tekan untuk memasukkan konfigurasi jaringanmu</string>
     <string name="network_settings_self_host_config">Konfigurasi saat ini: %1$s</string>
+    <string name="widget_types_show">Tampilkan tipe</string>
+    <string name="widget_types_hide">Sembunyikan tipe</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Bagikan tautan undangan</string>
@@ -1121,7 +1123,7 @@
     <string name="multiplayer_private_comment_for_a_space_owner">Tinggalkan komentar untuk pemilik ruang</string>
     <string name="mulitplayer_request_to_join_explanation">Ketika pemilik ruang menyetujui permintaanmu, kamu akan bergabung ke ruang ini dengan hak akses yang telah ditentukan.</string>
     <string name="multiplayer_space_request_to_join">Permintaan bergabung</string>
-    <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %1$s. Send a request so space owner can let you in.</string>
+    <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %2$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Ketuk untuk menulis komentar</string>
     <string name="multiplayer_share_space">Bagikan ruang</string>
     <string name="multiplayer_members_and_requests">Members and requests</string>
@@ -1132,5 +1134,9 @@
     <string name="multiplayer_owner">Owner</string>
     <string name="multiplayer_can_edit">Can edit</string>
     <string name="multiplayer_can_read">Can read</string>
+    <string name="multiplayer_space_add_viewer">Add viewer</string>
+    <string name="multiplayer_space_add_editor">Add editor</string>
+    <string name="multiplayer_space_request_reject">Tolak</string>
+    <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <!--endregion-->
 </resources>

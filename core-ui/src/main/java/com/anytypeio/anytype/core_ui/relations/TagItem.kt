@@ -58,13 +58,15 @@ fun TagItem(
         ) {
             TagItemText(state = state)
         }
-        CircleIcon(
-            number = if (state.isSelected) state.number.toString() else null,
-            isSelected = state.isSelected,
-            modifier = Modifier
-                .size(24.dp)
-                .align(Alignment.CenterEnd)
-        )
+        if (isEditable) {
+            CircleIcon(
+                number = if (state.isSelected) state.number.toString() else null,
+                isSelected = state.isSelected,
+                modifier = Modifier
+                    .size(24.dp)
+                    .align(Alignment.CenterEnd)
+            )
+        }
         if (showDivider) Divider(modifier = Modifier.align(Alignment.BottomCenter))
         if (isEditable) {
             ItemMenu(

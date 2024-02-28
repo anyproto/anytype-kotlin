@@ -21,7 +21,9 @@ class RelationObjectItem @JvmOverloads constructor(
 
     fun setup(name: String, icon: ObjectIcon) = with(binding) {
         tvName.visible()
-        tvName.text = name
+        tvName.text = name.ifBlank {
+            context.resources.getString(R.string.untitled)
+        }
         when (icon) {
             ObjectIcon.None -> objectIcon.gone()
             else -> {

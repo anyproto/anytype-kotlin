@@ -2,6 +2,7 @@ package com.anytypeio.anytype.middleware.interactor
 
 import anytype.Rpc
 import anytype.model.Block
+import anytype.model.ParticipantPermissionChange
 import anytype.model.Range
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
@@ -2410,6 +2411,36 @@ class Middleware @Inject constructor(
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.spaceRequestDecline(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun removeMembersFromSpace(
+        space: SpaceId,
+        identities: List<Id>
+    ) {
+        val request = Rpc.Space.ParticipantRemove.Request(
+            spaceId = space.id,
+            identities = identities
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceParticipantRemove(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun changeMemberPermissions(space: SpaceId, identity: Id, permission: ParticipantPermissions) {
+        val request = Rpc.Space.ParticipantPermissionsChange.Request(
+            spaceId = space.id,
+            changes = listOf(
+                ParticipantPermissionChange(
+                    identity = identity,
+                    perms = permission.toMw()
+                )
+            )
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceParticipantPermissionsChange(request)
         if (BuildConfig.DEBUG) logResponse(response)
     }
 

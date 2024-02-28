@@ -1112,6 +1112,8 @@
     <string name="network_settings_troubleshooting_section">Troubleshooting</string>
     <string name="network_settings_provide_config_hint">点击提供您的网络配置</string>
     <string name="network_settings_self_host_config">当前配置：%1$s</string>
+    <string name="widget_types_show">显示类型</string>
+    <string name="widget_types_hide">隐藏类型</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">分享邀请链接</string>

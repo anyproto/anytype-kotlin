@@ -1112,6 +1112,8 @@
     <string name="network_settings_troubleshooting_section">Penyelesaian Masalah</string>
     <string name="network_settings_provide_config_hint">Tekan untuk memasukkan konfigurasi jaringanmu</string>
     <string name="network_settings_self_host_config">Konfigurasi saat ini: %1$s</string>
+    <string name="widget_types_show">Tampilkan tipe</string>
+    <string name="widget_types_hide">Sembunyikan tipe</string>
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Bagikan tautan undangan</string>

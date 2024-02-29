@@ -970,7 +970,7 @@
     <string name="onboarding_terms_and_policy_terms">Nutzungsbedingungen</string>
     <string name="onboarding_terms_and_policy_infix">" und "</string>
     <string name="onboarding_terms_and_policy_privacy">Datenschutzrichtlinie</string>
-    <string name="onboarding_join_button_text">Join</string>
+    <string name="onboarding_join_button_text">Beitreten</string>
     <string name="onboarding_log_in_button_text">Anmelden</string>
     <string name="onboarding_invite_code_title">Gib deinen Einladungscode ein</string>
     <string name="onboarding_invite_code_description">Wenn du noch keinen hast, gehe einfach zu anytype.io\nund lass dich auf die Warteliste setzen.</string>
@@ -1133,13 +1133,13 @@
     <string name="multiplayer_members_and_requests">Mitglieder und Anfragen</string>
     <string name="multiplayer_unjoining_requested">Unjoining requested</string>
     <string name="multiplayer_joining_requested">Joining requested</string>
-    <string name="multiplayer_approve_request">Approve</string>
-    <string name="multiplayer_view_request">View request</string>
+    <string name="multiplayer_approve_request">Genehmigen</string>
+    <string name="multiplayer_view_request">Anfrage ansehen</string>
     <string name="multiplayer_owner">Eigentümer</string>
     <string name="multiplayer_can_edit">Darf bearbeiten</string>
     <string name="multiplayer_can_read">Can read</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
-    <string name="multiplayer_space_add_editor">Add editor</string>
+    <string name="multiplayer_space_add_editor">Editor hinzufügen</string>
     <string name="multiplayer_space_request_reject">Ablehnen</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>

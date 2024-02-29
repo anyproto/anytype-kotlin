@@ -884,4 +884,23 @@ class BlockMiddleware(
             identity = identity
         )
     }
+
+    override suspend fun removeSpaceMembers(space: SpaceId, identities: List<Id>) {
+        middleware.removeSpaceMembers(
+            space = space,
+            identities = identities
+        )
+    }
+
+    override suspend fun changeSpaceMemberPermissions(
+        space: SpaceId,
+        identity: Id,
+        permission: ParticipantPermissions
+    ) {
+        middleware.changeSpaceMemberPermissions(
+            space = space,
+            identity = identity,
+            permission = permission
+        )
+    }
 }

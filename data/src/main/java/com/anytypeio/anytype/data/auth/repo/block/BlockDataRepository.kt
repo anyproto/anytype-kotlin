@@ -922,4 +922,23 @@ class BlockDataRepository(
             identity = identity
         )
     }
+
+    override suspend fun removeSpaceMembers(space: SpaceId, identities: List<Id>) {
+        remote.removeSpaceMembers(
+            space = space,
+            identities = identities
+        )
+    }
+
+    override suspend fun changeSpaceMemberPermissions(
+        space: SpaceId,
+        identity: Id,
+        permission: ParticipantPermissions
+    ) {
+        remote.changeSpaceMemberPermissions(
+            space = space,
+            identity = identity,
+            permission = permission
+        )
+    }
 }

@@ -8,10 +8,13 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
@@ -24,6 +27,8 @@ import timber.log.Timber
 class ShareSpaceViewModel(
     private val params: Params,
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+    private val removeSpaceMembers: RemoveSpaceMembers,
+    private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
     private val container: StorelessSubscriptionContainer
 ) : BaseViewModel() {
 
@@ -98,7 +103,70 @@ class ShareSpaceViewModel(
     }
 
     fun onApproveUnjoinRequestClicked(view: ShareSpaceMemberView) {
+        // TODO
+    }
 
+    fun onCanEditClicked(
+        view: ShareSpaceMemberView
+    ) {
+        viewModelScope.launch {
+            if (view.config != ShareSpaceMemberView.Config.Member.Reader) {
+                changeSpaceMemberPermissions.async(
+                    ChangeSpaceMemberPermissions.Params(
+                        space = params.space,
+                        identity = view.obj.identity,
+                        permission = ParticipantPermissions.WRITER
+                    )
+                ).fold(
+                    onFailure = { e ->
+                        Timber.e(e, "Error while changing member permissions").also {
+                            sendToast(e.msg())
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    fun onCanReadClicked(
+        view: ShareSpaceMemberView
+    ) {
+        viewModelScope.launch {
+            if (view.config != ShareSpaceMemberView.Config.Member.Reader) {
+                changeSpaceMemberPermissions.async(
+                    ChangeSpaceMemberPermissions.Params(
+                        space = params.space,
+                        identity = view.obj.identity,
+                        permission = ParticipantPermissions.READER
+                    )
+                ).fold(
+                    onFailure = { e ->
+                        Timber.e(e, "Error while changing member permissions").also {
+                            sendToast(e.msg())
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    fun onRemoveMemberClicked(
+        view: ShareSpaceMemberView
+    ) {
+        viewModelScope.launch {
+            removeSpaceMembers.async(
+                RemoveSpaceMembers.Params(
+                    space = params.space,
+                    identities = listOf(view.obj.identity)
+                )
+            ).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while removing space member").also {
+                        sendToast(e.msg())
+                    }
+                }
+            )
+        }
     }
 
     override fun onCleared() {
@@ -111,12 +179,16 @@ class ShareSpaceViewModel(
     class Factory @Inject constructor(
         private val params: Params,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+        private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
+        private val removeSpaceMembers: RemoveSpaceMembers,
         private val container: StorelessSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
             params = params,
             generateSpaceInviteLink = generateSpaceInviteLink,
+            changeSpaceMemberPermissions = changeSpaceMemberPermissions,
+            removeSpaceMembers = removeSpaceMembers,
             container = container
         ) as T
     }

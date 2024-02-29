@@ -235,8 +235,9 @@ private fun SpaceMember(
                         )
                     if (config is ShareSpaceMemberView.Config.Member.Reader) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_check_black_14),
-                            contentDescription = "Checked icon"
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
+                            contentDescription = "Checked icon",
+                            modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
                     }
@@ -259,8 +260,9 @@ private fun SpaceMember(
                         )
                     if (config is ShareSpaceMemberView.Config.Member.Writer) {
                         Image(
-                            painter = painterResource(id = R.drawable.ic_option_checked),
-                            contentDescription = "Checked icon"
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
+                            contentDescription = "Checked icon",
+                            modifier = Modifier.align(Alignment.CenterVertically)
                         )
                     }
                     }

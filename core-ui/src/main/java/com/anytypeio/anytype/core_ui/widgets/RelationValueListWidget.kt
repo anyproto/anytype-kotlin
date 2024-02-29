@@ -148,7 +148,9 @@ class RelationValueListWidget @JvmOverloads constructor(
         }
         textView.apply {
             visible()
-            text = txt
+            text = txt.ifBlank {
+                context.resources.getString(R.string.untitled)
+            }
             updateLayoutParams<LayoutParams> {
                 setMarginStart(marginStart)
             }
@@ -298,7 +300,9 @@ class RelationValueListWidget @JvmOverloads constructor(
         iconView.setIcon(objIcon)
         textView.apply {
             visible()
-            text = txt
+            text = txt.ifBlank {
+                context.resources.getString(R.string.untitled)
+            }
             updateLayoutParams<LayoutParams> {
                 marginStart = marginStartWithIcon
             }

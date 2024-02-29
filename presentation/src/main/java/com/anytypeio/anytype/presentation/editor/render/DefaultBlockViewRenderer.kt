@@ -1530,7 +1530,12 @@ class DefaultBlockViewRenderer @Inject constructor(
                     color = block.textColor()
                 )
             }
-            ObjectType.Layout.FILE, ObjectType.Layout.IMAGE, ObjectType.Layout.BOOKMARK -> {
+            ObjectType.Layout.FILE,
+            ObjectType.Layout.IMAGE,
+            ObjectType.Layout.BOOKMARK,
+            ObjectType.Layout.VIDEO,
+            ObjectType.Layout.AUDIO,
+            ObjectType.Layout.PDF -> {
                 BlockView.Title.Basic(
                     mode = blockMode,
                     id = block.id,

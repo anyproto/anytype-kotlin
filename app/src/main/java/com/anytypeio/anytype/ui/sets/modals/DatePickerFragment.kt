@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseDialogFragment
 import com.anytypeio.anytype.databinding.FragmentDatePickerBinding
 import java.util.*
 
+@Deprecated("Use RelationDateValueFragment instead")
 class DatePickerFragment : BaseDialogFragment<FragmentDatePickerBinding>() {
 
     private val mTimeInSeconds get() = argLong(TIMESTAMP_KEY)

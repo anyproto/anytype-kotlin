@@ -970,7 +970,7 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Bli med</string>
+    <string name="onboarding_join_button_text">Join</string>
     <string name="onboarding_log_in_button_text">Logg inn</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>

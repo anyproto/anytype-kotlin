@@ -4,20 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
-import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_ui.relations.DatePickerContent
+import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argBoolean
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -28,7 +25,6 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.sets.DateValueCommand
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
 import com.anytypeio.anytype.ui.sets.modals.DatePickerFragment
-import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
 open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
@@ -51,11 +47,7 @@ open class RelationDateValueFragment : BaseBottomSheetComposeFragment() {
         setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
         setContent {
             MaterialTheme(
-                typography = typography,
-                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(10.dp)),
-                colors = MaterialTheme.colors.copy(
-                    surface = colorResource(id = R.color.context_menu_background)
-                )
+                typography = MaterialTheme.typography.copy(bodyLarge = Title3)
             ) {
                 DatePickerContent(
                     state = vm.views.collectAsStateWithLifecycle().value,

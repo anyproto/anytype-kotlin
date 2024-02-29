@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
@@ -674,7 +675,8 @@ object ObjectSearchConstants {
     fun filterTypes(
         spaces: List<Id>,
         recommendedLayouts: List<ObjectType.Layout> = emptyList(),
-        excludedTypeKeys: List<TypeKey> = emptyList()
+        excludedTypeKeys: List<TypeKey> = emptyList(),
+        excludeParticipant: Boolean = true
     ): List<DVFilter> {
         return buildList {
             addAll(
@@ -724,15 +726,37 @@ object ObjectSearchConstants {
                     )
                 )
             }
-            if (recommendedLayouts.isNotEmpty()) {
-                add(
-                    DVFilter(
-                        relation = Relations.RECOMMENDED_LAYOUT,
-                        condition = DVFilterCondition.IN,
-                        value = recommendedLayouts.map { it.code.toDouble() }
-                    )
+            addRecommendedLayoutsFilter(recommendedLayouts, excludeParticipant)
+        }
+    }
+
+    private fun MutableList<DVFilter>.addRecommendedLayoutsFilter(
+        recommendedLayouts: List<ObjectType.Layout>,
+        excludeParticipant: Boolean
+    ) {
+        when {
+            recommendedLayouts.isNotEmpty() -> add(
+                DVFilter(
+                    relation = Relations.RECOMMENDED_LAYOUT,
+                    condition = DVFilterCondition.IN,
+                    value = getLayoutCodes(recommendedLayouts, excludeParticipant)
                 )
-            }
+            )
+            excludeParticipant -> add(
+                DVFilter(
+                    relation = Relations.RECOMMENDED_LAYOUT,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(ObjectType.Layout.PARTICIPANT.code.toDouble())
+                )
+            )
+        }
+    }
+
+    private fun getLayoutCodes(layouts: List<ObjectType.Layout>, excludeParticipant: Boolean): List<Double> {
+        return if (excludeParticipant) {
+            layouts.filterNot { it == ObjectType.Layout.PARTICIPANT }.map { it.code.toDouble() }
+        } else {
+            layouts.map { it.code.toDouble() }
         }
     }
 

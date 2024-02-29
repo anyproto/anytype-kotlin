@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.objects
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
@@ -88,7 +89,7 @@ fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? =
         return true
     }
 
-    val skipLayouts = fileLayouts + systemLayouts
+    val skipLayouts = fileLayouts + systemLayouts + listOf(ObjectType.Layout.PARTICIPANT)
     return !skipLayouts.contains(objectType?.recommendedLayout)
 }
 

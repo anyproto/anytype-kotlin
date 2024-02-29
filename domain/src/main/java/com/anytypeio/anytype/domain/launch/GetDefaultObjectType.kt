@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -159,6 +160,11 @@ class GetDefaultObjectType @Inject constructor(
             relation = Relations.SPACE_ID,
             condition = DVFilterCondition.EQUAL,
             value = space.id
+        ),
+        DVFilter(
+            relation = Relations.RESTRICTIONS,
+            condition = DVFilterCondition.NOT_IN,
+            value = listOf(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE.code.toDouble())
         )
     )
 

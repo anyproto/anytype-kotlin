@@ -1142,5 +1142,6 @@
     <string name="multiplayer_space_add_editor">Agregar editor</string>
     <string name="multiplayer_space_request_reject">Rechazar</string>
     <string name="multiplayer_space_join_request_header">%1$s ha solicitado unirse al espacio %2$s</string>
+    <string name="multiplayer_remove_member">Remove member</string>
     <!--endregion-->
 </resources>

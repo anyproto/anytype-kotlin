@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -75,6 +76,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
+import com.anytypeio.anytype.presentation.objects.isAllowedToCreateObject
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
@@ -1038,7 +1040,9 @@ class ObjectSetViewModel(
                                 toast("Could not found key for given type")
                                 return
                             }
-                            if (wrapper.restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE)) {
+                            val objType = ObjectWrapper.Type(sourceDetails.map)
+                            if (!objType.isAllowedToCreateObject()) {
+                                Timber.w("Object type: ${objType.name} is not allowed to create object")
                                 toast(TOAST_CREATE_OBJECT_RESTRICTS)
                                 return
                             }
@@ -1070,7 +1074,8 @@ class ObjectSetViewModel(
                                     ObjectSetCommand.Modal.CreateBookmark(ctx = context)
                                 )
                             } else {
-                                if (defaultObjectType.restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE)) {
+                                if (!defaultObjectType.isAllowedToCreateObject()) {
+                                    Timber.w("Object type: ${defaultObjectType.name} is not allowed to create object")
                                     toast(TOAST_CREATE_OBJECT_RESTRICTS)
                                     return
                                 }
@@ -1135,12 +1140,14 @@ class ObjectSetViewModel(
 
         if (typeChosenByUser != null) {
             val objType = storeOfObjectTypes.getByKey(typeChosenByUser.key)
-            if (objType != null && objType.restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE)) {
+            if (!objType.isAllowedToCreateObject()) {
+                Timber.w("Object type: ${objType?.name} is not allowed to create object")
                 toast(TOAST_CREATE_OBJECT_RESTRICTS)
                 return
             }
         } else {
-            if (defaultObjectType?.restrictions?.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) == true) {
+            if (defaultObjectType?.isAllowedToCreateObject() == false) {
+                Timber.w("Object type: ${defaultObjectType.name} is not allowed to create object")
                 toast(TOAST_CREATE_OBJECT_RESTRICTS)
                 return
             }

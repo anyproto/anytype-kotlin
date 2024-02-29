@@ -79,7 +79,8 @@ class ObjectTypesSubscriptionManager (
                 Relations.RECOMMENDED_LAYOUT,
                 Relations.DEFAULT_TEMPLATE_ID,
                 Relations.SPACE_ID,
-                Relations.UNIQUE_KEY
+                Relations.UNIQUE_KEY,
+                Relations.RESTRICTIONS
             ),
             ignoreWorkspace = true
         )

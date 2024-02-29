@@ -202,7 +202,8 @@ class ObjectSetSettingsViewModel(
         private val updateDataViewViewer: UpdateDataViewViewer,
         private val store: StoreOfRelations,
         private val analytics: Analytics,
-        private val deleteRelationFromDataView: DeleteRelationFromDataView
+        private val deleteRelationFromDataView: DeleteRelationFromDataView,
+        private val storeOfObjectTypes: StoreOfObjectTypes
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -212,7 +213,8 @@ class ObjectSetSettingsViewModel(
                 updateDataViewViewer = updateDataViewViewer,
                 storeOfRelations = store,
                 analytics = analytics,
-                deleteRelationFromDataView = deleteRelationFromDataView
+                deleteRelationFromDataView = deleteRelationFromDataView,
+                storeOfObjectTypes = storeOfObjectTypes
             ) as T
         }
     }

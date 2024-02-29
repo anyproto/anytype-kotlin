@@ -22,7 +22,6 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,7 +47,6 @@ class TagOrStatusValueViewModel(
     private val query = MutableSharedFlow<String>(replay = 0)
     private var isEditableRelation = false
     val commands = MutableSharedFlow<Command>(replay = 0)
-    private val jobs = mutableListOf<Job>()
 
     private val initialIds = mutableListOf<Id>()
     private var isInitialSortDone = false
@@ -80,7 +78,9 @@ class TagOrStatusValueViewModel(
                     if (ids.isNotEmpty()) {
                         initialIds.addAll(ids)
                     } else {
-                        emitCommand(Command.Expand)
+                        if (isEditableRelation) {
+                            emitCommand(Command.Expand)
+                        }
                     }
                 }
                 initViewState(

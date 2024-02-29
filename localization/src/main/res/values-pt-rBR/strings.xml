@@ -970,7 +970,7 @@
     <string name="onboarding_terms_and_policy_terms">Termos\u00A0de\u00A0Uso</string>
     <string name="onboarding_terms_and_policy_infix">" e "</string>
     <string name="onboarding_terms_and_policy_privacy">Política\u00A0de\u00A0Privacidade</string>
-    <string name="onboarding_join_button_text">Cadastrar-se</string>
+    <string name="onboarding_join_button_text">Join</string>
     <string name="onboarding_log_in_button_text">Entrar</string>
     <string name="onboarding_invite_code_title">Insira seu código de convite</string>
     <string name="onboarding_invite_code_description">Se você não tem um, basta acessar anytype.io\ne entre na lista de espera.</string>

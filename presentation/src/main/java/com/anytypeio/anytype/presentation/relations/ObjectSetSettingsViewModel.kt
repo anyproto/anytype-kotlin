@@ -8,13 +8,16 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationDeleteEvent
 import com.anytypeio.anytype.presentation.mapper.toSimpleRelationView
+import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
+import com.anytypeio.anytype.presentation.sets.getActiveViewTypeAndTemplate
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -32,17 +35,30 @@ class ObjectSetSettingsViewModel(
     private val updateDataViewViewer: UpdateDataViewViewer,
     private val storeOfRelations: StoreOfRelations,
     private val analytics: Analytics,
-    private val deleteRelationFromDataView: DeleteRelationFromDataView
+    private val deleteRelationFromDataView: DeleteRelationFromDataView,
+    private val storeOfObjectTypes: StoreOfObjectTypes
 ) : BaseListViewModel<ViewerRelationListView>() {
 
-    val screenState = MutableStateFlow(ScreenState.LIST)
+    val screenState = MutableStateFlow(ScreenState())
 
-    fun onStart(viewerId: Id) {
+    fun onStart(ctx: Id, viewerId: Id) {
+        Timber.d("Start with ctx: $ctx, viewerId: $viewerId")
         viewModelScope.launch {
             objectState.filterIsInstance<ObjectState.DataView>().collect { state ->
-                Timber.d("New update, viewerId: $viewerId, state: $state")
                 val result = mutableListOf<ViewerRelationListView>()
                 val viewer = state.viewerById(viewerId) ?: return@collect
+
+                val (defType, _) = state.getActiveViewTypeAndTemplate(
+                    ctx = ctx,
+                    activeView = viewer,
+                    storeOfObjectTypes = storeOfObjectTypes
+                )
+
+                screenState.value =
+                    ScreenState(
+                        isCreateObjectAllowed = state.isCreateObjectAllowed(defType),
+                        isEdit = false
+                    )
 
                 Timber.d("Relation index: ${state.dataViewContent.relationLinks}")
 
@@ -66,11 +82,11 @@ class ObjectSetSettingsViewModel(
     }
 
     fun onEditButtonClicked() {
-        screenState.value = ScreenState.EDIT
+        screenState.value = screenState.value.copy(isEdit = true)
     }
 
     fun onDoneButtonClicked() {
-        screenState.value = ScreenState.LIST
+        screenState.value = screenState.value.copy(isEdit = false)
     }
 
     fun onSwitchClicked(ctx: Id, viewerId: Id, item: SimpleRelationView) {
@@ -224,5 +240,5 @@ class ObjectSetSettingsViewModel(
         private const val UNKNOWN_ERROR = "Error unknown"
     }
 
-    enum class ScreenState { LIST, EDIT }
+    data class ScreenState(val isCreateObjectAllowed: Boolean = false, val isEdit: Boolean = false)
 }

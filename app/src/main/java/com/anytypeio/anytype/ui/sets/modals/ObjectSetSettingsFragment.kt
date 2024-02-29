@@ -126,39 +126,41 @@ class ObjectSetSettingsFragment : BaseBottomSheetFragment<FragmentViewerRelation
 
     override fun onStart() {
         super.onStart()
-        vm.onStart(viewer)
+        vm.onStart(ctx, viewer)
     }
 
     private fun render(state: ObjectSetSettingsViewModel.ScreenState) {
-        when (state) {
-            ObjectSetSettingsViewModel.ScreenState.LIST -> {
-                with(binding) {
-                    recycler.apply {
-                        dndItemTouchHelper.attachToRecyclerView(null)
-                    }
-                    iconAdd.visible()
-                    editBtn.visible()
-                    doneBtn.invisible()
-                    recycler.apply {
-                        adapter = listAdapter
-                        removeItemDecoration(itemDividerEdit)
-                        addItemDecoration(itemDivider)
-                    }
+        if (state.isEdit)  {
+            with(binding) {
+                recycler.apply {
+                    dndItemTouchHelper.attachToRecyclerView(this)
+                }
+                iconAdd.invisible()
+                doneBtn.visible()
+                editBtn.invisible()
+                recycler.apply {
+                    adapter = editAdapter
+                    removeItemDecoration(itemDivider)
+                    addItemDecoration(itemDividerEdit)
                 }
             }
-            ObjectSetSettingsViewModel.ScreenState.EDIT -> {
-                with(binding) {
-                    recycler.apply {
-                        dndItemTouchHelper.attachToRecyclerView(this)
-                    }
-                    iconAdd.invisible()
-                    doneBtn.visible()
+        } else {
+            with(binding) {
+                recycler.apply {
+                    dndItemTouchHelper.attachToRecyclerView(null)
+                }
+                if (state.isCreateObjectAllowed) {
+                    editBtn.visible()
+                    iconAdd.visible()
+                } else {
                     editBtn.invisible()
-                    recycler.apply {
-                        adapter = editAdapter
-                        removeItemDecoration(itemDivider)
-                        addItemDecoration(itemDividerEdit)
-                    }
+                    iconAdd.invisible()
+                }
+                doneBtn.invisible()
+                recycler.apply {
+                    adapter = listAdapter
+                    removeItemDecoration(itemDividerEdit)
+                    addItemDecoration(itemDivider)
                 }
             }
         }

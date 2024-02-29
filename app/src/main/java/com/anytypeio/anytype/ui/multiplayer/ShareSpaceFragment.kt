@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,14 +43,20 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
         return ComposeView(requireContext()).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                MaterialTheme(typography = typography) {
+                MaterialTheme(
+                    typography = typography,
+                    shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
+                ) {
                     ShareSpaceScreen(
                         viewState = vm.viewState.collectAsStateWithLifecycle().value,
                         onRegenerateInviteLinkClicked = vm::onRegenerateInviteLinkClicked,
                         onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
                         members = vm.members.collectAsStateWithLifecycle().value,
                         onViewRequestClicked = vm::onViewRequestClicked,
-                        onApproveUnjoinRequestClicked = vm::onApproveUnjoinRequestClicked
+                        onApproveUnjoinRequestClicked = vm::onApproveUnjoinRequestClicked,
+                        onCanEditClicked = vm::onCanEditClicked,
+                        onCanViewClicked = vm::onCanViewClicked,
+                        onRemoveMemberClicked = vm::onRemoveMemberClicked
                     )
                 }
                 LaunchedEffect(Unit) {

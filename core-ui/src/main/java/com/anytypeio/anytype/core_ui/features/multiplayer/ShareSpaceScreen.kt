@@ -16,8 +16,15 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -40,6 +47,8 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -55,7 +64,10 @@ fun ShareSpaceScreen(
     onRegenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
-    onApproveUnjoinRequestClicked: (ShareSpaceMemberView) -> Unit
+    onApproveUnjoinRequestClicked: (ShareSpaceMemberView) -> Unit,
+    onCanViewClicked: (ShareSpaceMemberView) -> Unit,
+    onCanEditClicked: (ShareSpaceMemberView) -> Unit,
+    onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -92,7 +104,16 @@ fun ShareSpaceScreen(
                         is ShareSpaceMemberView.Config.Member -> {
                             SpaceMember(
                                 member = member.obj,
-                                config = config
+                                config = config,
+                                onCanEditClicked = {
+                                    onCanEditClicked(member)
+                                },
+                                onCanViewClicked = {
+                                    onCanViewClicked(member)
+                                },
+                                onRemoveMemberClicked = {
+                                    onRemoveMemberClicked(member)
+                                }
                             )
                         }
                         is ShareSpaceMemberView.Config.Request -> {
@@ -135,8 +156,12 @@ fun ShareSpaceScreen(
 @Composable
 private fun SpaceMember(
     member: ObjectWrapper.Participant,
-    config: ShareSpaceMemberView.Config.Member
+    config: ShareSpaceMemberView.Config.Member,
+    onCanEditClicked: () -> Unit,
+    onCanViewClicked: () -> Unit,
+    onRemoveMemberClicked: () -> Unit
 ) {
+    var isMemberMenuExpanded by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .height(72.dp)
@@ -179,11 +204,87 @@ private fun SpaceMember(
                 color = colorResource(id = R.color.text_secondary)
             )
         }
-        Image(
-            modifier = Modifier.align(Alignment.CenterVertically),
-            painter = painterResource(id = R.drawable.ic_action_more),
-            contentDescription = "Menu button"
-        )
+        if (config !is ShareSpaceMemberView.Config.Member.Owner) {
+            Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_action_more),
+                    contentDescription = "Menu button",
+                    modifier = Modifier.noRippleClickable { isMemberMenuExpanded = true }
+                )
+                DropdownMenu(
+                    expanded = isMemberMenuExpanded,
+                    onDismissRequest = {
+                        isMemberMenuExpanded = false
+                    },
+                    modifier = Modifier.background(
+                        color = colorResource(id = R.color.background_secondary)
+                    )
+                ) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onCanViewClicked().also {
+                                isMemberMenuExpanded = false
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.multiplayer_can_read),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.weight(1.0f)
+                        )
+                    if (config is ShareSpaceMemberView.Config.Member.Reader) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
+                            contentDescription = "Checked icon",
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
+                    }
+                    Divider(
+                        thickness = 0.5.dp,
+                        color = colorResource(id = R.color.shape_primary)
+                    )
+                    DropdownMenuItem(
+                        onClick = {
+                            onCanEditClicked().also {
+                                isMemberMenuExpanded = false
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.multiplayer_can_edit),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.weight(1.0f)
+                        )
+                    if (config is ShareSpaceMemberView.Config.Member.Writer) {
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
+                            contentDescription = "Checked icon",
+                            modifier = Modifier.align(Alignment.CenterVertically)
+                        )
+                    }
+                    }
+                    Divider(
+                        thickness = 0.5.dp,
+                        color = colorResource(id = R.color.shape_primary)
+                    )
+                    DropdownMenuItem(
+                        onClick = {
+                            isMemberMenuExpanded = false
+                            onRemoveMemberClicked()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.multiplayer_remove_member),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.palette_dark_red)
+                        )
+                    }
+                }
+            }
+        }
         Spacer(modifier = Modifier.width(16.dp))
     }
 }
@@ -362,7 +463,10 @@ fun ShareSpaceScreenPreview() {
             )
         },
         onApproveUnjoinRequestClicked = {},
-        onViewRequestClicked = {}
+        onViewRequestClicked = {},
+        onRemoveMemberClicked = {},
+        onCanViewClicked = {},
+        onCanEditClicked = {}
     )
 }
 
@@ -376,6 +480,26 @@ private fun SpaceOwnerMemberPreview() {
                 Relations.NAME to "Evgenii"
             )
         ),
-        config = ShareSpaceMemberView.Config.Member.Owner
+        config = ShareSpaceMemberView.Config.Member.Owner,
+        onCanEditClicked = {},
+        onCanViewClicked = {},
+        onRemoveMemberClicked = {}
+    )
+}
+
+@Composable
+@Preview
+private fun SpaceEditorMemberPreview() {
+    SpaceMember(
+        member = ObjectWrapper.Participant(
+            mapOf(
+                Relations.ID to "2",
+                Relations.NAME to "Evgenii"
+            )
+        ),
+        config = ShareSpaceMemberView.Config.Member.Writer,
+        onCanEditClicked = {},
+        onCanViewClicked = {},
+        onRemoveMemberClicked = {}
     )
 }

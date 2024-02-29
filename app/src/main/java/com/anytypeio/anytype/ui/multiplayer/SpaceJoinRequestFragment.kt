@@ -60,6 +60,11 @@ class SpaceJoinRequestFragment : BaseBottomSheetComposeFragment() {
                     LaunchedEffect(Unit) {
                         vm.toasts.collect { toast(it) }
                     }
+                    LaunchedEffect(Unit) {
+                        vm.isDismissed.collect { isDismissed ->
+                            if (isDismissed) dismiss()
+                        }
+                    }
                 }
             }
         }

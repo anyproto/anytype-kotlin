@@ -109,8 +109,9 @@ class ShareSpaceViewModel(
     fun onCanEditClicked(
         view: ShareSpaceMemberView
     ) {
+        Timber.d("onCanEditClicked")
         viewModelScope.launch {
-            if (view.config != ShareSpaceMemberView.Config.Member.Reader) {
+            if (view.config != ShareSpaceMemberView.Config.Member.Writer) {
                 changeSpaceMemberPermissions.async(
                     ChangeSpaceMemberPermissions.Params(
                         space = params.space,
@@ -128,9 +129,10 @@ class ShareSpaceViewModel(
         }
     }
 
-    fun onCanReadClicked(
+    fun onCanViewClicked(
         view: ShareSpaceMemberView
     ) {
+        Timber.d("onCanViewClicked")
         viewModelScope.launch {
             if (view.config != ShareSpaceMemberView.Config.Member.Reader) {
                 changeSpaceMemberPermissions.async(
@@ -153,6 +155,7 @@ class ShareSpaceViewModel(
     fun onRemoveMemberClicked(
         view: ShareSpaceMemberView
     ) {
+        Timber.d("onRemoveMemberClicked")
         viewModelScope.launch {
             removeSpaceMembers.async(
                 RemoveSpaceMembers.Params(

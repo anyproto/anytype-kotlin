@@ -74,7 +74,6 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
-import com.anytypeio.anytype.presentation.objects.isAllowedToCreateObject
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
@@ -1038,12 +1037,6 @@ class ObjectSetViewModel(
                                 toast("Could not found key for given type")
                                 return
                             }
-                            val objType = ObjectWrapper.Type(sourceDetails.map)
-                            if (!objType.isAllowedToCreateObject()) {
-                                Timber.w("Object type: ${objType.name} is not allowed to create object")
-                                toast(TOAST_CREATE_OBJECT_RESTRICTS)
-                                return
-                            }
                             if (uniqueKey == ObjectTypeIds.BOOKMARK) {
                                 dispatch(
                                     ObjectSetCommand.Modal.CreateBookmark(ctx = context)
@@ -1072,11 +1065,6 @@ class ObjectSetViewModel(
                                     ObjectSetCommand.Modal.CreateBookmark(ctx = context)
                                 )
                             } else {
-                                if (!defaultObjectType.isAllowedToCreateObject()) {
-                                    Timber.w("Object type: ${defaultObjectType.name} is not allowed to create object")
-                                    toast(TOAST_CREATE_OBJECT_RESTRICTS)
-                                    return
-                                }
                                 val validTemplateId = templateChosenBy ?: defaultTemplate
                                 val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
                                     storeOfRelations = storeOfRelations,
@@ -1135,22 +1123,6 @@ class ObjectSetViewModel(
             dateProvider = dateProvider,
             dataViewRelationLinks = state.dataViewContent.relationLinks
         )
-
-        if (typeChosenByUser != null) {
-            val objType = storeOfObjectTypes.getByKey(typeChosenByUser.key)
-            if (!objType.isAllowedToCreateObject()) {
-                Timber.w("Object type: ${objType?.name} is not allowed to create object")
-                toast(TOAST_CREATE_OBJECT_RESTRICTS)
-                return
-            }
-        } else {
-            if (defaultObjectType?.isAllowedToCreateObject() == false) {
-                Timber.w("Object type: ${defaultObjectType.name} is not allowed to create object")
-                toast(TOAST_CREATE_OBJECT_RESTRICTS)
-                return
-            }
-        }
-
         val type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         val createObjectParams = CreateDataViewObject.Params.Collection(
             template = validTemplateId,
@@ -2691,7 +2663,6 @@ class ObjectSetViewModel(
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"
         const val DATA_VIEW_HAS_NO_VIEW_MSG = "Data view has no view."
         const val TOAST_SET_NOT_EXIST = "This object doesn't exist"
-        const val TOAST_CREATE_OBJECT_RESTRICTS = "It's restricted to creating objects of this type"
         const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
     }

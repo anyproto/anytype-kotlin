@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts.editorLayouts
@@ -118,22 +117,4 @@ fun Key?.getCreateObjectParams(defaultTemplate: Id?): CreateObject.Param {
         internalFlags = flags,
         template = defaultTemplate
     )
-}
-
-/**
- * Determines whether an object of this type is allowed to be created.
- *
- * This function checks if the current [ObjectWrapper.Type] is eligible for object creation
- * based on certain restrictions and layout considerations.
- * An object type is considered not allowed to be created if either of the following conditions is met:
- * - The type has a restriction that explicitly prohibits the creation of an object of this type ([ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE]).
- * - The type is designated as a PARTICIPANT through recommended layout ([ObjectType.Layout.PARTICIPANT])
- *
- * @receiver The [ObjectWrapper.Type] for which the check is being performed. If the receiver is `null`, the function immediately returns `false`.
- * @return `true` if an object of this type is allowed to be created
- */
-fun ObjectWrapper.Type?.isAllowedToCreateObject(): Boolean {
-    return this != null &&
-            !restrictions.contains(ObjectRestriction.CREATE_OBJECT_OF_THIS_TYPE) &&
-            recommendedLayout != ObjectType.Layout.PARTICIPANT
 }

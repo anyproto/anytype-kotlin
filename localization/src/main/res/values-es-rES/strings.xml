@@ -970,7 +970,7 @@
     <string name="onboarding_terms_and_policy_terms">Términos\u00A0de\u00A0Uso</string>
     <string name="onboarding_terms_and_policy_infix">" y "</string>
     <string name="onboarding_terms_and_policy_privacy">Política\u00A0de Privacidad</string>
-    <string name="onboarding_join_button_text">Join</string>
+    <string name="onboarding_join_button_text">Unirse</string>
     <string name="onboarding_log_in_button_text">Iniciar sesión</string>
     <string name="onboarding_invite_code_title">Escriba su código de invitación</string>
     <string name="onboarding_invite_code_description">Si no tienes uno, simplemente ve a anytype.io\ny regístrate en la lista de espera.</string>

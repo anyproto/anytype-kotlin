@@ -22,7 +22,6 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -48,7 +47,6 @@ class TagOrStatusValueViewModel(
     private val query = MutableSharedFlow<String>(replay = 0)
     private var isEditableRelation = false
     val commands = MutableSharedFlow<Command>(replay = 0)
-    private val jobs = mutableListOf<Job>()
 
     private val initialIds = mutableListOf<Id>()
     private var isInitialSortDone = false
@@ -56,6 +54,7 @@ class TagOrStatusValueViewModel(
     init {
         viewModelScope.launch {
             val relation = relations.get(relation = viewModelParams.relationKey)
+            setupIsRelationNotEditable(relation)
             val spaces = listOf(spaceManager.get())
             val searchParams = StoreSearchParams(
                 subscription = SUB_MY_OPTIONS,
@@ -73,25 +72,38 @@ class TagOrStatusValueViewModel(
                 query.onStart { emit("") },
                 subscription.subscribe(searchParams)
             ) { record, query, options ->
-                setupIsRelationNotEditable(relation)
                 val ids = getRecordValues(record)
                 if (!isInitialSortDone) {
                     initialIds.clear()
                     if (ids.isNotEmpty()) {
                         initialIds.addAll(ids)
                     } else {
-                        emitCommand(Command.Expand)
+                        if (isEditableRelation) {
+                            emitCommand(Command.Expand)
+                        }
                     }
                 }
                 initViewState(
                     relation = relation,
-                    options = options
-                        .map { ObjectWrapper.Option(map = it.map) }
-                        .filter { it.name?.contains(query, true) == true },
+                    options = filterOptions(query, options, ids),
                     query = query,
                     ids = ids
                 )
             }.collect()
+        }
+    }
+
+    private fun filterOptions(
+        query: String,
+        options: List<ObjectWrapper.Basic>,
+        ids: List<Id>
+    ): List<ObjectWrapper.Option> {
+        return if (isEditableRelation) {
+            options.map { ObjectWrapper.Option(map = it.map) }
+                .filter { it.name?.contains(query, true) == true }
+        } else {
+            options.map { ObjectWrapper.Option(map = it.map) }
+                .filter { ids.contains(it.id) }
         }
     }
 

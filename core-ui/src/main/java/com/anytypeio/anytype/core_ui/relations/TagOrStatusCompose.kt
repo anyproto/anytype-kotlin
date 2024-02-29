@@ -16,7 +16,9 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -123,6 +125,7 @@ private fun Header(state: TagStatusViewState, action: (TagStatusAction) -> Unit)
         modifier = Modifier
             .fillMaxWidth()
             .height(48.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         if (isClearButtonVisible(state = state)) {
             // Left-aligned CLEAR button
@@ -199,8 +202,7 @@ fun RelationsViewContent(
     LazyColumn(
         state = lazyListState,
         modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
+            .fillMaxSize()
     ) {
         itemsIndexed(
             items = state.items,
@@ -237,7 +239,11 @@ fun RelationsViewEmpty(
         icon = R.drawable.ic_alert_error
     )
     if (state.isRelationEditable) {
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
             Spacer(modifier = Modifier.height(154.dp))
             AlertIcon(icon)
             Spacer(modifier = Modifier.height(12.dp))
@@ -258,7 +264,11 @@ fun RelationsViewEmpty(
             )
         }
     } else {
-        Column {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
             Spacer(modifier = Modifier.height(87.dp))
             AlertIcon(icon)
             Spacer(modifier = Modifier.height(12.dp))

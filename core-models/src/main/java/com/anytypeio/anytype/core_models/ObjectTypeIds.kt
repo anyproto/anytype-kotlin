@@ -25,11 +25,12 @@ object ObjectTypeIds {
     const val BOOKMARK = "ot-bookmark"
     const val RELATION_OPTION = "ot-relationOption"
     const val SPACE = "ot-space"
+    const val PARTICIPANT = "ot-participant"
 
     const val DEFAULT_OBJECT_TYPE_PREFIX = "ot-"
 
     fun getTypesWithoutTemplates(): List<String> =
-        listOf(BOOKMARK, NOTE).plus(getFileTypes()).plus(getSetTypes())
+        listOf(BOOKMARK, NOTE, PARTICIPANT).plus(getFileTypes()).plus(getSetTypes())
             .plus(getSystemTypes())
 
     fun getFileTypes(): List<String> = listOf(FILE, IMAGE, AUDIO, VIDEO)

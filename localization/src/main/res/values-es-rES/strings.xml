@@ -761,7 +761,7 @@
     <string name="fragment_dashboard_restore">Restaurar</string>
     <string name="your_account_deleted">Tu cuenta ha sido borrada.</string>
     <plurals name="fragment_dashboard_selected_count">
-        <item quantity="one">%d objeto seleccionado</item>
+        <item quantity="one">%d objeto seleccionado / objetos seleccionados</item>
         <item quantity="other">%d objetos seleccionados </item>
     </plurals>
     <string name="debug_mode">modo_depuración </string>
@@ -1074,20 +1074,20 @@
     <string name="date_type_older">Más antiguo</string>
     <string name="dates_days_ago">Hace %1$s días</string>
     <string name="dates_days_from">%1$s días desde ahora</string>
-    <string name="settings_use_yamux">Use a reserve multiplex library</string>
+    <string name="settings_use_yamux">Usar una biblioteca multiplexo de reserva</string>
     <!--endregion-->
-    <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="create_object_section_pinned">Pinned</string>
-    <string name="any_object_creation_menu_pin_on_top">Pin on top</string>
-    <string name="any_object_creation_menu_unpin">Unpin</string>
-    <string name="any_object_creation_menu_set_as_default">Set as default</string>
+    <string name="error_kanban_view_not_supported">La vista de Kanban aún no está disponible en el móvil.\nCambia el tipo de vista (Ajustes -&gt; Vista) o crea una nueva para acceder a tus datos.</string>
+    <string name="error_calendar_view_not_supported">La vista de calendario aún no está disponible en el móvil.\nCambia el tipo de vista (Ajustes -&gt; Vista) o crea una nueva para acceder a tus datos.</string>
+    <string name="error_generic_view_not_supported">Esta vista aún no está disponible en el móvil.\nCambia el tipo de vista (Ajustes -&gt; Vista) o crea una nueva para acceder a tus datos.</string>
+    <string name="create_object_section_pinned">Anclado/a</string>
+    <string name="any_object_creation_menu_pin_on_top">Anclar arriba</string>
+    <string name="any_object_creation_menu_unpin">Desanclar</string>
+    <string name="any_object_creation_menu_set_as_default">Definir como predeterminado</string>
     <string name="any_object_creation_menu_move_left">Mover a la izquierda</string>
     <string name="any_object_creation_menu_move_right">Mover a la derecha</string>
-    <string name="clipboard_panel_create_object_from_clipboard">Create object from clipboard</string>
-    <string name="block_media_error">Something went wrong, please try again</string>
-    <string name="relation_value_create_new">Create \"%1$s\"</string>
+    <string name="clipboard_panel_create_object_from_clipboard">Crear objeto desde el portapapeles</string>
+    <string name="block_media_error">Algo salió mal, por favor inténtalo de nuevo</string>
+    <string name="relation_value_create_new">Crear \"%1$s\"</string>
     <string name="option_widget_create">Crear opción</string>
     <string name="option_widget_edit">Editar opción</string>
     <string name="options_empty_description">No se ha encontrado nada. Crea la primera opción para comenzar.</string>
@@ -1095,27 +1095,27 @@
     <string name="options_empty_not_editable">La relación está vacía</string>
     <string name="options_delete_title">¿Estás seguro?</string>
     <string name="options_delete_description">La opción se eliminará permanentemente de tu espacio</string>
-    <string name="object_values_empty_description">Objects not found</string>
-    <string name="object_values_empty_title">No values</string>
+    <string name="object_values_empty_description">No se encontraron objetos</string>
+    <string name="object_values_empty_title">Sin valores</string>
     <string name="object_values_empty_not_editable">La relación está vacía</string>
     <string name="object_values_delete_title">¿Estás seguro?</string>
-    <string name="object_values_delete_description">The object will be moved to the Bin.</string>
+    <string name="object_values_delete_description">El objeto será movido a la papelera.</string>
     <string name="hint_enter_name">Introducir nombre...</string>
     <string name="create_object">Crear objeto</string>
     <string name="msg_query_cannot_be_changed">Esta consulta sólo puede cambiarse en el escritorio</string>
     <!--region ONBOARDING ERRORS -->
-    <string name="error_invalid_recovery_phrase">Invalid recovery phrase</string>
+    <string name="error_invalid_recovery_phrase">Frase de recuperación no válida</string>
     <string name="network">Red</string>
-    <string name="network_settings_anytype_network">Anytype network</string>
-    <string name="network_settings_anytype_network_description">Backup to the network managed by Anytype</string>
+    <string name="network_settings_anytype_network">Red de Anytype</string>
+    <string name="network_settings_anytype_network_description">Crear una copia de seguridad en la red administrada por Anytype</string>
     <string name="network_settings_local_only">Sólo local</string>
-    <string name="network_settings_local_only_description">Don\'t back up; sync within local network</string>
+    <string name="network_settings_local_only_description">No hacer copia de seguridad; sincronizar a través de la red local</string>
     <string name="network_settings_self_host">Alojado por el usuario</string>
-    <string name="network_settings_self_host_description">Back up to your self-hosted network</string>
+    <string name="network_settings_self_host_description">Hacer una copia de seguridad en tu red privada</string>
     <string name="network_settings_networks_section">Redes</string>
-    <string name="network_settings_troubleshooting_section">Troubleshooting</string>
-    <string name="network_settings_provide_config_hint">Tap to provide your network config</string>
-    <string name="network_settings_self_host_config">Current config: %1$s</string>
+    <string name="network_settings_troubleshooting_section">Solución de problemas</string>
+    <string name="network_settings_provide_config_hint">Toque para proporcionar su configuración de red</string>
+    <string name="network_settings_self_host_config">Configuración actual: %1$s</string>
     <string name="widget_types_show">Mostrar tipos</string>
     <string name="widget_types_hide">Ocultar tipos</string>
     <!--endregion-->
@@ -1124,11 +1124,11 @@
     <string name="multiplayer_share_invite_link_description">Envía este enlace a otros. Se le asignarán los derechos de acceso después de su aprobación</string>
     <string name="multiplayer_invite_link">Enlace de invitación</string>
     <string name="multiplayer_join_a_space">Unirse a un espacio</string>
-    <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
-    <string name="mulitplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
-    <string name="multiplayer_space_request_to_join">Request to join</string>
-    <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %2$s. Send a request so space owner can let you in.</string>
-    <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
+    <string name="multiplayer_private_comment_for_a_space_owner">Dejar un comentario privado para el propietario del espacio</string>
+    <string name="mulitplayer_request_to_join_explanation">Una vez que el propietario del espacio apruebe su solicitud, te unirás al espacio con los derechos de acceso que el propietario haya determinado.</string>
+    <string name="multiplayer_space_request_to_join">Solicitar acceso</string>
+    <string name="multiplayer_space_request_to_join_msg">Has sido invitado a unirte al espacio %1$s, creado por %2$s. Envía una solicitud para que el propietario del espacio pueda dejarte entrar.</string>
+    <string name="multiplayer_tap_to_write_request_to_join_comment">Toca para escribir tu comentario</string>
     <string name="multiplayer_share_space">Compartir espacio</string>
     <string name="multiplayer_members_and_requests">Miembros y solicitudes</string>
     <string name="multiplayer_unjoining_requested">Ha solicitado salir</string>
@@ -1138,9 +1138,9 @@
     <string name="multiplayer_owner">Propietario</string>
     <string name="multiplayer_can_edit">Puede editar</string>
     <string name="multiplayer_can_read">Puede(n) leer</string>
-    <string name="multiplayer_space_add_viewer">Add viewer</string>
-    <string name="multiplayer_space_add_editor">Add editor</string>
+    <string name="multiplayer_space_add_viewer">Añadir espectador</string>
+    <string name="multiplayer_space_add_editor">Agregar editor</string>
     <string name="multiplayer_space_request_reject">Rechazar</string>
-    <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
+    <string name="multiplayer_space_join_request_header">%1$s ha solicitado unirse al espacio %2$s</string>
     <!--endregion-->
 </resources>

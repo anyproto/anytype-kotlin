@@ -1523,9 +1523,11 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,
         ObjectType.Layout.TODO,
-        ObjectType.Layout.FILE,
         ObjectType.Layout.BOOKMARK,
         ObjectType.Layout.PARTICIPANT -> {
+            OpenObjectNavigation.OpenEditor(id)
+        }
+        in SupportedLayouts.fileLayouts -> {
             OpenObjectNavigation.OpenEditor(id)
         }
         ObjectType.Layout.PROFILE -> {

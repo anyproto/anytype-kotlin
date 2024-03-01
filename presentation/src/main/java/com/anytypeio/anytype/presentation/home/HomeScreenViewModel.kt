@@ -66,6 +66,7 @@ import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendSelectHomeTabEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
+import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.presentation.profile.profileIcon
@@ -1523,9 +1524,11 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         ObjectType.Layout.BASIC,
         ObjectType.Layout.NOTE,
         ObjectType.Layout.TODO,
-        ObjectType.Layout.FILE,
         ObjectType.Layout.BOOKMARK,
         ObjectType.Layout.PARTICIPANT -> {
+            OpenObjectNavigation.OpenEditor(id)
+        }
+        in SupportedLayouts.fileLayouts -> {
             OpenObjectNavigation.OpenEditor(id)
         }
         ObjectType.Layout.PROFILE -> {

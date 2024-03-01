@@ -108,6 +108,11 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             onClick = {
                                 findNavController().navigate(R.id.aboutAppScreen)
                             }
+                        ),
+                        onMembershipClicked = throttledClick(
+                            onClick = {
+                                findNavController().navigate(R.id.paymentsScreen)
+                            }
                         )
                     )
                 }

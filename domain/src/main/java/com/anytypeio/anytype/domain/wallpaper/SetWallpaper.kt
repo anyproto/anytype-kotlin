@@ -4,9 +4,11 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import javax.inject.Inject
 
-class SetWallpaper(
-    private val repo: UserSettingsRepository
+class SetWallpaper @Inject constructor(
+    private val repo: UserSettingsRepository,
+    private val store: WallpaperStore
 ) : Interactor<SetWallpaper.Params>() {
 
     override suspend fun run(params: Params) {
@@ -16,14 +18,14 @@ class SetWallpaper(
                     space = params.space,
                     wallpaper = Wallpaper.Gradient(params.code)
                 )
-                WallpaperStore.Default.set(Wallpaper.Gradient(params.code))
+                store.set(Wallpaper.Gradient(params.code))
             }
             is Params.SolidColor -> {
                 repo.setWallpaper(
                     space = params.space,
                     wallpaper = Wallpaper.Color(params.code)
                 )
-                WallpaperStore.Default.set(Wallpaper.Color(params.code))
+               store.set(Wallpaper.Color(params.code))
             }
         }
     }

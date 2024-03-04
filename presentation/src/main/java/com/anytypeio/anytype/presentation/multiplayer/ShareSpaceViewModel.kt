@@ -103,7 +103,23 @@ class ShareSpaceViewModel(
     }
 
     fun onApproveUnjoinRequestClicked(view: ShareSpaceMemberView) {
-        // TODO
+        viewModelScope.launch {
+            removeSpaceMembers.async(
+                RemoveSpaceMembers.Params(
+                    space = params.space,
+                    identities = listOf(view.obj.identity)
+                )
+            ).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while approving unjoin request").also {
+                        sendToast(e.msg())
+                    }
+                },
+                onSuccess = {
+                    Timber.d("Successfully removed space member")
+                }
+            )
+        }
     }
 
     fun onCanEditClicked(
@@ -123,6 +139,9 @@ class ShareSpaceViewModel(
                         Timber.e(e, "Error while changing member permissions").also {
                             sendToast(e.msg())
                         }
+                    },
+                    onSuccess = {
+                        Timber.d("Successfully updated space member permissions")
                     }
                 )
             }
@@ -146,6 +165,9 @@ class ShareSpaceViewModel(
                         Timber.e(e, "Error while changing member permissions").also {
                             sendToast(e.msg())
                         }
+                    },
+                    onSuccess = {
+                        Timber.d("Successfully updated space member permissions")
                     }
                 )
             }
@@ -167,6 +189,9 @@ class ShareSpaceViewModel(
                     Timber.e(e, "Error while removing space member").also {
                         sendToast(e.msg())
                     }
+                },
+                onSuccess = {
+                    Timber.d("Successfully removed space member")
                 }
             )
         }

@@ -54,7 +54,8 @@ class ObjectTypeChangeViewModel(
 
     private val pipeline = combine(searchQuery, setup) { query, setup ->
         val myTypes = proceedWithGettingMyTypes(
-            query = query
+            query = query,
+            setup = setup
         )
         val marketplaceTypes = proceedWithGettingMarketplaceTypes(
             myTypes = myTypes,
@@ -100,6 +101,7 @@ class ObjectTypeChangeViewModel(
         selectedTypes: List<Id>,
         isSetSource: Boolean
     ) {
+        Timber.d("Starting with params: isWithCollection=$isWithCollection, isWithBookmark=$isWithBookmark, excludeTypes=$excludeTypes, selectedTypes=$selectedTypes, isSetSource=$isSetSource")
         viewModelScope.launch {
             setup.emit(
                 Setup(
@@ -270,12 +272,14 @@ class ObjectTypeChangeViewModel(
     }
 
     private suspend fun proceedWithGettingMyTypes(
-        query: String
+        query: String,
+        setup: Setup
     ) = getObjectTypes.run(
         GetObjectTypes.Params(
             filters = ObjectSearchConstants.filterTypes(
                 spaces = listOf(spaceManager.get()),
-                recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
+                recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts,
+                excludeParticipant = !setup.isSetSource
             ),
             sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
             query = query,

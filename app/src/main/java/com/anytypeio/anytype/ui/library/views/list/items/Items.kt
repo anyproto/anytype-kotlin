@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -273,6 +274,7 @@ fun Icon(icon: ObjectIcon?) {
             factory = { ctx ->
                 ObjectIconWidget(ctx)
             },
+            modifier = Modifier.size(24.dp),
             update = {
                 it.setIcon(icon)
             }

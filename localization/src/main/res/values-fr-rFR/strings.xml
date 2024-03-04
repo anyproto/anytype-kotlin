@@ -67,6 +67,7 @@
     <string name="deleted_account_danger_zone_msg">Une fois que la suppression de votre compte est demandée, vous avez 30 jours pour annuler cette demande. Après 30 jours, les données chiffrées de votre compte seront définitivement supprimées du nœud de sauvegarde, et vous ne pourrez plus vous connecter à Anytype sur de nouveaux appareils.</string>
     <string name="danger_zone">Zone de danger</string>
     <string name="snackbar_template_add">Le nouveau modèle a été ajouté au type</string>
+    <string name="settings_membership">Membership</string>
     <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Transformer en</string>

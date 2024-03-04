@@ -221,5 +221,7 @@
     <color name="date_selected_inactive_color">#30DCDCDC</color>
     <color name="widget_edit_view_stroke_color_active">@color/palette_system_amber_50</color>
     <color name="widget_edit_view_stroke_color_inactive">@color/shape_primary</color>
+    <color name="payments_main_color_start">#F6F6F6</color>
+    <color name="payments_main_color_end">#CFF5CE</color>
 
 </resources>

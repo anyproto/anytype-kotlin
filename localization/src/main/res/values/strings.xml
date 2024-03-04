@@ -1330,4 +1330,11 @@
 
     <!--endregion-->
 
+    <!--region PAYMENTS -->
+
+    <string name="payments_header">Let’s build together</string>
+    <string name="payments_subheader">Joining Anytype network means contributing to its story</string>
+    <string name="payments_subheader_2">Co-create with us</string>
+    <string name="payments_text">Stay closely connected with our team and community. Join calls with the team, influence Anytype\'s evolution, and have your say on features.</string>
+
 </resources>

@@ -500,7 +500,7 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
         }
 
     @Test
-    fun `should not render relation in featured relations if corresponding relation is hidden`() =
+    fun `should render relation in featured relations if corresponding relation is hidden`() =
         runTest {
 
             val title = MockTypicalDocumentFactory.title
@@ -601,6 +601,24 @@ class EditorFeaturedRelationsTest : EditorPresentationTestSetup() {
                             key = r1.key,
                             name = r1.name.orEmpty(),
                             value = value1,
+                            featured = true,
+                            format = Relation.Format.SHORT_TEXT,
+                            system = false
+                        ),
+                        ObjectRelationView.Default(
+                            id = r2.id,
+                            key = r2.key,
+                            name = r2.name.orEmpty(),
+                            value = value2,
+                            featured = true,
+                            format = Relation.Format.SHORT_TEXT,
+                            system = false
+                        ),
+                        ObjectRelationView.Default(
+                            id = r3.id,
+                            key = r3.key,
+                            name = r3.name.orEmpty(),
+                            value = value3,
                             featured = true,
                             format = Relation.Format.SHORT_TEXT,
                             system = false

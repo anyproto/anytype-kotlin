@@ -6,9 +6,10 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.platform.MetricsProvider
-import com.anytypeio.anytype.domain.workspace.WorkspaceManager
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.junit.Before
 import org.junit.Rule
@@ -28,7 +29,10 @@ class ResumeAccountTest {
     lateinit var configStorage: ConfigStorage
 
     @Mock
-    lateinit var workspaceManager: WorkspaceManager
+    lateinit var spaceManager: SpaceManager
+
+    @Mock
+    lateinit var userSettingsRepository: UserSettingsRepository
 
     @Mock
     lateinit var pathProvider: PathProvider
@@ -51,7 +55,9 @@ class ResumeAccountTest {
             configStorage = configStorage,
             pathProvider = pathProvider,
             metricsProvider = metricsProvider,
-            awaitAccountStartManager = awaitAccountStartManager
+            awaitAccountStartManager = awaitAccountStartManager,
+            spaceManager = spaceManager,
+            settings = userSettingsRepository
         )
     }
 }

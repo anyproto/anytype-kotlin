@@ -106,6 +106,26 @@ fun AlertWithWarningButton() {
     )
 }
 
+@Preview
+@Composable
+fun AlertWithMessageButton() {
+    GenericAlert(
+        onFirstButtonClicked = {},
+        onSecondButtonClicked = {},
+        config = AlertConfig.WithTwoButtons(
+            firstButtonType = BUTTON_SECONDARY,
+            secondButtonType = BUTTON_WARNING,
+            icon = AlertConfig.Icon(
+                icon = R.drawable.ic_alert_message,
+                gradient = GRADIENT_TYPE_BLUE
+            ),
+            firstButtonText = "Later",
+            secondButtonText = "Retry",
+            title = "It's time to update",
+            description = "Some of your data was managed in a newer version of Anytype. Please update the app to work with all your docs and the latest features."
+        )
+    )
+}
 
 @Composable
 fun GenericAlert(
@@ -359,7 +379,10 @@ typealias GradientType = Int
 
 const val GRADIENT_TYPE_GREEN = 0
 const val GRADIENT_TYPE_RED = 1
+const val GRADIENT_TYPE_BLUE = 2
 val GREEN_FROM = Color(0xFFA9F496)
 val GREEN_TO = Color(0xFF00BCF2AF)
 val RED_FROM = Color(0xFFFFBCBC)
 val RED_TO = Color(0xFF00FFE6E6)
+val BLUE_FROM = Color(0xFF80D1FF)
+val BLUE_TO = Color(0xFFBBE7FF)

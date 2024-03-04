@@ -141,7 +141,7 @@ interface MainComponent :
 }
 
 @Module
-private abstract class ComponentDependenciesModule private constructor() {
+abstract class ComponentDependenciesModule private constructor() {
 
     @Binds
     @IntoMap

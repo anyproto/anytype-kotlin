@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
@@ -443,5 +444,16 @@ interface BlockRepository {
         space: SpaceId,
         identity: Id,
         permission: ParticipantPermissions
+    )
+    suspend fun getSpaceInviteView(
+        inviteContentId: Id,
+        inviteFileKey: String
+    ): SpaceInviteView
+
+    suspend fun sendJoinSpaceRequest(
+        space: SpaceId,
+        network: Id?,
+        inviteContentId: Id,
+        inviteFileKey: String
     )
 }

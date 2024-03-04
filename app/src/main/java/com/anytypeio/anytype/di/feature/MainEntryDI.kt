@@ -87,13 +87,17 @@ object MainEntryModule {
         pathProvider: PathProvider,
         configStorage: ConfigStorage,
         metricsProvider: MetricsProvider,
-        awaitAccountStartManager: AwaitAccountStartManager
+        awaitAccountStartManager: AwaitAccountStartManager,
+        spaceManager: SpaceManager,
+        settingsRepository: UserSettingsRepository
     ): ResumeAccount = ResumeAccount(
         repository = authRepository,
         pathProvider = pathProvider,
         configStorage = configStorage,
         metricsProvider = metricsProvider,
-        awaitAccountStartManager = awaitAccountStartManager
+        awaitAccountStartManager = awaitAccountStartManager,
+        spaceManager = spaceManager,
+        settings = settingsRepository
     )
 
     @JvmStatic

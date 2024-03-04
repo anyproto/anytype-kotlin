@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.di.main
 
-    import com.anytypeio.anytype.app.AndroidApplication
+import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.common.ComponentDependenciesKey
 import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
@@ -21,14 +21,16 @@ import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
-    import com.anytypeio.anytype.di.feature.multiplayer.ShareSpaceDependencies
-    import com.anytypeio.anytype.di.feature.multiplayer.SpaceJoinRequestDependencies
-    import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
+import com.anytypeio.anytype.di.feature.multiplayer.RequestJoinSpaceDependencies
+import com.anytypeio.anytype.di.feature.multiplayer.ShareSpaceDependencies
+import com.anytypeio.anytype.di.feature.multiplayer.SpaceJoinRequestDependencies
+import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
+import com.anytypeio.anytype.di.feature.payments.PaymentsComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
 import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
@@ -108,7 +110,8 @@ interface MainComponent :
     AppPreferencesDependencies,
     AddToAnytypeDependencies,
     ShareSpaceDependencies,
-    SpaceJoinRequestDependencies
+    SpaceJoinRequestDependencies,
+    RequestJoinSpaceDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -294,4 +297,14 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(SpaceJoinRequestDependencies::class)
     abstract fun provideSpaceJoinRequestDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(PaymentsComponentDependencies::class)
+    abstract fun providePaymentsComponentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(RequestJoinSpaceDependencies::class)
+    abstract fun provideRequestToJoinSpaceDependencies(component: MainComponent): ComponentDependencies
 }

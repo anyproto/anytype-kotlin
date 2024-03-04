@@ -37,11 +37,10 @@ fun ObjectWrapper.Relation.view(
     values: Map<String, Any?>,
     urlBuilder: UrlBuilder,
     isFeatured: Boolean = false
-): ObjectRelationView? {
+): ObjectRelationView {
     val relation = this
-    return when {
-        relation.isHidden == true -> null
-        relation.format == RelationFormat.OBJECT -> {
+    return when (relation.format) {
+        RelationFormat.OBJECT -> {
             val objects = values.buildRelationValueObjectViews(
                 relationKey = relation.key,
                 details = details.details,
@@ -57,7 +56,7 @@ fun ObjectWrapper.Relation.view(
                 system = relation.key.isSystemKey()
             )
         }
-        relation.format == RelationFormat.FILE -> {
+        RelationFormat.FILE -> {
             val files = values.buildFileViews(
                 relationKey = relation.key,
                 details = details.details
@@ -72,7 +71,7 @@ fun ObjectWrapper.Relation.view(
                 system = relation.key.isSystemKey()
             )
         }
-        relation.format == RelationFormat.DATE -> {
+        RelationFormat.DATE -> {
             //TODO In DataView Relation Date uses DateFormat and TimeFormat
             // so SimpleDateFormat can be different from what we have here
             // see {SetsExtension:buildGridRow()}
@@ -96,7 +95,7 @@ fun ObjectWrapper.Relation.view(
                 system = relation.key.isSystemKey()
             )
         }
-        relation.format == RelationFormat.STATUS -> {
+        RelationFormat.STATUS -> {
             val options = buildList {
                 when(val value = values[relation.key]) {
                     is Id -> {
@@ -133,7 +132,7 @@ fun ObjectWrapper.Relation.view(
                 system = relation.key.isSystemKey()
             )
         }
-        relation.format == RelationFormat.TAG -> {
+        RelationFormat.TAG -> {
             val options = buildList {
                 when(val value = values[relation.key]) {
                     is Id -> {
@@ -170,7 +169,7 @@ fun ObjectWrapper.Relation.view(
                 system = relation.key.isSystemKey()
             )
         }
-        relation.format == RelationFormat.CHECKBOX -> {
+        RelationFormat.CHECKBOX -> {
             ObjectRelationView.Checkbox(
                 id = relation.id,
                 key = relation.key,
@@ -181,7 +180,7 @@ fun ObjectWrapper.Relation.view(
                 system = relation.key.isSystemKey()
             )
         }
-        relation.format == RelationFormat.NUMBER -> {
+        RelationFormat.NUMBER -> {
             val value = values[relation.key]
             ObjectRelationView.Default(
                 id = relation.id,

@@ -119,7 +119,8 @@ open class ObjectSearchViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    spaces = listOf(spaceManager.get())
+                    spaces = listOf(spaceManager.get()),
+                    excludeParticipant = false
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType
             )

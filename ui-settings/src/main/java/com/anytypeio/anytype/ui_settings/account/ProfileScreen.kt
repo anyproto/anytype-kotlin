@@ -73,7 +73,8 @@ fun ProfileSettingsScreen(
     account: ProfileSettingsViewModel.AccountProfile,
     onAppearanceClicked: () -> Unit,
     onDataManagementClicked: () -> Unit,
-    onAboutClicked: () -> Unit
+    onAboutClicked: () -> Unit,
+    onMembershipClicked: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -116,6 +117,16 @@ fun ProfileSettingsScreen(
                 image = R.drawable.ic_file_storage,
                 text = stringResource(R.string.data_management),
                 onClick = onDataManagementClicked
+            )
+        }
+        item {
+            Divider(paddingStart = 60.dp)
+        }
+        item {
+            Option(
+                image = R.drawable.ic_membership,
+                text = stringResource(R.string.settings_membership),
+                onClick = onMembershipClicked
             )
         }
         item {

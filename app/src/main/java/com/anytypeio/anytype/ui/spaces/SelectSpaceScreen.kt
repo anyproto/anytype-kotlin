@@ -209,7 +209,9 @@ private fun SelectSpaceProfileHeader(
                     end = 44.dp
                 )
                 .fillMaxWidth()
-                .noRippleClickable { onProfileClicked() }
+                .noRippleClickable { onProfileClicked() },
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
         )
         Box(
             modifier = Modifier

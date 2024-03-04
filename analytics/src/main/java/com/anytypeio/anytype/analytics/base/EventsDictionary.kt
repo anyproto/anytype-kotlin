@@ -209,7 +209,7 @@ object EventsDictionary {
 
     // Routes
     object Routes {
-        const val home = "ScreenHome"
+        const val home = "HomeScreen"
         const val searchScreen = "ScreenSearch"
         const val mention = "MenuMention"
         const val searchMenu = "MenuSearch"

@@ -62,6 +62,7 @@ import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
+import com.anytypeio.anytype.di.feature.multiplayer.DaggerRequestJoinSpaceComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerShareSpaceComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerSpaceJoinRequestComponent
 import com.anytypeio.anytype.di.feature.objects.DaggerSelectObjectTypeComponent
@@ -70,6 +71,7 @@ import com.anytypeio.anytype.di.feature.onboarding.DaggerOnboardingStartComponen
 import com.anytypeio.anytype.di.feature.onboarding.login.DaggerOnboardingMnemonicLoginComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingMnemonicComponent
 import com.anytypeio.anytype.di.feature.onboarding.signup.DaggerOnboardingSoulCreationComponent
+import com.anytypeio.anytype.di.feature.payments.DaggerPaymentsComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationCreateFromLibraryComponent
 import com.anytypeio.anytype.di.feature.relations.DaggerRelationEditComponent
 import com.anytypeio.anytype.di.feature.relations.LimitObjectTypeModule
@@ -104,6 +106,7 @@ import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
+import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
@@ -1055,6 +1058,18 @@ class ComponentManager(
             .withDependencies(findComponentDependencies())
             .withParams(params = params)
             .build()
+    }
+
+    val requestToJoinSpaceComponent = ComponentWithParams { params: RequestJoinSpaceViewModel.Params ->
+        DaggerRequestJoinSpaceComponent
+            .builder()
+            .withDependencies(findComponentDependencies())
+            .withParams(params = params)
+            .build()
+    }
+
+    val paymentsComponent = Component {
+        DaggerPaymentsComponent.factory().create(findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {

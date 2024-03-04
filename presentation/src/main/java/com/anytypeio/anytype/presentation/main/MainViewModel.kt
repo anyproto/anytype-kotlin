@@ -107,6 +107,7 @@ class MainViewModel(
     }
 
     fun onRestore() {
+        Timber.d("onRestoreCalled")
         /***
          * Before fragment backstack and screen states are restored by the OS,
          * We need to resume account session in a blocking manner.

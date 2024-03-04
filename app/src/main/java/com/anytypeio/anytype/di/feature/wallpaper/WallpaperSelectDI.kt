@@ -6,6 +6,7 @@ import com.anytypeio.anytype.device.DefaultGradientCollectionProvider
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
 import com.anytypeio.anytype.domain.wallpaper.SetWallpaper
+import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperSelectViewModel
 import com.anytypeio.anytype.ui.dashboard.WallpaperSelectFragment
@@ -48,5 +49,10 @@ object WallpaperSelectModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideSetWallpaper(repo: UserSettingsRepository) : SetWallpaper = SetWallpaper(repo)
+    fun provideSetWallpaper(
+        repo: UserSettingsRepository
+    ) : SetWallpaper = SetWallpaper(
+        repo = repo,
+        store = WallpaperStore.Default
+    )
 }

@@ -970,7 +970,7 @@
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
-    <string name="onboarding_join_button_text">Rejoindre</string>
+    <string name="onboarding_join_button_text">Join</string>
     <string name="onboarding_log_in_button_text">Connexion</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
@@ -1142,5 +1142,6 @@
     <string name="multiplayer_space_add_editor">Ajouter un éditeur</string>
     <string name="multiplayer_space_request_reject">Rejeter</string>
     <string name="multiplayer_space_join_request_header">%1$s a demandé à rejoindre l\'espace %2$s</string>
+    <string name="multiplayer_remove_member">Remove member</string>
     <!--endregion-->
 </resources>

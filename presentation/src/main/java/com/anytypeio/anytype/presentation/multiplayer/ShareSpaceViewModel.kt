@@ -114,6 +114,9 @@ class ShareSpaceViewModel(
                     Timber.e(e, "Error while approving unjoin request").also {
                         sendToast(e.msg())
                     }
+                },
+                onSuccess = {
+                    Timber.d("Successfully removed space member")
                 }
             )
         }
@@ -136,6 +139,9 @@ class ShareSpaceViewModel(
                         Timber.e(e, "Error while changing member permissions").also {
                             sendToast(e.msg())
                         }
+                    },
+                    onSuccess = {
+                        Timber.d("Successfully updated space member permissions")
                     }
                 )
             }
@@ -159,6 +165,9 @@ class ShareSpaceViewModel(
                         Timber.e(e, "Error while changing member permissions").also {
                             sendToast(e.msg())
                         }
+                    },
+                    onSuccess = {
+                        Timber.d("Successfully updated space member permissions")
                     }
                 )
             }
@@ -180,6 +189,9 @@ class ShareSpaceViewModel(
                     Timber.e(e, "Error while removing space member").also {
                         sendToast(e.msg())
                     }
+                },
+                onSuccess = {
+                    Timber.d("Successfully removed space member")
                 }
             )
         }

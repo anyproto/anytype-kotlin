@@ -21,8 +21,8 @@ class RestoreWallpaper(
 
     override fun build(): Flow<Unit> = spaceManager
         .observe()
-        .map {
-            val wallpaper = repo.getWallpaper(space = spaceManager.get())
+        .map { config ->
+            val wallpaper = repo.getWallpaper(space = config.space)
             store.set(wallpaper)
         }
         .catch {

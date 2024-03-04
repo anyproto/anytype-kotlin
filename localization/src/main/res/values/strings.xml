@@ -1336,5 +1336,17 @@
     <string name="payments_subheader">Joining Anytype network means contributing to its story</string>
     <string name="payments_subheader_2">Co-create with us</string>
     <string name="payments_text">Stay closely connected with our team and community. Join calls with the team, influence Anytype\'s evolution, and have your say on features.</string>
+    
+    <string name="payments_tier_explorer">Explorer</string>
+    <string name="payments_tier_explorer_description">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
+    <string name="payments_tier_builder">Builder</string>
+    <string name="payments_tier_builder_description">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string name="payments_tier_cocreator">Co-Creator</string>
+    <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
+    <string name="payments_tier_custom">Custom</string>
+    <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
+
+    <string name="payments_button_learn">Learn more</string>
+    <string name="payments_button_contact">Contact</string>
 
 </resources>

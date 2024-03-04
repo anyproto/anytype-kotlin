@@ -2,6 +2,7 @@ package com.anytypeio.anytype.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -35,6 +38,7 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
 import com.anytypeio.anytype.viewmodel.PaymentsState
+import com.anytypeio.anytype.viewmodel.TierState
 
 @Composable
 fun MainPaymentsScreen(state: PaymentsState) {
@@ -53,13 +57,15 @@ fun MainPaymentsScreen(state: PaymentsState) {
                 .fillMaxSize()
                 .padding(bottom = 20.dp)
         ) {
-            Header(state = state)
+            if (state is PaymentsState.Success) {
+                Header(state = state)
+            }
         }
     }
 }
 
 @Composable
-private fun Header(state: PaymentsState) {
+private fun Header(state: PaymentsState.Success) {
 
     // Dragger at the top, centered
     Box(
@@ -138,14 +144,76 @@ private fun Header(state: PaymentsState) {
             style = Relations2,
             textAlign = TextAlign.Center
         )
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
+            horizontalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+            itemsIndexed(state.tiers) { index, tier ->
+                when (tier) {
+                    is TierState.Explorer -> {
+                        Tier(
+                            title = stringResource(id = R.string.payments_tier_explorer),
+                            subTitle = stringResource(id = R.string.payments_tier_explorer_description),
+                            price = tier.price,
+                            colorGradientStart = R.color.payments_explorer_start,
+                            colorGradientEnd = R.color.payments_explorer_end,
+                            icon = R.drawable.logo_explorer,
+                            buttonText = stringResource(id = R.string.payments_button_learn),
+                            onClick = { /*TODO*/ }
+                        )
+                    }
+
+                    is TierState.Builder -> {
+                        Tier(
+                            title = stringResource(id = R.string.payments_tier_builder),
+                            subTitle = stringResource(id = R.string.payments_tier_builder_description),
+                            price = tier.price,
+                            colorGradientStart = R.color.payments_main_color_start,
+                            colorGradientEnd = R.color.payments_main_color_end,
+                            icon = R.drawable.logo_builder,
+                            buttonText = stringResource(id = R.string.payments_button_learn),
+                            onClick = { /*TODO*/ }
+                        )
+                    }
+
+                    is TierState.CoCreator -> {
+                        Tier(
+                            title = stringResource(id = R.string.payments_tier_cocreator),
+                            subTitle = stringResource(id = R.string.payments_tier_cocreator_description),
+                            price = tier.price,
+                            colorGradientStart = R.color.payments_main_color_start,
+                            colorGradientEnd = R.color.payments_main_color_end,
+                            icon = R.drawable.logo_co_creator,
+                            buttonText = stringResource(id = R.string.payments_button_learn),
+                            onClick = { /*TODO*/ }
+                        )
+                    }
+
+                    is TierState.Custom -> {
+                        Tier(
+                            title = stringResource(id = R.string.payments_tier_custom),
+                            subTitle = stringResource(id = R.string.payments_tier_custom_description),
+                            price = tier.price,
+                            colorGradientStart = R.color.payments_main_color_start,
+                            colorGradientEnd = R.color.payments_main_color_end,
+                            icon = R.drawable.logo_custom,
+                            buttonText = stringResource(id = R.string.payments_button_learn),
+                            onClick = { /*TODO*/ }
+                        )
+                    }
+                }
+            }
+        }
         Spacer(modifier = Modifier.height(30.dp))
     }
 }
 
+
 @Preview
 @Composable
 fun MainPaymentsScreenPreview() {
-    MainPaymentsScreen(PaymentsState.Success)
+    MainPaymentsScreen(PaymentsState.Success(emptyList()))
 }
 
 val headerTextStyle = TextStyle(

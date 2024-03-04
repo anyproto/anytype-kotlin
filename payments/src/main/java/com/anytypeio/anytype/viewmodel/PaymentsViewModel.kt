@@ -13,6 +13,14 @@ class PaymentsViewModel(
 
     init {
         Timber.d("PaymentsViewModel created")
+        viewState.value = PaymentsState.Success(
+            listOf(
+                TierState.Explorer("Free", true),
+                TierState.Builder("$9.99/mo", false),
+                TierState.CoCreator("$19.99/mo", false),
+                TierState.Custom("$29.99/mo", false)
+            )
+        )
     }
 
     interface PaymentsNavigation {

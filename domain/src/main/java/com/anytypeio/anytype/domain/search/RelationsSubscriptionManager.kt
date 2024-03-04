@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.search
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Marketplace
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -21,7 +22,7 @@ class RelationsSubscriptionManager @Inject constructor(
     private val spaceManager: SpaceManager
 ) {
     private val pipeline = spaceManager.observe().flatMapLatest { config ->
-        val params = buildParams(config.space)
+        val params = buildParams(listOf(config.space, config.techSpace, Marketplace.MARKETPLACE_SPACE_ID))
         container.observe(params)
     }
 
@@ -32,7 +33,7 @@ class RelationsSubscriptionManager @Inject constructor(
         job = scope.launch { pipeline.collect() }
     }
 
-    private fun buildParams(space: Id) = RelationsSubscriptionContainer.Params(
+    private fun buildParams(spaces: List<Id>) = RelationsSubscriptionContainer.Params(
         subscription = RelationsSubscriptionContainer.SUBSCRIPTION_ID,
         filters = listOf(
             DVFilter(
@@ -42,13 +43,18 @@ class RelationsSubscriptionManager @Inject constructor(
             ),
             DVFilter(
                 relation = Relations.IS_DELETED,
-                condition = DVFilterCondition.EQUAL,
-                value = false
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            ),
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
             ),
             DVFilter(
                 relation = Relations.SPACE_ID,
-                condition = DVFilterCondition.EQUAL,
-                value = space
+                condition = DVFilterCondition.IN,
+                value = spaces
             )
         ),
         limit = 0,

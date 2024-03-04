@@ -46,6 +46,8 @@ class RelationTextValueViewModel(
     val title = MutableStateFlow("")
     val isDismissed = MutableStateFlow<Boolean>(false)
 
+    private var isEditableRelation = false
+
     private val jobs = mutableListOf<Job>()
 
     fun onDateStart(
@@ -74,17 +76,16 @@ class RelationTextValueViewModel(
                 values.subscribe(ctx = ctx, target = objectId)
             ) { relation, values ->
                 Timber.d("combine, relation:[$relation], values:[$values]")
+                setupIsRelationNotEditable(relation, isLocked)
                 val obj = ObjectWrapper.Basic(values)
                 val value = values[relationKey]?.toString()
-                val isValueReadOnly = values[Relations.IS_READ_ONLY] as? Boolean ?: false
-                val isValueEditable = !(isValueReadOnly || isLocked)
                 title.value = relation.name.orEmpty()
                 when (relation.format) {
                     RelationFormat.SHORT_TEXT -> {
                         views.value = listOf(
                             RelationTextValueView.TextShort(
                                 value = value,
-                                isEditable = isValueEditable
+                                isEditable = isEditableRelation
                             )
                         )
                     }
@@ -92,7 +93,7 @@ class RelationTextValueViewModel(
                         views.value = listOf(
                             RelationTextValueView.Text(
                                 value = value,
-                                isEditable = isValueEditable
+                                isEditable = isEditableRelation
                             )
                         )
                     }
@@ -100,7 +101,7 @@ class RelationTextValueViewModel(
                         views.value = listOf(
                             RelationTextValueView.Number(
                                 value = NumberParser.parse(value),
-                                isEditable = isValueEditable
+                                isEditable = isEditableRelation
                             )
                         )
                     }
@@ -108,7 +109,7 @@ class RelationTextValueViewModel(
                         views.value = listOf(
                             RelationTextValueView.Url(
                                 value = value,
-                                isEditable = isValueEditable
+                                isEditable = isEditableRelation
                             )
                         )
                         actions.value = buildList {
@@ -131,7 +132,7 @@ class RelationTextValueViewModel(
                         views.value = listOf(
                             RelationTextValueView.Email(
                                 value = value,
-                                isEditable = isValueEditable
+                                isEditable = isEditableRelation
                             )
                         )
                         if (value != null) {
@@ -145,7 +146,7 @@ class RelationTextValueViewModel(
                         views.value = listOf(
                             RelationTextValueView.Phone(
                                 value = value,
-                                isEditable = isValueEditable
+                                isEditable = isEditableRelation
                             )
                         )
                         if (value != null) {
@@ -264,6 +265,15 @@ class RelationTextValueViewModel(
         if (hasFocus) {
             viewModelScope.sendAnalyticsRelationUrlEdit(analytics)
         }
+    }
+
+    private fun setupIsRelationNotEditable(relation: ObjectWrapper.Relation, isLocked: Boolean) {
+        isEditableRelation = !(isLocked
+                || relation.isReadonlyValue
+                || relation.isHidden == true
+                || relation.isDeleted == true
+                || relation.isArchived == true
+                || !relation.isValid)
     }
 
     class Factory(

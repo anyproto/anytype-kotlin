@@ -1,62 +1,62 @@
 package com.anytypeio.anytype.di.main
 
 import com.anytypeio.anytype.app.AndroidApplication
-    import com.anytypeio.anytype.di.common.ComponentDependencies
-    import com.anytypeio.anytype.di.common.ComponentDependenciesKey
-    import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
-    import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
-    import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
-    import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
-    import com.anytypeio.anytype.di.feature.DebugSettingsSubComponent
-    import com.anytypeio.anytype.di.feature.EditorSubComponent
-    import com.anytypeio.anytype.di.feature.KeychainPhraseSubComponent
-    import com.anytypeio.anytype.di.feature.LinkToObjectSubComponent
-    import com.anytypeio.anytype.di.feature.MainEntrySubComponent
-    import com.anytypeio.anytype.di.feature.MoveToSubComponent
-    import com.anytypeio.anytype.di.feature.ObjectSearchSubComponent
-    import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
-    import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
-    import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
-    import com.anytypeio.anytype.di.feature.SplashDependencies
-    import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
-    import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
-    import com.anytypeio.anytype.di.feature.library.LibraryDependencies
+import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.common.ComponentDependenciesKey
+import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
+import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
+import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
+import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
+import com.anytypeio.anytype.di.feature.DebugSettingsSubComponent
+import com.anytypeio.anytype.di.feature.EditorSubComponent
+import com.anytypeio.anytype.di.feature.KeychainPhraseSubComponent
+import com.anytypeio.anytype.di.feature.LinkToObjectSubComponent
+import com.anytypeio.anytype.di.feature.MainEntrySubComponent
+import com.anytypeio.anytype.di.feature.MoveToSubComponent
+import com.anytypeio.anytype.di.feature.ObjectSearchSubComponent
+import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
+import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
+import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
+import com.anytypeio.anytype.di.feature.SplashDependencies
+import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
+import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
+import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.RequestJoinSpaceDependencies
-    import com.anytypeio.anytype.di.feature.multiplayer.ShareSpaceDependencies
+import com.anytypeio.anytype.di.feature.multiplayer.ShareSpaceDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.SpaceJoinRequestDependencies
 import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
-    import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
-    import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
-    import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
-    import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
-    import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
-    import com.anytypeio.anytype.di.feature.payments.PaymentsComponentDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
+import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
+import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
+import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
+import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingSoulCreationDependencies
+import com.anytypeio.anytype.di.feature.payments.PaymentsComponentDependencies
 import com.anytypeio.anytype.di.feature.relations.RelationCreateFromLibraryDependencies
-    import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
-    import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
-    import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
-    import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
-    import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
-    import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
-    import com.anytypeio.anytype.di.feature.settings.SpacesStorageDependencies
-    import com.anytypeio.anytype.di.feature.sharing.AddToAnytypeDependencies
-    import com.anytypeio.anytype.di.feature.spaces.CreateSpaceDependencies
-    import com.anytypeio.anytype.di.feature.spaces.SelectSpaceDependencies
-    import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
-    import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
-    import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
-    import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
-    import com.anytypeio.anytype.di.feature.types.CreateObjectTypeDependencies
-    import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
-    import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
-    import com.anytypeio.anytype.di.feature.update.MigrationErrorDependencies
-    import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
-    import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
-    import dagger.Binds
-    import dagger.Component
-    import dagger.Module
-    import dagger.multibindings.IntoMap
-    import javax.inject.Singleton
+import com.anytypeio.anytype.di.feature.relations.RelationEditDependencies
+import com.anytypeio.anytype.di.feature.settings.AboutAppDependencies
+import com.anytypeio.anytype.di.feature.settings.AppearanceDependencies
+import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
+import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
+import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
+import com.anytypeio.anytype.di.feature.settings.SpacesStorageDependencies
+import com.anytypeio.anytype.di.feature.sharing.AddToAnytypeDependencies
+import com.anytypeio.anytype.di.feature.spaces.CreateSpaceDependencies
+import com.anytypeio.anytype.di.feature.spaces.SelectSpaceDependencies
+import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
+import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
+import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
+import com.anytypeio.anytype.di.feature.templates.TemplateSubComponent
+import com.anytypeio.anytype.di.feature.types.CreateObjectTypeDependencies
+import com.anytypeio.anytype.di.feature.types.TypeEditDependencies
+import com.anytypeio.anytype.di.feature.types.TypeIconPickDependencies
+import com.anytypeio.anytype.di.feature.update.MigrationErrorDependencies
+import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectSubComponent
+import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
+import dagger.Binds
+import dagger.Component
+import dagger.Module
+import dagger.multibindings.IntoMap
+import javax.inject.Singleton
 
 @Singleton
 @Component(

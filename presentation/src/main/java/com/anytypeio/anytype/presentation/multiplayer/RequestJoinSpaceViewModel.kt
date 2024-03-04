@@ -20,8 +20,7 @@ class RequestJoinSpaceViewModel(
     private val params: Params,
     private val getSpaceInviteView: GetSpaceInviteView,
     private val sendJoinSpaceRequest: SendJoinSpaceRequest,
-    // TODO inject resolver
-    private val spaceInviteResolver: SpaceInviteResolver = SpaceInviteResolver.Default
+    private val spaceInviteResolver: SpaceInviteResolver
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<ViewState<SpaceInviteView>>(ViewState.Loading)

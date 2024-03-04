@@ -34,6 +34,8 @@ class EditorTableRowsColumnsDelete : EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     private var tableId = MockDataFactory.randomUuid()

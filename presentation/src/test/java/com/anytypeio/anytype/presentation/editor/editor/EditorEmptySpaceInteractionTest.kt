@@ -58,6 +58,7 @@ class EditorEmptySpaceInteractionTest : EditorPresentationTestSetup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
         stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     @Test

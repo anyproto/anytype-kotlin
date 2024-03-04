@@ -33,6 +33,7 @@ class EditorCreateBlockTest : EditorPresentationTestSetup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
         stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     val title = StubTitle()

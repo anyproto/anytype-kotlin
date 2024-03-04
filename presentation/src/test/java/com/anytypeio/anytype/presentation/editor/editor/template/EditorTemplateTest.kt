@@ -33,6 +33,8 @@ class EditorTemplateTest: EditorPresentationTestSetup() {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         stubSpaceManager()
+        stubGetNetworkMode()
+        stubFileLimitEvents()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)

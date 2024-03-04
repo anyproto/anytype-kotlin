@@ -1,18 +1,18 @@
 [versions]
 middlewareVersion = "v0.32.0-rc11"
-kotlinVersion = '1.8.22'
+kotlinVersion = '1.9.20'
 
 androidxCoreVersion = "1.12.0"
 
-androidxComposeVersion = '1.5.0'
-composeKotlinCompilerVersion = '1.4.8'
+androidxComposeVersion = '1.6.2'
+composeKotlinCompilerVersion = '1.5.5'
 composeMaterial3Version = '1.2.0'
-composeMaterialVersion = '1.5.0'
+composeMaterialVersion = '1.6.2'
 composeConstraintLayoutVersion = '1.0.1'
 
 dokkaVersion = '1.8.20'
 
-activityComposeVersion = '1.8.1'
+activityComposeVersion = '1.8.2'
 composeReorderableVersion = '0.9.6'
 accompanistVersion = "0.30.0"
 appcompatVersion = '1.6.1'
@@ -26,7 +26,7 @@ junitVersion = '4.13.2'
 androidJunitVersion = "1.1.4"
 runnerVersion = "1.5.0"
 mockitoAndroidVersion = '4.10.0'
-kotlinCoroutinesVersion = '1.6.4'
+kotlinCoroutinesVersion = '1.7.1'
 coroutineTestingVersion = '1.6.4'
 androidxTestCoreVersion = '1.5.0'
 androidxCoreTestingVersion = '2.2.0'
@@ -37,10 +37,10 @@ recyclerviewVersion = '1.3.2'
 cardviewVersion = '1.0.0'
 emojiCompatVersion = '1.1.0'
 viewPager2Version = '1.0.0'
-lifecycleVersion = '2.6.2'
-lifecycleRuntimeComposeVersion = '2.7.0-rc01'
-navigationVersion = '2.7.5'
-navigationComposeVersion = '2.7.5'
+lifecycleVersion = '2.7.0'
+lifecycleRuntimeComposeVersion = '2.7.0'
+navigationVersion = '2.7.7'
+navigationComposeVersion = '2.7.7'
 shimmerLayoutVersion = '0.5.0'
 photoViewVersion = '2.3.0'
 daggerVersion = '2.45'

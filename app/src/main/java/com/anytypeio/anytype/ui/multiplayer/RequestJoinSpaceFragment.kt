@@ -9,12 +9,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceScreen
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.common.ViewState
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -37,13 +39,28 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
-                    JoinSpaceScreen(
-                        onRequestJoinSpaceClicked = { /*TODO*/ },
-                        spaceName = "TODO",
-                        createdByName = "TODO"
-                    )
+                    when(val state = vm.state.collectAsStateWithLifecycle().value) {
+                        is ViewState.Error -> {
+                            // Render nothing.
+                        }
+                        ViewState.Loading -> {
+                            // Render nothing.
+                        }
+                        is ViewState.Success -> {
+                            JoinSpaceScreen(
+                                onRequestJoinSpaceClicked = { /*TODO*/ },
+                                spaceName = "TODO",
+                                createdByName = "TODO"
+                            )
+                        }
+                    }
                     LaunchedEffect(Unit) {
                         vm.toasts.collect { toast(it) }
+                    }
+                    LaunchedEffect(Unit) {
+                        vm.isDismissed.collect { isDismissed ->
+                            if (isDismissed) dismiss()
+                        }
                     }
                 }
             }

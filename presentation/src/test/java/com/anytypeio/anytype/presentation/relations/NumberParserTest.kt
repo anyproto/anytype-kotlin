@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.relations
 import com.anytypeio.anytype.presentation.number.NumberParser
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 class NumberParserTest {
 
@@ -41,5 +42,10 @@ class NumberParserTest {
     fun `many digits after dot`() {
         assertEquals("1.11111111111115", NumberParser.parse("1.11111111111115"))
         assertEquals("1.11111111111115", NumberParser.parse(1.11111111111115))
+    }
+
+    @Test
+    fun `null when parse to double is impossible`() {
+        assertNull(NumberParser.parse("+99 11"))
     }
 }

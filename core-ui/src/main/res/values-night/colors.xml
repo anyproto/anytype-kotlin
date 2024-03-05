@@ -101,4 +101,6 @@
 
     <color name="context_menu_background">#302F2B</color>
 
+    <color name="date_selected_container_color">#483308</color>
+
 </resources>

@@ -10,7 +10,7 @@ object NumberParser {
 
     fun parse(value: Any?): String? {
         val doubleValue = when (value) {
-            is String -> value.toDouble()
+            is String -> value.toDoubleOrNull()
             is Number -> value.toDouble()
             else -> null
         }

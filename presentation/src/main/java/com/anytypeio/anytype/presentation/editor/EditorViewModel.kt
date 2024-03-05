@@ -4563,6 +4563,7 @@ class EditorViewModel(
         if (!target.isEmpty) {
             proceedWithSlashItem(item, target.requireTarget())
         } else {
+            controlPanelInteractor.onEvent(ControlPanelMachine.Event.Slash.OnStop)
             Timber.e("Slash Widget Error, target is empty")
         }
     }

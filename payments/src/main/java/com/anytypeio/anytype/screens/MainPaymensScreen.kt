@@ -1,10 +1,12 @@
 package com.anytypeio.anytype.screens
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -20,11 +23,9 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -59,6 +60,9 @@ fun MainPaymentsScreen(state: PaymentsState) {
         ) {
             if (state is PaymentsState.Success) {
                 Header(state = state)
+                Spacer(modifier = Modifier.height(32.dp))
+                InfoCards()
+                Tiers(state = state)
             }
         }
     }
@@ -110,110 +114,59 @@ private fun Header(state: PaymentsState.Success) {
             textAlign = TextAlign.Center
         )
     }
+}
 
-    val brush = Brush.verticalGradient(
-        listOf(
-            colorResource(id = R.color.payments_main_color_end),
-            colorResource(id = R.color.payments_main_color_start)
-        )
-    )
-
-    Column(
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun Tiers(state: PaymentsState.Success) {
+    val itemsScroll = rememberLazyListState(initialFirstVisibleItemIndex = 1)
+    LazyRow(
+        state = itemsScroll,
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(top = 32.dp)
-            .background(brush),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(top = 32.dp),
+        horizontalArrangement = Arrangement.spacedBy(20.dp),
+        contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
+        flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
     ) {
-        Image(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 39.dp, end = 39.dp, top = 32.dp)
-                .verticalScroll(rememberScrollState()),
-            painter = painterResource(id = R.drawable.iamge_payments_main),
-            contentDescription = "Main payments image"
-        )
-        Spacer(modifier = Modifier.height(24.dp))
-        Text(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 39.dp, end = 39.dp, top = 7.dp),
-            text = stringResource(id = R.string.payments_text),
-            color = colorResource(id = R.color.text_primary),
-            style = Relations2,
-            textAlign = TextAlign.Center
-        )
-
-        LazyRow(
-            modifier = Modifier.fillMaxWidth().padding(top = 32.dp),
-            horizontalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            itemsIndexed(state.tiers) { index, tier ->
-                when (tier) {
-                    is TierState.Explorer -> {
-                        Tier(
-                            title = stringResource(id = R.string.payments_tier_explorer),
-                            subTitle = stringResource(id = R.string.payments_tier_explorer_description),
-                            price = tier.price,
-                            colorGradientStart = R.color.payments_explorer_start,
-                            colorGradientEnd = R.color.payments_explorer_end,
-                            icon = R.drawable.logo_explorer,
-                            buttonText = stringResource(id = R.string.payments_button_learn),
-                            onClick = { /*TODO*/ }
-                        )
-                    }
-
-                    is TierState.Builder -> {
-                        Tier(
-                            title = stringResource(id = R.string.payments_tier_builder),
-                            subTitle = stringResource(id = R.string.payments_tier_builder_description),
-                            price = tier.price,
-                            colorGradientStart = R.color.payments_main_color_start,
-                            colorGradientEnd = R.color.payments_main_color_end,
-                            icon = R.drawable.logo_builder,
-                            buttonText = stringResource(id = R.string.payments_button_learn),
-                            onClick = { /*TODO*/ }
-                        )
-                    }
-
-                    is TierState.CoCreator -> {
-                        Tier(
-                            title = stringResource(id = R.string.payments_tier_cocreator),
-                            subTitle = stringResource(id = R.string.payments_tier_cocreator_description),
-                            price = tier.price,
-                            colorGradientStart = R.color.payments_main_color_start,
-                            colorGradientEnd = R.color.payments_main_color_end,
-                            icon = R.drawable.logo_co_creator,
-                            buttonText = stringResource(id = R.string.payments_button_learn),
-                            onClick = { /*TODO*/ }
-                        )
-                    }
-
-                    is TierState.Custom -> {
-                        Tier(
-                            title = stringResource(id = R.string.payments_tier_custom),
-                            subTitle = stringResource(id = R.string.payments_tier_custom_description),
-                            price = tier.price,
-                            colorGradientStart = R.color.payments_main_color_start,
-                            colorGradientEnd = R.color.payments_main_color_end,
-                            icon = R.drawable.logo_custom,
-                            buttonText = stringResource(id = R.string.payments_button_learn),
-                            onClick = { /*TODO*/ }
-                        )
-                    }
-                }
-            }
+        itemsIndexed(state.tiers) { index, tier ->
+            TierByType(tier = tier)
         }
-        Spacer(modifier = Modifier.height(30.dp))
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun InfoCards() {
+    val cards = infoCardsState()
+    val itemsScroll = rememberLazyListState(initialFirstVisibleItemIndex = 0)
+    LazyRow(
+        state = itemsScroll,
+        modifier = Modifier
+            .wrapContentHeight(),
+        flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
+    ) {
+        itemsIndexed(cards) { _, card ->
+            InfoCard(
+                gradient = card.gradient,
+                title = card.title,
+                subtitle = card.subtitle,
+                image = card.image
+            )
+        }
+    }
+}
 
 @Preview
 @Composable
 fun MainPaymentsScreenPreview() {
-    MainPaymentsScreen(PaymentsState.Success(emptyList()))
+    val tiers = listOf(
+        TierState.Explorer("999", isCurrent = true),
+        TierState.Builder("999", isCurrent = false),
+        TierState.CoCreator("999", isCurrent = false),
+        TierState.Custom("999", isCurrent = false)
+    )
+    MainPaymentsScreen(PaymentsState.Success(tiers))
 }
 
 val headerTextStyle = TextStyle(

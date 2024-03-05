@@ -95,10 +95,10 @@ fun DatePickerContent(
             weekdayContentColor = colorResource(id = R.color.text_tertiary),
             todayContentColor = todayContentColor,
             todayDateBorderColor = Color.Transparent,
-            selectedDayContainerColor = colorResource(id = R.color.palette_very_light_orange),
+            selectedDayContainerColor = colorResource(id = R.color.date_selected_container_color),
             selectedDayContentColor = colorResource(id = R.color.glyph_accent),
             disabledDayContentColor = colorResource(id = R.color.text_primary),
-            disabledSelectedDayContentColor = colorResource(id = R.color.glyph_inactive),
+            disabledSelectedDayContentColor = colorResource(id = R.color.text_primary),
             disabledSelectedDayContainerColor = colorResource(id = R.color.date_selected_inactive_color),
             navigationContentColor = navigationContentColor
         )

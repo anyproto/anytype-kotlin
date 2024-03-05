@@ -274,7 +274,7 @@ fun Icon(icon: ObjectIcon?) {
             factory = { ctx ->
                 ObjectIconWidget(ctx)
             },
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(20.dp),
             update = {
                 it.setIcon(icon)
             }

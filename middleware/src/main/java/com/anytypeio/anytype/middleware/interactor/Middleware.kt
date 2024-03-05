@@ -2446,17 +2446,12 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun sendJoinSpaceRequest(
-        network: Id?,
-        inviteContentId: Id,
-        inviteFileKey: String,
-        space: SpaceId
-    ) {
+    fun sendJoinSpaceRequest(command: Command.SendJoinSpaceRequest) {
         val request = Rpc.Space.Join.Request(
-            networkId = network.orEmpty(),
-            inviteCid = inviteContentId,
-            inviteFileKey = inviteFileKey,
-            spaceId = space.id
+            networkId = command.network.orEmpty(),
+            inviteCid = command.inviteContentId,
+            inviteFileKey = command.inviteFileKey,
+            spaceId = command.space.id
         )
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.spaceJoin(request)

@@ -905,18 +905,8 @@ class BlockMiddleware(
         )
     }
 
-    override suspend fun sendJoinSpaceRequest(
-        space: SpaceId,
-        network: Id?,
-        inviteContentId: Id,
-        inviteFileKey: String,
-    ) {
-        middleware.sendJoinSpaceRequest(
-            space = space,
-            network = network,
-            inviteContentId = inviteContentId,
-            inviteFileKey = inviteFileKey
-        )
+    override suspend fun sendJoinSpaceRequest(command: Command.SendJoinSpaceRequest) {
+        middleware.sendJoinSpaceRequest(command)
     }
 
     override suspend fun getSpaceInviteView(

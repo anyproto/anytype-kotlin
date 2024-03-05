@@ -453,4 +453,11 @@ sealed class Command {
     data class ApplyTemplate(val objectId: Id, val template: Id?)
 
     data class DeleteRelationOptions(val optionIds: List<Id>)
+
+    data class SendJoinSpaceRequest(
+        val space: SpaceId,
+        val network: Id?,
+        val inviteContentId: Id,
+        val inviteFileKey: String
+    )
 }

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.multiplayer
 
+import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -14,10 +15,12 @@ class SendJoinSpaceRequest @Inject constructor(
 
     override suspend fun doWork(params: Params) {
         repo.sendJoinSpaceRequest(
-            space = params.space,
-            network = params.network,
-            inviteContentId = params.inviteContentId,
-            inviteFileKey = params.inviteFileKey
+            Command.SendJoinSpaceRequest(
+                space = params.space,
+                network = params.network,
+                inviteContentId = params.inviteContentId,
+                inviteFileKey = params.inviteFileKey
+            )
         )
     }
 

@@ -450,10 +450,5 @@ interface BlockRepository {
         inviteFileKey: String
     ): SpaceInviteView
 
-    suspend fun sendJoinSpaceRequest(
-        space: SpaceId,
-        network: Id?,
-        inviteContentId: Id,
-        inviteFileKey: String
-    )
+    suspend fun sendJoinSpaceRequest(command: Command.SendJoinSpaceRequest)
 }

@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.middleware.interactor.Middleware
@@ -901,6 +902,20 @@ class BlockMiddleware(
             space = space,
             identity = identity,
             permission = permission
+        )
+    }
+
+    override suspend fun sendJoinSpaceRequest(command: Command.SendJoinSpaceRequest) {
+        middleware.sendJoinSpaceRequest(command)
+    }
+
+    override suspend fun getSpaceInviteView(
+        inviteContentId: Id,
+        inviteFileKey: String
+    ): SpaceInviteView {
+        return middleware.getSpaceInviteView(
+            inviteContentId = inviteContentId,
+            inviteFileKey = inviteFileKey
         )
     }
 }

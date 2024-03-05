@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
@@ -939,6 +940,20 @@ class BlockDataRepository(
             space = space,
             identity = identity,
             permission = permission
+        )
+    }
+
+    override suspend fun sendJoinSpaceRequest(command: Command.SendJoinSpaceRequest) {
+        remote.sendJoinSpaceRequest(command)
+    }
+
+    override suspend fun getSpaceInviteView(
+        inviteContentId: Id,
+        inviteFileKey: String
+    ): SpaceInviteView {
+        return remote.getSpaceInviteView(
+            inviteContentId = inviteContentId,
+            inviteFileKey = inviteFileKey
         )
     }
 }

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 interface BlockRemote {
@@ -400,4 +401,11 @@ interface BlockRemote {
         identity: Id,
         permission: ParticipantPermissions
     )
+
+    suspend fun sendJoinSpaceRequest(command: Command.SendJoinSpaceRequest)
+
+    suspend fun getSpaceInviteView(
+        inviteContentId: Id,
+        inviteFileKey: String
+    ): SpaceInviteView
 }

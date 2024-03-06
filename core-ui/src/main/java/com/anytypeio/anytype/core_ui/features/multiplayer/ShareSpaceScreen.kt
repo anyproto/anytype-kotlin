@@ -34,6 +34,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
@@ -291,15 +293,17 @@ private fun SpaceMember(
 }
 
 @Composable
-private fun SpaceMemberIcon(
+fun SpaceMemberIcon(
     icon: SpaceMemberIconView,
-    modifier: Modifier
+    modifier: Modifier,
+    iconSize: Dp = 48.dp,
+    textSize: TextUnit = 28.sp
 ) {
     when (icon) {
         is SpaceMemberIconView.Placeholder -> {
             Box(
                 modifier = modifier
-                    .size(48.dp)
+                    .size(iconSize)
                     .clip(CircleShape)
                     .background(color = colorResource(id = R.color.text_tertiary))
             ) {
@@ -311,7 +315,7 @@ private fun SpaceMemberIcon(
                         .uppercase(),
                     modifier = Modifier.align(Alignment.Center),
                     style = TextStyle(
-                        fontSize = 28.sp,
+                        fontSize = textSize,
                         fontWeight = FontWeight.SemiBold,
                         color = colorResource(id = R.color.text_white)
                     )
@@ -324,7 +328,7 @@ private fun SpaceMemberIcon(
                 painter = rememberAsyncImagePainter(icon.url),
                 contentDescription = "Icon from URI",
                 modifier = modifier
-                    .size(48.dp)
+                    .size(iconSize)
                     .clip(CircleShape)
             )
         }

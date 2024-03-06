@@ -9,16 +9,12 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -33,6 +29,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel.ViewState
+import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @Preview
 @Composable
@@ -43,7 +40,8 @@ fun SpaceJoinRequestScreenPreview() {
         onRejectClicked = {},
         state = ViewState.Success(
             memberName = "Merk",
-            spaceName = "Investors"
+            spaceName = "Investors",
+            icon = SpaceMemberIconView.Placeholder("Merk")
         )
     )
 }
@@ -68,12 +66,10 @@ fun SpaceJoinRequestScreen(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Box(
-                modifier = Modifier
-                    .size(72.dp)
-                    .clip(CircleShape)
-                    .background(Color.Blue)
-                    .align(Alignment.Center)
+            SpaceMemberIcon(
+                icon = state.icon,
+                modifier = Modifier.align(Alignment.Center),
+                iconSize = 72.dp
             )
         }
         Spacer(modifier = Modifier.height(20.dp))

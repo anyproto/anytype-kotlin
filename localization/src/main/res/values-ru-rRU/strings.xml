@@ -302,7 +302,7 @@
     <string name="add_sort">Добавить сортировку</string>
     <string name="apply">Применить</string>
     <string name="add_filter">Добавить фильтр</string>
-    <string name="relation_format_tag">Multiselect</string>
+    <string name="relation_format_tag">Множественный выбор</string>
     <string name="unknown_number_of_objects">Неизвестное число объектов</string>
     <string name="sort_from_first_to_last">Первый → Последний</string>
     <string name="sort_from_last_to_first">Последний → Первый</string>
@@ -385,7 +385,7 @@
     <string name="default_object_type_title">Тип объекта по умолчанию</string>
     <string name="name_layout_basic">Базовый</string>
     <string name="name_layout_profile">Профиль</string>
-    <string name="name_layout_participant">Participant</string>
+    <string name="name_layout_participant">Участник</string>
     <string name="name_layout_todo">Задача</string>
     <string name="name_layout_set">Набор</string>
     <string name="name_layout_collection">Коллекция</string>
@@ -977,7 +977,7 @@
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_join_button_text">Присоединись</string>
     <string name="onboarding_log_in_button_text">Войти</string>
-    <string name="onboarding_invite_code_title">Enter your invite code</string>
+    <string name="onboarding_invite_code_title">Введите код приглашения</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
@@ -1043,7 +1043,7 @@
     <string name="sharing_menu_save_as_section_name">Сохранить как</string>
     <string name="sharing_menu_save_as_note_option">Заметка</string>
     <string name="sharing_menu_save_as_bookmark_option">Закладка</string>
-    <string name="sharing_menu_save_as_image_option">Image</string>
+    <string name="sharing_menu_save_as_image_option">Изображение</string>
     <string name="sharing_menu_save_as_file_option">Файл</string>
     <string name="sharing_menu_save_as_images_option">Images</string>
     <string name="sharing_menu_save_as_files_option">Files</string>

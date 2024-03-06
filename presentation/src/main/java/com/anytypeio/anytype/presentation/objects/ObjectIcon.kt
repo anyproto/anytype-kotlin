@@ -134,3 +134,22 @@ sealed class ObjectIcon {
         }
     }
 }
+
+sealed class SpaceMemberIconView {
+    data class Placeholder(val name: String) : SpaceMemberIconView()
+    data class Image(val url: String, val name: String) : SpaceMemberIconView()
+
+    companion object {
+        fun icon(obj: ObjectWrapper.Participant, urlBuilder: UrlBuilder) : SpaceMemberIconView {
+            return when {
+                !obj.iconImage.isNullOrEmpty() -> Image(
+                    url = urlBuilder.thumbnail(obj.iconImage!!),
+                    name = obj.name.orEmpty()
+                )
+                else -> {
+                    Placeholder(name = obj.name.orEmpty())
+                }
+            }
+        }
+    }
+}

@@ -969,7 +969,7 @@
     <string name="onboarding_terms_and_policy_terms">\u00A0使用的条款\u00A0</string>
     <string name="onboarding_terms_and_policy_infix">" 和 "</string>
     <string name="onboarding_terms_and_policy_privacy">隐私\u00A0政策</string>
-    <string name="onboarding_join_button_text">Join</string>
+    <string name="onboarding_join_button_text">加入</string>
     <string name="onboarding_log_in_button_text">登录</string>
     <string name="onboarding_invite_code_title">填写邀请码</string>
     <string name="onboarding_invite_code_description">如果你没有，只需要打开anytype.io并注册到等候列表。</string>
@@ -1120,10 +1120,10 @@
     <string name="multiplayer_share_invite_link">分享邀请链接</string>
     <string name="multiplayer_share_invite_link_description">发送此链接来邀请他人。在他们的请求批准时分配访问权限。</string>
     <string name="multiplayer_invite_link">邀请链接</string>
-    <string name="multiplayer_join_a_space">Join a space</string>
+    <string name="multiplayer_join_a_space">加入空间</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
-    <string name="mulitplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
-    <string name="multiplayer_space_request_to_join">Request to join</string>
+    <string name="mulitplayer_request_to_join_explanation">一旦空间所有者批准您的请求，您将与访问权所有者一起加入该空间。</string>
+    <string name="multiplayer_space_request_to_join">申请加入</string>
     <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %2$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
     <string name="multiplayer_share_space">共享空间</string>
@@ -1140,7 +1140,7 @@
     <string name="multiplayer_space_request_reject">Reject</string>
     <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
-    <string name="multiplayer_request_sent_toast">Request sent</string>
+    <string name="multiplayer_request_sent_toast">已发送申请</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Let’s build\ntogether</string>

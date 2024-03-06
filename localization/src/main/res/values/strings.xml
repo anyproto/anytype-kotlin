@@ -1387,4 +1387,10 @@
     <string name="payments_button_learn">Learn more</string>
     <string name="payments_button_contact">Contact</string>
 
+    <string name="payments_member_link">Membership levels details</string>
+    <string name="payments_privacy_link">Privacy policy</string>
+    <string name="payments_terms_link">Terms and conditions</string>
+    <string name="payments_let_us_link_start">Would you like to use Anytype for business, education, etc.?</string>
+    <string name="payments_let_us_link_end">Please let us know here.</string>
+
 </resources>

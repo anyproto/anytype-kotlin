@@ -1145,4 +1145,30 @@
     <string name="multiplayer_space_join_request_header">%1$s heeft verzocht om deel te nemen aan de ruimte %2$s</string>
     <string name="multiplayer_remove_member">Verwijder lid</string>
     <!--endregion-->
+    <!--region PAYMENTS -->
+    <string name="payments_header">Let’s build\ntogether</string>
+    <string name="payments_subheader">Deelnemen aan het Anytype netwerk betekent bijdragen aan het verhaal</string>
+    <string name="payments_card_text_1">Maak samen met ons</string>
+    <string name="payments_card_description_1">Blijf nauw verbonden met ons team en onze gemeenschap. Neem deel aan gesprekken met het team, beïnvloed de ontwikkeling van Anytype en geef je mening over functies.</string>
+    <string name="payments_card_text_2">Verdien voordelen</string>
+    <string name="payments_card_description_2">Our members have unique identity on Anytype Network, more storage, shared spaces and members per space for extensive collaboration.</string>
+    <string name="payments_card_text_3">Ondersteun de visie</string>
+    <string name="payments_card_description_3">Jouw bijdrage steunt ons onafhankelijke team en ondersteunt onze visie op een gebruiker-gestuurde, veilige en gezamenlijke digitale omgeving.</string>
+    <string name="payments_card_text_4">Investeer in verbinding</string>
+    <string name="payments_card_description_4">Our software is free by design, but we thrive on the network that connects us all. Support us, and you\'re investing in the very infrastructure that keeps us united.</string>
+    <string name="payments_tier_explorer">Verkenner</string>
+    <string name="payments_tier_explorer_description">Duik in het netwerk en geniet van de spanning van één-op-één samenwerking</string>
+    <string name="payments_tier_builder">Bouwer</string>
+    <string name="payments_tier_builder_description">Ontgrendel de magie van de samenwerking tussen meerdere partijen en geniet van de hoogwaardige ondersteuning</string>
+    <string name="payments_tier_cocreator">Co-creator</string>
+    <string name="payments_tier_cocreator_description">Ondersteun ons avontuur en ontgrendel exclusieve toegang en voordelen</string>
+    <string name="payments_tier_custom">Custom</string>
+    <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
+    <string name="payments_button_learn">Ontdek meer</string>
+    <string name="payments_button_contact">Contacteer</string>
+    <string name="payments_member_link">Lidmaatschap niveaus details</string>
+    <string name="payments_privacy_link">Privacybeleid</string>
+    <string name="payments_terms_link">Algemene voorwaarden</string>
+    <string name="payments_let_us_link_start">Wil je Anytype gebruiken voor werk, opleiding, etc.?</string>
+    <string name="payments_let_us_link_end">Laat het ons hier weten.</string>
 </resources>

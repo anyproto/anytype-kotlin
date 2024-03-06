@@ -1144,6 +1144,7 @@
     <string name="multiplayer_space_request_reject">Weiger</string>
     <string name="multiplayer_space_join_request_header">%1$s heeft verzocht om deel te nemen aan de ruimte %2$s</string>
     <string name="multiplayer_remove_member">Verwijder lid</string>
+    <string name="multiplayer_request_sent_toast">Verzoek verzonden</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Let’s build\ntogether</string>

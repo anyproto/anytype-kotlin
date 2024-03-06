@@ -285,13 +285,6 @@ class ShareSpaceViewModel(
         object Dismiss : Command()
     }
 
-    sealed class Config {
-        object Init : Config()
-        data class Success(
-            val canStopSharing: Boolean
-        ) : Config()
-    }
-
     companion object {
         const val SHARE_SPACE_SUBSCRIPTION = "share-space-subscription"
     }

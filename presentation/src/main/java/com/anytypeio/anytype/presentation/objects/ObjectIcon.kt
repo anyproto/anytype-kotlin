@@ -141,9 +141,10 @@ sealed class SpaceMemberIconView {
 
     companion object {
         fun icon(obj: ObjectWrapper.Participant, urlBuilder: UrlBuilder) : SpaceMemberIconView {
+            val icon = obj.iconImage
             return when {
-                !obj.iconImage.isNullOrEmpty() -> Image(
-                    url = urlBuilder.thumbnail(obj.iconImage!!),
+                !icon.isNullOrEmpty() -> Image(
+                    url = urlBuilder.thumbnail(icon),
                     name = obj.name.orEmpty()
                 )
                 else -> {

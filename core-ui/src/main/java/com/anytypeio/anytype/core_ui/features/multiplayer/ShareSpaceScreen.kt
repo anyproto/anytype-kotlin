@@ -66,7 +66,7 @@ import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 @Composable
 fun ShareSpaceScreen(
     members: List<ShareSpaceMemberView>,
-    viewState: ShareSpaceViewModel.ViewState,
+    shareLinkViewState: ShareSpaceViewModel.ShareLinkViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
@@ -143,18 +143,18 @@ fun ShareSpaceScreen(
                 }
             }
         }
-        when(viewState) {
-            ShareSpaceViewModel.ViewState.Init -> {
+        when(shareLinkViewState) {
+            ShareSpaceViewModel.ShareLinkViewState.Init -> {
                 // Do nothing.
             }
-            is ShareSpaceViewModel.ViewState.Share -> {
+            is ShareSpaceViewModel.ShareLinkViewState.Share -> {
                 Box(
                     modifier = Modifier
                         .padding(16.dp)
                         .align(Alignment.BottomStart)
                 ) {
                     ShareInviteLinkCard(
-                        link = viewState.link,
+                        link = shareLinkViewState.link,
                         onShareInviteClicked = onShareInviteLinkClicked,
                         onRegenerateInviteLinkClicked = onRegenerateInviteLinkClicked
                     )
@@ -458,7 +458,7 @@ fun SpaceUnjoinRequestPreview() {
 @Preview
 fun ShareSpaceScreenPreview() {
     ShareSpaceScreen(
-        viewState = ShareSpaceViewModel.ViewState.Share(
+        shareLinkViewState = ShareSpaceViewModel.ShareLinkViewState.Share(
             link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssg..."
         ),
         onShareInviteLinkClicked = {},

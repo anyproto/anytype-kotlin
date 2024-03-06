@@ -48,7 +48,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
                 ) {
                     ShareSpaceScreen(
-                        viewState = vm.viewState.collectAsStateWithLifecycle().value,
+                        shareLinkViewState = vm.shareLinkViewState.collectAsStateWithLifecycle().value,
                         onRegenerateInviteLinkClicked = vm::onRegenerateInviteLinkClicked,
                         onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
                         members = vm.members.collectAsStateWithLifecycle().value,

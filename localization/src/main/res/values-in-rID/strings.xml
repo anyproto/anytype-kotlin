@@ -1140,6 +1140,7 @@
     <string name="multiplayer_space_request_reject">Tolak</string>
     <string name="multiplayer_space_join_request_header">%1$s meminta bergabung ke ruang %2$s</string>
     <string name="multiplayer_remove_member">Hapus anggota</string>
+    <string name="multiplayer_request_sent_toast">Permintaan terkirim</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Let’s build\ntogether</string>

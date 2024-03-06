@@ -25,6 +25,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -40,9 +41,9 @@ class ShareSpaceViewModel(
 ) : BaseViewModel() {
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
-
     val shareLinkViewState = MutableStateFlow<ShareLinkViewState>(ShareLinkViewState.Init)
     val commands = MutableSharedFlow<Command>()
+    val canStopSharing = MutableStateFlow(false)
 
     init {
         proceedWithGeneratingInviteLink()
@@ -66,6 +67,12 @@ class ShareSpaceViewModel(
                         obj = ObjectWrapper.Participant(wrapper.map),
                         urlBuilder = urlBuilder
                     )
+                }
+            }.onEach { results ->
+                canStopSharing.value = results.any { result ->
+                    val member = result.obj
+                    member.identity == configStorage.getOrNull()?.profile
+                            && member.permissions == ParticipantPermissions.OWNER
                 }
             }.collect {
                 members.value = it
@@ -212,11 +219,9 @@ class ShareSpaceViewModel(
     }
 
     fun onStopSharingSpaceClicked() {
+        Timber.d("onStopSharingClicked")
         viewModelScope.launch {
-            val user = members.value.firstOrNull { member ->
-                member.obj.identity == configStorage.getOrNull()?.profile
-            }
-            if (user != null && user.obj.permissions == ParticipantPermissions.OWNER) {
+            if (canStopSharing.value) {
                 stopSharingSpace.async(
                     params = params.space
                 ).fold(
@@ -277,6 +282,14 @@ class ShareSpaceViewModel(
     sealed class Command {
         data class ShareInviteLink(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
+        object Dismiss : Command()
+    }
+
+    sealed class Config {
+        object Init : Config()
+        data class Success(
+            val canStopSharing: Boolean
+        ) : Config()
     }
 
     companion object {

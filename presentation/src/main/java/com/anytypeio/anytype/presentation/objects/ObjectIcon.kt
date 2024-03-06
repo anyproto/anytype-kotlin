@@ -147,9 +147,7 @@ sealed class SpaceMemberIconView {
                     url = urlBuilder.thumbnail(icon),
                     name = obj.name.orEmpty()
                 )
-                else -> {
-                    Placeholder(name = obj.name.orEmpty())
-                }
+                else -> Placeholder(name = obj.name.orEmpty())
             }
         }
     }

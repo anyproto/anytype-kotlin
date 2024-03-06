@@ -1331,35 +1331,7 @@
     <!--endregion-->
 
     <!--region PAYMENTS -->
-
-    <string-array name="payments_tiers">
-        <item>@string/payments_tier_explorer</item>
-        <item>@string/payments_tier_builder</item>
-        <item>@string/payments_tier_cocreator</item>
-        <item>@string/payments_tier_custom</item>
-    </string-array>
-
-    <string-array name="payments_tiers_descriptions">
-        <item>@string/payments_tier_explorer_description</item>
-        <item>@string/payments_tier_builder_description</item>
-        <item>@string/payments_tier_cocreator_description</item>
-        <item>@string/payments_tier_custom_description</item>
-    </string-array>
-
-    <string-array name="payments_cards_title">
-        <item>@string/payments_card_text_1</item>
-        <item>@string/payments_card_text_2</item>
-        <item>@string/payments_card_text_3</item>
-        <item>@string/payments_card_text_4</item>
-    </string-array>
-
-    <string-array name="payments_cards_description">
-        <item>@string/payments_card_description_1</item>
-        <item>@string/payments_card_description_2</item>
-        <item>@string/payments_card_description_3</item>
-        <item>@string/payments_card_description_4</item>
-    </string-array>
-
+    
     <string name="payments_header">Let’s build\ntogether</string>
     <string name="payments_subheader">Joining Anytype network means contributing to its story</string>
 

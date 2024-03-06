@@ -222,17 +222,5 @@
     <color name="date_selected_container_color">@color/palette_very_light_orange</color>
     <color name="widget_edit_view_stroke_color_active">@color/palette_system_amber_50</color>
     <color name="widget_edit_view_stroke_color_inactive">@color/shape_primary</color>
-    <color name="payments_main_color_start">#F6F6F6</color>
-    <color name="payments_main_color_end">#CFF5CE</color>
-    <color name="payments_explorer_start">#00CFFAFF</color>
-    <color name="payments_explorer_end">#CFFAFF</color>
-    <color name="payments_builder_start">#ACA996</color>
-    <color name="payments_builder_end">#ACA996</color>
-    <color name="payments_cocreator_start">#ACA996</color>
-    <color name="payments_cocreator_end">#ACA996</color>
-    <color name="payments_custom_start">#ACA996</color>
-    <color name="payments_custom_end">#ACA996</color>
-
-
 
 </resources>

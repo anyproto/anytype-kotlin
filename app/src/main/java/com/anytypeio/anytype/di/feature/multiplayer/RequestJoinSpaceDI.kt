@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import dagger.Binds
@@ -48,7 +49,7 @@ object RequestJoinSpaceModule {
 
     @PerDialog
     @Provides
-    fun provideSpaceInviteResolver() : SpaceInviteResolver = SpaceInviteResolver.Default
+    fun provideSpaceInviteResolver() : SpaceInviteResolver = DefaultSpaceInviteResolver
 }
 
 interface RequestJoinSpaceDependencies : ComponentDependencies {

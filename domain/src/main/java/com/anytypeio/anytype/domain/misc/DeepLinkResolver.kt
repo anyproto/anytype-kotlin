@@ -9,5 +9,6 @@ interface DeepLinkResolver {
         sealed class Import : Action() {
             object Experience : Action()
         }
+        data class Invite(val link: String) : Action()
     }
 }

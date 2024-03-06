@@ -1145,6 +1145,7 @@
     <string name="multiplayer_space_request_reject">Rifiuta</string>
     <string name="multiplayer_space_join_request_header">%1$s ha richiesto di unirsi allo spazio %2$s</string>
     <string name="multiplayer_remove_member">Remove member</string>
+    <string name="multiplayer_request_sent_toast">Richiesta inviata</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Let’s build\ntogether</string>

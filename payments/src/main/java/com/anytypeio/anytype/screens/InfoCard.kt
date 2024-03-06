@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
@@ -38,7 +37,6 @@ fun InfoCard(
 
     Column(
         modifier = Modifier
-            .width(configuration.screenWidthDp.dp)
             .height(284.dp)
             .background(color = colorResource(id = R.color.shape_tertiary)),
         horizontalAlignment = Alignment.CenterHorizontally

@@ -1146,24 +1146,24 @@
     <string name="multiplayer_remove_member">Supprimer un membre</string>
     <!--endregion-->
     <!--region PAYMENTS -->
-    <string name="payments_header">Let’s build\ntogether</string>
+    <string name="payments_header">Construisons ensemble</string>
     <string name="payments_subheader">Rejoindre le réseau Anytype signifie contribuer à son histoire</string>
     <string name="payments_card_text_1">Co-créez avec nous</string>
     <string name="payments_card_description_1">Restez en contact étroit avec notre équipe et notre communauté. Rejoignez les conférences avec l\'équipe, influencez l\'évolution de Anytype et ayez votre mot à dire sur les fonctionnalités.</string>
     <string name="payments_card_text_2">Gagnez des avantages</string>
-    <string name="payments_card_description_2">Our members have unique identity on Anytype Network, more storage, shared spaces and members per space for extensive collaboration.</string>
+    <string name="payments_card_description_2">Nos membres ont une identité unique sur Anytype Network, plus de stockage, des espaces partagés et des membres par espace pour une collaboration étendue.</string>
     <string name="payments_card_text_3">Soutenir la vision</string>
     <string name="payments_card_description_3">Votre contribution soutient notre équipe indépendante et soutient notre vision d\'un environnement numérique axé sur l\'utilisateur, sécurisé et collaboratif.</string>
     <string name="payments_card_text_4">Investir dans la connectivité</string>
-    <string name="payments_card_description_4">Our software is free by design, but we thrive on the network that connects us all. Support us, and you\'re investing in the very infrastructure that keeps us united.</string>
+    <string name="payments_card_description_4">Notre logiciel est gratuit par conception, mais nous prospérons sur le réseau qui nous connecte tous. Soutenez-nous, et vous investirez dans l\'infrastructure qui nous maintient unis.</string>
     <string name="payments_tier_explorer">Explorer</string>
-    <string name="payments_tier_explorer_description">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
+    <string name="payments_tier_explorer_description">Plongez dans le réseau et profitez du frisson de la collaboration entre personnes</string>
     <string name="payments_tier_builder">Constructeur</string>
-    <string name="payments_tier_builder_description">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string name="payments_tier_builder_description">Débloquez la magie de la collaboration multipartite et bénéficiez d\'un support haut de gamme</string>
     <string name="payments_tier_cocreator">Co -Créateurs</string>
     <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
-    <string name="payments_tier_custom">Custom</string>
-    <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
+    <string name="payments_tier_custom">Personnaliser</string>
+    <string name="payments_tier_custom_description">Abonnement adapté à vos besoins et préférences spécifiques</string>
     <string name="payments_button_learn">En savoir plus</string>
     <string name="payments_button_contact">Contact</string>
     <string name="payments_member_link">Détails des niveaux d\'adhésion</string>

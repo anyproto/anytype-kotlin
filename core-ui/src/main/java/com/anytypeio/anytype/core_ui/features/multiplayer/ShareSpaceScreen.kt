@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
@@ -47,6 +46,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
@@ -102,7 +102,7 @@ fun ShareSpaceScreen(
                     title = stringResource(R.string.multiplayer_members_and_requests)
                 )
             }
-            members.forEach { member ->
+            members.forEachIndexed { index, member ->
                 item {
                     when(val config = member.config) {
                         is ShareSpaceMemberView.Config.Member -> {
@@ -134,6 +134,9 @@ fun ShareSpaceScreen(
                                 }
                             )
                         }
+                    }
+                    if (index != members.lastIndex) {
+                        Divider()
                     }
                 }
             }
@@ -245,10 +248,7 @@ private fun SpaceMember(
                         )
                     }
                     }
-                    Divider(
-                        thickness = 0.5.dp,
-                        color = colorResource(id = R.color.shape_primary)
-                    )
+                    Divider()
                     DropdownMenuItem(
                         onClick = {
                             onCanEditClicked().also {
@@ -270,10 +270,7 @@ private fun SpaceMember(
                         )
                     }
                     }
-                    Divider(
-                        thickness = 0.5.dp,
-                        color = colorResource(id = R.color.shape_primary)
-                    )
+                    Divider()
                     DropdownMenuItem(
                         onClick = {
                             isMemberMenuExpanded = false

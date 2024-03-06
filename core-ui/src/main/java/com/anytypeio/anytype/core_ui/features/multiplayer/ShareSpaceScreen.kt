@@ -75,6 +75,7 @@ fun ShareSpaceScreen(
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
     onCanEditClicked: (ShareSpaceMemberView) -> Unit,
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
+    onStopSharingClicked: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -88,16 +89,47 @@ fun ShareSpaceScreen(
                 }
             }
             item {
+                var isMenuExpanded by remember { mutableStateOf(false) }
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Toolbar(title = stringResource(R.string.multiplayer_share_space))
-                    Image(
+                    Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(end = 16.dp)
-                        ,
-                        painter = painterResource(id = R.drawable.ic_action_more),
-                        contentDescription = "Menu button"
-                    )
+                    ) {
+                        if (canStopSharing) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_action_more),
+                                contentDescription = "Menu button",
+                                modifier = Modifier.noRippleClickable {
+                                    isMenuExpanded = true
+                                }
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = isMenuExpanded,
+                            onDismissRequest = {
+                                isMenuExpanded = false
+                            },
+                            modifier = Modifier.background(
+                                color = colorResource(id = R.color.background_secondary)
+                            )
+                        ) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    onStopSharingClicked()
+                                    isMenuExpanded = false
+                                }
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.multiplayer_space_stop_sharing),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.palette_dark_red),
+                                    modifier = Modifier.weight(1.0f)
+                                )
+                            }
+                        }
+                    }
                 }
             }
             item {
@@ -526,7 +558,8 @@ fun ShareSpaceScreenPreview() {
         onRemoveMemberClicked = {},
         onCanViewClicked = {},
         onCanEditClicked = {},
-        canStopSharing = false
+        canStopSharing = false,
+        onStopSharingClicked = {}
     )
 }
 

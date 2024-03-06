@@ -57,7 +57,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onApproveUnjoinRequestClicked = vm::onApproveUnjoinRequestClicked,
                         onCanEditClicked = vm::onCanEditClicked,
                         onCanViewClicked = vm::onCanViewClicked,
-                        onRemoveMemberClicked = vm::onRemoveMemberClicked
+                        onRemoveMemberClicked = vm::onRemoveMemberClicked,
+                        onStopSharingClicked = vm::onStopSharingSpaceClicked
                     )
                 }
                 LaunchedEffect(Unit) {

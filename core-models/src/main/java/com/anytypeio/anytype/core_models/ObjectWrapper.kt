@@ -319,6 +319,7 @@ sealed class ObjectWrapper {
         val id: Id by default
         val identity: Id by default
         val name: String? by default
+        val iconImage: String? by default
 
         val status
             get() = getSingleValue<Double>(Relations.PARTICIPANT_STATUS)

@@ -12,12 +12,14 @@ import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ApproveJoinSpaceRequest
 import com.anytypeio.anytype.domain.multiplayer.DeclineSpaceJoinRequest
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.ViewState
+import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -28,7 +30,8 @@ class SpaceJoinRequestViewModel(
     private val approveJoinSpaceRequest: ApproveJoinSpaceRequest,
     private val declineSpaceJoinRequest: DeclineSpaceJoinRequest,
     private val searchObjects: SearchObjects,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val urlBuilder: UrlBuilder
 ): BaseViewModel() {
 
     val isDismissed = MutableStateFlow(false)
@@ -108,7 +111,11 @@ class SpaceJoinRequestViewModel(
                     is State.Init -> ViewState.Init
                     is State.Success -> ViewState.Success(
                         memberName = curr.member.name.orEmpty(),
-                        spaceName = curr.spaceView.name.orEmpty()
+                        spaceName = curr.spaceView.name.orEmpty(),
+                        icon = SpaceMemberIconView.icon(
+                            obj = curr.member,
+                            urlBuilder = urlBuilder
+                        )
                     )
                 }
             }
@@ -212,7 +219,8 @@ class SpaceJoinRequestViewModel(
         private val approveJoinSpaceRequest: ApproveJoinSpaceRequest,
         private val declineSpaceJoinRequest: DeclineSpaceJoinRequest,
         private val searchObjects: SearchObjects,
-        private val spaceManager: SpaceManager
+        private val spaceManager: SpaceManager,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = SpaceJoinRequestViewModel(
@@ -220,7 +228,8 @@ class SpaceJoinRequestViewModel(
             declineSpaceJoinRequest = declineSpaceJoinRequest,
             approveJoinSpaceRequest = approveJoinSpaceRequest,
             searchObjects = searchObjects,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            urlBuilder = urlBuilder
         ) as T
     }
 
@@ -237,7 +246,11 @@ class SpaceJoinRequestViewModel(
 
     sealed class ViewState {
         object Init: ViewState()
-        data class Success(val memberName: String, val spaceName: String): ViewState()
+        data class Success(
+            val memberName: String,
+            val spaceName: String,
+            val icon: SpaceMemberIconView
+        ): ViewState()
         object Error: ViewState()
     }
 }

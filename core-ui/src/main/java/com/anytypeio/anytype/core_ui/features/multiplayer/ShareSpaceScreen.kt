@@ -65,6 +65,7 @@ import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @Composable
 fun ShareSpaceScreen(
+    canStopSharing: Boolean,
     members: List<ShareSpaceMemberView>,
     shareLinkViewState: ShareSpaceViewModel.ShareLinkViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
@@ -524,7 +525,8 @@ fun ShareSpaceScreenPreview() {
         onViewRequestClicked = {},
         onRemoveMemberClicked = {},
         onCanViewClicked = {},
-        onCanEditClicked = {}
+        onCanEditClicked = {},
+        canStopSharing = false
     )
 }
 

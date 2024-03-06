@@ -49,6 +49,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 ) {
                     ShareSpaceScreen(
                         shareLinkViewState = vm.shareLinkViewState.collectAsStateWithLifecycle().value,
+                        canStopSharing = vm.canStopSharing.collectAsStateWithLifecycle().value,
                         onRegenerateInviteLinkClicked = vm::onRegenerateInviteLinkClicked,
                         onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
                         members = vm.members.collectAsStateWithLifecycle().value,
@@ -95,6 +96,9 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         member = command.member
                     )
                 )
+            }
+            is ShareSpaceViewModel.Command.Dismiss -> {
+                dismiss()
             }
         }
     }

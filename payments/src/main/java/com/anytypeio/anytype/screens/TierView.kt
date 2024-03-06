@@ -32,13 +32,12 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
-import com.anytypeio.anytype.viewmodel.TierState
+import com.anytypeio.anytype.models.Tier
 
 @Composable
-private fun Tier(
+private fun TierView(
     title: String,
     subTitle: String,
-    price: String,
     colorGradient: Color,
     radialGradient: Color,
     icon: Int,
@@ -120,69 +119,59 @@ fun PriceOrOption() {
 }
 
 @Composable
-fun TierByType(tier: TierState) {
-    when (tier) {
-        is TierState.Builder -> {
-            Tier(
-                title = stringResource(id = R.string.payments_tier_builder),
-                subTitle = stringResource(id = R.string.payments_tier_builder_description),
-                price = tier.price,
-                colorGradient = Color(0xFFE4E7FF),
-                radialGradient = Color(0xFFA5AEFF),
-                icon = R.drawable.logo_builder,
-                buttonText = stringResource(id = R.string.payments_button_learn),
-                onClick = { /*TODO*/ }
-            )
-        }
+fun TierByType(tier: Tier) {
+    val resources = mapTierToResources(tier)
+    TierView(
+        title = resources.title,
+        subTitle = resources.subtitle,
+        colorGradient = resources.colorGradient,
+        radialGradient = resources.radialGradient,
+        icon = resources.mediumIcon,
+        buttonText = stringResource(id = R.string.payments_button_learn),
+        onClick = { /*TODO*/ }
+    )
+}
 
-        is TierState.CoCreator -> {
-            Tier(
-                title = stringResource(id = R.string.payments_tier_cocreator),
-                subTitle = stringResource(id = R.string.payments_tier_cocreator_description),
-                price = tier.price,
-                colorGradient = Color(0xFFFBEAEA),
-                radialGradient = Color(0xFFF05F5F),
-                icon = R.drawable.logo_co_creator,
-                buttonText = stringResource(id = R.string.payments_button_learn),
-                onClick = { /*TODO*/ }
-            )
-        }
-
-        is TierState.Custom -> {
-            Tier(
-                title = stringResource(id = R.string.payments_tier_custom),
-                subTitle = stringResource(id = R.string.payments_tier_custom_description),
-                price = tier.price,
-                colorGradient = Color(0xFFFBEAFF),
-                radialGradient = Color(0xFFFE86DE3),
-                icon = R.drawable.logo_custom,
-                buttonText = stringResource(id = R.string.payments_button_learn),
-                onClick = { /*TODO*/ }
-            )
-        }
-
-        is TierState.Explorer -> {
-            Tier(
-                title = stringResource(id = R.string.payments_tier_explorer),
-                subTitle = stringResource(id = R.string.payments_tier_explorer_description),
-                price = tier.price,
-                colorGradient = Color(0xFFCFFAFF),
-                radialGradient = Color(0xFF24BFD4),
-                icon = R.drawable.logo_explorer,
-                buttonText = stringResource(id = R.string.payments_button_learn),
-                onClick = { /*TODO*/ }
-            )
-        }
+@Composable
+fun mapTierToResources(tier: Tier): TierResources {
+    return when (tier) {
+        is Tier.Builder -> TierResources(
+            title = stringResource(id = R.string.payments_tier_builder),
+            subtitle = stringResource(id = R.string.payments_tier_builder_description),
+            mediumIcon = R.drawable.logo_builder,
+            colorGradient = Color(0xFFE4E7FF),
+            radialGradient = Color(0xFFA5AEFF)
+        )
+        is Tier.CoCreator -> TierResources(
+            title = stringResource(id = R.string.payments_tier_cocreator),
+            subtitle = stringResource(id = R.string.payments_tier_cocreator_description),
+            mediumIcon = R.drawable.logo_co_creator,
+            colorGradient = Color(0xFFFBEAEA),
+            radialGradient = Color(0xFFF05F5F)
+        )
+        is Tier.Custom -> TierResources(
+            title = stringResource(id = R.string.payments_tier_custom),
+            subtitle = stringResource(id = R.string.payments_tier_custom_description),
+            mediumIcon = R.drawable.logo_custom,
+            colorGradient = Color(0xFFFBEAFF),
+            radialGradient = Color(0xFFFE86DE3)
+        )
+        is Tier.Explorer -> TierResources(
+            title = stringResource(id = R.string.payments_tier_explorer),
+            subtitle = stringResource(id = R.string.payments_tier_explorer_description),
+            mediumIcon = R.drawable.logo_explorer,
+            colorGradient = Color(0xFFCFFAFF),
+            radialGradient = Color(0xFF24BFD4)
+        )
     }
 }
 
 @Preview
 @Composable
 fun TierPreview() {
-    Tier(
+    TierView(
         title = "Explorer",
         subTitle = "Dive into the network and enjoy the thrill of one-on-one collaboration",
-        price = "9.99",
         buttonText = "Subscribe",
         onClick = {},
         icon = R.drawable.logo_co_creator,
@@ -197,4 +186,12 @@ val titleTextStyle = TextStyle(
     fontSize = 17.sp,
     lineHeight = 24.sp,
     letterSpacing = (-0.024).em
+)
+
+data class TierResources(
+    val title: String,
+    val subtitle: String,
+    val mediumIcon: Int,
+    val colorGradient: Color,
+    val radialGradient: Color
 )

@@ -111,7 +111,8 @@ interface MainComponent :
     AddToAnytypeDependencies,
     ShareSpaceDependencies,
     SpaceJoinRequestDependencies,
-    RequestJoinSpaceDependencies
+    RequestJoinSpaceDependencies,
+    PaymentsComponentDependencies
 {
 
     fun inject(app: AndroidApplication)

@@ -1146,4 +1146,30 @@
     <string name="multiplayer_space_join_request_header">%1$s ha richiesto di unirsi allo spazio %2$s</string>
     <string name="multiplayer_remove_member">Remove member</string>
     <!--endregion-->
+    <!--region PAYMENTS -->
+    <string name="payments_header">Let’s build\ntogether</string>
+    <string name="payments_subheader">Unire alla rete di Anytype significa contribuire alla sua storia</string>
+    <string name="payments_card_text_1">Co-crea con noi</string>
+    <string name="payments_card_description_1">Rimani strettamente connesso con il nostro team e la nostra comunità. Partecipa alle chiamate con il team, influenzando l\'evoluzione di Anytype e dando il tuo parere sulle funzionalità.</string>
+    <string name="payments_card_text_2">Ottieni vantaggi</string>
+    <string name="payments_card_description_2">Our members have unique identity on Anytype Network, more storage, shared spaces and members per space for extensive collaboration.</string>
+    <string name="payments_card_text_3">Supporta la visione</string>
+    <string name="payments_card_description_3">Il tuo contributo supporta il nostro team indipendente e sostiene la nostra visione di un ambiente digitale basato sugli utenti, sicuro e collaborativo.</string>
+    <string name="payments_card_text_4">Investi nella connettività</string>
+    <string name="payments_card_description_4">Our software is free by design, but we thrive on the network that connects us all. Support us, and you\'re investing in the very infrastructure that keeps us united.</string>
+    <string name="payments_tier_explorer">Explorer</string>
+    <string name="payments_tier_explorer_description">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
+    <string name="payments_tier_builder">Builder</string>
+    <string name="payments_tier_builder_description">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string name="payments_tier_cocreator">Co-Creator</string>
+    <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
+    <string name="payments_tier_custom">Custom</string>
+    <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
+    <string name="payments_button_learn">Learn more</string>
+    <string name="payments_button_contact">Contatto</string>
+    <string name="payments_member_link">Dettagli dei livelli di membership</string>
+    <string name="payments_privacy_link">Informativa sulla privacy</string>
+    <string name="payments_terms_link">Termini e condizioni</string>
+    <string name="payments_let_us_link_start">Vorresti utilizzare Anytype per affari, educazione, ecc.?</string>
+    <string name="payments_let_us_link_end">Per piacere, fatecelo sapere qui.</string>
 </resources>

@@ -1906,4 +1906,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun spaceStopSharing(request: Rpc.Space.StopSharing.Request): Rpc.Space.StopSharing.Response {
+        val encoded = Service.spaceStopSharing(
+            Rpc.Space.StopSharing.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Space.StopSharing.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Space.StopSharing.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

@@ -2478,6 +2478,16 @@ class Middleware @Inject constructor(
         )
     }
 
+    @Throws(Exception::class)
+    fun stopSharingSpace(space: SpaceId) {
+        val request = Rpc.Space.StopSharing.Request(
+            spaceId = space.id
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceStopSharing(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
     private fun logRequest(any: Any) {
         logger.logRequest(any).also {
             if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {

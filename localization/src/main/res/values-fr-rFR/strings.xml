@@ -1144,6 +1144,7 @@
     <string name="multiplayer_space_request_reject">Rejeter</string>
     <string name="multiplayer_space_join_request_header">%1$s a demandé à rejoindre l\'espace %2$s</string>
     <string name="multiplayer_remove_member">Supprimer un membre</string>
+    <string name="multiplayer_request_sent_toast">Demande envoyée</string>
     <!--endregion-->
     <!--region PAYMENTS -->
     <string name="payments_header">Construisons ensemble</string>
@@ -1161,7 +1162,7 @@
     <string name="payments_tier_builder">Constructeur</string>
     <string name="payments_tier_builder_description">Débloquez la magie de la collaboration multipartite et bénéficiez d\'un support haut de gamme</string>
     <string name="payments_tier_cocreator">Co -Créateurs</string>
-    <string name="payments_tier_cocreator_description">Support our adventure and unlock exclusive access and perks</string>
+    <string name="payments_tier_cocreator_description">Soutenez notre aventure et débloquez un accès exclusif et des avantages</string>
     <string name="payments_tier_custom">Personnaliser</string>
     <string name="payments_tier_custom_description">Abonnement adapté à vos besoins et préférences spécifiques</string>
     <string name="payments_button_learn">En savoir plus</string>

@@ -52,6 +52,13 @@
                 <data android:scheme="anytype"
                     android:host="main" />
             </intent-filter>
+            <intent-filter android:label="Anytype DEEP LINK for invites">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="anytype"
+                    android:host="invite" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <category android:name="android.intent.category.DEFAULT" />

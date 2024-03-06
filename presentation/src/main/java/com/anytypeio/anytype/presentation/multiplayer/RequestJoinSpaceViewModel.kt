@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.ViewState
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -24,31 +25,34 @@ class RequestJoinSpaceViewModel(
 ) : BaseViewModel() {
 
     val state = MutableStateFlow<ViewState<SpaceInviteView>>(ViewState.Loading)
-    val isDismissed = MutableStateFlow(false)
+    val commands = MutableSharedFlow<Command>(0)
 
     init {
         proceedWithGettingSpaceInviteView()
     }
 
     private fun proceedWithGettingSpaceInviteView() {
-        val fileKey = runCatching { spaceInviteResolver.parseFileKey(params.link) }
-        val contentId = runCatching { spaceInviteResolver.parseContentId(params.link) }
-        if (fileKey.isSuccess && contentId.isSuccess) {
+        val fileKey = spaceInviteResolver.parseFileKey(params.link)
+        val contentId = spaceInviteResolver.parseContentId(params.link)
+        if (fileKey != null && contentId != null) {
             viewModelScope.launch {
                 getSpaceInviteView.async(
                     GetSpaceInviteView.Params(
-                        inviteContentId = contentId.getOrThrow(),
-                        inviteFileKey = fileKey.getOrThrow()
+                        inviteContentId = contentId,
+                        inviteFileKey = fileKey
                     )
                 ).fold(
                     onSuccess = { view ->
-
+                        state.value = ViewState.Success(view)
                     },
                     onFailure = { e ->
                         Timber.e(e, "Error while getting space invite view")
                     }
                 )
             }
+        } else {
+            Timber.e("Could not parse invite link: ${params.link}")
+            state.value = ViewState.Error("Could not parse invite link: ${params.link}")
         }
     }
 
@@ -62,23 +66,28 @@ class RequestJoinSpaceViewModel(
             }
             is ViewState.Success -> {
                 viewModelScope.launch {
-                    sendJoinSpaceRequest.async(
-                        SendJoinSpaceRequest.Params(
-                            space = curr.data.space,
-                            network = null,
-                            inviteFileKey = spaceInviteResolver.parseFileKey(params.link),
-                            inviteContentId = spaceInviteResolver.parseContentId(params.link)
-                        )
-                    ).fold(
-                        onFailure = { e ->
-                            Timber.e(e, "Error while sending space join request").also {
-                                sendToast(e.msg())
+                    val fileKey = spaceInviteResolver.parseFileKey(params.link)
+                    val contentId = spaceInviteResolver.parseContentId(params.link)
+                    if (contentId != null && fileKey != null) {
+                        sendJoinSpaceRequest.async(
+                            SendJoinSpaceRequest.Params(
+                                space = curr.data.space,
+                                network = null,
+                                inviteFileKey = fileKey,
+                                inviteContentId = contentId
+                            )
+                        ).fold(
+                            onFailure = { e ->
+                                Timber.e(e, "Error while sending space join request").also {
+                                    sendToast(e.msg())
+                                }
+                            },
+                            onSuccess = {
+                                commands.emit(Command.Toast.RequestSent)
+                                commands.emit(Command.Dismiss)
                             }
-                        },
-                        onSuccess = {
-                            isDismissed.value = true
-                        }
-                    )
+                        )
+                    }
                 }
             }
         }
@@ -100,4 +109,11 @@ class RequestJoinSpaceViewModel(
     }
 
     data class Params(val link: String)
+
+    sealed class Command {
+        sealed class Toast : Command() {
+            object RequestSent : Toast()
+        }
+        object Dismiss: Command()
+    }
 }

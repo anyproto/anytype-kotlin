@@ -11,10 +11,10 @@ import org.robolectric.annotation.Config
 
 @Config(sdk = [Build.VERSION_CODES.P])
 @RunWith(RobolectricTestRunner::class)
-class Test {
+class DefaultSpaceInviteResolverTest {
 
     @Test
-    fun test() {
+    fun `should parse file key and content id`() {
         val fileKeyValue = MockDataFactory.randomUuid()
         val cidValue = MockDataFactory.randomUuid()
 

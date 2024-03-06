@@ -53,8 +53,8 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
+import com.anytypeio.anytype.models.Tier
 import com.anytypeio.anytype.viewmodel.PaymentsState
-import com.anytypeio.anytype.viewmodel.TierState
 
 @Composable
 fun MainPaymentsScreen(state: PaymentsState) {
@@ -78,7 +78,7 @@ fun MainPaymentsScreen(state: PaymentsState) {
                 Header(state = state)
                 Spacer(modifier = Modifier.height(32.dp))
                 InfoCards()
-                Tiers(state = state)
+                TiersList(state = state)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
                 Divider()
@@ -140,7 +140,7 @@ private fun Header(state: PaymentsState.Success) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun Tiers(state: PaymentsState.Success) {
+fun TiersList(state: PaymentsState.Success) {
     val itemsScroll = rememberLazyListState(initialFirstVisibleItemIndex = 1)
     LazyRow(
         state = itemsScroll,
@@ -152,7 +152,16 @@ fun Tiers(state: PaymentsState.Success) {
         flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
     ) {
         itemsIndexed(state.tiers) { index, tier ->
-            TierByType(tier = tier)
+            val resources = mapTierToResources(tier)
+            TierView(
+                title = resources.title,
+                subTitle = resources.subtitle,
+                colorGradient = resources.colorGradient,
+                radialGradient = resources.radialGradient,
+                icon = resources.smallIcon,
+                buttonText = stringResource(id = R.string.payments_button_learn),
+                onClick = { /*TODO*/ }
+            )
         }
     }
 }
@@ -257,10 +266,10 @@ fun BottomText() {
 @Composable
 fun MainPaymentsScreenPreview() {
     val tiers = listOf(
-        TierState.Explorer("999", isCurrent = true),
-        TierState.Builder("999", isCurrent = false),
-        TierState.CoCreator("999", isCurrent = false),
-        TierState.Custom("999", isCurrent = false)
+        Tier.Explorer("999", isCurrent = true),
+        Tier.Builder("999", isCurrent = false),
+        Tier.CoCreator("999", isCurrent = false),
+        Tier.Custom("999", isCurrent = false)
     )
     MainPaymentsScreen(PaymentsState.Success(tiers))
 }

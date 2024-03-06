@@ -1141,4 +1141,30 @@
     <string name="multiplayer_space_join_request_header">%1$s meminta bergabung ke ruang %2$s</string>
     <string name="multiplayer_remove_member">Hapus anggota</string>
     <!--endregion-->
+    <!--region PAYMENTS -->
+    <string name="payments_header">Let’s build\ntogether</string>
+    <string name="payments_subheader">Bergabung dengan jaringan Anytype berarti turut berkontribusi pada kisahnya</string>
+    <string name="payments_card_text_1">Ciptakan bersama dengan kami</string>
+    <string name="payments_card_description_1">Tetap terhubung dengan tim dan komunitas kami. Bergabung dengan panggilan tim kami, buat evolusi Anytype berkembang, dan beri masukan fitur baru.</string>
+    <string name="payments_card_text_2">Dapatkan Keuntungan</string>
+    <string name="payments_card_description_2">Our members have unique identity on Anytype Network, more storage, shared spaces and members per space for extensive collaboration.</string>
+    <string name="payments_card_text_3">Dukung Visi Kami</string>
+    <string name="payments_card_description_3">Kontribusimu akan mendukung tim independen kami dan juga visi kami meraih lingkungan digital yang berbasis pengguna, aman, dan kolaboratif.</string>
+    <string name="payments_card_text_4">Berinvestasilah pada Konektivitas</string>
+    <string name="payments_card_description_4">Our software is free by design, but we thrive on the network that connects us all. Support us, and you\'re investing in the very infrastructure that keeps us united.</string>
+    <string name="payments_tier_explorer">Penjelajah</string>
+    <string name="payments_tier_explorer_description">Masuki dalam jaringan dan nikmati keseruan kolaborasi one-on-one</string>
+    <string name="payments_tier_builder">Pembangun</string>
+    <string name="payments_tier_builder_description">Dapatkan keajaiban kolaborasi multi-party dan nikmati dukungan tertinggi</string>
+    <string name="payments_tier_cocreator">Pencipta Bersama</string>
+    <string name="payments_tier_cocreator_description">Dukung petualangan kami dan dapatkan akses dan manfaat eksklusif</string>
+    <string name="payments_tier_custom">Custom</string>
+    <string name="payments_tier_custom_description">Membership tailored to your specific needs and preferences</string>
+    <string name="payments_button_learn">Pelajari lebih lanjut</string>
+    <string name="payments_button_contact">Kontak</string>
+    <string name="payments_member_link">Detail level langganan</string>
+    <string name="payments_privacy_link">Kebijakan privasi</string>
+    <string name="payments_terms_link">Syarat dan ketentuan</string>
+    <string name="payments_let_us_link_start">Apakah Anda ingin menggunakan Anytype untuk bisnis, pendidikan, dll.?</string>
+    <string name="payments_let_us_link_end">Silakan beri tahu kami di sini.</string>
 </resources>

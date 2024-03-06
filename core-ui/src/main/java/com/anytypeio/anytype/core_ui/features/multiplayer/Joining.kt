@@ -27,7 +27,7 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_GREEN
+import com.anytypeio.anytype.core_ui.foundation.GRADIENT_TYPE_BLUE
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -63,7 +63,7 @@ fun JoinSpaceScreen(
         Spacer(modifier = Modifier.height(16.dp))
         AlertIcon(
             icon = AlertConfig.Icon(
-                gradient = GRADIENT_TYPE_GREEN,
+                gradient = GRADIENT_TYPE_BLUE,
                 icon = R.drawable.ic_alert_message
             )
         )

@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
+import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.model.Indent
@@ -97,7 +97,7 @@ sealed class WidgetView {
             val icon: SpaceIconView,
             val type: SpaceType,
         ) : SpaceWidget() {
-            val shareable: Boolean get() = type == SHARED_SPACE_TYPE
+            val shareable: Boolean get() = type != PERSONAL_SPACE_TYPE
         }
     }
 

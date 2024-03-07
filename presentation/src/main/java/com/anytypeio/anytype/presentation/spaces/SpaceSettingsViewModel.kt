@@ -271,6 +271,24 @@ class SpaceSettingsViewModel(
         }
     }
 
+    fun onManageSharedSpaceClicked() {
+        // TODO get space id from params
+        viewModelScope.launch {
+            commands.emit(
+                Command.ManageSharedSpace(SpaceId(id = "TODO"))
+            )
+        }
+    }
+
+    fun onSharePrivateSpaceClicked() {
+        // TODO get space id from params
+        viewModelScope.launch {
+            commands.emit(
+                Command.SharePrivateSpace(SpaceId(id = "TODO"))
+            )
+        }
+    }
+
     data class SpaceData(
         val spaceId: Id?,
         val createdDateInMillis: Long?,
@@ -284,6 +302,8 @@ class SpaceSettingsViewModel(
 
     sealed class Command {
         data class ShareSpaceDebug(val filepath: Filepath) : Command()
+        data class SharePrivateSpace(val space: SpaceId) : Command()
+        data class ManageSharedSpace(val space: SpaceId) : Command()
     }
 
     class Factory @Inject constructor(

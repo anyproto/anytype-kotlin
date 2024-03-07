@@ -60,6 +60,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
 import com.anytypeio.anytype.ui.spaces.Section
@@ -70,6 +71,8 @@ import javax.inject.Inject
 import timber.log.Timber
 
 class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
+
+    // TODO provide space id as arguement
 
     @Inject
     lateinit var factory: SpaceSettingsViewModel.Factory
@@ -142,12 +145,8 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                     },
                     onDebugClicked = vm::onSpaceDebugClicked,
                     onRandomGradientClicked = vm::onRandomSpaceGradientClicked,
-                    onManageSharedSpaceClicked = {
-                        toast("TODO")
-                    },
-                    onSharePrivateSpaceClicked = {
-                        toast("TODO")
-                    }
+                    onManageSharedSpaceClicked = vm::onManageSharedSpaceClicked,
+                    onSharePrivateSpaceClicked = vm::onSharePrivateSpaceClicked
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {
@@ -174,6 +173,28 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                         Timber.e(e, "Error while sharing space debug").also {
                             toast("Error while sharing space debug. Please try again later.")
                         }
+                    }
+                }
+                is Command.ManageSharedSpace -> {
+                    runCatching {
+                        findNavController()
+                            .navigate(
+                                R.id.shareSpaceScreen,
+                                ShareSpaceFragment.args(command.space)
+                            )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening share-space screen")
+                    }
+                }
+                is Command.SharePrivateSpace -> {
+                    runCatching {
+                        findNavController()
+                            .navigate(
+                                R.id.shareSpaceScreen,
+                                ShareSpaceFragment.args(command.space)
+                            )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening share-space screen")
                     }
                 }
             }

@@ -181,6 +181,7 @@ fun AlertIcon(icon: AlertConfig.Icon) {
     val gradientColors = when(icon.gradient) {
         GRADIENT_TYPE_GREEN -> listOf(GREEN_FROM, GREEN_TO)
         GRADIENT_TYPE_RED -> listOf(RED_FROM, RED_TO)
+        GRADIENT_TYPE_BLUE -> listOf(BLUE_FROM, BLUE_TO)
         else -> emptyList()
     }
     Box(
@@ -385,4 +386,4 @@ val GREEN_TO = Color(0xFF00BCF2AF)
 val RED_FROM = Color(0xFFFFBCBC)
 val RED_TO = Color(0xFF00FFE6E6)
 val BLUE_FROM = Color(0xFF80D1FF)
-val BLUE_TO = Color(0xFFBBE7FF)
+val BLUE_TO = Color(0xFF00BBE7FF)

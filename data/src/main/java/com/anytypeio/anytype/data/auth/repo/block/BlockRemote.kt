@@ -23,9 +23,9 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
-import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 interface BlockRemote {
@@ -390,7 +390,7 @@ interface BlockRemote {
     suspend fun approveSpaceRequest(
         space: SpaceId,
         identity: Id,
-        permissions: ParticipantPermissions
+        permissions: SpaceMemberPermissions
     )
     suspend fun declineSpaceRequest(space: SpaceId, identity: Id)
 
@@ -399,7 +399,7 @@ interface BlockRemote {
     suspend fun changeSpaceMemberPermissions(
         space: SpaceId,
         identity: Id,
-        permission: ParticipantPermissions
+        permission: SpaceMemberPermissions
     )
 
     suspend fun sendJoinSpaceRequest(command: Command.SendJoinSpaceRequest)
@@ -408,4 +408,6 @@ interface BlockRemote {
         inviteContentId: Id,
         inviteFileKey: String
     ): SpaceInviteView
+
+    suspend fun stopSharingSpace(space: SpaceId)
 }

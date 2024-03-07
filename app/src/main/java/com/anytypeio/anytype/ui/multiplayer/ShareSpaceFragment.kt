@@ -48,7 +48,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
                 ) {
                     ShareSpaceScreen(
-                        viewState = vm.viewState.collectAsStateWithLifecycle().value,
+                        shareLinkViewState = vm.shareLinkViewState.collectAsStateWithLifecycle().value,
+                        canStopSharing = vm.canStopSharing.collectAsStateWithLifecycle().value,
                         onRegenerateInviteLinkClicked = vm::onRegenerateInviteLinkClicked,
                         onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
                         members = vm.members.collectAsStateWithLifecycle().value,
@@ -56,7 +57,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onApproveUnjoinRequestClicked = vm::onApproveUnjoinRequestClicked,
                         onCanEditClicked = vm::onCanEditClicked,
                         onCanViewClicked = vm::onCanViewClicked,
-                        onRemoveMemberClicked = vm::onRemoveMemberClicked
+                        onRemoveMemberClicked = vm::onRemoveMemberClicked,
+                        onStopSharingClicked = vm::onStopSharingSpaceClicked
                     )
                 }
                 LaunchedEffect(Unit) {
@@ -95,6 +97,9 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         member = command.member
                     )
                 )
+            }
+            is ShareSpaceViewModel.Command.Dismiss -> {
+                dismiss()
             }
         }
     }

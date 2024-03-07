@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -45,10 +45,13 @@ fun ShareInviteLinkCard(
     onShareInviteClicked: () -> Unit,
     onRegenerateInviteLinkClicked: () -> Unit
 ) {
-    Card(
+    ElevatedCard(
         modifier = modifier,
         colors = CardDefaults.cardColors(
-            containerColor = colorResource(id = R.color.palette_light_blue)
+            containerColor = colorResource(id = R.color.background_primary)
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 16.dp
         )
 
     ) {

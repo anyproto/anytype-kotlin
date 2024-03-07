@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Text
@@ -28,13 +27,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -44,6 +48,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.light
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Section
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
@@ -56,11 +61,13 @@ import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
+import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @Composable
 fun ShareSpaceScreen(
+    canStopSharing: Boolean,
     members: List<ShareSpaceMemberView>,
-    viewState: ShareSpaceViewModel.ViewState,
+    shareLinkViewState: ShareSpaceViewModel.ShareLinkViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
@@ -68,6 +75,7 @@ fun ShareSpaceScreen(
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
     onCanEditClicked: (ShareSpaceMemberView) -> Unit,
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
+    onStopSharingClicked: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -81,16 +89,47 @@ fun ShareSpaceScreen(
                 }
             }
             item {
+                var isMenuExpanded by remember { mutableStateOf(false) }
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Toolbar(title = stringResource(R.string.multiplayer_share_space))
-                    Image(
+                    Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(end = 16.dp)
-                        ,
-                        painter = painterResource(id = R.drawable.ic_action_more),
-                        contentDescription = "Menu button"
-                    )
+                    ) {
+                        if (canStopSharing) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_action_more),
+                                contentDescription = "Menu button",
+                                modifier = Modifier.noRippleClickable {
+                                    isMenuExpanded = true
+                                }
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = isMenuExpanded,
+                            onDismissRequest = {
+                                isMenuExpanded = false
+                            },
+                            modifier = Modifier.background(
+                                color = colorResource(id = R.color.background_secondary)
+                            )
+                        ) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    onStopSharingClicked()
+                                    isMenuExpanded = false
+                                }
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.multiplayer_space_stop_sharing),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.palette_dark_red),
+                                    modifier = Modifier.weight(1.0f)
+                                )
+                            }
+                        }
+                    }
                 }
             }
             item {
@@ -98,7 +137,7 @@ fun ShareSpaceScreen(
                     title = stringResource(R.string.multiplayer_members_and_requests)
                 )
             }
-            members.forEach { member ->
+            members.forEachIndexed { index, member ->
                 item {
                     when(val config = member.config) {
                         is ShareSpaceMemberView.Config.Member -> {
@@ -113,12 +152,14 @@ fun ShareSpaceScreen(
                                 },
                                 onRemoveMemberClicked = {
                                     onRemoveMemberClicked(member)
-                                }
+                                },
+                                icon = member.icon
                             )
                         }
                         is ShareSpaceMemberView.Config.Request -> {
                             SpaceMemberRequest(
                                 member = member.obj,
+                                icon = member.icon,
                                 request = config,
                                 onViewRequestClicked = {
                                     onViewRequestClicked(member)
@@ -129,21 +170,24 @@ fun ShareSpaceScreen(
                             )
                         }
                     }
+                    if (index != members.lastIndex) {
+                        Divider()
+                    }
                 }
             }
         }
-        when(viewState) {
-            ShareSpaceViewModel.ViewState.Init -> {
+        when(shareLinkViewState) {
+            ShareSpaceViewModel.ShareLinkViewState.Init -> {
                 // Do nothing.
             }
-            is ShareSpaceViewModel.ViewState.Share -> {
+            is ShareSpaceViewModel.ShareLinkViewState.Share -> {
                 Box(
                     modifier = Modifier
                         .padding(16.dp)
                         .align(Alignment.BottomStart)
                 ) {
                     ShareInviteLinkCard(
-                        link = viewState.link,
+                        link = shareLinkViewState.link,
                         onShareInviteClicked = onShareInviteLinkClicked,
                         onRegenerateInviteLinkClicked = onRegenerateInviteLinkClicked
                     )
@@ -155,7 +199,8 @@ fun ShareSpaceScreen(
 
 @Composable
 private fun SpaceMember(
-    member: ObjectWrapper.Participant,
+    member: ObjectWrapper.SpaceMember,
+    icon: SpaceMemberIconView,
     config: ShareSpaceMemberView.Config.Member,
     onCanEditClicked: () -> Unit,
     onCanViewClicked: () -> Unit,
@@ -168,12 +213,9 @@ private fun SpaceMember(
             .fillMaxWidth()
     ) {
         Spacer(modifier = Modifier.width(16.dp))
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(color = Color.Blue)
-                .align(Alignment.CenterVertically)
+        SpaceMemberIcon(
+            icon = icon,
+            modifier = Modifier.align(Alignment.CenterVertically)
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column(
@@ -241,10 +283,7 @@ private fun SpaceMember(
                         )
                     }
                     }
-                    Divider(
-                        thickness = 0.5.dp,
-                        color = colorResource(id = R.color.shape_primary)
-                    )
+                    Divider()
                     DropdownMenuItem(
                         onClick = {
                             onCanEditClicked().also {
@@ -266,10 +305,7 @@ private fun SpaceMember(
                         )
                     }
                     }
-                    Divider(
-                        thickness = 0.5.dp,
-                        color = colorResource(id = R.color.shape_primary)
-                    )
+                    Divider()
                     DropdownMenuItem(
                         onClick = {
                             isMemberMenuExpanded = false
@@ -290,8 +326,52 @@ private fun SpaceMember(
 }
 
 @Composable
+fun SpaceMemberIcon(
+    icon: SpaceMemberIconView,
+    modifier: Modifier,
+    iconSize: Dp = 48.dp,
+    textSize: TextUnit = 28.sp
+) {
+    when (icon) {
+        is SpaceMemberIconView.Placeholder -> {
+            Box(
+                modifier = modifier
+                    .size(iconSize)
+                    .clip(CircleShape)
+                    .background(color = colorResource(id = R.color.text_tertiary))
+            ) {
+                Text(
+                    text = icon
+                        .name
+                        .ifEmpty { stringResource(id = R.string.u) }
+                        .take(1)
+                        .uppercase(),
+                    modifier = Modifier.align(Alignment.Center),
+                    style = TextStyle(
+                        fontSize = textSize,
+                        fontWeight = FontWeight.SemiBold,
+                        color = colorResource(id = R.color.text_white)
+                    )
+                )
+            }
+        }
+
+        is SpaceMemberIconView.Image -> {
+            Image(
+                painter = rememberAsyncImagePainter(icon.url),
+                contentDescription = "Icon from URI",
+                modifier = modifier
+                    .size(iconSize)
+                    .clip(CircleShape)
+            )
+        }
+    }
+}
+
+@Composable
 private fun SpaceMemberRequest(
-    member: ObjectWrapper.Participant,
+    member: ObjectWrapper.SpaceMember,
+    icon: SpaceMemberIconView,
     request: ShareSpaceMemberView.Config.Request,
     onViewRequestClicked: () -> Unit,
     onApproveUnjoinRequestClicked: () -> Unit
@@ -302,12 +382,9 @@ private fun SpaceMemberRequest(
             .fillMaxWidth()
     ) {
         Spacer(modifier = Modifier.width(16.dp))
-        Box(
-            modifier = Modifier
-                .size(48.dp)
-                .clip(CircleShape)
-                .background(color = Color.Red)
-                .align(Alignment.CenterVertically)
+        SpaceMemberIcon(
+            icon = icon,
+            modifier = Modifier.align(Alignment.CenterVertically)
         )
         Spacer(modifier = Modifier.width(12.dp))
         Column(
@@ -378,13 +455,14 @@ private fun SpaceMemberRequest(
 @Preview
 fun SpaceJoinRequestPreview() {
     SpaceMemberRequest(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "1",
                 Relations.NAME to "Konstantin",
                 Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
             )
         ),
+        icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
         request = ShareSpaceMemberView.Config.Request.Join,
         onApproveUnjoinRequestClicked = {},
         onViewRequestClicked = {}
@@ -395,13 +473,14 @@ fun SpaceJoinRequestPreview() {
 @Preview
 fun SpaceUnjoinRequestPreview() {
     SpaceMemberRequest(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "1",
                 Relations.NAME to "Konstantin",
                 Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
             )
         ),
+        icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
         request = ShareSpaceMemberView.Config.Request.Unjoin,
         onApproveUnjoinRequestClicked = {},
         onViewRequestClicked = {}
@@ -412,7 +491,7 @@ fun SpaceUnjoinRequestPreview() {
 @Preview
 fun ShareSpaceScreenPreview() {
     ShareSpaceScreen(
-        viewState = ShareSpaceViewModel.ViewState.Share(
+        shareLinkViewState = ShareSpaceViewModel.ShareLinkViewState.Share(
             link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssg..."
         ),
         onShareInviteLinkClicked = {},
@@ -420,45 +499,57 @@ fun ShareSpaceScreenPreview() {
         members = buildList {
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "1",
                             Relations.NAME to "Konstantin",
                             Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
                         )
+                    ),
+                    icon = SpaceMemberIconView.Placeholder(
+                        name = "Konstantin"
                     )
                 )
             )
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Evgenii"
                         )
+                    ),
+                    icon = SpaceMemberIconView.Placeholder(
+                        name = "Evgenii"
                     )
                 )
             )
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Aleksey"
                         )
                     ),
-                    config = ShareSpaceMemberView.Config.Request.Unjoin
+                    config = ShareSpaceMemberView.Config.Request.Unjoin,
+                    icon = SpaceMemberIconView.Placeholder(
+                        name = "Aleksey"
+                    )
                 )
             )
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Anton"
                         )
                     ),
-                    config = ShareSpaceMemberView.Config.Request.Join
+                    config = ShareSpaceMemberView.Config.Request.Join,
+                    icon = SpaceMemberIconView.Placeholder(
+                        name = "Anton"
+                    )
                 )
             )
         },
@@ -466,7 +557,9 @@ fun ShareSpaceScreenPreview() {
         onViewRequestClicked = {},
         onRemoveMemberClicked = {},
         onCanViewClicked = {},
-        onCanEditClicked = {}
+        onCanEditClicked = {},
+        canStopSharing = false,
+        onStopSharingClicked = {}
     )
 }
 
@@ -474,12 +567,13 @@ fun ShareSpaceScreenPreview() {
 @Preview
 private fun SpaceOwnerMemberPreview() {
     SpaceMember(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "2",
                 Relations.NAME to "Evgenii"
             )
         ),
+        icon = SpaceMemberIconView.Placeholder(name = "Evgenii"),
         config = ShareSpaceMemberView.Config.Member.Owner,
         onCanEditClicked = {},
         onCanViewClicked = {},
@@ -491,12 +585,13 @@ private fun SpaceOwnerMemberPreview() {
 @Preview
 private fun SpaceEditorMemberPreview() {
     SpaceMember(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "2",
                 Relations.NAME to "Evgenii"
             )
         ),
+        icon = SpaceMemberIconView.Placeholder(name = "Evgenii"),
         config = ShareSpaceMemberView.Config.Member.Writer,
         onCanEditClicked = {},
         onCanViewClicked = {},

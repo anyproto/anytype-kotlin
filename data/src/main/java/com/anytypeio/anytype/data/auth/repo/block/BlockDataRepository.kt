@@ -23,9 +23,9 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
-import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.data.auth.exception.AnytypeNeedsUpgradeException
 import com.anytypeio.anytype.data.auth.exception.NotFoundObjectException
@@ -908,7 +908,7 @@ class BlockDataRepository(
     override suspend fun approveSpaceRequest(
         space: SpaceId,
         identity: Id,
-        permissions: ParticipantPermissions
+        permissions: SpaceMemberPermissions
     ) {
         remote.approveSpaceRequest(
             space = space,
@@ -934,7 +934,7 @@ class BlockDataRepository(
     override suspend fun changeSpaceMemberPermissions(
         space: SpaceId,
         identity: Id,
-        permission: ParticipantPermissions
+        permission: SpaceMemberPermissions
     ) {
         remote.changeSpaceMemberPermissions(
             space = space,
@@ -955,5 +955,9 @@ class BlockDataRepository(
             inviteContentId = inviteContentId,
             inviteFileKey = inviteFileKey
         )
+    }
+
+    override suspend fun stopSharingSpace(space: SpaceId) {
+        remote.stopSharingSpace(space = space)
     }
 }

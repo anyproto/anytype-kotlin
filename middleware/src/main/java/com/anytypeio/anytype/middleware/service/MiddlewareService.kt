@@ -518,5 +518,8 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun spaceRequestDecline(request: Rpc.Space.RequestDecline.Request): Rpc.Space.RequestDecline.Response
 
+    @Throws(Exception::class)
+    fun spaceStopSharing(request: Rpc.Space.StopSharing.Request): Rpc.Space.StopSharing.Response
+
     //endregion
 }

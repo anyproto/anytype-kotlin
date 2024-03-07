@@ -918,4 +918,8 @@ class BlockMiddleware(
             inviteFileKey = inviteFileKey
         )
     }
+
+    override suspend fun stopSharingSpace(space: SpaceId) {
+        middleware.stopSharingSpace(space)
+    }
 }

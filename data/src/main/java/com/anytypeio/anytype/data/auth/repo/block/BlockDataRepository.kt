@@ -956,4 +956,8 @@ class BlockDataRepository(
             inviteFileKey = inviteFileKey
         )
     }
+
+    override suspend fun stopSharingSpace(space: SpaceId) {
+        remote.stopSharingSpace(space = space)
+    }
 }

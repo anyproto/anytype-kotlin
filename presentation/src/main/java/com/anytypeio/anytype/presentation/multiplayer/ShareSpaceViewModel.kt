@@ -10,12 +10,14 @@ import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
+import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -23,6 +25,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -31,17 +34,23 @@ class ShareSpaceViewModel(
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
     private val removeSpaceMembers: RemoveSpaceMembers,
     private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
+    private val stopSharingSpace: StopSharingSpace,
     private val container: StorelessSubscriptionContainer,
+    private val configStorage: ConfigStorage,
     private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
-
-    val viewState = MutableStateFlow<ViewState>(ViewState.Init)
+    val shareLinkViewState = MutableStateFlow<ShareLinkViewState>(ShareLinkViewState.Init)
     val commands = MutableSharedFlow<Command>()
+    val canStopSharing = MutableStateFlow(false)
 
     init {
         proceedWithGeneratingInviteLink()
+        proceedWithSpaceMemberSubscription()
+    }
+
+    private fun proceedWithSpaceMemberSubscription() {
         viewModelScope.launch {
             container.subscribe(
                 StoreSearchParams(
@@ -59,6 +68,12 @@ class ShareSpaceViewModel(
                         urlBuilder = urlBuilder
                     )
                 }
+            }.onEach { results ->
+                canStopSharing.value = results.any { result ->
+                    val member = result.obj
+                    member.identity == configStorage.getOrNull()?.profile
+                            && member.permissions == ParticipantPermissions.OWNER
+                }
             }.collect {
                 members.value = it
             }
@@ -71,7 +86,7 @@ class ShareSpaceViewModel(
                 .async(params.space)
                 .fold(
                     onSuccess = { link ->
-                        viewState.value = ViewState.Share(link = link.scheme)
+                        shareLinkViewState.value = ShareLinkViewState.Share(link = link.scheme)
                     },
                     onFailure = {
                         Timber.e(it, "Error while generating invite link")
@@ -86,11 +101,11 @@ class ShareSpaceViewModel(
 
     fun onShareInviteLinkClicked() {
         viewModelScope.launch {
-            when(val value = viewState.value) {
-                ViewState.Init -> {
+            when(val value = shareLinkViewState.value) {
+                ShareLinkViewState.Init -> {
                     // Do nothing.
                 }
-                is ViewState.Share -> {
+                is ShareLinkViewState.Share -> {
                     commands.emit(Command.ShareInviteLink(value.link))
                 }
             }
@@ -203,6 +218,28 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onStopSharingSpaceClicked() {
+        Timber.d("onStopSharingClicked")
+        viewModelScope.launch {
+            if (canStopSharing.value) {
+                stopSharingSpace.async(
+                    params = params.space
+                ).fold(
+                    onSuccess = {
+                        Timber.d("Stopped sharing space")
+                    },
+                    onFailure = { e ->
+                        Timber.e(e, "Error while sharing space").also {
+                            sendToast(e.msg())
+                        }
+                    }
+                )
+            } else {
+                Timber.w("Something wrong with permissions.")
+            }
+        }
+    }
+
     override fun onCleared() {
         viewModelScope.launch {
             container.unsubscribe(subscriptions = listOf(SHARE_SPACE_SUBSCRIPTION))
@@ -214,7 +251,9 @@ class ShareSpaceViewModel(
         private val params: Params,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
         private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
+        private val stopSharingSpace: StopSharingSpace,
         private val removeSpaceMembers: RemoveSpaceMembers,
+        private val configStorage: ConfigStorage,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
@@ -224,8 +263,10 @@ class ShareSpaceViewModel(
             generateSpaceInviteLink = generateSpaceInviteLink,
             changeSpaceMemberPermissions = changeSpaceMemberPermissions,
             removeSpaceMembers = removeSpaceMembers,
+            stopSharingSpace = stopSharingSpace,
             container = container,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            configStorage = configStorage
         ) as T
     }
 
@@ -233,14 +274,15 @@ class ShareSpaceViewModel(
         val space: SpaceId
     )
 
-    sealed class ViewState {
-        object Init : ViewState()
-        data class Share(val link: String): ViewState()
+    sealed class ShareLinkViewState {
+        object Init : ShareLinkViewState()
+        data class Share(val link: String): ShareLinkViewState()
     }
 
     sealed class Command {
         data class ShareInviteLink(val link: String) : Command()
         data class ViewJoinRequest(val space: SpaceId, val member: Id) : Command()
+        object Dismiss : Command()
     }
 
     companion object {

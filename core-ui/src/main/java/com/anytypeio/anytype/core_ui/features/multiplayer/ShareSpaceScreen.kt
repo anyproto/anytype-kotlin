@@ -65,8 +65,9 @@ import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @Composable
 fun ShareSpaceScreen(
+    canStopSharing: Boolean,
     members: List<ShareSpaceMemberView>,
-    viewState: ShareSpaceViewModel.ViewState,
+    shareLinkViewState: ShareSpaceViewModel.ShareLinkViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
@@ -74,6 +75,7 @@ fun ShareSpaceScreen(
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
     onCanEditClicked: (ShareSpaceMemberView) -> Unit,
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
+    onStopSharingClicked: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -87,16 +89,47 @@ fun ShareSpaceScreen(
                 }
             }
             item {
+                var isMenuExpanded by remember { mutableStateOf(false) }
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Toolbar(title = stringResource(R.string.multiplayer_share_space))
-                    Image(
+                    Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(end = 16.dp)
-                        ,
-                        painter = painterResource(id = R.drawable.ic_action_more),
-                        contentDescription = "Menu button"
-                    )
+                    ) {
+                        if (canStopSharing) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_action_more),
+                                contentDescription = "Menu button",
+                                modifier = Modifier.noRippleClickable {
+                                    isMenuExpanded = true
+                                }
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = isMenuExpanded,
+                            onDismissRequest = {
+                                isMenuExpanded = false
+                            },
+                            modifier = Modifier.background(
+                                color = colorResource(id = R.color.background_secondary)
+                            )
+                        ) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    onStopSharingClicked()
+                                    isMenuExpanded = false
+                                }
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.multiplayer_space_stop_sharing),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.palette_dark_red),
+                                    modifier = Modifier.weight(1.0f)
+                                )
+                            }
+                        }
+                    }
                 }
             }
             item {
@@ -143,18 +176,18 @@ fun ShareSpaceScreen(
                 }
             }
         }
-        when(viewState) {
-            ShareSpaceViewModel.ViewState.Init -> {
+        when(shareLinkViewState) {
+            ShareSpaceViewModel.ShareLinkViewState.Init -> {
                 // Do nothing.
             }
-            is ShareSpaceViewModel.ViewState.Share -> {
+            is ShareSpaceViewModel.ShareLinkViewState.Share -> {
                 Box(
                     modifier = Modifier
                         .padding(16.dp)
                         .align(Alignment.BottomStart)
                 ) {
                     ShareInviteLinkCard(
-                        link = viewState.link,
+                        link = shareLinkViewState.link,
                         onShareInviteClicked = onShareInviteLinkClicked,
                         onRegenerateInviteLinkClicked = onRegenerateInviteLinkClicked
                     )
@@ -458,7 +491,7 @@ fun SpaceUnjoinRequestPreview() {
 @Preview
 fun ShareSpaceScreenPreview() {
     ShareSpaceScreen(
-        viewState = ShareSpaceViewModel.ViewState.Share(
+        shareLinkViewState = ShareSpaceViewModel.ShareLinkViewState.Share(
             link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssg..."
         ),
         onShareInviteLinkClicked = {},
@@ -524,7 +557,9 @@ fun ShareSpaceScreenPreview() {
         onViewRequestClicked = {},
         onRemoveMemberClicked = {},
         onCanViewClicked = {},
-        onCanEditClicked = {}
+        onCanEditClicked = {},
+        canStopSharing = false,
+        onStopSharingClicked = {}
     )
 }
 

@@ -10,7 +10,7 @@ import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
-import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 
 
 // ---------------------- BLOCKS ------------------------
@@ -509,9 +509,9 @@ fun NetworkMode.toMiddlewareModel(): MNetworkMode = when (this) {
     NetworkMode.CUSTOM -> MNetworkMode.CustomConfig
 }
 
-fun ParticipantPermissions.toMw() : MParticipantPermission = when(this) {
-    ParticipantPermissions.READER -> MParticipantPermission.Reader
-    ParticipantPermissions.WRITER -> MParticipantPermission.Writer
-    ParticipantPermissions.OWNER -> MParticipantPermission.Owner
-    ParticipantPermissions.NO_PERMISSIONS -> MParticipantPermission.NoPermissions
+fun SpaceMemberPermissions.toMw() : MParticipantPermission = when(this) {
+    SpaceMemberPermissions.READER -> MParticipantPermission.Reader
+    SpaceMemberPermissions.WRITER -> MParticipantPermission.Writer
+    SpaceMemberPermissions.OWNER -> MParticipantPermission.Owner
+    SpaceMemberPermissions.NO_PERMISSIONS -> MParticipantPermission.NoPermissions
 }

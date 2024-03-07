@@ -1,6 +1,12 @@
 package com.anytypeio.anytype.presentation.widgets
 
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
+import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
+import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -32,6 +38,7 @@ class SpaceWidgetContainer @Inject constructor(
                     targets = listOf(config.spaceView),
                     keys = buildList {
                         addAll(ObjectSearchConstants.defaultKeys)
+                        add(Relations.SPACE_ACCESS_TYPE)
                         add(Relations.ICON_OPTION)
                     }
                 )
@@ -41,13 +48,19 @@ class SpaceWidgetContainer @Inject constructor(
         }.mapNotNull { (config, results) ->
             val spaceObject = results.firstOrNull()
             if (spaceObject != null) {
+                val wrapper = ObjectWrapper.SpaceView(spaceObject.map)
                 WidgetView.SpaceWidget.View(
                     space = spaceObject,
                     icon = spaceObject.spaceIcon(
                         builder = urlBuilder,
                         spaceGradientProvider = spaceGradientProvider
                     ),
-                    type = spaceManager.getType(space = config.space)
+                    type = when(wrapper.spaceAccessType) {
+                        SpaceAccessType.PRIVATE -> PRIVATE_SPACE_TYPE
+                        SpaceAccessType.PERSONAL -> PERSONAL_SPACE_TYPE
+                        SpaceAccessType.SHARED -> SHARED_SPACE_TYPE
+                        else -> UNKNOWN_SPACE_TYPE
+                    }
                 )
             } else {
                 null

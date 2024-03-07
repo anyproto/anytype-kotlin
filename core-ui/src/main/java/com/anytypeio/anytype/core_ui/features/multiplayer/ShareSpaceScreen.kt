@@ -65,7 +65,7 @@ import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @Composable
 fun ShareSpaceScreen(
-    canStopSharing: Boolean,
+    isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
     shareLinkViewState: ShareSpaceViewModel.ShareLinkViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
@@ -97,7 +97,7 @@ fun ShareSpaceScreen(
                             .align(Alignment.CenterEnd)
                             .padding(end = 16.dp)
                     ) {
-                        if (canStopSharing) {
+                        if (isCurrentUserOwner) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_action_more),
                                 contentDescription = "Menu button",
@@ -143,6 +143,7 @@ fun ShareSpaceScreen(
                         is ShareSpaceMemberView.Config.Member -> {
                             SpaceMember(
                                 member = member.obj,
+                                isCurrentUserOwner = isCurrentUserOwner,
                                 config = config,
                                 onCanEditClicked = {
                                     onCanEditClicked(member)
@@ -199,6 +200,7 @@ fun ShareSpaceScreen(
 
 @Composable
 private fun SpaceMember(
+    isCurrentUserOwner: Boolean,
     member: ObjectWrapper.SpaceMember,
     icon: SpaceMemberIconView,
     config: ShareSpaceMemberView.Config.Member,
@@ -246,7 +248,7 @@ private fun SpaceMember(
                 color = colorResource(id = R.color.text_secondary)
             )
         }
-        if (config !is ShareSpaceMemberView.Config.Member.Owner) {
+        if (isCurrentUserOwner && config !is ShareSpaceMemberView.Config.Member.Owner) {
             Box(modifier = Modifier.align(Alignment.CenterVertically)) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_action_more),
@@ -558,7 +560,7 @@ fun ShareSpaceScreenPreview() {
         onRemoveMemberClicked = {},
         onCanViewClicked = {},
         onCanEditClicked = {},
-        canStopSharing = false,
+        isCurrentUserOwner = false,
         onStopSharingClicked = {}
     )
 }
@@ -577,7 +579,8 @@ private fun SpaceOwnerMemberPreview() {
         config = ShareSpaceMemberView.Config.Member.Owner,
         onCanEditClicked = {},
         onCanViewClicked = {},
-        onRemoveMemberClicked = {}
+        onRemoveMemberClicked = {},
+        isCurrentUserOwner = true
     )
 }
 
@@ -595,6 +598,7 @@ private fun SpaceEditorMemberPreview() {
         config = ShareSpaceMemberView.Config.Member.Writer,
         onCanEditClicked = {},
         onCanViewClicked = {},
-        onRemoveMemberClicked = {}
+        onRemoveMemberClicked = {},
+        isCurrentUserOwner = true
     )
 }

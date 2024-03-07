@@ -45,7 +45,7 @@ class ShareSpaceViewModel(
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
     val shareLinkViewState = MutableStateFlow<ShareLinkViewState>(ShareLinkViewState.Init)
     val commands = MutableSharedFlow<Command>()
-    val canStopSharing = MutableStateFlow(false)
+    val isCurrentUserOwner = MutableStateFlow(false)
 
     init {
         proceedWithGeneratingInviteLink()
@@ -54,6 +54,7 @@ class ShareSpaceViewModel(
 
     private fun proceedWithSpaceMemberSubscription() {
         viewModelScope.launch {
+            val account = getAccount.async(Unit).getOrNull()
             container.subscribe(
                 StoreSearchParams(
                     subscription = SHARE_SPACE_SUBSCRIPTION,
@@ -71,12 +72,10 @@ class ShareSpaceViewModel(
                     )
                 }
             }.onEach { results ->
-                val account = getAccount.async(Unit).getOrNull()?.id
-                canStopSharing.value = results.any { result ->
-                    val member = result.obj
-                    member.identity == account && member.permissions == OWNER
-                }.also { isOwnerFound ->
-                    if (!isOwnerFound) Timber.w("Owner not found")
+                isCurrentUserOwner.value = results.any { result ->
+                    with(result.obj) {
+                        identity.isNotEmpty() && identity == account?.id && permissions == OWNER
+                    }
                 }
             }.collect {
                 members.value = it
@@ -225,7 +224,7 @@ class ShareSpaceViewModel(
     fun onStopSharingSpaceClicked() {
         Timber.d("onStopSharingClicked")
         viewModelScope.launch {
-            if (canStopSharing.value) {
+            if (isCurrentUserOwner.value) {
                 stopSharingSpace.async(
                     params = params.space
                 ).fold(

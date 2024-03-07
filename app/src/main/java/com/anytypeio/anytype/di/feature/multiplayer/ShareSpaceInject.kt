@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -25,7 +26,6 @@ import dagger.Module
 )
 @PerDialog
 interface ShareSpaceComponent {
-
     @Component.Builder
     interface Builder {
         fun withDependencies(dependencies: ShareSpaceDependencies): Builder
@@ -39,14 +39,12 @@ interface ShareSpaceComponent {
 
 @Module
 object ShareSpaceModule {
-
     @Module
     interface Declarations {
         @PerScreen
         @Binds
         fun bindViewModelFactory(factory: ShareSpaceViewModel.Factory): ViewModelProvider.Factory
     }
-
 }
 
 interface ShareSpaceDependencies : ComponentDependencies {
@@ -55,4 +53,5 @@ interface ShareSpaceDependencies : ComponentDependencies {
     fun spaceManager(): SpaceManager
     fun dispatchers(): AppCoroutineDispatchers
     fun container(): StorelessSubscriptionContainer
+    fun config(): ConfigStorage
 }

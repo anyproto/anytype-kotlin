@@ -408,4 +408,6 @@ interface BlockRemote {
         inviteContentId: Id,
         inviteFileKey: String
     ): SpaceInviteView
+
+    suspend fun stopSharingSpace(space: SpaceId)
 }

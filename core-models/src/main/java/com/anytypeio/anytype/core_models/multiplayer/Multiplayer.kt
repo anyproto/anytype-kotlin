@@ -27,11 +27,17 @@ enum class ParticipantStatus(
     CANCELLED(5),
 }
 
-enum class ParticipantPermissions(
+enum class SpaceMemberPermissions(
     val code: Int
 ) {
     READER(0),
     WRITER(1),
     OWNER(2),
     NO_PERMISSIONS(3),
+}
+
+enum class SpaceAccessType(val code: Int) {
+    PRIVATE(0),
+    PERSONAL(1),
+    SHARED(2)
 }

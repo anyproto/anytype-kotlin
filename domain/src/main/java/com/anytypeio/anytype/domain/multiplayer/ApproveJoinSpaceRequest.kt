@@ -2,7 +2,7 @@ package com.anytypeio.anytype.domain.multiplayer
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
@@ -29,6 +29,6 @@ class ApproveJoinSpaceRequest @Inject constructor(
     data class Params(
         val space: SpaceId,
         val identity: Id,
-        val permissions: ParticipantPermissions
+        val permissions: SpaceMemberPermissions
     )
 }

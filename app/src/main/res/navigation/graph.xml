@@ -546,4 +546,8 @@
         android:id="@+id/spaceJoinRequestScreen"
         android:name="com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment"/>
 
+    <dialog
+        android:id="@+id/requestJoinSpaceScreen"
+        android:name="com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment"/>
+
 </navigation>

@@ -67,6 +67,7 @@
     <string name="deleted_account_danger_zone_msg">Zodra je een verzoek hebt ingediend om jouw account te verwijderen, heb je 30 dagen om dit verzoek te annuleren. Na 30 dagen worden jouw versleutelde accountgegevens permanent verwijderd uit de back-up node, je kunt je dan niet meer inloggen in Anytype op nieuwe apparaten.</string>
     <string name="danger_zone">Gevarenzone</string>
     <string name="snackbar_template_add">Nieuw sjabloon is toegevoegd aan het type</string>
+    <string name="settings_membership">Lidmaatschap</string>
     <string name="default_text_placeholder">Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
     <string name="default_url_placeholder">https://humanparts.medium.com/how-i-overcame-cult-trauma-with-psychedelics-4342c03a074c</string>
     <string name="multi_select_turn_into">Verander in</string>
@@ -970,7 +971,7 @@
     <string name="onboarding_terms_and_policy_terms">Voorwaarden\u00A0van\u00A0gebruik</string>
     <string name="onboarding_terms_and_policy_infix">" en "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Beleid</string>
-    <string name="onboarding_join_button_text">Join</string>
+    <string name="onboarding_join_button_text">Neem deel</string>
     <string name="onboarding_log_in_button_text">Aanmelden</string>
     <string name="onboarding_invite_code_title">Voer jouw uitnodigingscode in</string>
     <string name="onboarding_invite_code_description">Als je er geen hebt, ga dan naar anytype.io\nen schrijf je in op de wachtlijst.</string>
@@ -1074,7 +1075,7 @@
     <string name="date_type_older">Ouder</string>
     <string name="dates_days_ago">%1$s dagen geleden</string>
     <string name="dates_days_from">%1$s dagen vanaf nu</string>
-    <string name="settings_use_yamux">Use a reserve multiplex library</string>
+    <string name="settings_use_yamux">Gebruik een reserve multiplex bibliotheek</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban weergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
     <string name="error_calendar_view_not_supported">Agendaweergave is nog niet beschikbaar op mobiele telefoon.\nVerander type weergave (Instellingen -&gt; Weergave) of maak een nieuwe aan om toegang tot jouw gegevens te krijgen.</string>
@@ -1113,7 +1114,7 @@
     <string name="network_settings_self_host">Zelfgehost</string>
     <string name="network_settings_self_host_description">Back-up naar zelfgehost netwerk</string>
     <string name="network_settings_networks_section">Netwerken</string>
-    <string name="network_settings_troubleshooting_section">Troubleshooting</string>
+    <string name="network_settings_troubleshooting_section">Probleemoplossen</string>
     <string name="network_settings_provide_config_hint">Tik om je netwerkinstellingen aan te geven</string>
     <string name="network_settings_self_host_config">Huidige instellingen: %1$s</string>
     <string name="widget_types_show">Toon types</string>
@@ -1124,24 +1125,24 @@
     <string name="multiplayer_share_invite_link_description">Stuur deze link om anderen uit te nodigen. Wijs toegangsrechten toe na hun goedkeuring.</string>
     <string name="multiplayer_invite_link">Uitnodigingslink</string>
     <string name="multiplayer_join_a_space">Sluit je aan bij een ruimte</string>
-    <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
+    <string name="multiplayer_private_comment_for_a_space_owner">Persoonlijk bericht voor een eigenaar van de ruimte</string>
     <string name="mulitplayer_request_to_join_explanation">Zodra de eigenaar van de ruimte jouw verzoek heeft goedgekeurd, zul je toetreden tot de ruimte met de toegangsrechten die door de eigenaar zijn bepaald.</string>
     <string name="multiplayer_space_request_to_join">Verzoek om aan te sluiten</string>
-    <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %2$s. Send a request so space owner can let you in.</string>
-    <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
+    <string name="multiplayer_space_request_to_join_msg">Je bent uitgenodigd om deel te nemen aan de ruimte %1$s , aangemaakt door %2$s. Stuur een verzoek zodat de eigenaar van de ruimte je kan toelaten. </string>
+    <string name="multiplayer_tap_to_write_request_to_join_comment">Tik om je reactie te schrijven</string>
     <string name="multiplayer_share_space">Deel ruimte</string>
     <string name="multiplayer_members_and_requests">Leden en verzoeken</string>
-    <string name="multiplayer_unjoining_requested">Unjoining requested</string>
-    <string name="multiplayer_joining_requested">Joining requested</string>
-    <string name="multiplayer_approve_request">Approve</string>
-    <string name="multiplayer_view_request">View request</string>
+    <string name="multiplayer_unjoining_requested">Uitschrijven aangevraagd</string>
+    <string name="multiplayer_joining_requested">Deelnemen aangevraagd</string>
+    <string name="multiplayer_approve_request">Goedkeuren</string>
+    <string name="multiplayer_view_request">Bekijk verzoek</string>
     <string name="multiplayer_owner">Eigenaar</string>
     <string name="multiplayer_can_edit">Kan bewerken</string>
-    <string name="multiplayer_can_read">Can read</string>
-    <string name="multiplayer_space_add_viewer">Add viewer</string>
-    <string name="multiplayer_space_add_editor">Add editor</string>
+    <string name="multiplayer_can_read">Kan lezen</string>
+    <string name="multiplayer_space_add_viewer">Voeg lezer toe</string>
+    <string name="multiplayer_space_add_editor">Voeg bewerker toe</string>
     <string name="multiplayer_space_request_reject">Weiger</string>
-    <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
-    <string name="multiplayer_remove_member">Remove member</string>
+    <string name="multiplayer_space_join_request_header">%1$s heeft verzocht om deel te nemen aan de ruimte %2$s</string>
+    <string name="multiplayer_remove_member">Verwijder lid</string>
     <!--endregion-->
 </resources>

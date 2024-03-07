@@ -1,11 +1,20 @@
 package com.anytypeio.anytype.core_models.multiplayer
 
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+
 data class SpaceInviteLink(
     val fileKey: String,
     val contentId: String
 ) {
     val scheme = "anytype://invite/?cid=$contentId&key=$fileKey"
 }
+
+data class SpaceInviteView(
+    val space: SpaceId,
+    val spaceName: String,
+    val creatorName: String,
+    val spaceIconContentId: String
+)
 
 enum class ParticipantStatus(
     val code: Int

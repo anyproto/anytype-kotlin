@@ -12,10 +12,12 @@ import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ChangeSpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -29,7 +31,8 @@ class ShareSpaceViewModel(
     private val generateSpaceInviteLink: GenerateSpaceInviteLink,
     private val removeSpaceMembers: RemoveSpaceMembers,
     private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
-    private val container: StorelessSubscriptionContainer
+    private val container: StorelessSubscriptionContainer,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
@@ -51,7 +54,10 @@ class ShareSpaceViewModel(
                 )
             ).map { results ->
                 results.mapNotNull { wrapper ->
-                    ShareSpaceMemberView.fromObject(ObjectWrapper.Participant(wrapper.map))
+                    ShareSpaceMemberView.fromObject(
+                        obj = ObjectWrapper.Participant(wrapper.map),
+                        urlBuilder = urlBuilder
+                    )
                 }
             }.collect {
                 members.value = it
@@ -209,7 +215,8 @@ class ShareSpaceViewModel(
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
         private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
         private val removeSpaceMembers: RemoveSpaceMembers,
-        private val container: StorelessSubscriptionContainer
+        private val container: StorelessSubscriptionContainer,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -217,7 +224,8 @@ class ShareSpaceViewModel(
             generateSpaceInviteLink = generateSpaceInviteLink,
             changeSpaceMemberPermissions = changeSpaceMemberPermissions,
             removeSpaceMembers = removeSpaceMembers,
-            container = container
+            container = container,
+            urlBuilder = urlBuilder
         ) as T
     }
 
@@ -242,7 +250,8 @@ class ShareSpaceViewModel(
 
 data class ShareSpaceMemberView(
     val obj: ObjectWrapper.Participant,
-    val config: Config = Config.Member.Owner
+    val config: Config = Config.Member.Owner,
+    val icon: SpaceMemberIconView
 ) {
     sealed class Config {
         sealed class Request : Config() {
@@ -259,39 +268,53 @@ data class ShareSpaceMemberView(
     }
 
     companion object {
-        fun fromObject(obj: ObjectWrapper.Participant) : ShareSpaceMemberView? {
+        fun fromObject(
+            obj: ObjectWrapper.Participant,
+            urlBuilder: UrlBuilder
+        ) : ShareSpaceMemberView? {
+            val icon = SpaceMemberIconView.icon(
+                obj = obj,
+                urlBuilder = urlBuilder
+            )
             return when(obj.status) {
                 ParticipantStatus.ACTIVE -> {
                     when(obj.permissions) {
                         ParticipantPermissions.READER -> ShareSpaceMemberView(
                             obj = obj,
-                            config = Config.Member.Reader
+                            config = Config.Member.Reader,
+                            icon = icon
                         )
                         ParticipantPermissions.WRITER -> ShareSpaceMemberView(
                             obj = obj,
-                            config = Config.Member.Writer
+                            config = Config.Member.Writer,
+                            icon = icon
                         )
                         ParticipantPermissions.OWNER -> ShareSpaceMemberView(
                             obj = obj,
-                            config = Config.Member.Owner
+                            config = Config.Member.Owner,
+                            icon = icon
                         )
                         ParticipantPermissions.NO_PERMISSIONS -> ShareSpaceMemberView(
                             obj = obj,
-                            config = Config.Member.NoPermissions
+                            config = Config.Member.NoPermissions,
+                            icon = icon
                         )
                         null -> ShareSpaceMemberView(
                             obj = obj,
-                            config = Config.Member.Unknown
+                            config = Config.Member.Unknown,
+                            icon = icon
                         )
                     }
                 }
                 ParticipantStatus.JOINING -> ShareSpaceMemberView(
                     obj = obj,
-                    config = Config.Request.Join
+                    config = Config.Request.Join,
+                    icon = icon
                 )
                 ParticipantStatus.REMOVING -> ShareSpaceMemberView(
                     obj = obj,
-                    config = Config.Request.Unjoin
+                    config = Config.Request.Unjoin,
+                    icon = icon
                 )
                 else -> null
             }

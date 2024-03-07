@@ -32,6 +32,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
@@ -2442,6 +2443,39 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logRequest(request)
         val response = service.spaceParticipantPermissionsChange(request)
         if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun sendJoinSpaceRequest(command: Command.SendJoinSpaceRequest) {
+        val request = Rpc.Space.Join.Request(
+            networkId = command.network.orEmpty(),
+            inviteCid = command.inviteContentId,
+            inviteFileKey = command.inviteFileKey,
+            spaceId = command.space.id
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceJoin(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+    }
+
+    @Throws(Exception::class)
+    fun getSpaceInviteView(
+        inviteContentId: Id,
+        inviteFileKey: String
+    ): SpaceInviteView {
+        val request = Rpc.Space.InviteView.Request(
+            inviteCid = inviteContentId,
+            inviteFileKey = inviteFileKey,
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceInviteView(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return SpaceInviteView(
+            space = SpaceId(response.spaceId),
+            creatorName = response.creatorName,
+            spaceName = response.spaceName,
+            spaceIconContentId = response.spaceIconCid
+        )
     }
 
     private fun logRequest(any: Any) {

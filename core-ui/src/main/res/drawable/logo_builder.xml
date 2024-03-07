@@ -1,0 +1,59 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="60dp"
+    android:height="60dp"
+    android:viewportWidth="60"
+    android:viewportHeight="60">
+  <path
+      android:pathData="M17,17m0,17a17,17 0,1 1,0 -34a17,17 0,1 1,0 34">
+    <aapt:attr name="android:fillColor">
+      <gradient 
+          android:centerX="17"
+          android:centerY="17"
+          android:gradientRadius="17"
+          android:type="radial">
+        <item android:offset="0.41" android:color="#00A5AEFF"/>
+        <item android:offset="1" android:color="#FFA5AEFF"/>
+      </gradient>
+    </aapt:attr>
+  </path>
+  <path
+      android:pathData="M17,43m0,17a17,17 0,1 1,0 -34a17,17 0,1 1,0 34">
+    <aapt:attr name="android:fillColor">
+      <gradient 
+          android:centerX="17"
+          android:centerY="43"
+          android:gradientRadius="17"
+          android:type="radial">
+        <item android:offset="0.41" android:color="#00A5AEFF"/>
+        <item android:offset="1" android:color="#FFA5AEFF"/>
+      </gradient>
+    </aapt:attr>
+  </path>
+  <path
+      android:pathData="M43,17m0,17a17,17 0,1 1,0 -34a17,17 0,1 1,0 34">
+    <aapt:attr name="android:fillColor">
+      <gradient 
+          android:centerX="43"
+          android:centerY="17"
+          android:gradientRadius="17"
+          android:type="radial">
+        <item android:offset="0.41" android:color="#00A5AEFF"/>
+        <item android:offset="1" android:color="#FFA5AEFF"/>
+      </gradient>
+    </aapt:attr>
+  </path>
+  <path
+      android:pathData="M43,43m0,17a17,17 0,1 1,0 -34a17,17 0,1 1,0 34">
+    <aapt:attr name="android:fillColor">
+      <gradient 
+          android:centerX="43"
+          android:centerY="43"
+          android:gradientRadius="17"
+          android:type="radial">
+        <item android:offset="0.41" android:color="#00A5AEFF"/>
+        <item android:offset="1" android:color="#FFA5AEFF"/>
+      </gradient>
+    </aapt:attr>
+  </path>
+</vector>

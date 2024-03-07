@@ -31,6 +31,7 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.main.MainActivity
+import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -182,54 +183,77 @@ class HomeScreenFragment : BaseComposeFragment() {
     private fun proceed(command: Command) {
         when (command) {
             is Command.ChangeWidgetSource -> {
-                findNavController().navigate(
-                    R.id.selectWidgetSourceScreen,
-                    args = SelectWidgetSourceFragment.args(
-                        ctx = command.ctx,
-                        widget = command.widget,
-                        source = command.source,
-                        type = command.type,
-                        isInEditMode = command.isInEditMode
+                runCatching {
+                    findNavController().navigate(
+                        R.id.selectWidgetSourceScreen,
+                        args = SelectWidgetSourceFragment.args(
+                            ctx = command.ctx,
+                            widget = command.widget,
+                            source = command.source,
+                            type = command.type,
+                            isInEditMode = command.isInEditMode
+                        )
                     )
-                )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
             }
             is Command.SelectWidgetSource -> {
-                findNavController().navigate(
-                    R.id.selectWidgetSourceScreen,
-                    args = SelectWidgetSourceFragment.args(
-                        target = command.target,
-                        isInEditMode = command.isInEditMode
+                runCatching {
+                    findNavController().navigate(
+                        R.id.selectWidgetSourceScreen,
+                        args = SelectWidgetSourceFragment.args(
+                            target = command.target,
+                            isInEditMode = command.isInEditMode
+                        )
                     )
-                )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
             }
             is Command.ChangeWidgetType -> {
-                findNavController().navigate(
-                    R.id.selectWidgetTypeScreen,
-                    args = SelectWidgetTypeFragment.args(
-                        ctx = command.ctx,
-                        widget = command.widget,
-                        source = command.source,
-                        type = command.type,
-                        layout = command.layout,
-                        isInEditMode = command.isInEditMode
+                runCatching {
+                    findNavController().navigate(
+                        R.id.selectWidgetTypeScreen,
+                        args = SelectWidgetTypeFragment.args(
+                            ctx = command.ctx,
+                            widget = command.widget,
+                            source = command.source,
+                            type = command.type,
+                            layout = command.layout,
+                            isInEditMode = command.isInEditMode
+                        )
                     )
-                )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
             }
             is Command.SelectWidgetType -> {
-                findNavController().navigate(
-                    R.id.selectWidgetTypeScreen,
-                    args = SelectWidgetTypeFragment.args(
-                        ctx = command.ctx,
-                        source = command.source,
-                        layout = command.layout,
-                        target = command.target,
-                        isInEditMode = command.isInEditMode
+                runCatching {
+                    findNavController().navigate(
+                        R.id.selectWidgetTypeScreen,
+                        args = SelectWidgetTypeFragment.args(
+                            ctx = command.ctx,
+                            source = command.source,
+                            layout = command.layout,
+                            target = command.target,
+                            isInEditMode = command.isInEditMode
+                        )
                     )
-                )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation")
+                }
             }
             is Command.Deeplink.CannotImportExperience -> {
                 arguments?.putString(DEEP_LINK_KEY, null)
                 findNavController().navigate(R.id.alertImportExperienceUnsupported)
+            }
+            is Command.Deeplink.Invite -> {
+                arguments?.putString(DEEP_LINK_KEY, null)
+                findNavController().navigate(
+                    R.id.requestJoinSpaceScreen,
+                    RequestJoinSpaceFragment.args(link = command.link)
+                )
             }
             is Command.ShareSpace -> {
                 findNavController().navigate(

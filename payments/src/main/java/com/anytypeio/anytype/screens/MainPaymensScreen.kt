@@ -90,6 +90,7 @@ fun MainPaymentsScreen(state: PaymentsState) {
             }
         }
     }
+    MembershipLevels(tier = Tier.Explorer(id = "888", isCurrent = true))
 }
 
 @Composable
@@ -151,7 +152,7 @@ fun TiersList(state: PaymentsState.Success) {
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
         flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
     ) {
-        itemsIndexed(state.tiers) { index, tier ->
+        itemsIndexed(state.tiers) { _, tier ->
             val resources = mapTierToResources(tier)
             TierView(
                 title = resources.title,

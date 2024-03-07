@@ -914,7 +914,9 @@
 
     <string name="space_type_personal">Personal</string>
     <string name="space_type_private">Private</string>
+    <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Shared</string>
+    <string name="space_type_shared_space">Shared space</string>
     <string name="space_type_unknown">Unknown</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Lists</string>
@@ -1367,5 +1369,8 @@
     <string name="payments_terms_link">Terms and conditions</string>
     <string name="payments_let_us_link_start">Would you like to use Anytype for business, education, etc.?</string>
     <string name="payments_let_us_link_end">Please let us know here.</string>
+    <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_share">Share</string>
+    <string name="multiplayer_manage">Manage</string>
 
 </resources>

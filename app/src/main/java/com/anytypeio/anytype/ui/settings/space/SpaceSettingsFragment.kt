@@ -4,12 +4,15 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
@@ -21,19 +24,26 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
+import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
+import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -46,6 +56,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -130,7 +141,13 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                         )
                     },
                     onDebugClicked = vm::onSpaceDebugClicked,
-                    onRandomGradientClicked = vm::onRandomSpaceGradientClicked
+                    onRandomGradientClicked = vm::onRandomSpaceGradientClicked,
+                    onManageSharedSpaceClicked = {
+                        toast("TODO")
+                    },
+                    onSharePrivateSpaceClicked = {
+                        toast("TODO")
+                    }
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {
@@ -189,7 +206,9 @@ fun SpaceSettingsScreen(
     onNetworkIdClicked: (Id) -> Unit,
     onCreatedByClicked: (Id) -> Unit,
     onDebugClicked: () -> Unit,
-    onRandomGradientClicked: () -> Unit
+    onRandomGradientClicked: () -> Unit,
+    onSharePrivateSpaceClicked: () -> Unit,
+    onManageSharedSpaceClicked: () -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -216,15 +235,34 @@ fun SpaceSettingsScreen(
         }
         item { Divider() }
         item {
-            Section(title = stringResource(id = R.string.type))
+            if (spaceData is ViewState.Success) {
+                if (spaceData.data.spaceType == PERSONAL_SPACE_TYPE) {
+                    Section(title = stringResource(id = R.string.type))
+                } else {
+                    Section(title = stringResource(id = R.string.multiplayer_sharing))
+                }
+            } else {
+                Section(title = EMPTY_STRING_VALUE)
+            }
         }
         item {
-            TypeOfSpace(
-                if (spaceData is ViewState.Success)
-                    spaceData.data.spaceType
-                else
-                    null
-            )
+            if (spaceData is ViewState.Success) {
+                when(spaceData.data.spaceType) {
+                    PERSONAL_SPACE_TYPE -> {
+                        TypeOfSpace(spaceData.data.spaceType)
+                    }
+                    PRIVATE_SPACE_TYPE -> {
+                        PrivateSpaceSharing(
+                            onSharePrivateSpaceClicked = onSharePrivateSpaceClicked
+                        )
+                    }
+                    SHARED_SPACE_TYPE -> {
+                        SharedSpaceSharing(
+                            onManageSharedSpaceClicked = onManageSharedSpaceClicked
+                        )
+                    }
+                }
+            }
         }
         item {
             Divider()
@@ -402,4 +440,138 @@ fun SpaceSettingsScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+@Composable
+@Preview
+fun SpaceSettingsScreenPreview() {
+    SpaceSettingsScreen(
+        spaceData = ViewState.Success(
+            data = SpaceSettingsViewModel.SpaceData(
+                spaceId = "ID",
+                createdDateInMillis = null,
+                createdBy = "1235",
+                network = "332311313131",
+                name = "Dream team",
+                icon = SpaceIconView.Placeholder,
+                isDeletable = true,
+                spaceType = PERSONAL_SPACE_TYPE
+            )
+        ),
+        onNameSet = {},
+        onDeleteSpaceClicked = {},
+        onFileStorageClick = {},
+        onPersonalizationClicked = {},
+        onSpaceIdClicked = {},
+        onNetworkIdClicked = {} ,
+        onCreatedByClicked = {},
+        onDebugClicked = {},
+        onRandomGradientClicked = {},
+        onManageSharedSpaceClicked = {},
+        onSharePrivateSpaceClicked = {}
+    )
+}
+
+@Composable
+fun PrivateSpaceSharing(
+    onSharePrivateSpaceClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .height(52.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .align(Alignment.CenterStart),
+            text = stringResource(id = R.string.space_type_private_space),
+            color = colorResource(id = R.color.text_primary),
+            style = BodyRegular
+        )
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .noRippleClickable(
+                    onClick = throttledClick(
+                        onClick = { onSharePrivateSpaceClicked() }
+                    )
+                )
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                text = stringResource(id = R.string.multiplayer_share),
+                color = colorResource(id = R.color.text_secondary),
+                style = BodyRegular
+            )
+            Spacer(Modifier.width(10.dp))
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_forward),
+                contentDescription = "Arrow forward",
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(end = 20.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun SharedSpaceSharing(
+    onManageSharedSpaceClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .height(52.dp)
+            .fillMaxWidth()
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(start = 20.dp)
+                .align(Alignment.CenterStart),
+            text = stringResource(id = R.string.space_type_shared_space),
+            color = colorResource(id = R.color.text_primary),
+            style = BodyRegular
+        )
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterEnd)
+                .noRippleClickable(
+                    onClick = throttledClick(
+                        onClick = { onManageSharedSpaceClicked() }
+                    )
+                )
+        ) {
+            Text(
+                modifier = Modifier.align(Alignment.CenterVertically),
+                text = stringResource(id = R.string.multiplayer_manage),
+                color = colorResource(id = R.color.text_secondary),
+                style = BodyRegular
+            )
+            Spacer(Modifier.width(10.dp))
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_forward),
+                contentDescription = "Arrow forward",
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(end = 20.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+fun PrivateSpaceSharingPreview() {
+    PrivateSpaceSharing(
+        onSharePrivateSpaceClicked = {}
+    )
+}
+
+@Preview
+@Composable
+fun SharedSpaceSharingPreview() {
+    SharedSpaceSharing(
+        onManageSharedSpaceClicked = {}
+    )
 }

@@ -5,8 +5,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
@@ -59,12 +59,12 @@ class ShareSpaceViewModel(
                         spaces = listOf(params.space.id)
                     ),
                     sorts = listOf(ObjectSearchConstants.sortByName()),
-                    keys = ObjectSearchConstants.participantKeys
+                    keys = ObjectSearchConstants.spaceMemberKeys
                 )
             ).map { results ->
                 results.mapNotNull { wrapper ->
                     ShareSpaceMemberView.fromObject(
-                        obj = ObjectWrapper.Participant(wrapper.map),
+                        obj = ObjectWrapper.SpaceMember(wrapper.map),
                         urlBuilder = urlBuilder
                     )
                 }
@@ -72,7 +72,7 @@ class ShareSpaceViewModel(
                 canStopSharing.value = results.any { result ->
                     val member = result.obj
                     member.identity == configStorage.getOrNull()?.profile
-                            && member.permissions == ParticipantPermissions.OWNER
+                            && member.permissions == SpaceMemberPermissions.OWNER
                 }
             }.collect {
                 members.value = it
@@ -153,7 +153,7 @@ class ShareSpaceViewModel(
                     ChangeSpaceMemberPermissions.Params(
                         space = params.space,
                         identity = view.obj.identity,
-                        permission = ParticipantPermissions.WRITER
+                        permission = SpaceMemberPermissions.WRITER
                     )
                 ).fold(
                     onFailure = { e ->
@@ -179,7 +179,7 @@ class ShareSpaceViewModel(
                     ChangeSpaceMemberPermissions.Params(
                         space = params.space,
                         identity = view.obj.identity,
-                        permission = ParticipantPermissions.READER
+                        permission = SpaceMemberPermissions.READER
                     )
                 ).fold(
                     onFailure = { e ->
@@ -291,7 +291,7 @@ class ShareSpaceViewModel(
 }
 
 data class ShareSpaceMemberView(
-    val obj: ObjectWrapper.Participant,
+    val obj: ObjectWrapper.SpaceMember,
     val config: Config = Config.Member.Owner,
     val icon: SpaceMemberIconView
 ) {
@@ -311,7 +311,7 @@ data class ShareSpaceMemberView(
 
     companion object {
         fun fromObject(
-            obj: ObjectWrapper.Participant,
+            obj: ObjectWrapper.SpaceMember,
             urlBuilder: UrlBuilder
         ) : ShareSpaceMemberView? {
             val icon = SpaceMemberIconView.icon(
@@ -321,22 +321,22 @@ data class ShareSpaceMemberView(
             return when(obj.status) {
                 ParticipantStatus.ACTIVE -> {
                     when(obj.permissions) {
-                        ParticipantPermissions.READER -> ShareSpaceMemberView(
+                        SpaceMemberPermissions.READER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Reader,
                             icon = icon
                         )
-                        ParticipantPermissions.WRITER -> ShareSpaceMemberView(
+                        SpaceMemberPermissions.WRITER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Writer,
                             icon = icon
                         )
-                        ParticipantPermissions.OWNER -> ShareSpaceMemberView(
+                        SpaceMemberPermissions.OWNER -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.Owner,
                             icon = icon
                         )
-                        ParticipantPermissions.NO_PERMISSIONS -> ShareSpaceMemberView(
+                        SpaceMemberPermissions.NO_PERMISSIONS -> ShareSpaceMemberView(
                             obj = obj,
                             config = Config.Member.NoPermissions,
                             icon = icon

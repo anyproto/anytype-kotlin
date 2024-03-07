@@ -140,7 +140,7 @@ sealed class SpaceMemberIconView {
     data class Image(val url: String, val name: String) : SpaceMemberIconView()
 
     companion object {
-        fun icon(obj: ObjectWrapper.Participant, urlBuilder: UrlBuilder) : SpaceMemberIconView {
+        fun icon(obj: ObjectWrapper.SpaceMember, urlBuilder: UrlBuilder) : SpaceMemberIconView {
             val icon = obj.iconImage
             return when {
                 !icon.isNullOrEmpty() -> Image(

@@ -914,6 +914,7 @@
 
     <string name="space_type_personal">Personal</string>
     <string name="space_type_private">Private</string>
+    <string name="space_type_shared">Shared</string>
     <string name="space_type_unknown">Unknown</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Lists</string>

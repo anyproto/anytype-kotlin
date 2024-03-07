@@ -30,9 +30,9 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
-import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
@@ -2389,7 +2389,7 @@ class Middleware @Inject constructor(
     fun approveSpaceRequest(
         space: SpaceId,
         identity: Id,
-        permissions: ParticipantPermissions
+        permissions: SpaceMemberPermissions
     ) {
         val request = Rpc.Space.RequestApprove.Request(
             spaceId = space.id,
@@ -2430,7 +2430,7 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun changeSpaceMemberPermissions(space: SpaceId, identity: Id, permission: ParticipantPermissions) {
+    fun changeSpaceMemberPermissions(space: SpaceId, identity: Id, permission: SpaceMemberPermissions) {
         val request = Rpc.Space.ParticipantPermissionsChange.Request(
             spaceId = space.id,
             changes = listOf(

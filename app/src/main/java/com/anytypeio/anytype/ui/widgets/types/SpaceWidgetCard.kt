@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
+import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -89,6 +90,7 @@ fun SpaceWidgetCard(
         val spaceTypeName = when(spaceType) {
             PERSONAL_SPACE_TYPE -> stringResource(id = R.string.space_type_personal)
             PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private)
+            SHARED_SPACE_TYPE -> stringResource(id = R.string.space_type_shared)
             else -> stringResource(id = R.string.space_type_unknown)
         }
         Text(

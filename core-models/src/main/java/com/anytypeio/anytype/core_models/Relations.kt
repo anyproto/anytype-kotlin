@@ -83,6 +83,7 @@ object Relations {
 
     const val PARTICIPANT_STATUS = "participantStatus"
     const val PARTICIPANT_PERMISSIONS = "participantPermissions"
+    const val SPACE_ACCESS_TYPE = "spaceAccessType"
     const val IDENTITY = "identity"
 
     val systemRelationKeys = listOf(

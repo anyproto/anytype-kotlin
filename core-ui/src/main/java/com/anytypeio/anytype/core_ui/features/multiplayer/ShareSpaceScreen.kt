@@ -199,7 +199,7 @@ fun ShareSpaceScreen(
 
 @Composable
 private fun SpaceMember(
-    member: ObjectWrapper.Participant,
+    member: ObjectWrapper.SpaceMember,
     icon: SpaceMemberIconView,
     config: ShareSpaceMemberView.Config.Member,
     onCanEditClicked: () -> Unit,
@@ -370,7 +370,7 @@ fun SpaceMemberIcon(
 
 @Composable
 private fun SpaceMemberRequest(
-    member: ObjectWrapper.Participant,
+    member: ObjectWrapper.SpaceMember,
     icon: SpaceMemberIconView,
     request: ShareSpaceMemberView.Config.Request,
     onViewRequestClicked: () -> Unit,
@@ -455,7 +455,7 @@ private fun SpaceMemberRequest(
 @Preview
 fun SpaceJoinRequestPreview() {
     SpaceMemberRequest(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "1",
                 Relations.NAME to "Konstantin",
@@ -473,7 +473,7 @@ fun SpaceJoinRequestPreview() {
 @Preview
 fun SpaceUnjoinRequestPreview() {
     SpaceMemberRequest(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "1",
                 Relations.NAME to "Konstantin",
@@ -499,7 +499,7 @@ fun ShareSpaceScreenPreview() {
         members = buildList {
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "1",
                             Relations.NAME to "Konstantin",
@@ -513,7 +513,7 @@ fun ShareSpaceScreenPreview() {
             )
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Evgenii"
@@ -526,7 +526,7 @@ fun ShareSpaceScreenPreview() {
             )
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Aleksey"
@@ -540,7 +540,7 @@ fun ShareSpaceScreenPreview() {
             )
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Anton"
@@ -567,7 +567,7 @@ fun ShareSpaceScreenPreview() {
 @Preview
 private fun SpaceOwnerMemberPreview() {
     SpaceMember(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "2",
                 Relations.NAME to "Evgenii"
@@ -585,7 +585,7 @@ private fun SpaceOwnerMemberPreview() {
 @Preview
 private fun SpaceEditorMemberPreview() {
     SpaceMember(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "2",
                 Relations.NAME to "Evgenii"

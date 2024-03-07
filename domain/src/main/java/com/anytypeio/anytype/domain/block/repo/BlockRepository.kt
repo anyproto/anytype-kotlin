@@ -23,9 +23,9 @@ import com.anytypeio.anytype.core_models.SearchResult
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
-import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLink
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
@@ -436,14 +436,14 @@ interface BlockRepository {
     suspend fun approveSpaceRequest(
         space: SpaceId,
         identity: Id,
-        permissions: ParticipantPermissions
+        permissions: SpaceMemberPermissions
     )
     suspend fun declineSpaceRequest(space: SpaceId, identity: Id)
     suspend fun removeSpaceMembers(space: SpaceId, identities: List<Id>)
     suspend fun changeSpaceMemberPermissions(
         space: SpaceId,
         identity: Id,
-        permission: ParticipantPermissions
+        permission: SpaceMemberPermissions
     )
     suspend fun getSpaceInviteView(
         inviteContentId: Id,

@@ -1,12 +1,9 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
-import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
-import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.asSpaceType
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -55,12 +52,7 @@ class SpaceWidgetContainer @Inject constructor(
                         builder = urlBuilder,
                         spaceGradientProvider = spaceGradientProvider
                     ),
-                    type = when(wrapper.spaceAccessType) {
-                        SpaceAccessType.PRIVATE -> PRIVATE_SPACE_TYPE
-                        SpaceAccessType.PERSONAL -> PERSONAL_SPACE_TYPE
-                        SpaceAccessType.SHARED -> SHARED_SPACE_TYPE
-                        else -> UNKNOWN_SPACE_TYPE
-                    }
+                    type = wrapper.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE
                 )
             } else {
                 null

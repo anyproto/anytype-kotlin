@@ -7,8 +7,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions.OWNER
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -36,7 +38,7 @@ class ShareSpaceViewModel(
     private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
     private val stopSharingSpace: StopSharingSpace,
     private val container: StorelessSubscriptionContainer,
-    private val configStorage: ConfigStorage,
+    private val getAccount: GetAccount,
     private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
@@ -69,10 +71,12 @@ class ShareSpaceViewModel(
                     )
                 }
             }.onEach { results ->
+                val account = getAccount.async(Unit).getOrNull()?.id
                 canStopSharing.value = results.any { result ->
                     val member = result.obj
-                    member.identity == configStorage.getOrNull()?.profile
-                            && member.permissions == SpaceMemberPermissions.OWNER
+                    member.identity == account && member.permissions == OWNER
+                }.also { isOwnerFound ->
+                    if (!isOwnerFound) Timber.w("Owner not found")
                 }
             }.collect {
                 members.value = it
@@ -252,6 +256,7 @@ class ShareSpaceViewModel(
         private val generateSpaceInviteLink: GenerateSpaceInviteLink,
         private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
         private val stopSharingSpace: StopSharingSpace,
+        private val getAccount: GetAccount,
         private val removeSpaceMembers: RemoveSpaceMembers,
         private val configStorage: ConfigStorage,
         private val container: StorelessSubscriptionContainer,
@@ -266,7 +271,7 @@ class ShareSpaceViewModel(
             stopSharingSpace = stopSharingSpace,
             container = container,
             urlBuilder = urlBuilder,
-            configStorage = configStorage
+            getAccount = getAccount
         ) as T
     }
 

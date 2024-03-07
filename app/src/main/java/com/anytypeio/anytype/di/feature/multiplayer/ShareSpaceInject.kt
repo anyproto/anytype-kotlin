@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -49,6 +50,7 @@ object ShareSpaceModule {
 
 interface ShareSpaceDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
+    fun auth() : AuthRepository
     fun urlBuilder(): UrlBuilder
     fun spaceManager(): SpaceManager
     fun dispatchers(): AppCoroutineDispatchers

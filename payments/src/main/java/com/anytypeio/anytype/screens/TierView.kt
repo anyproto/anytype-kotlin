@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,13 +33,12 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
-import com.anytypeio.anytype.viewmodel.TierState
+import com.anytypeio.anytype.models.Tier
 
 @Composable
-private fun Tier(
+fun TierView(
     title: String,
     subTitle: String,
-    price: String,
     colorGradient: Color,
     radialGradient: Color,
     icon: Int,
@@ -120,72 +120,58 @@ fun PriceOrOption() {
 }
 
 @Composable
-fun TierByType(tier: TierState) {
-    when (tier) {
-        is TierState.Builder -> {
-            Tier(
-                title = stringResource(id = R.string.payments_tier_builder),
-                subTitle = stringResource(id = R.string.payments_tier_builder_description),
-                price = tier.price,
-                colorGradient = Color(0xFFE4E7FF),
-                radialGradient = Color(0xFFA5AEFF),
-                icon = R.drawable.logo_builder,
-                buttonText = stringResource(id = R.string.payments_button_learn),
-                onClick = { /*TODO*/ }
-            )
-        }
+fun mapTierToResources(tier: Tier): TierResources {
+    return when (tier) {
+        is Tier.Builder -> TierResources(
+            title = stringResource(id = R.string.payments_tier_builder),
+            subtitle = stringResource(id = R.string.payments_tier_builder_description),
+            mediumIcon = R.drawable.logo_builder_96,
+            smallIcon = R.drawable.logo_builder_64,
+            colorGradient = Color(0xFFE4E7FF),
+            radialGradient = Color(0xFFA5AEFF),
+            benefits = stringArrayResource(id = R.array.payments_benefits_builder).toList()
+        )
 
-        is TierState.CoCreator -> {
-            Tier(
-                title = stringResource(id = R.string.payments_tier_cocreator),
-                subTitle = stringResource(id = R.string.payments_tier_cocreator_description),
-                price = tier.price,
-                colorGradient = Color(0xFFFBEAEA),
-                radialGradient = Color(0xFFF05F5F),
-                icon = R.drawable.logo_co_creator,
-                buttonText = stringResource(id = R.string.payments_button_learn),
-                onClick = { /*TODO*/ }
-            )
-        }
+        is Tier.CoCreator -> TierResources(
+            title = stringResource(id = R.string.payments_tier_cocreator),
+            subtitle = stringResource(id = R.string.payments_tier_cocreator_description),
+            mediumIcon = R.drawable.logo_co_creator_96,
+            smallIcon = R.drawable.logo_co_creator_64,
+            colorGradient = Color(0xFFFBEAEA),
+            radialGradient = Color(0xFFF05F5F),
+            benefits = stringArrayResource(id = R.array.payments_benefits_cocreator).toList()
+        )
 
-        is TierState.Custom -> {
-            Tier(
-                title = stringResource(id = R.string.payments_tier_custom),
-                subTitle = stringResource(id = R.string.payments_tier_custom_description),
-                price = tier.price,
-                colorGradient = Color(0xFFFBEAFF),
-                radialGradient = Color(0xFFFE86DE3),
-                icon = R.drawable.logo_custom,
-                buttonText = stringResource(id = R.string.payments_button_learn),
-                onClick = { /*TODO*/ }
-            )
-        }
+        is Tier.Custom -> TierResources(
+            title = stringResource(id = R.string.payments_tier_custom),
+            subtitle = stringResource(id = R.string.payments_tier_custom_description),
+            smallIcon = R.drawable.logo_custom_64,
+            colorGradient = Color(0xFFFBEAFF),
+            radialGradient = Color(0xFFFE86DE3),
+            benefits = emptyList()
+        )
 
-        is TierState.Explorer -> {
-            Tier(
-                title = stringResource(id = R.string.payments_tier_explorer),
-                subTitle = stringResource(id = R.string.payments_tier_explorer_description),
-                price = tier.price,
-                colorGradient = Color(0xFFCFFAFF),
-                radialGradient = Color(0xFF24BFD4),
-                icon = R.drawable.logo_explorer,
-                buttonText = stringResource(id = R.string.payments_button_learn),
-                onClick = { /*TODO*/ }
-            )
-        }
+        is Tier.Explorer -> TierResources(
+            title = stringResource(id = R.string.payments_tier_explorer),
+            subtitle = stringResource(id = R.string.payments_tier_explorer_description),
+            mediumIcon = R.drawable.logo_explorer_96,
+            smallIcon = R.drawable.logo_explorer_64,
+            colorGradient = Color(0xFFCFFAFF),
+            radialGradient = Color(0xFF24BFD4),
+            benefits = stringArrayResource(id = R.array.payments_benefits_explorer).toList()
+        )
     }
 }
 
 @Preview
 @Composable
 fun TierPreview() {
-    Tier(
+    TierView(
         title = "Explorer",
         subTitle = "Dive into the network and enjoy the thrill of one-on-one collaboration",
-        price = "9.99",
         buttonText = "Subscribe",
         onClick = {},
-        icon = R.drawable.logo_co_creator,
+        icon = R.drawable.logo_co_creator_64,
         colorGradient = Color(0xFFCFF6CF),
         radialGradient = Color(0xFF24BFD4)
     )
@@ -197,4 +183,14 @@ val titleTextStyle = TextStyle(
     fontSize = 17.sp,
     lineHeight = 24.sp,
     letterSpacing = (-0.024).em
+)
+
+data class TierResources(
+    val title: String,
+    val subtitle: String,
+    val mediumIcon: Int? = null,
+    val smallIcon: Int,
+    val colorGradient: Color,
+    val radialGradient: Color,
+    val benefits: List<String>
 )

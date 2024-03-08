@@ -293,7 +293,7 @@ class TextInputWidget : AppCompatEditText {
      *  Makes all links in the TextView object active.
      */
     private fun makeLinksActive() {
-        Linkify.addLinks(this, Linkify.ALL)
+        Linkify.addLinks(this, Linkify.WEB_URLS)
         movementMethod = CustomBetterLinkMovementMethod
     }
 

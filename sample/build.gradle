@@ -66,9 +66,11 @@ dependencies {
     implementation libs.design
     implementation libs.pickT
 
+    implementation libs.navigationCompose
+
     implementation libs.compose
     implementation libs.composeFoundation
-    implementation libs.composeMaterial
+    implementation libs.composeMaterial3
     implementation libs.composeToolingPreview
     implementation libs.composeAccompanistPager
     implementation libs.composeAccompanistThemeAdapter
@@ -85,6 +87,8 @@ dependencies {
     testImplementation libs.robolectric
     testImplementation libs.androidXTestCore
     testImplementation libs.mockitoKotlin
+
+    implementation "com.google.accompanist:accompanist-navigation-material:0.34.0"
 
     implementation platform('com.google.firebase:firebase-bom:32.1.1')
 }

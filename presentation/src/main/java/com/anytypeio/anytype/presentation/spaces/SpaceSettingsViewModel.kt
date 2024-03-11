@@ -8,8 +8,11 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
@@ -22,7 +25,7 @@ import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
-import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
+import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
@@ -32,10 +35,8 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
-import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -65,54 +66,67 @@ class SpaceSettingsViewModel(
                 eventName = EventsDictionary.screenSettingSpacesSpaceIndex
             )
         }
-
         viewModelScope.launch {
-            spaceManager
-                .observe()
-                .take(1)
-                .flatMapLatest { config ->
-                    storelessSubscriptionContainer.subscribe(
-                        StoreSearchByIdsParams(
-                            subscription = SPACE_SETTINGS_SUBSCRIPTION,
-                            targets = listOf(config.spaceView),
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.SPACE_ID,
-                                Relations.NAME,
-                                Relations.ICON_EMOJI,
-                                Relations.ICON_IMAGE,
-                                Relations.ICON_OPTION,
-                                Relations.CREATED_DATE,
-                                Relations.CREATOR,
-                                Relations.TARGET_SPACE_ID,
-                                Relations.SPACE_ACCESS_TYPE
+            val config = spaceManager.getConfig(params.space)
+            storelessSubscriptionContainer.subscribe(
+                StoreSearchParams(
+                    subscription = SPACE_SETTINGS_SUBSCRIPTION,
+                    filters = buildList {
+                        add(
+                            DVFilter(
+                                relation = Relations.TARGET_SPACE_ID,
+                                value = params.space.id,
+                                condition = DVFilterCondition.EQUAL
                             )
                         )
-                    ).mapNotNull { results ->
-                        results.firstOrNull()
-                    }.map { wrapper ->
-                        val spaceView = ObjectWrapper.SpaceView(wrapper.map)
-                        SpaceData(
-                            name = wrapper.name.orEmpty(),
-                            icon = wrapper.spaceIcon(
-                                builder = urlBuilder,
-                                spaceGradientProvider = gradientProvider
-                            ),
-                            createdDateInMillis = wrapper
-                                .getValue<Double?>(Relations.CREATED_DATE)
-                                ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
-                            createdBy = wrapper
-                                .getValue<Id?>(Relations.CREATOR)
-                                .toString(),
-                            spaceId = config.space,
-                            network = config.network,
-                            isDeletable = isSpaceDeletable(config.space),
-                            spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE
+                        add(
+                            DVFilter(
+                                relation = Relations.LAYOUT,
+                                value = ObjectType.Layout.SPACE_VIEW.code.toDouble(),
+                                condition = DVFilterCondition.EQUAL
+                            )
                         )
-                    }
-                }.collect { spaceData ->
-                    spaceViewState.value = ViewState.Success(spaceData)
-                }
+                    },
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.SPACE_ID,
+                        Relations.NAME,
+                        Relations.ICON_EMOJI,
+                        Relations.ICON_IMAGE,
+                        Relations.ICON_OPTION,
+                        Relations.CREATED_DATE,
+                        Relations.CREATOR,
+                        Relations.TARGET_SPACE_ID,
+                        Relations.SPACE_ACCESS_TYPE,
+                        Relations.SPACE_LOCAL_STATUS,
+                        Relations.SPACE_ACCOUNT_STATUS
+                    ),
+                    limit = 1
+                )
+            ).mapNotNull { results ->
+                results.firstOrNull()
+            }.map { wrapper ->
+                val spaceView = ObjectWrapper.SpaceView(wrapper.map)
+                SpaceData(
+                    name = wrapper.name.orEmpty(),
+                    icon = wrapper.spaceIcon(
+                        builder = urlBuilder,
+                        spaceGradientProvider = gradientProvider
+                    ),
+                    createdDateInMillis = wrapper
+                        .getValue<Double?>(Relations.CREATED_DATE)
+                        ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
+                    createdBy = wrapper
+                        .getValue<Id?>(Relations.CREATOR)
+                        .toString(),
+                    spaceId = params.space.id,
+                    network = config?.network.orEmpty(),
+                    isDeletable = false,
+                    spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE
+                )
+            }.collect { spaceData ->
+                spaceViewState.value = ViewState.Success(spaceData)
+            }
         }
     }
 

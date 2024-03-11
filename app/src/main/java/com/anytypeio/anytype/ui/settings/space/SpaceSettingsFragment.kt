@@ -4,61 +4,39 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
-import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.Option
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.ButtonWarning
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
-import com.anytypeio.anytype.core_utils.const.DateConst
-import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
-import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
-import com.anytypeio.anytype.ui.spaces.Section
-import com.anytypeio.anytype.ui.spaces.TypeOfSpace
-import com.anytypeio.anytype.ui_settings.main.SpaceHeader
+import com.anytypeio.anytype.ui_settings.space.SpaceSettingsScreen
 import java.io.File
 import javax.inject.Inject
 import timber.log.Timber
 
 class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
+
+    private val space get() = arg<Id>(ARG_SPACE_ID_KEY)
 
     @Inject
     lateinit var factory: SpaceSettingsViewModel.Factory
@@ -130,7 +108,9 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                         )
                     },
                     onDebugClicked = vm::onSpaceDebugClicked,
-                    onRandomGradientClicked = vm::onRandomSpaceGradientClicked
+                    onRandomGradientClicked = vm::onRandomSpaceGradientClicked,
+                    onManageSharedSpaceClicked = vm::onManageSharedSpaceClicked,
+                    onSharePrivateSpaceClicked = vm::onSharePrivateSpaceClicked
                 )
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {
@@ -159,6 +139,28 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
                         }
                     }
                 }
+                is Command.ManageSharedSpace -> {
+                    runCatching {
+                        findNavController()
+                            .navigate(
+                                R.id.shareSpaceScreen,
+                                ShareSpaceFragment.args(command.space)
+                            )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening share-space screen")
+                    }
+                }
+                is Command.SharePrivateSpace -> {
+                    runCatching {
+                        findNavController()
+                            .navigate(
+                                R.id.shareSpaceScreen,
+                                ShareSpaceFragment.args(command.space)
+                            )
+                    }.onFailure {
+                        Timber.e(it, "Error while opening share-space screen")
+                    }
+                }
             }
         }
     }
@@ -170,236 +172,15 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().spaceSettingsComponent.get().inject(this)
+        componentManager().spaceSettingsComponent.get(SpaceId(space)).inject(this)
     }
 
     override fun releaseDependencies() {
         componentManager().spaceSettingsComponent.release()
     }
-}
 
-@Composable
-fun SpaceSettingsScreen(
-    spaceData: ViewState<SpaceSettingsViewModel.SpaceData>,
-    onNameSet: (String) -> Unit,
-    onDeleteSpaceClicked: () -> Unit,
-    onFileStorageClick: () -> Unit,
-    onPersonalizationClicked: () -> Unit,
-    onSpaceIdClicked: (Id) -> Unit,
-    onNetworkIdClicked: (Id) -> Unit,
-    onCreatedByClicked: (Id) -> Unit,
-    onDebugClicked: () -> Unit,
-    onRandomGradientClicked: () -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier
-            .nestedScroll(rememberNestedScrollInteropConnection())
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        item {
-            SpaceHeader(
-                modifier = Modifier,
-                name = when (spaceData) {
-                    is ViewState.Success -> spaceData.data.name.ifEmpty { 
-                        stringResource(id = R.string.untitled)
-                    }
-                    else -> null
-                },
-                icon = when (spaceData) {
-                    is ViewState.Success -> spaceData.data.icon
-                    else -> null
-                },
-                onNameSet = onNameSet,
-                onRandomGradientClicked = onRandomGradientClicked
-            )
-        }
-        item { Divider() }
-        item {
-            Section(title = stringResource(id = R.string.type))
-        }
-        item {
-            TypeOfSpace(
-                if (spaceData is ViewState.Success)
-                    spaceData.data.spaceType
-                else
-                    null
-            )
-        }
-        item {
-            Divider()
-        }
-        item {
-            Section(title = stringResource(id = R.string.settings))
-        }
-        item {
-            Option(image = R.drawable.ic_file_storage,
-                text = stringResource(R.string.remote_storage),
-                onClick = throttledClick(onFileStorageClick)
-            )
-        }
-        item {
-            Divider(paddingStart = 60.dp)
-        }
-        item {
-            Option(image = R.drawable.ic_personalization,
-                text = stringResource(R.string.personalization),
-                onClick = throttledClick(onPersonalizationClicked)
-            )
-        }
-        item {
-            Divider(paddingStart = 60.dp)
-        }
-        item {
-            Option(image = R.drawable.ic_debug,
-                text = stringResource(R.string.debug),
-                onClick = throttledClick(onDebugClicked)
-            )
-        }
-        item {
-            Divider(
-                paddingStart = 60.dp
-            )
-        }
-        item {
-            Section(title = stringResource(id = R.string.space_info))
-        }
-        item {
-            Box(
-                modifier = Modifier
-                    .height(92.dp)
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(id = R.string.space_id),
-                    style = Title1,
-                    modifier = Modifier.padding(top = 12.dp),
-                    color = colorResource(id = R.color.text_primary)
-                )
-                if (spaceData is ViewState.Success) {
-                    Text(
-                        text = spaceData.data.spaceId ?: stringResource(id = R.string.unknown),
-                        style = PreviewTitle2Regular,
-                        maxLines = 2,
-                        color = colorResource(id = R.color.text_primary),
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(bottom = 12.dp, end = 50.dp)
-                            .noRippleClickable {
-                                onSpaceIdClicked(spaceData.data.spaceId.orEmpty())
-                            }
-                    )
-                }
-            }
-        }
-        item {
-            Box(
-                modifier = Modifier
-                    .height(92.dp)
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(id = R.string.created_by),
-                    style = Title1,
-                    modifier = Modifier.padding(top = 12.dp),
-                    color = colorResource(id = R.color.text_primary)
-                )
-                if (spaceData is ViewState.Success) {
-                    Text(
-                        text = spaceData.data.createdBy ?: stringResource(id = R.string.unknown),
-                        style = PreviewTitle2Regular,
-                        maxLines = 2,
-                        color = colorResource(id = R.color.text_primary),
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(bottom = 12.dp, end = 50.dp)
-                            .noRippleClickable {
-                                onCreatedByClicked(spaceData.data.createdBy.orEmpty())
-                            }
-                    )
-                }
-            }
-        }
-        item {
-            Box(
-                modifier = Modifier
-                    .height(72.dp)
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(id = R.string.creation_date),
-                    style = Title1,
-                    modifier = Modifier.padding(top = 12.dp),
-                    color = colorResource(id = R.color.text_primary)
-                )
-                if (spaceData is ViewState.Success) {
-                    val formattedDate = spaceData.data.createdDateInMillis?.formatTimeInMillis(
-                        DateConst.DEFAULT_DATE_FORMAT
-                    ) ?: stringResource(id = R.string.unknown)
-                    Text(
-                        text = formattedDate,
-                        style = PreviewTitle2Regular,
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(bottom = 12.dp, end = 50.dp),
-                        maxLines = 1,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                }
-            }
-        }
-        item {
-            Box(
-                modifier = Modifier
-                    .height(92.dp)
-                    .padding(horizontal = 20.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = stringResource(id = R.string.network_id),
-                    style = Title1,
-                    modifier = Modifier.padding(top = 12.dp),
-                    color = colorResource(id = R.color.text_primary)
-                )
-                if (spaceData is ViewState.Success) {
-                    Text(
-                        text = spaceData.data.network ?: stringResource(id = R.string.unknown),
-                        style = PreviewTitle2Regular,
-                        maxLines = 2,
-                        color = colorResource(id = R.color.text_primary),
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(bottom = 12.dp, end = 50.dp)
-                            .noRippleClickable {
-                                onNetworkIdClicked(spaceData.data.network.orEmpty())
-                            }
-                    )
-                }
-            }
-        }
-        if (spaceData is ViewState.Success && spaceData.data.isDeletable) {
-            item {
-                Box(modifier = Modifier.height(78.dp)) {
-                    ButtonWarning(
-                        onClick = { onDeleteSpaceClicked() },
-                        text = stringResource(R.string.delete_space),
-                        modifier = Modifier
-                            .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
-                            .fillMaxWidth()
-                            .align(Alignment.BottomCenter),
-                        size = ButtonSize.Large
-                    )
-                }
-            }
-        }
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-        }
+    companion object {
+        const val ARG_SPACE_ID_KEY = "arg.space-settings.space-id"
+        fun args(space: SpaceId) = bundleOf(ARG_SPACE_ID_KEY to space.id)
     }
 }

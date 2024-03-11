@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -35,6 +36,7 @@ interface SpaceManager {
     suspend fun get(): Id
     suspend fun set(space: Id): Result<Config>
     fun getConfig(): Config?
+    fun getConfig(space: SpaceId) : Config?
     fun getType(space: Id): SpaceType
     fun observe() : Flow<Config>
     fun clear()
@@ -75,6 +77,10 @@ interface SpaceManager {
             } else {
                 UNKNOWN_SPACE_TYPE
             }
+        }
+
+        override fun getConfig(space: SpaceId): Config? {
+            return info[space.id]
         }
 
         override suspend fun set(space: Id) : Result<Config> = withContext(dispatchers.io) {

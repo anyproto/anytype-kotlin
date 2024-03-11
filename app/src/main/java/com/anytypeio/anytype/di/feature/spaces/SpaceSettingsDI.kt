@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.device.share.debug.DebugSpaceDeviceFileContentSaver
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -34,10 +36,14 @@ import dagger.Provides
 )
 @PerScreen
 interface SpaceSettingsComponent {
-    @Component.Factory
+    @Component.Builder
     interface Builder {
-        fun create(dependencies: SpaceSettingsDependencies): SpaceSettingsComponent
+        @BindsInstance
+        fun withParams(params: SpaceSettingsViewModel.Params): Builder
+        fun withDependencies(dependencies: SpaceSettingsDependencies): Builder
+        fun build(): SpaceSettingsComponent
     }
+
     fun inject(fragment: SpaceSettingsFragment)
 }
 
@@ -83,6 +89,7 @@ object SpaceSettingsModule {
 
 interface SpaceSettingsDependencies : ComponentDependencies {
     fun blockRepo(): BlockRepository
+    fun auth(): AuthRepository
     fun urlBuilder(): UrlBuilder
     fun analytics(): Analytics
     fun dispatchers(): AppCoroutineDispatchers

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.spaces
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,17 +31,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Name
-import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
-import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
-import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -53,6 +48,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui_settings.main.SpaceImageBlock
+import com.anytypeio.anytype.ui_settings.space.TypeOfSpace
 
 @Composable
 fun CreateSpaceScreen(
@@ -275,39 +271,6 @@ fun Section(
             color = color,
             style = Caption1Regular
         )
-    }
-}
-
-@Composable
-fun TypeOfSpace(spaceType: SpaceType?) {
-    Box(
-        modifier = Modifier
-            .height(52.dp)
-            .fillMaxWidth()
-    ) {
-        Image(
-            modifier = Modifier
-                .align(Alignment.CenterStart)
-                .padding(start = 18.dp),
-            painter = painterResource(id = R.drawable.ic_space_type_private), 
-            contentDescription = "Private space icon"
-        )
-        if (spaceType != null) {
-            val spaceTypeName = when (spaceType) {
-                PERSONAL_SPACE_TYPE -> stringResource(id = R.string.space_type_personal)
-                PRIVATE_SPACE_TYPE -> stringResource(id = R.string.space_type_private)
-                SHARED_SPACE_TYPE -> stringResource(id = R.string.space_type_shared)
-                else -> stringResource(id = R.string.space_type_unknown)
-            }
-            Text(
-                modifier = Modifier
-                    .padding(start = 42.dp)
-                    .align(Alignment.CenterStart),
-                text = spaceTypeName,
-                color = colorResource(id = R.color.text_primary),
-                style = BodyRegular
-            )
-        }
     }
 }
 

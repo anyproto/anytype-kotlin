@@ -1126,7 +1126,7 @@
     <string name="multiplayer_invite_link">Uitnodigingslink</string>
     <string name="multiplayer_join_a_space">Sluit je aan bij een ruimte</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Persoonlijk bericht voor een eigenaar van de ruimte</string>
-    <string name="mulitplayer_request_to_join_explanation">Zodra de eigenaar van de ruimte jouw verzoek heeft goedgekeurd, zul je toetreden tot de ruimte met de toegangsrechten die door de eigenaar zijn bepaald.</string>
+    <string name="multiplayer_request_to_join_explanation">Zodra de eigenaar van de ruimte jouw verzoek heeft goedgekeurd, zul je toetreden tot de ruimte met de toegangsrechten die door de eigenaar zijn bepaald.</string>
     <string name="multiplayer_space_request_to_join">Verzoek om aan te sluiten</string>
     <string name="multiplayer_space_request_to_join_msg">Je bent uitgenodigd om deel te nemen aan de ruimte %1$s , aangemaakt door %2$s. Stuur een verzoek zodat de eigenaar van de ruimte je kan toelaten. </string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tik om je reactie te schrijven</string>

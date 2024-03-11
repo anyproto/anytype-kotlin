@@ -34,6 +34,7 @@ import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.SelectObjectTypeFragment
+import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
@@ -113,11 +114,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                         }
                     ),
                     onSpaceWidgetClicked = throttledClick(
-                        onClick = {
-                            runCatching {
-                                findNavController().navigate(R.id.action_open_space_settings)
-                            }
-                        }
+                        onClick = vm::onSpaceSettingsClicked
                     ),
                     onOpenSpacesClicked = throttledClick(
                         onClick = {
@@ -260,6 +257,16 @@ class HomeScreenFragment : BaseComposeFragment() {
                     R.id.shareSpaceScreen,
                     args = ShareSpaceFragment.args(command.space)
                 )
+            }
+            is Command.OpenSpaceSettings -> {
+                runCatching {
+                    findNavController().navigate(
+                        R.id.action_open_space_settings,
+                        SpaceSettingsFragment.args(command.spaceId)
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening space settings")
+                }
             }
         }
     }

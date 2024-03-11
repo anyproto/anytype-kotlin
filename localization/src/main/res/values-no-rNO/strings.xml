@@ -1126,7 +1126,7 @@
     <string name="multiplayer_invite_link">Invitasjonslenke</string>
     <string name="multiplayer_join_a_space">Bli med i et rom</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
-    <string name="mulitplayer_request_to_join_explanation">Når eieren av rommet godkjenner forespørselen din, vil du bli med i rommet med tilgangsrettigheter eieren har satt.</string>
+    <string name="multiplayer_request_to_join_explanation">Når eieren av rommet godkjenner forespørselen din, vil du bli med i rommet med tilgangsrettigheter eieren har satt.</string>
     <string name="multiplayer_space_request_to_join">Be om å bli med</string>
     <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %2$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>

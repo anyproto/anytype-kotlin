@@ -114,6 +114,7 @@ import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionVie
 import com.anytypeio.anytype.presentation.relations.value.attachment.AttachmentValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.ui.relations.RelationEditParameters
 import com.anytypeio.anytype.ui.types.edit.TypeEditParameters
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
@@ -933,10 +934,12 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val spaceSettingsComponent = Component {
+    val spaceSettingsComponent = ComponentWithParams { space: SpaceId ->
         DaggerSpaceSettingsComponent
-            .factory()
-            .create(findComponentDependencies())
+            .builder()
+            .withParams(SpaceSettingsViewModel.Params(space))
+            .withDependencies(findComponentDependencies())
+            .build()
     }
 
     val selectObjectTypeComponent = ComponentWithParams { excludedTypeKeys: List<TypeKey> ->

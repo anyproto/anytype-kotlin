@@ -113,11 +113,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                         }
                     ),
                     onSpaceWidgetClicked = throttledClick(
-                        onClick = {
-                            runCatching {
-                                findNavController().navigate(R.id.action_open_space_settings)
-                            }
-                        }
+                        onClick = vm::onSpaceSettingsClicked
                     ),
                     onOpenSpacesClicked = throttledClick(
                         onClick = {
@@ -260,6 +256,13 @@ class HomeScreenFragment : BaseComposeFragment() {
                     R.id.shareSpaceScreen,
                     args = ShareSpaceFragment.args(command.space)
                 )
+            }
+            is Command.OpenSpaceSettings -> {
+                runCatching {
+                    findNavController().navigate(R.id.action_open_space_settings)
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening space settings")
+                }
             }
         }
     }

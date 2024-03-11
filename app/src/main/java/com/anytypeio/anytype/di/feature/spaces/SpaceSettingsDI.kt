@@ -21,6 +21,7 @@ import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.providers.DefaultUriFileProvider
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -34,10 +35,14 @@ import dagger.Provides
 )
 @PerScreen
 interface SpaceSettingsComponent {
-    @Component.Factory
+    @Component.Builder
     interface Builder {
-        fun create(dependencies: SpaceSettingsDependencies): SpaceSettingsComponent
+        @BindsInstance
+        fun withParams(params: SpaceSettingsViewModel.Params): Builder
+        fun withDependencies(dependencies: SpaceSettingsDependencies): Builder
+        fun build(): SpaceSettingsComponent
     }
+
     fun inject(fragment: SpaceSettingsFragment)
 }
 

@@ -40,6 +40,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SpaceSettingsViewModel(
+    private val params: Params,
     private val analytics: Analytics,
     private val setSpaceDetails: SetSpaceDetails,
     private val spaceManager: SpaceManager,
@@ -307,6 +308,7 @@ class SpaceSettingsViewModel(
     }
 
     class Factory @Inject constructor(
+        private val params: Params,
         private val analytics: Analytics,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
@@ -331,9 +333,12 @@ class SpaceSettingsViewModel(
             deleteSpace = deleteSpace,
             configStorage = configStorage,
             debugSpaceShareDownloader = debugFileShareDownloader,
-            spaceGradientProvider = spaceGradientProvider
+            spaceGradientProvider = spaceGradientProvider,
+            params = params
         ) as T
     }
+
+    class Params(val space: SpaceId)
 
     companion object {
         const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."

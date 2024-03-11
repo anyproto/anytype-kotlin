@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
@@ -38,6 +39,7 @@ import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -50,6 +52,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.const.DateConst
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -72,7 +75,7 @@ import timber.log.Timber
 
 class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
 
-    // TODO provide space id as arguement
+    private val space get() = arg<Id>(ARG_SPACE_ID_KEY)
 
     @Inject
     lateinit var factory: SpaceSettingsViewModel.Factory
@@ -208,11 +211,16 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().spaceSettingsComponent.get().inject(this)
+        componentManager().spaceSettingsComponent.get(SpaceId(space)).inject(this)
     }
 
     override fun releaseDependencies() {
         componentManager().spaceSettingsComponent.release()
+    }
+
+    companion object {
+        const val ARG_SPACE_ID_KEY = "arg.space-settings.space-id"
+        fun args(space: SpaceId) = bundleOf(ARG_SPACE_ID_KEY to space.id)
     }
 }
 

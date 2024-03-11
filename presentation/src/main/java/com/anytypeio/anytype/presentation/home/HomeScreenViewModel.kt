@@ -1359,6 +1359,16 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSpaceSettingsClicked() {
+        viewModelScope.launch {
+            commands.emit(
+                Command.OpenSpaceSettings(
+                    spaceId = SpaceId(spaceManager.get())
+                )
+            )
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         viewModelScope.launch {
@@ -1480,6 +1490,8 @@ sealed class Command {
         val target: Id? = null,
         val isInEditMode: Boolean
     ) : Command()
+
+    data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
 
     data class SelectWidgetType(
         val ctx: Id,

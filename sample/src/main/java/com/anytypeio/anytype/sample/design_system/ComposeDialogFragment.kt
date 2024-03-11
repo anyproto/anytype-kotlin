@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -34,6 +35,7 @@ import kotlinx.coroutines.FlowPreview
 
 class ComposeDialogFragment : BaseComposeFragment() {
 
+    @OptIn(ExperimentalMaterial3Api::class)
     @FlowPreview
     @ExperimentalPagerApi
     @ExperimentalMaterialApi

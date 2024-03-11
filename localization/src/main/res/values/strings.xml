@@ -1403,5 +1403,9 @@
     <string name="payments_detials_button_pay">Pay by Card</string>
     <string name="payments_detials_button_submit">Submit</string>
     <string name="payments_details_whats_included">What’s included</string>
+    <string name="payments_email_title">Get your free membership</string>
+    <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
+    <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
+    <string name="payments_email_hint">E-mail</string>
 
 </resources>

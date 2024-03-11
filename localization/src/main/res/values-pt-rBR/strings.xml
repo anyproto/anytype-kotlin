@@ -1126,7 +1126,7 @@
     <string name="multiplayer_invite_link">Link de convite</string>
     <string name="multiplayer_join_a_space">Join a space</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentário privado para o proprietário do espaço</string>
-    <string name="mulitplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
+    <string name="multiplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
     <string name="multiplayer_space_request_to_join">Request to join</string>
     <string name="multiplayer_space_request_to_join_msg">Você foi convidado para se juntar ao espaço %1$s, criado por %2$s. Envie uma solicitação para que o proprietário do espaço permita seu acesso.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Toque para escrever seu comentário</string>

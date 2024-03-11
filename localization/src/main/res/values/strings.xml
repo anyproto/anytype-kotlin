@@ -1312,7 +1312,7 @@
     <string name="multiplayer_invite_link">Invite link</string>
     <string name="multiplayer_join_a_space">Join a space</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
-    <string name="mulitplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
+    <string name="multiplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
     <string name="multiplayer_space_request_to_join">Request to join</string>
     <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %2$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
@@ -1332,6 +1332,10 @@
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">Request sent</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
+    <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_share">Share</string>
+    <string name="multiplayer_manage">Manage</string>
+    <string name="multiplayer_leave_space">Leave space</string>
 
     <!--endregion-->
 
@@ -1369,8 +1373,5 @@
     <string name="payments_terms_link">Terms and conditions</string>
     <string name="payments_let_us_link_start">Would you like to use Anytype for business, education, etc.?</string>
     <string name="payments_let_us_link_end">Please let us know here.</string>
-    <string name="multiplayer_sharing">Sharing</string>
-    <string name="multiplayer_share">Share</string>
-    <string name="multiplayer_manage">Manage</string>
 
 </resources>

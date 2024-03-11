@@ -14,15 +14,17 @@ import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
-import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.asSpaceType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.ViewState
+import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -32,9 +34,11 @@ import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -51,12 +55,15 @@ class SpaceSettingsViewModel(
     private val deleteSpace: DeleteSpace,
     private val configStorage: ConfigStorage,
     private val debugSpaceShareDownloader: DebugSpaceShareDownloader,
-    private val spaceGradientProvider: SpaceGradientProvider
+    private val spaceGradientProvider: SpaceGradientProvider,
+    private val getAccount: GetAccount
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
     val isDismissed = MutableStateFlow(false)
     val spaceViewState = MutableStateFlow<ViewState<SpaceData>>(ViewState.Init)
+
+    val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
     private val spaceConfig = spaceManager.getConfig()
 
@@ -65,6 +72,41 @@ class SpaceSettingsViewModel(
             analytics.sendEvent(
                 eventName = EventsDictionary.screenSettingSpacesSpaceIndex
             )
+        }
+        viewModelScope.launch {
+            val account = getAccount.async(Unit).getOrThrow()
+            storelessSubscriptionContainer.subscribe(
+                searchParams = StoreSearchParams(
+                    subscription = SPACE_SETTINGS_PARTICIPANT_SUBSCRIPTION,
+                    filters = buildList {
+                        addAll(
+                            ObjectSearchConstants.filterParticipants(
+                                spaces = listOf(params.space.id)
+                            )
+                        )
+                        add(
+                            DVFilter(
+                                relation = Relations.IDENTITY,
+                                value = account.id,
+                                condition = DVFilterCondition.EQUAL
+                            )
+                        )
+                    },
+                    sorts = emptyList(),
+                    keys = ObjectSearchConstants.spaceMemberKeys,
+                    limit = 1
+                )
+            ).map { results ->
+                if (results.isNotEmpty())
+                    ObjectWrapper.SpaceMember(results.first().map)
+                else
+                    null
+            }.collect { user ->
+                if (user != null)
+                    permissions.value = user.permissions ?: SpaceMemberPermissions.NO_PERMISSIONS
+                else
+                    Timber.w("User-as-space-member permission is not found.")
+            }
         }
         viewModelScope.launch {
             val config = spaceManager.getConfig(params.space)
@@ -105,7 +147,7 @@ class SpaceSettingsViewModel(
                 )
             ).mapNotNull { results ->
                 results.firstOrNull()
-            }.map { wrapper ->
+            }.combine(permissions) { wrapper, permission ->
                 val spaceView = ObjectWrapper.SpaceView(wrapper.map)
                 SpaceData(
                     name = wrapper.name.orEmpty(),
@@ -121,29 +163,13 @@ class SpaceSettingsViewModel(
                         .toString(),
                     spaceId = params.space.id,
                     network = config?.network.orEmpty(),
-                    isDeletable = false,
-                    spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE
+                    isDeletable = spaceView.spaceAccessType != SpaceAccessType.PERSONAL,
+                    spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
+                    permissions = permission
                 )
             }.collect { spaceData ->
                 spaceViewState.value = ViewState.Success(spaceData)
             }
-        }
-    }
-
-    private fun isSpaceDeletable(space: Id) : Boolean {
-        val personalSpace = resolvePersonalSpace()
-        return if (personalSpace == null)
-            false
-        else
-            personalSpace != space
-    }
-
-    private fun resolveSpaceType(space: Id) : SpaceType {
-        val personalSpace = resolvePersonalSpace()
-        return when {
-            personalSpace == space -> PERSONAL_SPACE_TYPE
-            personalSpace != null && personalSpace != space -> PRIVATE_SPACE_TYPE
-            else -> UNKNOWN_SPACE_TYPE
         }
     }
 
@@ -287,19 +313,17 @@ class SpaceSettingsViewModel(
     }
 
     fun onManageSharedSpaceClicked() {
-        // TODO get space id from params
         viewModelScope.launch {
             commands.emit(
-                Command.ManageSharedSpace(SpaceId(id = "TODO"))
+                Command.ManageSharedSpace(params.space)
             )
         }
     }
 
     fun onSharePrivateSpaceClicked() {
-        // TODO get space id from params
         viewModelScope.launch {
             commands.emit(
-                Command.SharePrivateSpace(SpaceId(id = "TODO"))
+                Command.SharePrivateSpace(params.space)
             )
         }
     }
@@ -312,7 +336,8 @@ class SpaceSettingsViewModel(
         val name: String,
         val icon: SpaceIconView,
         val isDeletable: Boolean = false,
-        val spaceType: SpaceType
+        val spaceType: SpaceType,
+        val permissions: SpaceMemberPermissions
     )
 
     sealed class Command {
@@ -323,6 +348,7 @@ class SpaceSettingsViewModel(
 
     class Factory @Inject constructor(
         private val params: Params,
+        private val getAccount: GetAccount,
         private val analytics: Analytics,
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
@@ -348,7 +374,8 @@ class SpaceSettingsViewModel(
             configStorage = configStorage,
             debugSpaceShareDownloader = debugFileShareDownloader,
             spaceGradientProvider = spaceGradientProvider,
-            params = params
+            params = params,
+            getAccount = getAccount
         ) as T
     }
 
@@ -357,5 +384,6 @@ class SpaceSettingsViewModel(
     companion object {
         const val SPACE_DEBUG_MSG = "Kindly share this debug logs with Anytype developers."
         const val SPACE_SETTINGS_SUBSCRIPTION = "subscription.space-settings.space-views"
+        const val SPACE_SETTINGS_PARTICIPANT_SUBSCRIPTION = "subscription.space-settings.participant"
     }
 }

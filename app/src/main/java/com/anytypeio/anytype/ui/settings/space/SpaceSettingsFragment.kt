@@ -39,6 +39,7 @@ import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
@@ -452,10 +453,14 @@ fun SpaceSettingsScreen(
         }
         if (spaceData is ViewState.Success && spaceData.data.isDeletable) {
             item {
+                val label = when(spaceData.data.permissions) {
+                    SpaceMemberPermissions.OWNER -> stringResource(R.string.delete_space)
+                    else -> stringResource(R.string.multiplayer_leave_space)
+                }
                 Box(modifier = Modifier.height(78.dp)) {
                     ButtonWarning(
                         onClick = { onDeleteSpaceClicked() },
-                        text = stringResource(R.string.delete_space),
+                        text = label,
                         modifier = Modifier
                             .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
                             .fillMaxWidth()
@@ -484,7 +489,8 @@ fun SpaceSettingsScreenPreview() {
                 name = "Dream team",
                 icon = SpaceIconView.Placeholder,
                 isDeletable = true,
-                spaceType = PERSONAL_SPACE_TYPE
+                spaceType = PERSONAL_SPACE_TYPE,
+                permissions = SpaceMemberPermissions.OWNER
             )
         ),
         onNameSet = {},

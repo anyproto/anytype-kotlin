@@ -7,7 +7,9 @@ sealed class Tier {
     data class Explorer(
         override val id: String,
         override val isCurrent: Boolean,
-        val price: String = ""
+        val price: String = "",
+        val email: String = "",
+        val isChecked: Boolean = true
     ) : Tier()
 
     data class Builder(

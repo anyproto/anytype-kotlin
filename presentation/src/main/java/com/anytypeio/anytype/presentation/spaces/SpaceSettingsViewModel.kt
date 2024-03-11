@@ -132,7 +132,7 @@ class SpaceSettingsViewModel(
                         .toString(),
                     spaceId = params.space.id,
                     network = config?.network.orEmpty(),
-                    isDeletable = spaceView.spaceAccessType != SpaceAccessType.PERSONAL,
+                    isDeletable = resolveIsSpaceDeletable(spaceView),
                     spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE,
                     permissions = permission
                 )
@@ -141,6 +141,9 @@ class SpaceSettingsViewModel(
             }
         }
     }
+
+    private fun resolveIsSpaceDeletable(spaceView: ObjectWrapper.SpaceView) =
+        spaceView.spaceAccessType != null && spaceView.spaceAccessType != SpaceAccessType.PERSONAL
 
     private fun proceedWithUserAsSpaceMemberPermissions() {
         viewModelScope.launch {

@@ -24,7 +24,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugSpaceShareDownloader
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -73,41 +72,11 @@ class SpaceSettingsViewModel(
                 eventName = EventsDictionary.screenSettingSpacesSpaceIndex
             )
         }
-        viewModelScope.launch {
-            val account = getAccount.async(Unit).getOrThrow()
-            storelessSubscriptionContainer.subscribe(
-                searchParams = StoreSearchParams(
-                    subscription = SPACE_SETTINGS_PARTICIPANT_SUBSCRIPTION,
-                    filters = buildList {
-                        addAll(
-                            ObjectSearchConstants.filterParticipants(
-                                spaces = listOf(params.space.id)
-                            )
-                        )
-                        add(
-                            DVFilter(
-                                relation = Relations.IDENTITY,
-                                value = account.id,
-                                condition = DVFilterCondition.EQUAL
-                            )
-                        )
-                    },
-                    sorts = emptyList(),
-                    keys = ObjectSearchConstants.spaceMemberKeys,
-                    limit = 1
-                )
-            ).map { results ->
-                if (results.isNotEmpty())
-                    ObjectWrapper.SpaceMember(results.first().map)
-                else
-                    null
-            }.collect { user ->
-                if (user != null)
-                    permissions.value = user.permissions ?: SpaceMemberPermissions.NO_PERMISSIONS
-                else
-                    Timber.w("User-as-space-member permission is not found.")
-            }
-        }
+        proceedWithUserAsSpaceMemberPermissions()
+        proceedWithFetchingSpaceMetaData()
+    }
+
+    private fun proceedWithFetchingSpaceMetaData() {
         viewModelScope.launch {
             val config = spaceManager.getConfig(params.space)
             storelessSubscriptionContainer.subscribe(
@@ -173,8 +142,49 @@ class SpaceSettingsViewModel(
         }
     }
 
-    private fun resolvePersonalSpace() : Id? {
-        return configStorage.getOrNull()?.space
+    private fun proceedWithUserAsSpaceMemberPermissions() {
+        viewModelScope.launch {
+            getAccount.async(Unit).fold(
+                onSuccess = { account ->
+                    storelessSubscriptionContainer.subscribe(
+                        searchParams = StoreSearchParams(
+                            subscription = SPACE_SETTINGS_PARTICIPANT_SUBSCRIPTION,
+                            filters = buildList {
+                                addAll(
+                                    ObjectSearchConstants.filterParticipants(
+                                        spaces = listOf(params.space.id)
+                                    )
+                                )
+                                add(
+                                    DVFilter(
+                                        relation = Relations.IDENTITY,
+                                        value = account.id,
+                                        condition = DVFilterCondition.EQUAL
+                                    )
+                                )
+                            },
+                            sorts = emptyList(),
+                            keys = ObjectSearchConstants.spaceMemberKeys,
+                            limit = 1
+                        )
+                    ).map { results ->
+                        if (results.isNotEmpty())
+                            ObjectWrapper.SpaceMember(results.first().map)
+                        else
+                            null
+                    }.collect { user ->
+                        if (user != null)
+                            permissions.value =
+                                user.permissions ?: SpaceMemberPermissions.NO_PERMISSIONS
+                        else
+                            Timber.w("User-as-space-member permission is not found.")
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Could not get account")
+                }
+            )
+        }
     }
 
     fun onNameSet(name: String) {

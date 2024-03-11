@@ -10,11 +10,13 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.PERSONAL_SPACE_TYPE
 import com.anytypeio.anytype.core_models.PRIVATE_SPACE_TYPE
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
+import com.anytypeio.anytype.core_models.asSpaceType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ui.ViewState
 import com.anytypeio.anytype.domain.base.fold
@@ -81,12 +83,14 @@ class SpaceSettingsViewModel(
                                 Relations.ICON_OPTION,
                                 Relations.CREATED_DATE,
                                 Relations.CREATOR,
-                                Relations.TARGET_SPACE_ID
+                                Relations.TARGET_SPACE_ID,
+                                Relations.SPACE_ACCESS_TYPE
                             )
                         )
                     ).mapNotNull { results ->
                         results.firstOrNull()
                     }.map { wrapper ->
+                        val spaceView = ObjectWrapper.SpaceView(wrapper.map)
                         SpaceData(
                             name = wrapper.name.orEmpty(),
                             icon = wrapper.spaceIcon(
@@ -102,7 +106,7 @@ class SpaceSettingsViewModel(
                             spaceId = config.space,
                             network = config.network,
                             isDeletable = isSpaceDeletable(config.space),
-                            spaceType = resolveSpaceType(config.space)
+                            spaceType = spaceView.spaceAccessType?.asSpaceType() ?: UNKNOWN_SPACE_TYPE
                         )
                     }
                 }.collect { spaceData ->

@@ -11,9 +11,7 @@ import com.anytypeio.anytype.core_models.Marketplace.MARKETPLACE_SPACE_ID
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.TypeKey
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.objects.SupportedLayouts
 
 /**
@@ -1111,7 +1109,7 @@ object ObjectSearchConstants {
         Relations.RELATION_KEY
     )
 
-    val participantKeys = listOf(
+    val spaceMemberKeys = listOf(
         Relations.ID,
         Relations.SPACE_ID,
         Relations.IDENTITY,

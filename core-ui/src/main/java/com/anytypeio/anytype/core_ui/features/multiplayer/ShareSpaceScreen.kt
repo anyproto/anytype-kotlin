@@ -65,8 +65,9 @@ import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @Composable
 fun ShareSpaceScreen(
+    isCurrentUserOwner: Boolean,
     members: List<ShareSpaceMemberView>,
-    viewState: ShareSpaceViewModel.ViewState,
+    shareLinkViewState: ShareSpaceViewModel.ShareLinkViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
@@ -74,6 +75,7 @@ fun ShareSpaceScreen(
     onCanViewClicked: (ShareSpaceMemberView) -> Unit,
     onCanEditClicked: (ShareSpaceMemberView) -> Unit,
     onRemoveMemberClicked: (ShareSpaceMemberView) -> Unit,
+    onStopSharingClicked: () -> Unit
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -87,16 +89,47 @@ fun ShareSpaceScreen(
                 }
             }
             item {
+                var isMenuExpanded by remember { mutableStateOf(false) }
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Toolbar(title = stringResource(R.string.multiplayer_share_space))
-                    Image(
+                    Box(
                         modifier = Modifier
                             .align(Alignment.CenterEnd)
                             .padding(end = 16.dp)
-                        ,
-                        painter = painterResource(id = R.drawable.ic_action_more),
-                        contentDescription = "Menu button"
-                    )
+                    ) {
+                        if (isCurrentUserOwner) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_action_more),
+                                contentDescription = "Menu button",
+                                modifier = Modifier.noRippleClickable {
+                                    isMenuExpanded = true
+                                }
+                            )
+                        }
+                        DropdownMenu(
+                            expanded = isMenuExpanded,
+                            onDismissRequest = {
+                                isMenuExpanded = false
+                            },
+                            modifier = Modifier.background(
+                                color = colorResource(id = R.color.background_secondary)
+                            )
+                        ) {
+                            DropdownMenuItem(
+                                onClick = {
+                                    onStopSharingClicked()
+                                    isMenuExpanded = false
+                                }
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.multiplayer_space_stop_sharing),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.palette_dark_red),
+                                    modifier = Modifier.weight(1.0f)
+                                )
+                            }
+                        }
+                    }
                 }
             }
             item {
@@ -110,6 +143,7 @@ fun ShareSpaceScreen(
                         is ShareSpaceMemberView.Config.Member -> {
                             SpaceMember(
                                 member = member.obj,
+                                isCurrentUserOwner = isCurrentUserOwner,
                                 config = config,
                                 onCanEditClicked = {
                                     onCanEditClicked(member)
@@ -143,18 +177,18 @@ fun ShareSpaceScreen(
                 }
             }
         }
-        when(viewState) {
-            ShareSpaceViewModel.ViewState.Init -> {
+        when(shareLinkViewState) {
+            ShareSpaceViewModel.ShareLinkViewState.Init -> {
                 // Do nothing.
             }
-            is ShareSpaceViewModel.ViewState.Share -> {
+            is ShareSpaceViewModel.ShareLinkViewState.Share -> {
                 Box(
                     modifier = Modifier
                         .padding(16.dp)
                         .align(Alignment.BottomStart)
                 ) {
                     ShareInviteLinkCard(
-                        link = viewState.link,
+                        link = shareLinkViewState.link,
                         onShareInviteClicked = onShareInviteLinkClicked,
                         onRegenerateInviteLinkClicked = onRegenerateInviteLinkClicked
                     )
@@ -166,7 +200,8 @@ fun ShareSpaceScreen(
 
 @Composable
 private fun SpaceMember(
-    member: ObjectWrapper.Participant,
+    isCurrentUserOwner: Boolean,
+    member: ObjectWrapper.SpaceMember,
     icon: SpaceMemberIconView,
     config: ShareSpaceMemberView.Config.Member,
     onCanEditClicked: () -> Unit,
@@ -213,7 +248,7 @@ private fun SpaceMember(
                 color = colorResource(id = R.color.text_secondary)
             )
         }
-        if (config !is ShareSpaceMemberView.Config.Member.Owner) {
+        if (isCurrentUserOwner && config !is ShareSpaceMemberView.Config.Member.Owner) {
             Box(modifier = Modifier.align(Alignment.CenterVertically)) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_action_more),
@@ -337,7 +372,7 @@ fun SpaceMemberIcon(
 
 @Composable
 private fun SpaceMemberRequest(
-    member: ObjectWrapper.Participant,
+    member: ObjectWrapper.SpaceMember,
     icon: SpaceMemberIconView,
     request: ShareSpaceMemberView.Config.Request,
     onViewRequestClicked: () -> Unit,
@@ -422,7 +457,7 @@ private fun SpaceMemberRequest(
 @Preview
 fun SpaceJoinRequestPreview() {
     SpaceMemberRequest(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "1",
                 Relations.NAME to "Konstantin",
@@ -440,7 +475,7 @@ fun SpaceJoinRequestPreview() {
 @Preview
 fun SpaceUnjoinRequestPreview() {
     SpaceMemberRequest(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "1",
                 Relations.NAME to "Konstantin",
@@ -458,7 +493,7 @@ fun SpaceUnjoinRequestPreview() {
 @Preview
 fun ShareSpaceScreenPreview() {
     ShareSpaceScreen(
-        viewState = ShareSpaceViewModel.ViewState.Share(
+        shareLinkViewState = ShareSpaceViewModel.ShareLinkViewState.Share(
             link = "https://anytype.io/ibafyrfhfsag6rea3ifffsasssg..."
         ),
         onShareInviteLinkClicked = {},
@@ -466,7 +501,7 @@ fun ShareSpaceScreenPreview() {
         members = buildList {
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "1",
                             Relations.NAME to "Konstantin",
@@ -480,7 +515,7 @@ fun ShareSpaceScreenPreview() {
             )
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Evgenii"
@@ -493,7 +528,7 @@ fun ShareSpaceScreenPreview() {
             )
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Aleksey"
@@ -507,7 +542,7 @@ fun ShareSpaceScreenPreview() {
             )
             add(
                 ShareSpaceMemberView(
-                    obj = ObjectWrapper.Participant(
+                    obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
                             Relations.NAME to "Anton"
@@ -524,7 +559,9 @@ fun ShareSpaceScreenPreview() {
         onViewRequestClicked = {},
         onRemoveMemberClicked = {},
         onCanViewClicked = {},
-        onCanEditClicked = {}
+        onCanEditClicked = {},
+        isCurrentUserOwner = false,
+        onStopSharingClicked = {}
     )
 }
 
@@ -532,7 +569,7 @@ fun ShareSpaceScreenPreview() {
 @Preview
 private fun SpaceOwnerMemberPreview() {
     SpaceMember(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "2",
                 Relations.NAME to "Evgenii"
@@ -542,7 +579,8 @@ private fun SpaceOwnerMemberPreview() {
         config = ShareSpaceMemberView.Config.Member.Owner,
         onCanEditClicked = {},
         onCanViewClicked = {},
-        onRemoveMemberClicked = {}
+        onRemoveMemberClicked = {},
+        isCurrentUserOwner = true
     )
 }
 
@@ -550,7 +588,7 @@ private fun SpaceOwnerMemberPreview() {
 @Preview
 private fun SpaceEditorMemberPreview() {
     SpaceMember(
-        member = ObjectWrapper.Participant(
+        member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "2",
                 Relations.NAME to "Evgenii"
@@ -560,6 +598,7 @@ private fun SpaceEditorMemberPreview() {
         config = ShareSpaceMemberView.Config.Member.Writer,
         onCanEditClicked = {},
         onCanViewClicked = {},
-        onRemoveMemberClicked = {}
+        onRemoveMemberClicked = {},
+        isCurrentUserOwner = true
     )
 }

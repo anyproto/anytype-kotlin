@@ -2,8 +2,9 @@ package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.Relations.RELATION_FORMAT_OBJECT_TYPES
 import com.anytypeio.anytype.core_models.ext.typeOf
-import com.anytypeio.anytype.core_models.multiplayer.ParticipantPermissions
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 
@@ -265,6 +266,14 @@ sealed class ObjectWrapper {
                     .firstOrNull { it.code == code?.toInt() }
                     ?: SpaceStatus.UNKNOWN
             }
+
+        val spaceAccessType: SpaceAccessType?
+            get() {
+                val code = getValue<Double?>(Relations.SPACE_ACCESS_TYPE)
+                return SpaceAccessType
+                    .values()
+                    .firstOrNull { it.code == code?.toInt() }
+            }
     }
 
     inline fun <reified T> getValue(relation: Key): T? {
@@ -313,7 +322,7 @@ sealed class ObjectWrapper {
         val isDeleted: Boolean? by default
     }
 
-    data class Participant(override val map: Struct): ObjectWrapper() {
+    data class SpaceMember(override val map: Struct): ObjectWrapper() {
         private val default = map.withDefault { null }
 
         val id: Id by default
@@ -330,7 +339,7 @@ sealed class ObjectWrapper {
         val permissions
             get() = getSingleValue<Double>(Relations.PARTICIPANT_PERMISSIONS)
                 .let { code ->
-                    ParticipantPermissions.values().firstOrNull { it.code == code?.toInt() }
+                    SpaceMemberPermissions.values().firstOrNull { it.code == code?.toInt() }
                 }
     }
 }

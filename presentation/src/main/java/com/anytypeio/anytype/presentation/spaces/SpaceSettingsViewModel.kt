@@ -8,6 +8,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Filepath
@@ -149,44 +150,48 @@ class SpaceSettingsViewModel(
         viewModelScope.launch {
             getAccount.async(Unit).fold(
                 onSuccess = { account ->
-                    storelessSubscriptionContainer.subscribe(
-                        searchParams = StoreSearchParams(
-                            subscription = SPACE_SETTINGS_PARTICIPANT_SUBSCRIPTION,
-                            filters = buildList {
-                                addAll(
-                                    ObjectSearchConstants.filterParticipants(
-                                        spaces = listOf(params.space.id)
-                                    )
-                                )
-                                add(
-                                    DVFilter(
-                                        relation = Relations.IDENTITY,
-                                        value = account.id,
-                                        condition = DVFilterCondition.EQUAL
-                                    )
-                                )
-                            },
-                            sorts = emptyList(),
-                            keys = ObjectSearchConstants.spaceMemberKeys,
-                            limit = 1
-                        )
-                    ).map { results ->
-                        if (results.isNotEmpty())
-                            ObjectWrapper.SpaceMember(results.first().map)
-                        else
-                            null
-                    }.collect { user ->
-                        if (user != null)
-                            permissions.value =
-                                user.permissions ?: SpaceMemberPermissions.NO_PERMISSIONS
-                        else
-                            Timber.w("User-as-space-member permission is not found.")
-                    }
+                    proceedWithSpaceMemberPermissionSubscription(account)
                 },
                 onFailure = {
                     Timber.e(it, "Could not get account")
                 }
             )
+        }
+    }
+
+    private suspend fun proceedWithSpaceMemberPermissionSubscription(account: Account) {
+        storelessSubscriptionContainer.subscribe(
+            searchParams = StoreSearchParams(
+                subscription = SPACE_SETTINGS_PARTICIPANT_SUBSCRIPTION,
+                filters = buildList {
+                    addAll(
+                        ObjectSearchConstants.filterParticipants(
+                            spaces = listOf(params.space.id)
+                        )
+                    )
+                    add(
+                        DVFilter(
+                            relation = Relations.IDENTITY,
+                            value = account.id,
+                            condition = DVFilterCondition.EQUAL
+                        )
+                    )
+                },
+                sorts = emptyList(),
+                keys = ObjectSearchConstants.spaceMemberKeys,
+                limit = 1
+            )
+        ).map { results ->
+            if (results.isNotEmpty())
+                ObjectWrapper.SpaceMember(results.first().map)
+            else
+                null
+        }.collect { user ->
+            if (user != null)
+                permissions.value =
+                    user.permissions ?: SpaceMemberPermissions.NO_PERMISSIONS
+            else
+                Timber.w("User-as-space-member permission is not found.")
         }
     }
 

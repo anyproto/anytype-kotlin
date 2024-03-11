@@ -12,6 +12,8 @@ class PaymentsViewModel(
 
     val viewState = MutableStateFlow<PaymentsState>(PaymentsState.Loading)
 
+    val showTier = MutableStateFlow<Tier?>(null)
+
     init {
         Timber.d("PaymentsViewModel created")
         viewState.value = PaymentsState.Success(

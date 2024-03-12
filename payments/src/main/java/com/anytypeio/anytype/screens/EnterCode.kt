@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.screens
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,8 +13,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -27,7 +31,7 @@ import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
@@ -39,6 +43,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.text.isDigitsOnly
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
@@ -77,6 +82,9 @@ private fun ModalCodeContent(error: String? = null, onCodeEntered: (String) -> U
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(44.dp))
+        val modifier = Modifier
+            .width(48.dp)
+            .height(64.dp)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -84,41 +92,38 @@ private fun ModalCodeContent(error: String? = null, onCodeEntered: (String) -> U
             horizontalArrangement = Arrangement.Center
         ) {
             CodeNumber(
-                modifier = Modifier
-                    .width(48.dp)
-                    .height(64.dp)
+                modifier = modifier
                     .focusRequester(item1)
                     .focusProperties {
                         next = item2
                         previous = item1
-                    })
+                    },
+                onNumberChanged = { onCodeEntered(it) }
+            )
             Spacer(modifier = Modifier.width(8.dp))
-            CodeNumber(modifier = Modifier
-                .width(48.dp)
-                .height(64.dp)
+            CodeNumber(modifier = modifier
                 .focusRequester(item2)
                 .focusProperties {
                     next = item3
                     previous = item1
-                })
+                },
+                onNumberChanged = { onCodeEntered(it) })
             Spacer(modifier = Modifier.width(8.dp))
-            CodeNumber(modifier = Modifier
-                .width(48.dp)
-                .height(64.dp)
+            CodeNumber(modifier = modifier
                 .focusRequester(item3)
                 .focusProperties {
                     next = item4
                     previous = item2
-                })
+                },
+                onNumberChanged = { onCodeEntered(it) })
             Spacer(modifier = Modifier.width(8.dp))
-            CodeNumber(modifier = Modifier
-                .width(48.dp)
-                .height(64.dp)
+            CodeNumber(modifier = modifier
                 .focusRequester(item4)
                 .focusProperties {
                     next = item4
                     previous = item3
-                })
+                },
+                onNumberChanged = { onCodeEntered(it) })
         }
 
         Spacer(modifier = Modifier.height(149.dp))
@@ -133,9 +138,8 @@ private fun ModalCodeContent(error: String? = null, onCodeEntered: (String) -> U
 }
 
 @Composable
-private fun CodeNumber(modifier: Modifier = Modifier) {
-    val pattern = remember { Regex("^[^\\t]*\$") } //to not accept the tab key as value
-    var (text, setText) = remember { mutableStateOf("") }
+private fun CodeNumber(modifier: Modifier = Modifier, onNumberChanged: (String) -> Unit) {
+    val (text, setText) = remember { mutableStateOf("") }
     val maxChar = 1
     val focusManager = LocalFocusManager.current
 
@@ -148,11 +152,13 @@ private fun CodeNumber(modifier: Modifier = Modifier) {
             )
         }
     }
-    androidx.compose.material.OutlinedTextField(
+    val borderColor = colorResource(id = R.color.shape_primary)
+    BasicTextField(
         value = text,
         onValueChange = { newText: String ->
-            if (newText.length <= maxChar && (newText.isEmpty() || pattern.matches(newText))) {
+            if (newText.length <= maxChar && (newText.isEmpty() || newText.isDigitsOnly())) {
                 setText(newText)
+                onNumberChanged(newText)
             }
         },
         modifier = modifier
@@ -167,21 +173,24 @@ private fun CodeNumber(modifier: Modifier = Modifier) {
                     false
                 }
             },
+        singleLine = true,
+        enabled = true,
+        cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
         keyboardOptions = KeyboardOptions(
             imeAction = ImeAction.Next,
             keyboardType = KeyboardType.Number
         ),
-        singleLine = true,
-        colors = TextFieldDefaults.outlinedTextFieldColors(
-            textColor = colorResource(id = R.color.text_primary),
-            backgroundColor = Color.Transparent,
-            focusedBorderColor = colorResource(id = R.color.shape_primary),
-            unfocusedBorderColor = colorResource(id = R.color.shape_primary),
-            placeholderColor = colorResource(id = R.color.text_tertiary),
-            cursorColor = colorResource(id = R.color.text_primary)
-        ),
-        textStyle = HeadlineTitle,
-        shape = RoundedCornerShape(8.dp),
+        decorationBox = { innerTextField ->
+            Box(
+                modifier = Modifier
+                    .border(BorderStroke(1.dp, borderColor), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 15.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                innerTextField()
+            }
+        },
+        textStyle = HeadlineTitle
     )
 }
 

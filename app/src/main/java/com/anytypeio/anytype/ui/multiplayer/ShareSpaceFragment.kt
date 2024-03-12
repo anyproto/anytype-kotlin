@@ -90,7 +90,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
                 startActivity(Intent.createChooser(intent, null))
             }
-
             is ShareSpaceViewModel.Command.ViewJoinRequest -> {
                 findNavController().navigate(
                     resId = R.id.spaceJoinRequestScreen,
@@ -100,7 +99,6 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     )
                 )
             }
-
             is ShareSpaceViewModel.Command.Dismiss -> {
                 dismiss()
             }

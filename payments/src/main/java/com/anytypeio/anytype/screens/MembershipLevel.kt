@@ -71,22 +71,22 @@ import com.anytypeio.anytype.peyments.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModalTier(tier: Tier?, onDismiss: () -> Unit) {
+fun ModalTier(tier: Tier?, onDismiss: () -> Unit, actionPay: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         modifier = Modifier.padding(top = 30.dp),
         sheetState = sheetState,
         containerColor = Color.Transparent,
         dragHandle = null,
-        onDismissRequest = { onDismiss() }) { MembershipLevels(tier = tier) }
+        onDismissRequest = { onDismiss() },
+        content = {
+            MembershipLevels(tier = tier, actionPay = actionPay)
+        }
+    )
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun MembershipLevels(tier: Tier?) {
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
+fun MembershipLevels(tier: Tier?, actionPay: () -> Unit) {
 
     Box(
         modifier = Modifier
@@ -167,7 +167,8 @@ fun MembershipLevels(tier: Tier?) {
                         nameIsTaken = tier.nameIsTaken,
                         nameIsFree = tier.nameIsFree,
                         price = tier.price,
-                        interval = tier.interval
+                        interval = tier.interval,
+                        actionPay = actionPay
                     )
                 }
                 if (tier is Tier.CoCreator) {
@@ -176,7 +177,8 @@ fun MembershipLevels(tier: Tier?) {
                         nameIsTaken = tier.nameIsTaken,
                         nameIsFree = tier.nameIsFree,
                         price = tier.price,
-                        interval = tier.interval
+                        interval = tier.interval,
+                        actionPay = actionPay
                     )
                     Price(tier.price, tier.interval)
                     Spacer(modifier = Modifier.height(14.dp))
@@ -195,7 +197,8 @@ fun NamePickerAndButton(
     nameIsTaken: Boolean,
     nameIsFree: Boolean,
     price: String,
-    interval: String
+    interval: String,
+    actionPay: () -> Unit
 ) {
     var innerValue by remember(name) { mutableStateOf(name) }
 
@@ -304,7 +307,7 @@ fun NamePickerAndButton(
         Price(price = price, interval = interval)
         Spacer(modifier = Modifier.height(14.dp))
         ButtonPay(enabled = true, actionPay = {
-
+            actionPay()
         })
     }
 }
@@ -495,6 +498,7 @@ fun MyLevel() {
             isCurrent = true,
             price = "$99",
             interval = "per year"
-        )
+        ),
+        actionPay = {}
     )
 }

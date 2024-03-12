@@ -6,12 +6,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -38,15 +44,16 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -67,7 +74,10 @@ import com.anytypeio.anytype.peyments.R
 fun ModalTier(tier: Tier?, onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
+        modifier = Modifier.padding(top = 30.dp),
         sheetState = sheetState,
+        containerColor = Color.Transparent,
+        dragHandle = null,
         onDismissRequest = { onDismiss() }) { MembershipLevels(tier = tier) }
 }
 
@@ -81,7 +91,10 @@ fun MembershipLevels(tier: Tier?) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(id = R.color.shape_tertiary)),
+            .background(
+                color = colorResource(id = R.color.shape_tertiary),
+                shape = RoundedCornerShape(16.dp)
+            ),
     ) {
 
         val tierResources = mapTierToResources(tier)
@@ -149,19 +162,26 @@ fun MembershipLevels(tier: Tier?) {
                     })
                 }
                 if (tier is Tier.Builder) {
-                    NamePicker(tier = tier)
-                    Price(tier.price, tier.interval)
-                    Spacer(modifier = Modifier.height(14.dp))
-                    ButtonPay(enabled = true, actionPay = {
-                        //viewModel.pay()
-                    })
+                    NamePickerAndButton(
+                        name = tier.name,
+                        nameIsTaken = tier.nameIsTaken,
+                        nameIsFree = tier.nameIsFree,
+                        price = tier.price,
+                        interval = tier.interval
+                    )
                 }
                 if (tier is Tier.CoCreator) {
-                    NamePicker(tier = tier)
+                    NamePickerAndButton(
+                        name = tier.name,
+                        nameIsTaken = tier.nameIsTaken,
+                        nameIsFree = tier.nameIsFree,
+                        price = tier.price,
+                        interval = tier.interval
+                    )
                     Price(tier.price, tier.interval)
                     Spacer(modifier = Modifier.height(14.dp))
                     ButtonPay(enabled = true, actionPay = {
-                        //viewModel.pay()
+
                     })
                 }
             }
@@ -170,8 +190,14 @@ fun MembershipLevels(tier: Tier?) {
 }
 
 @Composable
-fun NamePicker(tier: Tier.Builder) {
-    var innerValue by remember(tier.name) { mutableStateOf(tier.name) }
+fun NamePickerAndButton(
+    name: String,
+    nameIsTaken: Boolean,
+    nameIsFree: Boolean,
+    price: String,
+    interval: String
+) {
+    var innerValue by remember(name) { mutableStateOf(name) }
 
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
@@ -180,7 +206,7 @@ fun NamePicker(tier: Tier.Builder) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .wrapContentHeight()
+            .fillMaxHeight()
             .background(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.background_primary)
@@ -256,10 +282,12 @@ fun NamePicker(tier: Tier.Builder) {
         Spacer(modifier = Modifier.height(12.dp))
         Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
         val (messageTextColor, messageText) = when {
-            tier.nameIsTaken ->
+            nameIsTaken ->
                 colorResource(id = R.color.palette_system_red) to stringResource(id = R.string.payments_details_name_error)
-            tier.nameIsFree ->
+
+            nameIsFree ->
                 colorResource(id = R.color.palette_dark_lime) to stringResource(id = R.string.payments_details_name_success)
+
             else ->
                 colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_details_name_min)
         }
@@ -273,11 +301,16 @@ fun NamePicker(tier: Tier.Builder) {
             style = Relations2,
             textAlign = TextAlign.Center
         )
+        Price(price = price, interval = interval)
+        Spacer(modifier = Modifier.height(14.dp))
+        ButtonPay(enabled = true, actionPay = {
+
+        })
     }
 }
 
 @Composable
-private fun Price(price: String, interval : String) {
+private fun Price(price: String, interval: String) {
     Row() {
         Text(
             modifier = Modifier
@@ -290,7 +323,9 @@ private fun Price(price: String, interval : String) {
         )
         Text(
             modifier = Modifier
-                .wrapContentWidth().align(Alignment.Bottom).padding(bottom = 4.dp, start = 6.dp),
+                .wrapContentWidth()
+                .align(Alignment.Bottom)
+                .padding(bottom = 4.dp, start = 6.dp),
             text = interval,
             color = colorResource(id = R.color.text_primary),
             style = Relations1,
@@ -438,13 +473,15 @@ private fun SubmitEmail(tier: Tier.Explorer, updateEmail: (String) -> Unit) {
 }
 
 @Composable
-private fun ButtonPay(enabled: Boolean, actionPay:() -> Unit) {
+private fun ButtonPay(enabled: Boolean, actionPay: () -> Unit) {
     ButtonPrimary(
         enabled = enabled,
         text = stringResource(id = R.string.payments_detials_button_pay),
         onClick = { actionPay() },
         size = ButtonSize.Large,
-        modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp)
     )
 }
 
@@ -452,5 +489,12 @@ private fun ButtonPay(enabled: Boolean, actionPay:() -> Unit) {
 @Preview()
 @Composable
 fun MyLevel() {
-    MembershipLevels(tier = Tier.Builder(id = "121", isCurrent = true, price = "$99", interval = "per year"))
+    MembershipLevels(
+        tier = Tier.Builder(
+            id = "121",
+            isCurrent = true,
+            price = "$99",
+            interval = "per year"
+        )
+    )
 }

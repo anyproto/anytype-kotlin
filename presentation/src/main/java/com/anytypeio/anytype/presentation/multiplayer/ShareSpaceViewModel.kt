@@ -32,6 +32,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onEach
@@ -105,6 +106,8 @@ class ShareSpaceViewModel(
                     null
                 }
 
+            }.catch {
+                Timber.e("Error while $SHARE_SPACE_SPACE_SUBSCRIPTION subscription")
             }.collect { result ->
                 shareLinkViewState.value = result
             }
@@ -136,6 +139,8 @@ class ShareSpaceViewModel(
                         identity.isNotEmpty() && identity == account?.id && permissions == OWNER
                     }
                 }
+            }.catch {
+                Timber.e("Error while $SHARE_SPACE_MEMBER_SUBSCRIPTION subscription")
             }.collect {
                 members.value = it
             }

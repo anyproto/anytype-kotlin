@@ -960,4 +960,8 @@ class BlockDataRepository(
     override suspend fun stopSharingSpace(space: SpaceId) {
         remote.stopSharingSpace(space = space)
     }
+
+    override suspend fun getSpaceInviteLink(spaceId: SpaceId): SpaceInviteLink {
+        return remote.getSpaceInviteLink(spaceId)
+    }
 }

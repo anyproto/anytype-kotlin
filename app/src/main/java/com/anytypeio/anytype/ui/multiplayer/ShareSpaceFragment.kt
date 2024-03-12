@@ -58,7 +58,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                         onCanEditClicked = vm::onCanEditClicked,
                         onCanViewClicked = vm::onCanViewClicked,
                         onRemoveMemberClicked = vm::onRemoveMemberClicked,
-                        onStopSharingClicked = vm::onStopSharingSpaceClicked
+                        onStopSharingClicked = vm::onStopSharingSpaceClicked,
+                        onGenerateInviteLinkClicked = vm::onGenerateSpaceInviteLink
                     )
                 }
                 LaunchedEffect(Unit) {
@@ -89,6 +90,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
                 startActivity(Intent.createChooser(intent, null))
             }
+
             is ShareSpaceViewModel.Command.ViewJoinRequest -> {
                 findNavController().navigate(
                     resId = R.id.spaceJoinRequestScreen,
@@ -98,6 +100,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     )
                 )
             }
+
             is ShareSpaceViewModel.Command.Dismiss -> {
                 dismiss()
             }
@@ -114,7 +117,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
 
     companion object {
         const val SPACE_ID_KEY = "arg.share-space.space-id-key"
-        fun args(space: SpaceId) : Bundle = bundleOf(
+        fun args(space: SpaceId): Bundle = bundleOf(
             SPACE_ID_KEY to space.id
         )
     }

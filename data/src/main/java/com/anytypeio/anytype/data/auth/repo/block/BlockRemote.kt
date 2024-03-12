@@ -410,4 +410,6 @@ interface BlockRemote {
     ): SpaceInviteView
 
     suspend fun stopSharingSpace(space: SpaceId)
+
+    suspend fun getSpaceInviteLink(spaceId: SpaceId): SpaceInviteLink
 }

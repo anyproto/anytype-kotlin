@@ -230,7 +230,7 @@ private fun WidgetList(
                         icon = item.icon,
                         spaceType = item.type,
                         onSpaceShareIconClicked = { onSpaceShareIconClicked(item.space) },
-                        shareable = item.shareable
+                        isShared = item.isShared
                     )
                 }
                 is WidgetView.Tree -> {

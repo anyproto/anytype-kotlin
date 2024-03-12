@@ -39,6 +39,15 @@ fun ShareInviteLinkCardPreview() {
 }
 
 @Composable
+@Preview
+fun GenerateInviteLinkCardPreview() {
+    GenerateInviteLinkCard(
+        modifier = Modifier,
+        onGenerateInviteLinkClicked = {}
+    )
+}
+
+@Composable
 fun ShareInviteLinkCard(
     modifier: Modifier = Modifier,
     link: String,
@@ -108,6 +117,59 @@ fun ShareInviteLinkCard(
             ButtonPrimary(
                 text = stringResource(R.string.multiplayer_share_invite_link),
                 onClick = onShareInviteClicked,
+                size = ButtonSize.Large,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            )
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+    }
+}
+
+@Composable
+fun GenerateInviteLinkCard(
+    modifier: Modifier = Modifier,
+    onGenerateInviteLinkClicked: () -> Unit
+) {
+    ElevatedCard(
+        modifier = modifier,
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(id = R.color.background_primary)
+        ),
+        elevation = CardDefaults.elevatedCardElevation(
+            defaultElevation = 16.dp
+        )
+
+    ) {
+        Spacer(modifier = Modifier.height(20.dp))
+        Row(
+            modifier = Modifier.padding(horizontal = 20.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.multiplayer_invite_link),
+                style = Title1,
+                color = colorResource(id = R.color.text_primary),
+                modifier = Modifier.weight(1.0f)
+            )
+        }
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = stringResource(R.string.multiplayer_generate_invite_link_description),
+            style = BodyCalloutRegular,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier.padding(horizontal = 20.dp)
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+        ) {
+            ButtonPrimary(
+                text = stringResource(R.string.multiplayer_generate_invite_link),
+                onClick = onGenerateInviteLinkClicked,
                 size = ButtonSize.Large,
                 modifier = Modifier
                     .fillMaxWidth()

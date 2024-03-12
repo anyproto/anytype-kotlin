@@ -3,4 +3,5 @@
     <string-array name="certs">
         <item>MIIEqDCCA5CgAwIBAgIJA071MA0GCSqGSIb3DQEBBAUAMIGUMQsww...</item>
     </string-array>
+    <string name="multiplayer_generate_invite_link">Generate invite link</string>
 </resources>

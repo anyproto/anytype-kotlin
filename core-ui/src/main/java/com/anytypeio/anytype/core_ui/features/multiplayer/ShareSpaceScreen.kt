@@ -69,6 +69,7 @@ fun ShareSpaceScreen(
     members: List<ShareSpaceMemberView>,
     shareLinkViewState: ShareSpaceViewModel.ShareLinkViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
+    onGenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
     onApproveUnjoinRequestClicked: (ShareSpaceMemberView) -> Unit,
@@ -191,6 +192,17 @@ fun ShareSpaceScreen(
                         link = shareLinkViewState.link,
                         onShareInviteClicked = onShareInviteLinkClicked,
                         onRegenerateInviteLinkClicked = onRegenerateInviteLinkClicked
+                    )
+                }
+            }
+            is ShareSpaceViewModel.ShareLinkViewState.NotGenerated -> {
+                Box(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.BottomStart)
+                ) {
+                    GenerateInviteLinkCard(
+                        onGenerateInviteLinkClicked = onGenerateInviteLinkClicked
                     )
                 }
             }
@@ -561,7 +573,8 @@ fun ShareSpaceScreenPreview() {
         onCanViewClicked = {},
         onCanEditClicked = {},
         isCurrentUserOwner = false,
-        onStopSharingClicked = {}
+        onStopSharingClicked = {},
+        onGenerateInviteLinkClicked = {}
     )
 }
 

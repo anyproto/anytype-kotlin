@@ -1336,6 +1336,8 @@
     <string name="multiplayer_share">Share</string>
     <string name="multiplayer_manage">Manage</string>
     <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
+    <string name="multiplayer_generate_invite_link">Generate invite link</string>
 
     <!--endregion-->
 

@@ -188,11 +188,13 @@ fun ShareSpaceScreen(
             modifier = Modifier.align(Alignment.BottomStart)
         ) {
             Box(modifier = Modifier.padding(16.dp)) {
-                ShareInviteLinkCard(
-                    link = (shareLinkViewState as ShareSpaceViewModel.ShareLinkViewState.Share).link,
-                    onShareInviteClicked = onShareInviteLinkClicked,
-                    onRegenerateInviteLinkClicked = onRegenerateInviteLinkClicked
-                )
+                if (shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.Share) {
+                    ShareInviteLinkCard(
+                        link = shareLinkViewState.link,
+                        onShareInviteClicked = onShareInviteLinkClicked,
+                        onRegenerateInviteLinkClicked = onRegenerateInviteLinkClicked
+                    )
+                }
             }
         }
         AnimatedVisibility(

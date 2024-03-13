@@ -4,7 +4,8 @@ import com.anytypeio.anytype.models.Tier
 
 sealed class PaymentsState {
     object Loading : PaymentsState()
-    data class Success(val tiers: List<Tier>) : PaymentsState()
+    data class Default(val tiers: List<Tier>) : PaymentsState()
+    data class PaymentSuccess(val tiers: List<Tier>) : PaymentsState()
 }
 
 sealed class PaymentsCodeState {

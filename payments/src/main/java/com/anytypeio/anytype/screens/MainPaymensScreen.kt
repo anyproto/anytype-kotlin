@@ -74,11 +74,24 @@ fun MainPaymentsScreen(state: PaymentsState, tierClicked: (Tier) -> Unit) {
                 .padding(bottom = 20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (state is PaymentsState.Success) {
-                Header(state = state)
+            if (state is PaymentsState.Default) {
+                Header()
                 Spacer(modifier = Modifier.height(32.dp))
                 InfoCards()
-                TiersList(state = state, tierClicked = tierClicked)
+                TiersList(tiers = state.tiers, tierClicked = tierClicked)
+                Spacer(modifier = Modifier.height(32.dp))
+                LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
+                Divider()
+                LinkButton(text = stringResource(id = R.string.payments_privacy_link), action = {})
+                Divider()
+                LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {})
+                Spacer(modifier = Modifier.height(32.dp))
+                BottomText()
+            }
+            if (state is PaymentsState.PaymentSuccess) {
+                Header()
+                Spacer(modifier = Modifier.height(32.dp))
+                TiersList(tiers = state.tiers, tierClicked = tierClicked)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
                 Divider()
@@ -93,7 +106,7 @@ fun MainPaymentsScreen(state: PaymentsState, tierClicked: (Tier) -> Unit) {
 }
 
 @Composable
-private fun Header(state: PaymentsState.Success) {
+private fun Header() {
 
     // Dragger at the top, centered
     Box(
@@ -140,7 +153,7 @@ private fun Header(state: PaymentsState.Success) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TiersList(state: PaymentsState.Success, tierClicked: (Tier) -> Unit) {
+fun TiersList(tiers: List<Tier>, tierClicked: (Tier) -> Unit) {
     val itemsScroll = rememberLazyListState(initialFirstVisibleItemIndex = 1)
     LazyRow(
         state = itemsScroll,
@@ -151,7 +164,7 @@ fun TiersList(state: PaymentsState.Success, tierClicked: (Tier) -> Unit) {
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
         flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
     ) {
-        itemsIndexed(state.tiers) { _, tier ->
+        itemsIndexed(tiers) { _, tier ->
             val resources = mapTierToResources(tier)
             if (resources != null) {
                 TierView(
@@ -273,7 +286,7 @@ fun MainPaymentsScreenPreview() {
         Tier.CoCreator("999", isCurrent = false),
         Tier.Custom("999", isCurrent = false)
     )
-    MainPaymentsScreen(PaymentsState.Success(tiers), {})
+    MainPaymentsScreen(PaymentsState.PaymentSuccess(tiers), {})
 }
 
 val headerTextStyle = TextStyle(

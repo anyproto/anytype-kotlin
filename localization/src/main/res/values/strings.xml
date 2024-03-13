@@ -1412,4 +1412,8 @@
     <string name="payments_detials_button_submit">Submit</string>
     <string name="payments_details_whats_included">What’s included</string>
 
+    <string name="payments_welcome_title">Welcome to the network,\n%1$s</string>
+    <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
+    <string name="payments_welcome_button">Continue</string>
+
 </resources>

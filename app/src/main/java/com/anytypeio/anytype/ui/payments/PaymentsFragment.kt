@@ -15,6 +15,7 @@ import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.screens.EnterCodeModal
 import com.anytypeio.anytype.screens.MainPaymentsScreen
 import com.anytypeio.anytype.screens.ModalTier
 import com.anytypeio.anytype.ui.settings.typography
@@ -65,7 +66,17 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
                 bottomSheet(route = "second") {
                     ModalTier(
                         tier = vm.showTier.collectAsStateWithLifecycle().value,
-                        onDismiss = { navController.popBackStack() })
+                        onDismiss = { navController.popBackStack() },
+                        actionPay = { navController.navigate("third") }
+                    )
+                }
+                bottomSheet(route = "third") {
+                    EnterCodeModal(
+                        state = vm.codeViewState.collectAsStateWithLifecycle().value,
+                        actionResend = { },
+                        actionCode = vm::onActionCode,
+                        onDismiss = { navController.popBackStack() }
+                    )
                 }
             }
         }

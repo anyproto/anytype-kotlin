@@ -1409,4 +1409,10 @@
     <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
     <string name="payments_email_hint">E-mail</string>
 
+    <!-- Payments Code -->
+    <string name="payments_code_title">Enter the code sent to your email</string>
+    <string name="payments_code_resend">Resend</string>
+    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+
+
 </resources>

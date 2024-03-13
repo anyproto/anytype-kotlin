@@ -55,7 +55,7 @@ import com.anytypeio.anytype.viewmodel.PaymentsCodeState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnterCodeModal(
+fun CodeScreen(
     state: PaymentsCodeState,
     actionResend: () -> Unit,
     actionCode: (String) -> Unit,

@@ -14,3 +14,10 @@ sealed class PaymentsCodeState {
     object Success : PaymentsCodeState()
     data class Error(val message: String) : PaymentsCodeState()
 }
+
+sealed class PaymentsNavigation(val route: String) {
+    object Main : PaymentsNavigation("main")
+    object Tier : PaymentsNavigation("tier")
+    object Code : PaymentsNavigation("code")
+    object Dismiss : PaymentsNavigation("")
+}

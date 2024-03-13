@@ -62,7 +62,7 @@ import com.anytypeio.anytype.peyments.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ModalTier(tier: Tier?, onDismiss: () -> Unit, actionPay: () -> Unit) {
+fun TierScreen(tier: Tier?, onDismiss: () -> Unit, actionPay: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         modifier = Modifier.padding(top = 30.dp),

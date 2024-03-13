@@ -914,7 +914,9 @@
 
     <string name="space_type_personal">Personal</string>
     <string name="space_type_private">Private</string>
+    <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Shared</string>
+    <string name="space_type_shared_space">Shared space</string>
     <string name="space_type_unknown">Unknown</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Lists</string>
@@ -1310,7 +1312,7 @@
     <string name="multiplayer_invite_link">Invite link</string>
     <string name="multiplayer_join_a_space">Join a space</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
-    <string name="mulitplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
+    <string name="multiplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
     <string name="multiplayer_space_request_to_join">Request to join</string>
     <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %2$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
@@ -1330,6 +1332,12 @@
     <string name="multiplayer_remove_member">Remove member</string>
     <string name="multiplayer_request_sent_toast">Request sent</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
+    <string name="multiplayer_sharing">Sharing</string>
+    <string name="multiplayer_share">Share</string>
+    <string name="multiplayer_manage">Manage</string>
+    <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
+    <string name="multiplayer_generate_invite_link">Generate invite link</string>
 
     <!--endregion-->
 

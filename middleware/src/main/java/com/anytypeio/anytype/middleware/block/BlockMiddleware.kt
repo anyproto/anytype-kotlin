@@ -922,4 +922,8 @@ class BlockMiddleware(
     override suspend fun stopSharingSpace(space: SpaceId) {
         middleware.stopSharingSpace(space)
     }
+
+    override suspend fun getSpaceInviteLink(spaceId: SpaceId): SpaceInviteLink {
+        return middleware.getCurrentSpaceInvite(spaceId)
+    }
 }

@@ -101,7 +101,7 @@ fun JoinSpaceScreen(
         }
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = stringResource(R.string.mulitplayer_request_to_join_explanation),
+            text = stringResource(R.string.multiplayer_request_to_join_explanation),
             style = Caption1Regular,
             color = colorResource(id = R.color.text_secondary),
             modifier = Modifier.padding(horizontal = 28.dp),

@@ -2488,6 +2488,20 @@ class Middleware @Inject constructor(
         if (BuildConfig.DEBUG) logResponse(response)
     }
 
+    @Throws(Exception::class)
+    fun getCurrentSpaceInvite(space: SpaceId): SpaceInviteLink {
+        val request = Rpc.Space.InviteGetCurrent.Request(
+            spaceId = space.id
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.spaceInviteGetCurrent(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return SpaceInviteLink(
+            fileKey = response.inviteFileKey,
+            contentId = response.inviteCid
+        )
+    }
+
     private fun logRequest(any: Any) {
         logger.logRequest(any).also {
             if (BuildConfig.DEBUG && threadInfo.isOnMainThread()) {

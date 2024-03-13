@@ -1,5 +1,8 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -69,6 +72,7 @@ fun ShareSpaceScreen(
     members: List<ShareSpaceMemberView>,
     shareLinkViewState: ShareSpaceViewModel.ShareLinkViewState,
     onRegenerateInviteLinkClicked: () -> Unit,
+    onGenerateInviteLinkClicked: () -> Unit,
     onShareInviteLinkClicked: () -> Unit,
     onViewRequestClicked: (ShareSpaceMemberView) -> Unit,
     onApproveUnjoinRequestClicked: (ShareSpaceMemberView) -> Unit,
@@ -177,22 +181,32 @@ fun ShareSpaceScreen(
                 }
             }
         }
-        when(shareLinkViewState) {
-            ShareSpaceViewModel.ShareLinkViewState.Init -> {
-                // Do nothing.
-            }
-            is ShareSpaceViewModel.ShareLinkViewState.Share -> {
-                Box(
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .align(Alignment.BottomStart)
-                ) {
+        AnimatedVisibility(
+            visible = shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.Share,
+            enter = slideInVertically { it },
+            exit = slideOutVertically { it },
+            modifier = Modifier.align(Alignment.BottomStart)
+        ) {
+            Box(modifier = Modifier.padding(16.dp)) {
+                if (shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.Share) {
                     ShareInviteLinkCard(
                         link = shareLinkViewState.link,
                         onShareInviteClicked = onShareInviteLinkClicked,
                         onRegenerateInviteLinkClicked = onRegenerateInviteLinkClicked
                     )
                 }
+            }
+        }
+        AnimatedVisibility(
+            visible = shareLinkViewState is ShareSpaceViewModel.ShareLinkViewState.NotGenerated,
+            enter = slideInVertically { it },
+            exit = slideOutVertically { it },
+            modifier = Modifier.align(Alignment.BottomStart)
+        ) {
+            Box(modifier = Modifier.padding(16.dp)) {
+                GenerateInviteLinkCard(
+                    onGenerateInviteLinkClicked = onGenerateInviteLinkClicked
+                )
             }
         }
     }
@@ -561,7 +575,8 @@ fun ShareSpaceScreenPreview() {
         onCanViewClicked = {},
         onCanEditClicked = {},
         isCurrentUserOwner = false,
-        onStopSharingClicked = {}
+        onStopSharingClicked = {},
+        onGenerateInviteLinkClicked = {}
     )
 }
 

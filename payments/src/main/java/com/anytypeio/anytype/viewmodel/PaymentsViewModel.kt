@@ -11,10 +11,14 @@ class PaymentsViewModel(
 ) : ViewModel() {
 
     val viewState = MutableStateFlow<PaymentsState>(PaymentsState.Loading)
+    val codeViewState = MutableStateFlow<PaymentsCodeState>(PaymentsCodeState.Empty)
+    val command = MutableStateFlow<PaymentsNavigation?>(null)
+
+    val selectedTier = MutableStateFlow<Tier?>(null)
 
     init {
         Timber.d("PaymentsViewModel created")
-        viewState.value = PaymentsState.Success(
+        viewState.value = PaymentsState.Default(
             listOf(
                 Tier.Explorer("Free", true),
                 Tier.Builder("$9.99/mo", false),
@@ -24,8 +28,24 @@ class PaymentsViewModel(
         )
     }
 
-    interface PaymentsNavigation {
-        object MembershipMain : PaymentsNavigation
-        object MembershipLevel : PaymentsNavigation
+    fun onTierClicked(tier: Tier) {
+        selectedTier.value = tier
+        command.value = PaymentsNavigation.Tier
+    }
+
+    fun onActionCode(code: String) {
+        Timber.d("onActionCode: $code")
+    }
+
+    fun onPayButtonClicked() {
+        command.value = PaymentsNavigation.Code
+    }
+
+    fun onDismissTier() {
+        command.value = PaymentsNavigation.Dismiss
+    }
+
+    fun onDismissCode() {
+        command.value = PaymentsNavigation.Dismiss
     }
 }

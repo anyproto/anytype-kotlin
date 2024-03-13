@@ -10,8 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -120,7 +120,7 @@ fun PriceOrOption() {
 }
 
 @Composable
-fun mapTierToResources(tier: Tier): TierResources {
+fun mapTierToResources(tier: Tier?): TierResources? {
     return when (tier) {
         is Tier.Builder -> TierResources(
             title = stringResource(id = R.string.payments_tier_builder),
@@ -160,6 +160,8 @@ fun mapTierToResources(tier: Tier): TierResources {
             radialGradient = Color(0xFF24BFD4),
             benefits = stringArrayResource(id = R.array.payments_benefits_explorer).toList()
         )
+
+        else -> null
     }
 }
 

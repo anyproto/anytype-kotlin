@@ -21,22 +21,19 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusProperties
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -44,13 +41,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.text.isDigitsOnly
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.peyments.R
 import com.anytypeio.anytype.viewmodel.PaymentsCodeState
-import timber.log.Timber
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,37 +58,20 @@ fun EnterCodeModal(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     ModalBottomSheet(
         sheetState = sheetState,
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = onDismiss,
         containerColor = colorResource(id = R.color.background_primary),
-        content = {
-            ModalCodeContent(
-                state = state,
-                actionCode = actionCode,
-            )
-        }
+        content = { ModalCodeContent(state = state, actionCode = actionCode) }
     )
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 private fun ModalCodeContent(state: PaymentsCodeState, actionCode: (String) -> Unit) {
-    val (item1, item2, item3, item4) = remember { FocusRequester.createRefs() }
-    val items = listOf(item1, item2, item3, item4)
+    val focusRequesters = remember { List(4) { FocusRequester() } }
+    val enteredDigits = remember { mutableStateListOf<Char>() }
 
-    var enteredCode by remember { mutableStateOf("") }
-    val codeNumberKey = remember { mutableStateOf(0) }
-
-    LaunchedEffect(state) {
-        if (state is PaymentsCodeState.Error) {
-            enteredCode = ""
-            codeNumberKey.value += 1
-            item1.requestFocus()
-        }
-    }
-
-    LaunchedEffect(key1 = enteredCode) {
-        if (enteredCode.length == 4) {
-            actionCode(enteredCode)
+    LaunchedEffect(key1 = enteredDigits.size) {
+        if (enteredDigits.size == 4) {
+            actionCode(enteredDigits.joinToString(""))
         }
     }
 
@@ -120,20 +98,19 @@ private fun ModalCodeContent(state: PaymentsCodeState, actionCode: (String) -> U
                 .align(Alignment.CenterHorizontally),
             horizontalArrangement = Arrangement.Center
         ) {
-            items.forEachIndexed { index, focusRequester ->
+            focusRequesters.forEachIndexed { index, focusRequester ->
                 CodeNumber(
-                    key = codeNumberKey.value.toString(),
-                    modifier = modifier
-                        .focusRequester(focusRequester)
-                        .focusProperties {
-                            next = if (index < 3) items[index + 1] else focusRequester
-                            previous = if (index > 0) items[index - 1] else focusRequester
-                        },
-                    onNumberChanged = {
-                        Timber.d("onNumberChanged: $it")
-                        if (it.length == 1) {
-                            enteredCode += it
+                    modifier = modifier,
+                    focusRequester = focusRequester,
+                    onDigitEntered = { digit ->
+                        if (enteredDigits.size < 4) {
+                            enteredDigits.add(digit)
                         }
+                        if (index < 3) focusRequesters[index + 1].requestFocus()
+                    },
+                    onBackspace = {
+                        if (enteredDigits.isNotEmpty()) enteredDigits.removeLast()
+                        if (index > 0) focusRequesters[index - 1].requestFocus()
                     }
                 )
                 if (index < 3) Spacer(modifier = Modifier.width(8.dp))
@@ -162,43 +139,38 @@ private fun ModalCodeContent(state: PaymentsCodeState, actionCode: (String) -> U
 
 @Composable
 private fun CodeNumber(
-    key: String,
-    modifier: Modifier = Modifier,
-    onNumberChanged: (String) -> Unit
+    focusRequester: FocusRequester,
+    onDigitEntered: (Char) -> Unit,
+    onBackspace: () -> Unit,
+    modifier: Modifier
 ) {
-    val (text, setText) = remember(key) { mutableStateOf("") }
-    val maxChar = 1
-    val focusManager = LocalFocusManager.current
+    val (text, setText) = remember { mutableStateOf("") }
 
-    LaunchedEffect(
-        key1 = text,
-    ) {
-        if (text.isNotEmpty()) {
-            focusManager.moveFocus(
-                focusDirection = FocusDirection.Next,
-            )
-        }
-    }
     val borderColor = colorResource(id = R.color.shape_primary)
     BasicTextField(
         value = text,
-        onValueChange = { newText: String ->
-            if (newText.length <= maxChar && (newText.isEmpty() || newText.isDigitsOnly())) {
-                setText(newText)
-                onNumberChanged(newText)
+        onValueChange = { newValue ->
+            when {
+                newValue.length == 1 && newValue[0].isDigit() && text.isEmpty() -> {
+                    setText(newValue)
+                    onDigitEntered(newValue[0])
+                }
+
+                newValue.isEmpty() -> {
+                    if (text.isNotEmpty()) {
+                        setText("")
+                        onBackspace()
+                    }
+                }
             }
         },
         modifier = modifier
+            .focusRequester(focusRequester)
             .onKeyEvent { event ->
-                if (event.key == Key.Tab) {
-                    focusManager.moveFocus(FocusDirection.Next)
+                if (event.type == KeyEventType.KeyUp && event.key == Key.Backspace && text.isEmpty()) {
+                    onBackspace()
                     true
-                } else {
-                    if (text.isEmpty() && event.key == Key.Backspace) {
-                        focusManager.moveFocus(FocusDirection.Previous)
-                    }
-                    false
-                }
+                } else false
             },
         singleLine = true,
         enabled = true,

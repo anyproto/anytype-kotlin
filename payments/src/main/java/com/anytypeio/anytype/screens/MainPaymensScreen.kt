@@ -26,7 +26,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,7 +57,7 @@ import com.anytypeio.anytype.models.Tier
 import com.anytypeio.anytype.viewmodel.PaymentsState
 
 @Composable
-fun MainPaymentsScreen(state: PaymentsState) {
+fun MainPaymentsScreen(state: PaymentsState, tierClicked: (Tier) -> Unit) {
     Box(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
@@ -74,11 +74,24 @@ fun MainPaymentsScreen(state: PaymentsState) {
                 .padding(bottom = 20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (state is PaymentsState.Success) {
-                Header(state = state)
+            if (state is PaymentsState.Default) {
+                Header()
                 Spacer(modifier = Modifier.height(32.dp))
                 InfoCards()
-                TiersList(state = state)
+                TiersList(tiers = state.tiers, tierClicked = tierClicked)
+                Spacer(modifier = Modifier.height(32.dp))
+                LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
+                Divider()
+                LinkButton(text = stringResource(id = R.string.payments_privacy_link), action = {})
+                Divider()
+                LinkButton(text = stringResource(id = R.string.payments_terms_link), action = {})
+                Spacer(modifier = Modifier.height(32.dp))
+                BottomText()
+            }
+            if (state is PaymentsState.PaymentSuccess) {
+                Header()
+                Spacer(modifier = Modifier.height(32.dp))
+                TiersList(tiers = state.tiers, tierClicked = tierClicked)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
                 Divider()
@@ -90,11 +103,10 @@ fun MainPaymentsScreen(state: PaymentsState) {
             }
         }
     }
-    MembershipLevels(tier = Tier.Explorer(id = "888", isCurrent = true))
 }
 
 @Composable
-private fun Header(state: PaymentsState.Success) {
+private fun Header() {
 
     // Dragger at the top, centered
     Box(
@@ -141,7 +153,7 @@ private fun Header(state: PaymentsState.Success) {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TiersList(state: PaymentsState.Success) {
+fun TiersList(tiers: List<Tier>, tierClicked: (Tier) -> Unit) {
     val itemsScroll = rememberLazyListState(initialFirstVisibleItemIndex = 1)
     LazyRow(
         state = itemsScroll,
@@ -152,17 +164,19 @@ fun TiersList(state: PaymentsState.Success) {
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
         flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
     ) {
-        itemsIndexed(state.tiers) { _, tier ->
+        itemsIndexed(tiers) { _, tier ->
             val resources = mapTierToResources(tier)
-            TierView(
-                title = resources.title,
-                subTitle = resources.subtitle,
-                colorGradient = resources.colorGradient,
-                radialGradient = resources.radialGradient,
-                icon = resources.smallIcon,
-                buttonText = stringResource(id = R.string.payments_button_learn),
-                onClick = { /*TODO*/ }
-            )
+            if (resources != null) {
+                TierView(
+                    title = resources.title,
+                    subTitle = resources.subtitle,
+                    colorGradient = resources.colorGradient,
+                    radialGradient = resources.radialGradient,
+                    icon = resources.smallIcon,
+                    buttonText = stringResource(id = R.string.payments_button_learn),
+                    onClick = { tierClicked.invoke(tier) }
+                )
+            }
         }
     }
 }
@@ -272,7 +286,7 @@ fun MainPaymentsScreenPreview() {
         Tier.CoCreator("999", isCurrent = false),
         Tier.Custom("999", isCurrent = false)
     )
-    MainPaymentsScreen(PaymentsState.Success(tiers))
+    MainPaymentsScreen(PaymentsState.PaymentSuccess(tiers), {})
 }
 
 val headerTextStyle = TextStyle(

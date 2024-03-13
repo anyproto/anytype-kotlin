@@ -1378,9 +1378,10 @@
 
     <!-- Membership Level Details -->
     <string name="payments_details_name_title">Pick your unique name</string>
-    <string name="payments_details_name_subtitle">This name acts like a personal domain, making it easier for others to find you</string>
+    <string name="payments_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
     <string name="payments_details_name_hint">Myself</string>
     <string name="payments_details_name_domain">.any</string>
+    <string name="payments_details_name_min">Min 7 characters</string>
     <string name="payments_details_name_error">This name is already taken!</string>
     <string name="payments_details_name_success">This name is up for grabs!</string>
 
@@ -1411,5 +1412,15 @@
     <string name="payments_detials_button_pay">Pay by Card</string>
     <string name="payments_detials_button_submit">Submit</string>
     <string name="payments_details_whats_included">What’s included</string>
+    <string name="payments_email_title">Get your free membership</string>
+    <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
+    <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
+    <string name="payments_email_hint">E-mail</string>
+
+    <!-- Payments Code -->
+    <string name="payments_code_title">Enter the code sent to your email</string>
+    <string name="payments_code_resend">Resend</string>
+    <string name="payments_code_resend_in">Resend in %1$n sec</string>
+
 
 </resources>

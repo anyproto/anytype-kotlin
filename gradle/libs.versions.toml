@@ -14,7 +14,7 @@ dokkaVersion = '1.8.20'
 
 activityComposeVersion = '1.8.1'
 composeReorderableVersion = '0.9.6'
-accompanistVersion = "0.30.0"
+accompanistVersion = "0.34.0"
 appcompatVersion = '1.6.1'
 androidXAnnotationVersion = '1.7.0'
 fragmentVersion = "1.6.2"
@@ -84,6 +84,7 @@ composeAccompanistPager = { module = "com.google.accompanist:accompanist-pager",
 composeAccompanistPermissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistVersion" }
 composeAccompanistPagerIndicators = { module = "com.google.accompanist:accompanist-pager-indicators", version.ref = "accompanistVersion" }
 composeAccompanistThemeAdapter = { module = "com.google.accompanist:accompanist-themeadapter-material", version.ref = "accompanistVersion" }
+composeAccompanistNavigation = { module = "com.google.accompanist:accompanist-navigation-material", version.ref = "accompanistVersion" }
 composeReorderable = { module = "org.burnoutcrew.composereorderable:reorderable", version.ref = "composeReorderableVersion" }
 composeConstraintLayout = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "composeConstraintLayoutVersion" }
 kotlinxSerializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.4.1" }

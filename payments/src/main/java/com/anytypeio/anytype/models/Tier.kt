@@ -1,11 +1,13 @@
 package com.anytypeio.anytype.models
 
+import com.anytypeio.anytype.viewmodel.TierId
+
 sealed class Tier {
-    abstract val id: String
+    abstract val id: TierId
     abstract val isCurrent: Boolean
 
     data class Explorer(
-        override val id: String,
+        override val id: TierId,
         override val isCurrent: Boolean,
         val price: String = "",
         val email: String = "",
@@ -13,7 +15,7 @@ sealed class Tier {
     ) : Tier()
 
     data class Builder(
-        override val id: String,
+        override val id: TierId,
         override val isCurrent: Boolean,
         val price: String = "",
         val interval: String = "",
@@ -24,7 +26,7 @@ sealed class Tier {
     ) : Tier()
 
     data class CoCreator(
-        override val id: String,
+        override val id: TierId,
         override val isCurrent: Boolean,
         val price: String = "",
         val interval: String = "",
@@ -34,7 +36,7 @@ sealed class Tier {
     ) : Tier()
 
     data class Custom(
-        override val id: String,
+        override val id: TierId,
         override val isCurrent: Boolean,
         val price: String = ""
     ) : Tier()

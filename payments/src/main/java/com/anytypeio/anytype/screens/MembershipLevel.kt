@@ -58,26 +58,30 @@ import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.models.Tier
 import com.anytypeio.anytype.peyments.R
+import com.anytypeio.anytype.viewmodel.PaymentsTierState
+import com.anytypeio.anytype.viewmodel.TierId
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TierScreen(tier: Tier?, onDismiss: () -> Unit, actionPay: () -> Unit) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(
-        modifier = Modifier.padding(top = 30.dp),
-        sheetState = sheetState,
-        containerColor = Color.Transparent,
-        dragHandle = null,
-        onDismissRequest = { onDismiss() },
-        content = {
-            MembershipLevels(tier = tier, actionPay = actionPay)
-        }
-    )
+fun TierScreen(state: PaymentsTierState, onDismiss: () -> Unit, actionPay: (TierId) -> Unit) {
+    if (state is PaymentsTierState.Visible) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            modifier = Modifier.padding(top = 30.dp),
+            sheetState = sheetState,
+            containerColor = Color.Transparent,
+            dragHandle = null,
+            onDismissRequest = { onDismiss() },
+            content = {
+                MembershipLevels(tier = state.tier, actionPay = { actionPay(state.tier.id) })
+            }
+        )
+    }
 }
 
 @Composable
-fun MembershipLevels(tier: Tier?, actionPay: () -> Unit) {
+fun MembershipLevels(tier: Tier, actionPay: () -> Unit) {
 
     Box(
         modifier = Modifier
@@ -485,7 +489,7 @@ private fun ButtonPay(enabled: Boolean, actionPay: () -> Unit) {
 fun MyLevel() {
     MembershipLevels(
         tier = Tier.Builder(
-            id = "121",
+            id = TierId("121"),
             isCurrent = true,
             price = "$99",
             interval = "per year"

@@ -45,6 +45,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -54,10 +55,11 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
 import com.anytypeio.anytype.models.Tier
-import com.anytypeio.anytype.viewmodel.PaymentsState
+import com.anytypeio.anytype.viewmodel.PaymentsMainState
+import com.anytypeio.anytype.viewmodel.TierId
 
 @Composable
-fun MainPaymentsScreen(state: PaymentsState, tierClicked: (Tier) -> Unit) {
+fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) {
     Box(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
@@ -74,7 +76,7 @@ fun MainPaymentsScreen(state: PaymentsState, tierClicked: (Tier) -> Unit) {
                 .padding(bottom = 20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (state is PaymentsState.Default) {
+            if (state is PaymentsMainState.Default) {
                 Header()
                 Spacer(modifier = Modifier.height(32.dp))
                 InfoCards()
@@ -88,7 +90,7 @@ fun MainPaymentsScreen(state: PaymentsState, tierClicked: (Tier) -> Unit) {
                 Spacer(modifier = Modifier.height(32.dp))
                 BottomText()
             }
-            if (state is PaymentsState.PaymentSuccess) {
+            if (state is PaymentsMainState.PaymentSuccess) {
                 Header()
                 Spacer(modifier = Modifier.height(32.dp))
                 TiersList(tiers = state.tiers, tierClicked = tierClicked)
@@ -153,7 +155,7 @@ private fun Header() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TiersList(tiers: List<Tier>, tierClicked: (Tier) -> Unit) {
+fun TiersList(tiers: List<Tier>, tierClicked: (TierId) -> Unit) {
     val itemsScroll = rememberLazyListState(initialFirstVisibleItemIndex = 1)
     LazyRow(
         state = itemsScroll,
@@ -174,7 +176,7 @@ fun TiersList(tiers: List<Tier>, tierClicked: (Tier) -> Unit) {
                     radialGradient = resources.radialGradient,
                     icon = resources.smallIcon,
                     buttonText = stringResource(id = R.string.payments_button_learn),
-                    onClick = { tierClicked.invoke(tier) }
+                    onClick = { tierClicked.invoke(tier.id) }
                 )
             }
         }
@@ -281,12 +283,12 @@ fun BottomText() {
 @Composable
 fun MainPaymentsScreenPreview() {
     val tiers = listOf(
-        Tier.Explorer("999", isCurrent = true),
-        Tier.Builder("999", isCurrent = false),
-        Tier.CoCreator("999", isCurrent = false),
-        Tier.Custom("999", isCurrent = false)
+        Tier.Explorer(TierId("999"), isCurrent = true),
+        Tier.Builder(TierId("999"), isCurrent = false),
+        Tier.CoCreator(TierId("999"), isCurrent = false),
+        Tier.Custom(TierId("999"), isCurrent = false)
     )
-    MainPaymentsScreen(PaymentsState.PaymentSuccess(tiers), {})
+    MainPaymentsScreen(PaymentsMainState.PaymentSuccess(tiers), {})
 }
 
 val headerTextStyle = TextStyle(

@@ -32,7 +32,7 @@ class RelationValueListWidget @JvmOverloads constructor(
     private val defaultObjectMargin = resources.getDimensionPixelSize(R.dimen.dp_4)
     private val defaultBackground = resources.getColor(R.color.shape_primary, null)
 
-    private val MAX_ITEMS = 2
+    private val MAX_ITEMS = 1
     private val DEFAULT_MARGIN_START = 0
 
     private val binding: RelationValueListBinding =

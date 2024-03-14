@@ -6,18 +6,17 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -38,88 +37,85 @@ interface UserPermissionProvider  {
      * Get current space member permission for currently active space.
      * @return null if user permission could not be defined.
      */
-    fun get() : SpaceMemberPermissions?
+    fun get(space: SpaceId) : SpaceMemberPermissions?
     /**
      * Subscribes to the current space member permission for currently active space.
      * @return null if user permission could not be defined.
      */
-    fun observe() : Flow<SpaceMemberPermissions?>
+    fun observe(space: SpaceId) : Flow<SpaceMemberPermissions?>
 }
 
 class DefaultUserPermissionProvider @Inject constructor(
     private val container: StorelessSubscriptionContainer,
-    private val spaceManager: SpaceManager,
     private val repo: AuthRepository,
     private val dispatchers: AppCoroutineDispatchers,
     private val scope: CoroutineScope
 ) : UserPermissionProvider {
 
-    val permission = MutableStateFlow<SpaceMemberPermissions?>(null)
-    val jobs = mutableListOf<Job>()
+    private val members = MutableStateFlow<List<ObjectWrapper.SpaceMember>>(emptyList())
+    private val jobs = mutableListOf<Job>()
 
-    override fun get(): SpaceMemberPermissions? = permission.value
-    override fun observe(): Flow<SpaceMemberPermissions?> = permission
+    override fun get(space: SpaceId): SpaceMemberPermissions? {
+        return members.value.firstOrNull { member -> member.spaceId == space.id }?.permissions
+    }
+    override fun observe(space: SpaceId): Flow<SpaceMemberPermissions?> {
+        return members.map { all ->
+            all.firstOrNull { member -> member.spaceId == space.id }?.permissions
+        }
+    }
 
     override fun start() {
-        jobs.forEach { it.cancel() }
+        clear()
         jobs += scope.launch(dispatchers.io) {
             val account = repo.getCurrentAccountId()
-            check(account.isNotEmpty()) { "No account data." }
-            spaceManager
-                .observe()
-                .onEach { permission.value = null }
-                .flatMapLatest { config ->
-                    container.subscribe(
-                        StoreSearchParams(
-                            subscription = SUBSCRIPTION,
-                            filters = buildList {
-                                add(
-                                    DVFilter(
-                                        relation = Relations.SPACE_ID,
-                                        value = config.space,
-                                        condition = DVFilterCondition.EQUAL
-                                    )
-                                )
-                                add(
-                                    DVFilter(
-                                        relation = Relations.LAYOUT,
-                                        value = ObjectType.Layout.PARTICIPANT.code.toDouble(),
-                                        condition = DVFilterCondition.EQUAL
-                                    )
-                                )
-                                add(
-                                    DVFilter(
-                                        relation = Relations.IDENTITY,
-                                        value = account,
-                                        condition = DVFilterCondition.EQUAL
-                                    )
-                                )
-                            },
-                            limit = 1,
-                            keys = listOf(
-                                Relations.ID,
-                                Relations.IDENTITY,
-                                Relations.PARTICIPANT_PERMISSIONS
+            container.subscribe(
+                StoreSearchParams(
+                    subscription = GLOBAL_SUBSCRIPTION,
+                    filters = buildList {
+                        add(
+                            DVFilter(
+                                relation = Relations.LAYOUT,
+                                value = ObjectType.Layout.PARTICIPANT.code.toDouble(),
+                                condition = DVFilterCondition.EQUAL
                             )
                         )
+                        add(
+                            DVFilter(
+                                relation = Relations.IDENTITY,
+                                value = account,
+                                condition = DVFilterCondition.EQUAL
+                            )
+                        )
+                    },
+                    limit = NO_LIMIT,
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.SPACE_ID,
+                        Relations.IDENTITY,
+                        Relations.PARTICIPANT_PERMISSIONS
                     )
-                }.collect { results ->
-                    val obj = results.firstOrNull()
-                    if (obj != null) {
-                        val member = ObjectWrapper.SpaceMember(obj.map)
-                        permission.value = member.permissions
-                    }
+                )
+            ).collect { results ->
+                members.value = results.map {
+                    ObjectWrapper.SpaceMember(it.map)
                 }
+            }
         }
     }
 
     override fun stop() {
+        clear()
         scope.launch(dispatchers.io) {
-            container.unsubscribe(listOf(SUBSCRIPTION))
+            container.unsubscribe(listOf(GLOBAL_SUBSCRIPTION))
         }
     }
 
+    private fun clear() {
+        jobs.forEach { it.cancel() }
+    }
+
     companion object {
-        const val SUBSCRIPTION = "subscription.global.user-as-space-member-permissions"
+        const val GLOBAL_SUBSCRIPTION = "subscription.global.user-as-space-member-permissions"
+        const val NO_LIMIT = 0
     }
 }

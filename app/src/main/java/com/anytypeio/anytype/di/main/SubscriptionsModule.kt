@@ -114,13 +114,11 @@ object SubscriptionsModule {
     @Provides
     @Singleton
     fun userPermissionProvider(
-        spaceManager: SpaceManager,
         dispatchers: AppCoroutineDispatchers,
         @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
         container: StorelessSubscriptionContainer,
         repo: AuthRepository
     ) : UserPermissionProvider = DefaultUserPermissionProvider(
-        spaceManager = spaceManager,
         dispatchers = dispatchers,
         scope = scope,
         container = container,

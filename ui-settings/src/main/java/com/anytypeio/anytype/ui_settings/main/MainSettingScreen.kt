@@ -32,7 +32,8 @@ fun SpaceHeader(
     icon: SpaceIconView?,
     modifier: Modifier = Modifier,
     onNameSet: (String) -> Unit,
-    onRandomGradientClicked: () -> Unit
+    onRandomGradientClicked: () -> Unit,
+    isEditEnabled: Boolean
 ) {
     val isSpaceIconMenuExpanded = remember {
         mutableStateOf(false)
@@ -78,7 +79,8 @@ fun SpaceHeader(
         SpaceNameBlock(
             modifier = Modifier,
             name = name,
-            onNameSet = onNameSet
+            onNameSet = onNameSet,
+            isEditEnabled = isEditEnabled
         )
     }
 }

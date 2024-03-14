@@ -254,14 +254,11 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             spaceManager
                 .observe()
-                .onEach { Timber.d("Getting space manager config: $it") }
                 .flatMapLatest { config ->
                     userPermissionProvider.observe(SpaceId(config.space))
                 }.collect { permission ->
-                    Timber.d("Got permission: ${permission}")
                     userPermissions.value = permission
                     if (permission == null || !permission.isOwnerOrEditor()) {
-                        Timber.d("Changing interaction mode to read")
                         mode.value = InteractionMode.ReadOnly
                     }
                 }

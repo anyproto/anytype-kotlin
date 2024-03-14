@@ -101,7 +101,7 @@ fun DataViewListWidgetCard(
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
-                hasReadOnlyAccess = mode is InteractionMode.Read,
+                hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 onDropDownMenuAction = onDropDownMenuAction
             )
             if (item.tabs.size > 1 && item.isExpanded) {

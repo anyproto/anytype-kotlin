@@ -311,7 +311,7 @@ private fun WidgetList(
                                 },
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 isInEditMode = mode is InteractionMode.Edit,
-                                hasReadOnlyAccess = mode is InteractionMode.Read
+                                hasReadOnlyAccess = mode is InteractionMode.ReadOnly
                             )
                             AnimatedVisibility(
                                 visible = mode is InteractionMode.Edit,

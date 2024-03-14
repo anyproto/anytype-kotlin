@@ -262,7 +262,7 @@ class HomeScreenViewModel(
                     userPermissions.value = permission
                     if (permission == null || !permission.isOwnerOrEditor()) {
                         Timber.d("Changing interaction mode to read")
-                        mode.value = InteractionMode.Read
+                        mode.value = InteractionMode.ReadOnly
                     }
                 }
         }
@@ -1516,7 +1516,7 @@ sealed class ObjectViewState {
 sealed class InteractionMode {
     object Default : InteractionMode()
     object Edit : InteractionMode()
-    object Read: InteractionMode()
+    object ReadOnly: InteractionMode()
 }
 
 sealed class Command {

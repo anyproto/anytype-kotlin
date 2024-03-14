@@ -112,7 +112,7 @@ fun TreeWidgetCard(
                 isExpanded = item.isExpanded,
                 onDropDownMenuAction = onDropDownMenuAction,
                 isInEditMode = mode is InteractionMode.Edit,
-                hasReadOnlyAccess = mode == InteractionMode.Read
+                hasReadOnlyAccess = mode == InteractionMode.ReadOnly
             )
             if (item.elements.isNotEmpty()) {
                 TreeWidgetTreeItems(
@@ -129,7 +129,7 @@ fun TreeWidgetCard(
                 }
             }
         }
-        if (mode != InteractionMode.Read) {
+        if (mode != InteractionMode.ReadOnly) {
             WidgetMenu(
                 isExpanded = isCardMenuExpanded,
                 onDropDownMenuAction = onDropDownMenuAction

@@ -258,8 +258,16 @@ class HomeScreenViewModel(
                     userPermissionProvider.observe(SpaceId(config.space))
                 }.collect { permission ->
                     userPermissions.value = permission
-                    if (permission == null || !permission.isOwnerOrEditor()) {
-                        mode.value = InteractionMode.ReadOnly
+                    when(permission) {
+                        SpaceMemberPermissions.WRITER,
+                        SpaceMemberPermissions.OWNER -> {
+                            if (mode.value == InteractionMode.ReadOnly) {
+                                mode.value = InteractionMode.Default
+                            }
+                        }
+                        else -> {
+                            mode.value = InteractionMode.ReadOnly
+                        }
                     }
                 }
         }

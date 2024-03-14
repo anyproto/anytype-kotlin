@@ -152,7 +152,7 @@ fun HomeScreen(
             }
         }
         AnimatedVisibility(
-            visible = mode is InteractionMode.Default,
+            visible = mode !is InteractionMode.Edit,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 20.dp),
@@ -165,7 +165,8 @@ fun HomeScreen(
                 onCreateNewObjectClicked = throttledClick(onCreateNewObjectClicked),
                 onProfileClicked = throttledClick(onProfileClicked),
                 onCreateNewObjectLongClicked = onCreateNewObjectLongClicked,
-                modifier = Modifier
+                modifier = Modifier,
+                isReadOnlyAccess = mode is InteractionMode.ReadOnly
             )
         }
     }
@@ -526,7 +527,6 @@ fun HomeScreenButton(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeScreenBottomToolbar(
     profileIcon: ProfileIconView,
@@ -534,7 +534,8 @@ fun HomeScreenBottomToolbar(
     onSearchClicked: () -> Unit,
     onCreateNewObjectClicked: () -> Unit,
     onCreateNewObjectLongClicked: () -> Unit,
-    onProfileClicked: () -> Unit
+    onProfileClicked: () -> Unit,
+    isReadOnlyAccess: Boolean
 ) {
     val haptic = LocalHapticFeedback.current
     Row(
@@ -561,16 +562,22 @@ fun HomeScreenBottomToolbar(
         Box(
             modifier = Modifier
                 .weight(1f)
+                .alpha(if (isReadOnlyAccess) 0.2f else 1f)
                 .fillMaxSize()
-                .noRippleCombinedClickable(
-                    onLongClicked = {
-                        onCreateNewObjectLongClicked().also {
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        }
-                    },
-                    onClick = {
-                        onCreateNewObjectClicked()
-                    }
+                .then(
+                    if (isReadOnlyAccess)
+                        Modifier.noRippleCombinedClickable(
+                            onLongClicked = {
+                                onCreateNewObjectLongClicked().also {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                }
+                            },
+                            onClick = {
+                                onCreateNewObjectClicked()
+                            }
+                        )
+                    else
+                        Modifier
                 )
         ) {
             Image(

@@ -91,7 +91,9 @@ fun DatePickerContent(
         }
 
         val datePickerColors = DatePickerDefaults.colors(
-            dividerColor = colorResource(id = R.color.palette_system_green),
+            dividerColor = colorResource(id = R.color.shape_primary),
+            containerColor = colorResource(id = R.color.background_secondary),
+            yearContentColor = colorResource(id = R.color.text_primary),
             dayContentColor = colorResource(id = R.color.text_primary),
             weekdayContentColor = colorResource(id = R.color.text_tertiary),
             todayContentColor = todayContentColor,

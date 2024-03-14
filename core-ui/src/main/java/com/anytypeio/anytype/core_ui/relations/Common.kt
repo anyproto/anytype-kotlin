@@ -74,7 +74,7 @@ fun CheckedIcon(isSelected: Boolean, modifier: Modifier) {
     if (isSelected) {
         Image(
             modifier = modifier,
-            painter = painterResource(id = R.drawable.ic_checkbox_selected),
+            painter = painterResource(id = R.drawable.ic_checked_24),
             contentDescription = "Selected"
         )
     } else {

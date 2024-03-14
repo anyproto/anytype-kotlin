@@ -219,7 +219,7 @@ fun NamePickerAndButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 26.dp),
-            text = stringResource(id = R.string.payments_details_name_title),
+            text = stringResource(id = R.string.payments_tier_details_name_title),
             color = colorResource(id = R.color.text_primary),
             style = BodyBold,
             textAlign = TextAlign.Start
@@ -228,7 +228,7 @@ fun NamePickerAndButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 6.dp),
-            text = stringResource(id = R.string.payments_details_name_subtitle),
+            text = stringResource(id = R.string.payments_tier_details_name_subtitle),
             color = colorResource(id = R.color.text_primary),
             style = BodyCallout,
             textAlign = TextAlign.Start
@@ -264,7 +264,7 @@ fun NamePickerAndButton(
                 decorationBox = { innerTextField ->
                     if (innerValue.isEmpty()) {
                         Text(
-                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.payments_details_name_hint),
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.payments_tier_details_name_hint),
                             style = BodyRegular,
                             color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_tertiary),
                             modifier = Modifier
@@ -276,7 +276,7 @@ fun NamePickerAndButton(
                 }
             )
             Text(
-                text = stringResource(id = R.string.payments_details_name_domain),
+                text = stringResource(id = R.string.payments_tier_details_name_domain),
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_primary)
             )
@@ -285,13 +285,13 @@ fun NamePickerAndButton(
         Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
         val (messageTextColor, messageText) = when {
             nameIsTaken ->
-                colorResource(id = R.color.palette_system_red) to stringResource(id = R.string.payments_details_name_error)
+                colorResource(id = R.color.palette_system_red) to stringResource(id = R.string.payments_tier_details_name_error)
 
             nameIsFree ->
-                colorResource(id = R.color.palette_dark_lime) to stringResource(id = R.string.payments_details_name_success)
+                colorResource(id = R.color.palette_dark_lime) to stringResource(id = R.string.payments_tier_details_name_success)
 
             else ->
-                colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_details_name_min)
+                colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_tier_details_name_min)
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(

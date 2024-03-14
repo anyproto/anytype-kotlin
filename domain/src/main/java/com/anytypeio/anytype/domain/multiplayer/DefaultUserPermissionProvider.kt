@@ -34,12 +34,12 @@ interface UserPermissionProvider  {
     fun stop()
 
     /**
-     * @return null if user permission could not be defined.
+     * @return [SpaceMemberPermissions] for [space] or null if user permission could not be defined.
      */
     fun get(space: SpaceId) : SpaceMemberPermissions?
 
     /**
-     * @return null if user permission could not be defined.
+     * @return [SpaceMemberPermissions] for [space] or null if user permission could not be defined.
      */
     fun observe(space: SpaceId) : Flow<SpaceMemberPermissions?>
 }

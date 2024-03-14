@@ -84,10 +84,10 @@ class PaymentsViewModel(
 
     private fun gertTiers(): List<Tier> {
         return listOf(
-            Tier.Explorer(id = TierId("idExplorer"), isCurrent = false),
-            Tier.Builder(id = TierId("idBuilder"), isCurrent = false),
-            Tier.CoCreator(id = TierId("idCoCreator"), isCurrent = false),
-            Tier.Custom(id = TierId("idCustom"), isCurrent = false)
+            Tier.Explorer(id = TierId("idExplorer"), isCurrent = false, validUntil = "2022-12-31"),
+            Tier.Builder(id = TierId("idBuilder"), isCurrent = false, validUntil = "2022-12-31"),
+            Tier.CoCreator(id = TierId("idCoCreator"), isCurrent = false, validUntil = "2022-12-31"),
+            Tier.Custom(id = TierId("idCustom"), isCurrent = false, validUntil = "2022-12-31")
         )
     }
 }

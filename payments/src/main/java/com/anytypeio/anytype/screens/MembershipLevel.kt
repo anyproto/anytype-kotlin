@@ -52,6 +52,7 @@ import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations1
@@ -157,29 +158,32 @@ fun MembershipLevels(tier: Tier, actionPay: () -> Unit) {
                     })
                 }
                 if (tier is Tier.Builder) {
-                    NamePickerAndButton(
-                        name = tier.name,
-                        nameIsTaken = tier.nameIsTaken,
-                        nameIsFree = tier.nameIsFree,
-                        price = tier.price,
-                        interval = tier.interval,
-                        actionPay = actionPay
-                    )
+                    if (tier.isCurrent)  {
+                        StatusSubscribed(tier, {})
+                    } else {
+                        NamePickerAndButton(
+                            name = tier.name,
+                            nameIsTaken = tier.nameIsTaken,
+                            nameIsFree = tier.nameIsFree,
+                            price = tier.price,
+                            interval = tier.interval,
+                            actionPay = actionPay
+                        )
+                    }
                 }
                 if (tier is Tier.CoCreator) {
-                    NamePickerAndButton(
-                        name = tier.name,
-                        nameIsTaken = tier.nameIsTaken,
-                        nameIsFree = tier.nameIsFree,
-                        price = tier.price,
-                        interval = tier.interval,
-                        actionPay = actionPay
-                    )
-                    Price(tier.price, tier.interval)
-                    Spacer(modifier = Modifier.height(14.dp))
-                    ButtonPay(enabled = true, actionPay = {
-
-                    })
+                    if (tier.isCurrent) {
+                        StatusSubscribed(tier, {})
+                    } else {
+                        NamePickerAndButton(
+                            name = tier.name,
+                            nameIsTaken = tier.nameIsTaken,
+                            nameIsFree = tier.nameIsFree,
+                            price = tier.price,
+                            interval = tier.interval,
+                            actionPay = actionPay
+                        )
+                    }
                 }
             }
         }
@@ -304,6 +308,80 @@ fun NamePickerAndButton(
         ButtonPay(enabled = true, actionPay = {
             actionPay()
         })
+    }
+}
+
+@Composable
+private fun StatusSubscribed(tier: Tier, actionManage: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.background_primary)
+            )
+            .padding(start = 20.dp, end = 20.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 26.dp),
+            text = stringResource(id = R.string.payments_tier_current_title),
+            color = colorResource(id = R.color.text_primary),
+            style = BodyBold,
+            textAlign = TextAlign.Start
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(
+                    shape = RoundedCornerShape(12.dp),
+                    color = colorResource(id = R.color.payments_tier_current_background)
+                )
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 34.dp),
+                text = stringResource(id = R.string.payments_tier_current_valid),
+                color = colorResource(id = R.color.text_primary),
+                style = Relations2,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                text = tier.validUntil,
+                color = colorResource(id = R.color.text_primary),
+                style = HeadlineTitle,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 23.dp, bottom = 15.dp),
+                text = stringResource(id = R.string.payments_tier_current_paid_by),
+                color = colorResource(id = R.color.text_secondary),
+                style = Relations2,
+                textAlign = TextAlign.Center
+            )
+
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        ButtonSecondary(
+            enabled = true,
+            text = stringResource(id = R.string.payments_tier_current_button),
+            onClick = { actionManage() },
+            size = ButtonSize.LargeSecondary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+        )
     }
 }
 
@@ -492,7 +570,8 @@ fun MyLevel() {
             id = TierId("121"),
             isCurrent = true,
             price = "$99",
-            interval = "per year"
+            interval = "per year",
+            validUntil = "12/12/2025",
         ),
         actionPay = {}
     )

@@ -118,7 +118,7 @@ fun TierView(
             Text(
                 modifier = Modifier
                     .wrapContentSize()
-                    .padding(end = 24.dp, top = 18.dp)
+                    .padding(end = 15.5.dp, top = 18.dp)
                     .border(
                         shape = RoundedCornerShape(11.dp),
                         color = colorResource(id = R.color.text_primary),

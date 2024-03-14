@@ -5,10 +5,12 @@ import com.anytypeio.anytype.viewmodel.TierId
 sealed class Tier {
     abstract val id: TierId
     abstract val isCurrent: Boolean
+    abstract val validUntil: String
 
     data class Explorer(
         override val id: TierId,
         override val isCurrent: Boolean,
+        override val validUntil: String,
         val price: String = "",
         val email: String = "",
         val isChecked: Boolean = true
@@ -17,6 +19,7 @@ sealed class Tier {
     data class Builder(
         override val id: TierId,
         override val isCurrent: Boolean,
+        override val validUntil: String,
         val price: String = "",
         val interval: String = "",
         val name: String = "",
@@ -27,6 +30,7 @@ sealed class Tier {
     data class CoCreator(
         override val id: TierId,
         override val isCurrent: Boolean,
+        override val validUntil: String,
         val price: String = "",
         val interval: String = "",
         val name: String = "",
@@ -37,6 +41,7 @@ sealed class Tier {
     data class Custom(
         override val id: TierId,
         override val isCurrent: Boolean,
+        override val validUntil: String,
         val price: String = ""
     ) : Tier()
 }

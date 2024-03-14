@@ -288,10 +288,10 @@ fun BottomText() {
 @Composable
 fun MainPaymentsScreenPreview() {
     val tiers = listOf(
-        Tier.Explorer(TierId("999"), isCurrent = true),
-        Tier.Builder(TierId("999"), isCurrent = true),
-        Tier.CoCreator(TierId("999"), isCurrent = false),
-        Tier.Custom(TierId("999"), isCurrent = false)
+        Tier.Explorer(TierId("999"), isCurrent = true, validUntil = "2022-12-31"),
+        Tier.Builder(TierId("999"), isCurrent = true, validUntil = "2022-12-31"),
+        Tier.CoCreator(TierId("999"), isCurrent = false, validUntil = "2022-12-31"),
+        Tier.Custom(TierId("999"), isCurrent = false, validUntil = "2022-12-31")
     )
     MainPaymentsScreen(PaymentsMainState.PaymentSuccess(tiers), {})
 }

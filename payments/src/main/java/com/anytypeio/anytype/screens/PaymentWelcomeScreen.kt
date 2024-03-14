@@ -104,5 +104,6 @@ private fun WelcomeContent(tierResources: TierResources, onDismiss: () -> Unit) 
 @Preview
 @Composable
 fun PaymentWelcomeScreenPreview() {
-    PaymentWelcomeScreen(PaymentsWelcomeState.Initial(Tier.Explorer(TierId("Free"), true)), {})
+    PaymentWelcomeScreen(
+        PaymentsWelcomeState.Initial(Tier.Explorer(TierId("Free"), true, "01-01-2025")), {})
 }

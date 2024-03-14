@@ -1377,7 +1377,7 @@
     <string name="payments_let_us_link_end">Please let us know here.</string>
     <string name="payments_current_label">Current</string>
 
-    <!-- Membership Level Details -->
+    <!-- Tier details -->
     <string name="payments_details_name_title">Pick your unique name</string>
     <string name="payments_details_name_subtitle">This is your unique name on the Anytype network, confirming your Membership. It acts as your personal domain and cannot be changed.</string>
     <string name="payments_details_name_hint">Myself</string>
@@ -1417,6 +1417,11 @@
     <string name="payments_email_subtitle">We need your email to keep spam at bay and the fun in play!</string>
     <string name="payments_email_checkbox_text">I\'d like to get updates on products and enjoy free perks!</string>
     <string name="payments_email_hint">E-mail</string>
+
+    <string name="payments_tier_current_title">Your current status:</string>
+    <string name="payments_tier_current_valid">Valid until</string>
+    <string name="payments_tier_current_paid_by">Paid by Card</string>
+    <string name="payments_tier_current_button">Manage payment</string>
 
     <!-- Payments Code -->
     <string name="payments_code_title">Enter the code sent to your email</string>

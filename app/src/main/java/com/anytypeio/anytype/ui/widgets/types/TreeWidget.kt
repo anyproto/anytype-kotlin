@@ -111,7 +111,8 @@ fun TreeWidgetCard(
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 onDropDownMenuAction = onDropDownMenuAction,
-                isInEditMode = mode is InteractionMode.Edit
+                isInEditMode = mode is InteractionMode.Edit,
+                hasReadOnlyAccess = mode == InteractionMode.Read
             )
             if (item.elements.isNotEmpty()) {
                 TreeWidgetTreeItems(
@@ -128,10 +129,12 @@ fun TreeWidgetCard(
                 }
             }
         }
-        WidgetMenu(
-            isExpanded = isCardMenuExpanded,
-            onDropDownMenuAction = onDropDownMenuAction
-        )
+        if (mode != InteractionMode.Read) {
+            WidgetMenu(
+                isExpanded = isCardMenuExpanded,
+                onDropDownMenuAction = onDropDownMenuAction
+            )
+        }
     }
 }
 
@@ -148,7 +151,7 @@ private fun TreeWidgetTreeItems(
             modifier = Modifier
                 .padding(vertical = 10.dp, horizontal = 16.dp)
                 .then(
-                    if (mode is InteractionMode.Default)
+                    if (mode !is InteractionMode.Edit)
                         Modifier.noRippleClickable { onWidgetElementClicked(element.obj) }
                     else
                         Modifier
@@ -173,7 +176,7 @@ private fun TreeWidgetTreeItems(
                                     ArrowIconDefaults.Collapsed
                             )
                             .then(
-                                if (mode is InteractionMode.Default)
+                                if (mode !is InteractionMode.Edit)
                                     Modifier.noRippleClickable { onExpand(element.path) }
                                 else
                                     Modifier
@@ -245,7 +248,8 @@ fun WidgetHeader(
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onExpandElement: () -> Unit = {},
     isExpanded: Boolean = false,
-    isInEditMode: Boolean = true
+    isInEditMode: Boolean = true,
+    hasReadOnlyAccess: Boolean = false
 ) {
     val haptic = LocalHapticFeedback.current
     Box(
@@ -270,7 +274,11 @@ fun WidgetHeader(
                 .then(
                     if (isInEditMode)
                         Modifier
-                    else
+                    else if (hasReadOnlyAccess) {
+                        Modifier.noRippleClickable {
+                            onWidgetHeaderClicked()
+                        }
+                    } else
                         Modifier.combinedClickable(
                             onClick = onWidgetHeaderClicked,
                             onLongClick = {
@@ -321,11 +329,13 @@ fun WidgetHeader(
                             isHeaderMenuExpanded.value = !isHeaderMenuExpanded.value
                         }
                 )
-                WidgetMenu(
-                    isExpanded = isHeaderMenuExpanded,
-                    onDropDownMenuAction = onDropDownMenuAction,
-                    canEditWidgets = !isInEditMode
-                )
+                if (hasReadOnlyAccess) {
+                    WidgetMenu(
+                        isExpanded = isHeaderMenuExpanded,
+                        onDropDownMenuAction = onDropDownMenuAction,
+                        canEditWidgets = !isInEditMode
+                    )
+                }
             }
         }
     }

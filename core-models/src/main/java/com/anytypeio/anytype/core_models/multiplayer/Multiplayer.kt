@@ -33,7 +33,11 @@ enum class SpaceMemberPermissions(
     READER(0),
     WRITER(1),
     OWNER(2),
-    NO_PERMISSIONS(3),
+    NO_PERMISSIONS(3);
+
+    fun isOwnerOrEditor() : Boolean {
+        return this == OWNER || this == WRITER
+    }
 }
 
 enum class SpaceAccessType(val code: Int) {

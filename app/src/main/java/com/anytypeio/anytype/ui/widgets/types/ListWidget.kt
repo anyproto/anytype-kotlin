@@ -88,6 +88,7 @@ fun ListWidgetCard(
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
+                hasReadOnlyAccess = mode is InteractionMode.Read,
                 onDropDownMenuAction = onDropDownMenuAction
             )
             if (item.elements.isNotEmpty()) {
@@ -147,7 +148,7 @@ fun CompactListWidgetList(
                 modifier = Modifier
                     .padding(vertical = 10.dp, horizontal = 16.dp)
                     .then(
-                        if (mode is InteractionMode.Default)
+                        if (mode !is InteractionMode.Edit)
                             Modifier.noRippleClickable { onWidgetElementClicked(element.obj) }
                         else
                             Modifier

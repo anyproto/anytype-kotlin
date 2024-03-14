@@ -310,7 +310,8 @@ private fun WidgetList(
                                     onWidgetMenuAction(item.id, action)
                                 },
                                 onWidgetSourceClicked = onWidgetSourceClicked,
-                                isInEditMode = mode is InteractionMode.Edit
+                                isInEditMode = mode is InteractionMode.Edit,
+                                hasReadOnlyAccess = mode is InteractionMode.Read
                             )
                             AnimatedVisibility(
                                 visible = mode is InteractionMode.Edit,

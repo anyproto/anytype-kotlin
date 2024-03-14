@@ -21,6 +21,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.platform.MetricsProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
@@ -192,4 +193,5 @@ interface SplashDependencies : ComponentDependencies {
     fun spaceStatusWatcher(): SpaceDeletedStatusWatcher
     fun localeProvider(): LocaleProvider
     fun awaitAccountStartManager(): AwaitAccountStartManager
+    fun userPermissionProvider(): UserPermissionProvider
 }

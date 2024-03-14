@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -260,6 +261,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -318,6 +320,7 @@ class HomeScreenViewModelTest {
             stubGetWidgetSession()
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
+            stubUserPermission()
 
             val vm = buildViewModel()
 
@@ -403,6 +406,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -508,6 +512,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -621,6 +626,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -721,6 +727,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -919,6 +926,7 @@ class HomeScreenViewModelTest {
 
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
+            stubUserPermission()
 
             val vm = buildViewModel()
 
@@ -1065,6 +1073,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -2047,6 +2056,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -2815,6 +2825,14 @@ class HomeScreenViewModelTest {
                 async(spaceView)
             } doReturn Resultat.success(objectWrapper)
         }
+    }
+
+    private fun stubUserPermission(
+        permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
+    ) {
+       userPermissionProvider.stub {
+           on { observe(space = SpaceId(defaultSpaceConfig.space)) } doReturn flowOf(permission)
+       }
     }
 
     private fun buildViewModel() = HomeScreenViewModel(

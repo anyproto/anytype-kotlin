@@ -41,6 +41,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -197,6 +198,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var getPinnedObjectTypes: GetPinnedObjectTypes
+
+    @Mock
+    lateinit var userPermissionProvider: UserPermissionProvider
 
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
@@ -2847,7 +2851,8 @@ class HomeScreenViewModelTest {
         setObjectDetails = setObjectDetails,
         getSpaceView = getSpaceView,
         searchObjects = searchObjects,
-        getPinnedObjectTypes = getPinnedObjectTypes
+        getPinnedObjectTypes = getPinnedObjectTypes,
+        userPermissionProvider = userPermissionProvider
     )
 
     companion object {

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -86,6 +87,9 @@ class SplashViewModelTest {
     @Mock
     lateinit var spaceManager: SpaceManager
 
+    @Mock
+    lateinit var userPermissionProvider: UserPermissionProvider
+
     lateinit var vm: SplashViewModel
 
     val defaultSpaceConfig = StubConfig()
@@ -114,7 +118,8 @@ class SplashViewModelTest {
             crashReporter = crashReporter,
             spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
             localeProvider = localeProvider,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            userPermissionProvider = userPermissionProvider
         )
     }
 

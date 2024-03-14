@@ -326,7 +326,9 @@ sealed class ObjectWrapper {
         private val default = map.withDefault { null }
 
         val id: Id by default
+        val spaceId: Id? by default
         val identity: Id by default
+
         val name: String? by default
         val iconImage: String? by default
 

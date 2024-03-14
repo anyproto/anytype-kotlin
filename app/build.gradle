@@ -211,6 +211,7 @@ dependencies {
     implementation libs.composeAccompanistThemeAdapter
     implementation libs.composeAccompanistPagerIndicators
     implementation libs.composeAccompanistPermissions
+    implementation libs.composeAccompanistNavigation
     implementation libs.preference
     implementation libs.activityCompose
     implementation libs.composeReorderable

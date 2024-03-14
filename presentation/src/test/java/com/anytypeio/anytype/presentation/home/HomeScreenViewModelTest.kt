@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubWidgetBlock
 import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -41,6 +42,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -198,6 +200,9 @@ class HomeScreenViewModelTest {
     @Mock
     lateinit var getPinnedObjectTypes: GetPinnedObjectTypes
 
+    @Mock
+    lateinit var userPermissionProvider: UserPermissionProvider
+
     private val objectPayloadDispatcher = Dispatcher.Default<Payload>()
     private val widgetEventDispatcher = Dispatcher.Default<WidgetDispatchEvent>()
 
@@ -256,6 +261,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -314,6 +320,7 @@ class HomeScreenViewModelTest {
             stubGetWidgetSession()
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
+            stubUserPermission()
 
             val vm = buildViewModel()
 
@@ -399,6 +406,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -504,6 +512,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -617,6 +626,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -717,6 +727,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -915,6 +926,7 @@ class HomeScreenViewModelTest {
 
             stubSpaceManager()
             stubSpaceWidgetContainer(defaultSpaceWidgetView)
+            stubUserPermission()
 
             val vm = buildViewModel()
 
@@ -1061,6 +1073,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -2043,6 +2056,7 @@ class HomeScreenViewModelTest {
         stubGetWidgetSession()
         stubSpaceManager()
         stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        stubUserPermission()
 
         val vm = buildViewModel()
 
@@ -2813,6 +2827,14 @@ class HomeScreenViewModelTest {
         }
     }
 
+    private fun stubUserPermission(
+        permission: SpaceMemberPermissions = SpaceMemberPermissions.OWNER
+    ) {
+       userPermissionProvider.stub {
+           on { observe(space = SpaceId(defaultSpaceConfig.space)) } doReturn flowOf(permission)
+       }
+    }
+
     private fun buildViewModel() = HomeScreenViewModel(
         interceptEvents = interceptEvents,
         createWidget = createWidget,
@@ -2847,7 +2869,8 @@ class HomeScreenViewModelTest {
         setObjectDetails = setObjectDetails,
         getSpaceView = getSpaceView,
         searchObjects = searchObjects,
-        getPinnedObjectTypes = getPinnedObjectTypes
+        getPinnedObjectTypes = getPinnedObjectTypes,
+        userPermissionProvider = userPermissionProvider
     )
 
     companion object {

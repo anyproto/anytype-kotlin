@@ -42,7 +42,8 @@ fun LinkWidgetCard(
     item: WidgetView.Link,
     onWidgetSourceClicked: (Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
-    isInEditMode: Boolean
+    isInEditMode: Boolean,
+    hasReadOnlyAccess: Boolean = false
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -61,11 +62,15 @@ fun LinkWidgetCard(
                 color = colorResource(id = R.color.dashboard_card_background)
             )
             .then(
-                if (isInEditMode)
+                if (isInEditMode) {
                     Modifier.noRippleClickable {
                         isCardMenuExpanded.value = !isCardMenuExpanded.value
                     }
-                else
+                } else if (hasReadOnlyAccess) {
+                    Modifier.noRippleClickable {
+                        onWidgetSourceClicked(item.source)
+                    }
+                } else {
                     Modifier.combinedClickable(
                         onClick = { onWidgetSourceClicked(item.source) },
                         onLongClick = {
@@ -75,6 +80,7 @@ fun LinkWidgetCard(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     )
+                }
             )
     ) {
         Box(

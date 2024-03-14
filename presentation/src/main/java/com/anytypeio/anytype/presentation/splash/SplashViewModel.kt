@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -60,7 +61,8 @@ class SplashViewModel(
     private val crashReporter: CrashReporter,
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModel() {
 
     val state = MutableStateFlow<ViewState<Any>>(ViewState.Init)
@@ -154,6 +156,7 @@ class SplashViewModel(
         relationsSubscriptionManager.onStart()
         objectTypesSubscriptionManager.onStart()
         spaceDeletedStatusWatcher.onStart()
+        userPermissionProvider.start()
     }
 
     fun onIntentCreateNewObject(type: Key) {

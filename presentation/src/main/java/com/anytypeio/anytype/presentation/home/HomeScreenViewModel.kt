@@ -21,6 +21,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -39,6 +40,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -160,7 +162,8 @@ class HomeScreenViewModel(
     private val setObjectDetails: SetObjectDetails,
     private val getSpaceView: GetSpaceView,
     private val searchObjects: SearchObjects,
-    private val getPinnedObjectTypes: GetPinnedObjectTypes
+    private val getPinnedObjectTypes: GetPinnedObjectTypes,
+    private val userPermissionProvider: UserPermissionProvider
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -194,6 +197,10 @@ class HomeScreenViewModel(
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
     private val openWidgetObjectsHistory : MutableSet<Id> = LinkedHashSet()
+
+    private val userPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
+
+    val hasEditAccess = userPermissions.map { it?.isOwnerOrEditor() == true }
 
     private val widgetObjectPipeline = spaceManager
         .observe()
@@ -233,6 +240,7 @@ class HomeScreenViewModel(
         }
 
     init {
+        proceedWithUserPermissions()
         proceedWithObservingProfileIcon()
         proceedWithLaunchingUnsubscriber()
         proceedWithObjectViewStatePipeline()
@@ -240,6 +248,29 @@ class HomeScreenViewModel(
         proceedWithRenderingPipeline()
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
+    }
+
+    private fun proceedWithUserPermissions() {
+        viewModelScope.launch {
+            spaceManager
+                .observe()
+                .flatMapLatest { config ->
+                    userPermissionProvider.observe(SpaceId(config.space))
+                }.collect { permission ->
+                    userPermissions.value = permission
+                    when(permission) {
+                        SpaceMemberPermissions.WRITER,
+                        SpaceMemberPermissions.OWNER -> {
+                            if (mode.value == InteractionMode.ReadOnly) {
+                                mode.value = InteractionMode.Default
+                            }
+                        }
+                        else -> {
+                            mode.value = InteractionMode.ReadOnly
+                        }
+                    }
+                }
+        }
     }
 
     private suspend fun proceedWithClearingObjectSessionHistory(currentConfig: Config) {
@@ -280,8 +311,14 @@ class HomeScreenViewModel(
                 } else {
                     spaceWidgetView.map { view -> listOf(view) }
                 }
+            }.combine(hasEditAccess) { widgets, hasEditAccess ->
+                if (hasEditAccess) {
+                    widgets + listOf(WidgetView.Library, bin) + actions
+                } else {
+                    widgets
+                }
             }.flowOn(appCoroutineDispatchers.io).collect {
-                views.value = it + listOf(WidgetView.Library, bin) + actions
+                views.value = it
             }
         }
     }
@@ -663,8 +700,11 @@ class HomeScreenViewModel(
     }
 
     fun onEditWidgets() {
-        proceedWithEnteringEditMode().also {
-            viewModelScope.sendEditWidgetsEvent(analytics)
+        viewModelScope.launch {
+            if (userPermissions.value?.isOwnerOrEditor() ==  true) {
+                proceedWithEnteringEditMode()
+                sendEditWidgetsEvent(analytics)
+            }
         }
     }
 
@@ -1416,7 +1456,8 @@ class HomeScreenViewModel(
         private val setObjectDetails: SetObjectDetails,
         private val getSpaceView: GetSpaceView,
         private val searchObjects: SearchObjects,
-        private val getPinnedObjectTypes: GetPinnedObjectTypes
+        private val getPinnedObjectTypes: GetPinnedObjectTypes,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -1453,7 +1494,8 @@ class HomeScreenViewModel(
             setObjectDetails = setObjectDetails,
             getSpaceView = getSpaceView,
             searchObjects = searchObjects,
-            getPinnedObjectTypes = getPinnedObjectTypes
+            getPinnedObjectTypes = getPinnedObjectTypes,
+            userPermissionProvider = userPermissionProvider
         ) as T
     }
 
@@ -1479,6 +1521,7 @@ sealed class ObjectViewState {
 sealed class InteractionMode {
     object Default : InteractionMode()
     object Edit : InteractionMode()
+    object ReadOnly: InteractionMode()
 }
 
 sealed class Command {

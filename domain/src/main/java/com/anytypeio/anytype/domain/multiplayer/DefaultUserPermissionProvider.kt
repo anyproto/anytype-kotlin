@@ -20,8 +20,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
- * App-scoped and auth-scoped user-as-space-member permission provider.
- * Provide user-as-space-member permissions for the currently active space.
+ * App-scoped and auth-scoped user-as-space-member permission store.
+ * Provides user-as-space-member permissions.
  */
 interface UserPermissionProvider  {
     /**
@@ -34,12 +34,11 @@ interface UserPermissionProvider  {
     fun stop()
 
     /**
-     * Get current space member permission for currently active space.
      * @return null if user permission could not be defined.
      */
     fun get(space: SpaceId) : SpaceMemberPermissions?
+
     /**
-     * Subscribes to the current space member permission for currently active space.
      * @return null if user permission could not be defined.
      */
     fun observe(space: SpaceId) : Flow<SpaceMemberPermissions?>

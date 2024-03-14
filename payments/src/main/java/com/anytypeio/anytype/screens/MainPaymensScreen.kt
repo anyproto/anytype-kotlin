@@ -54,10 +54,11 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
 import com.anytypeio.anytype.models.Tier
-import com.anytypeio.anytype.viewmodel.PaymentsState
+import com.anytypeio.anytype.viewmodel.PaymentsMainState
+import com.anytypeio.anytype.viewmodel.TierId
 
 @Composable
-fun MainPaymentsScreen(state: PaymentsState, tierClicked: (Tier) -> Unit) {
+fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) {
     Box(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
@@ -74,10 +75,13 @@ fun MainPaymentsScreen(state: PaymentsState, tierClicked: (Tier) -> Unit) {
                 .padding(bottom = 20.dp)
                 .verticalScroll(rememberScrollState())
         ) {
-            if (state is PaymentsState.Default) {
-                Header()
+            if (state is PaymentsMainState.Default) {
+                Title()
+                Spacer(modifier = Modifier.height(7.dp))
+                Subtitle()
                 Spacer(modifier = Modifier.height(32.dp))
                 InfoCards()
+                Spacer(modifier = Modifier.height(32.dp))
                 TiersList(tiers = state.tiers, tierClicked = tierClicked)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
@@ -88,9 +92,9 @@ fun MainPaymentsScreen(state: PaymentsState, tierClicked: (Tier) -> Unit) {
                 Spacer(modifier = Modifier.height(32.dp))
                 BottomText()
             }
-            if (state is PaymentsState.PaymentSuccess) {
-                Header()
-                Spacer(modifier = Modifier.height(32.dp))
+            if (state is PaymentsMainState.PaymentSuccess) {
+                Title()
+                Spacer(modifier = Modifier.height(39.dp))
                 TiersList(tiers = state.tiers, tierClicked = tierClicked)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
@@ -106,7 +110,7 @@ fun MainPaymentsScreen(state: PaymentsState, tierClicked: (Tier) -> Unit) {
 }
 
 @Composable
-private fun Header() {
+private fun Title() {
 
     // Dragger at the top, centered
     Box(
@@ -133,7 +137,10 @@ private fun Header() {
             textAlign = TextAlign.Center
         )
     }
+}
 
+@Composable
+private fun Subtitle() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -142,7 +149,7 @@ private fun Header() {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 60.dp, end = 60.dp, top = 7.dp),
+                .padding(start = 60.dp, end = 60.dp),
             text = stringResource(id = R.string.payments_subheader),
             color = colorResource(id = R.color.text_primary),
             style = Relations2,
@@ -153,13 +160,12 @@ private fun Header() {
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TiersList(tiers: List<Tier>, tierClicked: (Tier) -> Unit) {
+fun TiersList(tiers: List<Tier>, tierClicked: (TierId) -> Unit) {
     val itemsScroll = rememberLazyListState(initialFirstVisibleItemIndex = 1)
     LazyRow(
         state = itemsScroll,
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(20.dp),
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
         flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
@@ -174,7 +180,8 @@ fun TiersList(tiers: List<Tier>, tierClicked: (Tier) -> Unit) {
                     radialGradient = resources.radialGradient,
                     icon = resources.smallIcon,
                     buttonText = stringResource(id = R.string.payments_button_learn),
-                    onClick = { tierClicked.invoke(tier) }
+                    onClick = { tierClicked.invoke(tier.id) },
+                    isCurrent = tier.isCurrent
                 )
             }
         }
@@ -281,12 +288,12 @@ fun BottomText() {
 @Composable
 fun MainPaymentsScreenPreview() {
     val tiers = listOf(
-        Tier.Explorer("999", isCurrent = true),
-        Tier.Builder("999", isCurrent = false),
-        Tier.CoCreator("999", isCurrent = false),
-        Tier.Custom("999", isCurrent = false)
+        Tier.Explorer(TierId("999"), isCurrent = true, validUntil = "2022-12-31"),
+        Tier.Builder(TierId("999"), isCurrent = true, validUntil = "2022-12-31"),
+        Tier.CoCreator(TierId("999"), isCurrent = false, validUntil = "2022-12-31"),
+        Tier.Custom(TierId("999"), isCurrent = false, validUntil = "2022-12-31")
     )
-    MainPaymentsScreen(PaymentsState.PaymentSuccess(tiers), {})
+    MainPaymentsScreen(PaymentsMainState.PaymentSuccess(tiers), {})
 }
 
 val headerTextStyle = TextStyle(

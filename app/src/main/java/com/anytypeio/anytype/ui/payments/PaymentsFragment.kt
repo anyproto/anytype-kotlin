@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.screens.CodeScreen
 import com.anytypeio.anytype.screens.MainPaymentsScreen
+import com.anytypeio.anytype.screens.PaymentWelcomeScreen
 import com.anytypeio.anytype.screens.TierScreen
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.viewmodel.PaymentsNavigation
@@ -62,6 +63,10 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
             when (command) {
                 PaymentsNavigation.Tier -> navController.navigate(PaymentsNavigation.Tier.route)
                 PaymentsNavigation.Code -> navController.navigate(PaymentsNavigation.Code.route)
+                PaymentsNavigation.Welcome -> {
+                    navController.popBackStack(PaymentsNavigation.Main.route, false)
+                    navController.navigate(PaymentsNavigation.Welcome.route)
+                }
                 PaymentsNavigation.Dismiss -> navController.popBackStack()
                 else -> {}
             }
@@ -84,19 +89,24 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
     private fun NavigationGraph(navController: NavHostController) {
         NavHost(navController = navController, startDestination = PaymentsNavigation.Main.route) {
             composable(PaymentsNavigation.Main.route) {
-                MainPaymentsScreen()
+                InitMainPaymentsScreen()
             }
             bottomSheet(PaymentsNavigation.Tier.route) {
-                TierScreen()
+                InitTierScreen()
             }
             bottomSheet(PaymentsNavigation.Code.route) {
-                CodeScreen()
+                InitCodeScreen()
+            }
+            bottomSheet(PaymentsNavigation.Welcome.route) {
+                InitWelcomeScreen()
             }
         }
     }
 
     @Composable
-    private fun MainPaymentsScreen() {
+    private fun InitMainPaymentsScreen() {
+        skipCollapsed()
+        expand()
         MainPaymentsScreen(
             state = vm.viewState.collectAsStateWithLifecycle().value,
             tierClicked = vm::onTierClicked
@@ -104,21 +114,29 @@ class PaymentsFragment : BaseBottomSheetComposeFragment() {
     }
 
     @Composable
-    private fun TierScreen() {
+    private fun InitTierScreen() {
         TierScreen(
-            tier = vm.selectedTier.collectAsStateWithLifecycle().value,
+            state = vm.tierState.collectAsStateWithLifecycle().value,
             onDismiss = vm::onDismissTier,
             actionPay = vm::onPayButtonClicked
         )
     }
 
     @Composable
-    private fun CodeScreen() {
+    private fun InitCodeScreen() {
         CodeScreen(
-            state = vm.codeViewState.collectAsStateWithLifecycle().value,
+            state = vm.codeState.collectAsStateWithLifecycle().value,
             actionResend = { },
             actionCode = vm::onActionCode,
             onDismiss = vm::onDismissCode
+        )
+    }
+
+    @Composable
+    private fun InitWelcomeScreen() {
+        PaymentWelcomeScreen(
+            state = vm.welcomeState.collectAsStateWithLifecycle().value,
+            onDismiss = vm::onDismissWelcome
         )
     }
 

@@ -52,32 +52,37 @@ import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.models.Tier
 import com.anytypeio.anytype.peyments.R
+import com.anytypeio.anytype.viewmodel.PaymentsTierState
+import com.anytypeio.anytype.viewmodel.TierId
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TierScreen(tier: Tier?, onDismiss: () -> Unit, actionPay: () -> Unit) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(
-        modifier = Modifier.padding(top = 30.dp),
-        sheetState = sheetState,
-        containerColor = Color.Transparent,
-        dragHandle = null,
-        onDismissRequest = { onDismiss() },
-        content = {
-            MembershipLevels(tier = tier, actionPay = actionPay)
-        }
-    )
+fun TierScreen(state: PaymentsTierState, onDismiss: () -> Unit, actionPay: (TierId) -> Unit) {
+    if (state is PaymentsTierState.Visible) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            modifier = Modifier.padding(top = 30.dp),
+            sheetState = sheetState,
+            containerColor = Color.Transparent,
+            dragHandle = null,
+            onDismissRequest = { onDismiss() },
+            content = {
+                MembershipLevels(tier = state.tier, actionPay = { actionPay(state.tier.id) })
+            }
+        )
+    }
 }
 
 @Composable
-fun MembershipLevels(tier: Tier?, actionPay: () -> Unit) {
+fun MembershipLevels(tier: Tier, actionPay: () -> Unit) {
 
     Box(
         modifier = Modifier
@@ -153,29 +158,32 @@ fun MembershipLevels(tier: Tier?, actionPay: () -> Unit) {
                     })
                 }
                 if (tier is Tier.Builder) {
-                    NamePickerAndButton(
-                        name = tier.name,
-                        nameIsTaken = tier.nameIsTaken,
-                        nameIsFree = tier.nameIsFree,
-                        price = tier.price,
-                        interval = tier.interval,
-                        actionPay = actionPay
-                    )
+                    if (tier.isCurrent)  {
+                        StatusSubscribed(tier, {})
+                    } else {
+                        NamePickerAndButton(
+                            name = tier.name,
+                            nameIsTaken = tier.nameIsTaken,
+                            nameIsFree = tier.nameIsFree,
+                            price = tier.price,
+                            interval = tier.interval,
+                            actionPay = actionPay
+                        )
+                    }
                 }
                 if (tier is Tier.CoCreator) {
-                    NamePickerAndButton(
-                        name = tier.name,
-                        nameIsTaken = tier.nameIsTaken,
-                        nameIsFree = tier.nameIsFree,
-                        price = tier.price,
-                        interval = tier.interval,
-                        actionPay = actionPay
-                    )
-                    Price(tier.price, tier.interval)
-                    Spacer(modifier = Modifier.height(14.dp))
-                    ButtonPay(enabled = true, actionPay = {
-
-                    })
+                    if (tier.isCurrent) {
+                        StatusSubscribed(tier, {})
+                    } else {
+                        NamePickerAndButton(
+                            name = tier.name,
+                            nameIsTaken = tier.nameIsTaken,
+                            nameIsFree = tier.nameIsFree,
+                            price = tier.price,
+                            interval = tier.interval,
+                            actionPay = actionPay
+                        )
+                    }
                 }
             }
         }
@@ -211,7 +219,7 @@ fun NamePickerAndButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 26.dp),
-            text = stringResource(id = R.string.payments_details_name_title),
+            text = stringResource(id = R.string.payments_tier_details_name_title),
             color = colorResource(id = R.color.text_primary),
             style = BodyBold,
             textAlign = TextAlign.Start
@@ -220,7 +228,7 @@ fun NamePickerAndButton(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 6.dp),
-            text = stringResource(id = R.string.payments_details_name_subtitle),
+            text = stringResource(id = R.string.payments_tier_details_name_subtitle),
             color = colorResource(id = R.color.text_primary),
             style = BodyCallout,
             textAlign = TextAlign.Start
@@ -256,7 +264,7 @@ fun NamePickerAndButton(
                 decorationBox = { innerTextField ->
                     if (innerValue.isEmpty()) {
                         Text(
-                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.payments_details_name_hint),
+                            text = stringResource(id = com.anytypeio.anytype.localization.R.string.payments_tier_details_name_hint),
                             style = BodyRegular,
                             color = colorResource(id = com.anytypeio.anytype.core_ui.R.color.text_tertiary),
                             modifier = Modifier
@@ -268,7 +276,7 @@ fun NamePickerAndButton(
                 }
             )
             Text(
-                text = stringResource(id = R.string.payments_details_name_domain),
+                text = stringResource(id = R.string.payments_tier_details_name_domain),
                 style = BodyRegular,
                 color = colorResource(id = R.color.text_primary)
             )
@@ -277,13 +285,13 @@ fun NamePickerAndButton(
         Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
         val (messageTextColor, messageText) = when {
             nameIsTaken ->
-                colorResource(id = R.color.palette_system_red) to stringResource(id = R.string.payments_details_name_error)
+                colorResource(id = R.color.palette_system_red) to stringResource(id = R.string.payments_tier_details_name_error)
 
             nameIsFree ->
-                colorResource(id = R.color.palette_dark_lime) to stringResource(id = R.string.payments_details_name_success)
+                colorResource(id = R.color.palette_dark_lime) to stringResource(id = R.string.payments_tier_details_name_success)
 
             else ->
-                colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_details_name_min)
+                colorResource(id = R.color.text_secondary) to stringResource(id = R.string.payments_tier_details_name_min)
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
@@ -300,6 +308,80 @@ fun NamePickerAndButton(
         ButtonPay(enabled = true, actionPay = {
             actionPay()
         })
+    }
+}
+
+@Composable
+private fun StatusSubscribed(tier: Tier, actionManage: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight()
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.background_primary)
+            )
+            .padding(start = 20.dp, end = 20.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 26.dp),
+            text = stringResource(id = R.string.payments_tier_current_title),
+            color = colorResource(id = R.color.text_primary),
+            style = BodyBold,
+            textAlign = TextAlign.Start
+        )
+
+        Spacer(modifier = Modifier.height(14.dp))
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(
+                    shape = RoundedCornerShape(12.dp),
+                    color = colorResource(id = R.color.payments_tier_current_background)
+                )
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 34.dp),
+                text = stringResource(id = R.string.payments_tier_current_valid),
+                color = colorResource(id = R.color.text_primary),
+                style = Relations2,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+                text = tier.validUntil,
+                color = colorResource(id = R.color.text_primary),
+                style = HeadlineTitle,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 23.dp, bottom = 15.dp),
+                text = stringResource(id = R.string.payments_tier_current_paid_by),
+                color = colorResource(id = R.color.text_secondary),
+                style = Relations2,
+                textAlign = TextAlign.Center
+            )
+
+        }
+        Spacer(modifier = Modifier.height(20.dp))
+        ButtonSecondary(
+            enabled = true,
+            text = stringResource(id = R.string.payments_tier_current_button),
+            onClick = { actionManage() },
+            size = ButtonSize.LargeSecondary,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+        )
     }
 }
 
@@ -485,10 +567,11 @@ private fun ButtonPay(enabled: Boolean, actionPay: () -> Unit) {
 fun MyLevel() {
     MembershipLevels(
         tier = Tier.Builder(
-            id = "121",
+            id = TierId("121"),
             isCurrent = true,
             price = "$99",
-            interval = "per year"
+            interval = "per year",
+            validUntil = "12/12/2025",
         ),
         actionPay = {}
     )

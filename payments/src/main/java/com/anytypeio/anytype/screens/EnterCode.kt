@@ -52,38 +52,42 @@ import com.anytypeio.anytype.core_ui.views.HeadlineTitle
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.peyments.R
 import com.anytypeio.anytype.viewmodel.PaymentsCodeState
+import com.anytypeio.anytype.viewmodel.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CodeScreen(
     state: PaymentsCodeState,
     actionResend: () -> Unit,
-    actionCode: (String) -> Unit,
+    actionCode: (String, TierId) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(
-        sheetState = sheetState,
-        onDismissRequest = onDismiss,
-        containerColor = colorResource(id = R.color.background_primary),
-        content = { ModalCodeContent(state = state, actionCode = actionCode) }
-    )
+    if (state is PaymentsCodeState.Visible) {
+        val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        ModalBottomSheet(
+            sheetState = sheetState,
+            onDismissRequest = onDismiss,
+            containerColor = colorResource(id = R.color.background_primary),
+            content = { ModalCodeContent(state = state, actionCode = { code ->  actionCode(code, state.tierId)}) }
+        )
+    }
 }
 
 @Composable
-private fun ModalCodeContent(state: PaymentsCodeState, actionCode: (String) -> Unit) {
+private fun ModalCodeContent(state: PaymentsCodeState.Visible, actionCode: (String) -> Unit) {
     val focusRequesters = remember { List(4) { FocusRequester() } }
     val enteredDigits = remember { mutableStateListOf<Char>() }
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = enteredDigits.size) {
         if (enteredDigits.size == 4) {
-            actionCode(enteredDigits.joinToString(""))
+            val code = enteredDigits.joinToString("")
+            actionCode(code)
         }
     }
 
     LaunchedEffect(key1 = state) {
-        if (state is PaymentsCodeState.Loading) {
+        if (state is PaymentsCodeState.Visible.Loading) {
             focusManager.clearFocus(true)
         }
     }
@@ -114,7 +118,7 @@ private fun ModalCodeContent(state: PaymentsCodeState, actionCode: (String) -> U
             ) {
                 focusRequesters.forEachIndexed { index, focusRequester ->
                     CodeNumber(
-                        isEnabled = state !is PaymentsCodeState.Loading,
+                        isEnabled = state !is PaymentsCodeState.Visible.Loading,
                         modifier = modifier,
                         focusRequester = focusRequester,
                         onDigitEntered = { digit ->
@@ -131,7 +135,7 @@ private fun ModalCodeContent(state: PaymentsCodeState, actionCode: (String) -> U
                     if (index < 3) Spacer(modifier = Modifier.width(8.dp))
                 }
             }
-            if (state is PaymentsCodeState.Error) {
+            if (state is PaymentsCodeState.Visible.Error) {
                 Text(
                     text = state.message,
                     color = colorResource(id = R.color.palette_system_red),
@@ -152,7 +156,7 @@ private fun ModalCodeContent(state: PaymentsCodeState, actionCode: (String) -> U
         }
         AnimatedVisibility(
             modifier = Modifier.align(Alignment.Center),
-            visible = state is PaymentsCodeState.Loading,
+            visible = state is PaymentsCodeState.Visible.Loading,
             enter = fadeIn(),
             exit = fadeOut()
         ) {
@@ -227,7 +231,7 @@ private fun CodeNumber(
 @Composable
 fun EnterCodeModalPreview() {
     ModalCodeContent(
-        state = PaymentsCodeState.Loading,
-        actionCode = {}
+        state = PaymentsCodeState.Visible.Loading(TierId("123")),
+        actionCode = { _ -> }
     )
 }

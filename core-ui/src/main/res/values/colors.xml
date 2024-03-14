@@ -223,4 +223,6 @@
     <color name="widget_edit_view_stroke_color_active">@color/palette_system_amber_50</color>
     <color name="widget_edit_view_stroke_color_inactive">@color/shape_primary</color>
 
+    <color name="payments_tier_current_background">#F6F6F6</color>
+
 </resources>

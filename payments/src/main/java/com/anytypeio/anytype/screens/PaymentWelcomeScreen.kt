@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,30 +28,34 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.models.Tier
 import com.anytypeio.anytype.peyments.R
+import com.anytypeio.anytype.viewmodel.PaymentsWelcomeState
+import com.anytypeio.anytype.viewmodel.TierId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PaymentWelcomeScreen(tier: Tier) {
+fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    ModalBottomSheet(
-        modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp)
-            .fillMaxWidth()
-            .wrapContentHeight(),
-        sheetState = sheetState,
-        onDismissRequest = {},
-        containerColor = colorResource(id = R.color.background_secondary),
-        content = {
-            WelcomeContent(tier)
-        },
-        shape = RoundedCornerShape(16.dp),
-        dragHandle = null
-    )
+    if (state is PaymentsWelcomeState.Initial) {
+        ModalBottomSheet(
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp)
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            sheetState = sheetState,
+            onDismissRequest = onDismiss,
+            containerColor = colorResource(id = R.color.background_secondary),
+            content = {
+                val tierResources = mapTierToResources(state.tier)
+                if (tierResources != null) WelcomeContent(tierResources)
+            },
+            shape = RoundedCornerShape(16.dp),
+            dragHandle = null
+        )
+    }
 }
 
 @Composable
-private fun WelcomeContent(tier: Tier) {
-    val tierResources = mapTierToResources(tier)
+private fun WelcomeContent(tierResources: TierResources) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -100,5 +104,5 @@ private fun WelcomeContent(tier: Tier) {
 @Preview
 @Composable
 fun PaymentWelcomeScreenPreview() {
-    PaymentWelcomeScreen(Tier.Explorer("Free", true))
+    PaymentWelcomeScreen(PaymentsWelcomeState.Initial(Tier.Explorer(TierId("Free"), true)), {})
 }

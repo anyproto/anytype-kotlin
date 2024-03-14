@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
 import com.anytypeio.anytype.domain.misc.LocaleProvider
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
@@ -35,7 +36,8 @@ class SplashViewModelFactory @Inject constructor(
     private val crashReporter: CrashReporter,
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
     private val localeProvider: LocaleProvider,
-    private val spaceManager: SpaceManager
+    private val spaceManager: SpaceManager,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -53,6 +55,7 @@ class SplashViewModelFactory @Inject constructor(
             crashReporter = crashReporter,
             spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
             localeProvider = localeProvider,
-            spaceManager = spaceManager
+            spaceManager = spaceManager,
+            userPermissionProvider = userPermissionProvider
         ) as T
 }

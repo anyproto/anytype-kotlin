@@ -101,6 +101,7 @@ fun DataViewListWidgetCard(
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
+                hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 onDropDownMenuAction = onDropDownMenuAction
             )
             if (item.tabs.size > 1 && item.isExpanded) {
@@ -204,7 +205,7 @@ fun ListWidgetElement(
             .fillMaxWidth()
             .padding(end = 16.dp)
             .then(
-                if (mode is InteractionMode.Default)
+                if (mode !is InteractionMode.Edit )
                     Modifier.noRippleClickable { onWidgetObjectClicked(obj) }
                 else
                     Modifier

@@ -67,7 +67,8 @@ fun Section(modifier: Modifier = Modifier, title: String) {
 fun SpaceNameBlock(
     modifier: Modifier = Modifier,
     name: String,
-    onNameSet: (String) -> Unit
+    onNameSet: (String) -> Unit,
+    isEditEnabled: Boolean
 ) {
 
     val nameValue = remember { mutableStateOf(name) }
@@ -99,6 +100,7 @@ fun SpaceNameBlock(
                     focusManager.clearFocus()
                 }
             ),
+            isEditEnabled = isEditEnabled
         )
     }
 }
@@ -199,22 +201,22 @@ fun SpaceImageBlock(
     }
 }
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SettingsTextField(
     value: String,
     onValueChange: (String) -> Unit,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
+    isEditEnabled: Boolean
 ) {
-
-    @OptIn(ExperimentalMaterialApi::class)
     BasicTextField(
         value = value,
         modifier = Modifier
             .padding(top = 4.dp, end = 20.dp)
             .fillMaxWidth(),
         onValueChange = onValueChange,
-        enabled = true,
+        enabled = isEditEnabled,
         readOnly = false,
         textStyle = HeadlineHeading.copy(color = colorResource(id = R.color.text_primary)),
         cursorBrush = SolidColor(colorResource(id = R.color.orange)),

@@ -82,7 +82,13 @@ fun SpaceSettingsScreen(
                     else -> null
                 },
                 onNameSet = onNameSet,
-                onRandomGradientClicked = onRandomGradientClicked
+                onRandomGradientClicked = onRandomGradientClicked,
+                isEditEnabled = when(spaceData) {
+                    is ViewState.Error -> false
+                    ViewState.Init -> false
+                    ViewState.Loading -> false
+                    is ViewState.Success -> spaceData.data.permissions.isOwnerOrEditor()
+                }
             )
         }
         item { Divider() }

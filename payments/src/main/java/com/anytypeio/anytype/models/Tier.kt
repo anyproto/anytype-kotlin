@@ -22,7 +22,6 @@ sealed class Tier {
         val name: String = "",
         val nameIsTaken: Boolean = false,
         val nameIsFree: Boolean = false
-
     ) : Tier()
 
     data class CoCreator(

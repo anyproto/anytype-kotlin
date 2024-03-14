@@ -45,7 +45,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -77,9 +76,12 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) 
                 .verticalScroll(rememberScrollState())
         ) {
             if (state is PaymentsMainState.Default) {
-                Header()
+                Title()
+                Spacer(modifier = Modifier.height(7.dp))
+                Subtitle()
                 Spacer(modifier = Modifier.height(32.dp))
                 InfoCards()
+                Spacer(modifier = Modifier.height(32.dp))
                 TiersList(tiers = state.tiers, tierClicked = tierClicked)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
@@ -91,8 +93,8 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) 
                 BottomText()
             }
             if (state is PaymentsMainState.PaymentSuccess) {
-                Header()
-                Spacer(modifier = Modifier.height(32.dp))
+                Title()
+                Spacer(modifier = Modifier.height(39.dp))
                 TiersList(tiers = state.tiers, tierClicked = tierClicked)
                 Spacer(modifier = Modifier.height(32.dp))
                 LinkButton(text = stringResource(id = R.string.payments_member_link), action = {})
@@ -108,7 +110,7 @@ fun MainPaymentsScreen(state: PaymentsMainState, tierClicked: (TierId) -> Unit) 
 }
 
 @Composable
-private fun Header() {
+private fun Title() {
 
     // Dragger at the top, centered
     Box(
@@ -135,7 +137,10 @@ private fun Header() {
             textAlign = TextAlign.Center
         )
     }
+}
 
+@Composable
+private fun Subtitle() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -144,7 +149,7 @@ private fun Header() {
         Text(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 60.dp, end = 60.dp, top = 7.dp),
+                .padding(start = 60.dp, end = 60.dp),
             text = stringResource(id = R.string.payments_subheader),
             color = colorResource(id = R.color.text_primary),
             style = Relations2,
@@ -160,8 +165,7 @@ fun TiersList(tiers: List<Tier>, tierClicked: (TierId) -> Unit) {
     LazyRow(
         state = itemsScroll,
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 32.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(20.dp),
         contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
         flingBehavior = rememberSnapFlingBehavior(lazyListState = itemsScroll)
@@ -176,7 +180,8 @@ fun TiersList(tiers: List<Tier>, tierClicked: (TierId) -> Unit) {
                     radialGradient = resources.radialGradient,
                     icon = resources.smallIcon,
                     buttonText = stringResource(id = R.string.payments_button_learn),
-                    onClick = { tierClicked.invoke(tier.id) }
+                    onClick = { tierClicked.invoke(tier.id) },
+                    isCurrent = tier.isCurrent
                 )
             }
         }
@@ -284,7 +289,7 @@ fun BottomText() {
 fun MainPaymentsScreenPreview() {
     val tiers = listOf(
         Tier.Explorer(TierId("999"), isCurrent = true),
-        Tier.Builder(TierId("999"), isCurrent = false),
+        Tier.Builder(TierId("999"), isCurrent = true),
         Tier.CoCreator(TierId("999"), isCurrent = false),
         Tier.Custom(TierId("999"), isCurrent = false)
     )

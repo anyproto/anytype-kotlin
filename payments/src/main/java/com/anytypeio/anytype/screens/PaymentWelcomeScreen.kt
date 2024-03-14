@@ -46,7 +46,7 @@ fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
             containerColor = colorResource(id = R.color.background_secondary),
             content = {
                 val tierResources = mapTierToResources(state.tier)
-                if (tierResources != null) WelcomeContent(tierResources)
+                if (tierResources != null) WelcomeContent(tierResources, onDismiss)
             },
             shape = RoundedCornerShape(16.dp),
             dragHandle = null
@@ -55,7 +55,7 @@ fun PaymentWelcomeScreen(state: PaymentsWelcomeState, onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun WelcomeContent(tierResources: TierResources) {
+private fun WelcomeContent(tierResources: TierResources, onDismiss: () -> Unit) {
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -93,7 +93,7 @@ private fun WelcomeContent(tierResources: TierResources) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 20.dp),
-            onClick = { /*TODO*/ },
+            onClick = { onDismiss() },
             size = ButtonSize.LargeSecondary
         )
         Spacer(modifier = Modifier.height(16.dp))

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.models.Tier
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +42,21 @@ class PaymentsViewModel(
             delay(2000)
             welcomeState.value =
                 PaymentsWelcomeState.Initial(tier = _tiers.first { it.id == tierId })
+            val updatedTiers = _tiers.map {
+                if (it.id == tierId) {
+                    when (it) {
+                        is Tier.Builder -> it.copy(isCurrent = true)
+                        is Tier.CoCreator -> it.copy(isCurrent = true)
+                        is Tier.Custom -> it.copy(isCurrent = true)
+                        is Tier.Explorer -> it.copy(isCurrent = true)
+                    }
+                } else {
+                    it
+                }
+            }
+            _tiers.clear()
+            _tiers.addAll(updatedTiers)
+            viewState.value = PaymentsMainState.PaymentSuccess(_tiers)
             command.value = PaymentsNavigation.Welcome
         }
     }
@@ -70,10 +84,10 @@ class PaymentsViewModel(
 
     private fun gertTiers(): List<Tier> {
         return listOf(
-            Tier.Explorer(id = TierId("idExplorer"), true),
-            Tier.Builder(id = TierId("idBuilder"), false),
-            Tier.CoCreator(id = TierId("idCoCreator"), false),
-            Tier.Custom(id = TierId("idCustom"), false)
+            Tier.Explorer(id = TierId("idExplorer"), isCurrent = false),
+            Tier.Builder(id = TierId("idBuilder"), isCurrent = false),
+            Tier.CoCreator(id = TierId("idCoCreator"), isCurrent = false),
+            Tier.Custom(id = TierId("idCustom"), isCurrent = false)
         )
     }
 }

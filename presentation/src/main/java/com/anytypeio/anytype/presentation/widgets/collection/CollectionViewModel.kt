@@ -546,11 +546,11 @@ class CollectionViewModel(
     }
 
     private fun onDone() {
-        actionMode = when (subscription) {
-            Subscription.Bin, Subscription.Files -> ActionMode.SelectAll
+         when (subscription) {
+            Subscription.Bin, Subscription.Files -> actionMode = ActionMode.SelectAll
             else -> {
+                actionMode = ActionMode.Edit
                 interactionMode.value = InteractionMode.View
-                ActionMode.Edit
             }
         }
         unselectViews()

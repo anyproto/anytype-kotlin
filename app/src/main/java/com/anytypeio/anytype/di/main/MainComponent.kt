@@ -19,6 +19,7 @@ import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
+import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.library.LibraryDependencies
 import com.anytypeio.anytype.di.feature.multiplayer.RequestJoinSpaceDependencies
@@ -112,7 +113,8 @@ interface MainComponent :
     ShareSpaceDependencies,
     SpaceJoinRequestDependencies,
     RequestJoinSpaceDependencies,
-    PaymentsComponentDependencies
+    PaymentsComponentDependencies,
+    GalleryInstallationComponentDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -308,4 +310,9 @@ private abstract class ComponentDependenciesModule private constructor() {
     @IntoMap
     @ComponentDependenciesKey(RequestJoinSpaceDependencies::class)
     abstract fun provideRequestToJoinSpaceDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(GalleryInstallationComponentDependencies::class)
+    abstract fun provideGalleryInstallationDependencies(component: MainComponent): ComponentDependencies
 }

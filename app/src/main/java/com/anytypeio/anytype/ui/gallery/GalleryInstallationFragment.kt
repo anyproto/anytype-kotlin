@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
@@ -14,6 +15,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
+import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
@@ -30,6 +32,9 @@ import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import javax.inject.Inject
 
 class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
+
+    private val deepLinkType get() = argString(DEEPLINK_TYPE_KEY)
+    private val deepLinkSource get() = argString(DEEPLINK_SOURCE_KEY)
 
     @Inject
     lateinit var factory: GalleryInstallationViewModelFactory
@@ -110,10 +115,26 @@ class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().galleryInstallationsComponent.get().inject(this)
+        val params = GalleryInstallationViewModel.ViewModelParams(
+            deepLinkType = deepLinkType,
+            deepLinkSource = deepLinkSource
+        )
+        componentManager().galleryInstallationsComponent.get(params).inject(this)
     }
 
     override fun releaseDependencies() {
         componentManager().galleryInstallationsComponent.release()
+    }
+
+    companion object {
+        const val DEEPLINK_TYPE_KEY = "arg.gallery-installation.deeplink-type-key"
+        const val DEEPLINK_SOURCE_KEY = "arg.gallery-installation.deeplink-source-key"
+        fun args(
+            deepLinkType: String,
+            deepLinkSource: String
+        ): Bundle = bundleOf(
+            DEEPLINK_TYPE_KEY to deepLinkType,
+            DEEPLINK_SOURCE_KEY to deepLinkSource
+        )
     }
 }

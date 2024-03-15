@@ -107,6 +107,7 @@ import com.anytypeio.anytype.di.feature.wallpaper.WallpaperSelectModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
+import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
@@ -1076,9 +1077,13 @@ class ComponentManager(
         DaggerPaymentsComponent.factory().create(findComponentDependencies())
     }
 
-    val galleryInstallationsComponent = Component {
-        DaggerGalleryInstallationComponent.factory().create(findComponentDependencies())
-    }
+    val galleryInstallationsComponent =
+        ComponentWithParams { params: GalleryInstallationViewModel.ViewModelParams ->
+            DaggerGalleryInstallationComponent.builder()
+                .withDependencies(findComponentDependencies())
+                .withParams(params)
+                .build()
+        }
 
     class Component<T>(private val builder: () -> T) {
 

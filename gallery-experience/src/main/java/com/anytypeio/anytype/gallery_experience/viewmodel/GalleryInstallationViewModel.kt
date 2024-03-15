@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 
 class GalleryInstallationViewModel(
+    private val viewModelParams: ViewModelParams,
     private val analytics: Analytics,
 ) : ViewModel() {
 
@@ -15,6 +16,11 @@ class GalleryInstallationViewModel(
     val command = MutableStateFlow<GalleryInstallationNavigation?>(null)
 
     init {
-        Timber.d("GalleryInstallationViewModel init")
+        Timber.d("GalleryInstallationViewModel init, viewModelParams: $viewModelParams")
     }
+
+    data class ViewModelParams(
+        val deepLinkType: String,
+        val deepLinkSource: String
+    )
 }

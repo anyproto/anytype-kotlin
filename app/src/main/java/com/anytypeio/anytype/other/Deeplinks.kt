@@ -13,20 +13,34 @@ const val IMPORT_PATH = "import"
 const val INVITE_PATH = "invite"
 
 const val TYPE_PARAM = "type"
+const val SOURCE_PARAM = "source"
 const val TYPE_VALUE_EXPERIENCE = "experience"
 
-const val IMPORT_EXPERIENCE_DEEPLINK = "$DEEP_LINK_PATTERN$MAIN_PATH/$IMPORT_PATH/?$TYPE_PARAM=$TYPE_VALUE_EXPERIENCE"
+const val IMPORT_EXPERIENCE_DEEPLINK =
+    "$DEEP_LINK_PATTERN$MAIN_PATH/$IMPORT_PATH/?$TYPE_PARAM=$TYPE_VALUE_EXPERIENCE"
 
 object DefaultDeepLinkResolver : DeepLinkResolver {
     override fun resolve(
         deeplink: String
     ): DeepLinkResolver.Action = when {
         deeplink.contains(IMPORT_EXPERIENCE_DEEPLINK) -> {
-            DeepLinkResolver.Action.Import.Experience
+            try {
+                val type = Uri.parse(deeplink).getQueryParameter(TYPE_PARAM)
+                val source = Uri.parse(deeplink).getQueryParameter(SOURCE_PARAM)
+                DeepLinkResolver.Action.Import.Experience(
+                    type = type.orEmpty(),
+                    source = source.orEmpty()
+                )
+            } catch (e: Exception) {
+                Timber.e(e, "Error while resolving deeplink: $deeplink")
+                DeepLinkResolver.Action.Unknown
+            }
         }
+
         deeplink.contains(INVITE_PATH) -> {
             DeepLinkResolver.Action.Invite(deeplink)
         }
+
         else -> DeepLinkResolver.Action.Unknown
     }.also { Timber.d("Resolved deeplink: $deeplink to action: $it") }
 }

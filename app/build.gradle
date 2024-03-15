@@ -171,6 +171,7 @@ dependencies {
     implementation project(':ui-settings')
     implementation project(':crash-reporting')
     implementation project(':payments')
+    implementation project(':gallery-experience')
 
     //Compile time dependencies
     kapt libs.daggerCompiler

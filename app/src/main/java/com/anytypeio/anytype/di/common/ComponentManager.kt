@@ -60,6 +60,7 @@ import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
+import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
 import com.anytypeio.anytype.di.feature.library.DaggerLibraryComponent
 import com.anytypeio.anytype.di.feature.multiplayer.DaggerRequestJoinSpaceComponent
@@ -1073,6 +1074,10 @@ class ComponentManager(
 
     val paymentsComponent = Component {
         DaggerPaymentsComponent.factory().create(findComponentDependencies())
+    }
+
+    val galleryInstallationsComponent = Component {
+        DaggerGalleryInstallationComponent.factory().create(findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {

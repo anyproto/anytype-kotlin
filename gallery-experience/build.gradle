@@ -1,0 +1,57 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+}
+
+android {
+
+    def config = rootProject.extensions.getByName("ext")
+
+    buildFeatures {
+        compose true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion libs.versions.composeKotlinCompilerVersion.get()
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlin {
+        jvmToolchain(17)
+    }
+    namespace 'com.anytypeio.anytype.galleryexperience'
+}
+
+dependencies {
+    implementation project(':domain')
+    implementation project(':core-ui')
+    implementation project(':analytics')
+    implementation project(':core-models')
+    implementation project(':core-utils')
+    implementation project(':localization')
+    implementation project(':presentation')
+    implementation project(':library-emojifier')
+
+    compileOnly libs.javaxInject
+
+    implementation libs.lifecycleViewModel
+    implementation libs.lifecycleRuntime
+
+    implementation libs.appcompat
+    implementation libs.compose
+    implementation libs.composeFoundation
+    implementation libs.composeToolingPreview
+    implementation libs.composeMaterial3
+
+    implementation libs.coilCompose
+
+    debugImplementation libs.composeTooling
+
+    implementation libs.timber
+
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
+}

@@ -4,6 +4,10 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.gallery_experience.DownloadGalleryManifest
+import com.anytypeio.anytype.domain.gallery_experience.ObjectImportExperience
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModelFactory
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
@@ -11,6 +15,7 @@ import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
+import dagger.Provides
 
 @Component(
     dependencies = [GalleryInstallationComponentDependencies::class],
@@ -36,6 +41,23 @@ interface GalleryInstallationComponent {
 @Module
 object GalleryInstallationModule {
 
+
+    @PerScreen
+    @Provides
+    @JvmStatic
+    fun provideDownloadGalleryManifest(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DownloadGalleryManifest = DownloadGalleryManifest(dispatchers, repo)
+
+    @PerScreen
+    @Provides
+    @JvmStatic
+    fun provideObjectImportExperience(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): ObjectImportExperience = ObjectImportExperience(dispatchers, repo)
+
     @Module
     interface Declarations {
 
@@ -49,5 +71,7 @@ object GalleryInstallationModule {
 }
 
 interface GalleryInstallationComponentDependencies : ComponentDependencies {
+    fun blockRepository(): BlockRepository
+    fun appCoroutineDispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
 }

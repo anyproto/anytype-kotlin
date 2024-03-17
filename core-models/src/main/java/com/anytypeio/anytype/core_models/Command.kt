@@ -460,4 +460,13 @@ sealed class Command {
         val inviteContentId: Id,
         val inviteFileKey: String
     )
+
+    data class DownloadGalleryManifest(val url: String)
+
+    data class ObjectImportExperience(
+        val space: SpaceId,
+        val url: String,
+        val title: String,
+        val isNewSpace: Boolean
+    )
 }

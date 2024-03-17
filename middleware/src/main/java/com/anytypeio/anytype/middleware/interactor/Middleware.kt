@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
@@ -2500,6 +2501,33 @@ class Middleware @Inject constructor(
             fileKey = response.inviteFileKey,
             contentId = response.inviteCid
         )
+    }
+
+    @Throws(Exception::class)
+    fun downloadGalleryManifest(command: Command.DownloadGalleryManifest): ManifestInfo? {
+        val request = Rpc.Gallery.DownloadManifest.Request(
+            url = command.url
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.downloadManifest(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.info?.toCoreModel()
+    }
+
+    @Throws(Exception::class)
+    fun objectImportExperience(
+        command: Command.ObjectImportExperience
+    ): Payload {
+        val request = Rpc.Object.ImportExperience.Request(
+            spaceId = command.space.id,
+            url = command.url,
+            title = command.title,
+            isNewSpace = command.isNewSpace
+        )
+        if (BuildConfig.DEBUG) logRequest(request)
+        val response = service.objectImportExperience(request)
+        if (BuildConfig.DEBUG) logResponse(response)
+        return response.event.toPayload()
     }
 
     private fun logRequest(any: Any) {

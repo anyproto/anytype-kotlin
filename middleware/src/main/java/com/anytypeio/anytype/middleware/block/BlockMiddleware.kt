@@ -12,6 +12,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
@@ -925,5 +926,13 @@ class BlockMiddleware(
 
     override suspend fun getSpaceInviteLink(spaceId: SpaceId): SpaceInviteLink {
         return middleware.getCurrentSpaceInvite(spaceId)
+    }
+
+    override suspend fun downloadGalleryManifest(command: Command.DownloadGalleryManifest): ManifestInfo? {
+        return middleware.downloadGalleryManifest(command)
+    }
+
+    override suspend fun objectImportExperience(command: Command.ObjectImportExperience): Payload {
+        return middleware.objectImportExperience(command)
     }
 }

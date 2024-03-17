@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsage
 import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectOrder
@@ -790,3 +791,20 @@ fun Account.Info.config() : Config = Config(
     device = deviceId,
     network = networkId
 )
+
+fun MManifestInfo.toCoreModel(): ManifestInfo {
+    return ManifestInfo(
+        schema = schema,
+        id = id,
+        name = name,
+        author = author,
+        license = license,
+        title = title,
+        description = description,
+        screenshots = screenshots,
+        downloadLink = downloadLink,
+        fileSize = fileSize,
+        categories = categories,
+        language = language
+    )
+}

@@ -68,3 +68,5 @@ typealias MWidgetLayout = anytype.model.Block.Content.Widget.Layout
 typealias MNetworkMode = anytype.Rpc.Account.NetworkMode
 
 typealias MParticipantPermission = anytype.model.ParticipantPermissions
+
+typealias MManifestInfo = anytype.model.ManifestInfo

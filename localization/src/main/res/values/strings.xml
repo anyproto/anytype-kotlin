@@ -1434,4 +1434,9 @@
     <string name="payments_welcome_subtitle">Big cheers for your curiosity!</string>
     <string name="payments_welcome_button">Continue</string>
 
+
+    <!-- Gallery Experience -->
+    <string name="gallery_experience_made">Made by</string>
+    <string name="gallery_experience_install">Install</string>
+
 </resources>

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectView
@@ -963,5 +964,13 @@ class BlockDataRepository(
 
     override suspend fun getSpaceInviteLink(spaceId: SpaceId): SpaceInviteLink {
         return remote.getSpaceInviteLink(spaceId)
+    }
+
+    override suspend fun downloadGalleryManifest(command: Command.DownloadGalleryManifest): ManifestInfo? {
+        return remote.downloadGalleryManifest(command)
+    }
+
+    override suspend fun importExperience(command: Command.ImportExperience): Payload {
+        return remote.importExperience(command)
     }
 }

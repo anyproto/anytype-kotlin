@@ -1047,13 +1047,18 @@ class HomeScreenViewModel(
 
     fun onResume(deeplink: DeepLinkResolver.Action? = null) {
         Timber.d("onResume, deeplink: ${deeplink}")
-        when(deeplink) {
+        when (deeplink) {
             is DeepLinkResolver.Action.Import.Experience -> {
                 viewModelScope.launch {
-                    delay(1000)
-                    commands.emit(Command.Deeplink.CannotImportExperience)
+                    commands.emit(
+                        Command.Deeplink.GalleryInstallation(
+                            deepLinkType = deeplink.type,
+                            deepLinkSource = deeplink.source
+                        )
+                    )
                 }
             }
+
             is DeepLinkResolver.Action.Invite -> {
                 viewModelScope.launch {
                     delay(1000)
@@ -1574,6 +1579,10 @@ sealed class Command {
     sealed class Deeplink : Command() {
         object CannotImportExperience : Deeplink()
         data class Invite(val link: String) : Deeplink()
+        data class GalleryInstallation(
+            val deepLinkType: String,
+            val deepLinkSource: String
+        ) : Deeplink()
     }
 }
 

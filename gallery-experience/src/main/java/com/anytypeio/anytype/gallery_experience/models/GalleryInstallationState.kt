@@ -2,7 +2,6 @@ package com.anytypeio.anytype.gallery_experience.models
 
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class GalleryInstallationState {
@@ -12,7 +11,7 @@ sealed class GalleryInstallationState {
 }
 
 data class GalleryInstallationSpacesState(
-    val spaces: List<SpaceView>,
+    val spaces: List<GallerySpaceView>,
     val isNewButtonVisible: Boolean
 )
 
@@ -24,7 +23,7 @@ sealed class GalleryInstallationNavigation(val route: String) {
     object Dismiss : GalleryInstallationNavigation("")
 }
 
-data class SpaceView(
+data class GallerySpaceView(
     val obj: ObjectWrapper.SpaceView,
     val icon: SpaceIconView
 )

@@ -16,7 +16,7 @@ import com.anytypeio.anytype.domain.spaces.GetSpaceViews
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationNavigation
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationSpacesState
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationState
-import com.anytypeio.anytype.gallery_experience.models.SpaceView
+import com.anytypeio.anytype.gallery_experience.models.GallerySpaceView
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -111,7 +111,7 @@ class GalleryInstallationViewModel(
         }
     }
 
-    fun onSpaceClick(space: SpaceView) {
+    fun onSpaceClick(space: GallerySpaceView) {
         command.value = GalleryInstallationNavigation.Dismiss
         val manifestInfo = (mainState.value as? GalleryInstallationState.Success)?.info ?: return
         proceedWithInstallation(
@@ -159,7 +159,7 @@ class GalleryInstallationViewModel(
 private fun ObjectWrapper.SpaceView.toView(
     builder: UrlBuilder,
     spaceGradientProvider: SpaceGradientProvider
-) = SpaceView(
+) = GallerySpaceView(
     obj = this,
     icon = spaceIcon(builder, spaceGradientProvider)
 )

@@ -93,14 +93,13 @@ class GalleryInstallationViewModel(
         val params = CreateSpace.Params(
             details = mapOf(
                 Relations.NAME to manifestInfo.name,
-                Relations.ICON_OPTION to spaceGradientProvider.randomId()
+                Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble()
             )
         )
         viewModelScope.launch {
             createSpace.async(params).fold(
                 onSuccess = { space ->
                     Timber.d("CreateSpace success, space: $space")
-                    analytics.sendEvent(eventName = EventsDictionary.createSpace)
                     proceedWithInstallation(
                         spaceId = SpaceId(space),
                         isNewSpace = true,

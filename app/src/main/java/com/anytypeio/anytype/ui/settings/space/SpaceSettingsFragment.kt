@@ -61,7 +61,7 @@ class SpaceSettingsFragment : BaseBottomSheetComposeFragment() {
             ) {
                 SpaceSettingsScreen(
                     onNameSet = vm::onNameSet,
-                    spaceData = vm.spaceViewState.collectAsStateWithLifecycle().value,
+                    state = vm.spaceViewState.collectAsStateWithLifecycle().value,
                     onDeleteSpaceClicked = throttledClick(
                         onClick = {
                             vm.onDeleteSpaceClicked()

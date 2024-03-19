@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
+import com.anytypeio.anytype.core_models.EventProcess
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsage
@@ -806,5 +807,43 @@ fun MManifestInfo.toCoreModel(): ManifestInfo {
         fileSize = fileSize,
         categories = categories,
         language = language
+    )
+}
+
+fun MProcess.toCoreModel(): EventProcess {
+    return EventProcess(
+        id = id,
+        type = type.toCoreModel(),
+        state = state.toCoreModel(),
+        progress = progress.toCoreModel()
+    )
+}
+
+fun MProcessType.toCoreModel(): EventProcess.Type {
+    return when (this) {
+        MProcessType.DropFiles -> EventProcess.Type.DropFiles
+        MProcessType.Import -> EventProcess.Type.Import
+        MProcessType.Export -> EventProcess.Type.Export
+        MProcessType.SaveFile -> EventProcess.Type.SaveFile
+        MProcessType.RecoverAccount -> EventProcess.Type.RecoverAccount
+        MProcessType.Migration ->  EventProcess.Type.Migration
+    }
+}
+
+fun MProcessState.toCoreModel(): EventProcess.State {
+    return when (this) {
+        MProcessState.None -> EventProcess.State.None
+        MProcessState.Running -> EventProcess.State.Running
+        MProcessState.Done -> EventProcess.State.Done
+        MProcessState.Canceled -> EventProcess.State.Canceled
+        MProcessState.Error -> EventProcess.State.Error
+    }
+}
+
+fun MProcessProgress.toCoreModel(): EventProcess.Progress {
+    return EventProcess.Progress(
+        total = total,
+        done = done,
+        message = message
     )
 }

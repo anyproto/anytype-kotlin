@@ -815,7 +815,7 @@ fun MProcess.toCoreModel(): EventProcess {
         id = id,
         type = type.toCoreModel(),
         state = state.toCoreModel(),
-        progress = progress.toCoreModel()
+        progress = progress?.toCoreModel()
     )
 }
 

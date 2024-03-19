@@ -4,7 +4,7 @@ data class EventProcess(
     val id: String,
     val type: Type,
     val state: State,
-    val progress: Progress
+    val progress: Progress?
 ) {
     enum class Type {
         DropFiles,

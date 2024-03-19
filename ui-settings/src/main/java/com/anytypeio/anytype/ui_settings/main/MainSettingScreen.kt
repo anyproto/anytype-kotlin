@@ -49,7 +49,9 @@ fun SpaceHeader(
             SpaceImageBlock(
                 icon = icon,
                 onSpaceIconClick = {
-                    isSpaceIconMenuExpanded.value = !isSpaceIconMenuExpanded.value
+                    if (isEditEnabled) {
+                        isSpaceIconMenuExpanded.value = !isSpaceIconMenuExpanded.value
+                    }
                 },
                 gradientCornerRadius = 4.dp
             )

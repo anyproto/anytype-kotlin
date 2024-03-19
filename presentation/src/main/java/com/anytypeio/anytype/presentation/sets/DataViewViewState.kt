@@ -26,7 +26,8 @@ sealed class SetOrCollectionHeaderState {
     object None : SetOrCollectionHeaderState()
     data class Default(
         val title: BlockView.Title.Basic,
-        val description: Description
+        val description: Description,
+        val isReadOnlyMode: Boolean = false
     ) : SetOrCollectionHeaderState()
 
     sealed class Description {

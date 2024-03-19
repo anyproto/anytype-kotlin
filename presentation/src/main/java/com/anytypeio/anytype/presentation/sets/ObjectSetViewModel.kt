@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -176,6 +177,8 @@ class ObjectSetViewModel(
 
     val icon = MutableStateFlow<ProfileIconView>(ProfileIconView.Loading)
 
+    val permission = MutableStateFlow<SpaceMemberPermissions?>(SpaceMemberPermissions.NO_PERMISSIONS)
+
     val status = MutableStateFlow<SyncStatusView?>(null)
     val error = MutableStateFlow<String?>(null)
 
@@ -230,7 +233,10 @@ class ObjectSetViewModel(
             stateReducer.state
                 .filterIsInstance<ObjectState.DataView>()
                 .distinctUntilChanged()
-                .collectLatest { state ->
+                .combine(permission) { state, permission ->
+                    state to permission
+                }
+                .collectLatest { (state, permission) ->
                     featured.value = state.featuredRelations(
                         ctx = context,
                         urlBuilder = urlBuilder,
@@ -239,7 +245,8 @@ class ObjectSetViewModel(
                     _header.value = state.header(
                         ctx = context,
                         urlBuilder = urlBuilder,
-                        coverImageHashProvider = coverImageHashProvider
+                        coverImageHashProvider = coverImageHashProvider,
+                        isReadOnlyMode = permission == SpaceMemberPermissions.NO_PERMISSIONS || permission == SpaceMemberPermissions.READER
                     )
                 }
         }

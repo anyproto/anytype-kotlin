@@ -16,12 +16,17 @@ import com.anytypeio.anytype.core_models.Event.Command.DataView.UpdateView.DVVie
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.PermittedConditions
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.ext.DAYS_IN_MONTH
+import com.anytypeio.anytype.core_models.ext.DAYS_IN_WEEK
 import com.anytypeio.anytype.core_models.ext.DateParser
+import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.ext.SECONDS_IN_DAY
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.primitives.TypeId
@@ -46,11 +51,6 @@ import com.anytypeio.anytype.presentation.relations.isSystemKey
 import com.anytypeio.anytype.presentation.relations.linksFeaturedRelation
 import com.anytypeio.anytype.presentation.relations.title
 import com.anytypeio.anytype.presentation.relations.view
-import com.anytypeio.anytype.core_models.PermittedConditions
-import com.anytypeio.anytype.core_models.ext.DAYS_IN_MONTH
-import com.anytypeio.anytype.core_models.ext.DAYS_IN_WEEK
-import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
-import com.anytypeio.anytype.core_models.ext.SECONDS_IN_DAY
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -91,7 +91,8 @@ fun ObjectState.DataView.featuredRelations(
 fun ObjectState.DataView.header(
     ctx: Id,
     urlBuilder: UrlBuilder,
-    coverImageHashProvider: CoverImageHashProvider
+    coverImageHashProvider: CoverImageHashProvider,
+    isReadOnlyMode: Boolean = false
 ): SetOrCollectionHeaderState {
     val title = blocks.title()
     return if (title != null) {
@@ -105,7 +106,7 @@ fun ObjectState.DataView.header(
                 title = title,
                 urlBuilder = urlBuilder,
                 details = details,
-                coverImageHashProvider = coverImageHashProvider
+                coverImageHashProvider = coverImageHashProvider,
             ),
             description = if (featured.contains(Relations.DESCRIPTION)) {
                 SetOrCollectionHeaderState.Description.Default(
@@ -113,7 +114,8 @@ fun ObjectState.DataView.header(
                 )
             } else {
                 SetOrCollectionHeaderState.Description.None
-            }
+            },
+            isReadOnlyMode = isReadOnlyMode
         )
     } else {
         return SetOrCollectionHeaderState.None

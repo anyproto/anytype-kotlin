@@ -729,6 +729,9 @@ open class ObjectSetFragment :
 
     private fun bindHeader(header: SetOrCollectionHeaderState.Default) {
         setupHeaderMargins(header)
+
+        title.isEnabled = !header.isReadOnlyMode
+
         if (title.text.toString() != header.title.text) {
             title.pauseTextWatchers {
                 title.setText(header.title.text)
@@ -1206,7 +1209,7 @@ open class ObjectSetFragment :
                     bindHeader(header)
                 }
                 is SetOrCollectionHeaderState.None -> {
-
+                    // Do nothing.
                 }
             }
         }

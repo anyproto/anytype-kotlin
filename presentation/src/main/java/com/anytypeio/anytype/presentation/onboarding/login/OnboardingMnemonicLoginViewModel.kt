@@ -250,7 +250,6 @@ class OnboardingMnemonicLoginViewModel @Inject constructor(
         objectTypesSubscriptionManager.onStart()
         spaceDeletedStatusWatcher.onStart()
         userPermissionProvider.start()
-
     }
 
     private fun navigateToDashboard() {

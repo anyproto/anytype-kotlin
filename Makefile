@@ -40,8 +40,11 @@ download_mw_artefacts_custom:
 normalize_mw_imports:
 	./scripts/mw/normalize-imports.sh
 
+clean_protos:
+	./scripts/mw/clean-protos.sh
+
 # Update mw when new release is ready
-update_mw: download_mw_artefacts normalize_mw_imports
+update_mw: download_mw_artefacts normalize_mw_imports clean_protos
 
 # Update mw from custom build (download only library, you have to update your proto files manually)
 update_mw_custom: download_mw_artefacts_custom

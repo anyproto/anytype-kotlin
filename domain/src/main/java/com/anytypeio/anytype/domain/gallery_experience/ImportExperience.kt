@@ -8,19 +8,19 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 
-class ObjectImportExperience @Inject constructor(
+class ImportExperience @Inject constructor(
     dispatchers: AppCoroutineDispatchers,
     private val repo: BlockRepository
-) : ResultInteractor<ObjectImportExperience.Params, Payload>(dispatchers.io) {
+) : ResultInteractor<ImportExperience.Params, Payload>(dispatchers.io) {
 
     override suspend fun doWork(params: Params): Payload {
-        val command = Command.ObjectImportExperience(
+        val command = Command.ImportExperience(
             space = params.spaceId,
             url = params.url,
             title = params.title,
             isNewSpace = params.isNewSpace
         )
-        return repo.objectImportExperience(command)
+        return repo.importExperience(command)
     }
 
     data class Params(

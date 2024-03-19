@@ -932,7 +932,7 @@ class BlockMiddleware(
         return middleware.downloadGalleryManifest(command)
     }
 
-    override suspend fun objectImportExperience(command: Command.ObjectImportExperience): Payload {
-        return middleware.objectImportExperience(command)
+    override suspend fun importExperience(command: Command.ImportExperience): Payload {
+        return middleware.importExperience(command)
     }
 }

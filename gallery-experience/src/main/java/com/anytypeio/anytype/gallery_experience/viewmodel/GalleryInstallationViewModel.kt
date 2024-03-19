@@ -3,15 +3,13 @@ package com.anytypeio.anytype.gallery_experience.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.gallery_experience.DownloadGalleryManifest
-import com.anytypeio.anytype.domain.gallery_experience.ObjectImportExperience
+import com.anytypeio.anytype.domain.gallery_experience.ImportExperience
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceViews
@@ -28,7 +26,7 @@ import timber.log.Timber
 class GalleryInstallationViewModel(
     private val viewModelParams: ViewModelParams,
     private val downloadGalleryManifest: DownloadGalleryManifest,
-    private val objectImportExperience: ObjectImportExperience,
+    private val importExperience: ImportExperience,
     private val analytics: Analytics,
     private val getSpaceViews: GetSpaceViews,
     private val createSpace: CreateSpace,
@@ -132,14 +130,14 @@ class GalleryInstallationViewModel(
         isNewSpace: Boolean,
         manifestInfo: ManifestInfo
     ) {
-        val params = ObjectImportExperience.Params(
+        val params = ImportExperience.Params(
             spaceId = spaceId,
             url = manifestInfo.downloadLink,
             title = manifestInfo.title,
             isNewSpace = isNewSpace
         )
         viewModelScope.launch {
-            objectImportExperience.async(params).fold(
+            importExperience.async(params).fold(
                 onSuccess = {
                     Timber.d("ObjectImportExperience success")
                     command.value = GalleryInstallationNavigation.Success

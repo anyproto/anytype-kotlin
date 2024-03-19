@@ -463,7 +463,7 @@ sealed class Command {
 
     data class DownloadGalleryManifest(val url: String)
 
-    data class ObjectImportExperience(
+    data class ImportExperience(
         val space: SpaceId,
         val url: String,
         val title: String,

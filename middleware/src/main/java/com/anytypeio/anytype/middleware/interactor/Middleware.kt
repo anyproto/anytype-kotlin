@@ -2515,8 +2515,8 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun objectImportExperience(
-        command: Command.ObjectImportExperience
+    fun importExperience(
+        command: Command.ImportExperience
     ): Payload {
         val request = Rpc.Object.ImportExperience.Request(
             spaceId = command.space.id,

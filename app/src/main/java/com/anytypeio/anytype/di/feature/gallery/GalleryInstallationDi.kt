@@ -6,10 +6,10 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.gallery_experience.DownloadGalleryManifest
-import com.anytypeio.anytype.domain.gallery_experience.ObjectImportExperience
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModelFactory
+import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -30,6 +30,7 @@ interface GalleryInstallationComponent {
     @Component.Builder
     interface Builder {
         fun withDependencies(dependencies: GalleryInstallationComponentDependencies): Builder
+
         @BindsInstance
         fun withParams(params: GalleryInstallationViewModel.ViewModelParams): Builder
         fun build(): GalleryInstallationComponent
@@ -41,22 +42,11 @@ interface GalleryInstallationComponent {
 @Module
 object GalleryInstallationModule {
 
-
-    @PerScreen
     @Provides
-    @JvmStatic
-    fun provideDownloadGalleryManifest(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): DownloadGalleryManifest = DownloadGalleryManifest(dispatchers, repo)
-
     @PerScreen
-    @Provides
-    @JvmStatic
-    fun provideObjectImportExperience(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): ObjectImportExperience = ObjectImportExperience(dispatchers, repo)
+    fun provideGradientProvider(): SpaceGradientProvider {
+        return SpaceGradientProvider.Default
+    }
 
     @Module
     interface Declarations {
@@ -74,4 +64,5 @@ interface GalleryInstallationComponentDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers
     fun analytics(): Analytics
+    fun urlBuilder(): UrlBuilder
 }

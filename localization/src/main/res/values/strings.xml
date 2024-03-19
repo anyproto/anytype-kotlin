@@ -1438,5 +1438,6 @@
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Made by</string>
     <string name="gallery_experience_install">Install</string>
+    <string name="gallery_experience_install_new">Install to new space</string>
 
 </resources>

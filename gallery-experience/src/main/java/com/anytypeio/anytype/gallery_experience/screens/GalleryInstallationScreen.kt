@@ -38,7 +38,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.painter.BrushPainter
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -50,21 +49,19 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.extensions.dark
-import com.anytypeio.anytype.core_ui.extensions.light
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitle
-import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationState
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
 
 @Composable
-fun GalleryInstallationScreen(state: GalleryInstallationState) {
+fun GalleryInstallationScreen(
+    state: GalleryInstallationState,
+    onInstallClicked: () -> Unit
+) {
     Box(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
@@ -87,7 +84,7 @@ fun GalleryInstallationScreen(state: GalleryInstallationState) {
                     LoadingScreen()
                 }
                 is GalleryInstallationState.Success -> {
-                    SuccessScreen(state)
+                    SuccessScreen(state, onInstallClicked)
                 }
             }
         }
@@ -162,7 +159,8 @@ private fun LoadingScreen() {
 @OptIn(ExperimentalFoundationApi::class, ExperimentalLayoutApi::class)
 @Composable
 private fun SuccessScreen(
-    state: GalleryInstallationState.Success
+    state: GalleryInstallationState.Success,
+    onInstallClicked: () -> Unit
 ) {
     val dotCurrentColor = colorResource(id = R.color.glyph_active)
     val dotColor = colorResource(id = R.color.glyph_inactive)
@@ -253,7 +251,7 @@ private fun SuccessScreen(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp),
-        onClick = { /*TODO*/ },
+        onClick = { onInstallClicked() },
         size = ButtonSize.Large,
         text = stringResource(id = R.string.gallery_experience_install)
     )
@@ -280,20 +278,23 @@ private fun CategoryItem(item: String) {
 @Preview
 @Composable
 private fun GalleryInstallationScreenPreview() {
-    GalleryInstallationScreen(GalleryInstallationState.Success(
-        info = ManifestInfo(
-            schema = "placerat",
-            id = "vix",
-            name = "Agnes Lucas",
-            author = "constituto",
-            license = "accommodare",
-            title = "reprimique",
-            description = "pretium",
-            screenshots = listOf("1", "2", "3", "4"),
-            downloadLink = "lobortis",
-            fileSize = 1213,
-            categories = listOf("tag1", "tag2", "tag3", "tag4", "tag5", "tag6", "tag7", "tag8", "tag9678676", "tag10"),
-            language = "nisi"
+    GalleryInstallationScreen(
+        onInstallClicked = {},
+        state = GalleryInstallationState.Success(
+            info = ManifestInfo(
+                schema = "placerat",
+                id = "vix",
+                name = "Agnes Lucas",
+                author = "constituto",
+                license = "accommodare",
+                title = "reprimique",
+                description = "pretium",
+                screenshots = listOf("1", "2", "3", "4"),
+                downloadLink = "lobortis",
+                fileSize = 1213,
+                categories = listOf("tag1", "tag2", "tag3312212112", "tag421312312", "tag5", "tag6"),
+                language = "nisi"
+            )
         )
-    ))
+    )
 }

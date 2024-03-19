@@ -66,7 +66,9 @@ class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
                 GalleryInstallationNavigation.Main -> navController.navigate(
                     GalleryInstallationNavigation.Main.route
                 )
-
+                GalleryInstallationNavigation.Spaces -> navController.navigate(
+                    GalleryInstallationNavigation.Spaces.route
+                )
                 GalleryInstallationNavigation.Dismiss -> navController.popBackStack()
                 else -> {}
             }
@@ -105,13 +107,19 @@ class GalleryInstallationFragment : BaseBottomSheetComposeFragment() {
         skipCollapsed()
         expand()
         GalleryInstallationScreen(
-            state = vm.mainState.collectAsStateWithLifecycle().value
+            state = vm.mainState.collectAsStateWithLifecycle().value,
+            onInstallClicked = vm::onInstallClicked
         )
     }
 
     @Composable
     private fun InitSpacesScreen() {
-        GalleryInstallationSpacesScreen()
+        GalleryInstallationSpacesScreen(
+            state = vm.spacesViewState.collectAsStateWithLifecycle().value,
+            onNewSpaceClick = vm::onNewSpaceClick,
+            onSpaceClick = vm::onSpaceClick,
+            onDismiss = vm::onDismiss
+        )
     }
 
     override fun injectDependencies() {

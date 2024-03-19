@@ -1919,4 +1919,30 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun downloadManifest(request: Rpc.Gallery.DownloadManifest.Request): Rpc.Gallery.DownloadManifest.Response {
+        val encoded = Service.galleryDownloadManifest(
+            Rpc.Gallery.DownloadManifest.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Gallery.DownloadManifest.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Gallery.DownloadManifest.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectImportExperience(request: Rpc.Object.ImportExperience.Request): Rpc.Object.ImportExperience.Response {
+        val encoded = Service.objectImportExperience(
+            Rpc.Object.ImportExperience.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.ImportExperience.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.ImportExperience.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

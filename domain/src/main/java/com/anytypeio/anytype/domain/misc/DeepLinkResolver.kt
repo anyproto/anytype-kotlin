@@ -7,7 +7,7 @@ interface DeepLinkResolver {
     sealed class Action {
         object Unknown : Action()
         sealed class Import : Action() {
-            object Experience : Action()
+            data class Experience(val type: String, val source: String) : Action()
         }
         data class Invite(val link: String) : Action()
     }

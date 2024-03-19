@@ -522,4 +522,12 @@ interface MiddlewareService {
     fun spaceStopSharing(request: Rpc.Space.StopSharing.Request): Rpc.Space.StopSharing.Response
 
     //endregion
+
+    //region GALLERY EXPERIENCE
+    @Throws(Exception::class)
+    fun downloadManifest(request: Rpc.Gallery.DownloadManifest.Request): Rpc.Gallery.DownloadManifest.Response
+
+    @Throws(Exception::class)
+    fun objectImportExperience(request: Rpc.Object.ImportExperience.Request): Rpc.Object.ImportExperience.Response
+    //endregion
 }

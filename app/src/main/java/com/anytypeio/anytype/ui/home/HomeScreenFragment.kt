@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
+import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.main.MainActivity
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -250,6 +251,15 @@ class HomeScreenFragment : BaseComposeFragment() {
                 findNavController().navigate(
                     R.id.requestJoinSpaceScreen,
                     RequestJoinSpaceFragment.args(link = command.link)
+                )
+            }
+            is Command.Deeplink.GalleryInstallation -> {
+                findNavController().navigate(
+                    R.id.galleryInstallationScreen,
+                    GalleryInstallationFragment.args(
+                        deepLinkType = command.deepLinkType,
+                        deepLinkSource = command.deepLinkSource
+                    )
                 )
             }
             is Command.ShareSpace -> {

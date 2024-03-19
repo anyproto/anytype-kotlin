@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.misc.AppActionManager
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
@@ -26,7 +27,8 @@ class LogoutWarningViewModel(
     private val relationsSubscriptionManager: RelationsSubscriptionManager,
     private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
     private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
-    private val appActionManager: AppActionManager
+    private val appActionManager: AppActionManager,
+    private val userPermissionProvider: UserPermissionProvider
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -73,6 +75,7 @@ class LogoutWarningViewModel(
         relationsSubscriptionManager.onStop()
         objectTypesSubscriptionManager.onStop()
         spaceDeletedStatusWatcher.onStop()
+        userPermissionProvider.stop()
     }
 
     fun onBackupClicked() {
@@ -91,7 +94,8 @@ class LogoutWarningViewModel(
         private val relationsSubscriptionManager: RelationsSubscriptionManager,
         private val objectTypesSubscriptionManager: ObjectTypesSubscriptionManager,
         private val spaceDeletedStatusWatcher: SpaceDeletedStatusWatcher,
-        private val appActionManager: AppActionManager
+        private val appActionManager: AppActionManager,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -101,7 +105,8 @@ class LogoutWarningViewModel(
                 relationsSubscriptionManager = relationsSubscriptionManager,
                 objectTypesSubscriptionManager = objectTypesSubscriptionManager,
                 spaceDeletedStatusWatcher = spaceDeletedStatusWatcher,
-                appActionManager = appActionManager
+                appActionManager = appActionManager,
+                userPermissionProvider = userPermissionProvider
             ) as T
         }
     }

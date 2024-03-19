@@ -558,9 +558,10 @@ class ObjectSetViewModel(
             combine(
                 database.index,
                 stateReducer.state,
-                session.currentViewerId
-            ) { dataViewState, objectState, currentViewId ->
-                processViewState(dataViewState, objectState, currentViewId)
+                session.currentViewerId,
+                permission
+            ) { dataViewState, objectState, currentViewId, permission ->
+                processViewState(dataViewState, objectState, currentViewId, permission)
             }.distinctUntilChanged().collect { viewState ->
                 Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
                 _currentViewer.value = viewState
@@ -571,7 +572,8 @@ class ObjectSetViewModel(
     private suspend fun processViewState(
         dataViewState: DataViewState,
         objectState: ObjectState,
-        currentViewId: String?
+        currentViewId: String?,
+        permission: SpaceMemberPermissions?
     ): DataViewViewState {
         return when (objectState) {
             is ObjectState.DataView.Collection -> processCollectionState(
@@ -582,7 +584,8 @@ class ObjectSetViewModel(
             is ObjectState.DataView.Set -> processSetState(
                 dataViewState = dataViewState,
                 objectState = objectState,
-                currentViewId = currentViewId
+                currentViewId = currentViewId,
+                permission = permission
             )
             ObjectState.Init -> DataViewViewState.Init
             ObjectState.ErrorLayout -> DataViewViewState.Error(msg = "Wrong layout, couldn't open object")
@@ -643,6 +646,7 @@ class ObjectSetViewModel(
         dataViewState: DataViewState,
         objectState: ObjectState.DataView.Set,
         currentViewId: String?,
+        permission: SpaceMemberPermissions?
     ): DataViewViewState {
         if (!objectState.isInitialized) return DataViewViewState.Init
 
@@ -696,6 +700,8 @@ class ObjectSetViewModel(
                         DataViewViewState.Set.Default(
                             viewer = render,
                             isCreateObjectAllowed = objectState.isCreateObjectAllowed(defType)
+                                    && (permission?.isOwnerOrEditor() == true),
+                            isEditingViewAllowed = permission?.isOwnerOrEditor() == true
                         )
                     }
                 }
@@ -2673,4 +2679,9 @@ class ObjectSetViewModel(
         const val DELAY_BEFORE_CREATING_TEMPLATE = 200L
         private const val SUBSCRIPTION_TEMPLATES_ID = "-SUBSCRIPTION_TEMPLATES_ID"
     }
+
+    data class Params(
+        val ctx: Id,
+        val space: SpaceId
+    )
 }

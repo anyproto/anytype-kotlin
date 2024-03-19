@@ -127,6 +127,7 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_T
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import com.bumptech.glide.Glide
 import javax.inject.Inject
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 
@@ -523,6 +524,13 @@ open class ObjectSetFragment :
         lifecycleScope.subscribe(vm.isCustomizeViewPanelVisible) { isCustomizeViewPanelVisible ->
             if (isCustomizeViewPanelVisible) showBottomPanel() else hideBottomPanel()
         }
+        lifecycleScope.subscribe(vm.permission.filterNotNull()) { permission ->
+            if (permission.isOwnerOrEditor()) {
+                binding.topToolbar.ivThreeDots.visible()
+            } else {
+                binding.topToolbar.ivThreeDots.invisible()
+            }
+        }
     }
 
     private fun setStatus(status: SyncStatusView?) {
@@ -606,6 +614,11 @@ open class ObjectSetFragment :
                 dataViewHeader.visible()
                 viewerTitle.isEnabled = true
                 setupNewButtons(state.isCreateObjectAllowed)
+                if (state.isEditingViewAllowed) {
+                    customizeViewButton.visible()
+                } else {
+                    customizeViewButton.invisible()
+                }
                 customizeViewButton.isEnabled = true
                 setCurrentViewerName(state.viewer?.title)
                 setViewer(viewer = state.viewer)

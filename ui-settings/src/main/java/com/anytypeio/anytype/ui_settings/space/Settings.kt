@@ -49,7 +49,7 @@ import com.anytypeio.anytype.ui_settings.main.SpaceHeader
 
 @Composable
 fun SpaceSettingsScreen(
-    spaceData: ViewState<SpaceSettingsViewModel.SpaceData>,
+    state: ViewState<SpaceSettingsViewModel.SpaceData>,
     onNameSet: (String) -> Unit,
     onDeleteSpaceClicked: () -> Unit,
     onFileStorageClick: () -> Unit,
@@ -71,30 +71,30 @@ fun SpaceSettingsScreen(
         item {
             SpaceHeader(
                 modifier = Modifier,
-                name = when (spaceData) {
-                    is ViewState.Success -> spaceData.data.name.ifEmpty {
+                name = when (state) {
+                    is ViewState.Success -> state.data.name.ifEmpty {
                         stringResource(id = R.string.untitled)
                     }
                     else -> null
                 },
-                icon = when (spaceData) {
-                    is ViewState.Success -> spaceData.data.icon
+                icon = when (state) {
+                    is ViewState.Success -> state.data.icon
                     else -> null
                 },
                 onNameSet = onNameSet,
                 onRandomGradientClicked = onRandomGradientClicked,
-                isEditEnabled = when(spaceData) {
+                isEditEnabled = when(state) {
                     is ViewState.Error -> false
                     ViewState.Init -> false
                     ViewState.Loading -> false
-                    is ViewState.Success -> spaceData.data.permissions.isOwnerOrEditor()
+                    is ViewState.Success -> state.data.permissions.isOwnerOrEditor()
                 }
             )
         }
         item { Divider() }
         item {
-            if (spaceData is ViewState.Success) {
-                if (spaceData.data.spaceType == PERSONAL_SPACE_TYPE) {
+            if (state is ViewState.Success) {
+                if (state.data.spaceType == PERSONAL_SPACE_TYPE) {
                     Section(title = stringResource(id = R.string.type))
                 } else {
                     Section(title = stringResource(id = R.string.multiplayer_sharing))
@@ -104,10 +104,10 @@ fun SpaceSettingsScreen(
             }
         }
         item {
-            if (spaceData is ViewState.Success) {
-                when(spaceData.data.spaceType) {
+            if (state is ViewState.Success) {
+                when(state.data.spaceType) {
                     PERSONAL_SPACE_TYPE -> {
-                        TypeOfSpace(spaceData.data.spaceType)
+                        TypeOfSpace(state.data.spaceType)
                     }
                     PRIVATE_SPACE_TYPE -> {
                         PrivateSpaceSharing(
@@ -128,23 +128,33 @@ fun SpaceSettingsScreen(
         item {
             Section(title = stringResource(id = R.string.settings))
         }
-        item {
-            Option(image = R.drawable.ic_file_storage,
-                text = stringResource(R.string.remote_storage),
-                onClick = throttledClick(onFileStorageClick)
-            )
-        }
-        item {
-            Divider(paddingStart = 60.dp)
-        }
-        item {
-            Option(image = R.drawable.ic_personalization,
-                text = stringResource(R.string.personalization),
-                onClick = throttledClick(onPersonalizationClicked)
-            )
-        }
-        item {
-            Divider(paddingStart = 60.dp)
+        when(state) {
+            is ViewState.Success -> {
+                if (state.data.permissions.isOwnerOrEditor()) {
+                    item {
+                        Option(
+                            image = R.drawable.ic_file_storage,
+                            text = stringResource(R.string.remote_storage),
+                            onClick = throttledClick(onFileStorageClick)
+                        )
+                    }
+                    item {
+                        Divider(paddingStart = 60.dp)
+                    }
+                    item {
+                        Option(image = R.drawable.ic_personalization,
+                            text = stringResource(R.string.personalization),
+                            onClick = throttledClick(onPersonalizationClicked)
+                        )
+                    }
+                    item {
+                        Divider(paddingStart = 60.dp)
+                    }
+                }
+            }
+            else -> {
+                // Do nothing.
+            }
         }
         item {
             Option(image = R.drawable.ic_debug,
@@ -173,9 +183,9 @@ fun SpaceSettingsScreen(
                     modifier = Modifier.padding(top = 12.dp),
                     color = colorResource(id = R.color.text_primary)
                 )
-                if (spaceData is ViewState.Success) {
+                if (state is ViewState.Success) {
                     Text(
-                        text = spaceData.data.spaceId ?: stringResource(id = R.string.unknown),
+                        text = state.data.spaceId ?: stringResource(id = R.string.unknown),
                         style = PreviewTitle2Regular,
                         maxLines = 2,
                         color = colorResource(id = R.color.text_primary),
@@ -184,7 +194,7 @@ fun SpaceSettingsScreen(
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp)
                             .noRippleClickable {
-                                onSpaceIdClicked(spaceData.data.spaceId.orEmpty())
+                                onSpaceIdClicked(state.data.spaceId.orEmpty())
                             }
                     )
                 }
@@ -203,9 +213,9 @@ fun SpaceSettingsScreen(
                     modifier = Modifier.padding(top = 12.dp),
                     color = colorResource(id = R.color.text_primary)
                 )
-                if (spaceData is ViewState.Success) {
+                if (state is ViewState.Success) {
                     Text(
-                        text = spaceData.data.createdBy ?: stringResource(id = R.string.unknown),
+                        text = state.data.createdBy ?: stringResource(id = R.string.unknown),
                         style = PreviewTitle2Regular,
                         maxLines = 2,
                         color = colorResource(id = R.color.text_primary),
@@ -214,7 +224,7 @@ fun SpaceSettingsScreen(
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp)
                             .noRippleClickable {
-                                onCreatedByClicked(spaceData.data.createdBy.orEmpty())
+                                onCreatedByClicked(state.data.createdBy.orEmpty())
                             }
                     )
                 }
@@ -233,8 +243,8 @@ fun SpaceSettingsScreen(
                     modifier = Modifier.padding(top = 12.dp),
                     color = colorResource(id = R.color.text_primary)
                 )
-                if (spaceData is ViewState.Success) {
-                    val formattedDate = spaceData.data.createdDateInMillis?.formatTimeInMillis(
+                if (state is ViewState.Success) {
+                    val formattedDate = state.data.createdDateInMillis?.formatTimeInMillis(
                         DateConst.DEFAULT_DATE_FORMAT
                     ) ?: stringResource(id = R.string.unknown)
                     Text(
@@ -262,9 +272,9 @@ fun SpaceSettingsScreen(
                     modifier = Modifier.padding(top = 12.dp),
                     color = colorResource(id = R.color.text_primary)
                 )
-                if (spaceData is ViewState.Success) {
+                if (state is ViewState.Success) {
                     Text(
-                        text = spaceData.data.network ?: stringResource(id = R.string.unknown),
+                        text = state.data.network ?: stringResource(id = R.string.unknown),
                         style = PreviewTitle2Regular,
                         maxLines = 2,
                         color = colorResource(id = R.color.text_primary),
@@ -273,15 +283,15 @@ fun SpaceSettingsScreen(
                             .align(Alignment.BottomStart)
                             .padding(bottom = 12.dp, end = 50.dp)
                             .noRippleClickable {
-                                onNetworkIdClicked(spaceData.data.network.orEmpty())
+                                onNetworkIdClicked(state.data.network.orEmpty())
                             }
                     )
                 }
             }
         }
-        if (spaceData is ViewState.Success && spaceData.data.isDeletable) {
+        if (state is ViewState.Success && state.data.isDeletable) {
             item {
-                val label = when(spaceData.data.permissions) {
+                val label = when(state.data.permissions) {
                     SpaceMemberPermissions.OWNER -> stringResource(R.string.delete_space)
                     else -> stringResource(R.string.multiplayer_leave_space)
                 }
@@ -308,7 +318,7 @@ fun SpaceSettingsScreen(
 @Preview
 fun SpaceSettingsScreenPreview() {
     SpaceSettingsScreen(
-        spaceData = ViewState.Success(
+        state = ViewState.Success(
             data = SpaceSettingsViewModel.SpaceData(
                 spaceId = "ID",
                 createdDateInMillis = null,

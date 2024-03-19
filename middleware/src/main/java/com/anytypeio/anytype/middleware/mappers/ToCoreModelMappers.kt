@@ -22,7 +22,7 @@ import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Event
-import com.anytypeio.anytype.core_models.EventProcess
+import com.anytypeio.anytype.core_models.Process
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsage
@@ -810,8 +810,8 @@ fun MManifestInfo.toCoreModel(): ManifestInfo {
     )
 }
 
-fun MProcess.toCoreModel(): EventProcess {
-    return EventProcess(
+fun MProcess.toCoreModel(): Process {
+    return Process(
         id = id,
         type = type.toCoreModel(),
         state = state.toCoreModel(),
@@ -819,29 +819,29 @@ fun MProcess.toCoreModel(): EventProcess {
     )
 }
 
-fun MProcessType.toCoreModel(): EventProcess.Type {
+fun MProcessType.toCoreModel(): Process.Type {
     return when (this) {
-        MProcessType.DropFiles -> EventProcess.Type.DropFiles
-        MProcessType.Import -> EventProcess.Type.Import
-        MProcessType.Export -> EventProcess.Type.Export
-        MProcessType.SaveFile -> EventProcess.Type.SaveFile
-        MProcessType.RecoverAccount -> EventProcess.Type.RecoverAccount
-        MProcessType.Migration ->  EventProcess.Type.Migration
+        MProcessType.DropFiles -> Process.Type.DropFiles
+        MProcessType.Import -> Process.Type.Import
+        MProcessType.Export -> Process.Type.Export
+        MProcessType.SaveFile -> Process.Type.SaveFile
+        MProcessType.RecoverAccount -> Process.Type.RecoverAccount
+        MProcessType.Migration ->  Process.Type.Migration
     }
 }
 
-fun MProcessState.toCoreModel(): EventProcess.State {
+fun MProcessState.toCoreModel(): Process.State {
     return when (this) {
-        MProcessState.None -> EventProcess.State.None
-        MProcessState.Running -> EventProcess.State.Running
-        MProcessState.Done -> EventProcess.State.Done
-        MProcessState.Canceled -> EventProcess.State.Canceled
-        MProcessState.Error -> EventProcess.State.Error
+        MProcessState.None -> Process.State.None
+        MProcessState.Running -> Process.State.Running
+        MProcessState.Done -> Process.State.Done
+        MProcessState.Canceled -> Process.State.Canceled
+        MProcessState.Error -> Process.State.Error
     }
 }
 
-fun MProcessProgress.toCoreModel(): EventProcess.Progress {
-    return EventProcess.Progress(
+fun MProcessProgress.toCoreModel(): Process.Progress {
+    return Process.Progress(
         total = total,
         done = done,
         message = message

@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.core_models
 
-data class EventProcess(
+data class Process(
     val id: String,
     val type: Type,
     val state: State,

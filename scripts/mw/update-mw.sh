@@ -42,17 +42,9 @@ printf "Preparing files\n"
 mkdir -p libs/protobuf/protos
 mv /tmp/lib/protobuf/protos/* protocol/src/main/proto
 
-
 # Clearing temp folder
 rm -rf /tmp/lib
 rm -rf $FILE
-
-# For Android app internal usage, we don't need the following protos:
-rm -rf protocol/src/main/proto/service.proto
-rm -rf protocol/src/main/proto/block.proto
-rm -rf protocol/src/main/proto/file.proto
-rm -rf protocol/src/main/proto/snapshot.proto
-rm -rf protocol/src/main/proto/migration.proto
 
 echo "Done with downloading protobuf files!"
 

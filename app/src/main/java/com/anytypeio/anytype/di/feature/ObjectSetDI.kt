@@ -216,7 +216,6 @@ object ObjectSetModule {
     @Provides
     @PerScreen
     fun provideObjectSetViewModelFactory(
-        params: ObjectSetViewModel.Params,
         openObjectSet: OpenObjectSet,
         closeBlock: CloseBlock,
         setObjectDetails: UpdateDetail,
@@ -295,8 +294,7 @@ object ObjectSetModule {
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         dispatchers = dispatchers,
         getNetworkMode = getNetworkMode,
-        dateProvider = dateProvider,
-        params = params
+        dateProvider = dateProvider
     )
 
     @JvmStatic

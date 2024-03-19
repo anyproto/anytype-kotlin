@@ -48,6 +48,8 @@ enum SmartBlockType {
     MissingObject = 0x207;
 
     FileObject = 0x215;
+
+    NotificationObject = 0x217;
 }
 
 message Block {
@@ -968,8 +970,14 @@ message Notification {
         GalleryImport galleryImport = 9;
         RequestToJoin requestToJoin = 10;
         Test test = 11;
+        ParticipantRequestApproved participantRequestApproved = 13;
+        RequestToLeave requestToLeave = 15;
+        ParticipantRemove participantRemove = 16;
+        ParticipantRequestDecline participantRequestDecline = 17;
+        ParticipantPermissionsChange participantPermissionsChange = 18;
     }
     string space = 7;
+    string aclHeadId = 14;
 
     message Import {
         string processId = 1;
@@ -1004,6 +1012,34 @@ message Notification {
     }
 
     message Test {}
+
+    message ParticipantRequestApproved {
+        string spaceId = 1;
+        ParticipantPermissions permissions = 2;
+    }
+
+    message RequestToLeave {
+        string spaceId = 1;
+        string identity = 2;
+        string identityName = 3;
+        string identityIcon = 4;
+    }
+
+    message ParticipantRemove {
+        string identity = 1;
+        string identityName = 2;
+        string identityIcon = 3;
+        string spaceId = 4;
+    }
+
+    message ParticipantRequestDecline {
+        string spaceId = 1;
+    }
+
+    message ParticipantPermissionsChange {
+        string spaceId = 1;
+        ParticipantPermissions permissions = 2;
+    }
 
     enum Status {
         Created = 0;
@@ -1048,6 +1084,7 @@ message Import {
         IMPORT_IS_CANCELED = 6;
         LIMIT_OF_ROWS_OR_RELATIONS_EXCEEDED = 7;
         FILE_LOAD_ERROR = 8;
+        INSUFFICIENT_PERMISSIONS = 9;
     }
 }
 

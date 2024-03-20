@@ -165,7 +165,18 @@ open class ObjectSearchViewModel(
             ObjectType.Layout.IMAGE,
             ObjectType.Layout.BOOKMARK,
             ObjectType.Layout.PARTICIPANT -> {
-                navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = target)))
+                val obj = objects
+                    .value
+                    .getOrNull()
+                    ?.find { obj -> obj.id == view.id }
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.LaunchDocument(
+                            target = target,
+                            space = requireNotNull(obj?.spaceId)
+                        )
+                    )
+                )
             }
             ObjectType.Layout.PROFILE -> {
                 val obj = objects
@@ -174,9 +185,23 @@ open class ObjectSearchViewModel(
                     ?.find { obj -> obj.id == view.id }
                 val identity = obj?.getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
                 if (identity != null) {
-                    navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = identity)))
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.LaunchDocument(
+                                target = identity,
+                                space = requireNotNull(obj.spaceId)
+                            )
+                        )
+                    )
                 } else {
-                    navigate(EventWrapper(AppNavigation.Command.LaunchDocument(id = target)))
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.LaunchDocument(
+                                target = target,
+                                space = requireNotNull(obj?.spaceId)
+                            )
+                        )
+                    )
                 }
             }
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {

@@ -27,8 +27,8 @@ interface AppNavigation {
         templateTypeKey: Key
     )
 
-    fun launchDocument(id: String)
-    fun launchCollections(subscription: Subscription)
+    fun launchDocument(target: String, space: Id)
+    fun launchCollections(subscription: Subscription, space: Id)
     fun launchObjectFromSplash(id: Id)
     fun launchObjectSetFromSplash(id: Id)
     fun launchObjectSet(id: Id)
@@ -63,7 +63,7 @@ interface AppNavigation {
 
         data class OpenObject(val target: Id, val space: Id) : Command()
 
-        data class LaunchDocument(val id: String) : Command()
+        data class LaunchDocument(val target: Id, val space: Id) : Command()
         data class LaunchObjectFromSplash(val target: Id) : Command()
         data class LaunchObjectSetFromSplash(val target: Id) : Command()
         data class OpenModalTemplateSelect(

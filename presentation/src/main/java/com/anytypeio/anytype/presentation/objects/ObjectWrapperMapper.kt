@@ -43,7 +43,8 @@ fun List<ObjectWrapper.Basic>.toView(
                 obj = obj,
                 layout = layout,
                 builder = urlBuilder
-            )
+            ),
+            space = requireNotNull(obj.spaceId)
         )
     }
 
@@ -85,7 +86,8 @@ fun ObjectWrapper.Basic.toView(
         ),
         lastModifiedDate = DateParser.parseInMillis(obj.lastModifiedDate) ?: 0L,
         lastOpenedDate = DateParser.parseInMillis(obj.lastOpenedDate) ?: 0L,
-        isFavorite = obj.isFavorite ?: false
+        isFavorite = obj.isFavorite ?: false,
+        space = requireNotNull(obj.spaceId)
     )
 }
 
@@ -311,7 +313,8 @@ fun ObjectWrapper.Basic.mapFileObjectToView(): CollectionView.ObjectView {
         name = getProperName(),
         description = sizeInBytes?.toLong()?.readableFileSize().orEmpty(),
         layout = layout,
-        icon = fileIcon
+        icon = fileIcon,
+        space = requireNotNull(spaceId)
     )
     return CollectionView.ObjectView(defaultObjectView)
 }

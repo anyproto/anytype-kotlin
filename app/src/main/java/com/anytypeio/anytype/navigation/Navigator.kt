@@ -86,10 +86,13 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun launchCollections(subscription: Subscription) {
+    override fun launchCollections(subscription: Subscription, space: Id) {
         navController?.navigate(
             R.id.homeScreenWidgets,
-            bundleOf(CollectionFragment.SUBSCRIPTION_KEY to subscription.id)
+            CollectionFragment.args(
+                subscription = subscription.id,
+                space = space
+            )
         )
     }
 

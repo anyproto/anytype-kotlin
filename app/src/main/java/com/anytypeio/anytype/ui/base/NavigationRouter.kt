@@ -28,7 +28,10 @@ class NavigationRouter(
                     isPopUpToDashboard = command.isPopUpToDashboard
                 )
                 is AppNavigation.Command.LaunchObjectSet -> navigation.launchObjectSet(command.target)
-                is AppNavigation.Command.LaunchDocument -> navigation.launchDocument(command.id)
+                is AppNavigation.Command.LaunchDocument -> navigation.launchDocument(
+                    target = command.id,
+                    space = command.id
+                )
                 is AppNavigation.Command.LaunchObjectFromSplash -> navigation.launchObjectFromSplash(
                     command.target
                 )

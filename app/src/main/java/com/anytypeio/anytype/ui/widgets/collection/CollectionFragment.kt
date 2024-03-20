@@ -7,10 +7,12 @@ import android.view.ViewGroup
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.core_utils.ui.proceed
@@ -31,6 +33,8 @@ class CollectionFragment : BaseComposeFragment() {
     lateinit var factory: CollectionViewModel.Factory
 
     private val navigation get() = navigation()
+
+    private val space get() = arg<Id>(SPACE_ID_KEY)
 
     private val subscription: Subscription by lazy {
         SubscriptionMapper().map(
@@ -56,7 +60,8 @@ class CollectionFragment : BaseComposeFragment() {
                         vm = vm,
                         onCreateObjectLongClicked = {
                             val dialog = SelectObjectTypeFragment.new(
-                                flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
+                                flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                                space = space
                             ).apply {
                                 onTypeSelected = {
                                     vm.onAddClicked(it)
@@ -78,11 +83,17 @@ class CollectionFragment : BaseComposeFragment() {
 
     private fun execute(command: Command) {
         when (command) {
-            is Command.LaunchDocument -> launchDocument(command.id)
+            is Command.LaunchDocument -> launchDocument(
+                target = command.target,
+                space = command.space
+            )
             is Command.LaunchObjectSet -> launchObjectSet(command.target)
             is Command.Exit -> exit()
             is Command.ConfirmRemoveFromBin -> confirmRemoveFromBin(command)
-            is Command.OpenCollection -> navigation.launchCollections(command.subscription)
+            is Command.OpenCollection -> navigation.launchCollections(
+                subscription = command.subscription,
+                space = space
+            )
             is Command.ToDesktop -> navigation.exitToDesktop()
             is Command.ToSearch -> navigation.openPageSearch()
             is Command.SelectSpace -> {
@@ -108,8 +119,11 @@ class CollectionFragment : BaseComposeFragment() {
         navigation.launchObjectSet(target)
     }
 
-    private fun launchDocument(id: Id) {
-        navigation.launchDocument(id)
+    private fun launchDocument(target: Id, space: Id) {
+        navigation.launchDocument(
+            target = target,
+            space = space
+        )
     }
 
     override fun onStop() {
@@ -127,5 +141,10 @@ class CollectionFragment : BaseComposeFragment() {
 
     companion object {
         const val SUBSCRIPTION_KEY: String = "arg.collection.subscription"
+        const val SPACE_ID_KEY = "arg.collection.space-id"
+        fun args(subscription: Id, space: Id) = bundleOf(
+            SUBSCRIPTION_KEY to subscription,
+            SPACE_ID_KEY  to space
+        )
     }
 }

@@ -1111,7 +1111,12 @@ class HomeScreenViewModel(
                 )
             }
             is OpenObjectNavigation.OpenEditor -> {
-                navigate(Navigation.OpenObject(navigation.target))
+                navigate(
+                    Navigation.OpenObject(
+                        ctx = navigation.target,
+                        space = navigation.space
+                    )
+                )
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
@@ -1150,6 +1155,15 @@ class HomeScreenViewModel(
                         sendToast("Error while creating object. Please, try again later")
                     }
                 )
+            }
+        }
+    }
+
+    fun onCreateNewObjectLongClicked() {
+        viewModelScope.launch {
+            val space = spaceManager.get()
+            if (space.isNotEmpty()) {
+                commands.emit(Command.OpenObjectCreateDialog(SpaceId(space)))
             }
         }
     }
@@ -1427,7 +1441,7 @@ class HomeScreenViewModel(
     }
 
     sealed class Navigation {
-        data class OpenObject(val ctx: Id) : Navigation()
+        data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id) : Navigation()
         data class ExpandWidget(val subscription: Subscription) : Navigation()
     }
@@ -1545,6 +1559,8 @@ sealed class Command {
     ) : Command()
 
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
+
+    data class OpenObjectCreateDialog(val space: SpaceId) : Command()
 
     data class SelectWidgetType(
         val ctx: Id,

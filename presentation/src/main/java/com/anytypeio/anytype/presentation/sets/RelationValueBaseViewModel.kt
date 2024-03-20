@@ -175,6 +175,7 @@ abstract class RelationValueBaseViewModel(
                             items.add(
                                 RelationValueView.Object.NonExistent(
                                     id = id,
+                                    space = requireNotNull(wrapper.spaceId),
                                     removable = isRemovable
                                 )
                             )
@@ -485,13 +486,21 @@ abstract class RelationValueBaseViewModel(
                 ObjectType.Layout.BOOKMARK,
                 ObjectType.Layout.PARTICIPANT -> {
                     viewModelScope.launch {
-                        navigation.emit(AppNavigation.Command.OpenObject(id))
+                        navigation.emit(
+                            AppNavigation.Command.OpenObject(
+                                target = id,
+                                space = space
+                            )
+                        )
                     }
                 }
                 ObjectType.Layout.PROFILE -> {
                     viewModelScope.launch {
                         navigation.emit(
-                            AppNavigation.Command.OpenObject(profileLinkIdentity ?: id)
+                            AppNavigation.Command.OpenObject(
+                                target = profileLinkIdentity ?: id,
+                                space = space
+                            )
                         )
                     }
                 }
@@ -514,16 +523,26 @@ abstract class RelationValueBaseViewModel(
         }
     }
 
-    fun onNonExistentObjectClicked(ctx: Id, target: Id) {
+    fun onNonExistentObjectClicked(ctx: Id, target: Id, space: Id) {
         // TODO consider closing object before navigation
         viewModelScope.launch {
-            navigation.emit(AppNavigation.Command.OpenObject(target))
+            navigation.emit(
+                AppNavigation.Command.OpenObject(
+                    target = target,
+                    space = space
+                )
+            )
         }
     }
 
-    fun onFileClicked(id: Id) {
+    fun onFileClicked(target: Id, space: Id) {
         viewModelScope.launch {
-            navigation.emit(AppNavigation.Command.OpenObject(id))
+            navigation.emit(
+                AppNavigation.Command.OpenObject(
+                    target = target,
+                    space = space
+                )
+            )
         }
     }
 

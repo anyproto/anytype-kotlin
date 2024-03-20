@@ -1603,7 +1603,7 @@ typealias Widgets = List<Widget>?
 typealias Containers = List<WidgetContainer>?
 
 sealed class OpenObjectNavigation {
-    data class OpenEditor(val target: Id) : OpenObjectNavigation()
+    data class OpenEditor(val target: Id, val space: Id) : OpenObjectNavigation()
     data class OpenDataView(val target: Id, val space: Id): OpenObjectNavigation()
     data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
 }
@@ -1615,24 +1615,36 @@ fun ObjectWrapper.Basic.navigation() : OpenObjectNavigation {
         ObjectType.Layout.TODO,
         ObjectType.Layout.BOOKMARK,
         ObjectType.Layout.PARTICIPANT -> {
-            OpenObjectNavigation.OpenEditor(id)
+            OpenObjectNavigation.OpenEditor(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
         }
         in SupportedLayouts.fileLayouts -> {
-            OpenObjectNavigation.OpenEditor(id)
+            OpenObjectNavigation.OpenEditor(
+                target = id,
+                space = requireNotNull(spaceId)
+            )
         }
         ObjectType.Layout.PROFILE -> {
             val identityLink = getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
             if (identityLink.isNullOrEmpty()) {
-                OpenObjectNavigation.OpenEditor(id)
+                OpenObjectNavigation.OpenEditor(
+                    target = id,
+                    space = requireNotNull(spaceId)
+                )
             } else {
-                OpenObjectNavigation.OpenEditor(identityLink)
+                OpenObjectNavigation.OpenEditor(
+                    target = identityLink,
+                    space = requireNotNull(spaceId)
+                )
             }
         }
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION -> {
             OpenObjectNavigation.OpenDataView(
                 target = id,
-                space = spaceId!!
+                space = requireNotNull(spaceId)
             )
         }
         else -> {

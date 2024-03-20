@@ -308,10 +308,12 @@ abstract class ObjectMenuViewModelBase(
         jobs += viewModelScope.launch { commands.emit(Command.OpenLinkToChooser) }
     }
 
-    fun proceedWithOpeningPage(id: Id) {
-        Timber.d("proceedWithOpeningPage, id:[$id]")
+    fun proceedWithOpeningPage(target: Id, space: Id) {
+        Timber.d("proceedWithOpeningPage, id:[$target]")
         viewModelScope.launch {
-            delegator.delegate(Action.OpenObject(id))
+            delegator.delegate(
+                Action.OpenObject(target = target, space = space)
+            )
         }
     }
 

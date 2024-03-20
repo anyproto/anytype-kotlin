@@ -306,7 +306,10 @@ class ObjectSetViewModel(
                     is Action.SetUnsplashImage -> {
                         proceedWithSettingUnsplashImage(action)
                     }
-                    is Action.OpenObject -> proceedWithOpeningObject(action.id)
+                    is Action.OpenObject -> proceedWithOpeningObject(
+                        target = action.target,
+                        space = action.space
+                    )
                     is Action.OpenCollection -> proceedWithOpeningObjectCollection(
                         target = action.target,
                         space = action.space
@@ -1195,7 +1198,8 @@ class ObjectSetViewModel(
         if (obj.layout == ObjectType.Layout.NOTE) {
             proceedWithOpeningObject(
                 target = response.objectId,
-                layout = obj.layout
+                layout = obj.layout,
+                space = requireNotNull(obj.spaceId)
             )
         } else {
             dispatch(
@@ -1361,6 +1365,7 @@ class ObjectSetViewModel(
 
     private suspend fun proceedWithOpeningObject(
         target: Id,
+        space: Id,
         layout: ObjectType.Layout? = null
     ) {
         Timber.d("proceedWithOpeningObject, target:[$target], layout:[$layout]")
@@ -1370,7 +1375,10 @@ class ObjectSetViewModel(
             return
         }
         isCustomizeViewPanelVisible.value = false
-        val navigateCommand = AppNavigation.Command.OpenObject(id = target)
+        val navigateCommand = AppNavigation.Command.OpenObject(
+            target = target,
+            space = space
+        )
         closeBlock.async(context).fold(
             onSuccess = { navigate(EventWrapper(navigateCommand)) },
             onFailure = {
@@ -1456,8 +1464,14 @@ class ObjectSetViewModel(
             ObjectType.Layout.AUDIO,
             ObjectType.Layout.PDF,
             ObjectType.Layout.BOOKMARK,
-            ObjectType.Layout.PARTICIPANT -> proceedWithOpeningObject(target)
-            ObjectType.Layout.PROFILE -> proceedWithOpeningObject(identityProfileLink ?: target)
+            ObjectType.Layout.PARTICIPANT -> proceedWithOpeningObject(
+                target = target,
+                space = space
+            )
+            ObjectType.Layout.PROFILE -> proceedWithOpeningObject(
+                target = identityProfileLink ?: target,
+                space = space
+            )
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
                 closeBlock.async(context).fold(
                     onSuccess = {
@@ -1530,7 +1544,8 @@ class ObjectSetViewModel(
                 onSuccess = { result ->
                     proceedWithOpeningObject(
                         target = result.objectId,
-                        layout = result.obj.layout
+                        layout = result.obj.layout,
+                        space = requireNotNull(result.obj.spaceId)
                     )
                     sendAnalyticsObjectCreateEvent(
                         analytics = analytics,

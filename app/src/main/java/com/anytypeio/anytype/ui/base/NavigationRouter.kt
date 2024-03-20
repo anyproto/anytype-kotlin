@@ -13,7 +13,10 @@ class NavigationRouter(
             when (command) {
                 is AppNavigation.Command.ExitFromMigrationScreen -> navigation.exitFromMigrationScreen()
                 is AppNavigation.Command.OpenSettings -> navigation.openSpaceSettings()
-                is AppNavigation.Command.OpenObject -> navigation.openDocument(command.id)
+                is AppNavigation.Command.OpenObject -> navigation.openDocument(
+                    target = command.target,
+                    space = command.space
+                )
                 is AppNavigation.Command.OpenModalTemplateSelect -> navigation.openModalTemplateSelect(
                     template = command.template,
                     templateTypeId = command.templateTypeId,

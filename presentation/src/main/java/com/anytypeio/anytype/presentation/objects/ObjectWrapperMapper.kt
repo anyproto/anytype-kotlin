@@ -254,6 +254,7 @@ fun List<ObjectWrapper.Basic>.toRelationObjectValueView(
             } else {
                 RelationValueView.Object.NonExistent(
                     id = obj.id,
+                    space = requireNotNull(obj.spaceId),
                     isSelected = false,
                     removable = false
                 )
@@ -272,6 +273,7 @@ fun List<ObjectWrapper.Basic>.toRelationFileValueView(
         if (obj.id !in ids) {
             RelationValueView.File(
                 id = obj.id,
+                space = requireNotNull(obj.spaceId),
                 name = obj.getProperName(),
                 ext = obj.getProperFileExt(),
                 mime = obj.getProperFileMime(),

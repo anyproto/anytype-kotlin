@@ -15,8 +15,7 @@ interface AppNavigation {
         space: Id,
         isPopUpToDashboard: Boolean = false
     )
-    @Deprecated("Provide space id")
-    fun openDocument(id: String)
+    fun openDocument(target: Id, space: Id)
     fun openModalTemplateSelect(
         template: Id,
         templateTypeId: Id,
@@ -62,7 +61,7 @@ interface AppNavigation {
 
         object ExitFromMigrationScreen : Command()
 
-        data class OpenObject(val id: String) : Command()
+        data class OpenObject(val target: Id, val space: Id) : Command()
 
         data class LaunchDocument(val id: String) : Command()
         data class LaunchObjectFromSplash(val target: Id) : Command()

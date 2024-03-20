@@ -40,10 +40,11 @@ sealed class RelationValueView {
     sealed class Object : RelationValueView(), Selectable {
 
         abstract val id: Id
+        abstract val space: Id
 
         data class Default(
             override val id: Id,
-            val space: Id,
+            override val space: Id,
             val name: String,
             val typeName: String?,
             val type: String?,
@@ -57,6 +58,7 @@ sealed class RelationValueView {
 
         data class NonExistent(
             override val id: Id,
+            override val space: Id,
             override val isSelected: Boolean? = null,
             val removable: Boolean
         ) : Object(), Selectable
@@ -64,6 +66,7 @@ sealed class RelationValueView {
 
     data class File(
         val id: Id,
+        val space: Id,
         val name: String,
         val mime: String,
         val ext: String,

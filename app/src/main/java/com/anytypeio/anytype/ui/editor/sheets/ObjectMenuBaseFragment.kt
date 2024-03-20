@@ -258,7 +258,10 @@ abstract class ObjectMenuBaseFragment :
                             space = command.space
                         )
                     } else {
-                        vm.proceedWithOpeningPage(command.id)
+                        vm.proceedWithOpeningPage(
+                            target = command.id,
+                            space = command.space
+                        )
                     }
                 }
         }, 300L)

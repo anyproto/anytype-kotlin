@@ -430,7 +430,9 @@ class EditorViewModel(
                     )
                     Action.SearchOnPage -> onEnterSearchModeClicked()
                     Action.UndoRedo -> onUndoRedoActionClicked()
-                    is Action.OpenObject -> proceedWithOpeningObject(action.id)
+                    is Action.OpenObject -> proceedWithOpeningObject(
+                        target = action.target
+                    )
                     is Action.OpenCollection -> proceedWithOpeningDataViewObject(
                         target = action.target,
                         space = SpaceId(action.space)
@@ -4280,10 +4282,14 @@ class EditorViewModel(
             closePage.async(context).fold(
                 onFailure = {
                     Timber.e(it, "Error while closing object")
-                    navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
+                    navigate(EventWrapper(
+                        AppNavigation.Command.OpenObject(target = target, space = space))
+                    )
                 },
                 onSuccess = {
-                    navigate(EventWrapper(AppNavigation.Command.OpenObject(target)))
+                    navigate(EventWrapper(
+                        AppNavigation.Command.OpenObject(target = target, space = space))
+                    )
                 }
             )
         }
@@ -4314,7 +4320,14 @@ class EditorViewModel(
                 )
             }
             is OpenObjectNavigation.OpenEditor -> {
-                navigate(EventWrapper(AppNavigation.Command.OpenObject(navigation.target)))
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenObject(
+                            target = navigation.target,
+                            space = navigation.space
+                        )
+                    )
+                )
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")

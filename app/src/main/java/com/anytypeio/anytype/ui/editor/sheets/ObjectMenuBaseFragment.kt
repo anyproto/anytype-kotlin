@@ -74,13 +74,13 @@ abstract class ObjectMenuBaseFragment :
     }
 
     override fun onStart() {
-        click(binding.objectDiagnostics) { vm.onDiagnosticsClicked(ctx) }
+        click(binding.objectDiagnostics) { vm.onDiagnosticsClicked(ctx = ctx) }
         click(binding.optionHistory) { vm.onHistoryClicked() }
-        click(binding.optionLayout) { vm.onLayoutClicked(ctx, space) }
-        click(binding.optionIcon) { vm.onIconClicked(ctx, space) }
+        click(binding.optionLayout) { vm.onLayoutClicked(ctx = ctx, space = space) }
+        click(binding.optionIcon) { vm.onIconClicked(ctx = ctx, space = space) }
         click(binding.optionRelations) { vm.onRelationsClicked() }
-        click(binding.optionCover) { vm.onCoverClicked(ctx, space) }
-        click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx) }
+        click(binding.optionCover) { vm.onCoverClicked(ctx = ctx, space = space) }
+        click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx = ctx) }
 
         proceed(vm.actions) { actionAdapter.submitList(it) }
         proceed(vm.toasts) { toast(it) }

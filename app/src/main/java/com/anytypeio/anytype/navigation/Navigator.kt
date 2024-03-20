@@ -100,10 +100,13 @@ class Navigator : AppNavigation {
         )
     }
 
-    override fun launchObjectSet(id: Id) {
+    override fun launchObjectSet(target: Id, space: Id) {
         navController?.navigate(
             R.id.dataViewNavigation,
-            bundleOf(ObjectSetFragment.CONTEXT_ID_KEY to id),
+            ObjectSetFragment.args(
+                ctx = target,
+                space = space
+            ),
             navOptions {
                 launchSingleTop = true
                 popUpTo(R.id.pageSearchFragment) {

@@ -31,7 +31,7 @@ interface AppNavigation {
     fun launchCollections(subscription: Subscription, space: Id)
     fun launchObjectFromSplash(id: Id)
     fun launchObjectSetFromSplash(id: Id)
-    fun launchObjectSet(id: Id)
+    fun launchObjectSet(target: Id, space: Id)
 
     fun openKeychainScreen()
     fun openUserSettingsScreen()
@@ -86,7 +86,7 @@ interface AppNavigation {
             val isPopUpToDashboard: Boolean = false
         ) : Command()
 
-        data class LaunchObjectSet(val target: Id) : Command()
+        data class LaunchObjectSet(val target: Id, val space: Id) : Command()
 
         object OpenUpdateAppScreen : Command()
 

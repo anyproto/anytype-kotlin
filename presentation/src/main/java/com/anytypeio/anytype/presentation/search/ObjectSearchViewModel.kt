@@ -205,7 +205,18 @@ open class ObjectSearchViewModel(
                 }
             }
             ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
-                navigate(EventWrapper(AppNavigation.Command.LaunchObjectSet(target = target)))
+                val obj = objects
+                    .value
+                    .getOrNull()
+                    ?.find { obj -> obj.id == view.id }
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.LaunchObjectSet(
+                            target = target,
+                            space = requireNotNull(obj?.spaceId)
+                        )
+                    )
+                )
             }
             else -> {
                 Timber.e("Unexpected layout: ${view.layout}")

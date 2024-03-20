@@ -94,11 +94,13 @@ fun GalleryInstallationScreen(
 @Composable
 private fun LoadingScreen() {
     val infiniteTransition = rememberInfiniteTransition(label = "")
-    val color = colorResource(id = R.color.dashboard_background)
+
+    val colorStart = colorResource(id = R.color.background_secondary)
+    val colorEnd = colorResource(id = R.color.shape_secondary)
     val shimmerColorShades = listOf(
-        color.copy(alpha = 0.6f),
-        color.copy(alpha = 0.2f),
-        color.copy(alpha = 0.6f)
+        colorStart,
+        colorEnd,
+        colorStart
     )
     val shimmerAnimation = infiniteTransition.animateFloat(
         initialValue = 0f,

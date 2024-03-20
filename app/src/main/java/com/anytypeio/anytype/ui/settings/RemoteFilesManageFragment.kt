@@ -75,7 +75,10 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
                 target = command.target,
                 space = command.space
             )
-            is CollectionViewModel.Command.LaunchObjectSet -> launchObjectSet(command.target)
+            is CollectionViewModel.Command.LaunchObjectSet -> launchObjectSet(
+                target = command.target,
+                space = command.space
+            )
             is CollectionViewModel.Command.ConfirmRemoveFromBin -> confirmRemoveFromBin(command)
             is CollectionViewModel.Command.OpenCollection -> navigation.launchCollections(
                 subscription = command.subscription,
@@ -100,8 +103,11 @@ class RemoteFilesManageFragment : BaseBottomSheetComposeFragment() {
         navigation.exit()
     }
 
-    private fun launchObjectSet(target: Id) {
-        navigation.launchObjectSet(target)
+    private fun launchObjectSet(target: Id, space: Id) {
+        navigation.launchObjectSet(
+            target = target,
+            space = space
+        )
     }
 
     private fun launchDocument(target: Id, space: Id) {

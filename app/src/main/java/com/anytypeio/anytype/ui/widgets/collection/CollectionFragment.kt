@@ -87,7 +87,10 @@ class CollectionFragment : BaseComposeFragment() {
                 target = command.target,
                 space = command.space
             )
-            is Command.LaunchObjectSet -> launchObjectSet(command.target)
+            is Command.LaunchObjectSet -> launchObjectSet(
+                target = command.target,
+                space = command.space
+            )
             is Command.Exit -> exit()
             is Command.ConfirmRemoveFromBin -> confirmRemoveFromBin(command)
             is Command.OpenCollection -> navigation.launchCollections(
@@ -115,8 +118,11 @@ class CollectionFragment : BaseComposeFragment() {
         navigation.exit()
     }
 
-    private fun launchObjectSet(target: Id) {
-        navigation.launchObjectSet(target)
+    private fun launchObjectSet(target: Id, space: Id) {
+        navigation.launchObjectSet(
+            target = target,
+            space = space
+        )
     }
 
     private fun launchDocument(target: Id, space: Id) {

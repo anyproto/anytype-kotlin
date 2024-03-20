@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.gallery_experience.screens
 
-import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -30,8 +29,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -49,7 +46,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
@@ -63,13 +59,19 @@ fun GalleryInstallationScreen(
     state: GalleryInstallationState,
     onInstallClicked: () -> Unit
 ) {
+    val brush = Brush.verticalGradient(
+        listOf(
+            colorResource(id = R.color.background_highlighted),
+            Color.Transparent
+        )
+    )
     Box(
         modifier = Modifier
             .nestedScroll(rememberNestedScrollInteropConnection())
             .fillMaxWidth()
             .wrapContentHeight()
             .background(
-                color = colorResource(id = R.color.background_secondary),
+                brush = brush,
                 shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
             ),
     ) {
@@ -84,6 +86,7 @@ fun GalleryInstallationScreen(
                 GalleryInstallationState.Loading -> {
                     LoadingScreen()
                 }
+
                 is GalleryInstallationState.Success -> {
                     SuccessScreen(state, onInstallClicked)
                 }
@@ -174,7 +177,11 @@ private fun SuccessScreen(
         modifier = Modifier
             .fillMaxWidth()
             .height(220.dp)
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 20.dp)
+            .background(
+                color = colorResource(id = R.color.background_primary),
+                shape = RoundedCornerShape(8.dp)
+            ),
         state = pagerState
     ) { index ->
         val screenshotUrl = state.info.screenshots[index]
@@ -295,7 +302,14 @@ private fun GalleryInstallationScreenPreview() {
                 screenshots = listOf("1", "2", "3", "4"),
                 downloadLink = "lobortis",
                 fileSize = 1213,
-                categories = listOf("tag1", "tag2", "tag3312212112", "tag421312312", "tag5", "tag6"),
+                categories = listOf(
+                    "tag1",
+                    "tag2",
+                    "tag3312212112",
+                    "tag421312312",
+                    "tag5",
+                    "tag6"
+                ),
                 language = "nisi"
             )
         )

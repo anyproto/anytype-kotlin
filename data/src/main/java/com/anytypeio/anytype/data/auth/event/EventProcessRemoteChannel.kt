@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.data.auth.event
 
 import com.anytypeio.anytype.core_models.ProcessEvent
+import com.anytypeio.anytype.domain.workspace.EventProcessChannel
 import kotlinx.coroutines.flow.Flow
 
 interface EventProcessRemoteChannel {
@@ -9,7 +10,7 @@ interface EventProcessRemoteChannel {
 
 class EventProcessDateChannel(
     private val channel: EventProcessRemoteChannel
-) : EventProcessRemoteChannel {
+) : EventProcessChannel {
 
     override fun observe(): Flow<List<ProcessEvent>> {
         return channel.observe()

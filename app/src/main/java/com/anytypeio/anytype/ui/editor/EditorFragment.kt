@@ -53,6 +53,7 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
@@ -1082,7 +1083,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         if (command.isDataView) {
                             vm.proceedWithOpeningDataViewObject(
                                 target = command.id,
-                                space = command.space
+                                space = SpaceId(command.space)
                             )
                         } else {
                             vm.proceedWithOpeningObject(command.id)

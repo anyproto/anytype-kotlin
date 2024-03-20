@@ -433,7 +433,7 @@ class EditorViewModel(
                     is Action.OpenObject -> proceedWithOpeningObject(action.id)
                     is Action.OpenCollection -> proceedWithOpeningDataViewObject(
                         target = action.target,
-                        space = action.space
+                        space = SpaceId(action.space)
                     )
                 }
             }
@@ -3133,17 +3133,18 @@ class EditorViewModel(
 
     private fun proceedWithOpeningDataViewBlock(dv: Content.DataView) {
         if (dv.targetObjectId.isNotEmpty()) {
+            val space = orchestrator.stores.details.current().let { details ->
+                val detail = details.details[dv.targetObjectId]
+                if (detail != null && detail.map.isNotEmpty()) {
+                    val wrapper = ObjectWrapper.Basic(detail.map)
+                    wrapper.spaceId ?: space
+                } else {
+                    space
+                }
+            }
             proceedWithOpeningDataViewObject(
                 target = dv.targetObjectId,
-                space = orchestrator.stores.details.current().let { details ->
-                    val detail = details.details[dv.targetObjectId]
-                    if (detail != null && detail.map.isNotEmpty()) {
-                        val wrapper = ObjectWrapper.Basic(detail.map)
-                        wrapper.spaceId ?: "TODO Fallback to space id from this object"
-                    } else {
-                        "TODO Fallback to space id from this object"
-                    }
-                }
+                space = SpaceId(space)
             )
             viewModelScope.sendAnalyticsOpenAsObject(
                 analytics = analytics,
@@ -3186,7 +3187,7 @@ class EditorViewModel(
                 if (space != null) {
                     proceedWithOpeningDataViewObject(
                         target = target,
-                        space = checkNotNull(wrapper.spaceId)
+                        space = SpaceId(checkNotNull(wrapper.spaceId))
                     )
                 }
             }
@@ -4323,7 +4324,7 @@ class EditorViewModel(
 
     fun proceedWithOpeningDataViewObject(
         target: Id,
-        space: Id,
+        space: SpaceId,
         isPopUpToDashboard: Boolean = false
     ) {
         viewModelScope.launch {
@@ -4334,7 +4335,7 @@ class EditorViewModel(
                         EventWrapper(
                             AppNavigation.Command.OpenSetOrCollection(
                                 target = target,
-                                space = space,
+                                space = space.id,
                                 isPopUpToDashboard
                             )
                         )
@@ -4345,7 +4346,7 @@ class EditorViewModel(
                         EventWrapper(
                             AppNavigation.Command.OpenSetOrCollection(
                                 target = target,
-                                space = space,
+                                space = space.id,
                                 isPopUpToDashboard
                             )
                         )
@@ -4501,7 +4502,7 @@ class EditorViewModel(
             onSuccess = {
                 proceedWithOpeningDataViewObject(
                     target = context,
-                    space = space,
+                    space = SpaceId(space),
                     isPopUpToDashboard = true
                 )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
@@ -4523,7 +4524,7 @@ class EditorViewModel(
             onSuccess = {
                 proceedWithOpeningDataViewObject(
                     target = context,
-                    space = space,
+                    space = SpaceId(space),
                     isPopUpToDashboard = true
                 )
                 viewModelScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
@@ -6231,7 +6232,7 @@ class EditorViewModel(
                 success = { response ->
                     proceedWithOpeningDataViewObject(
                         target = response.target,
-                        space = space
+                        space = SpaceId(space)
                     )
                 }
             )

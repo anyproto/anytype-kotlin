@@ -55,7 +55,11 @@ abstract class ObjectMenuBaseFragment :
 
     private val actionAdapter by lazy {
         ObjectActionAdapter { action ->
-            vm.onActionClicked(ctx, space, action)
+            vm.onActionClicked(
+                ctx = ctx,
+                space = space,
+                action = action
+            )
         }
     }
 

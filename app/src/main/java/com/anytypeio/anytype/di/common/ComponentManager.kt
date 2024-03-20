@@ -107,6 +107,7 @@ import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceModule
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeModule
 import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
+import com.anytypeio.anytype.presentation.library.LibraryViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
@@ -831,9 +832,10 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val libraryComponent = ComponentWithParams { ctx: Context ->
+    val libraryComponent = ComponentWithParams { (ctx, params) : Pair<Context, LibraryViewModel.Params> ->
         DaggerLibraryComponent.builder()
             .withContext(ctx)
+            .withParams(params)
             .withDependencies(findComponentDependencies())
             .build()
     }

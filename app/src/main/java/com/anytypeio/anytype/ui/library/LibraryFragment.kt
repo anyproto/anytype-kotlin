@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
@@ -210,7 +211,17 @@ class LibraryFragment : BaseComposeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().libraryComponent.get(requireContext()).inject(this)
+        componentManager()
+            .libraryComponent
+            .get(
+                Pair(
+                    requireContext(),
+                    LibraryViewModel.Params(
+                        space = SpaceId(space)
+                    )
+                )
+            )
+            .inject(this)
     }
 
     override fun releaseDependencies() {

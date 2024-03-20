@@ -22,9 +22,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -51,6 +53,8 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
     private val excludedTypeKeys get() = argOrNull<List<Key>>(EXCLUDED_TYPE_KEYS_ARG_KEY)
 
     private val flow get() = arg<FlowType>(FLOW_TYPE_KEY)
+
+    private val space get() = arg<Id>(SPACE_ID_KEY)
 
     private val vm by viewModels<SelectObjectTypeViewModel> { factory }
 
@@ -208,7 +212,10 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
     override fun injectDependencies() {
         componentManager()
             .selectObjectTypeComponent.get(
-                params = excludedTypeKeys?.map { TypeKey(it) } ?: emptyList()
+                params = SelectObjectTypeViewModel.Params(
+                    excludedTypeKeys = excludedTypeKeys?.map { TypeKey(it) } ?: emptyList(),
+                    space = SpaceId(space)
+                )
             )
             .inject(this)
     }
@@ -218,7 +225,7 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
     }
 
     companion object {
-
+        const val SPACE_ID_KEY = "arg.select-object-type.space-id"
         const val EXCLUDED_TYPE_KEYS_ARG_KEY = "arg.select-object-type.excluded-type-keys"
         const val FLOW_TYPE_KEY = "arg.select-object-type.flow-type"
         const val DROP_DOWN_MENU_ACTION_DELAY = 100L
@@ -229,17 +236,22 @@ class SelectObjectTypeFragment : BaseBottomSheetComposeFragment() {
         fun newInstance(
             excludedTypeKeys: List<Key>,
             onTypeSelected: (ObjectWrapper.Type) -> Unit,
-            flow: FlowType = FLOW_CHANGE_TYPE
+            flow: FlowType = FLOW_CHANGE_TYPE,
+            space: Id
         ): SelectObjectTypeFragment = SelectObjectTypeFragment().apply {
             this.onTypeSelected = onTypeSelected
             arguments = bundleOf(
-                    EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys,
-                    FLOW_TYPE_KEY to flow
+                EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys,
+                FLOW_TYPE_KEY to flow,
+                SPACE_ID_KEY to space
             )
         }
 
-        fun new(flow: FlowType = FLOW_CREATE_OBJECT) = SelectObjectTypeFragment().apply {
-            arguments = bundleOf(FLOW_TYPE_KEY to flow)
+        fun new(
+            flow: FlowType = FLOW_CREATE_OBJECT,
+            space: Id
+        ) = SelectObjectTypeFragment().apply {
+            arguments = bundleOf(FLOW_TYPE_KEY to flow, SPACE_ID_KEY to space)
         }
     }
 }

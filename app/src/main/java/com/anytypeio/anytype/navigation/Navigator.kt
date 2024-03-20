@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.navigation
 
-import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
@@ -32,12 +31,13 @@ class Navigator : AppNavigation {
         }
     }
 
-    override fun openDocument(id: String) {
+    override fun openDocument(target: Id, space: Id) {
         navController?.navigate(
             R.id.objectNavigation,
-            Bundle().apply {
-                putString(EditorFragment.CTX_KEY, id)
-            }
+            EditorFragment.args(
+                ctx = target,
+                space = space
+            )
         )
     }
 

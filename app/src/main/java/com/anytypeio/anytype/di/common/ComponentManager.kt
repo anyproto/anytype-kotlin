@@ -4,7 +4,6 @@ import android.content.Context
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.di.feature.AddDataViewRelationObjectValueModule
 import com.anytypeio.anytype.di.feature.AddDataViewRelationOptionValueModule
 import com.anytypeio.anytype.di.feature.AddFileRelationModule
@@ -944,11 +943,11 @@ class ComponentManager(
             .build()
     }
 
-    val selectObjectTypeComponent = ComponentWithParams { excludedTypeKeys: List<TypeKey> ->
+    val selectObjectTypeComponent = ComponentWithParams { params: SelectObjectTypeViewModel.Params ->
         DaggerSelectObjectTypeComponent
             .factory()
             .create(
-                params = SelectObjectTypeViewModel.Params(excludedTypeKeys),
+                params = params,
                 dependencies = findComponentDependencies()
             )
     }

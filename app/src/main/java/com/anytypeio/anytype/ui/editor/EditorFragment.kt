@@ -618,7 +618,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             .longClicks(withHaptic = true)
             .onEach {
                 val dialog = SelectObjectTypeFragment.new(
-                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT
+                    flow = SelectObjectTypeFragment.FLOW_CREATE_OBJECT,
+                    space = space
                 ).apply {
                     onTypeSelected = {
                         vm.onAddNewDocumentClicked(it)
@@ -1055,7 +1056,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     val dialog = SelectObjectTypeFragment.newInstance(
                         excludedTypeKeys = command.excludedTypes,
                         onTypeSelected = vm::onObjectTypeChanged,
-                        flow = SelectObjectTypeFragment.FLOW_CHANGE_TYPE
+                        flow = SelectObjectTypeFragment.FLOW_CHANGE_TYPE,
+                        space = space
                     )
                     dialog.show(childFragmentManager, null)
                 }

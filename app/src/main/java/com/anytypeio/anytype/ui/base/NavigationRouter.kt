@@ -59,7 +59,7 @@ class NavigationRouter(
                     typeId = command.typeId
                 )
 
-                is AppNavigation.Command.OpenLibrary -> navigation.openLibrary()
+                is AppNavigation.Command.OpenLibrary -> navigation.openLibrary(command.space)
                 is AppNavigation.Command.MigrationErrorScreen -> navigation.migrationErrorScreen()
                 is AppNavigation.Command.OpenRemoteFilesManageScreen -> navigation.openRemoteFilesManageScreen(
                     command.subscription

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
+import com.anytypeio.anytype.ui.library.LibraryFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
@@ -231,8 +232,11 @@ class Navigator : AppNavigation {
         })
     }
 
-    override fun openLibrary() {
-        navController?.navigate(R.id.libraryFragment)
+    override fun openLibrary(space: Id) {
+        navController?.navigate(
+            R.id.libraryFragment,
+            LibraryFragment.args(space)
+        )
     }
 
     override fun openRemoteFilesManageScreen(subscription: Id) {

@@ -89,7 +89,7 @@ class HomeScreenFragment : BaseComposeFragment() {
                         runCatching { navigation().openPageSearch() }
                     },
                     onLibraryClicked = {
-                        runCatching { navigation().openLibrary() }
+                        vm.onLibraryClicked()
                     },
                     onCreateNewObjectClicked = throttledClick(
                         onClick = { vm.onCreateNewObjectClicked() }
@@ -286,18 +286,27 @@ class HomeScreenFragment : BaseComposeFragment() {
     private fun proceed(destination: Navigation) {
         Timber.d("New destination: $destination")
         when (destination) {
-            is Navigation.OpenObject -> navigation().openDocument(
-                target = destination.ctx,
-                space = destination.space
-            )
-            is Navigation.OpenSet -> navigation().openObjectSet(
-                target = destination.ctx,
-                space = destination.space
-            )
-            is Navigation.ExpandWidget -> navigation().launchCollections(
-                subscription = destination.subscription,
-                space = destination.space
-            )
+            is Navigation.OpenObject -> runCatching {
+                navigation().openDocument(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }
+            is Navigation.OpenSet -> runCatching {
+                navigation().openObjectSet(
+                    target = destination.ctx,
+                    space = destination.space
+                )
+            }
+            is Navigation.ExpandWidget -> runCatching {
+                navigation().launchCollections(
+                    subscription = destination.subscription,
+                    space = destination.space
+                )
+            }
+            is Navigation.OpenLibrary -> runCatching {
+                navigation().openLibrary(destination.space)
+            }
         }
     }
 

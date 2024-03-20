@@ -1498,10 +1498,20 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onLibraryClicked() {
+        viewModelScope.launch {
+            val space = spaceManager.get()
+            navigation(
+                Navigation.OpenLibrary(space)
+            )
+        }
+    }
+
     sealed class Navigation {
         data class OpenObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenSet(val ctx: Id, val space: Id) : Navigation()
         data class ExpandWidget(val subscription: Subscription, val space: Id) : Navigation()
+        data class OpenLibrary(val space: Id) : Navigation()
     }
 
     class Factory @Inject constructor(

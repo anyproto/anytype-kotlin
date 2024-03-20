@@ -46,7 +46,7 @@ interface AppNavigation {
 
     fun deletedAccountScreen(deadline: Long)
 
-    fun openLibrary()
+    fun openLibrary(space: Id)
 
     fun logout()
 
@@ -94,7 +94,7 @@ interface AppNavigation {
 
         data class OpenTemplates(val typeId: Id) : Command()
 
-        object OpenLibrary: Command()
+        data class OpenLibrary(val space: Id): Command()
 
         data class OpenRemoteFilesManageScreen(val subscription: Id) : Command()
     }
